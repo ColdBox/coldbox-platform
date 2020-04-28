@@ -1,19 +1,18 @@
-Element.prototype.documentOffsetTop = function () {
-    return this.offsetTop + ( this.offsetParent ? this.offsetParent.documentOffsetTop() : 0 );
-};
-var codePreviewShow = true;
 function toggleCodePreview() {
     var codePreviewContainer = document.querySelector( ".code-preview" );
-    var toggleBtnIcon = document.querySelector( ".slideup_row i" );
-    console.log(codePreviewContainer);
-    if(codePreviewShow){
-        codePreviewContainer.classList.add('hidePreview');
-        toggleBtnIcon.classList.remove('up');
-        toggleBtnIcon.classList.add('down');
+	var upIcon = document.querySelector( "#codetoggle-up" );
+	var bottomIcon = document.querySelector( "#codetoggle-down" );
+
+	//console.log(codePreviewContainer);
+
+    if( codePreviewShow ){
+        codePreviewContainer.classList.add( "hidePreview" );
+		upIcon.classList.add( "hidden" );
+		bottomIcon.classList.remove( "hidden" );
     } else {
-        codePreviewContainer.classList.remove('hidePreview');  
-        toggleBtnIcon.classList.remove('down');      
-        toggleBtnIcon.classList.add('up');
+        codePreviewContainer.classList.remove( "hidePreview" );
+        upIcon.classList.remove( "hidden" );
+        bottomIcon.classList.add( "hidden" );
     }
     codePreviewShow = !codePreviewShow;
 }
@@ -57,8 +56,12 @@ function filterScopes(linkEl, filterID ) {
     document.getElementById('request-info-details').scrollTop = 0;
 }
 
-var codeWrapper = document.querySelector( ".code-preview" );
-var codeContainer = document.getElementById( "code-container" );
+Element.prototype.documentOffsetTop = function () {
+    return this.offsetTop + ( this.offsetParent ? this.offsetParent.documentOffsetTop() : 0 );
+};
+var codePreviewShow = true;
+var codeWrapper 	= document.querySelector( ".code-preview" );
+var codeContainer 	= document.getElementById( "code-container" );
 
 Array.from( document.querySelectorAll( ".stacktrace" ) )
     .forEach( function( stackTrace ) {

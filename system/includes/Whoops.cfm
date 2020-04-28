@@ -112,26 +112,50 @@
 <cfoutput>
 	<html>
 		<head>
-			<title>ColdBox Whoops! An error occurred.</title>
-			<script type="text/javascript" src="/coldbox/system/includes/js/syntaxhighlighter.js"></script>
-			<script type="text/javascript" src="/coldbox/system/includes/js/javascript-brush.js"></script>
-			<script type="text/javascript" src="/coldbox/system/includes/js/coldfusion-brush.js"></script>
+			<title>ColdBox Whoops! An error occurred!</title>
+			<script src="/coldbox/system/includes/js/eva.min.js"></script>
+			<script src="/coldbox/system/includes/js/syntaxhighlighter.js"></script>
+			<script src="/coldbox/system/includes/js/javascript-brush.js"></script>
+			<script src="/coldbox/system/includes/js/coldfusion-brush.js"></script>
 			<link type="text/css" rel="stylesheet" href="/coldbox/system/includes/css/syntaxhighlighter-theme.css">
 			<link type="text/css" rel="stylesheet" href="/coldbox/system/includes/css/whoops.css">
-			<script type="text/javascript">SyntaxHighlighter.defaults['gutter'] = true;
-				SyntaxHighlighter.defaults['smart-tabs'] = false;
-				SyntaxHighlighter.defaults['tab-size']   =  4;
-				SyntaxHighlighter.all();</script>
+			<script>
+				SyntaxHighlighter.defaults[ 'gutter' ] 		= true;
+				SyntaxHighlighter.defaults[ 'smart-tabs' ] 	= false;
+				SyntaxHighlighter.defaults[ 'tab-size' ]   	=  4;
+				SyntaxHighlighter.all();
+			</script>
 		</head>
 		<body>
 			<div class="whoops">
+
 				<div class="whoops__nav">
+
 					<div class="exception">
-						<small class="exception__timestamp">#dateFormat( now(), "MM/DD/YYYY" )##timeFormat( now(), "hh:MM:SS TT" )#</small>
-						<h1 class="exception__type">#trim( EventDetails[ "Error Code" ] & " " & local.e.type )#</h1>
-						<div class="exception__message">#local.e.message#</div>
+
+						<div class="exception__logo">
+							<img src="/coldbox/system/includes/images/coldbox-logo.png" width="40" />
+							<span>ColdBox Exception</span>
+						</div>
+
+						<h1 class="exception__timestamp" title="Time of exception">
+							<i data-eva="clock-outline" fill="##7fcbe2"></i>
+							<span>#dateFormat( now(), "MM/DD/YYYY" )# #timeFormat( now(), "hh:MM:SS TT" )#</span>
+						</h1>
+
+						<h1 class="exception__type" title="Error Code and Exception Type">
+							<i data-eva="close-circle-outline" fill="red"></i>
+							<span>#trim( eventDetails[ "Error Code" ] & " " & local.e.type )#</span>
+						</h1>
+
+						<div class="exception__message" title="Exception Message">
+							#oException.processMessage( local.e.message )#
+						</div>
+
 					</div>
+
 					<div class="whoops_stacktrace_panel_info">Stack Frame(s): #stackFrames#</div>
+
 					<div class="whoops__stacktrace_panel">
 						<ul class="stacktrace__list">
 							<cfset root = expandPath( "/" )/>
@@ -140,7 +164,8 @@
 								<!--- <cfdump var="#instance#"> --->
 								<li
 									id   ="stack#stackFrames - i + 1#"
-									class="stacktrace<cfif i EQ 1>stacktrace--active</cfif>"
+									class="stacktrace <cfif i EQ 1>stacktrace--active</cfif>"
+									title="Open Frame"
 								>
 									<span class="badge">#stackFrames - i + 1#</span>
 									<div class="stacktrace__info">
@@ -171,7 +196,10 @@
 											rel   ="noreferrer noopener"
 											href  ="#oException.openInEditorURL( event, instance )#"
 											class ="editorLink__btn"
-										>Open</a>
+											title="Open in Editor"
+										>
+											<i data-eva="code-outline" height="20"></i>
+										</a>
 									</cfif>
 								</li>
 							</cfloop>
@@ -188,14 +216,16 @@
 					</cfif>
 
 					<div class="request-info data-table-container">
+
 						<div class="slideup_row">
 							<a href="javascript:void(0);" onclick="toggleCodePreview()" class="button button-icononly">
-								<i class="arrow up"></i>
+								<i id="codetoggle-up" data-eva="arrowhead-up-outline"></i>
+								<i id="codetoggle-down" class="hidden" data-eva="arrowhead-down-outline"></i>
 							</a>
 						</div>
 
 						<div>
-							<h2 class="details-heading">Environment &amp; details:</h2>
+							<h2 class="details-heading">Exception Details:</h2>
 							<div class="data-filter">
 								<strong>Filter Scopes:</strong>
 								<a class="button active" href="javascript:void(0);" onclick="filterScopes(this,'');">All</a>
@@ -298,6 +328,10 @@
 				</div>
 			</div>
 
+			<!----------------------------------------------------------------------------------------->
+			<!--- Global File Getters --->
+			<!----------------------------------------------------------------------------------------->
+
 			<cfloop from="1" to="#arrayLen( local.e.TagContext )#" index="i">
 				<cfset instance = local.e.TagContext[ i ]/>
 				<cfset highlighter = ( listLast( instance.template, "." ) eq "cfm" ? "cf" : "js" )/>
@@ -306,7 +340,7 @@
 					data-highlight-line="#instance.line#"
 					style="display: none;"
 				>
-					<script type="syntaxhighlighter" class="brush:#highlighter#; highlight: [#instance.line#];">
+					<script type="syntaxhighlighter" class="brush:#highlighter#; highlight: [#instance.line#];" async>
 						<![CDATA[<cfloop file="#instance.template#" index="line">#line##chr( 13 )#</cfloop>
 						]]>
 					</script>
@@ -314,6 +348,9 @@
 			</cfloop>
 
 			<script src="/coldbox/system/includes/js/whoops.js"></script>
+			<script>
+				eva.replace();
+			</script>
 		</body>
 	</html>
 </cfoutput>

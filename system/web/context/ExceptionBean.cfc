@@ -316,6 +316,19 @@ component accessors="true" {
 		return arguments.str;
 	}
 
+	/**
+	 * Process a message for display
+	 *
+	 * @str The string to process
+	 */
+	function processMessage( required str ){
+		REMatchNoCase( "\[[^\]]*\]", arguments.str )
+			.each( function( item ){
+				str = replace( str, arguments.item, "<span class='highlight'>#arguments.item#</span>", "all" );
+			} );
+		return arguments.str;
+	}
+
 	function displayScope (scope) {
         var list = '<table class="data-table"><tbody>';
         var orderedArr = scope;
