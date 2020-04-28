@@ -23,6 +23,7 @@
 		"Extended Info" : ( oException.getExtendedInfo() != "" ) ? oException.getExtendedInfo() : "",
 		"Message"       : htmlEditFormat( oException.getmessage() ).listChangeDelims( "<br>", chr( 13 ) & chr( 10 ) ),
 		"Detail"        : htmlEditFormat( oException.getDetail() ).listChangeDelims( "<br>", chr( 13 ) & chr( 10 ) ),
+		"Environment"	: controller.getSetting( "environment" ),
 		"Event"         : ( event.getCurrentEvent() != "" ) ? event.getCurrentEvent() : "",
 		"Route"         : ( event.getCurrentRoute() != "" ) ? event.getCurrentRoute() & (
 			event.getCurrentRoutedModule() != "" ? " from the " & event.getCurrentRoutedModule() & "module router." : ""
@@ -40,6 +41,7 @@
 			"Message",
 			"Detail",
 			"Extended Info",
+			"Environment",
 			"Event",
 			"Route",
 			"Route Name",
@@ -171,14 +173,14 @@
 								<li
 									id   ="stack#stackFrames - i + 1#"
 									class="stacktrace <cfif i EQ 1>stacktrace--active</cfif>"
-									title="Open Frame"
 								>
 									<span class="badge">#stackFrames - i + 1#</span>
 									<div class="stacktrace__info">
 										<h3 class="stacktrace__location">
 											#replace( instance.template, root, "" )#:<span class="stacktrace__line-number">#instance.line#</span>
 										</h3>
-										<cfif structKeyExists( instance, "codePrintPlain" )>
+
+										<cfif structKeyExists( instance, "codePrintPlain" ) && controller.getSetting( "Environment" ) == "development">
 											<cfset codesnippet = instance.codePrintPlain>
 											<cfset codesnippet = reReplace( codesnippet, "\n\t", " ", "All" )>
 											<cfset codesnippet = htmlEditFormat( codesnippet )>
@@ -191,11 +193,12 @@
 											<cfset splitLines = listToArray( codesnippet, "#chr( 10 )#" )>
 											<h4 class="stacktrace__code" style="margin-top:-10px;">
 												<cfloop array="#splitLines#" index="codeline">
-													#strLimit( codeline, 40 )#<br>
+													#strLimit( codeline, 60 )#<br>
 												</cfloop>
 											</h4>
 										</cfif>
 									</div>
+
 									<cfif oException.openInEditorURL( event, instance ) NEQ "">
 										<a
 											target="_self"
@@ -207,6 +210,7 @@
 											<i data-eva="code-download-outline" height="20"></i>
 										</a>
 									</cfif>
+
 								</li>
 							</cfloop>
 						</ul>
@@ -222,7 +226,7 @@
 					<!----------------------------------------------------------------------------------------->
 					<!--- Code Container --->
 					<!----------------------------------------------------------------------------------------->
-					<cfif stackFrames gt 0>
+					<cfif stackFrames gt 0 AND controller.getSetting( "environment" ) == "development">
 						<div class="code-preview">
 							<cfset instance = local.e.TagContext[ 1 ]/>
 							<div id="code-container"></div>
@@ -238,12 +242,14 @@
 						<!--- Slide UP Button --->
 						<!----------------------------------------------------------------------------------------->
 
-						<div class="slideup_row">
-							<a href="javascript:void(0);" onclick="toggleCodePreview()" class="button button-icononly">
-								<i id="codetoggle-up" data-eva="arrowhead-up-outline"></i>
-								<i id="codetoggle-down" class="hidden" data-eva="arrowhead-down-outline"></i>
-							</a>
-						</div>
+						<cfif stackFrames gt 0 AND controller.getSetting( "environment" ) == "development">
+							<div class="slideup_row">
+								<a href="javascript:void(0);" onclick="toggleCodePreview()" class="button button-icononly">
+									<i id="codetoggle-up" data-eva="arrowhead-up-outline"></i>
+									<i id="codetoggle-down" class="hidden" data-eva="arrowhead-down-outline"></i>
+								</a>
+							</div>
+						</cfif>
 
 						<!----------------------------------------------------------------------------------------->
 						<!--- Scope Filters --->
@@ -337,22 +343,24 @@
 			<!----------------------------------------------------------------------------------------->
 			<!--- Global File Getters --->
 			<!----------------------------------------------------------------------------------------->
-			<cfset stime = getTickCount()>
 
-			<cfloop from="1" to="#arrayLen( local.e.TagContext )#" index="i">
-				<cfset instance = local.e.TagContext[ i ]/>
-				<cfset highlighter = ( listLast( instance.template, "." ) eq "cfm" ? "cf" : "js" )/>
-				<pre
-					id="stack#stackFrames - i + 1#-code"
-					data-highlight-line="#instance.line#"
-					style="display: none;"
-				>
-					<script type="syntaxhighlighter" class="brush:#highlighter#; highlight: [#instance.line#];" async>
-						<![CDATA[<cfloop file="#instance.template#" index="line">#line##chr( 13 )#</cfloop>
-						]]>
-					</script>
-				</pre>
-			</cfloop>
+			<!--- Make sure we are in Development only --->
+			<cfif controller.getSetting( "environment" ) == "development">
+				<cfloop from="1" to="#arrayLen( local.e.TagContext )#" index="i">
+					<cfset instance = local.e.TagContext[ i ]/>
+					<cfset highlighter = ( listLast( instance.template, "." ) eq "cfm" ? "cf" : "js" )/>
+					<pre
+						id="stack#stackFrames - i + 1#-code"
+						data-highlight-line="#instance.line#"
+						style="display: none;"
+					>
+						<script type="syntaxhighlighter" class="brush:#highlighter#; highlight: [#instance.line#];" async>
+							<![CDATA[<cfloop file="#instance.template#" index="line">#line##chr( 13 )#</cfloop>
+							]]>
+						</script>
+					</pre>
+				</cfloop>
+			</cfif>
 
 			<!----------------------------------------------------------------------------------------->
 			<!--- End JS Scripts --->

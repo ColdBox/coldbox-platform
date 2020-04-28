@@ -29,10 +29,15 @@ function toggleActiveClasses( id ) {
 }
 
 function changeCodePanel( id ) {
-    toggleActiveClasses( id );
+	toggleActiveClasses( id );
     var code = document.getElementById( id + "-code" );
-    var highlightLine = code.getAttribute( "data-highlight-line" );
-    codeContainer.innerHTML = code.innerHTML;
+	var highlightLine = code.getAttribute( "data-highlight-line" );
+
+	if( codeContainer == null ){
+		return;
+	}
+
+	codeContainer.innerHTML = code.innerHTML;
     scrollToLine( highlightLine );
 }
 
