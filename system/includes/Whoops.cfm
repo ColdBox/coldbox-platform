@@ -103,7 +103,7 @@
 
 	local.e = oException.getExceptionStruct();
 	stackFrames = arrayLen( local.e.TagContext );
-	local.safeEnvironment = "test";
+	local.safeEnvironment = "development";
 </cfscript>
 <cfoutput>
 	<html>
