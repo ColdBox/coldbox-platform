@@ -23,15 +23,15 @@
 		"Extended Info" : ( oException.getExtendedInfo() != "" ) ? oException.getExtendedInfo() : "",
 		"Message"       : htmlEditFormat( oException.getmessage() ).listChangeDelims( "<br>", chr( 13 ) & chr( 10 ) ),
 		"Detail"        : htmlEditFormat( oException.getDetail() ).listChangeDelims( "<br>", chr( 13 ) & chr( 10 ) ),
-		"Event"         : ( event.getCurrentEvent() != "" ) ? event.getCurrentEvent() : "N/A",
+		"Event"         : ( event.getCurrentEvent() != "" ) ? event.getCurrentEvent() : "",
 		"Route"         : ( event.getCurrentRoute() != "" ) ? event.getCurrentRoute() & (
 			event.getCurrentRoutedModule() != "" ? " from the " & event.getCurrentRoutedModule() & "module router." : ""
-		) : "N/A",
-		"Route Name"       : ( event.getCurrentRouteName() != "" ) ? event.getCurrentRouteName() : "N/A",
-		"Routed Module"    : ( event.getCurrentRoutedModule() != "" ) ? event.getCurrentRoutedModule() : "N/A",
-		"Routed Namespace" : ( event.getCurrentRoutedNamespace() != "" ) ? event.getCurrentRoutedNamespace() : "N/A",
-		"Routed URL"       : ( event.getCurrentRoutedURL() != "" ) ? event.getCurrentRoutedURL() : "N/A",
-		"Layout"           : ( Event.getCurrentLayout() != "" ) ? Event.getCurrentLayout() : "N/A",
+		) : "",
+		"Route Name"       : ( event.getCurrentRouteName() != "" ) ? event.getCurrentRouteName() : "",
+		"Routed Module"    : ( event.getCurrentRoutedModule() != "" ) ? event.getCurrentRoutedModule() : "",
+		"Routed Namespace" : ( event.getCurrentRoutedNamespace() != "" ) ? event.getCurrentRoutedNamespace() : "",
+		"Routed URL"       : ( event.getCurrentRoutedURL() != "" ) ? event.getCurrentRoutedURL() : "",
+		"Layout"           : ( Event.getCurrentLayout() != "" ) ? Event.getCurrentLayout() : "",
 		"Module"           : event.getCurrentLayoutModule(),
 		"View"             : event.getCurrentView(),
 		"itemorder"        : [
@@ -131,6 +131,9 @@
 
 				<div class="whoops__nav">
 
+					<!----------------------------------------------------------------------------------------->
+					<!--- Top Left Exception Area --->
+					<!----------------------------------------------------------------------------------------->
 					<div class="exception">
 
 						<div class="exception__logo">
@@ -154,8 +157,11 @@
 
 					</div>
 
-					<div class="whoops_stacktrace_panel_info">Stack Frame(s): #stackFrames#</div>
+					<!----------------------------------------------------------------------------------------->
+					<!--- Stack Frames --->
+					<!----------------------------------------------------------------------------------------->
 
+					<div class="whoops_stacktrace_panel_info">Stack Frame(s): #stackFrames#</div>
 					<div class="whoops__stacktrace_panel">
 						<ul class="stacktrace__list">
 							<cfset root = expandPath( "/" )/>
@@ -198,7 +204,7 @@
 											class ="editorLink__btn"
 											title="Open in Editor"
 										>
-											<i data-eva="code-outline" height="20"></i>
+											<i data-eva="code-download-outline" height="20"></i>
 										</a>
 									</cfif>
 								</li>
@@ -207,7 +213,15 @@
 					</div>
 				</div>
 
+
+				<!----------------------------------------------------------------------------------------->
+				<!--- Details Pane --->
+				<!----------------------------------------------------------------------------------------->
 				<div class="whoops__detail">
+
+					<!----------------------------------------------------------------------------------------->
+					<!--- Code Container --->
+					<!----------------------------------------------------------------------------------------->
 					<cfif stackFrames gt 0>
 						<div class="code-preview">
 							<cfset instance = local.e.TagContext[ 1 ]/>
@@ -215,7 +229,14 @@
 						</div>
 					</cfif>
 
+					<!----------------------------------------------------------------------------------------->
+					<!--- Exception Details --->
+					<!----------------------------------------------------------------------------------------->
 					<div class="request-info data-table-container">
+
+						<!----------------------------------------------------------------------------------------->
+						<!--- Slide UP Button --->
+						<!----------------------------------------------------------------------------------------->
 
 						<div class="slideup_row">
 							<a href="javascript:void(0);" onclick="toggleCodePreview()" class="button button-icononly">
@@ -224,53 +245,38 @@
 							</a>
 						</div>
 
+						<!----------------------------------------------------------------------------------------->
+						<!--- Scope Filters --->
+						<!----------------------------------------------------------------------------------------->
+
 						<div>
-							<h2 class="details-heading">Exception Details:</h2>
-							<div class="data-filter">
-								<strong>Filter Scopes:</strong>
-								<a class="button active" href="javascript:void(0);" onclick="filterScopes(this,'');">All</a>
-								<a class="button" href="javascript:void(0);" onclick="filterScopes(this,'eventdetails');">Error Details</a>
-								<a
-									class="button"
-									href ="javascript:void(0);" onclick="filterScopes(this,'frameworksnapshot_scope');"
-								>Framework Snapshot</a>
-								<a
-									class="button"
-									href ="javascript:void(0);" onclick="filterScopes(this,'database_scope');"
-								>Database</a>
-								<a
-									class="button"
-									href ="javascript:void(0);" onclick="filterScopes(this,'frameworksnapshot_scope');"
-								>RC</a>
-								<a class="button" href="javascript:void(0);" onclick="filterScopes(this,'prc_scope');">PRC</a>
-								<a
-									class="button"
-									href ="javascript:void(0);" onclick="filterScopes(this,'headers_scope');"
-								>Headers</a>
-								<a
-									class="button"
-									href ="javascript:void(0);" onclick="filterScopes(this,'session_scope');"
-								>Session</a>
-								<a
-									class="button"
-									href ="javascript:void(0);" onclick="filterScopes(this,'application_scope');"
-								>Application</a>
-								<a
-									class="button"
-									href ="javascript:void(0);" onclick="filterScopes(this,'cookies_scope');"
-								>Cookies</a>
-								<a
-									class="button"
-									href ="javascript:void(0);" onclick="filterScopes(this,'stacktrace_scope');"
-								>Raw Stack Trace</a>
+							<h2 class="details-heading">
+								Exception Details
+							</h2>
+							<div class="data-filter" title="Filter Scopes">
+								<i data-eva="funnel-outline" fill="white"></i>
+								<a class="button active" 	href="javascript:void(0);" onclick="filterScopes( this, '' );">All</a>
+								<a class="button" 			href="javascript:void(0);" onclick="filterScopes( this, 'eventdetails' );">Error Details</a>
+								<a class="button" 			href="javascript:void(0);" onclick="filterScopes( this, 'frameworksnapshot_scope' );">Framework Snapshot</a>
+								<a class="button" 			href="javascript:void(0);" onclick="filterScopes( this, 'database_scope' );">Database</a>
+								<a class="button" 			href="javascript:void(0);" onclick="filterScopes( this, 'rc_scope' );">RC</a>
+								<a class="button" 			href="javascript:void(0);" onclick="filterScopes( this, 'prc_scope' );">PRC</a>
+								<a class="button" 			href="javascript:void(0);" onclick="filterScopes( this, 'headers_scope' );">Headers</a>
+								<a class="button" 			href="javascript:void(0);" onclick="filterScopes( this, 'session_scope' );">Session</a>
+								<a class="button" 			href="javascript:void(0);" onclick="filterScopes( this, 'application_scope' );">Application</a>
+								<a class="button" 			href="javascript:void(0);" onclick="filterScopes( this, 'cookies_scope' );">Cookies</a>
+								<a class="button" 			href="javascript:void(0);" onclick="filterScopes( this, 'stacktrace_scope' );">Raw Stack Trace</a>
 							</div>
 						</div>
 
+						<!----------------------------------------------------------------------------------------->
+						<!--- Exception Details --->
+						<!----------------------------------------------------------------------------------------->
 						<cfoutput>
 							<div id="request-info-details">
 								<div id="eventdetails" class="data-table">
 									<label>Error Details</label>
-									#oException.displayScope( EventDetails )#
+									#oException.displayScope( eventDetails )#
 								</div>
 
 								<div id="frameworksnapshot_scope" class="data-table">
@@ -283,7 +289,7 @@
 									#oException.displayScope( databaseInfo )#
 								</div>
 
-								<div id="frameworksnapshot_scope" class="data-table">
+								<div id="rc_scope" class="data-table">
 									<label>RC</label>
 									#oException.displayScope( rc )#
 								</div>

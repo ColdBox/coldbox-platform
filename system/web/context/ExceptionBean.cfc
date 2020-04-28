@@ -329,54 +329,67 @@ component accessors="true" {
 		return arguments.str;
 	}
 
-	function displayScope (scope) {
+	function displayScope( required scope ) {
         var list = '<table class="data-table"><tbody>';
-        var orderedArr = scope;
-        if(structKeyExists(scope,'itemorder')) orderedArr = scope.itemorder;
+		var orderedArr = arguments.scope;
+
+        if( structKeyExists( arguments.scope, 'itemorder' ) ){
+			orderedArr = arguments.scope.itemorder;
+		}
 
         for( var i in orderedArr ){
             list &= '<tr>';
-            if(isDate(scope[i])){
+            if( isDate( arguments.scope[ i ] ) ){
                 list &= '<td width="250">' & i & '</td>';
-                list &= '<td class="overflow-scroll">' & dateformat(scope[i], "mm/dd/yyyy") & " " & timeformat(scope[i], "HH:mm:ss") & '</td>';
-            } else if(isSimpleValue(scope[i])){
+                list &= '<td class="overflow-scroll">' & dateformat( arguments.scope[ i ], "mm/dd/yyyy") & " " & timeformat( arguments.scope[ i ], "HH:mm:ss") & '</td>';
+            } else if( isSimpleValue( arguments.scope[ i ] ) ){
                 list &= '<td width="250">' & i & '</td>';
-                list &= '<td class="overflow-scroll">' & (scope[i]) & '</td>';
+                list &= '<td class="overflow-scroll">' & ( len( arguments.scope[ i ] ) ? arguments.scope[ i ] : "<em>---</em>" ) & '</td>';
             } else {
-                savecontent variable="myContent" {
-                 writeDump( var = scope[i], format= "html", top=2, expand=false)
+                savecontent variable="local.myContent" {
+                	writeDump( var = arguments.scope[i], format= "html", top=2, expand=false)
                 }
                 list &= '<td width="250">' & i & '</td>';
-                list &= '<td class="overflow-scroll">' & myContent & '</td>';
-                //list &= '<td>' & serializeJSON(scope[i]) & '</td>';
+                list &= '<td class="overflow-scroll">' & local.myContent & '</td>';
             }
             list &= '</tr>';
-        }
+		}
+
+		if( !len( orderedArr ) ){
+			list &= "<tr>
+				<td>
+					<em>No details found!</em>
+				</td>
+			</tr>";
+		}
+
         list &= '</tbody></table>';
-        return list;
+
+		return list;
     }
 
     function openInEditorURL( required event, required struct instance ) {
-        var editor = event.getController().getUtil().getSystemSetting( "WHOOPS_EDITOR", "vscode" );
+		// TODO: Move to ColdBox Setting
+        var editor = arguments.event.getController().getUtil().getSystemSetting( "WHOOPS_EDITOR", "vscode" );
         switch( editor ) {
             case "vscode":
-                return "vscode://file/#instance.template#:#instance.line#";
+                return "vscode://file/#arguments.instance.template#:#arguments.instance.line#";
             case "vscode-insiders":
-                return "vscode-insiders://file/#instance.template#:#instance.line#";
+                return "vscode-insiders://file/#arguments.instance.template#:#arguments.instance.line#";
             case "sublime":
-                return "subl://open?url=file://#instance.template#&line=#instance.line#";
+                return "subl://open?url=file://#arguments.instance.template#&line=#arguments.instance.line#";
             case "textmate":
-                return "txmt://open?url=file://#instance.template#&line=#instance.line#";
+                return "txmt://open?url=file://#arguments.instance.template#&line=#arguments.instance.line#";
             case "emacs":
-                return "emacs://open?url=file://#instance.template#&line=#instance.line#";
+                return "emacs://open?url=file://#arguments.instance.template#&line=#arguments.instance.line#";
             case "macvim":
-                return "mvim://open/?url=file://#instance.template#&line=#instance.line#";
+                return "mvim://open/?url=file://#arguments.instance.template#&line=#arguments.instance.line#";
             case "idea":
-                return "idea://open?file=#instance.template#&line=#instance.line#";
+                return "idea://open?file=#arguments.instance.template#&line=#arguments.instance.line#";
             case "atom":
-                return "atom://core/open/file?filename=#instance.template#&line=#instance.line#";
+                return "atom://core/open/file?filename=#arguments.instance.template#&line=#arguments.instance.line#";
             case "espresso":
-                return "x-espresso://open?filepath=#instance.template#&lines=#instance.line#";
+                return "x-espresso://open?filepath=#arguments.instance.template#&lines=#arguments.instance.line#";
             default:
                 return "";
         }

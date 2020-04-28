@@ -188,7 +188,15 @@ body {
 	margin-top: -2px;
 }
 
-.syntaxhighlighter{
+#code-toolbar{
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+	margin-left: 17px;
+}
+
+#code-toolbar span{
+	margin-left: 5px;
 }
 
 .request-info {
@@ -196,7 +204,9 @@ body {
     padding-left: 2em;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+	overflow: hidden;
+	background-color: #2a2a2a;
+	color: white;
 }
 
 #request-info-details {
@@ -214,9 +224,11 @@ body {
 .data-filter {
     padding-bottom: 10px;
 	border-bottom: 1px solid rgba(0, 0, 0, .1);
-	background-color: #bad7f6;
+	background-color: #38414b;
 	padding: 10px;
 	font-size: 12px;
+	display: flex;
+	justify-content: space-around;
 }
 
 .hidden {
@@ -276,7 +288,7 @@ a.button.active {
 
 .data-table-container label {
 	font-size: 16px;
-	color: #303030;
+	color: #c0d14c;
 	font-weight: bold;
 	margin: 10px 0;
 
@@ -288,6 +300,7 @@ a.button.active {
 .data-table {
 	width: 100%;
 	margin-bottom: 10px;
+	color: white;
 }
 
 .data-table tbody {
@@ -311,7 +324,7 @@ a.button.active {
 	min-width: 130px;
 	overflow: hidden;
 	font-weight: bold;
-	color: #463C54;
+	color: #7FCBE2;
 	padding-right: 5px;
 	font-weight: bold;
 }
@@ -345,7 +358,7 @@ a.button.active {
 }
 
 .details-heading {
-	color: #4288CE;
+	color: white;
 	font-weight: 300;
 	padding-bottom: 10px;
 }
