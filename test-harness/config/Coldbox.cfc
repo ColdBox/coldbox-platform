@@ -35,7 +35,7 @@
 			invalidHTTPMethodHandler : "main.invalidHTTPMethod",
 			exceptionHandler         : "main.onException",
 			invalidEventHandler      : "main.onInvalidEvent",
-			// customErrorTemplate		= "/coldbox/system/includes/BugReport.cfm",
+			// customErrorTemplate		= "/coldbox/system/exceptions/BugReport.cfm",
 			customErrorTemplate      : "views/_templates/generic_error.cfm",
 			// Application Aspects
 			handlerCaching           : false,

@@ -4,13 +4,13 @@
 		if( rc.core ?: false ){
 			setSetting(
 				"customErrorTemplate",
-				"/coldbox/system/includes/BugReport.cfm"
+				"/coldbox/system/exceptions/BugReport.cfm"
 			);
 		}
 		if( rc.new ?: true ){
 			setSetting(
 				"customErrorTemplate",
-				"/coldbox/system/includes/Whoops.cfm"
+				"/coldbox/system/exceptions/Whoops.cfm"
 			);
 		}
 		// testing coldbox exception bean, this line will throw error

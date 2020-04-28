@@ -31,7 +31,7 @@ apidocs/docbox/*
 ApplicationTemplates/*
 tests/suites/loadtests/logs
 test-harness/**/route-visualizer
-system/includes/node_modules/**
+system/exceptions/node_modules/**
 
 # Custom Settings
 test-harness/config/runtime.properties.cfm

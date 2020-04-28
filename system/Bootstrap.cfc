@@ -650,7 +650,7 @@ component serializable="false" accessors="true"{
 		} else {
 			// Default ColdBox Error Template
 			savecontent variable="local.exceptionReport"{
-				include "/coldbox/system/includes/BugReport-Public.cfm";
+				include "/coldbox/system/exceptions/BugReport-Public.cfm";
 			}
 		}
 
