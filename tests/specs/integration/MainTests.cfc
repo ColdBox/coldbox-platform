@@ -54,12 +54,12 @@ component
 			it( "can handle invalid onInvalidEvent handlers", function(){
 				var originalInvalidEventHandler = getController().getSetting( "invalidEventHandler" );
 				getController().setSetting( "invalidEventHandler", "notEvenAnAction" );
-				getController().getHandlerService().onConfigurationLoad();
 				try {
+					getController().getHandlerService().onConfigurationLoad();
 					execute( event = "invalid:bogus.index", renderResults = true );
 					fail( "The event handler was invalid and should have thrown an exception" );
 				} catch ( HandlerService.InvalidEventHandlerException e ) {
-					expect( e.message ).toBe( "The invalidEventHandler event is also invalid" );
+					expect( e.message ).toInclude( "The invalidEventHandler event is also invalid" );
 				} finally {
 					getController().setSetting( "invalidEventHandler", originalInvalidEventHandler );
 					getController().getHandlerService().onConfigurationLoad();
