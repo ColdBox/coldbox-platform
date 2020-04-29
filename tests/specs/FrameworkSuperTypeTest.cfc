@@ -18,7 +18,23 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 		describe( "Framework Super Type", function(){
 			beforeEach( function( currentSpec ){
 				setup();
+
+				target = new coldbox.system.FrameworkSuperType()
+					.setController( getController() );
 			} );
+
+
+			it( "can do when statements with no failures", function(){
+				var result = false;
+				target.when( true, function(){ result = true; } );
+				expect( result ).toBeTrue();
+			});
+
+			it( "can do when statements with failures", function(){
+				var result = true;
+				target.when( false, function(){ result = true; }, function(){ result = false; } );
+				expect( result ).toBeFalse();
+			});
 
 			describe( "Can do population", function(){
 				it( "from the request collection", function(){

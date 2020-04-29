@@ -398,7 +398,6 @@ component accessors="true" {
 	 * @return The string for the IDE
 	 */
     function openInEditorURL( required event, required struct instance ) {
-		// TODO: Move to ColdBox Setting
         var editor = arguments.event.getController().getSetting( name : "exceptionEditor", defaultValue : "vscode" );
         switch( editor ) {
             case "vscode":

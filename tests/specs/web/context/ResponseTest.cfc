@@ -60,6 +60,55 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				expect( response.getData().name ).toBe( "luis" );
 				expect( response.getMessagesString() ).toBe( "Created!" );
 			} );
+
+
+			it( "can set error messages with accompanied data", function(){
+				response.setErrorMessage( "unit test", 400 );
+
+				expect( response.getError() ).toBeTrue();
+				expect( response.getMessagesString() ).toInclude( "unit test" );
+				expect(	response.getStatusCode() ).toBe( 400 );
+				expect(	response.getStatusText() ).toBe( "Bad Request" );
+
+			});
+
+			it( "can set error messages with accompanied code and text", function(){
+				response.setErrorMessage( "unit test", 400, "error baby" );
+
+				expect( response.getError() ).toBeTrue();
+				expect( response.getMessagesString() ).toInclude( "unit test" );
+				expect(	response.getStatusCode() ).toBe( 400 );
+				expect(	response.getStatusText() ).toBe( "error baby" );
+			});
+
+			it( "can set status with default code texts", function(){
+				response.setStatus( 400 );
+
+				expect(	response.getStatusCode() ).toBe( 400 );
+				expect(	response.getStatusText() ).toBe( "Bad Request" );
+			});
+
+			it( "can set status with set code texts", function(){
+				response.setStatus( 400, "error baby" );
+
+				expect(	response.getStatusCode() ).toBe( 400 );
+				expect(	response.getStatusText() ).toBe( "error baby" );
+			});
+
+
+			it( "can set data with pagination with no pagination data", function(){
+				response.setDataWithPagination( { "results" : "luis" } );
+				expect( response.getData() ).toBe( "luis" );
+				expect( response.getPagination().page ).toBe( 1 );
+			});
+
+			it( "can set data with pagination and pagination data", function(){
+				response.setDataWithPagination( { "results" : "luis", "pagination"={
+					"page" : 4
+				} } );
+				expect( response.getData() ).toBe( "luis" );
+				expect( response.getPagination().page ).toBe( 4 );
+			});
 		} );
 	}
 
