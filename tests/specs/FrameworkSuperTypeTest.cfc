@@ -26,15 +26,25 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 
 			it( "can do when statements with no failures", function(){
 				var result = false;
-				target.when( true, function(){ result = true; } );
+				target.when( true, function(){
+					result = true;
+				} );
 				expect( result ).toBeTrue();
-			});
+			} );
 
 			it( "can do when statements with failures", function(){
 				var result = true;
-				target.when( false, function(){ result = true; }, function(){ result = false; } );
+				target.when(
+					false,
+					function(){
+						result = true;
+					},
+					function(){
+						result = false;
+					}
+				);
 				expect( result ).toBeFalse();
-			});
+			} );
 
 			describe( "Can do population", function(){
 				it( "from the request collection", function(){

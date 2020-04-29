@@ -14,11 +14,11 @@
  *	* eventArguments : The struct of args to pass to the event
  *	* renderResults : Render back the results of the event
  *******************************************************************************/
- component
- extends   ="tests.resources.BaseIntegrationTest"
+component
+	extends="tests.resources.BaseIntegrationTest"
 {
 
- /*********************************** BDD SUITES ***********************************/
+	/*********************************** BDD SUITES ***********************************/
 
 	function run(){
 		describe( "Application configuration executor registration", function(){
@@ -29,24 +29,23 @@
 
 			story( "I want to register executors in my app config", function(){
 				then( "it should register them upon startup", function(){
-						var e = this.get( event = "main.index" );
-						expect( getController().getSetting( "executors" ) ).notToBeEmpty();
-						expect( getInstance( "AsyncManager@coldbox" ).hasExecutor( "simpleTaskRunner" ) ).toBeTrue();
-						expect( getInstance( "AsyncManager@coldbox" ).hasExecutor( "scheduledTasks" ) ).toBeTrue();
+					var e = this.get( event = "main.index" );
+					expect( getController().getSetting( "executors" ) ).notToBeEmpty();
+					expect( getInstance( "AsyncManager@coldbox" ).hasExecutor( "simpleTaskRunner" ) ).toBeTrue();
+					expect( getInstance( "AsyncManager@coldbox" ).hasExecutor( "scheduledTasks" ) ).toBeTrue();
 				} );
 			} );
 
 			story( "I want to register executors in my ModuleConfig", function(){
 				then( "it should register them upon startup", function(){
-						expect( getController().getAsyncManager().hasExecutor( "resourcesPool" ) ).toBeTrue();
+					expect( getController().getAsyncManager().hasExecutor( "resourcesPool" ) ).toBeTrue();
 				} );
 				then( "it should delete them upon unLoading", function(){
 					expect( getController().getAsyncManager().hasExecutor( "resourcesPool" ) ).toBeTrue();
 					getController().getModuleService().unload( "resourcesTest" );
 					expect( getController().getAsyncManager().hasExecutor( "resourcesPool" ) ).toBeFalse();
+				} );
 			} );
-			} );
-
 		} );
 	}
 

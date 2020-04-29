@@ -1,14 +1,13 @@
 /**
  * My BDD Test
  */
-component extends="tests.specs.async.BaseAsyncSpec"{
+component extends="tests.specs.async.BaseAsyncSpec" {
 
 	/*********************************** BDD SUITES ***********************************/
 
 	function run( testResults, testBox ){
 		// all your suites go here.
 		describe( "ColdBox Executor Spec", function(){
-
 			beforeEach( function( currentSpec ){
 				asyncManager = new coldbox.system.async.AsyncManager();
 			} );
@@ -16,7 +15,7 @@ component extends="tests.specs.async.BaseAsyncSpec"{
 			story( "Ability to submit one-off tasks into the executor", function(){
 				it( "can execute one-off tasks", function(){
 					var myExecutor = asyncManager.newScheduledExecutor( "schedulerTest" );
-					var future = myExecutor.submit( function(){
+					var future     = myExecutor.submit( function(){
 						toConsole( "running submit() task in the scheduler from:#getThreadName()#" );
 						return "scheduler";
 					} );
@@ -24,11 +23,10 @@ component extends="tests.specs.async.BaseAsyncSpec"{
 					expect( future.get() ).toBe( "scheduler" );
 					expect( future.isCancelled() ).toBeFalse();
 					expect( future.isDone() ).toBeTrue();
-				});
-			});
+				} );
+			} );
 
 			story( "Ability to submit scheduled tasks", function(){
-
 				it( "can submit a task with no period and no delay", function(){
 					var myExecutor = asyncManager.newScheduledExecutor( "schedulerTest" );
 
@@ -42,14 +40,18 @@ component extends="tests.specs.async.BaseAsyncSpec"{
 					expect( sFuture.getDelay( "seconds" ) ).toBe( 0 );
 					expect( sFuture.isCancelled() ).toBeFalse();
 					expect( sFuture.isDone() ).toBeTrue();
-				});
+				} );
 				it( "can submit a task with no period and a delay", function(){
 					var myExecutor = asyncManager.newScheduledExecutor( "schedulerTest" );
 
-					var sFuture = myExecutor.schedule( function(){
-						toConsole( "running hello task with delay from:#getThreadName()#" );
-						return "hello";
-					}, 300, "milliseconds" );
+					var sFuture = myExecutor.schedule(
+						function(){
+							toConsole( "running hello task with delay from:#getThreadName()#" );
+							return "hello";
+						},
+						300,
+						"milliseconds"
+					);
 
 					expect( sFuture.isDone() ).toBeFalse();
 
@@ -57,20 +59,25 @@ component extends="tests.specs.async.BaseAsyncSpec"{
 
 					expect( sFuture.get() ).toBe( "hello" );
 					expect( sFuture.isPeriodic() ).toBeFalse();
-				});
+				} );
 
 				it( "can execute with a time period and be able to shutdown", function(){
 					var atomicLong = createObject( "java", "java.util.concurrent.atomic.AtomicLong" ).init( 0 );
 					var myExecutor = asyncManager.newScheduledExecutor( "schedulerTest" );
 
-					var sFuture = myExecutor.scheduleAtFixedRate( function(){
-						var results = atomicLong.incrementAndGet();
-						toConsole( "running periodic task (#results#) from:#getThreadName()#" );
-					}, 250, 0, "milliseconds" );
+					var sFuture = myExecutor.scheduleAtFixedRate(
+						function(){
+							var results = atomicLong.incrementAndGet();
+							toConsole( "running periodic task (#results#) from:#getThreadName()#" );
+						},
+						250,
+						0,
+						"milliseconds"
+					);
 
-					try{
+					try {
 						expect( sFuture.isPeriodic() ).toBeTrue();
-						for( var x=0; x lte 3; x++ ){
+						for ( var x = 0; x lte 3; x++ ) {
 							sleep( 750 );
 							toConsole( "atomic is " & atomicLong.get() );
 							expect( sFuture.isDone() ).toBeFalse();
@@ -88,21 +95,26 @@ component extends="tests.specs.async.BaseAsyncSpec"{
 
 						toConsole( "xxxxx => task done" );
 					}
-				});
+				} );
 
 				it( "can execute with a spaced delay and be able to shutdown", function(){
 					var atomicLong = createObject( "java", "java.util.concurrent.atomic.AtomicLong" ).init( 0 );
 					var myExecutor = asyncManager.newScheduledExecutor( "schedulerTest" );
 
-					var sFuture = myExecutor.scheduleWithFixedDelay( function(){
-						sleep( 100 );
-						var results = atomicLong.incrementAndGet();
-						toConsole( "running periodic task (#results#) from:#getThreadName()#" );
-					}, 50, 0, "milliseconds" );
+					var sFuture = myExecutor.scheduleWithFixedDelay(
+						function(){
+							sleep( 100 );
+							var results = atomicLong.incrementAndGet();
+							toConsole( "running periodic task (#results#) from:#getThreadName()#" );
+						},
+						50,
+						0,
+						"milliseconds"
+					);
 
-					try{
+					try {
 						expect( sFuture.isPeriodic() ).toBeTrue();
-						for( var x=0; x lte 3; x++ ){
+						for ( var x = 0; x lte 3; x++ ) {
 							sleep( 750 );
 							toConsole( "atomic is " & atomicLong.get() );
 							expect( sFuture.isDone() ).toBeFalse();
@@ -120,16 +132,13 @@ component extends="tests.specs.async.BaseAsyncSpec"{
 
 						toConsole( "xxxxx => task done" );
 					}
-				});
-
-
-			});
+				} );
+			} );
 
 
 			story( "Ability to use a builder to schedule tasks", function(){
-
 				it( "can use the builder to schedule a one-time task", function(){
-					var scheduler = asyncManager.newScheduledExecutor( "myExecutor" );
+					var scheduler  = asyncManager.newScheduledExecutor( "myExecutor" );
 					var atomicLong = createObject( "java", "java.util.concurrent.atomic.AtomicLong" ).init( 0 );
 
 					var sFuture = scheduler
@@ -140,8 +149,8 @@ component extends="tests.specs.async.BaseAsyncSpec"{
 						.delay( 500 )
 						.start();
 
-					try{
-						while( !sFuture.isDone() ){
+					try {
+						while ( !sFuture.isDone() ) {
 							toConsole( "Waiting for task to finish..." );
 							sleep( 100 );
 						}
@@ -152,9 +161,9 @@ component extends="tests.specs.async.BaseAsyncSpec"{
 						expect( sFuture.isDone() ).toBeTrue();
 						expect( sFuture.isCancelled() ).toBeFalse();
 					}
-				});
+				} );
 				it( "can use the builder to schedule a periodic task", function(){
-					var scheduler = asyncManager.newScheduledExecutor( "myExecutor" );
+					var scheduler  = asyncManager.newScheduledExecutor( "myExecutor" );
 					var atomicLong = createObject( "java", "java.util.concurrent.atomic.AtomicLong" ).init( 0 );
 
 					var sFuture = scheduler
@@ -165,10 +174,9 @@ component extends="tests.specs.async.BaseAsyncSpec"{
 						.every( 50 ) // every 50 ms
 						.start();
 
-					try{
-
+					try {
 						expect( sFuture.isPeriodic() ).toBeTrue();
-						for( var x=0; x lte 3; x++ ){
+						for ( var x = 0; x lte 3; x++ ) {
 							sleep( 750 );
 							toConsole( "atomic is " & atomicLong.get() );
 							expect( sFuture.isDone() ).toBeFalse();
@@ -185,9 +193,9 @@ component extends="tests.specs.async.BaseAsyncSpec"{
 
 						toConsole( "xxxxx => task done" );
 					}
-				});
+				} );
 				it( "can use the builder to schedule a periodic task", function(){
-					var scheduler = asyncManager.newScheduledExecutor( "myExecutor" );
+					var scheduler  = asyncManager.newScheduledExecutor( "myExecutor" );
 					var atomicLong = createObject( "java", "java.util.concurrent.atomic.AtomicLong" ).init( 0 );
 
 					var sFuture = scheduler
@@ -198,10 +206,9 @@ component extends="tests.specs.async.BaseAsyncSpec"{
 						} )
 						.spacedDelay( 50 ) // every 50 ms after each task completes
 						.start();
-					try{
-
+					try {
 						expect( sFuture.isPeriodic() ).toBeTrue();
-						for( var x=0; x lte 3; x++ ){
+						for ( var x = 0; x lte 3; x++ ) {
 							sleep( 750 );
 							toConsole( "atomic is " & atomicLong.get() );
 							expect( sFuture.isDone() ).toBeFalse();
@@ -218,10 +225,8 @@ component extends="tests.specs.async.BaseAsyncSpec"{
 
 						toConsole( "xxxxx => spaced delay task done" );
 					}
-				});
-
-			});
-
+				} );
+			} );
 		} );
 	}
 

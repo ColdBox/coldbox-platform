@@ -104,14 +104,14 @@
 		// define abstract parent service with required dependencies (alpha and bravo)
 		map( "abstractService" )
 			.to( "#modelsPath#.parent.AbstractService" )
-			.property( name:"someAlphaDAO", ref:"someAlphaDAO" )
-			.property( name:"someBravoDAO", ref:"someBravoDAO" );
+			.property( name: "someAlphaDAO", ref: "someAlphaDAO" )
+			.property( name: "someBravoDAO", ref: "someBravoDAO" );
 		// define concrete service that inherits the abstract parent service dependencies via the parent method
 		map( "concreteService" )
 			.to( "#modelsPath#.parent.ConcreteService" )
 			.parent( "abstractService" )
-			.property( name:"someCharlieDAO", ref:"someCharlieDAO" )
-			.property( name:"someDeltaDAO", ref:"someDeltaDAO" );
+			.property( name: "someCharlieDAO", ref: "someCharlieDAO" )
+			.property( name: "someDeltaDAO", ref: "someDeltaDAO" );
 
 		// Inherited metadata
 		map( "WireBoxURL" ).toValue( "http://www.coldbox.org" );

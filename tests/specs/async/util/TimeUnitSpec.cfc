@@ -1,7 +1,7 @@
 /**
  * My BDD Test
  */
-component extends="tests.specs.async.BaseAsyncSpec"{
+component extends="tests.specs.async.BaseAsyncSpec" {
 
 	/*********************************** BDD SUITES ***********************************/
 
@@ -14,7 +14,7 @@ component extends="tests.specs.async.BaseAsyncSpec"{
 
 			it( "can be created", function(){
 				expect( timeUnit ).toBeComponent();
-			});
+			} );
 
 			var timeUnits = [
 				"days",
@@ -28,15 +28,14 @@ component extends="tests.specs.async.BaseAsyncSpec"{
 
 			timeUnits.each( function( thisUnit ){
 				it(
-					title="can produce the #thisUnit# java unit",
-					body=function( data ){
+					title = "can produce the #thisUnit# java unit",
+					body  = function( data ){
 						var unit = timeUnit.get( data.unit );
 						expect( unit.toString() ).toInclude( data.unit );
 					},
-					data={ unit : thisUnit }
+					data = { unit : thisUnit }
 				);
 			} );
-
 		} );
 	}
 

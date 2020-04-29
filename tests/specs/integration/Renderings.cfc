@@ -15,7 +15,7 @@
  *	* renderResults : Render back the results of the event
  *******************************************************************************/
 component
-	extends   ="tests.resources.BaseIntegrationTest"
+	extends="tests.resources.BaseIntegrationTest"
 {
 
 	/*********************************** BDD SUITES ***********************************/
@@ -74,22 +74,22 @@ component
 				given( "A new renderer", function(){
 					then( "I can listen to renderer creations", function(){
 						// Mock the listener
-						var mockListener = createStub();
+						var mockListener                    = createStub();
 						mockListener[ "afterRendererInit" ] = variables.afterRendererInit;
 
 						// register it
 						getController()
 							.getInterceptorService()
-							.registerInterceptor( interceptorObject = mockListener, interceptorName="mockListener" );
+							.registerInterceptor( interceptorObject = mockListener, interceptorName = "mockListener" );
 
-						try{
+						try {
 							// Run it
 							var renderer = getController().getRenderer();
 							expect( renderer ).toHaveKey( "bdd" );
 						} finally {
 							getController()
 								.getInterceptorService()
-								.unregister( interceptorName="mockListener", state="afterRenderReinit" );
+								.unregister( interceptorName = "mockListener", state = "afterRenderReinit" );
 						}
 					} );
 				} );
@@ -135,7 +135,7 @@ component
 	}
 
 	function afterRendererInit( event, interceptData ){
-		if( !isNull( arguments.interceptData.this ) ){
+		if ( !isNull( arguments.interceptData.this ) ) {
 			arguments.interceptData.this.bdd = true;
 		}
 	}

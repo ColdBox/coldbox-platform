@@ -138,7 +138,7 @@ component
 			given( "A routing array", function(){
 				then( "module routes should be registered", function(){
 					var routingService = getController().getRoutingService();
-					var routing = routingService.getModuleRoutes( "conventionsTest" );
+					var routing        = routingService.getModuleRoutes( "conventionsTest" );
 
 					expect( routing ).notToBeEmpty();
 				} );
@@ -158,7 +158,7 @@ component
 			given( "A resources array", function(){
 				then( "module resourceful routes should be registered", function(){
 					var routingService = getController().getRoutingService();
-					var routing = routingService.getModuleRoutes( "resourcesTest" );
+					var routing        = routingService.getModuleRoutes( "resourcesTest" );
 
 					var photosFound = usersFound = false;
 					for ( var thisRoute in routing ) {

@@ -1,7 +1,7 @@
 /**
  * Base helper for the async specs
  */
-component extends="testbox.system.BaseSpec" skip="true"{
+component extends="testbox.system.BaseSpec" skip="true" {
 
 	/*********************************** LIFE CYCLE Methods ***********************************/
 
@@ -17,7 +17,7 @@ component extends="testbox.system.BaseSpec" skip="true"{
 	 * Send output to the console
 	 */
 	private function toConsole( required var ){
-		writedump( var=arguments.var, output="console" );
+		writeDump( var = arguments.var, output = "console" );
 		return this;
 	}
 

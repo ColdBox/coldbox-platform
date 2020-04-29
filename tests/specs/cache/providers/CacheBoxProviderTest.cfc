@@ -10,7 +10,7 @@
 		mockLogBox       = createMock( "coldbox.system.logging.LogBox" );
 		mockLogger       = createMock( "coldbox.system.logging.Logger" );
 		mockAsyncManager = createMock( "coldbox.system.async.AsyncManager" ).init();
-		mockExecutor 	 = prepareMock( mockAsyncManager.newScheduledExecutor( name : "cachebox-tasks", threads : 1 ) );
+		mockExecutor     = prepareMock( mockAsyncManager.newScheduledExecutor( name: "cachebox-tasks", threads: 1 ) );
 
 		// Mock Methods
 		mockFactory

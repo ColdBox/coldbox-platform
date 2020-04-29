@@ -1,4 +1,4 @@
-component extends="coldbox.system.testing.BaseModelTest"{
+component extends="coldbox.system.testing.BaseModelTest" {
 
 	/*********************************** LIFE CYCLE Methods ***********************************/
 
@@ -16,27 +16,28 @@ component extends="coldbox.system.testing.BaseModelTest"{
 		// all your suites go here.
 		describe( "Response Object", function(){
 			beforeEach( function( currentSpec ){
-				handler        = createMock( "coldbox.system.RestHandler" );
-				mockController = createMock( "coldbox.system.web.Controller" );
-				flashScope     = createEmptyMock( "coldbox.system.web.flash.MockFlash" );
-				mockRequestContext = createMock( "coldbox.system.web.context.RequestContext" )
-					.init( {
-						eventName : "event",
-						modules : {},
+				handler            = createMock( "coldbox.system.RestHandler" );
+				mockController     = createMock( "coldbox.system.web.Controller" );
+				flashScope         = createEmptyMock( "coldbox.system.web.flash.MockFlash" );
+				mockRequestContext = createMock( "coldbox.system.web.context.RequestContext" ).init(
+					{
+						eventName     : "event",
+						modules       : {},
 						defaultLayout : "",
-						defaultView : ""
-					}, mockController );
-				mockRS         = createEmptyMock( "coldbox.system.web.services.RequestService" )
-					.$( "getFlashScope", flashScope )
+						defaultView   : ""
+					},
+					mockController
+				);
+				mockRS = createEmptyMock( "coldbox.system.web.services.RequestService" ).$( "getFlashScope", flashScope )
 					.$( "getContext", mockRequestContext );
-				mockLogger     = createEmptyMock( "coldbox.system.logging.Logger" )
+				mockLogger = createEmptyMock( "coldbox.system.logging.Logger" )
 					.$( "warn" )
 					.$( "canDebug", false )
 					.$( "debug" )
 					.$( "error" );
-				mockLogBox     = createEmptyMock( "coldbox.system.logging.LogBox" ).$( "getLogger", mockLogger );
-				mockCacheBox   = createEmptyMock( "coldbox.system.cache.CacheFactory" );
-				mockWireBox    = createEmptyMock( "coldbox.system.ioc.Injector" );
+				mockLogBox   = createEmptyMock( "coldbox.system.logging.LogBox" ).$( "getLogger", mockLogger );
+				mockCacheBox = createEmptyMock( "coldbox.system.cache.CacheFactory" );
+				mockWireBox  = createEmptyMock( "coldbox.system.ioc.Injector" );
 
 				mockController.$( "getRequestService", mockRS );
 
@@ -46,11 +47,11 @@ component extends="coldbox.system.testing.BaseModelTest"{
 
 				mockController
 					.$( "getSetting" )
-						.$args( "applicationHelper" )
-						.$results( [] )
+					.$args( "applicationHelper" )
+					.$results( [] )
 					.$( "getSetting" )
-						.$args( "AppMapping" )
-						.$results( "/coldbox/testing" );
+					.$args( "AppMapping" )
+					.$results( "/coldbox/testing" );
 
 				handler.init( mockController );
 			} );
@@ -66,7 +67,7 @@ component extends="coldbox.system.testing.BaseModelTest"{
 				expect( response.getError() ).toBeTrue();
 				expect( response.getStatusText() ).toBe( "Expectation Failed" );
 				expect( response.getStatusCode() ).toBe( 417 );
-			});
+			} );
 
 			it( "can handle onInvalidRoute", function(){
 				handler.onInvalidRoute(
@@ -78,7 +79,7 @@ component extends="coldbox.system.testing.BaseModelTest"{
 				expect( response.getError() ).toBeTrue();
 				expect( response.getStatusText() ).toBe( "Not Found" );
 				expect( response.getStatusCode() ).toBe( 404 );
-			});
+			} );
 
 			it( "can handle onAuthorizationFailure with no aborts", function(){
 				handler.onAuthorizationFailure(
@@ -90,7 +91,7 @@ component extends="coldbox.system.testing.BaseModelTest"{
 				expect( response.getError() ).toBeTrue();
 				expect( response.getStatusText() ).toBe( "Unauthorized Resource" );
 				expect( response.getStatusCode() ).toBe( 403 );
-			});
+			} );
 
 			it( "can handle onAuthorizationFailure with cbsecurity results", function(){
 				mockrequestContext.setPrivateValue( "cbSecurity_validatorResults", { messages : "Invalid Access!" } );
@@ -104,7 +105,7 @@ component extends="coldbox.system.testing.BaseModelTest"{
 				expect( response.getStatusText() ).toBe( "Unauthorized Resource" );
 				expect( response.getStatusCode() ).toBe( 403 );
 				expect( response.getMessagesString() ).toInclude( "Invalid Access!" );
-			});
+			} );
 
 			it( "can handle onAuthenticationFailure with no aborts", function(){
 				handler.onAuthenticationFailure(
@@ -116,7 +117,7 @@ component extends="coldbox.system.testing.BaseModelTest"{
 				expect( response.getError() ).toBeTrue();
 				expect( response.getStatusText() ).toBe( "Invalid or Missing Credentials" );
 				expect( response.getStatusCode() ).toBe( 401 );
-			});
+			} );
 
 			it( "can handle onAuthenticationFailure with cbsecurity expiration results", function(){
 				mockrequestContext.setPrivateValue( "cbSecurity_validatorResults", { messages : "Expired Token!" } );
@@ -130,7 +131,7 @@ component extends="coldbox.system.testing.BaseModelTest"{
 				expect( response.getStatusText() ).toBe( "Expired Authentication Credentials" );
 				expect( response.getStatusCode() ).toBe( 401 );
 				expect( response.getMessagesString() ).toInclude( "Expired Authentication Credentials" );
-			});
+			} );
 
 			it( "can handle onMissingActions", function(){
 				handler.onMissingAction(
@@ -144,7 +145,7 @@ component extends="coldbox.system.testing.BaseModelTest"{
 				expect( response.getError() ).toBeTrue();
 				expect( response.getStatusText() ).toBe( "Invalid Action" );
 				expect( response.getStatusCode() ).toBe( 405 );
-			});
+			} );
 
 			it( "can handle onInvalidHTTPMethod", function(){
 				handler.onInvalidHTTPMethod(
@@ -158,7 +159,7 @@ component extends="coldbox.system.testing.BaseModelTest"{
 				expect( response.getError() ).toBeTrue();
 				expect( response.getStatusText() ).toBe( "Invalid HTTP Method" );
 				expect( response.getStatusCode() ).toBe( 405 );
-			});
+			} );
 
 			it( "can handle onEntityNotFoundException", function(){
 				handler.onEntityNotFoundException(
@@ -171,7 +172,7 @@ component extends="coldbox.system.testing.BaseModelTest"{
 				expect( response.getError() ).toBeTrue();
 				expect( response.getStatusText() ).toBe( "Not Found" );
 				expect( response.getStatusCode() ).toBe( 404 );
-			});
+			} );
 
 			it( "can handle onValidationException", function(){
 				handler.onValidationException(
@@ -179,17 +180,13 @@ component extends="coldbox.system.testing.BaseModelTest"{
 					mockRequestContext.getCollection(),
 					mockRequestContext.getPrivateCollection(),
 					{},
-					{
-						extendedInfo = serializeJSON( [
-							"Title is missing"
-						] )
-					}
+					{ extendedInfo : serializeJSON( [ "Title is missing" ] ) }
 				);
 				var response = mockRequestContext.getResponse();
 				expect( response.getError() ).toBeTrue();
 				expect( response.getStatusText() ).toBe( "Invalid Request" );
 				expect( response.getStatusCode() ).toBe( 400 );
-			});
+			} );
 
 			it( "can handle onError", function(){
 				handler.onError(
@@ -198,9 +195,9 @@ component extends="coldbox.system.testing.BaseModelTest"{
 					mockRequestContext.getPrivateCollection(),
 					"badAction",
 					{
-						message = "Invalid syntax",
-						detail = "oooops!",
-						stackTrace = callStackGet().toString()
+						message    : "Invalid syntax",
+						detail     : "oooops!",
+						stackTrace : callStackGet().toString()
 					},
 					{}
 				);
@@ -208,10 +205,8 @@ component extends="coldbox.system.testing.BaseModelTest"{
 				expect( response.getError() ).toBeTrue();
 				expect( response.getStatusText() ).toBe( "General application error" );
 				expect( response.getStatusCode() ).toBe( 500 );
-			});
-
+			} );
 		} );
 	}
-
 
 }

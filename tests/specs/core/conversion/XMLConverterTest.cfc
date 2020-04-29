@@ -9,7 +9,7 @@
 	function testObjectToXML(){
 		test = new tests.resources.Test();
 
-		results = xml.objectToXML( data=test );
+		results = xml.objectToXML( data = test );
 
 		assertTrue( isXML( results ) );
 	}

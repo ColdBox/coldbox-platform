@@ -15,7 +15,7 @@
  *	* renderResults : Render back the results of the event
  *******************************************************************************/
 component
-	extends   ="tests.resources.BaseIntegrationTest"
+	extends="tests.resources.BaseIntegrationTest"
 {
 
 	function run(){

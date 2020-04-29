@@ -40,7 +40,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		getRequestContext()
 			.setPrivateValue( "response", getRequestContext().getResponse() )
 			.getResponse()
-				.setData( { name : "luis" } );
+			.setData( { name : "luis" } );
 
 		var r = getRequestContext().getResponse();
 		expect( r.getData().name ).toBe( "luis" );

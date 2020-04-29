@@ -137,16 +137,16 @@
 		config
 			.map( "abstractService" )
 			.to( "models.parent.AbstractService" )
-			.property( name:"someAlphaDAO", ref:"someAlphaDAO" )
-			.property( name:"someBravoDAO", ref:"someBravoDAO" );
+			.property( name: "someAlphaDAO", ref: "someAlphaDAO" )
+			.property( name: "someBravoDAO", ref: "someBravoDAO" );
 
 		// define concrete service that inherits the abstract parent service dependencies via the parent method
 		config
 			.map( "concreteService" )
 			.to( "models.parent.ConcreteService" )
 			.parent( "abstractService" )
-			.property( name:"someCharlieDAO", ref:"someCharlieDAO" )
-			.property( name:"someDeltaDAO", ref:"someDeltaDAO" );
+			.property( name: "someCharlieDAO", ref: "someCharlieDAO" )
+			.property( name: "someDeltaDAO", ref: "someDeltaDAO" );
 
 		// test that both mappings still have their respective names and paths (processMemento excludes worked)
 		assertEquals( "models.parent.AbstractService", config.getMapping( "abstractService" ).getPath() );
