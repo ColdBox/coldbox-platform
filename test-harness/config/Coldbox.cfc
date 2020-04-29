@@ -19,6 +19,7 @@
 			sessionStartHandler     : "main.onSessionStart",
 			sessionEndHandler       : "main.onSessionEnd",
 			missingTemplateHandler  : "main.onMissingTemplate",
+
 			// Extension Points
 			applicationHelper       : "includes/helpers/ApplicationHelper.cfm",
 			viewsHelper             : "includes/helpers/ViewsHelper",
@@ -31,12 +32,14 @@
 			handlersExternalLocation : "cbtestharness.external.testHandlers",
 			requestContextDecorator  : "cbtestharness.models.myRequestContextDecorator",
 			controllerDecorator      : "cbtestharness.models.ControllerDecorator",
+
 			// Error/Exception Handling
 			invalidHTTPMethodHandler : "main.invalidHTTPMethod",
 			exceptionHandler         : "main.onException",
 			invalidEventHandler      : "main.onInvalidEvent",
 			customErrorTemplate		: "/coldbox/system/exceptions/Whoops.cfm",
 			exceptionEditor			: "vscode",
+
 			//customErrorTemplate      : "views/_templates/generic_error.cfm",
 			// Application Aspects
 			handlerCaching           : false,
