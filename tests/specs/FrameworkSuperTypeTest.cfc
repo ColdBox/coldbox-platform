@@ -19,7 +19,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 			beforeEach( function( currentSpec ){
 				setup();
 
-				target = new coldbox.system.FrameworkSuperType();
+				target = new coldbox.system.FrameworkSupertype();
 				target.setController( getController() );
 			} );
 
