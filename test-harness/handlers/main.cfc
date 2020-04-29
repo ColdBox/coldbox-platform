@@ -33,11 +33,11 @@ component {
 	}
 
 	function routes( event, rc, prc ){
-		var SES = getInterceptor( "SES", true );
+		var routingService = controller.getRoutingService();
 
-		prc.aRoutes          = getInterceptor( "SES", true ).getRoutes();
-		prc.aModuleRoutes    = getInterceptor( "SES", true ).getModuleRoutingTable();
-		prc.aNamespaceRoutes = getInterceptor( "SES", true ).getNamespaceRoutingTable();
+		prc.aRoutes          = routingService.getRoutes();
+		prc.aModuleRoutes    = routingService.getModuleRoutingTable();
+		prc.aNamespaceRoutes = routingService.getNamespaceRoutingTable();
 
 		event.setView( "main/routes" );
 	}

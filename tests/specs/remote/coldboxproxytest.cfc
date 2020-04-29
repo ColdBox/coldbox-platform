@@ -105,7 +105,7 @@
 
 	function testGetInterceptor(){
 		makePublic( proxy, "getInterceptor" );
-		assertTrue( isObject( proxy.getInterceptor( "SES" ) ) );
+		assertTrue( isObject( proxy.getInterceptor( "test1" ) ) );
 	}
 
 	function testGetCache(){

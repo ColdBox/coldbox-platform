@@ -35,7 +35,7 @@
 			invalidHTTPMethodHandler : "main.invalidHTTPMethod",
 			exceptionHandler         : "main.onException",
 			invalidEventHandler      : "main.onInvalidEvent",
-			customErrorTemplate			: "/coldbox/system/exceptions/Whoops.cfm",
+			customErrorTemplate		: "/coldbox/system/exceptions/Whoops.cfm",
 			exceptionEditor			: "vscode",
 			//customErrorTemplate      : "views/_templates/generic_error.cfm",
 			// Application Aspects

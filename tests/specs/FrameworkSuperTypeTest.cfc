@@ -26,7 +26,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 					rc.fname = "luis";
 					rc.lname = "majano";
 
-					var target = getInterceptor( "ses" );
+					var target = getInterceptor( "Test1" );
 					var oBean  = target.populateModel( "formBean" );
 					expect( oBean.getFname() ).toBe( "luis" );
 					expect( oBean.getLname() ).toBe( "majano" );
@@ -35,7 +35,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 				it( "from inline structs", function(){
 					var test = { fname : "luis", lname : "majano" };
 
-					var target = getInterceptor( "ses" );
+					var target = getInterceptor( "Test1" );
 					var oBean  = target.populateModel( model = "formBean", memento = test );
 					expect( oBean.getFname() ).toBe( "luis" );
 					expect( oBean.getLname() ).toBe( "majano" );
@@ -44,7 +44,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 				it( "from json", function(){
 					var test = serializeJSON( { "fname" : "luis", "lname" : "majano" } );
 
-					var target = getInterceptor( "ses" );
+					var target = getInterceptor( "Test1" );
 					var oBean  = target.populateModel( model = "formBean", jsonstring = test );
 					expect( oBean.getFname() ).toBe( "luis" );
 					expect( oBean.getLname() ).toBe( "majano" );
@@ -53,7 +53,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 				it( "from xml", function(){
 					var test = "<root><fname>luis</fname><lname>majano</lname></root>";
 
-					var target = getInterceptor( "ses" );
+					var target = getInterceptor( "Test1" );
 					var oBean  = target.populateModel( model = "formBean", xml = test );
 					expect( oBean.getFname() ).toBe( "luis" );
 					expect( oBean.getLname() ).toBe( "majano" );
@@ -65,7 +65,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 						luis | majano"
 					);
 
-					var target = getInterceptor( "ses" );
+					var target = getInterceptor( "Test1" );
 					var oBean  = target.populateModel( model = "formBean", qry = test );
 					expect( oBean.getFname() ).toBe( "luis" );
 					expect( oBean.getLname() ).toBe( "majano" );
