@@ -647,12 +647,9 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
         return getValue(
             "relocate_STATUSCODE",
             getValue(
-                "setNextEvent_STATUSCODE",
-                getValue(
-                    "cbox_statusCode",
-                    200
-                )
-            )
+				"cbox_statusCode",
+				200
+			)
         );
     }
 
