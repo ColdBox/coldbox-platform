@@ -652,7 +652,7 @@ component serializable="false" accessors="true" {
 			return arguments.path == currentRoutedURL;
 		}
 		var replaced = replace( currentRoutedURL, arguments.path, "" );
-		var sliced = mid(
+		var sliced   = mid(
 			currentRoutedURL,
 			len( arguments.path ) + 1,
 			len( currentRoutedURL ) - len( arguments.path )
@@ -1411,7 +1411,7 @@ component serializable="false" accessors="true" {
 
 		//  Send file
 		if ( isBinary( arguments.file ) ) {
-			cfcontent(variable=arguments.file, type=arguments.mimetype);
+			cfcontent( variable=arguments.file, type=arguments.mimetype );
 		} else {
 			cfcontent(
 				deletefile=arguments.deleteFile,

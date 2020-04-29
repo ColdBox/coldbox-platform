@@ -294,24 +294,59 @@ component accessors="true" {
 	 */
 	function processStackTrace( required str ){
 		// Not using encodeForHTML() as it is too destructive and ruins whitespace chars and other stuff
-		arguments.str = HTMLEditFormat( arguments.str );
+		arguments.str = htmlEditFormat( arguments.str );
 
-		var aMatches = REMatchNoCase( "\(([^\)]+)\)", arguments.str );
-		for( var aString in aMatches ){
-			arguments.str = replacenocase( arguments.str, aString, "<span class='highlight'>#aString#</span>", "all" );
+		var aMatches = reMatchNoCase( "\(([^\)]+)\)", arguments.str );
+		for ( var aString in aMatches ) {
+			arguments.str = replaceNoCase(
+				arguments.str,
+				aString,
+				"<span class='highlight'>#aString#</span>",
+				"all"
+			);
 		}
-		var aMatches = REMatchNoCase( "\[([^\]]+)\]", arguments.str );
-		for( var aString in aMatches ){
-			arguments.str = replacenocase( arguments.str, aString, "<span class='highlight'>#aString#</span>", "all" );
+		var aMatches = reMatchNoCase( "\[([^\]]+)\]", arguments.str );
+		for ( var aString in aMatches ) {
+			arguments.str = replaceNoCase(
+				arguments.str,
+				aString,
+				"<span class='highlight'>#aString#</span>",
+				"all"
+			);
 		}
-		var aMatches = REMatchNoCase( "\$([^(\(|\:)]+)(\:|\()", arguments.str );
-		for( var aString in aMatches ){
-			arguments.str = replacenocase( arguments.str, aString, "<span class='method'>#aString#</span>", "all" );
+		var aMatches = reMatchNoCase( "\$([^(\(|\:)]+)(\:|\()", arguments.str );
+		for ( var aString in aMatches ) {
+			arguments.str = replaceNoCase(
+				arguments.str,
+				aString,
+				"<span class='method'>#aString#</span>",
+				"all"
+			);
 		}
-		arguments.str = replace( arguments.str, chr( 13 ) & chr( 10 ), chr( 13 ) , 'all' );
-		arguments.str = replace( arguments.str, chr( 10 ), chr( 13 ) , 'all' );
-		arguments.str = replace( arguments.str, chr( 13 ), '<br>' , 'all' );
-		arguments.str = replaceNoCase( arguments.str, chr(9), repeatString( "&nbsp;", 4 ), "all" );
+		arguments.str = replace(
+			arguments.str,
+			chr( 13 ) & chr( 10 ),
+			chr( 13 ),
+			"all"
+		);
+		arguments.str = replace(
+			arguments.str,
+			chr( 10 ),
+			chr( 13 ),
+			"all"
+		);
+		arguments.str = replace(
+			arguments.str,
+			chr( 13 ),
+			"<br>",
+			"all"
+		);
+		arguments.str = replaceNoCase(
+			arguments.str,
+			chr( 9 ),
+			repeatString( "&nbsp;", 4 ),
+			"all"
+		);
 
 		return arguments.str;
 	}
@@ -322,10 +357,14 @@ component accessors="true" {
 	 * @str The string to process
 	 */
 	function processMessage( required str ){
-		REMatchNoCase( "\[[^\]]*\]", arguments.str )
-			.each( function( item ){
-				str = replace( str, arguments.item, "<span class='highlight'>#arguments.item#</span>", "all" );
-			} );
+		reMatchNoCase( "\[[^\]]*\]", arguments.str ).each( function( item ){
+			str = replace(
+				str,
+				arguments.item,
+				"<span class='highlight'>#arguments.item#</span>",
+				"all"
+			);
+		} );
 		return arguments.str;
 	}
 
@@ -336,7 +375,7 @@ component accessors="true" {
 	 * @limit The limiting number
 	 * @ending The postfix
 	 */
-	function stringLimit(  str, limit, ending = "..." ){
+	function stringLimit( str, limit, ending = "..." ){
 		if ( len( arguments.str ) <= arguments.limit ) {
 			return arguments.str;
 		}
@@ -350,33 +389,43 @@ component accessors="true" {
 	 *
 	 * @return The HTML of the scope data
 	 */
-	function displayScope( required scope ) {
-        var list = '<table class="data-table"><tbody>';
+	function displayScope( required scope ){
+		var list       = "<table class=""data-table""><tbody>";
 		var orderedArr = arguments.scope;
 
-        if( structKeyExists( arguments.scope, 'itemorder' ) ){
+		if ( structKeyExists( arguments.scope, "itemorder" ) ) {
 			orderedArr = arguments.scope.itemorder;
 		}
 
-        for( var i in orderedArr ){
-            list &= '<tr>';
-            if( isDate( arguments.scope[ i ] ) ){
-                list &= '<td width="250">' & i & '</td>';
-                list &= '<td class="overflow-scroll">' & dateformat( arguments.scope[ i ], "mm/dd/yyyy") & " " & timeformat( arguments.scope[ i ], "HH:mm:ss") & '</td>';
-            } else if( isSimpleValue( arguments.scope[ i ] ) ){
-                list &= '<td width="250">' & i & '</td>';
-                list &= '<td class="overflow-scroll">' & ( len( arguments.scope[ i ] ) ? arguments.scope[ i ] : "<em>---</em>" ) & '</td>';
-            } else {
-                savecontent variable="local.myContent" {
-                	writeDump( var = arguments.scope[i], format= "html", top=2, expand=false)
-                }
-                list &= '<td width="250">' & i & '</td>';
-                list &= '<td class="overflow-scroll">' & local.myContent & '</td>';
-            }
-            list &= '</tr>';
+		for ( var i in orderedArr ) {
+			list &= "<tr>";
+			if ( isDate( arguments.scope[ i ] ) ) {
+				list &= "<td width=""250"">" & i & "</td>";
+				list &= "<td class=""overflow-scroll"">" & dateFormat( arguments.scope[ i ], "mm/dd/yyyy" ) & " " & timeFormat(
+					arguments.scope[ i ],
+					"HH:mm:ss"
+				) & "</td>";
+			} else if ( isSimpleValue( arguments.scope[ i ] ) ) {
+				list &= "<td width=""250"">" & i & "</td>";
+				list &= "<td class=""overflow-scroll"">" & (
+					len( arguments.scope[ i ] ) ? arguments.scope[ i ] : "<em>---</em>"
+				) & "</td>";
+			} else {
+				savecontent variable="local.myContent" {
+					writeDump(
+						var    = arguments.scope[ i ],
+						format = "html",
+						top    = 2,
+						expand = false
+					)
+				}
+				list &= "<td width=""250"">" & i & "</td>";
+				list &= "<td class=""overflow-scroll"">" & local.myContent & "</td>";
+			}
+			list &= "</tr>";
 		}
 
-		if( !structCount( arguments.scope ) ){
+		if ( !structCount( arguments.scope ) ) {
 			list &= "<tr>
 				<td>
 					<em>No details found!</em>
@@ -384,10 +433,10 @@ component accessors="true" {
 			</tr>";
 		}
 
-        list &= '</tbody></table>';
+		list &= "</tbody></table>";
 
 		return list;
-    }
+	}
 
 	/**
 	 * Compose a screen for a file to open in an editor
@@ -397,29 +446,32 @@ component accessors="true" {
 	 *
 	 * @return The string for the IDE
 	 */
-    function openInEditorURL( required event, required struct instance ) {
-        var editor = arguments.event.getController().getSetting( name : "exceptionEditor", defaultValue : "vscode" );
-        switch( editor ) {
-            case "vscode":
-                return "vscode://file/#arguments.instance.template#:#arguments.instance.line#";
-            case "vscode-insiders":
-                return "vscode-insiders://file/#arguments.instance.template#:#arguments.instance.line#";
-            case "sublime":
-                return "subl://open?url=file://#arguments.instance.template#&line=#arguments.instance.line#";
-            case "textmate":
-                return "txmt://open?url=file://#arguments.instance.template#&line=#arguments.instance.line#";
-            case "emacs":
-                return "emacs://open?url=file://#arguments.instance.template#&line=#arguments.instance.line#";
-            case "macvim":
-                return "mvim://open/?url=file://#arguments.instance.template#&line=#arguments.instance.line#";
-            case "idea":
-                return "idea://open?file=#arguments.instance.template#&line=#arguments.instance.line#";
-            case "atom":
-                return "atom://core/open/file?filename=#arguments.instance.template#&line=#arguments.instance.line#";
-            case "espresso":
-                return "x-espresso://open?filepath=#arguments.instance.template#&lines=#arguments.instance.line#";
-            default:
-                return "";
-        }
-    }
+	function openInEditorURL( required event, required struct instance ){
+		var editor = arguments.event
+			.getController()
+			.getSetting( name: "exceptionEditor", defaultValue: "vscode" );
+		switch ( editor ) {
+			case "vscode":
+				return "vscode://file/#arguments.instance.template#:#arguments.instance.line#";
+			case "vscode-insiders":
+				return "vscode-insiders://file/#arguments.instance.template#:#arguments.instance.line#";
+			case "sublime":
+				return "subl://open?url=file://#arguments.instance.template#&line=#arguments.instance.line#";
+			case "textmate":
+				return "txmt://open?url=file://#arguments.instance.template#&line=#arguments.instance.line#";
+			case "emacs":
+				return "emacs://open?url=file://#arguments.instance.template#&line=#arguments.instance.line#";
+			case "macvim":
+				return "mvim://open/?url=file://#arguments.instance.template#&line=#arguments.instance.line#";
+			case "idea":
+				return "idea://open?file=#arguments.instance.template#&line=#arguments.instance.line#";
+			case "atom":
+				return "atom://core/open/file?filename=#arguments.instance.template#&line=#arguments.instance.line#";
+			case "espresso":
+				return "x-espresso://open?filepath=#arguments.instance.template#&lines=#arguments.instance.line#";
+			default:
+				return "";
+		}
+	}
+
 }
