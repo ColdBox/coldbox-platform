@@ -58,7 +58,7 @@
 							<i class="glyphicon glyphicon-info-sign"></i> About <b class="caret"></b>
 						</a>
 						<ul id="actions-submenu" class="dropdown-menu">
-							 <li><a href=""><strong>#getSetting("codename",1)# (#getsetting("suffix",1)#)</strong></a></li>
+							 <li><a href=""><strong>#getColdBoxSetting("codename")# (#getColdBoxSetting("suffix")#)</strong></a></li>
 							 <li><a href="http://coldbox.ortusbooks.com"><i class="glyphicon glyphicon-book"></i> Help Manual</a></li>
 							 <li><a href="mailto:bugs@coldbox.org?subject=DataBoss Bug Report"><i class="glyphicon glyphicon-fire"></i> Report a Bug</a></li>
 							 <li><a href="mailto:info@coldbox.org?subject=DataBoss Feedback"><i class="glyphicon glyphicon-bullhorn"></i> Send Us Feedback</a></li>

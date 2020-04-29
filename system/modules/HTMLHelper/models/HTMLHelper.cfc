@@ -2351,7 +2351,7 @@ component extends="coldbox.system.FrameworkSupertype" accessors=true singleton{
 
 		// Prepare state checks
 		var templateCache       = getCache( "template" );
-		var includesLocation 	= controller.getSetting( "IncludesConvention", true );
+		var includesLocation 	= controller.getColdBoxSetting( "IncludesConvention" );
 		var event 				= getRequestContext();
 		var currentModule 		= event.getCurrentModule();
 

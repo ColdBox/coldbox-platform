@@ -225,50 +225,67 @@ component serializable="false" accessors="true" {
 	 ****************************************************************/
 
 	/**
-	 * Get a setting from a configuration structure
+	 * Get a setting from the application
 	 *
 	 * @name The name of the setting
-	 * @fwSetting Switch to get the coldbox or config settings, defaults to config settings
 	 * @defaultValue The default value to use if setting does not exist
 	 *
 	 * @throws SettingNotFoundException
+	 *
+	 * @return The application setting value
 	 */
-	function getSetting(
-		required name,
-		boolean fwSetting = false,
-		defaultValue
-	){
-		var target = variables.configSettings;
-
-		if ( arguments.FWSetting ) {
-			target = variables.coldboxSettings;
-		}
-
-		if ( settingExists( arguments.name, arguments.FWSetting ) ) {
-			return target[ arguments.name ];
+	function getSetting( required name, defaultValue ){
+		if ( variables.configSettings.keyExists( arguments.name ) ) {
+			return variables.configSettings[ arguments.name ];
 		}
 
 		// Default value
-		if ( structKeyExists( arguments, "defaultValue" ) ) {
+		if ( !isNull( arguments.defaultValue ) ) {
 			return arguments.defaultValue;
 		}
 
 		throw(
-			message = "The setting #arguments.name# does not exist.",
-			detail  = "FWSetting flag is #arguments.FWSetting#",
+			message = "The application setting #arguments.name# does not exist.",
+			detail  = "Available settings are #variables.configSettings.keyList()#",
 			type    = "SettingNotFoundException"
 		);
 	}
 
 	/**
-	 * Check if a value exists in a configuration structure
+	 * Get a ColdBox setting
+	 *
+	 * @name The key to get
+	 * @defaultValue The default value if it doesn't exist
+	 *
+	 * @throws SettingNotFoundException
+	 *
+	 * @return The framework setting value
+	 */
+	function getColdBoxSetting( required name, defaultValue ){
+		if ( variables.coldboxSettings.keyExists( arguments.name ) ) {
+			return variables.coldboxSettings[ arguments.name ];
+		}
+
+		// Default value
+		if ( !isNull( arguments.defaultValue ) ) {
+			return arguments.defaultValue;
+		}
+
+		throw(
+			message = "The ColdBox setting #arguments.name# does not exist.",
+			detail  = "Available settings are #variables.coldboxSettings.keyList()#",
+			type    = "SettingNotFoundException"
+		);
+	}
+
+	/**
+	 * Check if the setting exists in the application
 	 *
 	 * @name The name of the setting
-	 * @fwSetting Switch to get the coldbox or config settings, defaults to config settings
 	 */
-	boolean function settingExists( required name, boolean fwSetting = false ){
+	boolean function settingExists( required name ){
 		return (
-			arguments.fwSetting ? structKeyExists( variables.coldboxSettings, arguments.name ) : structKeyExists(
+			structKeyExists(
 				variables.configSettings,
 				arguments.name
 			)
@@ -277,12 +294,13 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Set a value in the application configuration settings
+	 *
 	 * @name The name of the setting
 	 * @value The value to set
 	 *
-	 * @return Controller
+	 * @return Controller instance
 	 */
-	function setSetting( required name, required value ){
+	Controller function setSetting( required name, required value ){
 		variables.configSettings[ arguments.name ] = arguments.value;
 		return this;
 	}

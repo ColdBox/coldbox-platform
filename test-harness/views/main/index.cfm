@@ -3,7 +3,7 @@
 	<img src="includes/images/ColdBoxLogoSquare_125.png" class="pull-left margin10" alt="logo"/>
 	<h1>#prc.welcomeMessage#</h1>
 	<p>
-		 <strong>#getSetting("codename",1)# #getSetting("version",1)# (#getsetting("suffix",1)#)</strong>.
+		 <strong>#getColdBoxSetting("codename")# #getColdBoxSetting("version")# (#getColdBoxSetting("suffix")#)</strong>.
 		Test Harness Application
 		<a class="btn btn-primary" href="index.cfm?fwreinit=1" >
 			<strong>Reinitialize Framework</strong>

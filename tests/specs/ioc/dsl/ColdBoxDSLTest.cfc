@@ -207,8 +207,8 @@
 			dsl  : "coldbox:fwSetting"
 		};
 		mockColdBox
-			.$( "getSetting" )
-			.$args( "mySetting", true )
+			.$( "getColdBoxSetting" )
+			.$args( "mySetting" )
 			.$results( "UnitTest" );
 		c = builder.getColdBoxDSL( def );
 		assertEquals( "unitTest", c );

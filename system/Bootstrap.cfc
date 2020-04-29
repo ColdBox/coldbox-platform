@@ -208,7 +208,10 @@ component serializable="false" accessors="true"{
 			//****** PRE PROCESS *******/
 			interceptorService.processState( "preProcess" );
 			if( len( cbController.getSetting( "RequestStartHandler" ) ) ){
-				cbController.runEvent( cbController.getSetting( "RequestStartHandler" ), true );
+				cbController.runEvent(
+					event 			: cbController.getSetting( "RequestStartHandler" ),
+					prePostExempt 	: true
+				);
 			}
 
 			//****** EVENT CACHING CONTENT DELIVERY *******/

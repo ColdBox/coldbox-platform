@@ -268,22 +268,36 @@ component serializable="false" accessors="true"{
 	 * Get a setting from the system
 	 *
 	 * @name The key of the setting
-	 * @fwSetting Retrieve from the config or fw settings, defaults to config
 	 * @defaultValue If not found in config, default return value
+	 *
+	 * @throws SettingNotFoundException
 	 *
 	 * @return The requested setting
 	 */
-	function getSetting( required name, boolean fwSetting=false, defaultValue ){
+	function getSetting( required name, defaultValue ){
 		return variables.controller.getSetting( argumentCollection=arguments );
 	}
 
 	/**
-	 * Verify a setting from the system
+	 * Get a ColdBox setting
+	 *
+	 * @name The key to get
+	 * @defaultValue The default value if it doesn't exist
+	 *
+	 * @throws SettingNotFoundException
+	 *
+	 * @return The framework setting value
+	 */
+	function getColdBoxSetting( required name, defaultValue ){
+		return variables.controller.getColdBoxSetting( argumentCollection=arguments );
+	}
+
+	/**
+	 * Check if the setting exists in the application
 	 *
 	 * @name The key of the setting
-	 * @fwSetting Retrieve from the config or fw settings, defaults to config
 	 */
-	boolean function settingExists( required name, boolean fwSetting=false ){
+	boolean function settingExists( required name ){
 		return variables.controller.settingExists( argumentCollection=arguments );
 	}
 

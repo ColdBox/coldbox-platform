@@ -59,9 +59,6 @@
 		obj = controller.settingExists( "HandlerCaching" );
 		assertTrue( obj, "config exists check" );
 
-		obj = controller.settingExists( "nada", true );
-		assertFalse( obj, "fw exists check" );
-
 		obj = "test_#createUUID()#";
 		controller.setSetting( obj, obj );
 		assertEquals( obj, controller.getSetting( obj ) );
@@ -72,10 +69,6 @@
 		controller.setColdboxInitiated( true );
 		assertTrue( controller.getColdboxInitiated() );
 	}
-
-
-
-
 
 	function appstarthandlerFired(){
 		assertFalse( controller.getAppStartHandlerFired() );

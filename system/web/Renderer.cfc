@@ -71,8 +71,8 @@ component
 		variables.wireBox    = arguments.controller.getWireBox();
 
 		// Set Conventions, Settings and Properties
-		variables.layoutsConvention       = variables.controller.getSetting( "layoutsConvention", true );
-		variables.viewsConvention         = variables.controller.getSetting( "viewsConvention", true );
+		variables.layoutsConvention       = variables.controller.getColdBoxSetting( "layoutsConvention" );
+		variables.viewsConvention         = variables.controller.getColdBoxSetting( "viewsConvention" );
 		variables.appMapping              = variables.controller.getSetting( "AppMapping" );
 		variables.viewsExternalLocation   = variables.controller.getSetting( "ViewsExternalLocation" );
 		variables.layoutsExternalLocation = variables.controller.getSetting( "LayoutsExternalLocation" );

@@ -61,9 +61,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		registerHandlers();
 
 		// Configuration data and dependencies
+		variables.eventAction                = controller.getColdBoxSetting( "EventAction" );
 		variables.registeredHandlers         = controller.getSetting( "RegisteredHandlers" );
 		variables.registeredExternalHandlers = controller.getSetting( "RegisteredExternalHandlers" );
-		variables.eventAction                = controller.getSetting( "EventAction", 1 );
 		variables.eventName                  = controller.getSetting( "EventName" );
 		variables.invalidEventHandler        = controller.getSetting( "invalidEventHandler" );
 		variables.handlerCaching             = controller.getSetting( "HandlerCaching" );
@@ -448,8 +448,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			// Test for invalid Event Error as well so we don't go in an endless error loop
 			if ( compareNoCase( arguments.event, request._lastInvalidEvent ) eq 0 ) {
 				throw(
-					message = "The invalidEventHandler event is also invalid",
-					detail  = "The invalidEventHandler setting is also invalid: #variables.invalidEventHandler#. Please check your settings",
+					message = "The invalidEventHandler event is also invalid: #variables.invalidEventHandler#",
 					type    = "HandlerService.InvalidEventHandlerException"
 				);
 			}
@@ -475,6 +474,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				)
 				.setMethod( listLast( variables.invalidEventHandler, "." ) )
 				.setModule( "" );
+
 			// If module found in invalid event, set it for discovery
 			if ( find( ":", variables.invalidEventHandler ) ) {
 				arguments.ehBean.setModule( getToken( variables.invalidEventHandler, 1 ) );

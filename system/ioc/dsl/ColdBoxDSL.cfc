@@ -79,7 +79,7 @@ component implements="coldbox.system.ioc.dsl.IDSLBuilder" accessors="true"{
 
 		// Support shortcut for specifying name in the definition instead of the DSl for supporting namespaces
 		if(	thisTypeLen eq 2
-			and listFindNoCase( "setting,fwSetting,datasource,interceptor", listLast( thisType, ":" ) )
+			and listFindNoCase( "setting,fwSetting,interceptor", listLast( thisType, ":" ) )
 			and len( thisName )
 		){
 			// Add the additional alias to the DSL
@@ -132,7 +132,7 @@ component implements="coldbox.system.ioc.dsl.IDSLBuilder" accessors="true"{
 								){
 								return moduleSettings[ listlast(thisLocationKey, "@" ) ].settings[ listFirst( thisLocationKey, "@" ) ];
 							}
-							else {						
+							else {
 								throw(
 									type 	= "ColdBoxDSL.InvalidDSL",
 									message = "The DSL provided was not valid: #arguments.definition.toString()#",
@@ -161,7 +161,7 @@ component implements="coldbox.system.ioc.dsl.IDSLBuilder" accessors="true"{
 						if( structKeyExists( moduleSettings, thisLocationKey ) ){
 							return moduleSettings[ thisLocationKey ];
 						}
-						else {					
+						else {
 							throw(
 								type 	= "ColdBoxDSL.InvalidDSL",
 								message = "The DSL provided was not valid: #arguments.definition.toString()#",
@@ -169,7 +169,7 @@ component implements="coldbox.system.ioc.dsl.IDSLBuilder" accessors="true"{
 							);
 						}
 					}
-					case "fwSetting" 			: { return variables.coldbox.getSetting( thisLocationKey, true ); }
+					case "fwSetting" 			: { return variables.coldbox.getColdBoxSetting( thisLocationKey ); }
 					case "interceptor" 			: { return variables.coldbox.getInterceptorService().getInterceptor( thisLocationKey, true ); }
 				}//end of services
 
@@ -182,7 +182,7 @@ component implements="coldbox.system.ioc.dsl.IDSLBuilder" accessors="true"{
 				thisLocationToken  = getToken(thisType,4,":");
 				switch(thisLocationType){
 					case "modulesettings"		: {
-						
+
 						moduleSettings = variables.coldbox.getSetting( "modules" );
 						if( structKeyExists( moduleSettings, thisLocationKey ) ){
 							if( structKeyExists( moduleSettings[ thisLocationKey ].settings, thisLocationToken  ) ) {
@@ -202,7 +202,7 @@ component implements="coldbox.system.ioc.dsl.IDSLBuilder" accessors="true"{
 								detail="The module requested: #thisLocationKey# does not exist in the loaded modules. Loaded modules are #structKeyList(moduleSettings)#"
 							);
 						}
-						
+
 					}
 				}
 				break;
