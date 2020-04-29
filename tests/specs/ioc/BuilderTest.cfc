@@ -220,7 +220,7 @@
 			);
 
 		var p = builder.getProviderDSL( data );
-		assertEquals( mockLuis, p.get() );
+		assertEquals( mockLuis, p.$get() );
 	}
 
 	function testregisterCustomBuilders(){

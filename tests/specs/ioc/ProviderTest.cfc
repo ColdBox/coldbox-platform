@@ -21,7 +21,7 @@
 
 	function testGetNoScope(){
 		try {
-			provider.get();
+			provider.$get();
 		} catch ( "Provider.InjectorNotOnScope" e ) {
 		} catch ( Any e ) {
 			fail( e );
@@ -35,7 +35,7 @@
 		mockScopeStorage.$( "exists", true ).$( "get", mockInjector );
 
 		// 1. Execute get by name
-		results = provider.get();
+		results = provider.$get();
 		assertEquals( "UnitTest", mockInjector.$callLog().getInstance[ 1 ].name );
 		assertTrue( results.verify() );
 
@@ -46,7 +46,7 @@
 			dsl               = "logbox:logger:{this}",
 			targetObject      = this
 		);
-		results = provider.get();
+		results = provider.$get();
 		assertTrue( results.verify() );
 		assertEquals( "logbox:logger:{this}", mockInjector.$callLog().getInstance[ 2 ].dsl );
 	}

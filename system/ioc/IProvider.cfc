@@ -9,5 +9,5 @@ interface {
 	/**
 	 * Get the provided object
 	 */
-	public any function get();
+	public any function $get();
 }

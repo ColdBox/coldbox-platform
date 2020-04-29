@@ -87,7 +87,7 @@
 		assertEquals( "testbaby", val );
 
 		// Provider
-		mockProvider = createEmptyMock( "coldbox.system.ioc.Provider" ).$( "get", mockStub );
+		mockProvider = createEmptyMock( "coldbox.system.ioc.Provider" ).$( "$get", mockStub );
 		mapping.setType( "provider" ).setPath( "MyCoolProvider" );
 		injector
 			.$( "getInstance" )
@@ -115,7 +115,7 @@
 		assertEquals( true, isObject( providerTest.getPizza() ) );
 		assertEquals( true, structKeyExists( session, "wirebox:pizza" ) );
 		assertEquals( "coldbox.system.ioc.Provider", getMetadata( providerTest.coolPizza ).name );
-		assertEquals( session[ "wirebox:pizza" ], providerTest.coolPizza.get() );
+		assertEquals( session[ "wirebox:pizza" ], providerTest.coolPizza.$get() );
 		structClear( session );
 	}
 
@@ -141,7 +141,7 @@
 	function testWebService(){
 		ws = injector.getInstance( "coldboxWS" );
 
-		// 
+		//
 		if ( listFindNoCase( "Lucee", server.coldfusion.productname ) ) {
 			expect( getMetadata( ws ).name ).toMatch( "rpc" );
 		}

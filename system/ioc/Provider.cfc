@@ -65,7 +65,7 @@ component implements="coldbox.system.ioc.IProvider" accessors="true"{
 	/**
 	 * Get the provided object
 	 */
-	any function get() {
+	any function $get() {
 		var scopeInfo = variables.scopeRegistration;
 
 		// Return if scope exists, else throw exception

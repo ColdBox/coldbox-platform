@@ -450,7 +450,7 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 			case "provider" : {
 				// verify if it is a simple value or closure/UDF
 				if( isSimpleValue( thisMap.getPath() ) ){
-					oModel = getInstance( thisMap.getPath() ).get();
+					oModel = getInstance( thisMap.getPath() ).$get();
 				} else {
 					var closure = thisMap.getPath();
 					oModel = closure( injector = this );
