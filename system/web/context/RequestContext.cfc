@@ -637,6 +637,42 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
+	 * Tests that a given path exists in the currently routed URL.
+	 * If the exact flag is passed, the path must match exactly.
+	 * Using the `urlMatchesExact` is preferred.
+	 *
+	 * @path    The path to match in the currently routed URL.
+	 * @exact   Flag to do an exact match instead of a partial match
+	 *
+	 * @return  Boolean
+	 */
+	boolean function urlMatches( required string path, boolean exact = false ){
+		var currentRoutedURL = getCurrentRoutedURL();
+		if ( arguments.exact ) {
+			return arguments.path == currentRoutedURL;
+		}
+		var replaced = replace( currentRoutedURL, arguments.path, "" );
+		var sliced = mid(
+			currentRoutedURL,
+			len( arguments.path ) + 1,
+			len( currentRoutedURL ) - len( arguments.path )
+		);
+		return replaced == sliced;
+	}
+
+	/**
+	 * Tests that a given path matches exactly to the currently routed URL.
+	 *
+	 * @path    The path to match exactly to the currently routed URL.
+	 *
+	 * @return  Boolean
+	 */
+	boolean function urlMatchesExact( required string path ){
+		arguments.exact = true;
+		return urlMatches( argumentCollection = arguments );
+	}
+
+	/**
 	 * Get the current routed namespace that matched the SES route, if any
 	 */
 	string function getCurrentRoutedNamespace(){
@@ -1375,7 +1411,7 @@ component serializable="false" accessors="true" {
 
 		//  Send file
 		if ( isBinary( arguments.file ) ) {
-			cfcontent( variable=arguments.file, type=arguments.mimetype );
+			cfcontent(variable=arguments.file, type=arguments.mimetype);
 		} else {
 			cfcontent(
 				deletefile=arguments.deleteFile,
