@@ -18,6 +18,13 @@ component
 	extends="tests.resources.BaseIntegrationTest"
 {
 
+	function beforeAll(){
+		// forced cleanup
+		//structDelete( application, "cbController" );
+		super.beforeAll();
+		// do your own stuff here
+	}
+
 	/*********************************** BDD SUITES ***********************************/
 
 	function run(){

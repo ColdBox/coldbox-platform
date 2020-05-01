@@ -77,10 +77,8 @@
 	}
 
 	function testGetInstance(){
-		makePublic( proxy, "getModel" );
 		makePublic( proxy, "getInstance" );
 		assertTrue( isObject( proxy.getInstance( "testModel" ) ) );
-		assertTrue( isObject( proxy.getModel( "testModel" ) ) );
 	}
 
 	function testProxyAppLoading(){

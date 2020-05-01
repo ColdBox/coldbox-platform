@@ -697,22 +697,23 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 	}
 
 	/**
-	* Get a model object
-	* @name The mapping name or CFC path to retrieve
-	* @dsl The DSL string to use to retrieve an instance
-	* @initArguments The constructor structure of arguments to passthrough when initializing the instance
-	*/
-	function getModel( name, dsl, initArguments={} ){
-		return getInstance( argumentCollection=arguments );
+	 * @deprecated
+	 */
+	function getModel(){
+		throw(
+			message="getModel() is now fully deprecated in favor of getInstance().",
+			type = "DeprecationException"
+		);
 	}
 
 	/**
-	* Get a instance object from WireBox
-	* @name The mapping name or CFC path to retrieve
-	* @dsl The DSL string to use to retrieve an instance
-	* @initArguments The constructor structure of arguments to passthrough when initializing the instance
-	*/
-	function getInstance( name, dsl, initArguments={} ){
+	 * Get a instance object from WireBox
+	 *
+	 * @name The mapping name or CFC path to retrieve
+	 * @initArguments The constructor structure of arguments to passthrough when initializing the instance
+	 * @dsl The DSL string to use to retrieve an instance
+	 */
+	function getInstance( name, struct initArguments={}, dsl ){
 		return getController().getWireBox().getInstance( argumentCollection=arguments );
 	}
 

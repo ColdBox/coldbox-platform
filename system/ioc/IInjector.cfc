@@ -27,11 +27,11 @@
 	 * Locates, Creates, Injects and Configures an object model instance
 	 *
 	 * @name The mapping name or CFC instance path to try to build up
-	 * @dsl The dsl string to use to retrieve the instance model object, mutually exclusive with 'name'
 	 * @initArguments The constructor structure of arguments to passthrough when initializing the instance
+	 * @dsl The dsl string to use to retrieve the instance model object, mutually exclusive with 'name'
 	 * @targetObject The object requesting the dependency, usually only used by DSL lookups
 	 */
-	function getInstance( name, dsl, struct initArguments, targetObject="" );
+	function getInstance( name, struct initArguments, dsl, targetObject="" );
 
 	/**
 	 * Checks if this injector can locate a model instance or not

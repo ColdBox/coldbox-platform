@@ -320,16 +320,15 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 	 * Locates, Creates, Injects and Configures an object model instance
 	 *
 	 * @name The mapping name or CFC instance path to try to build up
-	 * @dsl The dsl string to use to retrieve the instance model object, mutually exclusive with 'name
 	 * @initArguments The constructor structure of arguments to passthrough when initializing the instance
-	 * @initArguments.doc_generic struct
+	 * @dsl The dsl string to use to retrieve the instance model object, mutually exclusive with 'name
 	 * @targetObject The object requesting the dependency, usually only used by DSL lookups
 	 *
 	 * @throws InstanceNotFoundException - When the requested instance cannot be found
 	 *
 	 * @return The requested instance
 	 **/
-	function getInstance( name, dsl, struct initArguments = {}, targetObject="" ){
+	function getInstance( name, struct initArguments = {}, dsl, targetObject="" ){
 
 		// Is the name a DSL?
 		if( !isNull( arguments.name ) && variables.builder.isDSLString( arguments.name ) ){
@@ -415,7 +414,6 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 	 * @mapping The mapping to construct
 	 * @mapping.doc_generic coldbox.system.ioc.config.Mapping
 	 * @initArguments The constructor structure of arguments to passthrough when initializing the instance
-	 * @initArguments.doc_generic struct
 	 **/
 	function buildInstance( required mapping, struct initArguments = {} ){
 		var thisMap = arguments.mapping;

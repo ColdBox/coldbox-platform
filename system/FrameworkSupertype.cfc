@@ -13,28 +13,25 @@ component serializable="false" accessors="true"{
 	property name="controller";
 
 	/**
-	 * Get a model object from WireBox
-	 *
-	 * @name The mapping name or CFC path to retrieve
-	 * @dsl The DSL string to use to retrieve an instance
-	 * @initArguments The constructor structure of arguments to passthrough when initializing the instance
-	 *
-	 * @return The requested instance
+	 * @deprecated
 	 */
-	function getModel( name, dsl, initArguments={} ){
-		return getInstance( argumentCollection=arguments );
+	function getModel(){
+		throw(
+			message="getModel() is now fully deprecated in favor of getInstance().",
+			type = "DeprecationException"
+		);
 	}
 
 	/**
 	 * Get a instance object from WireBox
 	 *
-	 * @name The mapping name or CFC path to retrieve
-	 * @dsl The DSL string to use to retrieve an instance
+	 * @name The mapping name or CFC path or DSL to retrieve
 	 * @initArguments The constructor structure of arguments to passthrough when initializing the instance
+	 * @dsl The DSL string to use to retrieve an instance
 	 *
 	 * @return The requested instance
 	 */
-	function getInstance( name, dsl, initArguments={} ){
+	function getInstance( name, initArguments={}, dsl ){
 		return variables.controller.getWirebox().getInstance( argumentCollection=arguments );
 	}
 
@@ -75,7 +72,7 @@ component serializable="false" accessors="true"{
 	){
 		// Do we have a model or name
 		if( isSimpleValue( arguments.model ) ){
-			arguments.target = getModel( model );
+			arguments.target = getInstance( model );
 		} else {
 			arguments.target = arguments.model;
 		}

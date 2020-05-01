@@ -225,24 +225,22 @@ component serializable="false" accessors="true" {
 	 * Locates, Creates, Injects and Configures an object model instance
 	 *
 	 * @name The mapping name or DSL
-	 * @dsl The dsl to use
 	 * @initArguments The constructor structure of arguments to passthrough when initializing the instance
+	 * @dsl The dsl to use
 	 *
 	 */
-	private any function getInstance( required name, dsl, initArguments ){
+	private any function getInstance( required name, initArguments, dsl ){
 		return getWireBox().getInstance( argumentCollection = arguments );
 	}
 
 	/**
-	 * Locates, Creates, Injects and Configures an object model instance
-	 *
-	 * @name The mapping name or DSL
-	 * @dsl The dsl to use
-	 * @initArguments The constructor structure of arguments to passthrough when initializing the instance
-	 *
+	 * @deprecated
 	 */
 	private any function getModel( required name, dsl, initArguments ){
-		return getWireBox().getInstance( argumentCollection = arguments );
+		throw(
+			message="getModel() is now fully deprecated in favor of getInstance().",
+			type = "DeprecationException"
+		);
 	}
 
 
