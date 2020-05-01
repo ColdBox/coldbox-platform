@@ -404,7 +404,7 @@
 		return (
 			variables.customDSL.keyExists( arguments.target )
 			||
-			variables.internalDSL.containsNoCase( arguments.target )
+			arrayContainsNoCase( variables.internalDSL, arguments.target )
 		);
 	}
 
