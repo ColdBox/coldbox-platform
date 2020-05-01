@@ -20,7 +20,7 @@ component
 
 	function beforeAll(){
 		// forced cleanup
-		//structDelete( application, "cbController" );
+		structDelete( application, "cbController" );
 		super.beforeAll();
 		// do your own stuff here
 	}

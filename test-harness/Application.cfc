@@ -7,7 +7,7 @@ www.ortussolutions.com
 component {
 
 	// Application properties
-	this.name              = "Test Harness" & hash( getCurrentTemplatePath() );
+	this.name              = "ColdBox Test Harness";
 	this.sessionManagement = true;
 	this.sessionTimeout    = createTimespan( 0, 0, 30, 0 );
 	this.setClientCookies  = true;
@@ -33,6 +33,7 @@ component {
 		"test-harness(\\|/)",
 		""
 	);
+
 	// ColdBox Root path
 	this.mappings[ "/coldbox" ]       = rootPath;
 	// Test Harness Path
