@@ -324,10 +324,20 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 	 * @initArguments The constructor structure of arguments to passthrough when initializing the instance
 	 * @initArguments.doc_generic struct
 	 * @targetObject The object requesting the dependency, usually only used by DSL lookups
+	 *
+	 * @throws InstanceNotFoundException - When the requested instance cannot be found
+	 *
+	 * @return The requested instance
 	 **/
-	function getInstance( name, dsl, struct initArguments = structNew(), targetObject="" ){
+	function getInstance( name, dsl, struct initArguments = {}, targetObject="" ){
+
+		// Is the name a DSL?
+		if( !isNull( arguments.name ) && variables.builder.isDSLString( arguments.name ) ){
+			arguments.dsl = arguments.name;
+		}
+
 		// Get by DSL?
-		if( structKeyExists( arguments, "dsl" ) ){
+		if( !isNull( arguments.dsl ) ){
 			return variables.builder.buildSimpleDSL(
 				dsl          = arguments.dsl,
 				targetID     = "ExplicitCall",
@@ -365,8 +375,8 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 		// Check if the mapping has been discovered yet, and if it hasn't it must be autowired enabled in order to process.
 		if( NOT mapping.isDiscovered() ){
 			try {
-			// process inspection of instance
-			mapping.process( binder=variables.binder, injector=this );
+				// process inspection of instance
+				mapping.process( binder=variables.binder, injector=this );
 			} catch( any e ) {
 				// Remove bad mapping
 				var mappings = variables.binder.getMappings();
@@ -566,7 +576,7 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 		}
 
 		// Check Scan Locations In Order
-		for( var thisScanPath in scanLocations){
+		for( var thisScanPath in scanLocations ){
 			// Check if located? If so, return instantiation path
 			if( fileExists( scanLocations[ thisScanPath ] & CFCName ) ){
 				if( variables.log.canDebug() ){ variables.log.debug( "Instance: #arguments.name# located in #thisScanPath#" ); }
@@ -796,7 +806,7 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 	/**
 	 * Return the core util object
 	 *
-	 * @doc_generic coldbox.system.core.util.Util
+	 * @return coldbox.system.core.util.Util
 	 */
 	function getUtil() {
 		return variables.utility;
@@ -817,7 +827,7 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 	 * @targetObject The target object to do some goodness on
 	 * @mapping The target mapping
 	 */
-	 private Injector function processMixins( required targetObject, required mapping ){
+	private Injector function processMixins( required targetObject, required mapping ){
 		// If no length, kick out
 		if( !arguments.mapping.getMixins().len() ){
 			return this;

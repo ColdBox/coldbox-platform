@@ -141,7 +141,7 @@
 	function testWebService(){
 		ws = injector.getInstance( "coldboxWS" );
 
-		// 
+		//
 		if ( listFindNoCase( "Lucee", server.coldfusion.productname ) ) {
 			expect( getMetadata( ws ).name ).toMatch( "rpc" );
 		}
@@ -212,6 +212,14 @@
 	function testImplicitSetters(){
 		var c = injector.getInstance( "implicitTest" );
 		// debug( c );
+	}
+
+	function testDSLAsName(){
+		var object = injector.getInstance( "logbox:root" );
+		expect( object.getCategory() ).toBe( "root" );
+
+		var object = injector.getInstance( "logbox" );
+		expect( object.getVersion() ).toBe( "@build.version@+@build.number@" );
 	}
 
 	function testDSLCreation(){

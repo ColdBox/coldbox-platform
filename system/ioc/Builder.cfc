@@ -62,14 +62,21 @@
 		variables.utility		= arguments.injector.getUtil();
 		variables.customDSL		= {};
 
+		// Internal DSL Registry
+		variables.internalDSL = [
+			"coldbox", "box", "executor", "cachebox", "logbox", "model", "id", "provider", "wirebox", "java", "byType"
+		];
+
 		// Do we need to build the coldbox DSL namespace
 		if( variables.injector.isColdBoxLinked() ){
 			variables.coldboxDSL = new coldbox.system.ioc.dsl.ColdBoxDSL( arguments.injector );
 		}
+
 		// Is CacheBox Linked?
 		if( variables.injector.isCacheBoxLinked() ){
 			variables.cacheBoxDSL = new coldbox.system.ioc.dsl.CacheBoxDSL( arguments.injector );
 		}
+
 		// Build LogBox DSL Namespace
 		variables.logBoxDSL = new coldbox.system.ioc.dsl.LogBoxDSL( arguments.injector );
 
@@ -272,7 +279,7 @@
 	 * @argumentArray The argument array of data
 	 * @targetObject The target object we are building the DSL dependency for
 	 */
-	 function buildArgumentCollection( required mapping, required argumentArray, required targetObject ){
+	function buildArgumentCollection( required mapping, required argumentArray, required targetObject ){
 		var thisMap 	= arguments.mapping;
 		var DIArgs 		= arguments.argumentArray;
 		var args		= {};
@@ -372,6 +379,8 @@
 	 * @dsl The dsl string to build
 	 * @targetID The target ID we are building this dependency for
 	 * @targetObject The target object we are building the DSL dependency for
+	 *
+	 * @return The requested DSL object
 	 */
 	function buildSimpleDSL( required dsl, required targetID, required targetObject = "" ){
 		var definition = {
@@ -387,11 +396,42 @@
 	}
 
 	/**
+	 * Verifies if the incoming string is a valid registered DSL namespace
+	 *
+	 * @target The string to verify if it's a registered namespace
+	 */
+	boolean function isDSLNamespace( required target ){
+		return (
+			variables.customDSL.keyExists( arguments.target )
+			||
+			variables.internalDSL.containsNoCase( arguments.target )
+		);
+	}
+
+	/**
+	 * Verifies if the incoming string is a valid registered DSL string
+	 *
+	 * @target The string to verify if it's a potential DSL
+	 */
+	boolean function isDSLString( required target ){
+		return (
+			isDSLNamespace( arguments.target )
+			||
+			find( ":", arguments.target )
+		);
+	}
+
+	/**
 	 * Build a DSL Dependency, if not found, returns null
 	 *
 	 * @definition The dependency definition structure: name, dsl as keys
 	 * @targetID The target ID we are building this dependency for
 	 * @targetObject The target object we are building the DSL dependency for
+	 *
+	 * @throws IllegalDSLException - When requesting a ColdBox/CacheBox DSL dependency and the library is not linked
+	 * @throws DSLDependencyNotFoundException - If the requested object is not found and it is required
+	 *
+	 * @return The requested object or null if not found and not required
 	 */
 	function buildDSLDependency( required definition, required targetID, targetObject = "" ){
 		var refLocal 			= {};
@@ -400,7 +440,7 @@
 		// Check if Custom DSL exists, if it does, execute it
 		if( structKeyExists( variables.customDSL, DSLNamespace ) ){
 			return variables.customDSL[ DSLNamespace ].process( argumentCollection=arguments );
-        }
+		}
 
 		// Determine Type of Injection according to type
 		// Some namespaces requires the ColdBox context, if not found, an exception is thrown.
@@ -485,7 +525,7 @@
 		}
 
 		// return only if found
-		if( structKeyExists( refLocal, "dependency" ) ){
+		if( !isNull( refLocal.dependency ) ){
 			return refLocal.dependency;
 		}
 
