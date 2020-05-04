@@ -24,6 +24,9 @@ component extends="EventHandler" {
 		"delete" : "DELETE"
 	};
 
+	// Do we reset data on errors?
+	this.resetDataOnError = false;
+
 	/**
 	 * Our Rest handler adds a nice around handler that will be active for all handlers
 	 * that leverage it.  So it can add uniformity, exception handling, tracking and more.
@@ -125,7 +128,7 @@ component extends="EventHandler" {
 			// Get response data according to error flag
 			var responseData = (
 				arguments.prc.response.getError() ?
-				arguments.prc.response.getDataPacket( reset = true ) :
+				arguments.prc.response.getDataPacket( reset = this.resetDataOnError ) :
 				arguments.prc.response.getDataPacket()
 			);
 
@@ -207,7 +210,7 @@ component extends="EventHandler" {
 			// Render Error Out
 			event.renderData(
 				type        = prc.response.getFormat(),
-				data        = prc.response.getDataPacket( reset = true ),
+				data        = prc.response.getDataPacket( reset = this.resetDataOnError ),
 				contentType = prc.response.getContentType(),
 				statusCode  = prc.response.getStatusCode(),
 				statusText  = prc.response.getStatusText(),
@@ -258,7 +261,7 @@ component extends="EventHandler" {
 		// Render Error Out
 		arguments.event.renderData(
 			type        = arguments.prc.response.getFormat(),
-			data        = arguments.prc.response.getDataPacket( reset = true ),
+			data        = arguments.prc.response.getDataPacket( reset = this.resetDataOnError ),
 			contentType = arguments.prc.response.getContentType(),
 			statusCode  = arguments.prc.response.getStatusCode(),
 			statusText  = arguments.prc.response.getStatusText(),
@@ -304,7 +307,7 @@ component extends="EventHandler" {
 		// Render Error Out
 		arguments.event.renderData(
 			type        = arguments.prc.response.getFormat(),
-			data        = arguments.prc.response.getDataPacket( reset = true ),
+			data        = arguments.prc.response.getDataPacket( reset = this.resetDataOnError ),
 			contentType = arguments.prc.response.getContentType(),
 			statusCode  = arguments.prc.response.getStatusCode(),
 			statusText  = arguments.prc.response.getStatusText(),
@@ -346,7 +349,7 @@ component extends="EventHandler" {
 		// Render Error Out
 		arguments.event.renderData(
 			type        = arguments.prc.response.getFormat(),
-			data        = arguments.prc.response.getDataPacket( reset = true ),
+			data        = arguments.prc.response.getDataPacket( reset = this.resetDataOnError ),
 			contentType = arguments.prc.response.getContentType(),
 			statusCode  = arguments.prc.response.getStatusCode(),
 			statusText  = arguments.prc.response.getStatusText(),
@@ -382,7 +385,7 @@ component extends="EventHandler" {
 		// Render Error Out
 		arguments.event.renderData(
 			type        = arguments.prc.response.getFormat(),
-			data        = arguments.prc.response.getDataPacket( reset = true ),
+			data        = arguments.prc.response.getDataPacket( reset = this.resetDataOnError ),
 			contentType = arguments.prc.response.getContentType(),
 			statusCode  = arguments.prc.response.getStatusCode(),
 			statusText  = arguments.prc.response.getStatusText(),
@@ -467,7 +470,7 @@ component extends="EventHandler" {
 			event.setHTTPHeader( name = "Content-Type", value = "application/json" );
 			event.setHTTPHeader( statusCode = "#arguments.event.STATUS.NOT_AUTHORIZED#", statusText = "Not Authorized" );
 
-			writeOutput( serializeJSON( prc.response.getDataPacket( reset = true ) ) );
+			writeOutput( serializeJSON( prc.response.getDataPacket( reset = this.resetDataOnError ) ) );
 
 			flush;
 			abort;

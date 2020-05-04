@@ -45,9 +45,10 @@ component {
 				.filter( ( thisFunction ) => !listFindNoCase( variables.ignoreMethods, thisFunction.name ) )
 				// Transpile function and parameters
 				.map( ( thisFunction ) => {
+					var fwName = ( findNoCase( "BaseSpec", cfcName ) ? "TestBox" : "ColdBox" );
 					return
 						"{
-							""trigger"": ""#thisFunction.name#\tfn. (ColdBox #cfcName#)"",
+							""trigger"": ""#thisFunction.name#\tfn. (#fwName#:#cfcName#)"",
 							""contents"": ""#thisFunction.name#(#processParams( thisFunction.parameters )# )""
 					}";
 				})
@@ -108,10 +109,10 @@ component {
 				.filter( ( thisFunction ) => !listFindNoCase( variables.ignoreMethods, thisFunction.name ) )
 				// Transpile function and parameters
 				.map( ( thisFunction ) => {
-					var fwName = ( findNoCase( "assert", thisScope ) ? "ColdBox" : "TestBox" );
+					var fwName = ( findNoCase( "assert", thisScope ) ? "TestBox" : "ColdBox" );
 					return
 						"{
-							""trigger"": ""#thisScope#.#thisFunction.name#\tfn. (#fwName# #thisScope#)"",
+							""trigger"": ""#thisScope#.#thisFunction.name#\tfn. (#fwName#:#thisScope#)"",
 							""contents"": ""#thisScope#.#thisFunction.name#(#processParams( thisFunction.parameters )# )""
 						}";
 				})
