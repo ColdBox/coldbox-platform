@@ -838,8 +838,15 @@ component
 
 		// Check for existing route matches
 		var matchingRoutes = variables.routes.filter( function( route ){
-			return route.pattern == thisRoute.pattern &&
-			route.domain == thisRoute.domain;
+			return (
+				route.pattern == thisRoute.pattern
+				&&
+				route.domain == thisRoute.domain
+				&&
+				route.module == thisRoute.module
+				&&
+				route.namespace == thisRoute.namespace
+			);
 		} );
 		if ( !matchingRoutes.isEmpty() ) {
 			var matchingRoute   = matchingRoutes[ 1 ];
