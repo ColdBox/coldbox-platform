@@ -498,7 +498,8 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 		requestContext = getRequestContext();
 
         // Add in the test helpers for convenience
-        requestContext.getRenderedContent = variables.getRenderedContent;
+		requestContext.getRenderedContent = variables.getRenderedContent;
+		requestContext.getHandlerResults  = variables.getHandlerResults;
         requestContext.getRenderData      = variables.getRenderData;
         requestContext.getStatusCode      = variables.getStatusCode;
 		return requestContext;
@@ -627,6 +628,15 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
     */
     function getRenderedContent(){
         return getValue( "cbox_rendered_content", "" );
+	}
+
+	/**
+    * Get the results from a handler execution if any
+    *
+    * @return The handler results or an empty string
+    */
+    function getHandlerResults(){
+        return getValue( "cbox_handler_results", "" );
     }
 
     /**

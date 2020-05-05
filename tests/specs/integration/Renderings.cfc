@@ -38,6 +38,7 @@ component
 				given( "A complex return data from a handler", function(){
 					then( "it should render the data back in json", function(){
 						var e = execute( route = "/actionRendering", renderResults = true );
+						expect( e.getHandlerResults() ).toBeArray();
 						expect( e.getRenderedContent() ).toBeJSON();
 					} );
 				} );
