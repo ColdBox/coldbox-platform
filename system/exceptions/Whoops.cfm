@@ -349,7 +349,7 @@
 						style="display: none;"
 					>
 						<script type="syntaxhighlighter" class="brush:#highlighter#; highlight: [#instance.line#];" async>
-							<![CDATA[<cfloop file="#instance.template#" index="line">#line##chr( 13 )#</cfloop>
+							<![CDATA[<cfloop file="#instance.template#" index="line">#line##chr( 13 )##chr( 10 )#</cfloop>
 							]]>
 						</script>
 					</pre>
