@@ -192,8 +192,8 @@ component implements="coldbox.system.ioc.dsl.IDSLBuilder" accessors="true"{
 							} else {
 								throw(
 									type 	= "ColdBoxDSL.InvalidDSL",
-									message="ColdBox DSL cannot find dependency using definition: #arguments.definition.toString()#",
-									detail="The setting requested: #thisLocationToken# does not exist in this module. Loaded settings are #structKeyList(moduleSettings[ thisLocationKey ].settings)#"
+									message = "ColdBox DSL cannot find dependency using definition: #arguments.definition.toString()#",
+									detail  = "The setting requested: #thisLocationToken# does not exist in this module. Loaded settings are #structKeyList(moduleSettings[ thisLocationKey ].settings)#"
 								);
 							}
 						}
@@ -201,7 +201,7 @@ component implements="coldbox.system.ioc.dsl.IDSLBuilder" accessors="true"{
 							throw(
 								type 	= "ColdBoxDSL.InvalidDSL",
 								message = "The DSL provided was not valid: #arguments.definition.toString()#",
-								detail="The module requested: #thisLocationKey# does not exist in the loaded modules. Loaded modules are #structKeyList(moduleSettings)#"
+								detail 	= "The module requested: #thisLocationKey# does not exist in the loaded modules. Loaded modules are #structKeyList(moduleSettings)#"
 							);
 						}
 
@@ -215,7 +215,7 @@ component implements="coldbox.system.ioc.dsl.IDSLBuilder" accessors="true"{
 		throw(
 			type 	= "ColdBoxDSL.InvalidDSL",
 			message = "The DSL provided was not valid: #arguments.definition.toString()#",
-			detail="Unknown DSL"
+			detail 	= "Unknown DSL"
 		);
 	}
 
