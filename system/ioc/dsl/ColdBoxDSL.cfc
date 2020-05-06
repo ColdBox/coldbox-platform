@@ -102,7 +102,7 @@ component implements="coldbox.system.ioc.dsl.IDSLBuilder" accessors="true"{
 					case "configSettings"		: { return variables.coldbox.getConfigSettings(); }
 					case "dataMarshaller"		: { return variables.coldbox.getDataMarshaller(); }
 					case "flash"		 		: { return variables.coldbox.getRequestService().getFlashScope(); }
-					case "fwSettings" : case "coldboxSettings" : { return variables.coldbox.getColdboxSettings(); }
+					case "fwSettings" 			: case "coldboxSettings" : { return variables.coldbox.getColdboxSettings(); }
 					case "handlerService"		: { return variables.coldbox.getHandlerService(); }
 					case "interceptorService"	: { return variables.coldbox.getInterceptorService(); }
 					case "loaderService"		: { return variables.coldbox.getLoaderService(); }
@@ -124,7 +124,7 @@ component implements="coldbox.system.ioc.dsl.IDSLBuilder" accessors="true"{
 				thisLocationType = getToken( thisType, 2, ":" );
 				thisLocationKey  = getToken( thisType, 3, ":" );
 				switch( thisLocationType ){
-					case "setting" : case "ConfigSettings" : {
+					case "setting" : case "configSettings" : {
 						// module setting?
 						if( find( "@", thisLocationKey ) ){
 							moduleSettings = variables.coldbox.getSetting( "modules" );
@@ -171,7 +171,7 @@ component implements="coldbox.system.ioc.dsl.IDSLBuilder" accessors="true"{
 							);
 						}
 					}
-					case "fwSetting" 			: { return variables.coldbox.getColdBoxSetting( thisLocationKey ); }
+					case "fwSetting" : case "coldboxSetting" : { return variables.coldbox.getColdBoxSetting( thisLocationKey ); }
 					case "interceptor" 			: { return variables.coldbox.getInterceptorService().getInterceptor( thisLocationKey, true ); }
 				}//end of services
 
