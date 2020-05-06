@@ -138,14 +138,18 @@ component{
 		string nullEmptyExclude="",
 		boolean composeRelationships=false
 	){
-		arguments.memento = structnew();
-		listToArray( arguments.qry.columnList )
-			.each( function( item ){
-				memento[ item ] = qry[ item ][ rowNumber ];
-			} );
+		if( arguments.qry.recordcount >= arguments.rowNumber ){
+			arguments.memento = structnew();
+			listToArray( arguments.qry.columnList )
+				.each( function( item ){
+					memento[ item ] = qry[ item ][ rowNumber ];
+				} );
 
-		//populate bean and return
-		return populateFromStruct( argumentCollection=arguments );
+			//populate bean and return
+			return populateFromStruct( argumentCollection=arguments );
+		} else {
+			return target;
+		}
 	}
 
 	/**
