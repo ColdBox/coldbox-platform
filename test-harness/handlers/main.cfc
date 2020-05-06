@@ -1,5 +1,7 @@
 component {
 
+	property name="asyncManager" inject="coldbox:asyncManager";
+
 	this.allowedMethods = { "index" : "GET" };
 
 	function routeRunner( event, rc, prc ){

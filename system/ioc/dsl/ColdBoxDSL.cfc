@@ -113,6 +113,7 @@ component implements="coldbox.system.ioc.dsl.IDSLBuilder" accessors="true"{
 					case "routingService"		: { return variables.coldbox.getRoutingService(); }
 					case "renderer"				: { return variables.coldbox.getRenderer(); }
 					case "moduleconfig"			: { return variables.coldbox.getSetting( "modules" ); }
+					case "asyncManager"			: { return variables.coldbox.getAsyncManager(); }
 				} // end of services
 
 				break;
