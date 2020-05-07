@@ -68,7 +68,11 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		}
 
 		// Auto Map Root Models
-		if ( variables.controller.getSetting( "autoMapModels" ) ) {
+		if (
+			variables.controller.getSetting( "autoMapModels" )
+			&&
+			directoryExists( variables.controller.getSetting( "ModelsPath" ) )
+		) {
 			variables.controller
 				.getWireBox()
 				.getBinder()
