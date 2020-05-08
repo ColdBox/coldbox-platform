@@ -26,6 +26,9 @@ component accessors="true" singleton {
 	// Static class to Executors: java.util.concurrent.Executors
 	this.$executors = new util.Executors();
 
+	// Helpers
+	variables.IntStream = createObject( "java", "java.util.stream.IntStream" );
+
 	/**
 	 * Constructor
 	 *
@@ -342,20 +345,34 @@ component accessors="true" singleton {
 	 ****************************************************************/
 
 	/**
-	 * Build an array out of a range of numbers
+	 * Build an array out of a range of numbers or using our range syntax.
+	 * You can also build negative ranges
 	 *
-	 * @from The initial index, defaults to 1
+	 * <pre>
+	 * arrayRange( "1..5" )
+	 * arrayRange( "-10..5" )
+	 * arrayRange( 1, 500 )
+	 * </pre>
+	 *
+	 * @from The initial index, defaults to 1 or you can use the {start}..{end} notation
 	 * @to The last index item
 	 */
-	array function arrayRange( numeric from=1, numeric to ){
+	array function arrayRange( any from=1, numeric to ){
+		// shortcut notation
+		if( find( "..", arguments.from ) ){
+			arguments.to 	= getToken( arguments.from, 2, ".." );
+			arguments.from 	= getToken( arguments.from, 1, ".." );
+		}
+
+		// cap to if larger than from
 		if( arguments.to < arguments.from ){
 			arguments.to = arguments.from;
 		}
-		var data = [];
-		while( arguments.from <= arguments.to ){
-			data.append( arguments.from++ );
-		}
-		return data;
+
+		// build it up
+		return IntStream
+			.rangeClosed( arguments.from, arguments.to )
+			.toArray()
 	}
 
 }
