@@ -483,13 +483,19 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 
 		} catch( "InterceptorService.InterceptorNotFound" e ) {
         	// In either case, if the interceptor doesn't exists, just ignore it.
-        } catch( Any e ) {
+        } catch( any e1 ) {
 			// Are we doing exception handling?
             if ( withExceptionHandling ) {
-                processException( cbController, e );
-            }
+				try {
+					processException( cbController, e1 );
+				} catch ( any e2 ) {
+					// Exclude relocations so they can be asserted.
+					if( NOT listFindNoCase( relocationTypes, e2.type ) ){
+						rethrow;
+					}
+				}
 			// Exclude relocations so they can be asserted.
-			if( NOT listFindNoCase( relocationTypes, e.type ) ){
+			} else if ( NOT listFindNoCase( relocationTypes, e1.type ) ){
 				rethrow;
 			}
 		}
@@ -513,13 +519,15 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
      * @headers Custom headers to pass as from the request
      * @method The method type to execute.  Defaults to GET.
      * @renderResults If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
+	 * @withExceptionHandling If true, then ColdBox will process any errors through the exception handling framework instead of just throwing the error. Default: false.
      */
     function request(
         string route = "",
         struct params = {},
         struct headers = {},
         string method = "GET",
-        boolean renderResults = true
+		boolean renderResults = true,
+		boolean withExceptionHandling = false
     ) {
         var mockedEvent = prepareMock( getRequestContext() ).$( "getHTTPMethod", ucase( method ) );
         params.keyArray().each( function( name ) {
@@ -538,12 +546,14 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
      * @params Params to pass to the `rc` scope.
      * @headers Custom headers to pass as from the request
      * @renderResults If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
+	 * @withExceptionHandling If true, then ColdBox will process any errors through the exception handling framework instead of just throwing the error. Default: false.
      */
     function get(
         string route = "",
         struct params = {},
         struct headers = {},
-        boolean renderResults = true
+		boolean renderResults = true,
+		boolean withExceptionHandling = false
     ) {
         arguments.method = "GET";
 		return variables.request( argumentCollection = arguments );
@@ -555,13 +565,15 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
     * @route The route to execute.
     * @params Params to pass to the `rc` scope.
     * @headers Custom headers to pass as from the request
-    * @renderResults If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
+	* @renderResults If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
+	* @withExceptionHandling If true, then ColdBox will process any errors through the exception handling framework instead of just throwing the error. Default: false.
     */
     function post(
         string route = "",
         struct params = {},
         struct headers = {},
-        boolean renderResults=true
+		boolean renderResults=true,
+		boolean withExceptionHandling = false
     ) {
         arguments.method = "POST";
         return variables.request( argumentCollection = arguments );
@@ -573,13 +585,15 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
     * @route The route to execute.
     * @params Params to pass to the `rc` scope.
     * @headers Custom headers to pass as from the request
-    * @renderResults If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
+	* @renderResults If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
+	* @withExceptionHandling If true, then ColdBox will process any errors through the exception handling framework instead of just throwing the error. Default: false.
     */
     function put(
         string route = "",
         struct params = {},
         struct headers = {},
-        boolean renderResults=true
+		boolean renderResults=true,
+		boolean withExceptionHandling = false
     ) {
         arguments.method = "PUT";
         return variables.request( argumentCollection = arguments );
@@ -592,12 +606,14 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
     * @params Params to pass to the `rc` scope.
     * @headers Custom headers to pass as from the request
     * @renderResults If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
-    */
+	* @withExceptionHandling If true, then ColdBox will process any errors through the exception handling framework instead of just throwing the error. Default: false.
+	*/
     function patch(
         string route = "",
         struct params = {},
         struct headers = {},
-        boolean renderResults=true
+		boolean renderResults=true,
+		boolean withExceptionHandling = false
     ) {
         arguments.method = "PATCH";
         return variables.request( argumentCollection = arguments );
@@ -610,12 +626,14 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
     * @params Params to pass to the `rc` scope.
     * @headers Custom headers to pass as from the request
     * @renderResults If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
-    */
+	* @withExceptionHandling If true, then ColdBox will process any errors through the exception handling framework instead of just throwing the error. Default: false.
+	*/
     function delete(
         string route = "",
         struct params = {},
         struct headers = {},
-        boolean renderResults=true
+		boolean renderResults=true,
+		boolean withExceptionHandling = false
     ) {
         arguments.method = "DELETE";
         return variables.request( argumentCollection = arguments );
