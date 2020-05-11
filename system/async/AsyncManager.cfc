@@ -372,7 +372,7 @@ component accessors="true" singleton {
 		// build it up
 		return IntStream
 			.rangeClosed( arguments.from, arguments.to )
-			.toArray()
+			.toArray();
 	}
 
 }
