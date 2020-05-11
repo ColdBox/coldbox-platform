@@ -1,4 +1,5 @@
 language: java
+os: "linux"
 group: deprecated-2017Q2
 
 notifications:
@@ -9,6 +10,7 @@ env:
   global:
     # TARGET RELEASE VERSION: BUMP AS NEEDED
     - COLDBOX_VERSION=6.0.0-RC
+    - COLDBOX_PRERELEASE=false
   matrix:
     - ENGINE=lucee@5 # Build Entire Frameworks
     - ENGINE=adobe@2016	ANT_TARGET=run-tests #just run tests
@@ -20,8 +22,6 @@ branches:
   - master
 
 dist: trusty
-
-sudo: required
 
 addons:
   apt:
@@ -45,6 +45,8 @@ install:
   - box config set endpoints.forgebox.APIToken=$FORGEBOX_API_TOKEN > /dev/null
 
 before_script:
+  # Set Travis Tag
+  - TRAVIS_TAG=${COLDBOX_VERSION}
   # create test database
   - mysql -u root -e 'create database coolblog;'
   # import database
@@ -88,6 +90,7 @@ deploy:
     local-dir: $TRAVIS_BUILD_DIR/artifacts
     upload-dir: ortussolutions
     acl: public_read
+
   # API Docs Deployment
   - provider: s3
     on:
@@ -102,6 +105,39 @@ deploy:
     bucket: "apidocs.ortussolutions.com"
     local-dir: $TRAVIS_BUILD_DIR/build-coldbox/apidocs
     acl: public_read
+
+  # Github Release only on Master
+  - provider: releases
+    token: ${GITHUB_TOKEN}
+    on:
+      branch:
+        - master
+      condition: "$ENGINE = lucee@5"
+    skip_cleanup: true
+    edge: true
+    file_glob: true
+    file: $TRAVIS_BUILD_DIR/artifacts/**/*
+    release_notes_file: changelog.md
+    name: v${TRAVIS_TAG}
+    tag_name: v${TRAVIS_TAG}
+    overwrite: true
+
+  # Github Pre-Releases
+  - provider: releases
+    token: ${GITHUB_TOKEN}
+    on:
+      branch:
+        - development
+      condition: "$ENGINE = lucee@5 && $COLDBOX_PRERELEASE = true"
+    skip_cleanup: true
+    edge: true
+    file_glob: true
+    file: $TRAVIS_BUILD_DIR/artifacts/**/*
+    release_notes_file: changelog.md
+    name: v${COLDBOX_VERSION}
+    tag_name: v${COLDBOX_VERSION}
+    overwrite: true
+    prerelease: true
 
 after_deploy:
   # publish ColdBox
