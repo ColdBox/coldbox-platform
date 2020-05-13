@@ -431,9 +431,9 @@ component serializable="false" accessors="true"{
 			// Get the incoming pass from form or url
 			var incomingPass 	= "";
 			if( structKeyExists( form, reinitKey ) ){
-				incomingPass = form.fwreinit;
+				incomingPass = form[ reinitKey ];
 			} else {
-				incomingPass = url.fwreinit;
+				incomingPass = url[ reinitKey ];
 			}
 
 			// Compare the passwords
