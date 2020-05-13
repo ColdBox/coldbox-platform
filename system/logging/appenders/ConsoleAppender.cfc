@@ -152,7 +152,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 					var thisMessage = variables.logListener.queue[ 1 ];
 					variables.logListener.queue.deleteAt( 1 );
 
-					this.out( "writing #thisMessage.toString()#" );
+					// this.out( "writing #thisMessage.toString()#" );
 
 					if ( thisMessage.isError ) {
 						variables.error.println( thisMessage.message );
