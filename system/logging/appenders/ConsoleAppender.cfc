@@ -7,24 +7,6 @@
 component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 
 	/**
-	 * The default lock name
-	 */
-	property name="lockName";
-
-	/**
-	 * The default lock timeout
-	 */
-	property
-		name   ="lockTimeout"
-		default="25"
-		type   ="numeric";
-
-	/**
-	 * Log Listener Queue
-	 */
-	property name="logListener" type="struct";
-
-	/**
 	 * Constructor
 	 *
 	 * @name The unique name for this appender.
@@ -46,16 +28,8 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 		variables.stdout = createObject( "java", "java.lang.System" ).out;
 		variables.stderr = createObject( "java", "java.lang.System" ).err;
 
-		// lock information
-		variables.lockName    = getHash() & getName() & "logOperation";
-		variables.lockTimeout = 25;
-
-		// Activate Log Listener Queue
-		variables.logListener = { active : false, queue : [] };
-
 		return this;
 	}
-
 
 	/**
 	 * Write an entry into the appender.
@@ -87,13 +61,19 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 			case "0":
 			case "1": {
 				// log message
-				append( message = entry, isError = true );
+				queueMessage( {
+					message : entry,
+					isError : true
+				} );
 				break;
 			}
 			// Warning and above go to info stream
 			default: {
 				// log message
-				append( message = entry, isError = false );
+				queueMessage( {
+					message : entry,
+					isError : false
+				} );
 				break;
 			}
 		}
@@ -102,108 +82,20 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 	}
 
 	/**
-	 * Start the log listener so we can queue up the logging
-	 */
-	function startLogListener(){
-		// Double lock to ensure thread isn't already requested
-		var isActive = variables.lock( "readonly", function(){
-			return variables.logListener.active;
-		} );
-
-		// if no thread is active, enter exclusive lock and start one.
-		if ( !isActive ) {
-			variables.lock( "exclusive", function(){
-				if ( !variables.logListener.active ) {
-					out( "ConsoleAppender ScheduleTask needs to be started..." );
-					variables.logListener.active = true;
-					// Create the runnable Log Listener, Start it up baby!
-					variables.logBox
-						.getTaskScheduler()
-						.schedule(
-							task           = this,
-							method         = "runLogListener",
-							loadAppContext = false
-						);
-					out( "ConsoleAppender ScheduleTask started" );
-				}
-			} );
-		}
-	}
-
-	/**
-	 * This function runs the log listener implementation, usually called async via a runnable class
-	 */
-	function runLogListener(){
-		try {
-			var lastRun       = getTickCount();
-			var start         = lastRun;
-			var maxIdle       = 15000; // 15 seconds is how long the threads can live for.
-			var sleepInterval = 25;
-			var count         = 0;
-			var hasMessages   = false;
-
-			out( "Starting #getName()# runnable", true );
-
-			while ( variables.logListener.queue.len() || lastRun + maxIdle > getTickCount() ) {
-				// out( "len: #variables.logListener.queue.len()# last run: #lastRun# idle: #maxIdle#" );
-
-				if ( variables.logListener.queue.len() ) {
-					// pop and dequeue
-					var thisMessage = variables.logListener.queue[ 1 ];
-					variables.logListener.queue.deleteAt( 1 );
-
-					// out( "writing #thisMessage.toString()#" );
-
-					if ( thisMessage.isError ) {
-						variables.stderr.println( thisMessage.message );
-					} else {
-						variables.stdout.println( thisMessage.message );
-					}
-
-					// Mark the last run
-					lastRun = getTickCount();
-				}
-
-				// out( "Sleeping: lastRun #lastRun + maxIdle#" );
-
-				sleep( sleepInterval ); // take a nap
-			}
-		} catch ( Any e ) {
-			$log( "ERROR", "Error processing log listener: #e.message# #e.detail# #e.stacktrace#" );
-			this.err( "Error with listener thread for #getName()#" & e.message & e.detail );
-			this.err( e.stackTrace );
-		} finally {
-			out(
-				"Stopping ConsoleAppender listener thread for #getName()#, it ran for #getTickCount() - start#ms!"
-			);
-
-			// Stop log listener
-			variables.lock(
-				body = function(){
-					variables.logListener.active = false;
-				}
-			);
-		}
-	}
-
-	/************************************ PRIVATE ************************************/
-
-	/**
-	 * Append a message to the log file
+	 * Processes a queue element to a destination
+	 * This method is called by the log listeners asynchronously.
 	 *
-	 * @message The target message
-	 * @isError Does this go to the error stream?
+	 * @data The data element the queue needs processing
+	 * @queueContext The queue context in process
+	 *
+	 * @return ConsoleAppender
 	 */
-	private ConsoleAppender function append( required message, required isError ){
-		// Ensure log listener
-		startLogListener();
-
-		// queue message up
-		variables.logListener.queue.append( {
-			message : arguments.message,
-			isError : arguments.isError
-		} );
-
+	function processQueueElement( required data, required queueContext ){
+		if ( arguments.data.isError ) {
+			variables.stderr.println( arguments.data.message );
+		} else {
+			variables.stdout.println( arguments.data.message );
+		}
 		return this;
 	}
 

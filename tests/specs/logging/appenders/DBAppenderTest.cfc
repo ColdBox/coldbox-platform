@@ -8,16 +8,18 @@
 			table      : "logs",
 			autocreate : "true"
 		};
-		db = createMock( className = "coldbox.system.logging.appenders.DBAppender" );
-		db.init( "UnitTest", props ).setLogBox( logBox );
 
-		loge = createMock( className = "coldbox.system.logging.LogEvent" );
-		loge.init(
-			"Unit Test Sample",
-			0,
-			structNew(),
-			"UnitTest"
-		);
+		db = createMock( "coldbox.system.logging.appenders.DBAppender" )
+			.init( "UnitTest", props )
+			.setLogBox( logBox );
+
+		loge = createMock( "coldbox.system.logging.LogEvent" )
+			.init(
+				"Unit Test Sample",
+				0,
+				structNew(),
+				"UnitTest"
+			);
 	}
 
 	function testSchema(){

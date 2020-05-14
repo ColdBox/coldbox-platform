@@ -17,21 +17,6 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 	 */
 	property name="logFullpath";
 
-	/**
-	 * The default lock name
-	 */
-	property name="lockName";
-
-	/**
-	 * The default lock timeout
-	 */
-	property name="lockTimeout" default="25" type="numeric";
-
-	/**
-	 * Log Listener Queue
-	 */
-	property name="logListener" type="struct";
-
     /**
 	 * Constructor
 	 *
@@ -83,16 +68,6 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 			variables.logFullPath = expandPath( variables.logFullpath );
 		}
 
-		// lock information
-		variables.lockName 		= getHash() & getname() & "logOperation";
-		variables.lockTimeout 	= 25;
-
-		// Activate Log Listener Queue
-		variables.logListener = {
-			active 	= false,
-			queue 	= []
-		};
-
 		return this;
 	}
 
@@ -133,8 +108,8 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 			entry = '"#severityToString( logEvent.getSeverity() )#","#getname()#","#dateformat( timestamp, "MM/DD/YYYY" )#","#timeformat( timestamp, "HH:MM:SS" )#","#loge.getCategory()#","#message#"';
 		}
 
-		// Log it
-		append( entry );
+		// Queue it up
+		queueMessage( entry );
 
 		return this;
 	}
@@ -182,131 +157,78 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 	}
 
 	/**
-	 * Start the log listener so we can queue up the logging to alleviate for disk operations
+	 * Fired once the listner starts queue processing
+	 *
+	 * @queueContext A struct of data attached to this processing queue thread
 	 */
-	function startLogListener(){
-		// Double lock to ensure thread isn't already requested
-		var isActive = variables.lock( "readonly", function(){
-			return variables.logListener.active;
-		} );
-
-		// if no thread is active, enter exclusive lock and start one.
-		if( !isActive ) {
-			variables.lock( "exclusive", function(){
-				if( !variables.logListener.active ) {
-					out( "FileAppender ScheduleTask needs to be started..." );
-					variables.logListener.active = true;
-					// Create the runnable Log Listener, Start it up baby!
-					variables.logBox.getTaskScheduler().schedule(
-						task       = this,
-						method         = "runLogListener",
-						loadAppContext = false
-					);
-					out( "FileAppender ScheduleTask started" );
-				}
-			} );
-		}
-
-
+	function onLogListenerStart( required struct queueContext ){
+		// Open the file to stream lines to
+		arguments.queueContext.oFile = fileOpen(
+			variables.logFullPath,
+			"append",
+			this.getProperty( "fileEncoding" )
+		);
+		// The flusing interval to disk
+		arguments.queueContext.flushInterval = 1000;
 	}
 
 	/**
-	 * This function runs the log listener implementation, usually called async via a runnable class
+	 * Fired once the listener will go to sleep
+	 *
+	 * @queueContext A struct of data attached to this processing queue thread
 	 */
-	function runLogListener(){
-		try{
+	function onLogListenerSleep( required struct queueContext ){
+		// flush to disk every start + 1000ms
+		if(
+			arguments.queueContext.start + arguments.queueContext.flushInterval < getTickCount()
+			&&
+			!isSimpleValue( arguments.queueContext.oFile )
+		){
+			out( "LogFile for #getName()# flushed to disk at #now()# using interval: #arguments.queueContext.flushInterval#", true );
+			fileClose( arguments.queueContext.oFile );
+			arguments.queueContext.oFile = "";
+			arguments.queueContext.start = getTickCount();
+		}
+	}
 
-			var lastRun       = getTickCount();
-			var start         = lastRun;
-			var maxIdle       = 5000; // 5 seconds is how long the threads can live for.
-			var flushInterval = 1000; // 1 second
-			var sleepInterval = 50; // 50 ms
-			var count         = 0;
+	/**
+	 * Processes a queue element to a destination
+	 * This method is called by the log listeners asynchronously.
+	 *
+	 * @data The data element the queue needs processing
+	 * @queueContext The queue context in process
+	 *
+	 * @return ConsoleAppender
+	 */
+	function processQueueElement( required data, required queueContext ){
+		// If simple value, open it
+		if( isSimpleValue( arguments.queueContext.oFile ) ){
+			arguments.queueContext.oFile = fileOpen(
+				variables.logFullPath,
+				"append",
+				this.getProperty( "fileEncoding" )
+			);
+		}
 
-			// Ensure Log File
-			initLogLocation();
+		// Write to file
+		fileWriteLine( arguments.queueContext.oFile, arguments.data );
 
-			var oFile         = fileOpen( variables.logFullPath, "append", this.getProperty( "fileEncoding" ) );
-			var hasMessages   = false;
+		return this;
+	}
 
-			out( "Starting #getName()# runnable", true );
-
-			// Execute only if there are messages in the queue or the internal has been crossed
-			while(
-				variables.logListener.queue.len() || lastRun + maxIdle > getTickCount()
-			){
-
-				//out( "len: #variables.logListener.queue.len()# last run: #lastRun# idle: #maxIdle#" );
-
-				if( variables.logListener.queue.len() ){
-					// pop and dequeue
-					var thisMessage = variables.logListener.queue[ 1 ];
-					variables.logListener.queue.deleteAt( 1 );
-
-					if( isSimpleValue( oFile ) ){
-						oFile = fileOpen( variables.logFullPath, "append", this.getProperty( "fileEncoding" ) );
-					}
-
-					//out( "Wrote to file #thisMessage#" );
-
-					// Write to file
-					fileWriteLine( oFile, thisMessage );
-
-					// Mark the last run
-					lastRun = getTickCount();
-				}
-
-				// flush to disk every start + 1000ms
-				if( start + flushInterval < getTickCount() && !isSimpleValue( oFile ) ){
-					out( "LogFile for #getName()# flushed to disk at #now()# using interval: #flushInterval#", true );
-					fileClose( oFile );
-					oFile = "";
-					start = getTickCount();
-				}
-
-				//out( "Sleeping (#getTickCount()#): lastRun #lastRun + maxIdle#" );
-
-				// Only take a nap if we've nothing to do
-				if( !variables.logListener.queue.len() ) {
-					sleep( sleepInterval ); // take a nap
-				}
-			}
-
-		} catch( Any e ){
-			$log( "ERROR", "Error processing log listener: #e.message# #e.detail# #e.stacktrace#" );
-			err( "Error with listener thread for #getName()#" & e.message & e.detail );
-			err( e.stackTrace );
-		} finally {
-			out( "Stopping FileAppender listener thread for #getName()#, it ran for #getTickCount() - start#ms!" );
-
-			// Stop log listener
-			variables.lock( body=function(){
-				variables.logListener.active = false;
-			} );
-
-			if( !isNull( oFile ) && !isSimpleValue( oFile ) ){
-				fileClose( oFile );
-				oFile = "";
-			}
+	/**
+	 * Fired once the listner stops queue processing
+	 *
+	 * @queueContext A struct of data attached to this processing queue thread
+	 */
+	function onLogListenerEnd( required struct queueContext ){
+		if( !isNull( arguments.queueContext.oFile ) && !isSimpleValue( arguments.queueContext.oFile ) ){
+			fileClose( arguments.queueContext.oFile );
+			arguments.queueContext.oFile = "";
 		}
 	}
 
 	/************************************ PRIVATE ************************************/
-
-	/**
-	 * Append a message to the log file
-	 *
-	 * @message The target message
-	 */
-	private FileAppender function append( required message ){
-		// Ensure log listener
-		startLogListener();
-
-		// queue message up
-		arrayAppend( variables.logListener.queue, arguments.message );
-
-		return this;
-	}
 
 	/**
 	 * Ensures the log directory.
