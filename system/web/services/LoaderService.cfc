@@ -239,10 +239,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		variables.log.info( "† Shutting down ColdBox..." );
 
 		var wireBox = variables.controller.getWireBox();
-
-		// Shutdown all ColdBox Scheduler Tasks, no need to delete them as WireBox will be nuked!
-		variables.log.info( "† Shutting down ColdBox Task Scheduler..." );
-		wirebox.getInstance( "AsyncManager@coldbox" ).shutdownAllExecutors( force = true );
+		var asyncManager = wirebox.getInstance( "AsyncManager@coldbox" );
 
 		// Process services reinit
 		structEach( variables.controller.getServices(), function( key, thisService ){
@@ -260,7 +257,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			wirebox.shutdown();
 		}
 
-		variables.log.info( "† ColdBox shutdown gracefully..." );
+		// Shutdown all ColdBox Scheduler Tasks, no need to delete them as WireBox will be nuked!
+		variables.log.info( "† Shutting down ColdBox Task Scheduler..." );
+		asyncManager.shutdownAllExecutors( force = true );
 
 		return this;
 	}
