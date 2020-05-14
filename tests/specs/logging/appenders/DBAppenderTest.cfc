@@ -10,7 +10,7 @@
 		};
 
 		db = createMock( "coldbox.system.logging.appenders.DBAppender" )
-			.init( "UnitTest", props )
+			.init( "DBAppender", props )
 			.setLogBox( logBox );
 
 		loge = createMock( "coldbox.system.logging.LogEvent" )
@@ -18,7 +18,7 @@
 				"Unit Test Sample",
 				0,
 				structNew(),
-				"UnitTest"
+				"DBAppender"
 			);
 	}
 
