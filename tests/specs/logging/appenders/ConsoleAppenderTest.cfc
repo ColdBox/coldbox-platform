@@ -23,6 +23,7 @@
 	function testMockLayout(){
 		console = createMock( className = "coldbox.system.logging.appenders.ConsoleAppender" );
 		console.init( name = "MyConsoleAppender", layout = "coldbox.tests.specs.logging.MockLayout" );
+		console.setLogBox( logBox );
 
 		for ( x = 0; x lte 5; x++ ) {
 			loge.setSeverity( x );

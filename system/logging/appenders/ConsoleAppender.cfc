@@ -43,8 +43,8 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 		super.init( argumentCollection = arguments );
 
 		// Output Streams
-		variables.out   = createObject( "java", "java.lang.System" ).out;
-		variables.error = createObject( "java", "java.lang.System" ).err;
+		variables.stdout = createObject( "java", "java.lang.System" ).out;
+		variables.stderr = createObject( "java", "java.lang.System" ).err;
 
 		// lock information
 		variables.lockName    = getHash() & getName() & "logOperation";
@@ -114,7 +114,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 		if ( !isActive ) {
 			variables.lock( "exclusive", function(){
 				if ( !variables.logListener.active ) {
-					this.out( "ConsoleAppender ScheduleTask needs to be started..." );
+					out( "ConsoleAppender ScheduleTask needs to be started..." );
 					variables.logListener.active = true;
 					// Create the runnable Log Listener, Start it up baby!
 					variables.logBox
@@ -124,7 +124,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 							method         = "runLogListener",
 							loadAppContext = false
 						);
-					this.out( "ConsoleAppender ScheduleTask started" );
+					out( "ConsoleAppender ScheduleTask started" );
 				}
 			} );
 		}
@@ -142,29 +142,29 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 			var count         = 0;
 			var hasMessages   = false;
 
-			this.out( "Starting #getName()# runnable", true );
+			out( "Starting #getName()# runnable", true );
 
 			while ( variables.logListener.queue.len() || lastRun + maxIdle > getTickCount() ) {
-				// this.out( "len: #variables.logListener.queue.len()# last run: #lastRun# idle: #maxIdle#" );
+				// out( "len: #variables.logListener.queue.len()# last run: #lastRun# idle: #maxIdle#" );
 
 				if ( variables.logListener.queue.len() ) {
 					// pop and dequeue
 					var thisMessage = variables.logListener.queue[ 1 ];
 					variables.logListener.queue.deleteAt( 1 );
 
-					this.out( "writing #thisMessage.toString()#" );
+					// out( "writing #thisMessage.toString()#" );
 
 					if ( thisMessage.isError ) {
-						variables.error.println( thisMessage.message );
+						variables.stderr.println( thisMessage.message );
 					} else {
-						variables.out.println( thisMessage.message );
+						variables.stdout.println( thisMessage.message );
 					}
 
 					// Mark the last run
 					lastRun = getTickCount();
 				}
 
-				// this.out( "Sleeping: lastRun #lastRun + maxIdle#" );
+				// out( "Sleeping: lastRun #lastRun + maxIdle#" );
 
 				sleep( sleepInterval ); // take a nap
 			}
@@ -173,7 +173,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 			this.err( "Error with listener thread for #getName()#" & e.message & e.detail );
 			this.err( e.stackTrace );
 		} finally {
-			this.out(
+			out(
 				"Stopping ConsoleAppender listener thread for #getName()#, it ran for #getTickCount() - start#ms!"
 			);
 
