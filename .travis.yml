@@ -117,7 +117,7 @@ deploy:
     edge: true
     file_glob: true
     file: $TRAVIS_BUILD_DIR/artifacts/**/*
-    release_notes_file: changelog.md
+    release_notes_file: $TRAVIS_BUILD_DIR/changelog.md
     name: v${TRAVIS_TAG}
     tag_name: v${TRAVIS_TAG}
     overwrite: true
@@ -133,7 +133,7 @@ deploy:
     edge: true
     file_glob: true
     file: $TRAVIS_BUILD_DIR/artifacts/**/*
-    release_notes_file: changelog.md
+    release_notes_file: $TRAVIS_BUILD_DIR/changelog.md
     name: v${COLDBOX_VERSION}
     tag_name: v${COLDBOX_VERSION}
     overwrite: true
