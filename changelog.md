@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ----
 
-## [6.0.0-RC] => 2020-MAY-14
+## [6.0.0-RC] => 2020-MAY-15
 
 ### Tasks
 
@@ -30,6 +30,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * COLDBOX-864 - `compatiblity` `jsonPayloadToRC` now defaults to true
 * COLDBOX-863 - Add setting to define reinit key vs. hard-coded fwreinit: `reinitKey`
 * COLDBOX-859 - ability to do async scheduled tasks with new async cbpromises
+* COLDBOX-841 - `compatiblity` Change announceInterception() and processState() to a single method name like: announce()
+* COLDBOX-882 - `compatiblity` Deprecate interceptData in favor of just data
 * LOGBOX-46 - Update ConsoleAppender to use TaskScheduler 
 * LOGBOX-47 - AbstractAppender log listener and queueing facilities are now available for all appenders
 * LOGBOX-48 - DB Appender now uses a queueing approach to sending log messages
