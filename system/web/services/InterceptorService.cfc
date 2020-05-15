@@ -120,10 +120,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 */
 	function rescanInterceptors(){
 		if ( variables.onLoadInterceptionPointsHash != hash( arrayToList( variables.interceptionPoints ) ) ) {
-			// Info log
-			if ( variables.log.canInfo() ) {
-				variables.log.info( "Re-scanning interceptors as modules have contributed interception points" );
-			}
+			variables.log.info( "Re-scanning interceptors as modules have contributed interception points" );
 			registerInterceptors();
 		}
 		return this;
@@ -146,12 +143,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// Check if we have custom interception points, and register them if we do
 		if ( arrayLen( variables.interceptorConfig.customInterceptionPoints ) ) {
 			appendInterceptionPoints( variables.interceptorConfig.customInterceptionPoints );
-			// Debug log
-			if ( variables.log.canDebug() ) {
-				variables.log.debug(
-					"Registering custom interception points: #variables.interceptorConfig.customInterceptionPoints.toString()#"
-				);
-			}
+			variables.log.info(
+				"Registering custom interception points: #variables.interceptorConfig.customInterceptionPoints.toString()#"
+			);
 		}
 
 		// Loop over the Interceptor Array, to begin registration
@@ -167,29 +161,33 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	}
 
 	/**
-	 * Process a State's Interceptors
 	 * Announce an interception to the system. If you use the asynchronous facilities, you will get a thread structure report as a result.
 	 *
 	 * This is needed so interceptors can write to the page output buffer
 	 * @output true
 	 *
 	 * @state An interception state to process
-	 * @interceptData A data structure used to pass intercepted information.
+	 * @data A data structure used to pass intercepted information.
 	 * @async If true, the entire interception chain will be ran in a separate thread.
 	 * @asyncAll If true, each interceptor in the interception chain will be ran in a separate thread and then joined together at the end.
 	 * @asyncAllJoin If true, each interceptor in the interception chain will be ran in a separate thread and joined together at the end by default.  If you set this flag to false then there will be no joining and waiting for the threads to finalize.
 	 * @asyncPriority The thread priority to be used. Either LOW, NORMAL or HIGH. The default value is NORMAL
 	 * @asyncJoinTimeout The timeout in milliseconds for the join thread to wait for interceptor threads to finish.  By default there is no timeout
 	 */
-	public any function processState(
+	public any function announce(
 		required any state,
-		any interceptData        = structNew(),
+		any data                 = {},
 		boolean async            = false,
 		boolean asyncAll         = false,
 		boolean asyncAllJoin     = true,
 		string asyncPriority     = "NORMAL",
 		numeric asyncJoinTimeout = 0
 	){
+		// Backwards Compat: Remove by ColdBox 7
+		if ( !isNull( arguments.interceptData ) ) {
+			arguments.data = arguments.interceptData;
+		}
+
 		// Process The State if it exists, else just exit out
 		if ( structKeyExists( variables.interceptionStates, arguments.state ) ) {
 			arguments.event  = controller.getRequestService().getContext();
@@ -210,6 +208,22 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				return results;
 			}
 		}
+	}
+
+	/**
+	 * @deprecated please use `announce()` instead
+	 */
+	public any function processState(
+		required any state,
+		any interceptData        = structNew(),
+		boolean async            = false,
+		boolean asyncAll         = false,
+		boolean asyncAllJoin     = true,
+		string asyncPriority     = "NORMAL",
+		numeric asyncJoinTimeout = 0
+	){
+		arguments.data = arguments.interceptData;
+		return announce( argumentCollection = arguments );
 	}
 
 	/**

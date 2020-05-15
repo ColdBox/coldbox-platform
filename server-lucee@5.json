@@ -13,8 +13,8 @@
         },
         "rewrites":{
             "enable":true
-		},
-		"aliases":{
+        },
+        "aliases":{
             "/coldbox":"./"
         }
     },

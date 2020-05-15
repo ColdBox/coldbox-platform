@@ -6,8 +6,8 @@
  * The manager will inspect target objects for implemented functions and match them to event states.
  * However, if a function has the metadata attribute of 'observe=true' on it, then it will also add it
  * as a custom state
-*/
-component accessors="true"{
+ */
+component accessors="true" {
 
 	/**
 	 * Event states to listen for
@@ -26,70 +26,77 @@ component accessors="true"{
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @eventStates The event states to listen for
 	 * @stopRecursionClasses The classes (comma-delim) to not inspect for events
 	 */
-	function init( required array eventStates, stopRecursionClasses="" ){
+	function init( required array eventStates, stopRecursionClasses = "" ){
 		// Setup properties of the event manager
-		variables.eventStates            = arguments.eventStates;
-		variables.stopRecursionClasses   = arguments.stopRecursionClasses;
-		
+		variables.eventStates          = arguments.eventStates;
+		variables.stopRecursionClasses = arguments.stopRecursionClasses;
+
 		// class id code
 		variables.classID = createObject( "java", "java.lang.System" ).identityHashCode( this );
 
 		// Init event pool container
-		variables.eventPoolContainer 	= structnew();
+		variables.eventPoolContainer = structNew();
 
 		return this;
 	}
 
 	/**
 	 * Process a state announcement. If the state does not exist it will ignore it.
-	 * 
+	 *
 	 * @state The state to process
-	 * @interceptData The data to pass into the interception event
-	 * 
+	 * @data The data to pass into the interception event
+	 *
 	 * @return EventPoolManager
 	 */
-	function processState( required state, struct interceptData={} ){
-		if( variables.eventPoolContainer.keyExists( arguments.state ) ){
+	function announce( required state, struct data = {} ){
+		if ( variables.eventPoolContainer.keyExists( arguments.state ) ) {
 			variables.eventPoolContainer
 				.find( arguments.state )
-				.process( arguments.interceptData );
+				.process( arguments.data );
 		}
-		
+
 		return this;
 	}
 
 	/**
-	 * Register an object in an event pool. If the target object is already in a state, it will not be added again. 
-	 * The object get's inspected for registered states or you can even send custom states in.  
+	 * Register an object in an event pool. If the target object is already in a state, it will not be added again.
+	 * The object get's inspected for registered states or you can even send custom states in.
 	 * Also, you can annotate the methods in the target object with 'observe=true' and we will register that state also.
 	 *
-	 * @target The target object to register in an event pool 
-	 * @name The name to use when registering the object.  If not passed, the name will be used from the object's metadata 
+	 * @target The target object to register in an event pool
+	 * @name The name to use when registering the object.  If not passed, the name will be used from the object's metadata
 	 * @customStates A comma delimmited list of custom states, if the object or class sent in observes them
-	 * 
+	 *
 	 * @return EventPoolManager
 	 */
-	function register( required target, name="", customStates="" ){
+	function register(
+		required target,
+		name         = "",
+		customStates = ""
+	){
 		var md = getMetadata( arguments.target );
 
 		// Check if name sent? If not, get the name from the last part of its name
-		if( NOT len( trim( arguments.name ) ) ){
+		if ( NOT len( trim( arguments.name ) ) ) {
 			arguments.name = listLast( md.name, "." );
 		}
 
-		lock name="EventPoolManager.#variables.classID#.RegisterObject.#arguments.name#" type="exclusive" throwontimeout="true" timeout="30"{
+		lock
+			name          ="EventPoolManager.#variables.classID#.RegisterObject.#arguments.name#"
+			type          ="exclusive"
+			throwontimeout="true"
+			timeout       ="30" {
 			// Append Custom Statess
 			appendInterceptionPoints( arguments.customStates );
 
 			// Register this target's event observation states with its appropriate interceptor/observation state
-			parseMetadata( md, {} )
-				.each( function( item ){
-					registerInEventState( name, item, target );
-				} );
+			parseMetadata( md, {} ).each( function( item ){
+				registerInEventState( name, item, target );
+			} );
 		}
 
 		return this;
@@ -100,17 +107,21 @@ component accessors="true"{
 	 *
 	 * @key The key to use when storing the object
 	 * @state The event state pool to save the object in
-	 * @target The object to register 
-	 * 
+	 * @target The object to register
+	 *
 	 * @return EventPoolManager
 	 */
-	function registerInEventState( required key, required state, required target ){
+	function registerInEventState(
+		required key,
+		required state,
+		required target
+	){
 		var eventPool = "";
 
 		// Verify if the event state doesn't exist in the evnet pool, else create it
-		if ( not structKeyExists( variables.eventPoolContainer, arguments.state ) ){
+		if ( not structKeyExists( variables.eventPoolContainer, arguments.state ) ) {
 			// Create new event pool
-			eventPool = new coldbox.system.core.events.EventPool( arguments.state );
+			eventPool                                       = new coldbox.system.core.events.EventPool( arguments.state );
 			// Register it with this pool manager
 			variables.eventPoolContainer[ arguments.state ] = eventPool;
 		} else {
@@ -119,7 +130,7 @@ component accessors="true"{
 		}
 
 		// Verify if the target object is already in the state
-		if( NOT eventPool.exists( arguments.key ) ){
+		if ( NOT eventPool.exists( arguments.key ) ) {
 			// Register it
 			eventPool.register( arguments.key, arguments.target );
 		}
@@ -131,12 +142,12 @@ component accessors="true"{
 	 * Get an object from the pool
 	 *
 	 * @name  The name of the object
-	 * 
+	 *
 	 * @throws EventPoolManager.ObjectNotFound
 	 */
 	function getObject( required name ){
-		for( var key in variables.eventPoolContainer ){
-			if( structFind( variables.eventPoolContainer, key ).exists( arguments.name ) ){
+		for ( var key in variables.eventPoolContainer ) {
+			if ( structFind( variables.eventPoolContainer, key ).exists( arguments.name ) ) {
 				return structFind( variables.eventPoolContainer, key ).getObject( arguments.name );
 			}
 		}
@@ -152,18 +163,17 @@ component accessors="true"{
 	 * Append a list of custom interception points to the CORE interception points and returns the points
 	 *
 	 * @customStates A comma delimmited list or array of custom interception states to append. If they already exists, then they will not be added again.
-	 * 
+	 *
 	 * @return  The current interception points
 	 */
 	array function appendInterceptionPoints( required customStates ){
-
 		// Inflate custom points
-		if( isSimpleValue( arguments.customStates ) ){
+		if ( isSimpleValue( arguments.customStates ) ) {
 			arguments.customStates = listToArray( arguments.customStates );
 		}
 
-		for( var thisPoint in arguments.customStates ){
-			if( !arrayFindNoCase( variables.eventStates, thisPoint ) ){
+		for ( var thisPoint in arguments.customStates ) {
+			if ( !arrayFindNoCase( variables.eventStates, thisPoint ) ) {
 				variables.eventStates.append( thisPoint );
 			}
 		}
@@ -174,10 +184,10 @@ component accessors="true"{
 	/**
 	 * Get an event pool by state name, if not found, it returns an empty structure
 	 *
-	 * @state The state to retrieve 
+	 * @state The state to retrieve
 	 */
 	function getEventPool( required state ){
-		if( variables.eventPoolContainer.keyExists( arguments.state ) ){
+		if ( variables.eventPoolContainer.keyExists( arguments.state ) ) {
 			return variables.eventPoolContainer[ arguments.state ];
 		}
 		return {};
@@ -189,12 +199,12 @@ component accessors="true"{
 	 * @name The name of the object to unregister
 	 * @state The state to unregister from. If not passed, then we will unregister from ALL pools
 	 */
-	boolean function unregister( required name, state="" ){
-		var unregistered  = false;
+	boolean function unregister( required name, state = "" ){
+		var unregistered = false;
 
 		// Unregister the object
-		for( var key in variables.eventPoolContainer ){
-			if( len( arguments.state ) eq 0 OR arguments.state eq key ){
+		for ( var key in variables.eventPoolContainer ) {
+			if ( len( arguments.state ) eq 0 OR arguments.state eq key ) {
 				structFind( variables.eventPoolContainer, key ).unregister( arguments.name );
 				unregistered = true;
 			}
@@ -208,34 +218,32 @@ component accessors="true"{
 	 */
 	private struct function parseMetadata( required metadata, required struct eventsFound ){
 		// Register local functions
-		if( structKeyExists( arguments.metadata, "functions" ) ){
-			
-			for( var thisFunction in arguments.metadata.functions ){
-				
+		if ( structKeyExists( arguments.metadata, "functions" ) ) {
+			for ( var thisFunction in arguments.metadata.functions ) {
 				// Verify observe annotation
-				if( thisFunction.keyExists( "interceptionPoint" ) ){
+				if ( thisFunction.keyExists( "interceptionPoint" ) ) {
 					// Register the observation point just in case
 					appendInterceptionPoints( thisFunction.name );
 				}
 
 				// verify it's an observation state and Not Registered already
-				if( 
-					arrayFindNoCase( variables.eventStates, thisFunction.name ) 
+				if (
+					arrayFindNoCase( variables.eventStates, thisFunction.name )
 					&&
 					!arguments.eventsFound.keyExists( thisFunction.name )
-				){
+				) {
 					// Observation Event Found
 					arguments.eventsFound[ thisFunction.name ] = true;
 				}
 			}
-
 		}
 
 		// Start Registering inheritances?
-		if ( structKeyExists( arguments.metadata, "extends") 
+		if (
+			structKeyExists( arguments.metadata, "extends" )
 			AND
-			NOT listFindNoCase( getStopRecursionClasses(), arguments.metadata.extends.name ) 
-		){
+			NOT listFindNoCase( getStopRecursionClasses(), arguments.metadata.extends.name )
+		) {
 			parseMetadata( arguments.metadata.extends, arguments.eventsFound );
 		}
 

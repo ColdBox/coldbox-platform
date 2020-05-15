@@ -5,7 +5,7 @@
 			"cbController"
 		);
 		prepareMock( controller.getRequestService() );
-		prepareMock( controller.getInterceptorService() ).$( "processState" );
+		prepareMock( controller.getInterceptorService() ).$( "announce" );
 	}
 
 	function testAppRoots(){
@@ -109,7 +109,7 @@
 			.$( "sendRelocation" );
 		controller.getRequestService().$( "getContext", mockContext );
 		controller.getRequestService().$( "getFlashScope", mockFlash );
-		controller.getRequestService().$( "processState" );
+		controller.getRequestService().$( "announce" );
 
 		// Test Full URL
 		controller.relocate( URL = "http://www.coldbox.org", addToken = true );

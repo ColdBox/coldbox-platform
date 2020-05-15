@@ -93,7 +93,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// Execute afterConfigurationLoad
 		variables.controller
 			.getInterceptorService()
-			.processState( "afterConfigurationLoad" );
+			.announce( "afterConfigurationLoad" );
 
 		// Rescan interceptors in case modules had interception poitns to register
 		variables.controller.getInterceptorService().rescanInterceptors();
@@ -103,7 +103,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// Execute afterAspectsLoad: all module interceptions are registered and flash rebuilt if needed
 		variables.controller
 			.getInterceptorService()
-			.processState( "afterAspectsLoad" );
+			.announce( "afterAspectsLoad" );
 
 		// We are now done, rock and roll!!
 		return this;
@@ -238,7 +238,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	LoaderService function processShutdown(){
 		variables.log.info( "† Shutting down ColdBox..." );
 
-		var wireBox = variables.controller.getWireBox();
+		var wireBox      = variables.controller.getWireBox();
 		var asyncManager = wirebox.getInstance( "AsyncManager@coldbox" );
 
 		// Process services reinit

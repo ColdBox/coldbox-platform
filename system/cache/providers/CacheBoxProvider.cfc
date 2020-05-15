@@ -272,7 +272,7 @@ component
 
 		if( !isNull( local.oldObject ) ){
 			// Announce update if it exists
-			getEventManager().processState( "afterCacheElementUpdated", {
+			getEventManager().announce( "afterCacheElementUpdated", {
 				cache          = this,
 				cacheObjectKey = arguments.objectKey,
 				cacheNewObject = arguments.object,
@@ -280,7 +280,7 @@ component
 			} );
 		} else {
 			// announce a fresh insert
-			getEventManager().processState( "afterCacheElementInsert", {
+			getEventManager().announce( "afterCacheElementInsert", {
 				cache                        = this,
 				cacheObject                  = arguments.object,
 				cacheObjectKey               = arguments.objectKey,
@@ -376,7 +376,7 @@ component
 
 		// If cleared notify listeners
 		if( clearCheck ){
-			getEventManager().processState( "afterCacheElementRemoved", {
+			getEventManager().announce( "afterCacheElementRemoved", {
 				cache = this,
 				cacheObjectKey 	= arguments.objectKey
 			} );
@@ -394,7 +394,7 @@ component
 		variables.objectStore.clearAll();
 
 		// notify listeners
-		getEventManager().processState( "afterCacheClearAll", { cache = this } );
+		getEventManager().announce( "afterCacheClearAll", { cache = this } );
 
 		return this;
 	}
@@ -616,7 +616,7 @@ component
 	 */
 	private function announceExpiration( required objectKey ){
 		// Execute afterCacheElementExpired Interception
-		getEventManager().processState( "afterCacheElementExpired", {
+		getEventManager().announce( "afterCacheElementExpired", {
 			cache = this,
 			cacheObjectKey = arguments.objectKey
 		} );

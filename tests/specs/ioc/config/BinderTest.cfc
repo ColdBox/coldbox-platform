@@ -11,7 +11,7 @@
 		this.TYPES     = createObject( "component", "coldbox.system.ioc.Types" );
 		mockInjector   = createMock( "coldbox.system.ioc.Injector" )
 			.setColdBox( createStub().$( "getSetting", "coldbox.test" ) )
-			.setEventManager( createStub().$( "processState" ) );
+			.setEventManager( createStub().$( "announce" ) );
 		config = createObject( "component", "coldbox.system.ioc.config.Binder" ).init(
 			injector = mockInjector,
 			config   = dataConfigPath

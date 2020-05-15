@@ -436,7 +436,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			"ehBean"       : arguments.ehBean,
 			"override"     : false
 		};
-		variables.interceptorService.processState( "onInvalidEvent", iData );
+		variables.interceptorService.announce( "onInvalidEvent", iData );
 
 		// If the override was changed by the interceptors then they updated the ehBean of execution
 		if ( iData.override ) {

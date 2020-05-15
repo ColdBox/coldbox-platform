@@ -62,7 +62,7 @@
 				mockConfig
 			)
 			.$( "registerInterceptor", iService );
-		mockLogger.$( "canDebug", false );
+		mockLogger.$( "info" );
 
 		iService.registerInterceptors();
 
@@ -138,7 +138,7 @@
 	function testSimpleProcessInterception(){
 		// 1: inited with throw enabled but not throw
 		mockController.$( "getColdboxInitiated", true );
-		iService.processState( "preProcess" );
+		iService.announce( "preProcess" );
 
 		// 3: process a mock state
 		mockController.$( "getColdboxInitiated", true );
@@ -149,7 +149,7 @@
 			mockState
 		);
 		// debug( iService.getInterceptionStates() );
-		iService.processState( "badState" );
+		iService.announce( "badState" );
 		assertTrue( mockState.$never( "process" ) );
 
 		// 4: real mock state
@@ -161,7 +161,7 @@
 			mockState
 		);
 		// debug( iService.getInterceptionStates() );
-		iService.processState( "preProcess" );
+		iService.announce( "preProcess" );
 		assertTrue( mockState.$once( "process" ) );
 	}
 

@@ -4,14 +4,14 @@
  * ---
  * This is a bean populator that binds different types of data to a bean.
  */
-component{
+component {
 
 	/**
 	 * Constructor
 	 */
 	function init(){
 		variables.mixerUtil = new coldbox.system.core.dynamic.MixerUtil();
-		variables.util 		= new coldbox.system.core.util.Util();
+		variables.util      = new coldbox.system.core.util.Util();
 		return this;
 	}
 
@@ -34,20 +34,20 @@ component{
 	function populateFromJson(
 		required target,
 		required string JSONString,
-		string scope="",
-		boolean trustedSetter=false,
-		string include="",
-		string exclude="",
-		boolean ignoreEmpty=false,
-		string nullEmptyInclude="",
-		string nullEmptyExclude="",
-		boolean composeRelationships=false
+		string scope                 = "",
+		boolean trustedSetter        = false,
+		string include               = "",
+		string exclude               = "",
+		boolean ignoreEmpty          = false,
+		string nullEmptyInclude      = "",
+		string nullEmptyExclude      = "",
+		boolean composeRelationships = false
 	){
 		// Inflate JSON
 		arguments.memento = deserializeJSON( arguments.JSONString );
 
 		// populate and return
-		return populateFromStruct( argumentCollection=arguments );
+		return populateFromStruct( argumentCollection = arguments );
 	}
 
 	/**
@@ -70,42 +70,40 @@ component{
 	function populateFromXML(
 		required target,
 		required xml,
-		string root="",
-		string scope="",
-		boolean trustedSetter=false,
-		string include="",
-		string exclude="",
-		boolean ignoreEmpty=false,
-		string nullEmptyInclude="",
-		string nullEmptyExclude="",
-		boolean composeRelationships=false
+		string root                  = "",
+		string scope                 = "",
+		boolean trustedSetter        = false,
+		string include               = "",
+		string exclude               = "",
+		boolean ignoreEmpty          = false,
+		string nullEmptyInclude      = "",
+		string nullEmptyExclude      = "",
+		boolean composeRelationships = false
 	){
 		// determine XML object or string?
-		if( isSimpleValue( arguments.xml ) ){
+		if ( isSimpleValue( arguments.xml ) ) {
 			arguments.xml = xmlParse( arguments.xml );
 		}
 
 		// check root else default to XMLRoot
-		if( NOT len( arguments.root ) ){
+		if ( NOT len( arguments.root ) ) {
 			arguments.root = "XMLRoot";
 		}
 
 		// check children else don't do anything, we can't populate
-		if( NOT structKeyExists( arguments.xml[ arguments.root ], "XMLChildren" ) ){
+		if ( NOT structKeyExists( arguments.xml[ arguments.root ], "XMLChildren" ) ) {
 			return;
 		}
 
 		arguments.memento = {};
 		// Have to do it this way as ACF11 parsing sucks on structs and member functions
-		var xmlRoot = arguments.xml[ arguments.root ];
+		var xmlRoot       = arguments.xml[ arguments.root ];
 		// Populate memento from XML
-		xmlRoot
-			.XMLChildren
-			.each( function( item ){
-				memento[ item.XMLName ] = trim( item.XMLText );
-			} );
+		xmlRoot.XMLChildren.each( function( item ){
+			memento[ item.XMLName ] = trim( item.XMLText );
+		} );
 
-		return populateFromStruct( argumentCollection=arguments );
+		return populateFromStruct( argumentCollection = arguments );
 	}
 
 	/**
@@ -128,25 +126,24 @@ component{
 	function populateFromQuery(
 		required target,
 		required query qry,
-		numeric rowNumber="1",
-		string scope="",
-		boolean trustedSetter=false,
-		string include="",
-		string exclude="",
-		boolean ignoreEmpty=false,
-		string nullEmptyInclude="",
-		string nullEmptyExclude="",
-		boolean composeRelationships=false
+		numeric rowNumber            = "1",
+		string scope                 = "",
+		boolean trustedSetter        = false,
+		string include               = "",
+		string exclude               = "",
+		boolean ignoreEmpty          = false,
+		string nullEmptyInclude      = "",
+		string nullEmptyExclude      = "",
+		boolean composeRelationships = false
 	){
-		if( arguments.qry.recordcount >= arguments.rowNumber ){
-			arguments.memento = structnew();
-			listToArray( arguments.qry.columnList )
-				.each( function( item ){
-					memento[ item ] = qry[ item ][ rowNumber ];
-				} );
+		if ( arguments.qry.recordcount >= arguments.rowNumber ) {
+			arguments.memento = structNew();
+			listToArray( arguments.qry.columnList ).each( function( item ){
+				memento[ item ] = qry[ item ][ rowNumber ];
+			} );
 
-			//populate bean and return
-			return populateFromStruct( argumentCollection=arguments );
+			// populate bean and return
+			return populateFromStruct( argumentCollection = arguments );
 		} else {
 			return target;
 		}
@@ -174,30 +171,30 @@ component{
 		required target,
 		required query qry,
 		required string prefix,
-		numeric rowNumber="1",
-		string scope="",
-		boolean trustedSetter=false,
-		string include="",
-		string exclude="",
-		boolean ignoreEmpty=false,
-		string nullEmptyInclude="",
-		string nullEmptyExclude="",
-		boolean composeRelationships=false
+		numeric rowNumber            = "1",
+		string scope                 = "",
+		boolean trustedSetter        = false,
+		string include               = "",
+		string exclude               = "",
+		boolean ignoreEmpty          = false,
+		string nullEmptyInclude      = "",
+		string nullEmptyExclude      = "",
+		boolean composeRelationships = false
 	){
-		var prefixLength 	= len( arguments.prefix );
+		var prefixLength = len( arguments.prefix );
 
-		arguments.memento = structnew();
+		arguments.memento = structNew();
 		listToArray( arguments.qry.columnList )
 			.filter( function( item ){
 				return ( left( item, prefixLength ) == prefix );
 			} )
 			.each( function( item ){
-				var trueColumnName = item.replaceNocase( prefix, "" );
+				var trueColumnName        = item.replaceNocase( prefix, "" );
 				memento[ trueColumnName ] = qry[ item ][ rowNumber ];
 			} );
 
-		//populate bean and return
-		return populateFromStruct( argumentCollection=arguments );
+		// populate bean and return
+		return populateFromStruct( argumentCollection = arguments );
 	}
 
 	/**
@@ -221,29 +218,29 @@ component{
 		required target,
 		required struct memento,
 		required string prefix,
-		string scope="",
-		boolean trustedSetter=false,
-		string include="",
-		string exclude="",
-		boolean ignoreEmpty=false,
-		string nullEmptyInclude="",
-		string nullEmptyExclude="",
-		boolean composeRelationships=false
+		string scope                 = "",
+		boolean trustedSetter        = false,
+		string include               = "",
+		string exclude               = "",
+		boolean ignoreEmpty          = false,
+		string nullEmptyInclude      = "",
+		string nullEmptyExclude      = "",
+		boolean composeRelationships = false
 	){
-		var prefixLength 	= len( arguments.prefix );
-		var newMemento 		= {};
+		var prefixLength = len( arguments.prefix );
+		var newMemento   = {};
 
 		arguments.memento
 			.filter( function( key, value ){
-				return( left( key, prefixLength ) == prefix );
+				return ( left( key, prefixLength ) == prefix );
 			} )
 			.each( function( key, value ){
-				newMemento[ key.replaceNoCase( prefix, "" )  ] = value;
+				newMemento[ key.replaceNoCase( prefix, "" ) ] = value;
 			} );
 
-		//populate bean and return
+		// populate bean and return
 		arguments.memento = newMemento;
-		return populateFromStruct( argumentCollection=arguments );
+		return populateFromStruct( argumentCollection = arguments );
 	}
 
 	/**
@@ -265,105 +262,120 @@ component{
 	function populateFromStruct(
 		required target,
 		required struct memento,
-		string scope="",
-		boolean trustedSetter=false,
-		string include="",
-		string exclude="",
-		boolean ignoreEmpty=false,
-		string nullEmptyInclude="",
-		string nullEmptyExclude="",
-		boolean composeRelationships=false
+		string scope                 = "",
+		boolean trustedSetter        = false,
+		string include               = "",
+		string exclude               = "",
+		boolean ignoreEmpty          = false,
+		string nullEmptyInclude      = "",
+		string nullEmptyExclude      = "",
+		boolean composeRelationships = false
 	){
-		var beanInstance = arguments.target;
-		var key = "";
-		var pop = true;
+		var beanInstance   = arguments.target;
+		var key            = "";
+		var pop            = true;
 		var scopeInjection = false;
-		var udfCall = "";
-		var args = "";
-		var nullValue = false;
-		var propertyValue = "";
+		var udfCall        = "";
+		var args           = "";
+		var nullValue      = false;
+		var propertyValue  = "";
 		var relationalMeta = "";
 
-		try{
-
+		try {
 			// Determine Method of population
-			if( structKeyExists(arguments,"scope") and len(trim(arguments.scope)) neq 0 ){
+			if ( structKeyExists( arguments, "scope" ) and len( trim( arguments.scope ) ) neq 0 ) {
 				scopeInjection = true;
 				mixerUtil.start( beanInstance );
 			}
 
 			// If composing relationships, get target metadata
-			if( arguments.composeRelationships ) {
+			if ( arguments.composeRelationships ) {
 				relationalMeta = getRelationshipMetaData( arguments.target );
 			}
 
 			// Populate Bean
-			for(key in arguments.memento){
+			for ( key in arguments.memento ) {
 				// init population flag
 				pop = true;
 				// init nullValue flag and shortcut to property value
 				// conditional with StructKeyExist, to prevent language issues with Null value checking of struct keys in ACF
-				if ( structKeyExists( arguments.memento, key) ){
-					nullValue = false;
+				if ( structKeyExists( arguments.memento, key ) ) {
+					nullValue     = false;
 					propertyValue = arguments.memento[ key ];
-
 				} else {
-					nullValue = true;
-					propertyValue = JavaCast( "null", "" );
+					nullValue     = true;
+					propertyValue = javacast( "null", "" );
 				}
 
 				// Include List?
-				if( len(arguments.include) AND NOT listFindNoCase(arguments.include,key) ){
+				if ( len( arguments.include ) AND NOT listFindNoCase( arguments.include, key ) ) {
 					pop = false;
 				}
 				// Exclude List?
-				if( len(arguments.exclude) AND listFindNoCase(arguments.exclude,key) ){
+				if ( len( arguments.exclude ) AND listFindNoCase( arguments.exclude, key ) ) {
 					pop = false;
 				}
 				// Ignore Empty? Check added for real Null value
-				if( arguments.ignoreEmpty and not IsNull(local.propertyValue) and isSimpleValue(arguments.memento[key]) and not len( trim( arguments.memento[key] ) ) ){
+				if (
+					arguments.ignoreEmpty and not isNull( local.propertyValue ) and isSimpleValue(
+						arguments.memento[ key ]
+					) and not len( trim( arguments.memento[ key ] ) )
+				) {
 					pop = false;
 				}
 
 				// Pop?
-				if( pop ){
+				if ( pop ) {
 					// Scope Injection?
-					if( scopeInjection ){
-						beanInstance.populatePropertyMixin(propertyName=key,propertyValue=propertyValue,scope=arguments.scope);
+					if ( scopeInjection ) {
+						beanInstance.populatePropertyMixin(
+							propertyName  = key,
+							propertyValue = propertyValue,
+							scope         = arguments.scope
+						);
 					}
 					// Check if setter exists, evaluate is used, so it can call on java/groovy objects
-					else if( structKeyExists( beanInstance, "set" & key ) or arguments.trustedSetter ){
+					else if ( structKeyExists( beanInstance, "set" & key ) or arguments.trustedSetter ) {
 						// top-level null settings
-						if( arguments.nullEmptyInclude == "*" ) {
+						if ( arguments.nullEmptyInclude == "*" ) {
 							nullValue = true;
 						}
-						if( arguments.nullEmptyExclude == "*" ) {
+						if ( arguments.nullEmptyExclude == "*" ) {
 							nullValue = false;
 						}
 						// Is property in empty-to-null include list?
-						if( ( len( arguments.nullEmptyInclude ) && listFindNoCase( arguments.nullEmptyInclude, key ) ) ) {
+						if ( ( len( arguments.nullEmptyInclude ) && listFindNoCase( arguments.nullEmptyInclude, key ) ) ) {
 							nullValue = true;
 						}
 						// Is property in empty-to-null exclude list, or is exclude list "*"?
-						if( ( len( arguments.nullEmptyExclude ) AND listFindNoCase( arguments.nullEmptyExclude, key ) ) ){
+						if ( ( len( arguments.nullEmptyExclude ) AND listFindNoCase( arguments.nullEmptyExclude, key ) ) ) {
 							nullValue = false;
 						}
 						// Is value nullable (e.g., simple, empty string)? If so, set null...
 						// short circuit evealuaton of IsNull added, so it won't break IsSimpleValue with Real null values. Real nulls are already set.
-						if( !IsNull(local.propertyValue) && isSimpleValue( propertyValue ) && !len( trim( propertyValue ) ) && nullValue ) {
-							propertyValue = JavaCast( "null", "" );
+						if (
+							!isNull( local.propertyValue ) && isSimpleValue( propertyValue ) && !len(
+								trim( propertyValue )
+							) && nullValue
+						) {
+							propertyValue = javacast( "null", "" );
 						}
 
 						var getEntityMap = function(){
-							if( find( "2018", server.coldfusion.productVersion ) ){
-								return arrayToList( ORMGetSessionFactory().getMetaModel().getAllEntityNames() ).listToArray();
+							if ( find( "2018", server.coldfusion.productVersion ) ) {
+								return arrayToList( ormGetSessionFactory().getMetaModel().getAllEntityNames() ).listToArray();
 							} else {
-								return structKeyArray( ORMGetSessionFactory().getAllClassMetadata() );
+								return structKeyArray( ormGetSessionFactory().getAllClassMetadata() );
 							}
 						};
 
 						// If property isn't null, try to compose the relationship
-						if( !isNull( local.propertyValue ) && composeRelationships && structKeyExists( relationalMeta, key ) ) {
+						if (
+							!isNull( local.propertyValue ) && composeRelationships && structKeyExists(
+								relationalMeta,
+								key
+							)
+						) {
 							// get valid, known entity name list
 							var validEntityNames = getEntityMap();
 							var targetEntityName = "";
@@ -377,64 +389,66 @@ component{
 							 */
 
 							// 1.) name match
-							if( validEntityNames.findNoCase( key ) ){
+							if ( validEntityNames.findNoCase( key ) ) {
 								targetEntityName = key;
 							}
 							// 2.) attempt match on CFC metadata
-							else if( validEntityNames.findNoCase( listLast( relationalMeta[ key ].cfc, "." ) ) ) {
+							else if ( validEntityNames.findNoCase( listLast( relationalMeta[ key ].cfc, "." ) ) ) {
 								targetEntityName = listLast( relationalMeta[ key ].cfc, "." );
 							}
 							// 3.) component lookup
 							else {
 								try {
-									targetEntityName = getComponentMetaData( relationalMeta[ key ].cfc ).entityName;
+									targetEntityName = getComponentMetadata( relationalMeta[ key ].cfc ).entityName;
+								} catch ( any e ) {
+									throw(
+										type    = "BeanPopulator.PopulateBeanException",
+										message = "Error populating bean #getMetadata( beanInstance ).name# relationship of #key#. The component #relationalMeta[ key ].cfc# could not be found.",
+										detail  = "#e.Detail#<br>#e.message#<br>#e.tagContext.toString()#"
+									);
 								}
-								catch( any e ) {
-									throw(type="BeanPopulator.PopulateBeanException",
-						  			  message="Error populating bean #getMetaData(beanInstance).name# relationship of #key#. The component #relationalMeta[ key ].cfc# could not be found.",
-						  			  detail="#e.Detail#<br>#e.message#<br>#e.tagContext.toString()#");
-								}
-
 							}
 							// if targetEntityName was successfully found
-							if( len( targetEntityName) ) {
+							if ( len( targetEntityName ) ) {
 								// array or struct type (one-to-many, many-to-many)
-								if( listContainsNoCase( "one-to-many,many-to-many", relationalMeta[ key ].fieldtype ) ) {
+								if ( listContainsNoCase( "one-to-many,many-to-many", relationalMeta[ key ].fieldtype ) ) {
 									// Support straight-up lists and convert to array
-									if( isSimpleValue( propertyValue ) ) {
+									if ( isSimpleValue( propertyValue ) ) {
 										propertyValue = listToArray( propertyValue );
 									}
-									var relType = structKeyExists( relationalMeta[ key ], "type" ) && relationalMeta[ key ].type != "any" ? relationalMeta[ key ].type : 'array';
-									var manyMap = reltype=="struct" ? {} : [];
+									var relType = structKeyExists( relationalMeta[ key ], "type" ) && relationalMeta[ key ].type != "any" ? relationalMeta[
+										key
+									].type : "array";
+									var manyMap = reltype == "struct" ? {} : [];
 									// loop over array
-									for( var relValue in propertyValue ) {
+									for ( var relValue in propertyValue ) {
 										// for type of array
-										if( relType=="array" ) {
+										if ( relType == "array" ) {
 											// add composed relationship to array
-											arrayAppend( manyMap, EntityLoadByPK( targetEntityName, relValue ) );
+											arrayAppend( manyMap, entityLoadByPK( targetEntityName, relValue ) );
 										}
 										// for type of struct
 										else {
 											// make sure structKeyColumn is defined in meta
-											if( structKeyExists( relationalMeta[ key ], "structKeyColumn" ) ) {
+											if ( structKeyExists( relationalMeta[ key ], "structKeyColumn" ) ) {
 												// load the value
-												var item = EntityLoadByPK( targetEntityName, relValue );
+												var item            = entityLoadByPK( targetEntityName, relValue );
 												var structKeyColumn = relationalMeta[ key ].structKeyColumn;
-												var keyValue = "";
+												var keyValue        = "";
 												// try to get struct key value from entity
-												if( !isNull( local.item ) ) {
+												if ( !isNull( local.item ) ) {
 													try {
 														keyValue = invoke( item, "get#structKeyColumn#" );
-													}
-													catch( Any e ) {
+													} catch ( Any e ) {
 														throw(
-															type	= "BeanPopulator.PopulateBeanException",
-                							  			 	message	= "Error populating bean #getMetaData( beanInstance ).name# relationship of #key#. The structKeyColumn #structKeyColumn# could not be resolved.",
-                							  			  	detail	= "#e.Detail#<br>#e.message#<br>#e.tagContext.toString()#");
+															type    = "BeanPopulator.PopulateBeanException",
+															message = "Error populating bean #getMetadata( beanInstance ).name# relationship of #key#. The structKeyColumn #structKeyColumn# could not be resolved.",
+															detail  = "#e.Detail#<br>#e.message#<br>#e.tagContext.toString()#"
+														);
 													}
 												}
 												// if the structKeyColumn value was found...
-												if( len( keyValue ) ) {
+												if ( len( keyValue ) ) {
 													manyMap[ keyValue ] = item;
 												}
 											}
@@ -445,41 +459,48 @@ component{
 								}
 								// otherwise, simple value; load relationship (one-to-one, many-to-one)
 								else {
-									if( isSimpleValue( propertyValue ) && trim( propertyValue ) != "" ) {
-										propertyValue = EntityLoadByPK( targetEntityName, propertyValue );
+									if ( isSimpleValue( propertyValue ) && trim( propertyValue ) != "" ) {
+										propertyValue = entityLoadByPK( targetEntityName, propertyValue );
 									}
 								}
-							} // if target entity name found
+							}
+							// if target entity name found
 						}
 						// Populate the property as a null value
-						if( isNull( local.propertyValue ) ) {
+						if ( isNull( local.propertyValue ) ) {
 							// Finally...set the value
-							invoke( beanInstance, "set#key#", [ JavaCast( 'null', '' ) ] );
+							invoke(
+								beanInstance,
+								"set#key#",
+								[ javacast( "null", "" ) ]
+							);
 						}
 						// Populate the property as the value obtained whether simple or related
 						else {
-							invoke( beanInstance, "set#key#", [ propertyValue ] );
+							invoke(
+								beanInstance,
+								"set#key#",
+								[ propertyValue ]
+							);
 						}
-
-					} // end if setter or scope injection
-				}// end if prop ignored
-
-			}//end for loop
+					}
+					// end if setter or scope injection
+				}
+				// end if prop ignored
+			}
+			// end for loop
 			return beanInstance;
-		}
-		catch( Any e ){
-			if( isNull( local.propertyValue ) ) {
+		} catch ( Any e ) {
+			if ( isNull( local.propertyValue ) ) {
 				arguments.keyTypeAsString = "NULL";
-			}
-			else if ( isObject( propertyValue ) OR isCustomFunction( propertyValue )){
-				arguments.keyTypeAsString = getMetaData( propertyValue ).name;
-			}
-			else{
-	        	arguments.keyTypeAsString = propertyValue.getClass().toString();
+			} else if ( isObject( propertyValue ) OR isCustomFunction( propertyValue ) ) {
+				arguments.keyTypeAsString = getMetadata( propertyValue ).name;
+			} else {
+				arguments.keyTypeAsString = propertyValue.getClass().toString();
 			}
 			throw(
 				type    = "BeanPopulator.PopulateBeanException",
-				message = "Error populating bean #getMetaData( beanInstance ).name# with argument #key# of type #arguments.keyTypeAsString#.",
+				message = "Error populating bean #getMetadata( beanInstance ).name# with argument #key# of type #arguments.keyTypeAsString#.",
 				detail  = "#e.Detail#<br>#e.message#<br>#e.tagContext.toString()#"
 			);
 		}
@@ -491,9 +512,12 @@ component{
 	 * @target The target to work on
 	 */
 	private struct function getRelationshipMetaData( required target ){
-		var meta = {};
+		var meta           = {};
 		// get array of properties
-		var stopRecursions= [ "lucee.Component", "WEB-INF.cftags.component" ];
+		var stopRecursions = [
+			"lucee.Component",
+			"WEB-INF.cftags.component"
+		];
 		// Collect property metadata
 		variables.util
 			.getInheritedMetaData( arguments.target, stopRecursions )

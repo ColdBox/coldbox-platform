@@ -226,10 +226,10 @@ component serializable="false" accessors="true"{
 	}
 
 	/**
-	 * Announce an interception to the system. If you use the asynchronous facilities, you will get a thread structure report as a result.
+	 * Announce an interception
 	 *
-	 * @state The event to announce
-	 * @interceptData A data structure used to pass intercepted information.
+	 * @state The interception state to announce
+	 * @data A data structure used to pass intercepted information.
 	 * @async If true, the entire interception chain will be ran in a separate thread.
 	 * @asyncAll If true, each interceptor in the interception chain will be ran in a separate thread and then joined together at the end.
 	 * @asyncAllJoin If true, each interceptor in the interception chain will be ran in a separate thread and joined together at the end by default.  If you set this flag to false then there will be no joining and waiting for the threads to finalize.
@@ -238,7 +238,26 @@ component serializable="false" accessors="true"{
 	 *
 	 * @return struct of thread information or void
 	 */
-	any function announceInterception(
+	any function announce(
+		required state,
+		struct data={},
+		boolean async=false,
+		boolean asyncAll=false,
+		boolean asyncAllJoin=true,
+		asyncPriority="NORMAL",
+		numeric asyncJoinTimeout=0
+	){
+		// Backwards Compat: Remove by ColdBox 7
+		if( !isNull( arguments.interceptData ) ){
+			arguments.data = arguments.interceptData;
+		}
+		return variables.controller.getInterceptorService().announce( argumentCollection=arguments );
+	}
+
+	/**
+	 * @deprecated Please use the new `announce()` function
+	 */
+	function announceInterception(
 		required state,
 		struct interceptData={},
 		boolean async=false,
@@ -247,7 +266,8 @@ component serializable="false" accessors="true"{
 		asyncPriority="NORMAL",
 		numeric asyncJoinTimeout=0
 	){
-		return variables.controller.getInterceptorService().processState( argumentCollection=arguments );
+		arguments.data 	= arguments.interceptData;
+		return announce( argumentCollection=arguments );
 	}
 
 	/**

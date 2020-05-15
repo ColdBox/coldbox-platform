@@ -22,7 +22,7 @@
 			.$( "debug" )
 			.$( "info" )
 			.$( "canDebug", false );
-		mockEventManager.$( "processState" );
+		mockEventManager.$( "announce" );
 
 		// Config
 		config = { cacheName : "object" };

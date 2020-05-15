@@ -1,7 +1,6 @@
-﻿<cfcomponent extends="coldbox.system.testing.BaseModelTest">
-	<!--- setup and teardown --->
-	<cffunction name="setUp" returntype="void" access="public">
-		<cfscript>
+﻿component extends = "coldbox.system.testing.BaseModelTest"{
+
+	function setUp(){
 		// Prepare mocks
 		mockLogBox = createEmptyMock( "coldbox.system.logging.LogBox" );
 		mockLogger = createEmptyMock( "coldbox.system.logging.Logger" ).$( "canDebug", false );
@@ -35,34 +34,26 @@
 			eventPattern  : ""
 		};
 		this.state.register( this.key, this.mock, mockMetadata );
-		</cfscript>
-	</cffunction>
+	}
 
-	<cffunction name="testgetInterceptor" access="public" returnType="void">
-		<cfscript>
+	function testgetInterceptor(){
 		assertEquals( this.state.getInterceptor( this.key ), this.mock );
-		</cfscript>
-	</cffunction>
+	}
 
-	<cffunction name="testgetinterceptors" access="public" returnType="void">
-		<cfscript>
+	function testgetinterceptors(){
 		assertTrue( this.state.getInterceptors().size() );
-		</cfscript>
-	</cffunction>
+	}
 
-	<cffunction name="testgetstate" access="public" returnType="void">
-		<cfscript>
+	function testgetstate(){
 		assertEquals( this.state.getState(), "unittest" );
-		</cfscript>
-	</cffunction>
+	}
 
-	<cffunction name="testprocess" access="public" returnType="void">
-		<cfscript>
+	function testprocess(){
 		mockBuffer = createStub();
 		this.state.process(
-			event         = this.event,
-			interceptData = structNew(),
-			buffer        = mockBuffer
+			event  = this.event,
+			data   = structNew(),
+			buffer = mockBuffer
 		);
 		assertEquals( this.event.getValue( "unittest" ), true );
 
@@ -81,25 +72,23 @@
 			}
 		);
 		this.state.process(
-			event         = this.event,
-			interceptData = structNew(),
-			buffer        = mockBuffer
+			event  = this.event,
+			data   = structNew(),
+			buffer = mockBuffer
 		);
 		assertEquals( false, this.event.getValue( "unittest" ) );
 
 		// Now add event
 		this.event.setValue( "event", "UnitTest.test" );
 		this.state.process(
-			event         = this.event,
-			interceptData = structNew(),
-			buffer        = mockBuffer
+			event  = this.event,
+			data   = structNew(),
+			buffer = mockBuffer
 		);
 		assertEquals( true, this.event.getValue( "unittest" ) );
-		</cfscript>
-	</cffunction>
+	}
 
-	<cffunction name="testregister" access="public" returnType="void">
-		<cfscript>
+	function testregister(){
 		mockMetadata = {
 			async         : false,
 			asyncPriority : "normal",
@@ -109,28 +98,22 @@
 		assertEquals( this.state.getInterceptor( this.key ), this.mock );
 		assertEquals( this.state.getMetadataMap( this.key ), mockMetadata );
 		// debug( this.state.getMetadataMap() );
-		</cfscript>
-	</cffunction>
+	}
 
-	<cffunction name="testsetstate" access="public" returnType="void">
-		<cfscript>
+	function testsetstate(){
 		this.state.setState( "nothing" );
 		assertEquals( this.state.getState(), "nothing" );
-		</cfscript>
-	</cffunction>
+	}
 
-	<cffunction name="testunregister" access="public" returnType="void">
-		<cfscript>
+	function testunregister(){
 		this.state.unregister( this.key );
 		assertFalse( this.state.getINterceptors().size() );
 		assertFalse( structKeyExists( this.state.getMetadataMap(), this.key ) );
 
 		this.state.unregister( "nothing baby" );
-		</cfscript>
-	</cffunction>
+	}
 
-	<cffunction name="testInvoker" access="public" returnType="void">
-		<cfscript>
+	function testInvoker(){
 		// debug( this.state.getState() );
 
 		// 1: Execute Normally
@@ -160,11 +143,9 @@
 			mockBuffer
 		);
 		assertTrue( mockInterceptor.$once( "unittest" ) );
-		</cfscript>
-	</cffunction>
+	}
 
-	<cffunction name="testInvokerThreaded" access="public" returnType="void">
-		<cfscript>
+	function testInvokerThreaded(){
 		// Mocks
 		mockBuffer = createStub();
 		getMockRequestContext().$( "getCollection", {} ).$( "getPrivateCollection", {} );
@@ -197,17 +178,13 @@
 		sleep( 5000 );
 		assertTrue( mockInterceptor.$once( "unittest" ) );
 		// debug( cfthread );
-		</cfscript>
-	</cffunction>
+	}
 
-	<cffunction name="unittest" access="private" returntype="void" eventPattern="^UnitTest">
-		<cfargument name="event" required="true" type="any" hint="The event object.">
-		<cfargument
-			name    ="interceptData"
-			required="true"
-			type    ="any"
-			hint    ="A structure containing intercepted information. NONE BY DEFAULT HERE"
-		>
-		<cfset arguments.event.setValue( "unittest", true )>
-	</cffunction>
-</cfcomponent>
+	/**
+	 * @eventPattern ^UnitTest
+	 */
+	private function unittest( event, data ){
+		arguments.event.setValue( "unittest", true );
+	}
+
+}

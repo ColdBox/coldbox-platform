@@ -140,7 +140,7 @@ component serializable="false" accessors="true"{
 							// Load Module CF Mappings so modules can unload properly
 							application[ appKey ].getModuleService().loadMappings();
 							// process preReinit interceptors
-							application[ appKey ].getInterceptorService().processState( "preReinit" );
+							application[ appKey ].getInterceptorService().announce( "preReinit" );
 							// Shutdown the application services
 							application[ appKey ].getLoaderService().processShutdown();
 						}
@@ -206,7 +206,7 @@ component serializable="false" accessors="true"{
 			var event = cbController.getRequestService().requestCapture();
 
 			//****** PRE PROCESS *******/
-			interceptorService.processState( "preProcess" );
+			interceptorService.announce( "preProcess" );
 			if( len( cbController.getSetting( "RequestStartHandler" ) ) ){
 				cbController.runEvent(
 					event 			: cbController.getSetting( "RequestStartHandler" ),
@@ -263,7 +263,7 @@ component serializable="false" accessors="true"{
 					var renderedContent = "";
 
 					// pre layout
-					interceptorService.processState( "preLayout" );
+					interceptorService.announce( "preLayout" );
 
 					// Check for Marshalling and data render
 					var renderData = event.getRenderData();
@@ -296,7 +296,7 @@ component serializable="false" accessors="true"{
 					var interceptorData = {
 						renderedContent = renderedContent
 					};
-					interceptorService.processState( "preRender", interceptorData );
+					interceptorService.announce( "preRender", interceptorData );
 					// replace back content in case of modification, strings passed by value
 					renderedContent = interceptorData.renderedContent;
 
@@ -374,7 +374,7 @@ component serializable="false" accessors="true"{
 					}
 
 					// Post rendering event
-					interceptorService.processState( "postRender" );
+					interceptorService.announce( "postRender" );
 				} // end no render
 
 			} // end normal rendering procedures
@@ -383,7 +383,7 @@ component serializable="false" accessors="true"{
 			if( len( cbController.getSetting( "RequestEndHandler" ) ) ){
 				cbController.runEvent( event=cbController.getSetting("RequestEndHandler"), prePostExempt=true );
 			}
-			interceptorService.processState( "postProcess" );
+			interceptorService.announce( "postProcess" );
 
 			//****** FLASH AUTO-SAVE *******/
 			if( cbController.getSetting( "flash" ).autoSave ){
@@ -518,7 +518,7 @@ component serializable="false" accessors="true"{
 			var cbController = application[ locateAppKey() ];
 		}
 		// Session start interceptors
-		cbController.getInterceptorService().processState( "sessionStart", session );
+		cbController.getInterceptorService().announce( "sessionStart", session );
 		//Execute Session Start Handler
 		if( len( cbController.getSetting( "SessionStartHandler" ) ) ){
 			cbController.runEvent( event=cbController.getSetting( "SessionStartHandler" ), prePostExempt=true );
@@ -548,7 +548,7 @@ component serializable="false" accessors="true"{
 				sessionReference = arguments.sessionScope,
 				applicationReference = arguments.appScope
 			};
-			cbController.getInterceptorService().processState( "sessionEnd", iData );
+			cbController.getInterceptorService().announce( "sessionEnd", iData );
 
 			// Execute Session End Handler
 			if ( len( cbController.getSetting( "SessionEndHandler" ) ) ){
@@ -577,7 +577,7 @@ component serializable="false" accessors="true"{
 		var cbController = arguments.appScope[ locateAppKey() ];
 
 		// Execute Application End interceptors
-		cbController.getInterceptorService().processState( "applicationEnd" );
+		cbController.getInterceptorService().announce( "applicationEnd" );
 		// Execute Application End Handler
 		if( len( cbController.getSetting( "applicationEndHandler" ) ) ){
 			cbController.runEvent( event=cbController.getSetting( "applicationEndHandler" ) ,prePostExempt=true );
@@ -604,7 +604,7 @@ component serializable="false" accessors="true"{
 
 		// Announce interception
 		arguments.controller.getInterceptorService()
-			.processState( "onException", { exception = arguments.exception } );
+			.announce( "onException", { exception = arguments.exception } );
 
 		// Store exception in private context
 		event.setPrivateValue( "exception", oException );

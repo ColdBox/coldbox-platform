@@ -58,7 +58,7 @@ component serializable="false" accessors="true" {
 			event.setProxyRequest();
 
 			// Execute a pre process interception.
-			cbController.getInterceptorService().processState( "preProcess" );
+			cbController.getInterceptorService().announce( "preProcess" );
 
 			// Request Start Handler if defined
 			if ( cbController.getSetting( "RequestStartHandler" ) neq "" ) {
@@ -76,7 +76,7 @@ component serializable="false" accessors="true" {
 			}
 
 			// Execute the post process interceptor
-			cbController.getInterceptorService().processState( " postProcess" );
+			cbController.getInterceptorService().announce( " postProcess" );
 		} catch ( any e ) {
 			handleException( e );
 			rethrow;
@@ -107,7 +107,7 @@ component serializable="false" accessors="true" {
 			// preProxyResults interception call
 			cbController
 				.getInterceptorService()
-				.processState( "preProxyResults", { "proxyResults" : refLocal } );
+				.announce( "preProxyResults", { "proxyResults" : refLocal } );
 
 			// Return The results
 			return refLocal.results;
@@ -115,22 +115,42 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
-	 * Process a remote interception
+	 * Announce an interception
 	 *
-	 * @state The state to execute
-	 * @interceptData The struct of data to send in the event
+	 * @state The interception state to announce
+	 * @data A data structure used to pass intercepted information.
 	 */
-	private boolean function announceInterception( required state, struct interceptData = {} ){
+	private boolean function announce( required state, struct data = {} ){
 		try {
+			// Backwards Compat: Remove by ColdBox 7
+			if( !isNull( arguments.interceptData ) ){
+				arguments.data = arguments.interceptData;
+			}
 			getController()
 				.getInterceptorService()
-				.processState( arguments.state, arguments.interceptData );
+				.announce( arguments.state, arguments.data );
 		} catch ( any e ) {
 			handleException( e );
 			rethrow;
 		}
 
 		return true;
+	}
+
+	/**
+	 * @deprecated Please use the new `emit()` function
+	 */
+	private function announceInterception(
+		required state,
+		struct interceptData={},
+		boolean async=false,
+		boolean asyncAll=false,
+		boolean asyncAllJoin=true,
+		asyncPriority="NORMAL",
+		numeric asyncJoinTimeout=0
+	){
+		arguments.data 	= arguments.interceptData;
+		return announce( argumentCollection=arguments );
 	}
 
 	/**
@@ -142,7 +162,7 @@ component serializable="false" accessors="true" {
 		// Intercept Exception
 		getController()
 			.getInterceptorService()
-			.processState( "onException", { "exception" : arguments.exceptionObject } );
+			.announce( "onException", { "exception" : arguments.exceptionObject } );
 
 		// Log Exception
 		getLogger( this ).error(

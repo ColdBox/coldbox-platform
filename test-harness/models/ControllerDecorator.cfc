@@ -43,7 +43,7 @@ component extends="coldbox.system.web.ControllerDecorator" {
 
 		// Post Process
 		if ( arguments.postProcessExempt ) {
-			getInterceptorService().processState( "postProcess" );
+			getInterceptorService().announce( "postProcess" );
 		}
 
 		throw( message = "Relocating via relocate: #arguments.toString()#", type = "TestController.relocate" );

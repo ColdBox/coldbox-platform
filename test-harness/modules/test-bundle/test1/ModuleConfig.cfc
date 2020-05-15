@@ -62,7 +62,7 @@
 	}
 
 	// This object can also act as an interceptor
-	function preProcess( event, interceptData ){
+	function preProcess( event, data ){
 		controller
 			.getLogBox()
 			.getLogger( this )
@@ -72,7 +72,7 @@
 	/**
 	 * @interceptionPoint
 	 */
-	function onPio( event, interceptData ){
+	function onPio( event, data ){
 		controller
 			.getLogBox()
 			.getLogger( this )

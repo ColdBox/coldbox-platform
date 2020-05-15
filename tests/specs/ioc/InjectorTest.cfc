@@ -21,7 +21,7 @@
 		// mocks
 		parent       = createStub().$( "shutdown", injector );
 		cachebox     = createStub().$( "shutdown" );
-		eventManager = createStub().$( "processState" );
+		eventManager = createStub().$( "announce" );
 
 		injector.setParent( parent );
 		injector
@@ -41,7 +41,7 @@
 
 		injector.shutdown();
 
-		assertTrue( eventManager.$times( 2, "processState" ) );
+		assertTrue( eventManager.$times( 2, "announce" ) );
 		assertTrue( parent.$once( "shutdown" ) );
 		assertTrue( injector.$once( "removeFromScope" ) );
 		assertTrue( cacheBox.$once( "shutdown" ) );

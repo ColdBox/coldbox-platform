@@ -142,9 +142,9 @@ component
 		} );
 	}
 
-	function afterRendererInit( event, interceptData ){
-		if ( !isNull( arguments.interceptData.this ) ) {
-			arguments.interceptData.this.bdd = true;
+	function afterRendererInit( event, data ){
+		if ( !isNull( arguments.data.this ) ) {
+			arguments.data.this.bdd = true;
 		}
 	}
 

@@ -3,8 +3,8 @@
 Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
-Author                    :	Luis Majano
-Date                             :	9/3/2007
+Author                              :	Luis Majano
+Date                                           :	9/3/2007
 Description :
 Some tests just are expecting to execute
 ----------------------------------------------------------------------->

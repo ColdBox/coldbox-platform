@@ -6,7 +6,7 @@ component {
 	void function configure(){
 	}
 
-	void function onCustomState( event, struct interceptData, rc ){
+	void function onCustomState( event, struct data, rc ){
 		var threadName = createObject( "java", "java.lang.Thread" )
 			.currentThread()
 			.getThreadGroup()

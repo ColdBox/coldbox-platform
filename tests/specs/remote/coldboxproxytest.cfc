@@ -53,8 +53,8 @@
 		var results = "";
 
 		// Announce interception
-		makePublic( proxy, "announceInterception" );
-		results = proxy.announceInterception( state = "onLog" );
+		makePublic( proxy, "announce" );
+		results = proxy.announce( state = "onLog" );
 		assertTrue( results, "onLog intercepted" );
 	}
 

@@ -13,13 +13,12 @@
 			.init( "DBAppender", props )
 			.setLogBox( logBox );
 
-		loge = createMock( "coldbox.system.logging.LogEvent" )
-			.init(
-				"Unit Test Sample",
-				0,
-				structNew(),
-				"DBAppender"
-			);
+		loge = createMock( "coldbox.system.logging.LogEvent" ).init(
+			"Unit Test Sample",
+			0,
+			structNew(),
+			"DBAppender"
+		);
 	}
 
 	function testSchema(){

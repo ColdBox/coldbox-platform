@@ -144,12 +144,10 @@ component extends="coldbox.system.web.services.BaseService" {
 			}
 		}
 
-		variables.logger.info(
-			"+ Registered All Modules in #numberFormat( getTickCount() - totalTime )# ms"
-		);
+		variables.logger.info( "+ Registered All Modules in #numberFormat( getTickCount() - totalTime )# ms" );
 
 		// interception
-		variables.interceptorService.processState(
+		variables.interceptorService.announce(
 			"afterModuleRegistrations",
 			{ moduleRegistry : variables.moduleRegistry }
 		);
@@ -276,7 +274,7 @@ component extends="coldbox.system.web.services.BaseService" {
 			throwontimeout="true"
 			timeout       ="20" {
 			// interception
-			variables.interceptorService.processState(
+			variables.interceptorService.announce(
 				"preModuleRegistration",
 				{
 					moduleRegistration : variables.moduleRegistry[ arguments.moduleName ],
@@ -450,7 +448,7 @@ component extends="coldbox.system.web.services.BaseService" {
 			}
 
 			// interception
-			variables.interceptorService.processState(
+			variables.interceptorService.announce(
 				"postModuleRegistration",
 				{
 					moduleConfig : mConfig,
@@ -495,12 +493,10 @@ component extends="coldbox.system.web.services.BaseService" {
 			}
 		}
 
-		variables.logger.info(
-			"+ Activated All Modules in #numberFormat( getTickCount() - totalTime )# ms"
-		);
+		variables.logger.info( "+ Activated All Modules in #numberFormat( getTickCount() - totalTime )# ms" );
 
 		// interception
-		variables.interceptorService.processState(
+		variables.interceptorService.announce(
 			"afterModuleActivations",
 			{ moduleRegistry : variables.moduleRegistry }
 		);
@@ -569,7 +565,7 @@ component extends="coldbox.system.web.services.BaseService" {
 			timeout       ="20"
 			throwontimeout="true" {
 			// preModuleLoad interception
-			variables.interceptorService.processState(
+			variables.interceptorService.announce(
 				"preModuleLoad",
 				{
 					moduleLocation : mConfig.path,
@@ -738,7 +734,7 @@ component extends="coldbox.system.web.services.BaseService" {
 			} );
 
 			// postModuleLoad interception
-			variables.interceptorService.processState(
+			variables.interceptorService.announce(
 				"postModuleLoad",
 				{
 					moduleLocation : mConfig.path,
@@ -831,7 +827,7 @@ component extends="coldbox.system.web.services.BaseService" {
 			var mConfig = appConfig.modules[ arguments.moduleName ];
 
 			// Before unloading a module interception
-			variables.interceptorService.processState(
+			variables.interceptorService.announce(
 				"preModuleUnload",
 				{ moduleName : arguments.moduleName }
 			);
@@ -888,7 +884,7 @@ component extends="coldbox.system.web.services.BaseService" {
 			structDelete( variables.mConfigCache, arguments.moduleName );
 
 			// After unloading a module interception
-			variables.interceptorService.processState(
+			variables.interceptorService.announce(
 				"postModuleUnload",
 				{ moduleName : arguments.moduleName }
 			);

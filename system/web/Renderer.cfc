@@ -96,7 +96,7 @@ component
 		loadApplicationHelpers();
 
 		// Announce interception
-		announceInterception( "afterRendererInit", { variables : variables, this : this } );
+		announce( "afterRendererInit", { variables : variables, this : this } );
 
 		return this;
 	}
@@ -242,7 +242,7 @@ component
 
 		// Announce preViewRender interception
 		if ( NOT arguments.prepostExempt ) {
-			announceInterception( "preViewRender", iData );
+			announce( "preViewRender", iData );
 		}
 
 		// Prepare caching arguments if doing implicit caching, and the view to render is the same as the implicitly cached.
@@ -276,7 +276,7 @@ component
 			if ( structKeyExists( iData, "renderedView" ) ) {
 				// Post View Render Interception
 				if ( NOT arguments.prepostExempt ) {
-					announceInterception( "postViewRender", iData );
+					announce( "postViewRender", iData );
 				}
 				// Return it
 				return iData.renderedView;
@@ -318,7 +318,7 @@ component
 
 		// Post View Render Interception point
 		if ( NOT arguments.prepostExempt ) {
-			announceInterception( "postViewRender", iData );
+			announce( "postViewRender", iData );
 		}
 
 		// Are we caching view
@@ -590,7 +590,7 @@ component
 
 		// Announce
 		if ( not arguments.prePostExempt ) {
-			announceInterception( "preLayoutRender", iData );
+			announce( "preLayoutRender", iData );
 		}
 
 		// Check explicit layout rendering
@@ -657,7 +657,7 @@ component
 
 		// Announce
 		if ( not arguments.prePostExempt ) {
-			announceInterception( "postLayoutRender", iData );
+			announce( "postLayoutRender", iData );
 		}
 
 		return iData.renderedLayout;

@@ -225,7 +225,11 @@ component accessors="true" {
 		var coldboxSettings  = arguments.oConfig.getPropertyMixin( "coldbox", "variables", {} );
 
 		// Incorporate fw defaults into the app settings
-		structAppend( configStruct, fwSettingsStruct, false );
+		structAppend(
+			configStruct,
+			fwSettingsStruct,
+			false
+		);
 		// Incorporate their config.cfc settings and override
 		structAppend( configStruct, coldboxSettings, true );
 
@@ -287,7 +291,6 @@ component accessors="true" {
 		} else {
 			arrayPrepend( configStruct.ModulesExternalLocation, "/modules_app" );
 		}
-
 	}
 
 	/**

@@ -266,7 +266,7 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 
 			// Announce To Listeners we are online
 			iData.injector = this;
-			variables.eventManager.processState( "afterInjectorConfiguration", iData );
+			variables.eventManager.announce( "afterInjectorConfiguration", iData );
 		}
 
 		return this;
@@ -285,7 +285,7 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 			variables.log.info( "Shutdown of Injector: #getInjectorID()# requested and started." );
 		}
 		// Notify Listeners
-		variables.eventManager.processState( "beforeInjectorShutdown", iData );
+		variables.eventManager.announce( "beforeInjectorShutdown", iData );
 
 		// Check if binder has onShutdown convention
 		if( structKeyExists( variables.binder, "onShutdown" ) ){
@@ -306,7 +306,7 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 		removeFromScope();
 
 		// Notify Listeners
-		variables.eventManager.processState( "afterInjectorShutdown", iData );
+		variables.eventManager.announce( "afterInjectorShutdown", iData );
 
 		// Log shutdown complete
 		if( variables.log.canInfo() ){
@@ -400,7 +400,7 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 			.getFromScope( mapping, arguments.initArguments );
 
 		// Announce creation, initialization and DI magicfinicitation!
-		variables.eventManager.processState(
+		variables.eventManager.announce(
 			"afterInstanceCreation",
 			{ mapping=mapping, target=target, injector=this }
 		);
@@ -419,7 +419,7 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 		var thisMap = arguments.mapping;
 
 		// before construction event
-		variables.eventManager.processState(
+		variables.eventManager.announce(
 			"beforeInstanceCreation",
 			{ mapping=arguments.mapping, injector=this }
 		);
@@ -490,7 +490,7 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 		}
 
 		// announce afterInstanceInitialized
-		variables.eventManager.processState(
+		variables.eventManager.announce(
 			"afterInstanceInitialized",
 			{ mapping=arguments.mapping, target=oModel, injector=this }
 		);
@@ -662,7 +662,7 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 				targetID = arguments.targetID,
 				injector = this
 			};
-			variables.eventManager.processState( "beforeInstanceAutowire", iData );
+			variables.eventManager.announce( "beforeInstanceAutowire", iData );
 
 			// prepare instance for wiring, done once for persisted objects and CFCs only
 			variables.utility.getMixerUtil().start( arguments.target );
@@ -690,7 +690,7 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 			processAfterCompleteDI( targetObject, thisMap.getOnDIComplete() );
 
 			// After Instance Autowire
-			variables.eventManager.processState( "afterInstanceAutowire", iData );
+			variables.eventManager.announce( "afterInstanceAutowire", iData );
 
 			// Debug Data
 			if( variables.log.canDebug() ){

@@ -26,7 +26,7 @@ An error observer
 	>
 		<!--- ************************************************************* --->
 		<cfargument name="event">
-		<cfargument name="interceptData">
+		<cfargument name="data">
 		<!--- ************************************************************* --->
 		<cfscript>
 		log.debug( "Cache in instance wired: #structKeyExists( instance, "cache" )#" );

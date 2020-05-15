@@ -234,7 +234,7 @@
 			}
 
 			// Announce To Listeners
-			variables.eventManager.processState( "afterCacheFactoryConfiguration", { cacheFactory = this } );
+			variables.eventManager.announce( "afterCacheFactoryConfiguration", { cacheFactory = this } );
 		}
 	}
 
@@ -319,7 +319,7 @@
 		}
 
 		// Notify Listeners
-		variables.eventManager.processState( "beforeCacheFactoryShutdown", { cacheFactory = this } );
+		variables.eventManager.announce( "beforeCacheFactoryShutdown", { cacheFactory = this } );
 
 		// safely iterate and shutdown caches
 		getCacheNames().each( function( item ){
@@ -332,13 +332,13 @@
 			}
 
 			//process listners
-			variables.eventManager.processState( "beforeCacheShutdown", { cache = cache } );
+			variables.eventManager.announce( "beforeCacheShutdown", { cache = cache } );
 
 			//Shutdown each cache
 			cache.shutdown();
 
 			//process listeners
-			variables.eventManager.processState( "afterCacheShutdown", { cache = cache } );
+			variables.eventManager.announce( "afterCacheShutdown", { cache = cache } );
 
 			// log
 			if( variables.log.canDebug() ){
@@ -353,7 +353,7 @@
 		removeFromScope();
 
 		// Notify Listeners
-		variables.eventManager.processState( "afterCacheFactoryShutdown", { cacheFactory = this } );
+		variables.eventManager.announce( "afterCacheFactoryShutdown", { cacheFactory = this } );
 
 		// Log shutdown complete
 		if( variables.log.canDebug() ){
@@ -390,13 +390,13 @@
 		}
 
 		// Notify Listeners
-		variables.eventManager.processState( "beforeCacheShutdown", { cache = cache } );
+		variables.eventManager.announce( "beforeCacheShutdown", { cache = cache } );
 
 		//Shutdown the cache
 		cache.shutdown();
 
 		//process listeners
-		variables.eventManager.processState( "afterCacheShutdown", { cache = cache } );
+		variables.eventManager.announce( "afterCacheShutdown", { cache = cache } );
 
 		// remove cache
 		removeCache( arguments.name );
@@ -439,7 +439,7 @@
 					var cache = variables.caches[ arguments.name ];
 
 					// Notify listeners here
-					variables.eventManager.processState( "beforeCacheRemoval", { cache = cache } );
+					variables.eventManager.announce( "beforeCacheRemoval", { cache = cache } );
 
 					// process shutdown
 					cache.shutdown();
@@ -448,7 +448,7 @@
 					structDelete( variables.caches, arguments.name );
 
 					// Announce it
-					variables.eventManager.processState( "afterCacheRemoval", { cache = arguments.name } );
+					variables.eventManager.announce( "afterCacheRemoval", { cache = arguments.name } );
 
 					// Log it
 					if( variables.log.canDebug() ){
@@ -534,7 +534,7 @@
 				newCache = arguments.decoratedCache
 			};
 
-			variables.eventManager.processState( "beforeCacheReplacement", iData	);
+			variables.eventManager.announce( "beforeCacheReplacement", iData	);
 
 			// remove old Cache
 			structDelete( variables.caches, name );
@@ -683,7 +683,7 @@
 					// Store it
 					variables.caches[ name ] = oCache;
 					// Announce new cache registration now
-					variables.eventManager.processState( "afterCacheRegistration", { cache = oCache } );
+					variables.eventManager.announce( "afterCacheRegistration", { cache = oCache } );
 				}
 			}
 		}

@@ -1,5 +1,4 @@
 ﻿component extends = "coldbox.system.testing.BaseModelTest"{
-
 	function setup(){
 		logBox  = new coldbox.system.logging.LogBox();
 		console = createMock( "coldbox.system.logging.appenders.ConsoleAppender" );

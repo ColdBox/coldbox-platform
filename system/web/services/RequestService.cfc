@@ -79,7 +79,7 @@ component extends="coldbox.system.web.services.BaseService" {
 		// First, process the request through the RoutingService
 		variables.routingService.requestCapture( context );
 		// Execute onRequestCapture interceptionPoint
-		variables.interceptorService.processState( "onRequestCapture" );
+		variables.interceptorService.announce( "onRequestCapture" );
 
 		// Remove FW reserved commands just in case before collection snapshot
 		var fwCache = structKeyExists( rc, "fwCache" );

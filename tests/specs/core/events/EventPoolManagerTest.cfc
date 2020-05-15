@@ -72,13 +72,13 @@
 		}
 	}
 
-	function testProcessStates(){
+	function testAnnouncements(){
 		var event = new tests.resources.Event();
 		manager.register( event );
 
-		manager.processState( "onAnnotation" );
-		manager.processState( "onCreate" );
-		manager.processState( "onTest" );
+		manager.announce( "onAnnotation" );
+		manager.announce( "onCreate" );
+		manager.announce( "onTest" );
 
 		debug( event.logs );
 		assertTrue( arrayLen( event.logs ) );

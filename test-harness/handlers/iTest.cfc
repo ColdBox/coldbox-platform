@@ -6,7 +6,7 @@ component {
 	function index( event, rc, prc ){
 		var data = { name : "Luis Majano", when : now() };
 
-		prc.threadInfo = announceInterception( state = "onCustomState", interceptData = data );
+		prc.threadInfo = announce( "onCustomState", data );
 
 		event.setView( "iTest/index" );
 	}
@@ -14,9 +14,9 @@ component {
 	function async( event, rc, prc ){
 		var data = { name : "Luis Majano", when : now() };
 
-		prc.threadInfo = announceInterception(
+		prc.threadInfo = announce(
 			state         = "onCustomState",
-			interceptData = data,
+			data = data,
 			async         = true,
 			asyncPriority = "High"
 		);
@@ -27,9 +27,9 @@ component {
 	function asyncAllWithTimeout( event, rc, prc ){
 		var data = { name : "Luis Majano", when : now() };
 
-		prc.threadInfo = announceInterception(
+		prc.threadInfo = announce(
 			state            = "onCustomState",
-			interceptData    = data,
+			data    = data,
 			asyncAll         = true,
 			asyncPriority    = "High",
 			asyncJoinTimeout = "2000"
@@ -41,9 +41,9 @@ component {
 	function asyncAll( event, rc, prc ){
 		var data = { name : "Luis Majano", when : now() };
 
-		prc.threadInfo = announceInterception(
+		prc.threadInfo = announce(
 			state         = "onCustomState",
-			interceptData = data,
+			data = data,
 			asyncAll      = true,
 			asyncPriority = "High"
 		);
@@ -54,9 +54,9 @@ component {
 	function asyncAllNoJoin( event, rc, prc ){
 		var data = { name : "Luis Majano", when : now() };
 
-		prc.threadInfo = announceInterception(
+		prc.threadInfo = announce(
 			state         = "onCustomState",
-			interceptData = data,
+			data = data,
 			asyncAll      = true,
 			asyncAllJoin  = false,
 			asyncPriority = "High"

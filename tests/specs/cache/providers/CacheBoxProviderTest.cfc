@@ -26,7 +26,7 @@
 			.$( "canDebug", true )
 			.$( "canInfo", true )
 			.$( "canError", true );
-		mockEventManager.$( "processState" );
+		mockEventManager.$( "announce" );
 
 		// Config
 		config = {

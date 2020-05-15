@@ -2,31 +2,31 @@
 	<cfscript>
 	this.logs = arrayNew( 1 );
 
-	function onTest( interceptData ){
-		var data = {
+	function onTest( data ){
+		var localData = {
 			stat : "onTest",
-			data : interceptData
+			data : data
 		};
-		arrayAppend( this.logs, data );
+		arrayAppend( this.logs, localData );
 	}
 
-	function onCreate( interceptData ){
-		var data = {
+	function onCreate( data ){
+		var localData = {
 			stat : "onCreate",
-			data : interceptData
+			data : data
 		};
-		arrayAppend( this.logs, data );
+		arrayAppend( this.logs, localData );
 	}
 	</cfscript>
 
 	<cffunction name="onAnnotation" output="false" interceptionPoint=true>
-		<cfargument name="interceptData" type="struct" required="true" default="" hint=""/>
+		<cfargument name="data" type="struct" required="true" default="" hint=""/>
 		<cfscript>
-		var data = {
+		var localData = {
 			stat : "onAnnotation",
-			data : interceptData
+			data : data
 		};
-		arrayAppend( this.logs, data );
+		arrayAppend( this.logs, localData );
 		</cfscript>
 	</cffunction>
 </cfcomponent>

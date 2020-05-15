@@ -1,31 +1,23 @@
-﻿<cfcomponent output="false">
-	<!--- configure --->
-	<cffunction name="configure" output="false" access="public">
-		<cfargument name="wireBox" type="any"/>
-		<cfargument name="properties" type="struct"/>
-		<cfscript>
+﻿component {
+
+	function configure(any wireBox, struct properties) {
+
 		variables.wireBox    = arguments.wireBox;
 		variables.properties = arguments.properties;
 
 		variables.log = variables.wireBox.getLogBox().getLogger( this );
-		</cfscript>
-	</cffunction>
+	}
 
-	<!--- afterInjectorConfiguration --->
-	<cffunction name="afterInjectorConfiguration" output="false" access="public" returntype="any" hint="">
-		<cfargument name="interceptData" type="struct"/>
-		<cfset log.info( "#properties.name# -> afterInjectorConfiguration called", arguments.interceptData.toString() )>
-	</cffunction>
+	any function afterInjectorConfiguration(struct data) {
+		log.info( "#properties.name# -> afterInjectorConfiguration called", arguments.data.toString() );
+	}
 
-	<!--- beforeObjectCreation --->
-	<cffunction name="beforeInstanceCreation" output="false" access="public" returntype="any" hint="">
-		<cfargument name="interceptData" type="struct"/>
-		<cfset log.info( "#properties.name# -> beforeInstanceCreation called", arguments.interceptData.toString() )>
-	</cffunction>
+	any function beforeInstanceCreation(struct data) {
+		log.info( "#properties.name# -> beforeInstanceCreation called", arguments.data.toString() );
+	}
 
-	<!--- afterObjectCreation --->
-	<cffunction name="afterInstanceCreation" output="false" access="public" returntype="any" hint="">
-		<cfargument name="interceptData" type="struct"/>
-		<cfset log.info( "#properties.name# -> afterInstanceCreation called", arguments.interceptData.toString() )>
-	</cffunction>
-</cfcomponent>
+	any function afterInstanceCreation(struct data) {
+		log.info( "#properties.name# -> afterInstanceCreation called", arguments.data.toString() );
+	}
+
+}

@@ -284,12 +284,7 @@ component serializable="false" accessors="true" {
 	 * @name The name of the setting
 	 */
 	boolean function settingExists( required name ){
-		return (
-			structKeyExists(
-				variables.configSettings,
-				arguments.name
-			)
-		);
+		return ( structKeyExists( variables.configSettings, arguments.name ) );
 	}
 
 	/**
@@ -470,7 +465,7 @@ component serializable="false" accessors="true" {
 
 		// Post Processors
 		if ( NOT arguments.postProcessExempt ) {
-			services.interceptorService.processState( "postProcess" );
+			services.interceptorService.announce( "postProcess" );
 		}
 
 		// Save Flash RAM
@@ -828,7 +823,7 @@ component serializable="false" accessors="true" {
 			// PRE ACTIONS
 			if ( NOT arguments.prePostExempt ) {
 				// PREEVENT Interceptor
-				services.interceptorService.processState( "preEvent", iData );
+				services.interceptorService.announce( "preEvent", iData );
 
 				// Verify if event was overriden
 				if ( arguments.event NEQ iData.processedEvent ) {
@@ -960,7 +955,7 @@ component serializable="false" accessors="true" {
 				}
 
 				// Execute postEvent interceptor
-				services.interceptorService.processState( "postEvent", iData );
+				services.interceptorService.announce( "postEvent", iData );
 			}
 			// end if prePostExempt
 		} catch ( any e ) {
