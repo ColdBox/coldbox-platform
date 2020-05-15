@@ -56,6 +56,9 @@
 		<condition property="build.branch" else="development">
 			<isset property="build.branch"/>
 		</condition>
+		<condition property="isPreRelease" else="false">
+			<isset property="isPreRelease"/>
+		</condition>
 
 		<!-- Build Number -->
 		<if>
@@ -180,14 +183,25 @@
 		  <fileset dir="${dir.build}/coldbox" />
 		</replaceregexp>
 
-		<!-- Determine snapshot vs master artifact -->
+		<!-- Determine snapshot vs isPrerelease vs master artifact -->
 		<if>
-			<equals arg1="${build.branch}" arg2="development" />
+
+			<equals arg1="${isPreRelease}" arg2="true" />
 			<then>
-				<replaceregexp match='\+@build.number@' replace="-snapshot" flags="ig" byline="true" encoding="UTF-8">
-				  <fileset dir="${dir.build}/coldbox" />
+				<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true" encoding="UTF-8">
+					<fileset dir="${dir.build}/coldbox" />
 				</replaceregexp>
 			</then>
+
+			<elseif>
+				<equals arg1="${build.branch}" arg2="development" />
+				<then>
+					<replaceregexp match='\+@build.number@' replace="-snapshot" flags="ig" byline="true" encoding="UTF-8">
+					  <fileset dir="${dir.build}/coldbox" />
+					</replaceregexp>
+				</then>
+			</elseif>
+
 			<else>
 				<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true" encoding="UTF-8">
 				  <fileset dir="${dir.build}/coldbox" />

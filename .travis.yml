@@ -10,7 +10,7 @@ env:
   global:
     # TARGET RELEASE VERSION: BUMP AS NEEDED
     - COLDBOX_VERSION=6.0.0-RC
-    - COLDBOX_PRERELEASE=false
+    - COLDBOX_PRERELEASE=true
   matrix:
     - ENGINE=lucee@5 # Build Entire Frameworks
     - ENGINE=adobe@2016	ANT_TARGET=run-tests #just run tests
@@ -61,7 +61,7 @@ before_script:
 
 script:
   # Execute build via ANT
-  - ant -Dcoldbox.version=$COLDBOX_VERSION -DisTravis=true -Dbuild.branch=$TRAVIS_BRANCH -Dbuild.number=$TRAVIS_BUILD_NUMBER -f build/build.xml $ANT_TARGET
+  - ant -DisPreRelease=${COLDBOX_PRERELEASE} -Dcoldbox.version=$COLDBOX_VERSION -DisTravis=true -Dbuild.branch=$TRAVIS_BRANCH -Dbuild.number=$TRAVIS_BUILD_NUMBER -f build/build.xml $ANT_TARGET
   #- ls -l $TRAVIS_BUILD_DIR
 
 after_failure:
