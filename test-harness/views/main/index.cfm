@@ -17,7 +17,7 @@
 		<section id="eventHandlers">
 		<div class="page-header">
 			<h2>
-				Registered Event Handlers
+				Registered Event Handlers: #sayHello()# #sayViewHello()#
 			</h2>
 		</div>
 		<p>

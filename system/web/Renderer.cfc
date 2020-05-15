@@ -35,13 +35,6 @@ component
 	property name="moduleConfig" type="struct";
 	// Views Helper Setting
 	property name="viewsHelper";
-	// View helper include bit
-	property
-		name   ="isViewsHelperIncluded"
-		default="false"
-		type   ="boolean";
-	// Rendered helpers metadata
-	property name="renderedHelpers" type="struct";
 	// Internal locking name
 	property name="lockName";
 	// Discovery caching is tied to handlers for discovery.
@@ -79,7 +72,6 @@ component
 		variables.modulesConfig           = variables.controller.getSetting( "modules" );
 		variables.viewsHelper             = variables.controller.getSetting( "viewsHelper" );
 		variables.viewCaching             = variables.controller.getSetting( "viewCaching" );
-		variables.isViewsHelperIncluded   = false;
 
 		// Verify View Helper Template extension + location
 		if ( len( variables.viewsHelper ) ) {
@@ -92,8 +84,7 @@ component
 		}
 
 		// Template Cache & Caching Maps
-		variables.renderedHelpers = {};
-		variables.lockName        = "rendering.#variables.controller.getAppHash()#";
+		variables.lockName = "rendering.#variables.controller.getAppHash()#";
 
 		// Discovery caching
 		variables.isDiscoveryCaching = controller.getSetting( "viewCaching" );

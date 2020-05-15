@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ----
 
-## [6.0.0-RC] => 2020-MAY-11
+## [6.0.0-RC] => 2020-MAY-14
 
 ### Tasks
 
@@ -30,6 +30,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * COLDBOX-864 - `compatiblity` `jsonPayloadToRC` now defaults to true
 * COLDBOX-863 - Add setting to define reinit key vs. hard-coded fwreinit: `reinitKey`
 * COLDBOX-859 - ability to do async scheduled tasks with new async cbpromises
+* LOGBOX-46 - Update ConsoleAppender to use TaskScheduler 
+* LOGBOX-47 - AbstractAppender log listener and queueing facilities are now available for all appenders
+* LOGBOX-48 - DB Appender now uses a queueing approach to sending log messages
 
 ### Fixed
 
@@ -38,6 +41,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * COLDBOX-878 - ColdBox 6 blows up if `models` directory doesn't exist
 * COLDBOX-875 - Gracefully handle out of index row number in populateFromQuery #450 	
 * COLDBOX-862 - when passing custom cfml executors to futures it blows up as the native executor is not set
+* COLDBOX-879 - Reinit-Password-Check does not use the new "reinitKey"-Setting
+* COLDBOX-880 - ViewHelpers not working in CB-6 RC
 
 ### Info
 
