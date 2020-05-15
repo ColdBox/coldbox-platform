@@ -9,8 +9,8 @@ notifications:
 env:
   global:
     # TARGET RELEASE VERSION: BUMP AS NEEDED
-    - COLDBOX_VERSION=6.0.0-RC
-    - COLDBOX_PRERELEASE=true
+    - COLDBOX_VERSION=6.0.0
+    - COLDBOX_PRERELEASE=false
   matrix:
     - ENGINE=lucee@5 # Build Entire Frameworks
     - ENGINE=adobe@2016	ANT_TARGET=run-tests #just run tests
