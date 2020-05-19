@@ -100,7 +100,12 @@ component accessors="true" {
 	 * Get error stackTrace
 	 */
 	function getStackTrace(){
-		if ( structKeyExists( variables.exceptionStruct, "StackTrace" ) ) {
+		if (
+			structKeyExists(
+				variables.exceptionStruct,
+				"StackTrace"
+			)
+		) {
 			return variables.exceptionStruct.StackTrace;
 		}
 		return variables.STRINGNULL;
@@ -110,7 +115,12 @@ component accessors="true" {
 	 * Get error tag context
 	 */
 	array function getTagContext(){
-		if ( structKeyExists( variables.exceptionStruct, "TagContext" ) ) {
+		if (
+			structKeyExists(
+				variables.exceptionStruct,
+				"TagContext"
+			)
+		) {
 			return variables.exceptionStruct.TagContext;
 		}
 		return variables.ARRAYNULL;
@@ -147,7 +157,12 @@ component accessors="true" {
 	 * Get native error code
 	 */
 	function getNativeErrorCode(){
-		if ( structKeyExists( variables.exceptionStruct, "nativeErrorCode" ) ) {
+		if (
+			structKeyExists(
+				variables.exceptionStruct,
+				"nativeErrorCode"
+			)
+		) {
 			return variables.exceptionStruct.nativeErrorCode;
 		}
 		return variables.STRINGNULL;
@@ -157,7 +172,12 @@ component accessors="true" {
 	 * Get SQL State
 	 */
 	function getSqlState(){
-		if ( structKeyExists( variables.exceptionStruct, "sqlState" ) ) {
+		if (
+			structKeyExists(
+				variables.exceptionStruct,
+				"sqlState"
+			)
+		) {
 			return variables.exceptionStruct.sqlState;
 		}
 		return variables.STRINGNULL;
@@ -177,7 +197,12 @@ component accessors="true" {
 	 * Get queryError
 	 */
 	function getQueryError(){
-		if ( structKeyExists( variables.exceptionStruct, "queryError" ) ) {
+		if (
+			structKeyExists(
+				variables.exceptionStruct,
+				"queryError"
+			)
+		) {
 			return variables.exceptionStruct.queryError;
 		}
 		return variables.STRINGNULL;
@@ -197,7 +222,12 @@ component accessors="true" {
 	 * Get err number
 	 */
 	function getErrNumber(){
-		if ( structKeyExists( variables.exceptionStruct, "errNumber" ) ) {
+		if (
+			structKeyExists(
+				variables.exceptionStruct,
+				"errNumber"
+			)
+		) {
 			return variables.exceptionStruct.errNumber;
 		}
 		return variables.STRINGNULL;
@@ -207,7 +237,12 @@ component accessors="true" {
 	 * Get missing file name
 	 */
 	function getMissingFileName(){
-		if ( structKeyExists( variables.exceptionStruct, "missingFileName" ) ) {
+		if (
+			structKeyExists(
+				variables.exceptionStruct,
+				"missingFileName"
+			)
+		) {
 			return variables.exceptionStruct.missingFileName;
 		}
 		return variables.STRINGNULL;
@@ -217,7 +252,12 @@ component accessors="true" {
 	 * Get lock name
 	 */
 	function getLockName(){
-		if ( structKeyExists( variables.exceptionStruct, "lockName" ) ) {
+		if (
+			structKeyExists(
+				variables.exceptionStruct,
+				"lockName"
+			)
+		) {
 			return variables.exceptionStruct.lockName;
 		}
 		return variables.STRINGNULL;
@@ -227,7 +267,12 @@ component accessors="true" {
 	 * Get lock operation
 	 */
 	function getLockOperation(){
-		if ( structKeyExists( variables.exceptionStruct, "lockOperation" ) ) {
+		if (
+			structKeyExists(
+				variables.exceptionStruct,
+				"lockOperation"
+			)
+		) {
 			return variables.exceptionStruct.lockOperation;
 		}
 		return variables.STRINGNULL;
@@ -237,7 +282,12 @@ component accessors="true" {
 	 * Get error code
 	 */
 	function getErrorCode(){
-		if ( structKeyExists( variables.exceptionStruct, "errorCode" ) ) {
+		if (
+			structKeyExists(
+				variables.exceptionStruct,
+				"errorCode"
+			)
+		) {
 			return variables.exceptionStruct.errorCode;
 		}
 		return variables.STRINGNULL;
@@ -247,7 +297,12 @@ component accessors="true" {
 	 * Get error extended info
 	 */
 	function getExtendedInfo(){
-		if ( structKeyExists( variables.exceptionStruct, "extendedInfo" ) ) {
+		if (
+			structKeyExists(
+				variables.exceptionStruct,
+				"extendedInfo"
+			)
+		) {
 			return variables.exceptionStruct.extendedInfo;
 		}
 		return variables.STRINGNULL;
@@ -314,7 +369,10 @@ component accessors="true" {
 				"all"
 			);
 		}
-		var aMatches = reMatchNoCase( "\$([^(\(|\:)]+)(\:|\()", arguments.str );
+		var aMatches = reMatchNoCase(
+			"\$([^(\(|\:)]+)(\:|\()",
+			arguments.str
+		);
 		for ( var aString in aMatches ) {
 			arguments.str = replaceNoCase(
 				arguments.str,
@@ -446,10 +504,16 @@ component accessors="true" {
 	 *
 	 * @return The string for the IDE
 	 */
-	function openInEditorURL( required event, required struct instance ){
+	function openInEditorURL(
+		required event,
+		required struct instance
+	){
 		var editor = arguments.event
 			.getController()
-			.getSetting( name: "exceptionEditor", defaultValue: "vscode" );
+			.getSetting(
+				name        : "exceptionEditor",
+				defaultValue: "vscode"
+			);
 		switch ( editor ) {
 			case "vscode":
 				return "vscode://file/#arguments.instance.template#:#arguments.instance.line#";

@@ -11,10 +11,7 @@ component accessors="true" {
 	/**
 	 * The output format of the response, defaults to json
 	 */
-	property
-		name   ="format"
-		type   ="string"
-		default="json";
+	property name="format" type="string" default="json";
 
 	/**
 	 * The data struct that will be used to marshall out the response
@@ -29,18 +26,12 @@ component accessors="true" {
 	/**
 	 * A boolean error indicator
 	 */
-	property
-		name   ="error"
-		type   ="boolean"
-		default="false";
+	property name="error" type="boolean" default="false";
 
 	/**
 	 * A binary indicator
 	 */
-	property
-		name   ="binary"
-		type   ="boolean"
-		default="false";
+	property name="binary" type="boolean" default="false";
 
 	/**
 	 * An array of messages to output if any
@@ -55,64 +46,46 @@ component accessors="true" {
 	/**
 	 * The json callback if any
 	 */
-	property
-		name   ="jsonCallback"
-		type   ="string"
-		default="";
+	property name="jsonCallback" type="string" default="";
 
 	/**
 	 * JSON Only: This parameter can be a Boolean value that specifies how to serialize ColdFusion queries or a string with possible values row, column, or struct
 	 */
-	property
-		name   ="jsonQueryFormat"
-		type   ="string"
-		default="true";
+	property name="jsonQueryFormat" type="string" default="true";
 
 	/**
 	 * The content type of the response
 	 */
-	property
-		name   ="contentType"
-		type   ="string"
-		default="";
+	property name="contentType" type="string" default="";
 
 	/**
 	 * The status code of the response
 	 */
-	property
-		name   ="statusCode"
-		type   ="numeric"
-		default="200";
+	property name="statusCode" type="numeric" default="200";
 
 	/**
 	 * The status text of the response
 	 */
-	property
-		name   ="statusText"
-		type   ="string"
-		default="OK";
+	property name="statusText" type="string" default="OK";
 
 	/**
 	 * The response time
 	 */
-	property
-		name   ="responsetime"
-		type   ="numeric"
-		default="0";
+	property name="responsetime" type="numeric" default="0";
 
 	/**
 	 * A boolean indicator if the response is cached or not
 	 */
-	property
-		name   ="cachedResponse"
-		type   ="boolean"
-		default="false";
+	property name="cachedResponse" type="boolean" default="false";
 
 	/**
 	 * The headers to send with the response
 	 */
 	property name="headers" type="array";
 
+	/**
+	 * Helper Status Texts Lookups
+	 */
 	this.STATUS_TEXTS = {
 		"100" : "Continue",
 		"101" : "Switching Protocols",
@@ -198,7 +171,8 @@ component accessors="true" {
 		variables.responsetime    = 0;
 		variables.cachedResponse  = false;
 		variables.headers         = [];
-		variables.pagination      = {};
+
+		setPagination();
 
 		return this;
 	}
@@ -229,7 +203,10 @@ component accessors="true" {
 	 * @name The header name ( e.g. "Content-Type" )
 	 * @value The header value ( e.g. "application/json" )
 	 */
-	Response function addHeader( required string name, required string value ){
+	Response function addHeader(
+		required string name,
+		required string value
+	){
 		arrayAppend(
 			variables.headers,
 			{
@@ -341,7 +318,10 @@ component accessors="true" {
 		addMessage( arguments.errorMessage );
 
 		if ( !isNull( arguments.statusCode ) ) {
-			setStatus( arguments.statusCode, arguments.statusText );
+			setStatus(
+				arguments.statusCode,
+				arguments.statusText
+			);
 		}
 
 		return this;

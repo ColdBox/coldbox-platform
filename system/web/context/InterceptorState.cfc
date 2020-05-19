@@ -72,7 +72,10 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 		required interceptorMD
 	){
 		// Register interceptor object
-		super.register( arguments.interceptorKey, arguments.interceptor );
+		super.register(
+			arguments.interceptorKey,
+			arguments.interceptor
+		);
 		// Register interceptor metadata
 		variables.metadataMap[ arguments.interceptorKey ] = arguments.interceptorMD;
 
@@ -88,7 +91,10 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 		// unregister object
 		var results = super.unregister( arguments.interceptorKey );
 		// unregister metadata map
-		structDelete( variables.metadataMap, arguments.interceptorKey );
+		structDelete(
+			variables.metadataMap,
+			arguments.interceptorKey
+		);
 
 		return results;
 	}
@@ -386,7 +392,10 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 		if (
 			len( iData.eventPattern )
 			AND
-			NOT reFindNoCase( iData.eventPattern, arguments.event.getCurrentEvent() )
+			NOT reFindNoCase(
+				iData.eventPattern,
+				arguments.event.getCurrentEvent()
+			)
 		) {
 			// Log it
 			if ( variables.log.canDebug() ) {

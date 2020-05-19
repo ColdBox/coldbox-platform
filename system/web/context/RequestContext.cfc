@@ -194,7 +194,10 @@ component serializable="false" accessors="true" {
 	 * @properties The ColdBox application settings
 	 * @controller Acess to the system controller
 	 */
-	function init( required struct properties = {}, required any controller ){
+	function init(
+		required struct properties = {},
+		required any controller
+	){
 		// Store controller;
 		variables.controller = arguments.controller;
 
@@ -209,13 +212,23 @@ component serializable="false" accessors="true" {
 
 		// Registered Layouts
 		variables.registeredLayouts = structNew();
-		if ( structKeyExists( arguments.properties, "registeredLayouts" ) ) {
+		if (
+			structKeyExists(
+				arguments.properties,
+				"registeredLayouts"
+			)
+		) {
 			variables.registeredLayouts = arguments.properties.registeredLayouts;
 		}
 
 		// Registered Folder Layouts
 		variables.folderLayouts = structNew();
-		if ( structKeyExists( arguments.properties, "folderLayouts" ) ) {
+		if (
+			structKeyExists(
+				arguments.properties,
+				"folderLayouts"
+			)
+		) {
 			variables.folderLayouts = arguments.properties.folderLayouts;
 		}
 
@@ -279,7 +292,10 @@ component serializable="false" accessors="true" {
 	 * @deepCopy Default is false, gives a reference to the collection. True, creates a deep copy of the collection.
 	 * @private Use public or private request collection
 	 */
-	struct function getCollection( boolean deepCopy = false, boolean private = false ){
+	struct function getCollection(
+		boolean deepCopy = false,
+		boolean private  = false
+	){
 		// Private Collection
 		if ( arguments.private ) {
 			if ( arguments.deepCopy ) {
@@ -356,7 +372,10 @@ component serializable="false" accessors="true" {
 	 * @collection The collection to incorporate
 	 * @overwrite Overwrite elements, defaults to false
 	 */
-	function privateCollectionAppend( required struct collection, boolean overwrite = false ){
+	function privateCollectionAppend(
+		required struct collection,
+		boolean overwrite = false
+	){
 		arguments.private = true;
 		return collectionAppend( argumentCollection = arguments );
 	}
@@ -498,7 +517,10 @@ component serializable="false" accessors="true" {
 	 *
 	 * @return RequestContext
 	 */
-	function removeValue( required name, boolean private = false ){
+	function removeValue(
+		required name,
+		boolean private = false
+	){
 		var collection = variables.context;
 		if ( arguments.private ) {
 			collection = variables.privateContext;
@@ -515,7 +537,10 @@ component serializable="false" accessors="true" {
 	 *
 	 * @return RequestContext
 	 */
-	function removePrivateValue( required name, boolean private = false ){
+	function removePrivateValue(
+		required name,
+		boolean private = false
+	){
 		arguments.private = true;
 		return removeValue( argumentCollection = arguments );
 	}
@@ -525,7 +550,10 @@ component serializable="false" accessors="true" {
 	 * @name The key name
 	 * @private Private or public, defaults public.
 	 */
-	boolean function valueExists( required name, boolean private = false ){
+	boolean function valueExists(
+		required name,
+		boolean private = false
+	){
 		var collection = variables.context;
 		if ( arguments.private ) {
 			collection = variables.privateContext;
@@ -555,7 +583,12 @@ component serializable="false" accessors="true" {
 		required value,
 		boolean private = false
 	){
-		if ( not valueExists( name = arguments.name, private = arguments.private ) ) {
+		if (
+			not valueExists(
+				name    = arguments.name,
+				private = arguments.private
+			)
+		) {
 			setValue(
 				name    = arguments.name,
 				value   = arguments.value,
@@ -646,7 +679,10 @@ component serializable="false" accessors="true" {
 	 *
 	 * @return  Boolean
 	 */
-	boolean function urlMatches( required string path, boolean exact = false ){
+	boolean function urlMatches(
+		required string path,
+		boolean exact = false
+	){
 		var currentRoutedURL = getCurrentRoutedURL();
 		if ( arguments.exact ) {
 			return arguments.path == currentRoutedURL;
@@ -842,15 +878,31 @@ component serializable="false" accessors="true" {
 			setLayout( arguments.layout );
 		}
 		// Discover layout
-		else if ( NOT arguments.nolayout AND NOT getPrivateValue( name = "layoutoverride", defaultValue = false ) ) {
+		else if (
+			NOT arguments.nolayout AND NOT getPrivateValue(
+				name         = "layoutoverride",
+				defaultValue = false
+			)
+		) {
 			// Verify that the view has a layout in the viewLayouts structure, static lookups
-			if ( structKeyExists( variables.viewLayouts, lCase( arguments.view ) ) ) {
-				setPrivateValue( "currentLayout", variables.viewLayouts[ lCase( arguments.view ) ] );
+			if (
+				structKeyExists(
+					variables.viewLayouts,
+					lCase( arguments.view )
+				)
+			) {
+				setPrivateValue(
+					"currentLayout",
+					variables.viewLayouts[ lCase( arguments.view ) ]
+				);
 			} else {
 				// Check the folders structure
 				for ( var key in variables.folderLayouts ) {
 					if ( reFindNoCase( "^#key#", lCase( arguments.view ) ) ) {
-						setPrivateValue( "currentLayout", variables.folderLayouts[ key ] );
+						setPrivateValue(
+							"currentLayout",
+							variables.folderLayouts[ key ]
+						);
 						break;
 					}
 				}
@@ -860,7 +912,10 @@ component serializable="false" accessors="true" {
 
 			// If not layout, then set default from main application
 			if ( not privateValueExists( "currentLayout", true ) ) {
-				setPrivateValue( "currentLayout", variables.defaultLayout );
+				setPrivateValue(
+					"currentLayout",
+					variables.defaultLayout
+				);
 			}
 
 			// If in current module, check for a module default layout\
@@ -870,7 +925,10 @@ component serializable="false" accessors="true" {
 				AND structKeyExists( variables.modules, cModule )
 				AND len( variables.modules[ cModule ].layoutSettings.defaultLayout )
 			) {
-				setPrivateValue( "currentLayout", variables.modules[ cModule ].layoutSettings.defaultLayout );
+				setPrivateValue(
+					"currentLayout",
+					variables.modules[ cModule ].layoutSettings.defaultLayout
+				);
 			}
 		}
 		// end layout discover
@@ -922,7 +980,10 @@ component serializable="false" accessors="true" {
 	 */
 	function noLayout(){
 		// remove layout if any
-		structDelete( variables.privateContext, "currentLayout" );
+		structDelete(
+			variables.privateContext,
+			"currentLayout"
+		);
 		// set layout overwritten flag.
 		variables.privateContext[ "layoutoverride" ] = true;
 		return this;
@@ -937,7 +998,12 @@ component serializable="false" accessors="true" {
 		// Set direct layout first.
 		variables.privateContext[ "currentLayout" ] = trim( arguments.name ) & ".cfm";
 		// Do an Alias Check and override if found.
-		if ( structKeyExists( variables.registeredLayouts, arguments.name ) ) {
+		if (
+			structKeyExists(
+				variables.registeredLayouts,
+				arguments.name
+			)
+		) {
 			variables.privateContext[ "currentLayout" ] = variables.registeredLayouts[ arguments.name ];
 		}
 		// set layout overwritten flag.
@@ -1001,7 +1067,10 @@ component serializable="false" accessors="true" {
 	 * @return RequestContext
 	 */
 	function noRender( boolean remove = false ){
-		if ( arguments.remove eq false ) return setPrivateValue( name = "coldbox_norender", value = true );
+		if ( arguments.remove eq false ) return setPrivateValue(
+				name  = "coldbox_norender",
+				value = true
+			);
 		else return removePrivateValue( name = "coldbox_norender" );
 	}
 
@@ -1009,7 +1078,10 @@ component serializable="false" accessors="true" {
 	 * Is this a no render request
 	 */
 	boolean function isNoRender(){
-		return getPrivateValue( name = "coldbox_norender", defaultValue = false );
+		return getPrivateValue(
+			name         = "coldbox_norender",
+			defaultValue = false
+		);
 	}
 
 	/**
@@ -1150,7 +1222,10 @@ component serializable="false" accessors="true" {
 			return buildLink( argumentCollection = args );
 		}
 
-		throw( type = "InvalidArgumentException", message = "The named route '#arguments.name#' does not exist" );
+		throw(
+			type    = "InvalidArgumentException",
+			message = "The named route '#arguments.name#' does not exist"
+		);
 	}
 
 	/**
@@ -1267,14 +1342,20 @@ component serializable="false" accessors="true" {
 	 * @return RequestContext
 	 */
 	function setEventCacheableEntry( required struct cacheEntry ){
-		return setPrivateValue( name = "cbox_eventCacheableEntry", value = arguments.cacheEntry );
+		return setPrivateValue(
+			name  = "cbox_eventCacheableEntry",
+			value = arguments.cacheEntry
+		);
 	}
 
 	/**
 	 * Get the event cacheable entry
 	 */
 	struct function getEventCacheableEntry(){
-		return getPrivateValue( name = "cbox_eventCacheableEntry", defaultValue = structNew() );
+		return getPrivateValue(
+			name         = "cbox_eventCacheableEntry",
+			defaultValue = structNew()
+		);
 	}
 
 	/**
@@ -1299,14 +1380,20 @@ component serializable="false" accessors="true" {
 	 * @return RequestContext
 	 */
 	function setViewCacheableEntry( required struct cacheEntry ){
-		return setPrivateValue( name = "cbox_viewCacheableEntry", value = arguments.cacheEntry );
+		return setPrivateValue(
+			name  = "cbox_viewCacheableEntry",
+			value = arguments.cacheEntry
+		);
 	}
 
 	/**
 	 * Get the event cacheable entry
 	 */
 	struct function getViewCacheableEntry(){
-		return getPrivateValue( name = "cbox_viewCacheableEntry", defaultValue = structNew() );
+		return getPrivateValue(
+			name         = "cbox_viewCacheableEntry",
+			defaultValue = structNew()
+		);
 	}
 
 
@@ -1363,7 +1450,10 @@ component serializable="false" accessors="true" {
 				arguments.name = createUUID();
 			}
 			if ( !len( trim( arguments.extension ) ) ) {
-				throw( message = "Extension missing for binary file.", type = "InvalidExtensionException" );
+				throw(
+					message = "Extension missing for binary file.",
+					type    = "InvalidExtensionException"
+				);
 			}
 			// Determine file size
 			fileSize = len( arguments.file );
@@ -1407,11 +1497,17 @@ component serializable="false" accessors="true" {
 			name  = "content-disposition",
 			value = "#arguments.disposition#; filename=#urlEncodedFormat( arguments.name )#"
 		);
-		setHTTPHeader( name = "content-length", value = fileSize );
+		setHTTPHeader(
+			name  = "content-length",
+			value = fileSize
+		);
 
 		//  Send file
 		if ( isBinary( arguments.file ) ) {
-			cfcontent( variable=arguments.file, type=arguments.mimetype );
+			cfcontent(
+				variable=arguments.file,
+				type    =arguments.mimetype
+			);
 		} else {
 			cfcontent(
 				deletefile=arguments.deleteFile,
@@ -1477,7 +1573,12 @@ component serializable="false" accessors="true" {
 		}
 
 		// Validate rendering type
-		if ( not reFindNoCase( "^(JSON|JSONP|JSONT|WDDX|XML|PLAIN|HTML|TEXT|PDF)$", arguments.type ) ) {
+		if (
+			not reFindNoCase(
+				"^(JSON|JSONP|JSONT|WDDX|XML|PLAIN|HTML|TEXT|PDF)$",
+				arguments.type
+			)
+		) {
 			throw(
 				message = "Invalid rendering type",
 				detail  = "The type you sent #arguments.type# is not a valid rendering type. Valid types are JSON,JSONP,JSONT,XML,WDDX,TEXT,PLAIN,PDF",
@@ -1556,7 +1657,10 @@ component serializable="false" accessors="true" {
 
 		// HTTP Location?
 		if ( len( arguments.location ) ) {
-			setHTTPHeader( name = "location", value = arguments.location );
+			setHTTPHeader(
+				name  = "location",
+				value = arguments.location
+			);
 		}
 
 		// Save Rendering data privately.
@@ -1569,7 +1673,10 @@ component serializable="false" accessors="true" {
 	 * Get the renderData structure
 	 */
 	struct function getRenderData(){
-		return getPrivateValue( name = "cbox_renderdata", defaultValue = structNew() );
+		return getPrivateValue(
+			name         = "cbox_renderdata",
+			defaultValue = structNew()
+		);
 	}
 
 	/**
@@ -1585,7 +1692,10 @@ component serializable="false" accessors="true" {
 	 * @json Try to return the content as deserialized json
 	 * @xml Try to return the content as an XML object
 	 */
-	any function getHTTPContent( boolean json = false, boolean xml = false ){
+	any function getHTTPContent(
+		boolean json = false,
+		boolean xml  = false
+	){
 		var content = getHTTPRequestData().content;
 
 		// ToString() neccessary when body comes in as binary.
@@ -1634,13 +1744,19 @@ component serializable="false" accessors="true" {
 		if ( structKeyExists( arguments, "statusCode" ) ) {
 			getPageContext()
 				.getResponse()
-				.setStatus( javacast( "int", arguments.statusCode ), javacast( "string", arguments.statusText ) );
+				.setStatus(
+					javacast( "int", arguments.statusCode ),
+					javacast( "string", arguments.statusText )
+				);
 		}
 		// Name Exists
 		else if ( structKeyExists( arguments, "name" ) ) {
 			getPageContext()
 				.getResponse()
-				.addHeader( javacast( "string", arguments.name ), javacast( "string", arguments.value ) );
+				.addHeader(
+					javacast( "string", arguments.name ),
+					javacast( "string", arguments.value )
+				);
 			variables.responseHeaders[ arguments.name ] = arguments.value;
 		} else {
 			throw(
@@ -1664,7 +1780,13 @@ component serializable="false" accessors="true" {
 
 		// continue if it exists
 		if ( len( authHeader ) ) {
-			authHeader       = charsetEncode( binaryDecode( listLast( authHeader, " " ), "Base64" ), "utf-8" );
+			authHeader = charsetEncode(
+				binaryDecode(
+					listLast( authHeader, " " ),
+					"Base64"
+				),
+				"utf-8"
+			);
 			results.username = getToken( authHeader, 1, ":" );
 			results.password = getToken( authHeader, 2, ":" );
 		}
@@ -1684,7 +1806,10 @@ component serializable="false" accessors="true" {
 	 * @keys A list or array of keys to bring back from the collection or private collection.
 	 * @private Private or public, defaults public request collection
 	 */
-	struct function getOnly( required keys, boolean private = false ){
+	struct function getOnly(
+		required keys,
+		boolean private = false
+	){
 		if ( isSimpleValue( arguments.keys ) ) {
 			arguments.keys = listToArray( arguments.keys );
 		}
@@ -1714,7 +1839,10 @@ component serializable="false" accessors="true" {
 	 * @keys A list or array of keys to exclude from the results of the collection or private collection.
 	 * @private Private or public, defaults public request collection
 	 */
-	struct function getExcept( required keys, boolean private = false ){
+	struct function getExcept(
+		required keys,
+		boolean private = false
+	){
 		if ( isSimpleValue( arguments.keys ) ) {
 			arguments.keys = listToArray( arguments.keys );
 		}
@@ -1754,7 +1882,12 @@ component serializable="false" accessors="true" {
 		// param incoming rc.format to "html"
 		paramValue( "format", "html" );
 		// try to match the incoming format with the ones defined, if not defined then throw an exception
-		if ( arrayFindNoCase( arguments.formats, variables.context.format ) ) {
+		if (
+			arrayFindNoCase(
+				arguments.formats,
+				variables.context.format
+			)
+		) {
 			// Cleanup of formats
 			arguments.formats = "";
 			// Determine view from incoming or implicit
