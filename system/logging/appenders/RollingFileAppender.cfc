@@ -63,12 +63,10 @@ component accessors="true" extends="coldbox.system.logging.appenders.FileAppende
 	}
 
 	function logRotation(){
-		$log( "#getName()# -> Checking for log rotations..." );
 		// Lock so we can do rotation
 		variables.lock( function(){
 			variables.fileRotator.checkRotation( this );
 		} );
-		$log( "#getName()# -> Log rotations finalized." );
 	}
 
 }
