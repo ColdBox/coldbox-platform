@@ -63,10 +63,7 @@ component accessors="true" extends="coldbox.system.logging.appenders.FileAppende
 	}
 
 	function logRotation(){
-		// Lock so we can do rotation
-		variables.lock( function(){
-			variables.fileRotator.checkRotation( this );
-		} );
+		variables.fileRotator.checkRotation( this );
 	}
 
 }
