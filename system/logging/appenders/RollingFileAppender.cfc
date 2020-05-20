@@ -54,8 +54,8 @@ component accessors="true" extends="coldbox.system.logging.appenders.FileAppende
 		variables.logbox
 			.getTaskScheduler()
 			.newSchedule( this, "logRotation" )
-				.delay( 5 ) // Don't start immediately, give it a breathing room
-				.spacedDelay( 5 ) // Runs again, after this spaced delay once each reap finalizes
+				.delay( 1 ) // Don't start immediately, give it a breathing room
+				.spacedDelay( 1 ) // Runs again, after this spaced delay once each reap finalizes
 				.inMinutes()
 				.start();
 
