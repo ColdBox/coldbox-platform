@@ -63,7 +63,14 @@ component accessors="true" extends="coldbox.system.logging.appenders.FileAppende
 	}
 
 	function logRotation(){
-		variables.fileRotator.checkRotation( this );
+		try{
+			variables.fileRotator.checkRotation( this );
+		} catch( Any e ){
+			var errorMessage = "Error rotating #getName()# : #e.message# #e.detail# #e.stacktrace#";
+			err( errorMessage );
+			$log( "ERROR", errorMessage );
+			rethrow;
+		}
 	}
 
 }

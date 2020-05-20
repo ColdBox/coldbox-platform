@@ -62,8 +62,6 @@ component accessors="true"{
 			oAppender.initLoglocation();
 		}
 
-		systemOutput( "==> End File Rotations", true );
-
 		return this;
 	}
 
