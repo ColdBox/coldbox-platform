@@ -178,6 +178,15 @@ component accessors="true" {
 	}
 
 	/**
+	 * Utility function to get the state of this object
+	 */
+	struct function getMemento(){
+		return variables.filter( function( key, value ){
+			return ( !isNull( value ) && !isCustomFunction( value ) && !listFindNoCase( "this", key ) );
+		} );
+	}
+
+	/**
 	 * Add some messages to the response
 	 *
 	 * @message Array or string of message to incorporate
