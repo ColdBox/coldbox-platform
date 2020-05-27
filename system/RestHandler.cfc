@@ -46,11 +46,11 @@ component extends="EventHandler" {
 	){
 		try {
 			// start a resource timer
-			var stime    = getTickCount();
+			var stime = getTickCount();
 			// prepare our response object
 			arguments.event.getResponse();
 			// prepare argument execution
-			var actionArgs     = {
+			var actionArgs = {
 				event : arguments.event,
 				rc    : arguments.rc,
 				prc   : arguments.prc
@@ -82,7 +82,7 @@ component extends="EventHandler" {
 			arguments.exception = e;
 			this.onEntityNotFoundException( argumentCollection = arguments );
 		} catch ( Any e ) {
-			// Log Locally
+			// Log Exception
 			log.error(
 				"Error calling #arguments.event.getCurrentEvent()#: #e.message# #e.detail#",
 				{
@@ -90,6 +90,7 @@ component extends="EventHandler" {
 					"httpData"    : getHTTPRequestData()
 				}
 			);
+
 			// Setup General Error Response
 			arguments.prc.response
 				.setError( true )
@@ -97,23 +98,33 @@ component extends="EventHandler" {
 				.setStatusCode( arguments.event.STATUS.INTERNAL_ERROR )
 				.setStatusText( "General application error" );
 
-			// Development additions
+			// If in development, let's show the error template
 			if ( getSetting( "environment" ) eq "development" ) {
-				arguments.prc.response
-					.addMessage( "Detail: #e.detail#" )
-					.addMessage( "StackTrace: #e.stacktrace#" );
+				rethrow;
 			}
 		}
-
 
 		// Development additions
 		if ( getSetting( "environment" ) eq "development" ) {
 			arguments.prc.response
-			.addHeader( "x-current-route", arguments.event.getCurrentRoute() )
-			.addHeader( "x-current-routed-url", arguments.event.getCurrentRoutedURL() )
-			.addHeader( "x-current-routed-namespace", arguments.event.getCurrentRoutedNamespace() )
-			.addHeader( "x-current-event", arguments.event.getCurrentEvent() );
+				.addHeader(
+					"x-current-route",
+					arguments.event.getCurrentRoute()
+				)
+				.addHeader(
+					"x-current-routed-url",
+					arguments.event.getCurrentRoutedURL()
+				)
+				.addHeader(
+					"x-current-routed-namespace",
+					arguments.event.getCurrentRoutedNamespace()
+				)
+				.addHeader(
+					"x-current-event",
+					arguments.event.getCurrentEvent()
+				);
 		}
+
 		// end timer
 		arguments.prc.response.setResponseTime( getTickCount() - stime );
 
@@ -127,9 +138,9 @@ component extends="EventHandler" {
 		) {
 			// Get response data according to error flag
 			var responseData = (
-				arguments.prc.response.getError() ?
-				arguments.prc.response.getDataPacket( reset = this.resetDataOnError ) :
-				arguments.prc.response.getDataPacket()
+				arguments.prc.response.getError() ? arguments.prc.response.getDataPacket(
+					reset = this.resetDataOnError
+				) : arguments.prc.response.getDataPacket()
 			);
 
 			// Magical renderings
@@ -148,12 +159,21 @@ component extends="EventHandler" {
 
 		// Global Response Headers
 		arguments.prc.response
-			.addHeader( "x-response-time", arguments.prc.response.getResponseTime() )
-			.addHeader( "x-cached-response", arguments.prc.response.getCachedResponse() );
+			.addHeader(
+				"x-response-time",
+				arguments.prc.response.getResponseTime()
+			)
+			.addHeader(
+				"x-cached-response",
+				arguments.prc.response.getCachedResponse()
+			);
 
 		// Output the response headers
 		for ( var thisHeader in arguments.prc.response.getHeaders() ) {
-			arguments.event.setHTTPHeader( name = thisHeader.name, value = thisHeader.value );
+			arguments.event.setHTTPHeader(
+				name  = thisHeader.name,
+				value = thisHeader.value
+			);
 		}
 
 		// If results detected, just return them, controllers requesting to return results
@@ -180,6 +200,11 @@ component extends="EventHandler" {
 		exception,
 		eventArguments
 	){
+		// If in development, then show exception template
+		if ( getSetting( "environment" ) eq "development" ) {
+			throw( arguments.exception );
+		}
+
 		// Log Locally
 		log.error(
 			"Error in base handler (#arguments.faultAction#): #arguments.exception.message# #arguments.exception.detail#",
@@ -192,32 +217,22 @@ component extends="EventHandler" {
 		// Setup General Error Response
 		arguments.event
 			.getResponse()
-				.setError( true )
-				.setData( {} )
-				.addMessage( "Base Handler Application Error: #arguments.exception.message#" )
-				.setStatusCode( arguments.event.STATUS.INTERNAL_ERROR )
-				.setStatusText( "General application error" );
+			.setError( true )
+			.setData( {} )
+			.addMessage( "Base Handler Application Error: #arguments.exception.message#" )
+			.setStatusCode( arguments.event.STATUS.INTERNAL_ERROR )
+			.setStatusText( "General application error" );
 
-		// Development additions
-		if ( getSetting( "environment" ) eq "development" ) {
-			prc.response
-				.addMessage( "Detail: #arguments.exception.detail#" )
-				.addMessage( "StackTrace: #arguments.exception.stacktrace#" );
-		}
-
-		// If in development, then it will show full trace error template, else render data
-		if ( getSetting( "environment" ) eq "development" ) {
-			// Render Error Out
-			event.renderData(
-				type        = prc.response.getFormat(),
-				data        = prc.response.getDataPacket( reset = this.resetDataOnError ),
-				contentType = prc.response.getContentType(),
-				statusCode  = prc.response.getStatusCode(),
-				statusText  = prc.response.getStatusText(),
-				location    = prc.response.getLocation(),
-				isBinary    = prc.response.getBinary()
-			);
-		}
+		// Render Error Out
+		event.renderData(
+			type        = prc.response.getFormat(),
+			data        = prc.response.getDataPacket( reset = this.resetDataOnError ),
+			contentType = prc.response.getContentType(),
+			statusCode  = prc.response.getStatusCode(),
+			statusText  = prc.response.getStatusText(),
+			location    = prc.response.getLocation(),
+			isBinary    = prc.response.getBinary()
+		);
 	}
 
 	/**
@@ -248,15 +263,13 @@ component extends="EventHandler" {
 		// Setup Response
 		arguments.event
 			.getResponse()
-				.setError( true )
-				.setData(
-					isJson( arguments.exception.extendedInfo ) ?
-					deserializeJSON( arguments.exception.extendedInfo ) :
-					""
-				)
-				.addMessage( "Validation exceptions occurred, please see the data" )
-				.setStatusCode( arguments.event.STATUS.BAD_REQUEST )
-				.setStatusText( "Invalid Request" );
+			.setError( true )
+			.setData(
+				isJSON( arguments.exception.extendedInfo ) ? deserializeJSON( arguments.exception.extendedInfo ) : ""
+			)
+			.addMessage( "Validation exceptions occurred, please see the data" )
+			.setStatusCode( arguments.event.STATUS.BAD_REQUEST )
+			.setStatusText( "Invalid Request" );
 
 		// Render Error Out
 		arguments.event.renderData(
@@ -298,11 +311,11 @@ component extends="EventHandler" {
 		// Setup Response
 		arguments.event
 			.getResponse()
-				.setError( true )
-				.setData( rc.id ?: "" )
-				.addMessage( "The record you requested cannot be found in this system" )
-				.setStatusCode( arguments.event.STATUS.NOT_FOUND )
-				.setStatusText( "Not Found" );
+			.setError( true )
+			.setData( rc.id ?: "" )
+			.addMessage( "The record you requested cannot be found in this system" )
+			.setStatusCode( arguments.event.STATUS.NOT_FOUND )
+			.setStatusText( "Not Found" );
 
 		// Render Error Out
 		arguments.event.renderData(
@@ -341,10 +354,12 @@ component extends="EventHandler" {
 		// Setup Response
 		arguments.event
 			.getResponse()
-				.setError( true )
-				.addMessage( "InvalidHTTPMethod Execution of (#arguments.faultAction#): #arguments.event.getHTTPMethod()#" )
-				.setStatusCode( arguments.event.STATUS.NOT_ALLOWED )
-				.setStatusText( "Invalid HTTP Method" );
+			.setError( true )
+			.addMessage(
+				"InvalidHTTPMethod Execution of (#arguments.faultAction#): #arguments.event.getHTTPMethod()#"
+			)
+			.setStatusCode( arguments.event.STATUS.NOT_ALLOWED )
+			.setStatusText( "Invalid HTTP Method" );
 
 		// Render Error Out
 		arguments.event.renderData(
@@ -377,10 +392,10 @@ component extends="EventHandler" {
 		// Setup Response
 		arguments.event
 			.getResponse()
-				.setError( true )
-				.addMessage( "Action '#arguments.missingAction#' could not be found" )
-				.setStatusCode( arguments.event.STATUS.NOT_ALLOWED )
-				.setStatusText( "Invalid Action" );
+			.setError( true )
+			.addMessage( "Action '#arguments.missingAction#' could not be found" )
+			.setStatusCode( arguments.event.STATUS.NOT_ALLOWED )
+			.setStatusText( "Invalid Action" );
 
 		// Render Error Out
 		arguments.event.renderData(
@@ -419,19 +434,19 @@ component extends="EventHandler" {
 		) {
 			arguments.event
 				.getResponse()
-					.setError( true )
-					.setStatusCode( arguments.event.STATUS.NOT_AUTHENTICATED )
-					.setStatusText( "Expired Authentication Credentials" )
-					.addMessage( "Expired Authentication Credentials" );
+				.setError( true )
+				.setStatusCode( arguments.event.STATUS.NOT_AUTHENTICATED )
+				.setStatusText( "Expired Authentication Credentials" )
+				.addMessage( "Expired Authentication Credentials" );
 			return;
 		}
 
 		arguments.event
 			.getResponse()
-				.setError( true )
-				.setStatusCode( arguments.event.STATUS.NOT_AUTHENTICATED )
-				.setStatusText( "Invalid or Missing Credentials" )
-				.addMessage( "Invalid or Missing Authentication Credentials" );
+			.setError( true )
+			.setStatusCode( arguments.event.STATUS.NOT_AUTHENTICATED )
+			.setStatusText( "Invalid or Missing Credentials" )
+			.addMessage( "Invalid or Missing Authentication Credentials" );
 	}
 
 	/**
@@ -453,10 +468,10 @@ component extends="EventHandler" {
 	){
 		arguments.event
 			.getResponse()
-				.setError( true )
-				.setStatusCode( arguments.event.STATUS.NOT_AUTHORIZED )
-				.setStatusText( "Unauthorized Resource" )
-				.addMessage( "You are not allowed to access this resource" );
+			.setError( true )
+			.setStatusCode( arguments.event.STATUS.NOT_AUTHORIZED )
+			.setStatusText( "Unauthorized Resource" )
+			.addMessage( "You are not allowed to access this resource" );
 
 		// Check for validator results
 		if ( !isNull( arguments.prc.cbSecurity_validatorResults ) ) {
@@ -467,8 +482,14 @@ component extends="EventHandler" {
 		 * When you need a really hard stop to prevent further execution ( use as last resort )
 		 */
 		if ( arguments.abort ) {
-			event.setHTTPHeader( name = "Content-Type", value = "application/json" );
-			event.setHTTPHeader( statusCode = "#arguments.event.STATUS.NOT_AUTHORIZED#", statusText = "Not Authorized" );
+			event.setHTTPHeader(
+				name  = "Content-Type",
+				value = "application/json"
+			);
+			event.setHTTPHeader(
+				statusCode = "#arguments.event.STATUS.NOT_AUTHORIZED#",
+				statusText = "Not Authorized"
+			);
 
 			writeOutput( serializeJSON( prc.response.getDataPacket( reset = this.resetDataOnError ) ) );
 
@@ -495,10 +516,10 @@ component extends="EventHandler" {
 	function onInvalidRoute( event, rc, prc ){
 		arguments.event
 			.getResponse()
-				.setError( true )
-				.setStatusCode( arguments.event.STATUS.NOT_FOUND )
-				.setStatusText( "Not Found" )
-				.addMessage( "The resource requested (#event.getCurrentRoutedURL()#) could not be found" );
+			.setError( true )
+			.setStatusCode( arguments.event.STATUS.NOT_FOUND )
+			.setStatusText( "Not Found" )
+			.addMessage( "The resource requested (#event.getCurrentRoutedURL()#) could not be found" );
 	}
 
 	/**
@@ -515,17 +536,17 @@ component extends="EventHandler" {
 	 * @returns 417:Expectation Failed
 	 */
 	function onExpectationFailed(
-		event = getRequestContext(),
-		rc    = getRequestCollection(),
-		prc   = getRequestCollection( private=true ),
+		event   = getRequestContext(),
+		rc      = getRequestCollection(),
+		prc     = getRequestCollection( private = true ),
 		message = "An expectation for the request failed. Could not proceed"
 	){
 		arguments.event
 			.getResponse()
-				.setError( true )
-				.setStatusCode( arguments.event.STATUS.EXPECTATION_FAILED )
-				.setStatusText( "Expectation Failed" )
-				.addMessage( arguments.message );
+			.setError( true )
+			.setStatusCode( arguments.event.STATUS.EXPECTATION_FAILED )
+			.setStatusText( "Expectation Failed" )
+			.addMessage( arguments.message );
 	}
 
 }
