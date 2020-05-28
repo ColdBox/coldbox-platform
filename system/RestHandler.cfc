@@ -201,8 +201,8 @@ component extends="EventHandler" {
 		eventArguments
 	){
 		// If in development, then show exception template
-		if ( getSetting( "environment" ) eq "development" ) {
-			throw( arguments.exception );
+		if ( getSetting( "environment" ) eq "development" && !isInstanceOf( variables.controller, "MockController" ) ) {
+			throw( object = arguments.exception );
 		}
 
 		// Log Locally
