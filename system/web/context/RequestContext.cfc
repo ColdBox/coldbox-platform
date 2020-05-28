@@ -101,22 +101,23 @@ component serializable="false" accessors="true" {
 
 	// HTTP STATUS CODES
 	this.STATUS = {
-		"CREATED"            : 201,
-		"ACCEPTED"           : 202,
-		"SUCCESS"            : 200,
-		"NO_CONTENT"         : 204,
-		"RESET"              : 205,
-		"PARTIAL_CONTENT"    : 206,
-		"BAD_REQUEST"        : 400,
-		"NOT_AUTHORIZED"     : 403,
-		"NOT_AUTHENTICATED"  : 401,
-		"NOT_FOUND"          : 404,
-		"NOT_ALLOWED"        : 405,
-		"NOT_ACCEPTABLE"     : 406,
-		"TOO_MANY_REQUESTS"  : 429,
-		"EXPECTATION_FAILED" : 417,
-		"INTERNAL_ERROR"     : 500,
-		"NOT_IMPLEMENTED"    : 501
+		"CREATED"              : 201,
+		"ACCEPTED"             : 202,
+		"SUCCESS"              : 200,
+		"NO_CONTENT"           : 204,
+		"RESET"                : 205,
+		"PARTIAL_CONTENT"      : 206,
+		"BAD_REQUEST"          : 400,
+		"NOT_AUTHORIZED"       : 403,
+		"NOT_AUTHENTICATED"    : 401,
+		"NOT_FOUND"            : 404,
+		"NOT_ALLOWED"          : 405,
+		"NOT_ACCEPTABLE"       : 406,
+		"UNPROCESSABLE_ENTITY" : 422,
+		"TOO_MANY_REQUESTS"    : 429,
+		"EXPECTATION_FAILED"   : 417,
+		"INTERNAL_ERROR"       : 500,
+		"NOT_IMPLEMENTED"      : 501
 	};
 
 	// HTTP STATUS TEXTS
