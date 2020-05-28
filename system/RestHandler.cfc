@@ -200,8 +200,13 @@ component extends="EventHandler" {
 		exception,
 		eventArguments
 	){
-		// If in development, then show exception template
-		if ( getSetting( "environment" ) eq "development" && !isInstanceOf( variables.controller, "MockController" ) ) {
+		// If in development and not in testing mode, then show exception template, easier to debug
+		if (
+			getSetting( "environment" ) eq "development" && !isInstanceOf(
+				variables.controller,
+				"MockController"
+			)
+		) {
 			throw( object = arguments.exception );
 		}
 
@@ -222,6 +227,14 @@ component extends="EventHandler" {
 			.addMessage( "Base Handler Application Error: #arguments.exception.message#" )
 			.setStatusCode( arguments.event.STATUS.INTERNAL_ERROR )
 			.setStatusText( "General application error" );
+
+		// Development additions Great for Testing
+		if ( getSetting( "environment" ) eq "development" ) {
+			prc.response
+				.setData( structKeyExists( arguments.exception, "tagContext" ) ? arguments.exception.tagContext : {} )
+				.addMessage( "Detail: #arguments.exception.detail#" )
+				.addMessage( "StackTrace: #arguments.exception.stacktrace#" );
+		}
 
 		// Render Error Out
 		event.renderData(
@@ -355,9 +368,7 @@ component extends="EventHandler" {
 		arguments.event
 			.getResponse()
 			.setError( true )
-			.addMessage(
-				"InvalidHTTPMethod Execution of (#arguments.faultAction#): #arguments.event.getHTTPMethod()#"
-			)
+			.addMessage( "InvalidHTTPMethod Execution of (#arguments.faultAction#): #arguments.event.getHTTPMethod()#" )
 			.setStatusCode( arguments.event.STATUS.NOT_ALLOWED )
 			.setStatusText( "Invalid HTTP Method" );
 
