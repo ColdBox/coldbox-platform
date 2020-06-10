@@ -448,7 +448,7 @@ component
 				viewPath         =arguments.viewPath,
 				viewHelperPath   =arguments.viewHelperPath,
 				args             =arguments.args,
-				rendererVariables=variables,
+				rendererVariables = ( isNull( attributes.rendererVariables ) ? variables : attributes.rendererVariables ),
 				event            =event,
 				rc               =event.getCollection(),
 				prc              =event.getPrivateCollection()
