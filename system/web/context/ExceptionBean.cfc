@@ -448,7 +448,7 @@ component accessors="true" {
 	 * @return The HTML of the scope data
 	 */
 	function displayScope( required scope ){
-		var list       = "<table class=""data-table""><tbody>";
+		var list = createObject( "java", "java.lang.StringBuilder" ).init( "<table class="" data-table""><tbody>" );
 		var orderedArr = arguments.scope;
 
 		if ( structKeyExists( arguments.scope, "itemorder" ) ) {
@@ -456,18 +456,21 @@ component accessors="true" {
 		}
 
 		for ( var i in orderedArr ) {
-			list &= "<tr>";
+			list.append( "<tr>" );
+
+			// Null Checks
+			if( isNull( arguments.scope[ i ] ) ){
+				arguments.scope[ i ] = "<span style='color: red'><strong>Java Null</strong></span>";
+			}
+
 			if ( isDate( arguments.scope[ i ] ) ) {
-				list &= "<td width=""250"">" & i & "</td>";
-				list &= "<td class=""overflow-scroll"">" & dateFormat( arguments.scope[ i ], "mm/dd/yyyy" ) & " " & timeFormat(
-					arguments.scope[ i ],
-					"HH:mm:ss"
-				) & "</td>";
+				list.append( "<td width=""250"">" & i & "</td>" );
+				list.append( "<td class=""overflow-scroll"">" &
+					dateFormat( arguments.scope[ i ], "mm/dd/yyyy" ) & " " &
+					timeFormat( arguments.scope[ i ], "HH:mm:ss" ) & "</td>" );
 			} else if ( isSimpleValue( arguments.scope[ i ] ) ) {
-				list &= "<td width=""250"">" & i & "</td>";
-				list &= "<td class=""overflow-scroll"">" & (
-					len( arguments.scope[ i ] ) ? arguments.scope[ i ] : "<em>---</em>"
-				) & "</td>";
+				list.append( "<td width=""250"">" & i & "</td>" );
+				list.append( "<td class=""overflow-scroll"">" & ( len( arguments.scope[ i ] ) ? arguments.scope[ i ] : "<em>---</em>" ) & "</td>" );
 			} else {
 				savecontent variable="local.myContent" {
 					writeDump(
@@ -477,23 +480,23 @@ component accessors="true" {
 						expand = false
 					)
 				}
-				list &= "<td width=""250"">" & i & "</td>";
-				list &= "<td class=""overflow-scroll"">" & local.myContent & "</td>";
+				list.append( "<td width=""250"">" & i & "</td>" );
+				list.append( "<td class=""overflow-scroll"">" & local.myContent & "</td>" );
 			}
-			list &= "</tr>";
+			list.append( "</tr>" );
 		}
 
 		if ( !structCount( arguments.scope ) ) {
-			list &= "<tr>
+			list.append( "<tr>
 				<td>
 					<em>No details found!</em>
 				</td>
-			</tr>";
+			</tr>" );
 		}
 
-		list &= "</tbody></table>";
+		list.append( "</tbody></table>" );
 
-		return list;
+		return list.toString();
 	}
 
 	/**

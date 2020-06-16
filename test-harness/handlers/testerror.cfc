@@ -1,6 +1,8 @@
 ﻿component output="false" {
 
 	function index( event, rc, prc ){
+		rc.nullTest = javacast( "null", "" );
+		prc.nullTest = javacast( "null", "" );
 		if( rc.core ?: false ){
 			setSetting(
 				"customErrorTemplate",
