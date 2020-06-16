@@ -135,6 +135,30 @@
 						<div class="exception__logo">
 							<img src="/coldbox/system/exceptions/images/coldbox-logo.png" width="40" />
 							<span>ColdBox Exception</span>
+							<form
+								name="reinitForm"
+								id="reinitForm"
+								action="#event.buildLink(
+									to : event.getCurrentRoutedURL(),
+									queryString : cgi.QUERY_STRING,
+									translate : false
+								)#"
+								method="POST"
+							>
+								<input
+									type="hidden"
+									name="fwreinit"
+									id="fwreinit"
+									value="">
+								<a
+									title="Reinitialize the framework and reload the page"
+									class="button"
+									href="javascript:reinitframework( #iif( controller.getSetting( "ReinitPassword" ).length(), 'true', 'false' )# )"
+								>
+									<i data-eva="flash-outline" data-eva-height="14" data-eva-fill="red"></i>
+								</a>
+
+							</form>
 						</div>
 
 						<h1 class="exception__timestamp" title="Time of exception">
@@ -147,7 +171,19 @@
 							<span>#trim( eventDetails[ "Error Code" ] & " " & local.e.type )#</span>
 						</h1>
 
-						<div class="exception__message" title="Exception Message">
+						<div
+							class="exception__message"
+							title="Exception Message - Click to copy"
+							id="exceptionMessage"
+							onclick="copyToClipboard( 'exceptionMessage' )"
+						>
+							<i
+								onclick="copyToClipboard( 'exceptionMessage' )"
+								data-eva="clipboard"
+								data-eva-fill="white"
+								data-eva-height="16"
+								style="cursor: pointer; float: right"></i>
+
 							#oException.processMessage( local.e.message )#
 						</div>
 
@@ -325,8 +361,17 @@
 								</div>
 
 								<div id="stacktrace_scope" class="data-table">
-									<label>Raw Stack Trace</label>
-									<div class="data-stacktrace">#processStackTrace( oException.getstackTrace() )#</div>
+									<label title="Copy to clipboard">
+										Raw Stack Trace
+										<i
+											onclick="copyToClipboard( 'rawStacktrace' )"
+											data-eva="clipboard"
+											data-eva-fill="white"
+											data-eva-height="16"
+											style="cursor: pointer"></i>
+									</label>
+
+									<div id="rawStacktrace" class="data-stacktrace">#processStackTrace( oException.getstackTrace() )#</div>
 								</div>
 							</div>
 						</cfoutput>

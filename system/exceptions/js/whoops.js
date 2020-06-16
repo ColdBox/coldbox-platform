@@ -41,6 +41,14 @@ function changeCodePanel( id ) {
     scrollToLine( highlightLine );
 }
 
+function reinitframework( usingPassword ){
+	var reinitForm = document.getElementById( 'reinitForm' );
+	if( usingPassword ){
+		reinitForm.fwreinit.value = prompt( "Reinit Password?" );
+	}
+	reinitForm.submit();
+}
+
 function filterScopes(linkEl, filterID ) {
     var links = document.querySelectorAll('div.data-filter a');
     for (var i = 0; i < links.length; i++){
@@ -59,6 +67,25 @@ function filterScopes(linkEl, filterID ) {
         }
     }
     document.getElementById('request-info-details').scrollTop = 0;
+}
+
+function copyToClipboard( id ) {
+	var elm = document.getElementById( id );
+	// for Internet Explorer
+	if( document.body.createTextRange ) {
+		var range = document.body.createTextRange();
+		range.moveToElementText( elm );
+		range.select();
+		document.execCommand( "Copy" );
+	} else if ( window.getSelection ) {
+		// other browsers
+		var selection = window.getSelection();
+		var range = document.createRange();
+		range.selectNodeContents( elm );
+		selection.removeAllRanges();
+		selection.addRange( range );
+		document.execCommand("Copy");
+	}
 }
 
 Element.prototype.documentOffsetTop = function () {
