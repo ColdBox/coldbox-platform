@@ -85,6 +85,9 @@ component {
 	/************************************** IMPLICIT ACTIONS *********************************************/
 
 	function onAppInit( event, rc, prc ){
+		listen( function(){
+			log.info( "executing from closure listener")
+		}, "preProcess" );
 	}
 
 	function onInvalidEvent( event, rc, prc ){

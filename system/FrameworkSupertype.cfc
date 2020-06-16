@@ -226,6 +226,16 @@ component serializable="false" accessors="true"{
 	}
 
 	/**
+	 * Register a closure listener as an interceptor on a specific point
+	 *
+	 * @target The closure/lambda to register
+	 * @point The interception point to register the listener to
+	 */
+	void function listen( required target, required point ){
+		variables.controller.getInterceptorService().listen( argumentCollection = arguments );
+	}
+
+	/**
 	 * Announce an interception
 	 *
 	 * @state The interception state to announce

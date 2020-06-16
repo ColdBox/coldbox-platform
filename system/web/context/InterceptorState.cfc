@@ -508,11 +508,18 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 			"prc"           : arguments.event.getPrivateCollection()
 		};
 
-		var results = invoke(
-			arguments.interceptor,
-			getState(),
-			args
-		);
+		// Closure or object?
+		if( isClosure( arguments.interceptor ) ){
+			arguments.interceptor( argumentCollection=args );
+		} else {
+			var results = invoke(
+				arguments.interceptor,
+				getState(),
+				args
+			);
+		}
+
+
 
 		if ( variables.log.canDebug() ) {
 			variables.log.debug( "Interception ended for: '#getState()#', key: #arguments.interceptorKey#" );

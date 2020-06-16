@@ -128,7 +128,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 
 	/**
-	 * Registers all the interceptors configured
+	 * Registers all the interceptors configured and found in the configuration files
 	 *
 	 * @return InterceptorService
 	 */
@@ -255,6 +255,23 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			}
 		};
 		return buffer;
+	}
+
+	/**
+	 * Register a closure listener as an interceptor on a specific point
+	 *
+	 * @target The closure/lambda to register
+	 * @point The interception point to register the listener to
+	 */
+	void function listen( required target, required point ){
+		// Append Custom Points
+		appendInterceptionPoints( arguments.point );
+		// Register the listener
+		registerInterceptionPoint(
+			interceptorKey = "closure-#arguments.point#-#hash( arguments.target.toString() )#",
+			state          = arguments.point,
+			oInterceptor   = arguments.target
+		);
 	}
 
 	/**
