@@ -36,7 +36,7 @@ component accessors="true"{
 			// Get the original incoming context hash
 			"incomingHash" 	= incomingHash,
 			// Multi-Host support
-			"cgihost" 		= CGI.HTTP_HOST
+			"cgihost" 		= CGI.SERVER_NAME
 		};
 
 		// Incorporate Routed Structs
@@ -65,7 +65,7 @@ component accessors="true"{
 			// Get the original incoming context hash according to incoming arguments
 			"incomingHash" 	= hash( virtualRC.toString() ),
 			// Multi-Host support
-			"cgihost" 		= CGI.HTTP_HOST
+			"cgihost" 		= CGI.SERVER_NAME
 		};
 
 		// return hash from cache key struct

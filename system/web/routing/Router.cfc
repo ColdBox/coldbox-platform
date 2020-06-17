@@ -171,9 +171,9 @@ component
 		variables.validExtensions         = variables.VALID_EXTENSIONS;
 		// Base Routing URL, defaults to the domain and app mapping defined by the routing services
 		if ( len( controller.getSetting( "RoutingAppMapping" ) ) lte 1 ) {
-			variables.baseURL = "http://#CGI.HTTP_HOST#";
+			variables.baseURL = "http://#CGI.SERVER_NAME#";
 		} else {
-			variables.baseURL = "http://#CGI.HTTP_HOST##controller.getSetting( "RoutingAppMapping" )#";
+			variables.baseURL = "http://#CGI.SERVER_NAME##controller.getSetting( "RoutingAppMapping" )#";
 		}
 		// Are full rewrites enabled
 		variables.fullRewrites         = false;

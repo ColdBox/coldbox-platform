@@ -185,7 +185,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			arguments.event.setSESBaseURL(
 				"http" &
 				( event.isSSL() ? "s" : "" ) &
-				"://#CGI.HTTP_HOST##variables.routingAppMapping#" &
+				"://#CGI.SERVER_NAME##variables.routingAppMapping#" &
 				( variables.router.getFullRewrites() ? "" : "index.cfm" )
 			);
 		}

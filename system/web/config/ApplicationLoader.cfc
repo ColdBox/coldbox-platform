@@ -793,7 +793,7 @@ component accessors="true" {
 			for ( var key in environments ) {
 				// loop over patterns
 				for ( var i = 1; i lte listLen( environments[ key ] ); i = i + 1 ) {
-					if ( reFindNoCase( listGetAt( environments[ key ], i ), CGI.HTTP_HOST ) ) {
+					if ( reFindNoCase( listGetAt( environments[ key ], i ), CGI.SERVER_NAME ) ) {
 						// set new environment
 						configStruct.environment = key;
 					}

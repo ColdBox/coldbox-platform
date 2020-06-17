@@ -50,7 +50,7 @@
 		"Coldfusion ID"  : "Session Scope Not Enabled",
 		"Template Path"  : CGI.CF_TEMPLATE_PATH,
 		"Path Info"      : CGI.PATH_INFO,
-		"Host"           : CGI.HTTP_HOST,
+		"Host"           : CGI.SERVER_NAME,
 		"Server"         : local.thisInetHost,
 		"Query String"   : CGI.QUERY_STRING,
 		"Referrer"       : CGI.HTTP_REFERER,

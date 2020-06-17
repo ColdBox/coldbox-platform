@@ -38,7 +38,7 @@ Request service Test
 		var testargs = { "id" : 1, "name" : "luis" };
 		var target   = {
 			"incomingHash" : hash( testargs.toString() ),
-			"cgihost"      : CGI.HTTP_HOST
+			"cgihost"      : CGI.SERVER_NAME
 		};
 
 		expect( testHash ).toBe( hash( target.toString() ) );
