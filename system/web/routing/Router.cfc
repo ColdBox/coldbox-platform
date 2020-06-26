@@ -29,50 +29,32 @@ component
 	/**
 	 * Flag to enable unique or not URLs
 	 */
-	property
-		name   ="uniqueURLS"
-		type   ="boolean"
-		default="false";
+	property name="uniqueURLS" type="boolean" default="false";
 
 	/**
 	 * Flag to enable/disable routing
 	 */
-	property
-		name   ="enabled"
-		type   ="boolean"
-		default="true";
+	property name="enabled" type="boolean" default="true";
 
 	/**
 	 * Loose matching flag for regex matches
 	 */
-	property
-		name   ="looseMatching"
-		type   ="boolean"
-		default="false";
+	property name="looseMatching" type="boolean" default="false";
 
 	/**
 	 * Detect extensions flag, so it can place a 'format' variable on the rc
 	 */
-	property
-		name   ="extensionDetection"
-		type   ="boolean"
-		default="true";
+	property name="extensionDetection" type="boolean" default="true";
 
 	/**
 	 * Throw an exception when extension detection is invalid or not
 	 */
-	property
-		name   ="throwOnInvalidExtension"
-		type   ="boolean"
-		default="false";
+	property name="throwOnInvalidExtension" type="boolean" default="false";
 
 	/**
 	 * Initialize the valid extensions to detect
 	 */
-	property
-		name   ="validExtensions"
-		type   ="string"
-		default="json,jsont,xml,cfm,cfml,html,htm,rss,pdf";
+	property name="validExtensions" type="string" default="json,jsont,xml,cfm,cfml,html,htm,rss,pdf";
 
 	/**
 	 * Base routing URL
@@ -83,19 +65,13 @@ component
 	 * This flag denotes if full URL rewrites are enabled or not. Meaning if the `index.cfm` is in the path of the rewriter or not.
 	 * The default value is **false**.
 	 */
-	property
-		name   ="fullRewrites"
-		type   ="boolean"
-		default="false";
+	property name="fullRewrites" type="boolean" default="false";
 
 	/**
 	 * This flag denotes that the routing service will discover the incoming base URL from the host + ssl + environment.
 	 * If off, then it will use whatever the base URL was set in the router.
 	 */
-	property
-		name   ="multiDomainDiscovery"
-		type   ="boolean"
-		default="true";
+	property name="multiDomainDiscovery" type="boolean" default="true";
 
 
 	/**
@@ -172,8 +148,15 @@ component
 		// Base Routing URL, defaults to the domain and app mapping defined by the routing services
 		if ( len( controller.getSetting( "RoutingAppMapping" ) ) lte 1 ) {
 			variables.baseURL = "http://#CGI.SERVER_NAME#";
+			if ( CGI.SERVER_PORT != 80 && CGI.SERVER_PORT != 443 ) {
+				variables.baseURL &= ":#CGI.SERVER_PORT#";
+			}
 		} else {
-			variables.baseURL = "http://#CGI.SERVER_NAME##controller.getSetting( "RoutingAppMapping" )#";
+			variables.baseURL = "http://#CGI.SERVER_NAME#";
+			if ( CGI.SERVER_PORT != 80 && CGI.SERVER_PORT != 443 ) {
+				variables.baseURL &= ":#CGI.SERVER_PORT#";
+			}
+			variables.baseURL &= controller.getSetting( "RoutingAppMapping" );
 		}
 		// Are full rewrites enabled
 		variables.fullRewrites         = false;
@@ -353,7 +336,12 @@ component
 		}
 
 		// Create the module routes container if it does not exist already
-		if ( NOT structKeyExists( variables.moduleRoutingTable, arguments.module ) ) {
+		if (
+			NOT structKeyExists(
+				variables.moduleRoutingTable,
+				arguments.module
+			)
+		) {
 			variables.moduleRoutingTable[ arguments.module ] = [];
 		}
 
@@ -402,7 +390,10 @@ component
 	 */
 	function removeModuleRoutes( required module ){
 		// remove all module routes
-		structDelete( variables.moduleRoutingTable, arguments.module );
+		structDelete(
+			variables.moduleRoutingTable,
+			arguments.module
+		);
 		// remove module routing entry point
 		variables.routes = variables.routes.filter( function( item ){
 			return ( item.moduleRouting != module );
@@ -416,7 +407,12 @@ component
 	 * @module The module to get
 	 */
 	array function getModuleRoutes( required module ){
-		if ( structKeyExists( variables.moduleRoutingTable, arguments.module ) ) {
+		if (
+			structKeyExists(
+				variables.moduleRoutingTable,
+				arguments.module
+			)
+		) {
 			return variables.moduleRoutingTable[ arguments.module ];
 		}
 		throw(
@@ -440,7 +436,12 @@ component
 		boolean append = "true"
 	){
 		// Create the namespace routes container if it does not exist already, as we could create many patterns that point to the same namespace
-		if ( NOT structKeyExists( variables.namespaceRoutingTable, arguments.namespace ) ) {
+		if (
+			NOT structKeyExists(
+				variables.namespaceRoutingTable,
+				arguments.namespace
+			)
+		) {
 			variables.namespaceRoutingTable[ arguments.namespace ] = [];
 		}
 
@@ -459,7 +460,12 @@ component
 	 * @namespace The namespace to get
 	 */
 	array function getNamespaceRoutes( required namespace ){
-		if ( structKeyExists( variables.namespaceRoutingTable, arguments.namespace ) ) {
+		if (
+			structKeyExists(
+				variables.namespaceRoutingTable,
+				arguments.namespace
+			)
+		) {
 			return variables.namespaceRoutingTable[ arguments.namespace ];
 		}
 
@@ -478,7 +484,10 @@ component
 	 */
 	function removeNamespaceRoutes( required namespace ){
 		// remove all namespace routes
-		structDelete( variables.namespaceRoutingTable, arguments.namespace );
+		structDelete(
+			variables.namespaceRoutingTable,
+			arguments.namespace
+		);
 
 		// remove namespace routing entry points
 		variables.routes = variables.routes.filter( function( item ){
@@ -832,7 +841,10 @@ component
 		// Cleanup initial /, not needed if found.
 		if ( left( thisRoute.pattern, 1 ) IS "/" ) {
 			if ( thisRoute.pattern neq "/" ) {
-				thisRoute.pattern = right( thisRoute.pattern, len( thisRoute.pattern ) - 1 );
+				thisRoute.pattern = right(
+					thisRoute.pattern,
+					len( thisRoute.pattern ) - 1
+				);
 			}
 		}
 
@@ -919,7 +931,10 @@ component
 					// Pull out Regex Pattern
 					thisRegex = reReplace( thisPattern, ":.*?-regex:", "" );
 					// Add Route Param
-					arrayAppend( thisRoute.patternParams, thisPatternParam );
+					arrayAppend(
+						thisRoute.patternParams,
+						thisPatternParam
+					);
 					break;
 				}
 
@@ -940,10 +955,18 @@ component
 							);
 						} else {
 							thisRegex = thisRegex & "+?)";
-							arrayAppend( thisRoute.patternParams, thisPatternParam );
+							arrayAppend(
+								thisRoute.patternParams,
+								thisPatternParam
+							);
 						}
 						// Override Constraints with your own REGEX
-						if ( structKeyExists( thisRoute.constraints, thisPatternParam ) ) {
+						if (
+							structKeyExists(
+								thisRoute.constraints,
+								thisPatternParam
+							)
+						) {
 							thisRegex = thisRoute.constraints[ thisPatternParam ];
 						}
 					} else {
@@ -963,7 +986,10 @@ component
 						thisRegex = thisRegex & "+?)";
 					}
 					// Add Route Param
-					arrayAppend( thisRoute.patternParams, thisPatternParam );
+					arrayAppend(
+						thisRoute.patternParams,
+						thisPatternParam
+					);
 					break;
 				}
 
@@ -982,7 +1008,10 @@ component
 						thisRegex = thisRegex & "+?)";
 					}
 					// Add Route Param
-					arrayAppend( thisRoute.patternParams, thisPatternParam );
+					arrayAppend(
+						thisRoute.patternParams,
+						thisPatternParam
+					);
 					break;
 				}
 			}
@@ -1036,7 +1065,10 @@ component
 						// Pull out Regex Pattern
 						thisRegex = reReplace( thisDomain, ":.*?-regex:", "" );
 						// Add Route Param
-						arrayAppend( thisRoute.domainParams, thisDomainParam );
+						arrayAppend(
+							thisRoute.domainParams,
+							thisDomainParam
+						);
 						break;
 					}
 					// ALPHANUMERICAL OPTIONAL
@@ -1056,10 +1088,18 @@ component
 								);
 							} else {
 								thisRegex = thisRegex & "+?)";
-								arrayAppend( thisRoute.domainParams, thisDomainParam );
+								arrayAppend(
+									thisRoute.domainParams,
+									thisDomainParam
+								);
 							}
 							// Override Constraints with your own REGEX
-							if ( structKeyExists( thisRoute.constraints, thisDomainParam ) ) {
+							if (
+								structKeyExists(
+									thisRoute.constraints,
+									thisDomainParam
+								)
+							) {
 								thisRegex = thisRoute.constraints[ thisDomainParam ];
 							}
 						} else {
@@ -1078,7 +1118,10 @@ component
 							thisRegex = thisRegex & "+?)";
 						}
 						// Add Route Param
-						arrayAppend( thisRoute.domainParams, thisDomainParam );
+						arrayAppend(
+							thisRoute.domainParams,
+							thisDomainParam
+						);
 						break;
 					}
 					// ALPHA OPTIONAL
@@ -1092,7 +1135,10 @@ component
 							thisRegex = thisRegex & "+?)";
 						}
 						// Add Route Param
-						arrayAppend( thisRoute.domainParams, thisDomainParam );
+						arrayAppend(
+							thisRoute.domainParams,
+							thisDomainParam
+						);
 						break;
 					}
 				}
@@ -1103,7 +1149,10 @@ component
 			}
 			// end looping of pattern optionals
 			if ( right( thisRoute.regexDomain, 1 ) == "." ) {
-				thisRoute.regexDomain = left( thisRoute.regexDomain, len( thisRoute.regexDomain ) - 1 );
+				thisRoute.regexDomain = left(
+					thisRoute.regexDomain,
+					len( thisRoute.regexDomain ) - 1
+				);
 			}
 		}
 
@@ -1378,7 +1427,10 @@ component
 	 * @map The structure of headers to issue
 	 * @overwrite Overwrite the elements
 	 */
-	function headers( required map, boolean overwrite = true ){
+	function headers(
+		required map,
+		boolean overwrite = true
+	){
 		// process a with closure if not empty
 		if ( !variables.withClosure.isEmpty() ) {
 			processWith( arguments );
@@ -1440,7 +1492,10 @@ component
 	 * @map The structure to append
 	 * @overwrite Overwrite elements, default behavior
 	 */
-	function rcAppend( required map, boolean overwrite = true ){
+	function rcAppend(
+		required map,
+		boolean overwrite = true
+	){
 		// process a with closure if not empty
 		if ( !variables.withClosure.isEmpty() ) {
 			processWith( arguments );
@@ -1485,7 +1540,10 @@ component
 	 * @map The structure to append
 	 * @overwrite Overwrite elements, default behavior
 	 */
-	function prcAppend( required map, boolean overwrite = true ){
+	function prcAppend(
+		required map,
+		boolean overwrite = true
+	){
 		// process a with closure if not empty
 		if ( !variables.withClosure.isEmpty() ) {
 			processWith( arguments );
@@ -1916,7 +1974,10 @@ component
 			processWith( arguments );
 		}
 		// Construct arguments
-		variables.thisRoute.append( { moduleRouting : arguments.module }, true );
+		variables.thisRoute.append(
+			{ moduleRouting : arguments.module },
+			true
+		);
 		// register the route
 		addRoute( argumentCollection = variables.thisRoute );
 		// reinit
@@ -1938,7 +1999,10 @@ component
 			processWith( arguments );
 		}
 		// Register route to namespace
-		addNamespace( pattern = variables.thisRoute.pattern, namespace = arguments.namespace );
+		addNamespace(
+			pattern   = variables.thisRoute.pattern,
+			namespace = arguments.namespace
+		);
 
 		// reinit
 		variables.thisRoute = initRouteDefinition();
