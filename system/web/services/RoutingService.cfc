@@ -45,12 +45,13 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		variables.routingAppMapping = left( variables.routingAppMapping, 1 ) == "/" ? variables.routingAppMapping : "/#variables.routingAppMapping#";
 
 		// Store routing appmapping
-		controller.setSetting( "routingAppMapping", variables.routingAppMapping );
+		controller.setSetting(
+			"routingAppMapping",
+			variables.routingAppMapping
+		);
 
 		// Register as an interceptor to listen to pre processes for routing
-		variables.controller
-			.getInterceptorService()
-			.registerInterceptor( interceptorObject = this );
+		variables.controller.getInterceptorService().registerInterceptor( interceptorObject = this );
 
 		// Load the Application Router
 		loadRouter();
@@ -63,7 +64,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	/**
 	 * Passthrough for legacy support of calling Router methods.  This will be removed in future versions.
 	 */
-	function onMissingMethod( missingMethodName, missingMethodArguments = {} ){
+	function onMissingMethod(
+		missingMethodName,
+		missingMethodArguments = {}
+	){
 		return invoke(
 			variables.router,
 			arguments.missingMethodName,
@@ -100,7 +104,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// Check if base router mapped?
 		if ( NOT wirebox.getBinder().mappingExists( baseRouter ) ) {
 			// feed the base class
-			wirebox.registerNewInstance( name = baseRouter, instancePath = baseRouter );
+			wirebox.registerNewInstance(
+				name         = baseRouter,
+				instancePath = baseRouter
+			);
 		}
 
 		// Load Router
@@ -113,17 +120,21 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				);
 				// Process as a Router.cfc with virtual inheritance
 				wirebox
-					.registerNewInstance( name = "router@coldbox", instancePath = modernRouterPath )
+					.registerNewInstance(
+						name         = "router@coldbox",
+						instancePath = modernRouterPath
+					)
 					.setVirtualInheritance( baseRouter )
 					.setThreadSafe( true )
 					.setScope( wirebox.getBinder().SCOPES.SINGLETON )
-					.addDIConstructorArgument( name = "controller", value = controller );
+					.addDIConstructorArgument(
+						name  = "controller",
+						value = controller
+					);
 				// Create the Router
 				variables.router = wirebox.getInstance( "router@coldbox" );
 				// Register the Router as an Interceptor as well.
-				variables.controller
-					.getInterceptorService()
-					.registerInterceptor( interceptorObject = variables.router );
+				variables.controller.getInterceptorService().registerInterceptor( interceptorObject = variables.router );
 				// Process it
 				variables.router.configure();
 				break;
@@ -133,7 +144,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				log.info( "Loading Legacy Router at: #legacyRouter#" );
 				// Register basic router
 				wirebox
-					.registerNewInstance( name = "router@coldbox", instancePath = baseRouter )
+					.registerNewInstance(
+						name         = "router@coldbox",
+						instancePath = baseRouter
+					)
 					.setScope( wirebox.getBinder().SCOPES.SINGLETON );
 				// Process legacy Routes.cfm. Create a basic Router
 				variables.router = wirebox
@@ -147,11 +161,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				log.info( "Loading Base ColdBox Router" );
 				// Register basic router with default routing
 				wirebox
-					.registerNewInstance( name = "router@coldbox", instancePath = baseRouter )
+					.registerNewInstance(
+						name         = "router@coldbox",
+						instancePath = baseRouter
+					)
 					.setScope( wirebox.getBinder().SCOPES.SINGLETON );
-				variables.router = wirebox
-					.getInstance( "router@coldbox" )
-					.addRoute( pattern = "/:handler/:action?" );
+				variables.router = wirebox.getInstance( "router@coldbox" ).addRoute( pattern = "/:handler/:action?" );
 			}
 		}
 
@@ -183,9 +198,15 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// Activate and record the incoming URL for multi-domain hosting
 		if ( variables.router.getMultiDomainDiscovery() ) {
 			arguments.event.setSESBaseURL(
-				"http" &
-				( event.isSSL() ? "s" : "" ) &
-				"://#CGI.SERVER_NAME##variables.routingAppMapping#" &
+				( event.isSSL() ? "https://" : "http://" ) &
+				CGI.SERVER_NAME &
+				(
+					(
+						( event.isSSL() && CGI.SERVER_PORT != 443 ) ||
+						( !event.isSSL() && CGI.SERVER_PORT != 80 )
+					) ? ":#CGI.SERVER_PORT#" : ""
+				) &
+				variables.routingAppMapping &
 				( variables.router.getFullRewrites() ? "" : "index.cfm" )
 			);
 		}
@@ -201,7 +222,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 		// Extension detection if enabled, so we can do cool extension formats
 		if ( variables.router.getExtensionDetection() ) {
-			cleanedPaths[ "pathInfo" ] = detectExtension( cleanedPaths[ "pathInfo" ], arguments.event );
+			cleanedPaths[ "pathInfo" ] = detectExtension(
+				cleanedPaths[ "pathInfo" ],
+				arguments.event
+			);
 		}
 
 		// Find a route to dispatch
@@ -306,7 +330,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				// Mark as invalid HTTP Exception
 				arguments.event.setIsInvalidHTTPMethod( true );
 				if ( log.canDebug() ) {
-					log.debug( "Invalid HTTP Method detected: #httpMethod#", routeResults.route );
+					log.debug(
+						"Invalid HTTP Method detected: #httpMethod#",
+						routeResults.route
+					);
 				}
 			}
 		}
@@ -329,7 +356,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				// Mark as invalid HTTP Exception
 				arguments.event.setIsInvalidHTTPMethod( true );
 				if ( log.canDebug() ) {
-					log.debug( "Invalid HTTP Method detected: #httpMethod#", routeResults.route );
+					log.debug(
+						"Invalid HTTP Method detected: #httpMethod#",
+						routeResults.route
+					);
 				}
 			}
 
@@ -341,7 +371,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			// Check if using HTTP method actions via struct
 			if ( isStruct( routeResults.route.action ) ) {
 				// Verify HTTP method used is valid
-				if ( structKeyExists( routeResults.route.action, httpMethod ) ) {
+				if (
+					structKeyExists(
+						routeResults.route.action,
+						httpMethod
+					)
+				) {
 					discoveredEvent &= ".#routeResults.route.action[ httpMethod ]#";
 					// Send for logging in debug mode
 					if ( log.canDebug() ) {
@@ -354,7 +389,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 					discoveredEvent &= ".onInvalidHTTPMethod";
 					arguments.event.setIsInvalidHTTPMethod( true );
 					if ( log.canDebug() ) {
-						log.debug( "Invalid HTTP Method detected: #httpMethod#", routeResults.route );
+						log.debug(
+							"Invalid HTTP Method detected: #httpMethod#",
+							routeResults.route
+						);
 					}
 				}
 			}
@@ -448,7 +486,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 		// Remove the leading slash
 		if ( len( requestString ) GT 1 AND left( requestString, 1 ) eq "/" ) {
-			requestString = right( requestString, len( requestString ) - 1 );
+			requestString = right(
+				requestString,
+				len( requestString ) - 1
+			);
 		}
 		// Add ending slash
 		if ( right( requestString, 1 ) IS NOT "/" ) {
@@ -502,7 +543,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 				// Is this namespace routing?
 				if ( len( arguments.namespace ) ) {
-					arguments.event.setPrivateValue( "currentRoutedNamespace", arguments.namespace );
+					arguments.event.setPrivateValue(
+						"currentRoutedNamespace",
+						arguments.namespace
+					);
 				}
 
 				// Debug logging
@@ -564,9 +608,18 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 		// Save current routed details in PRC
 		arguments.event
-			.setPrivateValue( "currentRoute", results.route.pattern )
-			.setPrivateValue( "currentRouteName", results.route.name )
-			.setPrivateValue( "currentRoutedModule", results.route.module );
+			.setPrivateValue(
+				"currentRoute",
+				results.route.pattern
+			)
+			.setPrivateValue(
+				"currentRouteName",
+				results.route.name
+			)
+			.setPrivateValue(
+				"currentRoutedModule",
+				results.route.module
+			);
 
 		// Save Found URL if NOT Found already
 		if ( NOT arguments.event.privateValueExists( "currentRoutedURL" ) ) {
@@ -649,7 +702,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * @requestString The incoming request string
 	 * @event The event object
 	 */
-	private function detectExtension( required requestString, required event ){
+	private function detectExtension(
+		required requestString,
+		required event
+	){
 		var extension    = listLast( arguments.requestString, "." );
 		var extensionLen = len( extension );
 
@@ -667,9 +723,15 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 					log.debug( "Extension: #extension# detected and set in rc.format" );
 				}
 				// remove it from the string and return string for continued parsing.
-				return left( requestString, len( arguments.requestString ) - extensionLen - 1 );
+				return left(
+					requestString,
+					len( arguments.requestString ) - extensionLen - 1
+				);
 			} else if ( variables.router.getThrowOnInvalidExtension() ) {
-				event.setHTTPHeader( statusText = "Invalid Requested Format Extension: #extension#", statusCode = 406 );
+				event.setHTTPHeader(
+					statusText = "Invalid Requested Format Extension: #extension#",
+					statusCode = 406
+				);
 				throw(
 					message = "Invalid requested format extendion: #extension#",
 					detail  = "Invalid Request Format Extension Detected: #extension#. Valid extensions are: #variables.router.getValidExtensions()#",
@@ -787,7 +849,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		var isModule       = len( arguments.module ) GT 0;
 
 		// Verify if we have a handler on the route params
-		if ( findNoCase( "handler", arrayToList( arguments.routeParams ) ) ) {
+		if (
+			findNoCase(
+				"handler",
+				arrayToList( arguments.routeParams )
+			)
+		) {
 			// Cleanup routing string to position of :handler
 			for ( x = 1; x lte routeParamsLen; x = x + 1 ) {
 				if ( arguments.routeParams[ x ] neq "handler" ) {
@@ -937,12 +1004,21 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			}
 
 			// Setup Relocation
-			var relocationUrl = "#arguments.event.getSESbaseURL()##newpath##serializeURL( httpRequestData.content, arguments.event )#";
+			var relocationUrl = "#arguments.event.getSESbaseURL()##newpath##serializeURL(
+				httpRequestData.content,
+				arguments.event
+			)#";
 
 			if ( httpRequestData.method eq "GET" ) {
-				cflocation( url=relocationUrl, statusCode=301 );
+				cflocation(
+					url        = relocationUrl,
+					statusCode = 301
+				);
 			} else {
-				cflocation( url=relocationUrl, statusCode=303 );
+				cflocation(
+					url        = relocationUrl,
+					statusCode = 303
+				);
 			}
 		}
 	}
@@ -957,7 +1033,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		var rc   = arguments.event.getCollection();
 
 		for ( var key in rc ) {
-			if ( NOT listFindNoCase( "route,handler,action,#variables.eventName#", key ) ) {
+			if (
+				NOT listFindNoCase(
+					"route,handler,action,#variables.eventName#",
+					key
+				)
+			) {
 				vars = listAppend(
 					vars,
 					"#lCase( key )#=#rc[ key ]#",
@@ -988,8 +1069,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				"^.*\?",
 				"",
 				"all"
-			)
-				.listToArray( "&" )
+			).listToArray( "&" )
 				.each( function( item ){
 					rc[ item.getToken( 1, "=" ) ] = item.getToken( 2, "=" );
 				} );
