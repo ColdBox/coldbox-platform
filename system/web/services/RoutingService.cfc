@@ -30,17 +30,21 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// Prepare dependencies
 		variables.log                          = variables.controller.getLogBox().getLogger( this );
 		variables.handlersPath                 = controller.getSetting( "HandlersPath" );
-		variables.handlersExternalLocationPath = controller.getSetting( "HandlersExternalLocationPath" );
-		variables.modules                      = controller.getSetting( "Modules" );
-		variables.eventName                    = controller.getSetting( "EventName" );
-		variables.defaultEvent                 = controller.getSetting( "DefaultEvent" );
-		variables.requestService               = controller.getRequestService();
-		variables.wirebox                      = controller.getWireBox();
+		variables.handlersExternalLocationPath = controller.getSetting(
+			"HandlersExternalLocationPath"
+		);
+		variables.modules        = controller.getSetting( "Modules" );
+		variables.eventName      = controller.getSetting( "EventName" );
+		variables.defaultEvent   = controller.getSetting( "DefaultEvent" );
+		variables.requestService = controller.getRequestService();
+		variables.wirebox        = controller.getWireBox();
 
 		// Routing AppMapping Determinations
 		variables.appMapping        = controller.getSetting( "AppMapping" );
 		variables.routingAppMapping = (
-			len( controller.getSetting( "AppMapping" ) lte 1 ) ? controller.getSetting( "AppMapping" ) & "/" : ""
+			len( controller.getSetting( "AppMapping" ) lte 1 ) ? controller.getSetting(
+				"AppMapping"
+			) & "/" : ""
 		);
 		variables.routingAppMapping = left( variables.routingAppMapping, 1 ) == "/" ? variables.routingAppMapping : "/#variables.routingAppMapping#";
 
@@ -134,7 +138,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				// Create the Router
 				variables.router = wirebox.getInstance( "router@coldbox" );
 				// Register the Router as an Interceptor as well.
-				variables.controller.getInterceptorService().registerInterceptor( interceptorObject = variables.router );
+				variables.controller
+					.getInterceptorService()
+					.registerInterceptor( interceptorObject = variables.router );
 				// Process it
 				variables.router.configure();
 				break;
@@ -166,7 +172,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 						instancePath = baseRouter
 					)
 					.setScope( wirebox.getBinder().SCOPES.SINGLETON );
-				variables.router = wirebox.getInstance( "router@coldbox" ).addRoute( pattern = "/:handler/:action?" );
+				variables.router = wirebox
+					.getInstance( "router@coldbox" )
+					.addRoute( pattern = "/:handler/:action?" );
 			}
 		}
 
@@ -292,12 +300,16 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			if ( routeResults.route.redirect.findNoCase( "http" ) ) {
 				controller.relocate(
 					URL        = routeResults.route.redirect,
-					statusCode = ( routeResults.route.keyExists( "statusCode" ) ? routeResults.route.statusCode : 301 )
+					statusCode = (
+						routeResults.route.keyExists( "statusCode" ) ? routeResults.route.statusCode : 301
+					)
 				);
 			} else {
 				controller.relocate(
 					event      = routeResults.route.redirect,
-					statusCode = ( routeResults.route.keyExists( "statusCode" ) ? routeResults.route.statusCode : 301 )
+					statusCode = (
+						routeResults.route.keyExists( "statusCode" ) ? routeResults.route.statusCode : 301
+					)
 				);
 			}
 			return;
@@ -430,7 +442,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 		// See if Response is dispatched
 		if (
-			isClosure( routeResults.route.response ) || isCustomFunction( routeResults.route.response ) || routeResults.route.response.len()
+			isClosure( routeResults.route.response ) || isCustomFunction(
+				routeResults.route.response
+			) || routeResults.route.response.len()
 		) {
 			renderResponse( routeResults.route, arguments.event );
 		}
@@ -508,11 +522,19 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			if (
 				( match.len[ 1 ] IS NOT 0 AND variables.router.getLooseMatching() )
 				OR
-				( NOT variables.router.getLooseMatching() AND match.len[ 1 ] IS NOT 0 AND match.pos[ 1 ] EQ 1 )
+				(
+					NOT variables.router.getLooseMatching() AND match.len[ 1 ] IS NOT 0 AND match.pos[
+						1
+					] EQ 1
+				)
 			) {
 				// Verify condition matching
 				if (
-					( isClosure( _routes[ i ].condition ) || isCustomFunction( _routes[ i ].condition ) )
+					(
+						isClosure( _routes[ i ].condition ) || isCustomFunction(
+							_routes[ i ].condition
+						)
+					)
 					AND NOT _routes[ i ].condition( requestString )
 				) {
 					// Debug logging
@@ -551,7 +573,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 				// Debug logging
 				if ( log.canDebug() ) {
-					log.debug( "SES Route matched: #results.route.toString()# on routed string: #requestString#" );
+					log.debug(
+						"Route matched: #results.route.toString()# on routed string: #requestString#"
+					);
 				}
 
 				break;
@@ -600,7 +624,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			// process context discovery of incoming pattern
 			var contextRoute = findRoute( argumentCollection = contextRouting );
 
-			// Return if route found.
+			// Return if route Not found.
 			if ( !contextRoute.route.isEmpty() ) {
 				return contextRoute;
 			}
@@ -608,6 +632,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 		// Save current routed details in PRC
 		arguments.event
+			.setPrivateValue( "currentRouteRecord", results.route )
 			.setPrivateValue(
 				"currentRoute",
 				results.route.pattern
@@ -619,6 +644,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			.setPrivateValue(
 				"currentRoutedModule",
 				results.route.module
+			)
+			.setPrivateValue(
+				"currentRouteMeta",
+				results.route.meta
 			);
 
 		// Save Found URL if NOT Found already
@@ -689,7 +718,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	function getCgiElement( required cgiElement, required event ){
 		// Allow a UDF to manipulate the CGI.PATH_INFO value
 		// in advance of route detection.
-		if ( arguments.cgiElement EQ "path_info" AND structKeyExists( variables.router, "PathInfoProvider" ) ) {
+		if (
+			arguments.cgiElement EQ "path_info" AND structKeyExists(
+				variables.router,
+				"PathInfoProvider"
+			)
+		) {
 			return variables.router.pathInfoProvider( event = arguments.event );
 		}
 		return CGI[ arguments.CGIElement ];
@@ -713,7 +747,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		extension = lCase( reReplace( extension, "/$", "", "all" ) );
 
 		// check if extension found
-		if ( listLen( arguments.requestString, "." ) GT 1 AND len( extension ) AND NOT find( "/", extension ) ) {
+		if (
+			listLen( arguments.requestString, "." ) GT 1 AND len( extension ) AND NOT find(
+				"/",
+				extension
+			)
+		) {
 			// Check if extension is valid?
 			if ( variables.router.isValidExtension( extension ) ) {
 				// set the format request collection variable
@@ -888,7 +927,11 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				if (
 					directoryExists( root & "/" & foundPaths & thisFolder )
 					OR
-					( len( extRoot ) AND directoryExists( extRoot & "/" & foundPaths & thisFolder ) )
+					(
+						len( extRoot ) AND directoryExists(
+							extRoot & "/" & foundPaths & thisFolder
+						)
+					)
 				) {
 					// Save Found Paths
 					foundPaths = foundPaths & thisFolder & "/";
@@ -974,7 +1017,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			(
 				rc[ variables.eventName ] NEQ variables.defaultEvent
 				OR
-				( structKeyExists( url, variables.eventName ) AND rc[ variables.eventName ] EQ variables.defaultEvent )
+				(
+					structKeyExists( url, variables.eventName ) AND rc[ variables.eventName ] EQ variables.defaultEvent
+				)
 			)
 		) {
 			//  New Pathing Calculations if not the default event. If default, relocate to the domain.
@@ -1000,7 +1045,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 			// Debugging
 			if ( log.canDebug() ) {
-				log.debug( "SES Invalid URL detected. Route: #arguments.route#, script_name: #arguments.script_name#" );
+				log.debug(
+					"SES Invalid URL detected. Route: #arguments.route#, script_name: #arguments.script_name#"
+				);
 			}
 
 			// Setup Relocation
@@ -1010,15 +1057,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			)#";
 
 			if ( httpRequestData.method eq "GET" ) {
-				cflocation(
-					url        = relocationUrl,
-					statusCode = 301
-				);
+				cflocation( url=relocationUrl, statusCode=301 );
 			} else {
-				cflocation(
-					url        = relocationUrl,
-					statusCode = 303
-				);
+				cflocation( url=relocationUrl, statusCode=303 );
 			}
 		}
 	}

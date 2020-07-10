@@ -649,25 +649,54 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
-	 * Get the current request's SES route that matched
+	 * Get the current request's route pattern that matched
 	 */
 	string function getCurrentRoute(){
 		return getPrivateValue( "currentRoute", "" );
 	}
 
 	/**
-	 * Get the current request's SES route name
+	 * Get the current request's routed name
 	 */
 	string function getCurrentRouteName(){
 		return getPrivateValue( "currentRouteName", "" );
 	}
 
+	/**
+	 * Get the current routed namespace that matched the route, if any
+	 */
+	string function getCurrentRoutedNamespace(){
+		return getPrivateValue( "currentRoutedNamespace", "" );
+	}
 
 	/**
-	 * Get the current routed URL that matched the SES route
+	 * Get the current routed module that matched the route, if any
+	 */
+	string function getCurrentRoutedModule(){
+		return getPrivateValue( "currentRoutedModule", "" );
+	}
+
+	/**
+	 * Get the current routed URL that matched the route pattern
 	 */
 	string function getCurrentRoutedURL(){
 		return getPrivateValue( "currentRoutedURL", "" );
+	}
+
+	/**
+	 * Get the current routed route record in all of its raw glory
+	 * Returns an empty struct if no record was found.
+	 */
+	struct function getCurrentRouteRecord(){
+		return getPrivateValue( "currentRouteRecord", {} );
+	}
+
+	/**
+	 * Gets the current routed route's metadata struct, if any
+	 * Returns an empty struct if no record was found.
+	 */
+	struct function getCurrentRouteMeta(){
+		return getPrivateValue( "currentRouteMeta", {} );
 	}
 
 	/**
@@ -707,20 +736,6 @@ component serializable="false" accessors="true" {
 	boolean function urlMatchesExact( required string path ){
 		arguments.exact = true;
 		return urlMatches( argumentCollection = arguments );
-	}
-
-	/**
-	 * Get the current routed namespace that matched the SES route, if any
-	 */
-	string function getCurrentRoutedNamespace(){
-		return getPrivateValue( "currentRoutedNamespace", "" );
-	}
-
-	/**
-	 * Get the current routed module that matched the SES route, if any
-	 */
-	string function getCurrentRoutedModule(){
-		return getPrivateValue( "currentRoutedModule", "" );
 	}
 
 	/**

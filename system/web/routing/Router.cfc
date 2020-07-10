@@ -29,32 +29,50 @@ component
 	/**
 	 * Flag to enable unique or not URLs
 	 */
-	property name="uniqueURLS" type="boolean" default="false";
+	property
+		name   ="uniqueURLS"
+		type   ="boolean"
+		default="false";
 
 	/**
 	 * Flag to enable/disable routing
 	 */
-	property name="enabled" type="boolean" default="true";
+	property
+		name   ="enabled"
+		type   ="boolean"
+		default="true";
 
 	/**
 	 * Loose matching flag for regex matches
 	 */
-	property name="looseMatching" type="boolean" default="false";
+	property
+		name   ="looseMatching"
+		type   ="boolean"
+		default="false";
 
 	/**
 	 * Detect extensions flag, so it can place a 'format' variable on the rc
 	 */
-	property name="extensionDetection" type="boolean" default="true";
+	property
+		name   ="extensionDetection"
+		type   ="boolean"
+		default="true";
 
 	/**
 	 * Throw an exception when extension detection is invalid or not
 	 */
-	property name="throwOnInvalidExtension" type="boolean" default="false";
+	property
+		name   ="throwOnInvalidExtension"
+		type   ="boolean"
+		default="false";
 
 	/**
 	 * Initialize the valid extensions to detect
 	 */
-	property name="validExtensions" type="string" default="json,jsont,xml,cfm,cfml,html,htm,rss,pdf";
+	property
+		name   ="validExtensions"
+		type   ="string"
+		default="json,jsont,xml,cfm,cfml,html,htm,rss,pdf";
 
 	/**
 	 * Base routing URL
@@ -65,13 +83,19 @@ component
 	 * This flag denotes if full URL rewrites are enabled or not. Meaning if the `index.cfm` is in the path of the rewriter or not.
 	 * The default value is **false**.
 	 */
-	property name="fullRewrites" type="boolean" default="false";
+	property
+		name   ="fullRewrites"
+		type   ="boolean"
+		default="false";
 
 	/**
 	 * This flag denotes that the routing service will discover the incoming base URL from the host + ssl + environment.
 	 * If off, then it will use whatever the base URL was set in the router.
 	 */
-	property name="multiDomainDiscovery" type="boolean" default="true";
+	property
+		name   ="multiDomainDiscovery"
+		type   ="boolean"
+		default="true";
 
 
 	/**
@@ -263,12 +287,6 @@ component
 			);
 		}
 		return this;
-	}
-
-	function setAutoReload(){
-	}
-	function getAutoReload(){
-		return false;
 	}
 
 	/****************************************************************************************************************************/
@@ -637,14 +655,15 @@ component
 	 * - `/photos/:id` : `PUT/PATCH` -> `photos.update` Update a specific photo
 	 * - `/photos/:id` : `DELETE` -> `photos.delete` Delete a specific photo
 	 *
-	 * @resource 		The name of a single resource or a list of resources or an array of resources
-	 * @handler 		The handler for the route. Defaults to the resource name.
-	 * @parameterName 	The name of the id/parameter for the resource. Defaults to `id`.
-	 * @only 			Limit routes created with only this list or array of actions, e.g. "index,show"
-	 * @except 			Exclude routes with an except list or array of actions, e.g. "show"
-	 * @module 			If passed, the module these resources will be attached to.
-	 * @namespace 		If passed, the namespace these resources will be attached to.
-	 * @pattern 		If passed, the actual URL pattern to use, else it defaults to `/#arguments.resource#` the name of the resource.
+	 * @resource The name of a single resource or a list of resources or an array of resources
+	 * @handler The handler for the route. Defaults to the resource name.
+	 * @parameterName The name of the id/parameter for the resource. Defaults to `id`.
+	 * @only Limit routes created with only this list or array of actions, e.g. "index,show"
+	 * @except Exclude routes with an except list or array of actions, e.g. "show"
+	 * @module If passed, the module these resources will be attached to.
+	 * @namespace If passed, the namespace these resources will be attached to.
+	 * @pattern If passed, the actual URL pattern to use, else it defaults to `/#arguments.resource#` the name of the resource.
+	 * @meta A struct of metadata to store with ALL the routes created from this resource
 	 */
 	function resources(
 		required resource,
@@ -654,7 +673,8 @@ component
 		except           = [],
 		string module    = "",
 		string namespace = "",
-		string pattern   = ""
+		string pattern   = "",
+		struct meta      = {}
 	){
 		// Inflate incoming arguments if not arrays
 		if ( !isArray( arguments.only ) ) {
@@ -682,11 +702,12 @@ component
 			);
 			if ( !structIsEmpty( actionSet ) ) {
 				addRoute(
-					pattern   = "#thisPattern#/:#arguments.parameterName#/edit",
-					handler   = arguments.handler,
-					action    = actionSet,
-					module    = arguments.module,
-					namespace = arguments.namespace
+					pattern  : "#thisPattern#/:#arguments.parameterName#/edit",
+					handler  : arguments.handler,
+					action   : actionSet,
+					module   : arguments.module,
+					namespace: arguments.namespace,
+					meta     : arguments.meta
 				);
 			}
 
@@ -698,11 +719,12 @@ component
 			);
 			if ( !structIsEmpty( actionSet ) ) {
 				addRoute(
-					pattern   = "#thisPattern#/new",
-					handler   = arguments.handler,
-					action    = actionSet,
-					module    = arguments.module,
-					namespace = arguments.namespace
+					pattern  : "#thisPattern#/new",
+					handler  : arguments.handler,
+					action   : actionSet,
+					module   : arguments.module,
+					namespace: arguments.namespace,
+					meta     : arguments.meta
 				);
 			}
 
@@ -719,11 +741,12 @@ component
 			);
 			if ( !structIsEmpty( actionSet ) ) {
 				addRoute(
-					pattern   = "#thisPattern#/:#arguments.parameterName#",
-					handler   = arguments.handler,
-					action    = actionSet,
-					module    = arguments.module,
-					namespace = arguments.namespace
+					pattern  : "#thisPattern#/:#arguments.parameterName#",
+					handler  : arguments.handler,
+					action   : actionSet,
+					module   : arguments.module,
+					namespace: arguments.namespace,
+					meta     : arguments.meta
 				);
 			}
 
@@ -735,11 +758,12 @@ component
 			);
 			if ( !structIsEmpty( actionSet ) ) {
 				addRoute(
-					pattern   = "#thisPattern#",
-					handler   = arguments.handler,
-					action    = actionSet,
-					module    = arguments.module,
-					namespace = arguments.namespace
+					pattern  : "#thisPattern#",
+					handler  : arguments.handler,
+					action   : actionSet,
+					module   : arguments.module,
+					namespace: arguments.namespace,
+					meta     : arguments.meta
 				);
 			}
 		}
@@ -780,6 +804,7 @@ component
 	 * @prc The PRC name value pairs to attach if the reponse matches
 	 * @viewModule The module the view belongs to
 	 * @layoutModule The module the layout belongs to
+	 * @meta Additional metadata to add to the incoming route
 	 *
 	 * @return SES
 	 */
@@ -813,12 +838,12 @@ component
 		struct rc                     = {},
 		struct prc                    = {},
 		string viewModule             = "",
-		string layoutModule           = ""
+		string layoutModule           = "",
+		struct meta                   = {}
 	){
 		// The route construct we will save
 		var thisRoute = {};
 		var thisRegex = 0;
-
 
 		// process a with closure if not empty
 		if ( !variables.withClosure.isEmpty() && !variables.onGroup ) {
@@ -886,8 +911,8 @@ component
 		}
 
 		// Init the matching variables and pattern parameters
-		thisRoute.regexPattern  = "";
-		thisRoute.patternParams = [];
+		thisRoute[ "regexPattern" ]  = "";
+		thisRoute[ "patternParams" ] = [];
 
 		// Check for / pattern
 		if ( len( thisRoute.pattern ) eq 1 ) {
@@ -1023,8 +1048,8 @@ component
 		// end looping of pattern optionals
 
 		// Process Sub-Domain Routing
-		thisRoute.domainParams = [];
-		thisRoute.regexDomain  = "^";
+		thisRoute[ "domainParams" ] = [];
+		thisRoute[ "regexDomain" ]  = "^";
 		if ( structKeyExists( thisRoute, "domain" ) ) {
 			// Process the route as a regex pattern
 			for ( var x = 1; x lte listLen( thisRoute.domain, "." ); x++ ) {
@@ -1202,35 +1227,37 @@ component
 		}
 		// Return a new route definition
 		return {
-			pattern               : "",
-			handler               : "",
-			action                : "",
-			packageResolverExempt : false,
-			view                  : "",
-			layout                : "",
-			viewNoLayout          : false,
-			viewModule            : "",
-			layoutModule          : "",
-			valuePairTranslation  : true,
-			constraints           : {},
-			module                : "",
-			moduleRouting         : "",
-			namespace             : "",
-			namespaceRouting      : "",
-			ssl                   : false,
-			append                : true,
-			response              : "",
-			statusCode            : 200,
-			statusText            : "Ok",
-			condition             : "",
-			name                  : "",
-			domain                : "",
-			redirect              : "",
-			event                 : "",
-			verbs                 : "",
-			headers               : {},
-			rc                    : {},
-			prc                   : {}
+			"action"                : "", // The action to execute
+			"append"                : true, // Was this route appended or pre/prended
+			"condition"             : "", // The condition closure which must be true for the route to match
+			// TODO: Consider deprecating this since now we have a `-regex()` placeholder
+			"constraints"           : {}, // If we have any regex constraints on placeholders.
+			"domain"                : "", // The domain attached to the route
+			"event"                 : "", // The full event syntax to execute
+			"handler"               : "", // The handler to execute
+			"headers"               : {}, // The HTTP response headers to respond with
+			"layout"                : "", // The layout to proxy to
+			"layoutModule"          : "", // If the layout comes from a module
+			"meta"                  : {}, // Route metadata if any
+			"module"                : "", // The module event we must execute
+			"moduleRouting"         : "", // This routes to a module
+			"name"                  : "", // The named route
+			"namespace"             : "", // The namespace this route belongs to
+			"namespaceRouting"      : "", // This routes to a namespace
+			"packageResolverExempt" : false, // If true, it does not resolve packages by convention, by default we do
+			"pattern"               : "", // The regex pattern used for matching
+			"prc"                   : {}, // The PRC params to add incorporate if matched
+			"rc"                    : {}, // The RC params to add incorporate if matched
+			"redirect"              : "", // The redirection location
+			"response"              : "", // Do we have an inline response closure
+			"ssl"                   : false, // Are we forcing SSL
+			"statusCode"            : 200, // The response status code
+			"statusText"            : "Ok", // The response status text
+			"valuePairTranslation"  : true, // If we translate name-value pairs in the URL by convention
+			"verbs"                 : "", // The HTTP Verbs allowed
+			"view"                  : "", // The view to proxy to
+			"viewModule"            : "", // If the view comes from a module
+			"viewNoLayout"          : false // If we use a layout or not
 		};
 	}
 
@@ -1267,8 +1294,10 @@ component
 				args = {
 					pattern : arguments.pattern,
 					event   : arguments.target,
-					verbs   : ( variables.thisRoute.keyExists( "verbs" ) ? variables.thisRoute.verbs : "" ),
-					name    : arguments.name
+					verbs   : (
+						variables.thisRoute.keyExists( "verbs" ) ? variables.thisRoute.verbs : ""
+					),
+					name : arguments.name
 				};
 			}
 			// Closure/Lambda => Response
@@ -1276,8 +1305,10 @@ component
 				args = {
 					pattern  : arguments.pattern,
 					response : arguments.target,
-					verbs    : ( variables.thisRoute.keyExists( "verbs" ) ? variables.thisRoute.verbs : "" ),
-					name     : arguments.name
+					verbs    : (
+						variables.thisRoute.keyExists( "verbs" ) ? variables.thisRoute.verbs : ""
+					),
+					name : arguments.name
 				};
 			}
 
@@ -1421,7 +1452,7 @@ component
 	/**
 	 * Appends a collection of header name-values to a pattern
 	 * <pre>
-	 * route( "hello", "main.index" ).headers( { ... } )
+	 * route( "hello" ).headers( { ... } ).to( "main.index" )
 	 * </pre>
 	 *
 	 * @map The structure of headers to issue
@@ -1436,6 +1467,27 @@ component
 			processWith( arguments );
 		}
 		variables.thisRoute.headers.append( arguments.map, arguments.overwrite );
+		return this;
+	}
+
+	/**
+	 * Appends a collection of metadata name-values to a pattern
+	 * <pre>
+	 * route( "hello" ).meta( { secure : true, perms : [] } ).to( "main.index" )
+	 * </pre>
+	 *
+	 * @map The structure of metadata to store within the route
+	 * @overwrite Overwrite the elements
+	 */
+	function meta(
+		required map,
+		boolean overwrite = true
+	){
+		// process a with closure if not empty
+		if ( !variables.withClosure.isEmpty() ) {
+			processWith( arguments );
+		}
+		variables.thisRoute.meta.append( arguments.map, arguments.overwrite );
 		return this;
 	}
 
@@ -2026,7 +2078,11 @@ component
 	){
 		var actionSet = arguments.initial;
 
-		if ( structKeyExists( arguments, "only" ) && !isNull( arguments.only ) && !arrayIsEmpty( arguments.only ) ) {
+		if (
+			structKeyExists( arguments, "only" ) && !isNull( arguments.only ) && !arrayIsEmpty(
+				arguments.only
+			)
+		) {
 			actionSet = {};
 			for ( var HTTPVerb in arguments.initial ) {
 				var methodName = arguments.initial[ HTTPVerb ];
@@ -2038,7 +2094,11 @@ component
 			}
 		}
 
-		if ( structKeyExists( arguments, "except" ) && !isNull( arguments.except ) && !arrayIsEmpty( arguments.except ) ) {
+		if (
+			structKeyExists( arguments, "except" ) && !isNull( arguments.except ) && !arrayIsEmpty(
+				arguments.except
+			)
+		) {
 			for ( var HTTPVerb in arguments.initial ) {
 				var methodName = arguments.initial[ HTTPVerb ];
 				for ( var exceptAction in arguments.except ) {

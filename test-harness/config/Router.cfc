@@ -5,23 +5,31 @@ component {
 		// setFullRewrites( false );
 
 		// Nested Resources
-		resources( resource = "agents", pattern = "/sites/:id/agents" );
+		resources(
+			resource = "agents",
+			pattern  = "/sites/:id/agents"
+		);
 
 		// Redirects
 		route( "/tempRoute" ).toRedirect( "/main/redirectTest", 302 );
 		route( "/oldRoute" ).toRedirect( "/main/redirectTest" );
 
-		route( "/render/:format" ).to( "actionRendering.index" );
+		route( "/render/:format" ).meta( { secure : false } ).to( "actionRendering.index" );
 
 		// With Regex
-		route( "post/:postID-regex:([a-zA-Z]+?)/:userID-alpha/regex:(xml|json)" ).to( "ehGeneral.dumpRC" );
+		route( "post/:postID-regex:([a-zA-Z]+?)/:userID-alpha/regex:(xml|json)" ).to(
+			"ehGeneral.dumpRC"
+		);
 
 		// subdomain routing
 		route( "/" ).withDomain( "subdomain-routing.dev" ).to( "subdomain.index" );
 		route( "/" ).withDomain( ":username.forgebox.dev" ).to( "subdomain.show" );
 
 		// Resources
-		resources( "photos" );
+		resources(
+			resource: "photos",
+			meta    : { secure : true }
+		);
 
 		// Responses + Conditions
 		route( "/ff" )
@@ -41,7 +49,10 @@ component {
 		} );
 
 		// Views No Events
-		route( pattern = "contactus2", name = "contactus2" ).toView( view = "simpleView", noLayout = true );
+		route(
+			pattern = "contactus2",
+			name    = "contactus2"
+		).toView( view = "simpleView", noLayout = true );
 
 		route( "contactus" ).as( "contactUs" ).toView( "simpleView" );
 
@@ -50,18 +61,35 @@ component {
 		route( "/parentLookup" ).toModuleRouting( "parentLookup" );
 
 		// More Routes
-		route( pattern = "/complexParams/:id-numeric{2}/:name-regex(luis)", name = "complexParams" ).to( "main.main" );
-		route( pattern = "/testroute/:id/:name", name = "testRouteWithParams" ).to( "main.main" );
-		route( pattern = "/testroute", name = "testRoute" ).to( "main.main" );
+		route(
+			pattern = "/complexParams/:id-numeric{2}/:name-regex(luis)",
+			name    = "complexParams"
+		).to( "main.main" );
+		route(
+			pattern = "/testroute/:id/:name",
+			name    = "testRouteWithParams"
+		).to( "main.main" );
+		route(
+			pattern = "/testroute",
+			name    = "testRoute"
+		).to( "main.main" );
 
 		// Names routes
-		route( pattern = "/routeRunner/:id/:name", name = "routeRunner" ).to( "main.returnTest" );
-		route( pattern = "/routeRunner/:id/:name", name = "routeRunner" ).to( "main.returnTest" );
+		route(
+			pattern = "/routeRunner/:id/:name",
+			name    = "routeRunner"
+		).to( "main.returnTest" );
+		route(
+			pattern = "/routeRunner/:id/:name",
+			name    = "routeRunner"
+		).to( "main.returnTest" );
 
 		// Should fire localized onInvalidHTTPMethod
 		route( pattern = "invalid-restful" ).withAction( { post : "index" } ).toHandler( "restful" );
 
-		route( pattern = "invalid-main-method" ).withAction( { post : "index" } ).toHandler( "main" );
+		route( pattern = "invalid-main-method" )
+			.withAction( { post : "index" } )
+			.toHandler( "main" );
 
 		route( "invalid-main-verbs" ).withVerbs( "post" ).to( "main.index" );
 
@@ -77,7 +105,10 @@ component {
 
 		// Sample namespace
 		with( namespace = "luis" )
-			.addRoute( pattern = "contactus", view = "simpleview" )
+			.addRoute(
+				pattern = "contactus",
+				view    = "simpleview"
+			)
 			.addRoute(
 				pattern      = "contactus2",
 				view         = "simpleview",
@@ -95,27 +126,15 @@ component {
 			.endWith();
 
 		// awn sync with contact manager
-		group(
-			{
-				pattern : "/runAWNsync",
-				handler : "utilities.AWNsync"
-			},
-			function( options ){
-				route( "/:user_id" )
-					.withAction( {
-						get     : "runAWNsync",
-						options : "returnOptions"
-					} )
-					.end();
-			}
-		);
+		group( { pattern : "/runAWNsync", handler : "utilities.AWNsync" }, function( options ){
+			route( "/:user_id" )
+				.withAction( { get : "runAWNsync", options : "returnOptions" } )
+				.end();
+		} );
 
 		// health check route
 		route( "/health_check" )
-			.withAction( {
-				get     : "runCheck",
-				options : "returnOptions"
-			} )
+			.withAction( { get : "runCheck", options : "returnOptions" } )
 			.to( "utilities.HealthCheck" );
 	}
 

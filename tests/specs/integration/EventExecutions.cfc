@@ -14,10 +14,7 @@
  *	* eventArguments : The struct of args to pass to the event
  *	* renderResults : Render back the results of the event
  *******************************************************************************/
-component
-	extends   ="coldbox.system.testing.BaseTestCase"
-	appMapping="/cbTestHarness"
-{
+component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarness" {
 
 	/*********************************** LIFE CYCLE Methods ***********************************/
 
@@ -43,7 +40,10 @@ component
 			story( "I want to execute private event actions", function(){
 				given( "a private event string: main.testPrivateActions", function(){
 					then( "it should execute it privately", function(){
-						var e = execute( event = "main.testPrivateActions", renderResults = true );
+						var e = execute(
+							event         = "main.testPrivateActions",
+							renderResults = true
+						);
 						expect( e.getRenderedContent() ).toInclude( "Private actions rule" );
 					} );
 				} );
@@ -54,7 +54,9 @@ component
 					then( "it should fire the localized onInvalidHTTPMethod", function(){
 						// Execute
 						var e = this.GET( "rendering.testHTTPMethod" );
-						expect( e.getRenderedContent() ).toInclude( "Yep, onInvalidHTTPMethod works!" );
+						expect( e.getRenderedContent() ).toInclude(
+							"Yep, onInvalidHTTPMethod works!"
+						);
 					} );
 				} );
 			} );
@@ -65,7 +67,10 @@ component
 						// Mock to invalid HTTP method
 						prepareMock( getRequestContext() ).$( "getHTTPMethod", "DELETE" );
 						// Execute
-						var e = execute( event = "main.index", renderResults = true );
+						var e = execute(
+							event         = "main.index",
+							renderResults = true
+						);
 						expect( e.getRenderedContent() ).toInclude( "invalid http: main.index" );
 						expect( e.getStatusCode() ).toBe( 405 );
 					} );
@@ -75,7 +80,10 @@ component
 			story( "I want to execute a global invalid event handler", function(){
 				given( "an invalid event", function(){
 					then( "it should fire the global invalid event handler", function(){
-						var e = execute( event = "does.not.exist", renderResults = true );
+						var e = execute(
+							event         = "does.not.exist",
+							renderResults = true
+						);
 						expect( e.getStatusCode() ).toBe( 404 );
 					} );
 				} );
@@ -99,7 +107,10 @@ component
 			story( "I want to run named routes via runRoute()", function(){
 				given( "a valid route and params with no caching", function(){
 					then( "it should execute the route event", function(){
-						var event = execute( event = "main.routeRunner", renderResults = true );
+						var event = execute(
+							event         = "main.routeRunner",
+							renderResults = true
+						);
 						expect( event.getRenderedContent() ).toInclude( "unit test!" );
 					} );
 				} );
@@ -107,9 +118,22 @@ component
 					then( "it should execute the route event", function(){
 						var cache = getCache( "template" );
 						cache.clearAll();
-						var event = execute( event = "main.routeRunnerWithCaching", renderResults = true );
+						var event = execute(
+							event         = "main.routeRunnerWithCaching",
+							renderResults = true
+						);
 						expect( event.getRenderedContent() ).toInclude( "unit test!" );
 						expect( cache.getSize() ).toBeGTE( 1 );
+					} );
+				} );
+			} );
+
+			story( "I want to run a route and inspect it's record and meta", function(){
+				given( "A route with meta", function(){
+					then( "I should be able to retrieve it", function(){
+						var event = this.GET( "/photos" );
+						expect( event.getCurrentRouteRecord().pattern ).toBe( "photos/" );
+						expect( event.getCurrentRouteMeta().secure ).toBeTrue();
 					} );
 				} );
 			} );
