@@ -17,14 +17,15 @@
 			it( "can register nested resources", function(){
 				router.resources( resource = "agents", pattern = "/sites/:siteId/agents" );
 				var cl = router.$callLog().addRoute;
-
+				debug( cl )
 				expect( cl[ 1 ] ).toBe(
 					{
 						pattern   : "/sites/:siteId/agents/:id/edit",
 						handler   : "agents",
 						action    : { GET : "edit" },
 						module    : "",
-						namespace : ""
+						namespace : "",
+						meta      : {}
 					},
 					"The route did not match.  Remember that order matters.  Add the most specific routes first."
 				);
@@ -34,7 +35,8 @@
 						handler   : "agents",
 						action    : { GET : "new" },
 						module    : "",
-						namespace : ""
+						namespace : "",
+						meta      : {}
 					},
 					"The route did not match.  Remember that order matters.  Add the most specific routes first."
 				);
@@ -49,7 +51,8 @@
 							DELETE : "delete"
 						},
 						module    : "",
-						namespace : ""
+						namespace : "",
+						meta      : {}
 					},
 					"The route did not match.  Remember that order matters.  Add the most specific routes first."
 				);
@@ -59,7 +62,8 @@
 						handler   : "agents",
 						action    : { GET : "index", POST : "create" },
 						module    : "",
-						namespace : ""
+						namespace : "",
+						meta      : {}
 					},
 					"The route did not match.  Remember that order matters.  Add the most specific routes first."
 				);
@@ -92,6 +96,8 @@
 
 				var cl = router.$callLog().addRoute;
 
+				debug( cl );
+
 				expect( cl ).toHaveLength( 4, "addRoute should have been called 4 times" );
 				expect( cl[ 1 ] ).toBe(
 					{
@@ -99,9 +105,10 @@
 						handler   : "photos",
 						action    : { GET : "edit" },
 						module    : "",
-						namespace : ""
+						namespace : "",
+						meta      : {}
 					},
-					"The route did not match.  Remember that order matters.  Add the most specific routes first."
+					"The route 1 did not match.  Remember that order matters.  Add the most specific routes first."
 				);
 				expect( cl[ 2 ] ).toBe(
 					{
@@ -109,9 +116,10 @@
 						handler   : "photos",
 						action    : { GET : "new" },
 						module    : "",
-						namespace : ""
+						namespace : "",
+						meta      : {}
 					},
-					"The route did not match.  Remember that order matters.  Add the most specific routes first."
+					"The route 2 did not match.  Remember that order matters.  Add the most specific routes first."
 				);
 				expect( cl[ 3 ] ).toBe(
 					{
@@ -124,9 +132,10 @@
 							DELETE : "delete"
 						},
 						module    : "",
-						namespace : ""
+						namespace : "",
+						meta      : {}
 					},
-					"The route did not match.  Remember that order matters.  Add the most specific routes first."
+					"The route 3 did not match.  Remember that order matters.  Add the most specific routes first."
 				);
 				expect( cl[ 4 ] ).toBe(
 					{
@@ -134,9 +143,10 @@
 						handler   : "photos",
 						action    : { GET : "index", POST : "create" },
 						module    : "",
-						namespace : ""
+						namespace : "",
+						meta : {}
 					},
-					"The route did not match.  Remember that order matters.  Add the most specific routes first."
+					"The route 4 did not match.  Remember that order matters.  Add the most specific routes first."
 				);
 			} );
 
@@ -153,7 +163,8 @@
 						handler   : "PhotosController",
 						action    : { GET : "edit" },
 						module    : "",
-						namespace : ""
+						namespace : "",
+						meta      : {}
 					},
 					"The route did not match.  Remember that order matters.  Add the most specific routes first."
 				);
@@ -163,7 +174,8 @@
 						handler   : "PhotosController",
 						action    : { GET : "new" },
 						module    : "",
-						namespace : ""
+						namespace : "",
+						meta      : {}
 					},
 					"The route did not match.  Remember that order matters.  Add the most specific routes first."
 				);
@@ -178,7 +190,8 @@
 							DELETE : "delete"
 						},
 						module    : "",
-						namespace : ""
+						namespace : "",
+						meta      : {}
 					},
 					"The route did not match.  Remember that order matters.  Add the most specific routes first."
 				);
@@ -188,7 +201,8 @@
 						handler   : "PhotosController",
 						action    : { GET : "index", POST : "create" },
 						module    : "",
-						namespace : ""
+						namespace : "",
+						meta      : {}
 					},
 					"The route did not match.  Remember that order matters.  Add the most specific routes first."
 				);
@@ -207,7 +221,8 @@
 						handler   : "photos",
 						action    : { GET : "edit" },
 						module    : "",
-						namespace : ""
+						namespace : "",
+						meta      : {}
 					},
 					"The route did not match.  Remember that order matters.  Add the most specific routes first."
 				);
@@ -217,7 +232,8 @@
 						handler   : "photos",
 						action    : { GET : "new" },
 						module    : "",
-						namespace : ""
+						namespace : "",
+						meta      : {}
 					},
 					"The route did not match.  Remember that order matters.  Add the most specific routes first."
 				);
@@ -232,7 +248,8 @@
 							DELETE : "delete"
 						},
 						module    : "",
-						namespace : ""
+						namespace : "",
+						meta      : {}
 					},
 					"The route did not match.  Remember that order matters.  Add the most specific routes first."
 				);
@@ -242,7 +259,8 @@
 						handler   : "photos",
 						action    : { GET : "index", POST : "create" },
 						module    : "",
-						namespace : ""
+						namespace : "",
+						meta      : {}
 					},
 					"The route did not match.  Remember that order matters.  Add the most specific routes first."
 				);
@@ -270,7 +288,8 @@
 								handler   : "photos",
 								action    : { GET : "show" },
 								module    : "",
-								namespace : ""
+								namespace : "",
+								meta      : {}
 							},
 							"The route did not match.  Remember that order matters.  Add the most specific routes first."
 						);
@@ -280,7 +299,8 @@
 								handler   : "photos",
 								action    : { GET : "index" },
 								module    : "",
-								namespace : ""
+								namespace : "",
+								meta      : {}
 							},
 							"The route did not match.  Remember that order matters.  Add the most specific routes first."
 						);
@@ -299,7 +319,8 @@
 								handler   : "photos",
 								action    : { GET : "show" },
 								module    : "",
-								namespace : ""
+								namespace : "",
+								meta      : {}
 							},
 							"The route did not match.  Remember that order matters.  Add the most specific routes first."
 						);
@@ -309,7 +330,8 @@
 								handler   : "photos",
 								action    : { GET : "index" },
 								module    : "",
-								namespace : ""
+								namespace : "",
+								meta      : {}
 							},
 							"The route did not match.  Remember that order matters.  Add the most specific routes first."
 						);
@@ -330,7 +352,8 @@
 								handler   : "photos",
 								action    : { GET : "new" },
 								module    : "",
-								namespace : ""
+								namespace : "",
+								meta      : {}
 							},
 							"The route did not match.  Remember that order matters.  Add the most specific routes first."
 						);
@@ -340,7 +363,8 @@
 								handler   : "photos",
 								action    : { GET : "show" },
 								module    : "",
-								namespace : ""
+								namespace : "",
+								meta      : {}
 							},
 							"The route did not match.  Remember that order matters.  Add the most specific routes first."
 						);
@@ -350,7 +374,8 @@
 								handler   : "photos",
 								action    : { GET : "index" },
 								module    : "",
-								namespace : ""
+								namespace : "",
+								meta      : {}
 							},
 							"The route did not match.  Remember that order matters.  Add the most specific routes first."
 						);
@@ -369,7 +394,8 @@
 								handler   : "photos",
 								action    : { GET : "new" },
 								module    : "",
-								namespace : ""
+								namespace : "",
+								meta      : {}
 							},
 							"The route did not match.  Remember that order matters.  Add the most specific routes first."
 						);
@@ -379,7 +405,8 @@
 								handler   : "photos",
 								action    : { GET : "show" },
 								module    : "",
-								namespace : ""
+								namespace : "",
+								meta      : {}
 							},
 							"The route did not match.  Remember that order matters.  Add the most specific routes first."
 						);
@@ -389,7 +416,8 @@
 								handler   : "photos",
 								action    : { GET : "index" },
 								module    : "",
-								namespace : ""
+								namespace : "",
+								meta      : {}
 							},
 							"The route did not match.  Remember that order matters.  Add the most specific routes first."
 						);
@@ -403,7 +431,8 @@
 							only      = [ "index", "show" ],
 							except    = "show",
 							module    = "",
-							namespace = ""
+							namespace = "",
+							meta      : {}
 						);
 
 						var cl = router.$callLog().addRoute;
@@ -416,7 +445,8 @@
 								handler   : "photos",
 								action    : { GET : "index" },
 								module    : "",
-								namespace : ""
+								namespace : "",
+								meta      : {}
 							},
 							"The route did not match.  Remember that order matters.  Add the most specific routes first."
 						);
