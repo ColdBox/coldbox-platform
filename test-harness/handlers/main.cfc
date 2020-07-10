@@ -86,7 +86,7 @@ component {
 
 	function onAppInit( event, rc, prc ){
 		listen( function(){
-			log.info( "executing from closure listener")
+			log.info( "executing from closure listener");
 		}, "preProcess" );
 	}
 

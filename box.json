@@ -45,14 +45,14 @@
         "testbox":"testbox/"
     },
     "scripts":{
-		"format": "cfformat run system/**/*.cfc,tests/specs/**/*.cfc --overwrite",
-        "format:watch": "cfformat watch system/**/*.cfc,tests/specs/**/*.cfc ./.cfformat.json",
-        "format:check": "cfformat check system/**/*.cfc,tests/specs/**/*.cfc",
-		"start:lucee" : "server start serverConfigFile='server-lucee@5.json' --force",
-		"start:2016" : "server start serverConfigFile='server-adobe@2016.json' --force",
-		"start:2018" : "server start serverConfigFile='server-adobe@2018.json' --force",
-		"log:lucee" : "server log coldbox-lucee@5 --follow",
-		"log:2016" : "server log coldbox-adobe@2016 --follow",
-		"log:2018" : "server log coldbox-adobe@2018 --follow"
-	}
+        "format":"cfformat run system/**/*.cfc,tests/specs/**/*.cfc --overwrite",
+        "format:watch":"cfformat watch system/**/*.cfc,tests/specs/**/*.cfc ./.cfformat.json",
+        "format:check":"cfformat check system/**/*.cfc,tests/specs/**/*.cfc",
+        "start:lucee":"server start serverConfigFile='server-lucee@5.json' --force",
+        "start:2016":"server start serverConfigFile='server-adobe@2016.json' --force",
+        "start:2018":"server start serverConfigFile='server-adobe@2018.json' --force",
+        "log:lucee":"server log coldbox-lucee@5 --follow",
+        "log:2016":"server log coldbox-adobe@2016 --follow",
+        "log:2018":"server log coldbox-adobe@2018 --follow"
+    }
 }

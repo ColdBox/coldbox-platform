@@ -1233,32 +1233,36 @@ component serializable="false" accessors="true" {
 	 * Builds links to events or URL Routes
 	 *
 	 * @to The event or route path you want to create the link to
+	 * @queryString The query string to append
 	 * @translate Translate between . to / depending on the SES mode on to and queryString arguments. Defaults to true.
 	 * @ssl Turn SSl on/off on URL creation, by default is SSL is enabled, we will use it.
 	 * @baseURL If not using SES, you can use this argument to create your own base url apart from the default of index.cfm. Example: https://mysample.com/index.cfm
-	 * @queryString The query string to append
 	 */
 	string function buildLink(
 		to,
+		queryString       = "",
 		boolean translate = true,
 		boolean ssl,
-		baseURL     = "",
-		queryString = ""
+		baseURL     = ""
 	){
-		var frontController = "index.cfm";
-
-		// Compatibility: Remove by 5.1
-		if ( !isNull( arguments.linkTo ) ) {
-			arguments.to = trim( arguments.linkTo );
+		// Is this a named route?
+		if( isStruct( arguments.to ) ){
+			param arguments.to.params = {};
+			param arguments.ssl       = this.isSSL();
+			return this.route(
+				name   : arguments.to.name,
+				params : arguments.to.params,
+				ssl    : arguments.ssl
+			);
 		}
 
-		// Check if to is defined.
 		// Cleanups
 		arguments.to          = trim( arguments.to );
 		arguments.baseURL     = trim( arguments.baseURL );
 		arguments.queryString = trim( arguments.queryString );
 
 		// Front Controller Base
+		var frontController = "index.cfm";
 		if ( len( arguments.baseURL ) neq 0 ) {
 			frontController = arguments.baseURL;
 		}

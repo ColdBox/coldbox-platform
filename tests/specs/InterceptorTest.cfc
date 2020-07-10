@@ -2,7 +2,7 @@
 
 	function setup(){
 		interceptor    = createMock( "coldbox.system.Interceptor" );
-		mockIService   = createMock( "coldbox.system.web.services.InterceptorService", clearMethods = true );
+		mockIService   = createEmptyMock( "coldbox.system.web.services.InterceptorService" );
 		mockController = createMock( "coldbox.system.web.Controller" );
 		mockRS         = createMock( "coldbox.system.web.services.RequestService" );
 		flashScope     = createMock( "coldbox.system.web.flash.MockFlash" );

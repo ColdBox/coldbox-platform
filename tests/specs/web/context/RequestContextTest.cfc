@@ -38,7 +38,10 @@ component extends="coldbox.system.testing.BaseModelTest" {
 
 	function testGetResponseWhenItExists(){
 		getRequestContext()
-			.setPrivateValue( "response", getRequestContext().getResponse() )
+			.setPrivateValue(
+				"response",
+				getRequestContext().getResponse()
+			)
 			.getResponse()
 			.setData( { name : "luis" } );
 
@@ -50,12 +53,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		// Mocks
 		var mockRouter = createStub().$(
 			"getRoutes",
-			[
-				{
-					name    : "contactus",
-					pattern : "contactus/"
-				}
-			]
+			[ { name : "contactus", pattern : "contactus/" } ]
 		);
 		mockController.getWireBox().$( "getInstance", mockRouter );
 
@@ -64,6 +62,37 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		// debug( r );
 		expect( r ).toBe( "http://jfetmac/applications/coldbox/test-harness/index.cfm/contactus/" );
 	}
+
+	function testNamedRoutesWithBuildLink(){
+		// Mocks
+		var mockRouter = createStub().$(
+			"getRoutes",
+			[ { name : "contactus", pattern : "contactus/" } ]
+		);
+		mockController.getWireBox().$( "getInstance", mockRouter );
+
+		var event = getRequestContext().setSESEnabled( true );
+		var r     = event.buildLink( { name : "contactus" } );
+
+		// debug( r );
+		expect( r ).toBe( "http://jfetmac/applications/coldbox/test-harness/index.cfm/contactus/" );
+	}
+
+	function testNamedRoutesWithParamsWithBuildLink(){
+		// Mocks
+		var mockRouter = createStub().$(
+			"getRoutes",
+			[ { name : "contactus", pattern : "contactus/:id" } ]
+		);
+		mockController.getWireBox().$( "getInstance", mockRouter );
+
+		var event = getRequestContext().setSESEnabled( true );
+		var r     = event.buildLink( { name : "contactus", params : { id : 3 } } );
+
+		// debug( r );
+		expect( r ).toBe( "http://jfetmac/applications/coldbox/test-harness/index.cfm/contactus/3" );
+	}
+
 
 	function testGetModuleEntryPoint(){
 		var event = getRequestContext()
@@ -80,7 +109,10 @@ component extends="coldbox.system.testing.BaseModelTest" {
 	function testValidModuleRoutes(){
 		// Mocks
 		var mockRouter = createStub()
-			.$( "getModuleRoutes", [ { name : "home", pattern : "home/" } ] )
+			.$(
+				"getModuleRoutes",
+				[ { name : "home", pattern : "home/" } ]
+			)
 			.$( "getRoutes", [] );
 		mockController.getWireBox().$( "getInstance", mockRouter );
 
@@ -93,7 +125,9 @@ component extends="coldbox.system.testing.BaseModelTest" {
 			);
 		var r = event.route( "home@mymodule" );
 		// debug( r );
-		expect( r ).toBe( "http://jfetmac/applications/coldbox/test-harness/index.cfm/mymodule/home/" );
+		expect( r ).toBe(
+			"http://jfetmac/applications/coldbox/test-harness/index.cfm/mymodule/home/"
+		);
 	}
 
 	function testInvalidRoute(){
@@ -110,10 +144,14 @@ component extends="coldbox.system.testing.BaseModelTest" {
 	function testGetHTMLBaseURL(){
 		var event = getRequestContext();
 		event.setSESEnabled( true ).$( "isSSL", false );
-		expect( event.getHTMLBaseURL() ).toinclude( "http://jfetmac/applications/coldbox/test-harness" );
+		expect( event.getHTMLBaseURL() ).toinclude(
+			"http://jfetmac/applications/coldbox/test-harness"
+		);
 
 		event.$( "isSSL", true );
-		expect( event.getHTMLBaseURL() ).toinclude( "https://jfetmac/applications/coldbox/test-harness" );
+		expect( event.getHTMLBaseURL() ).toinclude(
+			"https://jfetmac/applications/coldbox/test-harness"
+		);
 	}
 
 	function testgetCollection(){
@@ -162,9 +200,15 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		event.clearCollection();
 		event.collectionAppend( test );
 
-		assertEquals( test.today, event.getValue( "today" ) );
+		assertEquals(
+			test.today,
+			event.getValue( "today" )
+		);
 
-		assertEquals( "null", event.getValue( "invalidVar", "null" ) );
+		assertEquals(
+			"null",
+			event.getValue( "invalidVar", "null" )
+		);
 	}
 
 	function testsetValue(){
@@ -190,7 +234,10 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		assertEquals( test.today, event.getValue( "test" ) );
 
 		event.removeValue( "test" );
-		assertEquals( false, event.getValue( "test", false ) );
+		assertEquals(
+			false,
+			event.getValue( "test", false )
+		);
 	}
 
 	function testvalueExists(){
@@ -262,7 +309,10 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		event.clearCollection();
 
 		event.setLayout( layout );
-		assertEquals( layout & ".cfm", event.getCurrentLayout() );
+		assertEquals(
+			layout & ".cfm",
+			event.getCurrentLayout()
+		);
 	}
 
 	function testGetCurrentHandlerWithModule(){
@@ -282,25 +332,46 @@ component extends="coldbox.system.testing.BaseModelTest" {
 
 		event.setValue( "event", defaultEvent );
 
-		assertEquals( defaultEvent, event.getCurrentEvent() );
+		assertEquals(
+			defaultEvent,
+			event.getCurrentEvent()
+		);
 		assertEquals( "ehTest", event.getCurrentHandler() );
-		assertEquals( "doSomething", event.getCurrentAction() );
+		assertEquals(
+			"doSomething",
+			event.getCurrentAction()
+		);
 
 		defaultEvent = "blog.content.doSomething";
 
 		event.setValue( "event", defaultEvent );
 
-		assertEquals( defaultEvent, event.getCurrentEvent() );
+		assertEquals(
+			defaultEvent,
+			event.getCurrentEvent()
+		);
 		assertEquals( "content", event.getCurrentHandler() );
-		assertEquals( "doSomething", event.getCurrentAction() );
+		assertEquals(
+			"doSomething",
+			event.getCurrentAction()
+		);
 
 		defaultEvent = "blog.content.security.doSomething";
 
 		event.setValue( "event", defaultEvent );
 
-		assertEquals( defaultEvent, event.getCurrentEvent() );
-		assertEquals( "security", event.getCurrentHandler() );
-		assertEquals( "doSomething", event.getCurrentAction() );
+		assertEquals(
+			defaultEvent,
+			event.getCurrentEvent()
+		);
+		assertEquals(
+			"security",
+			event.getCurrentHandler()
+		);
+		assertEquals(
+			"doSomething",
+			event.getCurrentAction()
+		);
 	}
 
 	function testoverrideEvent(){
@@ -351,28 +422,46 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		var event  = getRequestContext();
 		var centry = structNew();
 
-		assertFalse( event.isEventCacheable(), "event cacheable" );
+		assertFalse(
+			event.isEventCacheable(),
+			"event cacheable"
+		);
 
 		centry.cacheable = true;
 		centry.test      = true;
 
 		event.setEventCacheableEntry( centry );
-		assertTrue( event.isEventCacheable(), "event cacheable 2" );
-		assertEquals( centry, event.getEventCacheableEntry() );
+		assertTrue(
+			event.isEventCacheable(),
+			"event cacheable 2"
+		);
+		assertEquals(
+			centry,
+			event.getEventCacheableEntry()
+		);
 	}
 
 	function testViewCacheableEntry(){
 		var event  = getRequestContext();
 		var centry = structNew();
 
-		assertFalse( event.isViewCacheable(), "view cacheable" );
+		assertFalse(
+			event.isViewCacheable(),
+			"view cacheable"
+		);
 
 		centry.cacheable = true;
 		centry.test      = true;
 
 		event.setViewCacheableEntry( centry );
-		assertTrue( event.isViewCacheable(), "view cacheable 2" );
-		assertEquals( centry, event.getViewCacheableEntry() );
+		assertTrue(
+			event.isViewCacheable(),
+			"view cacheable 2"
+		);
+		assertEquals(
+			centry,
+			event.getViewCacheableEntry()
+		);
 	}
 
 	function testRoutedStruct(){
@@ -384,7 +473,10 @@ component extends="coldbox.system.testing.BaseModelTest" {
 
 		event.setRoutedStruct( routedStruct );
 
-		assertEquals( event.getRoutedStruct(), routedStruct );
+		assertEquals(
+			event.getRoutedStruct(),
+			routedStruct
+		);
 	}
 
 	function testSES(){
@@ -417,17 +509,32 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		/* simple setup */
 		event.setSESEnabled( false );
 		testurl = event.buildLink( "general.index" );
-		assertEquals( testurl, "index.cfm?event=general.index" );
+		assertEquals(
+			testurl,
+			"index.cfm?event=general.index"
+		);
 
 		/* simple qs */
 		event.setSESEnabled( false );
-		testurl = event.buildLink( to = "general.index", queryString = "page=2" );
-		assertEquals( testurl, "index.cfm?event=general.index&page=2" );
+		testurl = event.buildLink(
+			to          = "general.index",
+			queryString = "page=2"
+		);
+		assertEquals(
+			testurl,
+			"index.cfm?event=general.index&page=2"
+		);
 
 		/* empty qs */
 		event.setSESEnabled( false );
-		testurl = event.buildLink( to = "general.index", queryString = "" );
-		assertEquals( testurl, "index.cfm?event=general.index" );
+		testurl = event.buildLink(
+			to          = "general.index",
+			queryString = ""
+		);
+		assertEquals(
+			testurl,
+			"index.cfm?event=general.index"
+		);
 
 		/* ses test */
 		event.setSESEnabled( true );
@@ -443,7 +550,10 @@ component extends="coldbox.system.testing.BaseModelTest" {
 			queryString = "page=2&tests=4",
 			ssl         = false
 		);
-		assertEquals( testurl, base & "/general/index/page/2/tests/4" );
+		assertEquals(
+			testurl,
+			base & "/general/index/page/2/tests/4"
+		);
 
 		/* ssl test */
 		event.setSESEnabled( true );
@@ -458,7 +568,10 @@ component extends="coldbox.system.testing.BaseModelTest" {
 			ssl         = false,
 			queryString = "name=luis&cool=false"
 		);
-		assertEquals( testurl, base & "/general/index/name/luis/cool/false" );
+		assertEquals(
+			testurl,
+			base & "/general/index/name/luis/cool/false"
+		);
 
 		/* translate */
 		event.setSESEnabled( true );
@@ -479,12 +592,18 @@ component extends="coldbox.system.testing.BaseModelTest" {
 			translate   = false,
 			ssl         = false
 		);
-		assertEquals( testurl, base & "/general.index?name=luis&cool=false" );
+		assertEquals(
+			testurl,
+			base & "/general.index?name=luis&cool=false"
+		);
 
 		// SES Module Translations
 		event.setSESEnabled( true );
 		event.setsesBaseURL( base );
-		var testUrl = event.buildLink( to = "test1:main.index", translate = true );
+		var testUrl = event.buildLink(
+			to        = "test1:main.index",
+			translate = true
+		);
 		expect( testurl ).toBe( "http://www.luismajano.com/index.cfm/test1/main/index" );
 	}
 
@@ -543,10 +662,16 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		assertEquals( rd.xmlColumnList, "" );
 
 		// Test contenttype
-		event.renderData( data = "Hello", contentType = "application/ms-excel" );
+		event.renderData(
+			data        = "Hello",
+			contentType = "application/ms-excel"
+		);
 		rd = event.getRenderData();
 		assertEquals( rd.type, "html" );
-		assertEquals( rd.contenttype, "application/ms-excel" );
+		assertEquals(
+			rd.contenttype,
+			"application/ms-excel"
+		);
 
 		// Test StatusCodes
 		event.renderData(
@@ -587,14 +712,20 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		// debug(event.getCurrentEVent());
 		assertEquals( "", event.getmoduleRoot() );
 		event.setValue( "event", "test1:test.home" );
-		assertEquals( props.modules.test1.mapping, event.getmoduleRoot() );
+		assertEquals(
+			props.modules.test1.mapping,
+			event.getmoduleRoot()
+		);
 	}
 
 
 	function testsetHTTPHeader(){
 		var event = getRequestContext();
 
-		event.setHTTPHeader( statusCode = "200", statusText = "Hello" );
+		event.setHTTPHeader(
+			statusCode = "200",
+			statusText = "Hello"
+		);
 
 		event.setHTTPHeader( name = "expires", value = "#now()#" );
 	}
@@ -613,7 +744,10 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		event.noLayout().setView( "test" );
 
 		// debug( event.getCollection(private=true) );
-		assertEquals( true, event.getValue( "layoutOverride", false, true ) );
+		assertEquals(
+			true,
+			event.getValue( "layoutOverride", false, true )
+		);
 	}
 
 	function testDoubleSlashInBuildLink(){
@@ -621,7 +755,10 @@ component extends="coldbox.system.testing.BaseModelTest" {
 
 		event.setSESEnabled( true );
 
-		link = event.buildLink( to = "my/event/handler/", queryString = "one=1&two=2" );
+		link = event.buildLink(
+			to          = "my/event/handler/",
+			queryString = "one=1&two=2"
+		);
 		expect( link ).toInclude( "test-harness/index.cfm/my/event/handler/one/1/two/2" );
 
 		// debug( link );
@@ -639,10 +776,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				"email",
 				"field-that-does-not-exist"
 			] )
-		).toBe( {
-			"name"  : "John",
-			"email" : "john@example.com"
-		} );
+		).toBe( { "name" : "John", "email" : "john@example.com" } );
 	}
 
 	function testOnlyList(){
@@ -651,10 +785,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		event.setValue( "email", "john@example.com" );
 		event.setValue( "hackedField", "hacked!" );
 
-		expect( event.getOnly( "name,email,field-that-does-not-exist" ) ).toBe( {
-			"name"  : "John",
-			"email" : "john@example.com"
-		} );
+		expect( event.getOnly( "name,email,field-that-does-not-exist" ) ).toBe( { "name" : "John", "email" : "john@example.com" } );
 	}
 
 	function testPrivateOnlyFlag(){
@@ -668,7 +799,12 @@ component extends="coldbox.system.testing.BaseModelTest" {
 			true
 		);
 
-		expect( event.getOnly( keys = "name,field-that-does-not-exist", private = true ) ).toBe( { "name" : "Jane" } );
+		expect(
+			event.getOnly(
+				keys    = "name,field-that-does-not-exist",
+				private = true
+			)
+		).toBe( { "name" : "Jane" } );
 	}
 
 	function testPrivateOnlyMethod(){
@@ -696,10 +832,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				"hackedField",
 				"field-that-does-not-exist"
 			] )
-		).toBe( {
-			"name"  : "John",
-			"email" : "john@example.com"
-		} );
+		).toBe( { "name" : "John", "email" : "john@example.com" } );
 	}
 
 	function testExceptList(){
@@ -708,10 +841,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		event.setValue( "email", "john@example.com" );
 		event.setValue( "hackedField", "hacked!" );
 
-		expect( event.getExcept( "hackedField,field-that-does-not-exist" ) ).toBe( {
-			"name"  : "John",
-			"email" : "john@example.com"
-		} );
+		expect( event.getExcept( "hackedField,field-that-does-not-exist" ) ).toBe( { "name" : "John", "email" : "john@example.com" } );
 	}
 
 	function testPrivateExceptFlag(){
@@ -725,7 +855,12 @@ component extends="coldbox.system.testing.BaseModelTest" {
 			true
 		);
 
-		expect( event.getExcept( keys = "hackedField,key-that-does-not-exist", private = true ) ).toBe( { "name" : "Jane" } );
+		expect(
+			event.getExcept(
+				keys    = "hackedField,key-that-does-not-exist",
+				private = true
+			)
+		).toBe( { "name" : "Jane" } );
 	}
 
 	function testPrivateExceptMethod(){
@@ -752,7 +887,9 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		debug( event.getFullUrl() );
 		expect( event.getFullUrl() ).toBeTypeOf( "url" );
 		var javaUrl = createObject( "java", "java.net.URL" ).init( event.getFullUrl() );
-		expect( javaUrl.getPort() ).toBe( listFind( "80,443", CGI.SERVER_PORT ) > 0 ? -1 : CGI.SERVER_PORT );
+		expect( javaUrl.getPort() ).toBe(
+			listFind( "80,443", CGI.SERVER_PORT ) > 0 ? -1 : CGI.SERVER_PORT
+		);
 	}
 
 	function testUrlMatches(){
