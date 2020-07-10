@@ -1,7 +1,9 @@
-﻿component extends = "coldbox.system.testing.BaseModelTest" model = "coldbox.system.web.routing.Router"{
+﻿component
+	extends = "coldbox.system.testing.BaseModelTest"
+	model   = "coldbox.system.web.routing.Router"{
+
 	function beforeAll(){
 		super.setup();
-
 		mockController = getMockController().setSetting( "RoutingAppMapping", "/" );
 		router         = model.init( mockController );
 	}
@@ -17,7 +19,6 @@
 			it( "can register nested resources", function(){
 				router.resources( resource = "agents", pattern = "/sites/:siteId/agents" );
 				var cl = router.$callLog().addRoute;
-				debug( cl )
 				expect( cl[ 1 ] ).toBe(
 					{
 						pattern   : "/sites/:siteId/agents/:id/edit",
@@ -144,7 +145,7 @@
 						action    : { GET : "index", POST : "create" },
 						module    : "",
 						namespace : "",
-						meta : {}
+						meta      : {}
 					},
 					"The route 4 did not match.  Remember that order matters.  Add the most specific routes first."
 				);
