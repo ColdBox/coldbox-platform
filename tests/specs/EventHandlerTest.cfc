@@ -1,4 +1,5 @@
 ﻿component extends = "coldbox.system.testing.BaseModelTest"{
+
 	function setup(){
 		handler        = createMock( "coldbox.system.EventHandler" );
 		mockController = createMock( "coldbox.system.web.Controller" );

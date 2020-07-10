@@ -46,7 +46,7 @@
     },
     "scripts":{
 		"format": "cfformat run system/**/*.cfc,tests/specs/**/*.cfc --overwrite",
-        "format:watch": "cfformat watch system/**/*.cfc,tests/specs/**/*.cfc ./cfformat.json",
+        "format:watch": "cfformat watch system/**/*.cfc,tests/specs/**/*.cfc ./.cfformat.json",
         "format:check": "cfformat check system/**/*.cfc,tests/specs/**/*.cfc",
 		"start:lucee" : "server start serverConfigFile='server-lucee@5.json' --force",
 		"start:2016" : "server start serverConfigFile='server-adobe@2016.json' --force",
