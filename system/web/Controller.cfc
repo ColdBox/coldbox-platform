@@ -399,7 +399,10 @@ component serializable="false" accessors="true" {
 					var mConfig = getSetting( "modules" );
 					var module  = listFirst( arguments.event, ":" );
 					if ( structKeyExists( mConfig, module ) ) {
-						arguments.event = mConfig[ module ].inheritedEntryPoint & "/" & listRest( arguments.event, ":" );
+						arguments.event = mConfig[ module ].inheritedEntryPoint & "/" & listRest(
+							arguments.event,
+							":"
+						);
 					}
 				}
 				// Route String start by converting event syntax to / syntax
@@ -565,7 +568,9 @@ component serializable="false" accessors="true" {
 
 			// If not, do we have a handler + action combo?
 			if ( len( foundRoute.handler ) ) {
-				arguments.event &= foundRoute.handler & "." & ( len( foundRoute.action ) ? foundRoute.action : "index" );
+				arguments.event &= foundRoute.handler & "." & (
+					len( foundRoute.action ) ? foundRoute.action : "index"
+				);
 				return runEvent( argumentCollection = arguments );
 			}
 
@@ -575,7 +580,10 @@ component serializable="false" accessors="true" {
 			);
 		}
 
-		throw( type = "InvalidArgumentException", message = "The named route '#arguments.name#' does not exist" );
+		throw(
+			type    = "InvalidArgumentException",
+			message = "The named route '#arguments.name#' does not exist"
+		);
 	}
 
 	/**
@@ -654,7 +662,10 @@ component serializable="false" accessors="true" {
 			// Do action Rendering
 			services.requestService
 				.getContext()
-				.renderdata( type = results.ehBean.getActionMetadata( "renderdata" ), data = results.data );
+				.renderdata(
+					type = results.ehBean.getActionMetadata( "renderdata" ),
+					data = results.data
+				);
 		}
 
 		// Are we caching
@@ -694,10 +705,7 @@ component serializable="false" accessors="true" {
 		struct eventArguments = {}
 	){
 		var oRequestContext = services.requestService.getContext();
-		var results         = {
-			"data"   : javacast( "null", "" ),
-			"ehBean" : ""
-		};
+		var results         = { "data" : javacast( "null", "" ), "ehBean" : "" };
 
 		// Setup Invoker args
 		var args = {
@@ -708,11 +716,7 @@ component serializable="false" accessors="true" {
 		};
 
 		// Setup Main Invoker Args with event arguments
-		var argsMain = {
-			event : oRequestContext,
-			rc    : args.rc,
-			prc   : args.prc
-		};
+		var argsMain = { event : oRequestContext, rc : args.rc, prc : args.prc };
 		structAppend( argsMain, arguments.eventArguments );
 
 		// Setup interception data
@@ -1089,7 +1093,12 @@ component serializable="false" accessors="true" {
 	){
 		if (
 			(
-				( len( arguments.inclusion ) AND listFindNoCase( arguments.inclusion, arguments.action ) )
+				(
+					len( arguments.inclusion ) AND listFindNoCase(
+						arguments.inclusion,
+						arguments.action
+					)
+				)
 				OR
 				( NOT len( arguments.inclusion ) )
 			)

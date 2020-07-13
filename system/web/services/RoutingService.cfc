@@ -49,10 +49,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		variables.routingAppMapping = left( variables.routingAppMapping, 1 ) == "/" ? variables.routingAppMapping : "/#variables.routingAppMapping#";
 
 		// Store routing appmapping
-		controller.setSetting(
-			"routingAppMapping",
-			variables.routingAppMapping
-		);
+		controller.setSetting( "routingAppMapping", variables.routingAppMapping );
 
 		// Register as an interceptor to listen to pre processes for routing
 		variables.controller.getInterceptorService().registerInterceptor( interceptorObject = this );
@@ -68,10 +65,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	/**
 	 * Passthrough for legacy support of calling Router methods.  This will be removed in future versions.
 	 */
-	function onMissingMethod(
-		missingMethodName,
-		missingMethodArguments = {}
-	){
+	function onMissingMethod( missingMethodName, missingMethodArguments = {} ){
 		return invoke(
 			variables.router,
 			arguments.missingMethodName,
@@ -108,10 +102,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// Check if base router mapped?
 		if ( NOT wirebox.getBinder().mappingExists( baseRouter ) ) {
 			// feed the base class
-			wirebox.registerNewInstance(
-				name         = baseRouter,
-				instancePath = baseRouter
-			);
+			wirebox.registerNewInstance( name = baseRouter, instancePath = baseRouter );
 		}
 
 		// Load Router
@@ -124,17 +115,11 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				);
 				// Process as a Router.cfc with virtual inheritance
 				wirebox
-					.registerNewInstance(
-						name         = "router@coldbox",
-						instancePath = modernRouterPath
-					)
+					.registerNewInstance( name = "router@coldbox", instancePath = modernRouterPath )
 					.setVirtualInheritance( baseRouter )
 					.setThreadSafe( true )
 					.setScope( wirebox.getBinder().SCOPES.SINGLETON )
-					.addDIConstructorArgument(
-						name  = "controller",
-						value = controller
-					);
+					.addDIConstructorArgument( name = "controller", value = controller );
 				// Create the Router
 				variables.router = wirebox.getInstance( "router@coldbox" );
 				// Register the Router as an Interceptor as well.
@@ -150,10 +135,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				log.info( "Loading Legacy Router at: #legacyRouter#" );
 				// Register basic router
 				wirebox
-					.registerNewInstance(
-						name         = "router@coldbox",
-						instancePath = baseRouter
-					)
+					.registerNewInstance( name = "router@coldbox", instancePath = baseRouter )
 					.setScope( wirebox.getBinder().SCOPES.SINGLETON );
 				// Process legacy Routes.cfm. Create a basic Router
 				variables.router = wirebox
@@ -167,10 +149,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				log.info( "Loading Base ColdBox Router" );
 				// Register basic router with default routing
 				wirebox
-					.registerNewInstance(
-						name         = "router@coldbox",
-						instancePath = baseRouter
-					)
+					.registerNewInstance( name = "router@coldbox", instancePath = baseRouter )
 					.setScope( wirebox.getBinder().SCOPES.SINGLETON );
 				variables.router = wirebox
 					.getInstance( "router@coldbox" )
@@ -193,6 +172,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		var rc  = event.getCollection();
 		var prc = event.getPrivateCollection();
 
+		// Clean incoming paths
 		var cleanedPaths = getCleanedPaths( rc, arguments.event );
 
 		// Check if disabled or in proxy mode, if it is, then exit out.
@@ -200,7 +180,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			return;
 		}
 
-		// Enable SES
+		// Enable the routing
 		arguments.event.setSESEnabled( true );
 
 		// Activate and record the incoming URL for multi-domain hosting
@@ -342,10 +322,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				// Mark as invalid HTTP Exception
 				arguments.event.setIsInvalidHTTPMethod( true );
 				if ( log.canDebug() ) {
-					log.debug(
-						"Invalid HTTP Method detected: #httpMethod#",
-						routeResults.route
-					);
+					log.debug( "Invalid HTTP Method detected: #httpMethod#", routeResults.route );
 				}
 			}
 		}
@@ -368,10 +345,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				// Mark as invalid HTTP Exception
 				arguments.event.setIsInvalidHTTPMethod( true );
 				if ( log.canDebug() ) {
-					log.debug(
-						"Invalid HTTP Method detected: #httpMethod#",
-						routeResults.route
-					);
+					log.debug( "Invalid HTTP Method detected: #httpMethod#", routeResults.route );
 				}
 			}
 
@@ -383,12 +357,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			// Check if using HTTP method actions via struct
 			if ( isStruct( routeResults.route.action ) ) {
 				// Verify HTTP method used is valid
-				if (
-					structKeyExists(
-						routeResults.route.action,
-						httpMethod
-					)
-				) {
+				if ( structKeyExists( routeResults.route.action, httpMethod ) ) {
 					discoveredEvent &= ".#routeResults.route.action[ httpMethod ]#";
 					// Send for logging in debug mode
 					if ( log.canDebug() ) {
@@ -500,10 +469,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 		// Remove the leading slash
 		if ( len( requestString ) GT 1 AND left( requestString, 1 ) eq "/" ) {
-			requestString = right(
-				requestString,
-				len( requestString ) - 1
-			);
+			requestString = right( requestString, len( requestString ) - 1 );
 		}
 		// Add ending slash
 		if ( right( requestString, 1 ) IS NOT "/" ) {
@@ -565,10 +531,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 				// Is this namespace routing?
 				if ( len( arguments.namespace ) ) {
-					arguments.event.setPrivateValue(
-						"currentRoutedNamespace",
-						arguments.namespace
-					);
+					arguments.event.setPrivateValue( "currentRoutedNamespace", arguments.namespace );
 				}
 
 				// Debug logging
@@ -595,12 +558,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		if ( len( results.route.moduleRouting ) OR len( results.route.namespaceRouting ) ) {
 			// build routing argument struct based on module/namespace context
 			var contextRouting = {
-				action : reReplaceNoCase(
-					requestString,
-					results.route.regexpattern,
-					""
-				),
-				event : arguments.event
+				action : reReplaceNoCase( requestString, results.route.regexpattern, "" ),
+				event  : arguments.event
 			};
 			// add module or namespace
 			if ( len( results.route.moduleRouting ) ) {
@@ -633,22 +592,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// Save current routed details in PRC
 		arguments.event
 			.setPrivateValue( "currentRouteRecord", results.route )
-			.setPrivateValue(
-				"currentRoute",
-				results.route.pattern
-			)
-			.setPrivateValue(
-				"currentRouteName",
-				results.route.name
-			)
-			.setPrivateValue(
-				"currentRoutedModule",
-				results.route.module
-			)
-			.setPrivateValue(
-				"currentRouteMeta",
-				results.route.meta
-			);
+			.setPrivateValue( "currentRoute", results.route.pattern )
+			.setPrivateValue( "currentRouteName", results.route.name )
+			.setPrivateValue( "currentRoutedModule", results.route.module )
+			.setPrivateValue( "currentRouteMeta", results.route.meta );
 
 		// Save Found URL if NOT Found already
 		if ( NOT arguments.event.privateValueExists( "currentRoutedURL" ) ) {
@@ -736,10 +683,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * @requestString The incoming request string
 	 * @event The event object
 	 */
-	private function detectExtension(
-		required requestString,
-		required event
-	){
+	private function detectExtension( required requestString, required event ){
 		var extension    = listLast( arguments.requestString, "." );
 		var extensionLen = len( extension );
 
@@ -762,10 +706,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 					log.debug( "Extension: #extension# detected and set in rc.format" );
 				}
 				// remove it from the string and return string for continued parsing.
-				return left(
-					requestString,
-					len( arguments.requestString ) - extensionLen - 1
-				);
+				return left( requestString, len( arguments.requestString ) - extensionLen - 1 );
 			} else if ( variables.router.getThrowOnInvalidExtension() ) {
 				event.setHTTPHeader(
 					statusText = "Invalid Requested Format Extension: #extension#",
@@ -888,20 +829,11 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		var isModule       = len( arguments.module ) GT 0;
 
 		// Verify if we have a handler on the route params
-		if (
-			findNoCase(
-				"handler",
-				arrayToList( arguments.routeParams )
-			)
-		) {
+		if ( findNoCase( "handler", arrayToList( arguments.routeParams ) ) ) {
 			// Cleanup routing string to position of :handler
 			for ( x = 1; x lte routeParamsLen; x = x + 1 ) {
 				if ( arguments.routeParams[ x ] neq "handler" ) {
-					rString = replace(
-						rString,
-						listFirst( rString, "/" ) & "/",
-						""
-					);
+					rString = replace( rString, listFirst( rString, "/" ) & "/", "" );
 				} else {
 					break;
 				}
@@ -977,11 +909,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 		// Module Cleanup
 		if ( isModule ) {
-			return replaceNoCase(
-				returnString,
-				arguments.module & ":",
-				""
-			);
+			return replaceNoCase( returnString, arguments.module & ":", "" );
 		}
 
 		return returnString;
@@ -1026,12 +954,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			if ( rc[ variables.eventName ] != variables.defaultEvent ) {
 				//  Clean for handler & Action
 				if ( structKeyExists( rc, variables.eventName ) ) {
-					handler = reReplace(
-						rc[ variables.eventName ],
-						"\.[^.]*$",
-						""
-					);
-					action = listLast( rc[ variables.eventName ], "." );
+					handler = reReplace( rc[ variables.eventName ], "\.[^.]*$", "" );
+					action  = listLast( rc[ variables.eventName ], "." );
 				}
 				//  route a handler
 				if ( len( handler ) ) {
@@ -1051,10 +975,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			}
 
 			// Setup Relocation
-			var relocationUrl = "#arguments.event.getSESbaseURL()##newpath##serializeURL(
-				httpRequestData.content,
-				arguments.event
-			)#";
+			var relocationUrl = "#arguments.event.getSESbaseURL()##newpath##serializeURL( httpRequestData.content, arguments.event )#";
 
 			if ( httpRequestData.method eq "GET" ) {
 				cflocation( url=relocationUrl, statusCode=301 );
@@ -1074,17 +995,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		var rc   = arguments.event.getCollection();
 
 		for ( var key in rc ) {
-			if (
-				NOT listFindNoCase(
-					"route,handler,action,#variables.eventName#",
-					key
-				)
-			) {
-				vars = listAppend(
-					vars,
-					"#lCase( key )#=#rc[ key ]#",
-					"&"
-				);
+			if ( NOT listFindNoCase( "route,handler,action,#variables.eventName#", key ) ) {
+				vars = listAppend( vars, "#lCase( key )#=#rc[ key ]#", "&" );
 			}
 		}
 
@@ -1105,22 +1017,13 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// Find a Matching position of IIS ?
 		if ( reFind( "\?.*=", arguments.requestString ) ) {
 			// Process the Query String
-			reReplace(
-				arguments.requestString,
-				"^.*\?",
-				"",
-				"all"
-			).listToArray( "&" )
+			reReplace( arguments.requestString, "^.*\?", "", "all" )
+				.listToArray( "&" )
 				.each( function( item ){
 					rc[ item.getToken( 1, "=" ) ] = item.getToken( 2, "=" );
 				} );
 			// Cleanup the query string
-			arguments.requestString = reReplace(
-				arguments.requestString,
-				"\?.*$",
-				"",
-				"all"
-			);
+			arguments.requestString = reReplace( arguments.requestString, "\?.*$", "", "all" );
 		}
 		return arguments.requestString;
 	}
@@ -1203,19 +1106,11 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 		// Clean ContextRoots
 		if ( len( getContextRoot() ) ) {
-			results[ "scriptName" ] = replaceNoCase(
-				results[ "scriptName" ],
-				getContextRoot(),
-				""
-			);
+			results[ "scriptName" ] = replaceNoCase( results[ "scriptName" ], getContextRoot(), "" );
 		}
 
 		// Clean up the path_info from index.cfm
-		results[ "pathInfo" ] = reReplaceNoCase(
-			results[ "pathInfo" ],
-			"^[/\\]index\.cfm",
-			""
-		);
+		results[ "pathInfo" ] = reReplaceNoCase( results[ "pathInfo" ], "^[/\\]index\.cfm", "" );
 
 		// Clean the scriptname from the pathinfo if it is the first item in case this is a nested application
 		if ( len( results[ "scriptName" ] ) ) {
