@@ -1778,6 +1778,9 @@ component
 	 * route( "old" ).toRedirect( "/api/new" );
 	 * route( "old" ).toRedirect( "/api/new", 302 );
 	 * route( "old" ).toRedirect( "https://www.ortussolutions.com");
+	 * route( "/users/:id" ).toRedirect( function( route, params, event ){
+	 * 	return "/api/users/#params.id#";
+	 * })
 	 * </pre>
 	 *
 	 * @target The target URI
