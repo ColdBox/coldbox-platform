@@ -276,23 +276,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		/****************** Start Processing Route ******************/
 
 		// Process Redirects
-		if ( routeResults.route.redirect.len() ) {
-			if ( routeResults.route.redirect.findNoCase( "http" ) ) {
-				controller.relocate(
-					URL        = routeResults.route.redirect,
-					statusCode = (
-						routeResults.route.keyExists( "statusCode" ) ? routeResults.route.statusCode : 301
-					)
-				);
-			} else {
-				controller.relocate(
-					event      = routeResults.route.redirect,
-					statusCode = (
-						routeResults.route.keyExists( "statusCode" ) ? routeResults.route.statusCode : 301
-					)
-				);
-			}
-			return;
+		if (
+			isClosure( routeResults.route.redirect ) ||
+			isCustomFunction( routeResults.route.redirect ) ||
+			routeResults.route.redirect.len()
+		) {
+			return processRedirect( routeResults, event );
 		}
 
 		// Process SSL Redirects
@@ -677,6 +666,50 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	}
 
 	/****************************************** PRIVATE ************************************************/
+
+	/**
+	 * Process a route redirection
+	 *
+	 * @routeResults The { params, route } that matched
+	 * @event The request context
+	 */
+	private function processRedirect( required routeResults, required event ){
+		var redirectTo = "";
+
+		// Determine closure or string relocation string
+		if (
+			isClosure( arguments.routeResults.route.redirect ) || isCustomFunction(
+				arguments.routeResults.route.redirect
+			)
+		) {
+			redirectTo = routeResults.route.redirect(
+				arguments.routeResults.route,
+				arguments.routeResults.params,
+				arguments.event
+			);
+		} else {
+			redirectTo = routeResults.route.redirect;
+		}
+
+		// Absolute or relative relocation
+		if ( redirectTo.findNoCase( "http" ) ) {
+			variables.controller.relocate(
+				URL       : redirectTo,
+				statusCode: (
+					arguments.routeResults.route.keyExists( "statusCode" ) ? arguments.routeResults.route.statusCode : 301
+				)
+			);
+		} else {
+			variables.controller.relocate(
+				event     : redirectTo,
+				statusCode: (
+					arguments.routeResults.route.keyExists( "statusCode" ) ? arguments.routeResults.route.statusCode : 301
+				)
+			);
+		}
+
+		return;
+	}
 
 	/**
 	 * Detect extensions from the incoming request

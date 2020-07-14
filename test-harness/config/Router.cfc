@@ -13,6 +13,10 @@ component {
 		// Redirects
 		route( "/tempRoute" ).toRedirect( "/main/redirectTest", 302 );
 		route( "/oldRoute" ).toRedirect( "/main/redirectTest" );
+		route( "/old/api/users/:id" )
+			.toRedirect( function( route, params ){
+				return "/luis/";
+			} );
 
 		route( "/render/:format" ).meta( { secure : false } ).to( "actionRendering.index" );
 
@@ -22,8 +26,12 @@ component {
 		);
 
 		// subdomain routing
-		route( "/" ).withDomain( "subdomain-routing.dev" ).to( "subdomain.index" );
-		route( "/" ).withDomain( ":username.forgebox.dev" ).to( "subdomain.show" );
+		route( "/" )
+			.withDomain( "subdomain-routing.dev" )
+			.to( "subdomain.index" );
+		route( "/" )
+			.withDomain( ":username.forgebox.dev" )
+			.to( "subdomain.show" );
 
 		// Resources
 		resources(

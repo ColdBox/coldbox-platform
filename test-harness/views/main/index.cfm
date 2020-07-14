@@ -58,7 +58,7 @@
 			<li><a href="#event.route( "contactus" )#">#event.route( "contactus" )#</a></li>
 			<li><a href="#event.buildLink( { name: "testRoute" } )#">#event.buildLink( { name: "testRoute" } )#</a></li>
 			<li><a href="#event.route( "testRouteWithParams", { id=1, name='test' } )#">#event.route( "testRouteWithParams", { id=1, name='test' } )#</a></li>
-			<li><a href="#event.builLink( { name: "complexParams", params : { id=1, name='test' } } )#">#event.route( "complexParams", { id=1, name='test' } )#</a></li>
+			<li><a href="#event.buildLink( { name: "complexParams", params : { id=1, name='test' } } )#">#event.route( "complexParams", { id=1, name='test' } )#</a></li>
 		</ul>
 		</section>
 

@@ -207,12 +207,7 @@ component
 			variables.baseURL &= "/index.cfm";
 		}
 		// Remove any double slashes
-		variables.baseURL = reReplace(
-			variables.baseURL,
-			"\/\/$",
-			"/",
-			"all"
-		);
+		variables.baseURL = reReplace( variables.baseURL, "\/\/$", "/", "all" );
 
 		// Save the base URL in the application settings
 		variables.controller.setSetting( "SESBaseURL", variables.baseURL );
@@ -354,12 +349,7 @@ component
 		}
 
 		// Create the module routes container if it does not exist already
-		if (
-			NOT structKeyExists(
-				variables.moduleRoutingTable,
-				arguments.module
-			)
-		) {
+		if ( NOT structKeyExists( variables.moduleRoutingTable, arguments.module ) ) {
 			variables.moduleRoutingTable[ arguments.module ] = [];
 		}
 
@@ -408,10 +398,7 @@ component
 	 */
 	function removeModuleRoutes( required module ){
 		// remove all module routes
-		structDelete(
-			variables.moduleRoutingTable,
-			arguments.module
-		);
+		structDelete( variables.moduleRoutingTable, arguments.module );
 		// remove module routing entry point
 		variables.routes = variables.routes.filter( function( item ){
 			return ( item.moduleRouting != module );
@@ -425,12 +412,7 @@ component
 	 * @module The module to get
 	 */
 	array function getModuleRoutes( required module ){
-		if (
-			structKeyExists(
-				variables.moduleRoutingTable,
-				arguments.module
-			)
-		) {
+		if ( structKeyExists( variables.moduleRoutingTable, arguments.module ) ) {
 			return variables.moduleRoutingTable[ arguments.module ];
 		}
 		throw(
@@ -454,12 +436,7 @@ component
 		boolean append = "true"
 	){
 		// Create the namespace routes container if it does not exist already, as we could create many patterns that point to the same namespace
-		if (
-			NOT structKeyExists(
-				variables.namespaceRoutingTable,
-				arguments.namespace
-			)
-		) {
+		if ( NOT structKeyExists( variables.namespaceRoutingTable, arguments.namespace ) ) {
 			variables.namespaceRoutingTable[ arguments.namespace ] = [];
 		}
 
@@ -478,12 +455,7 @@ component
 	 * @namespace The namespace to get
 	 */
 	array function getNamespaceRoutes( required namespace ){
-		if (
-			structKeyExists(
-				variables.namespaceRoutingTable,
-				arguments.namespace
-			)
-		) {
+		if ( structKeyExists( variables.namespaceRoutingTable, arguments.namespace ) ) {
 			return variables.namespaceRoutingTable[ arguments.namespace ];
 		}
 
@@ -502,10 +474,7 @@ component
 	 */
 	function removeNamespaceRoutes( required namespace ){
 		// remove all namespace routes
-		structDelete(
-			variables.namespaceRoutingTable,
-			arguments.namespace
-		);
+		structDelete( variables.namespaceRoutingTable, arguments.namespace );
 
 		// remove namespace routing entry points
 		variables.routes = variables.routes.filter( function( item ){
@@ -830,7 +799,7 @@ component
 		any condition                 = "",
 		string name                   = "",
 		string domain                 = "",
-		string redirect               = "",
+		redirect                      = "",
 		string event                  = "",
 		string verbs                  = "",
 		string layout                 = "",
@@ -866,10 +835,7 @@ component
 		// Cleanup initial /, not needed if found.
 		if ( left( thisRoute.pattern, 1 ) IS "/" ) {
 			if ( thisRoute.pattern neq "/" ) {
-				thisRoute.pattern = right(
-					thisRoute.pattern,
-					len( thisRoute.pattern ) - 1
-				);
+				thisRoute.pattern = right( thisRoute.pattern, len( thisRoute.pattern ) - 1 );
 			}
 		}
 
@@ -923,11 +889,7 @@ component
 		for ( var x = 1; x lte listLen( thisRoute.pattern, "/" ); x++ ) {
 			// Pattern and Pattern Param
 			var thisPattern      = listGetAt( thisRoute.pattern, x, "/" );
-			var thisPatternParam = replace(
-				listFirst( thisPattern, "-" ),
-				":",
-				""
-			);
+			var thisPatternParam = replace( listFirst( thisPattern, "-" ), ":", "" );
 
 			// Detect Optional Types
 			var patternType = "alphanumeric";
@@ -956,10 +918,7 @@ component
 					// Pull out Regex Pattern
 					thisRegex = reReplace( thisPattern, ":.*?-regex:", "" );
 					// Add Route Param
-					arrayAppend(
-						thisRoute.patternParams,
-						thisPatternParam
-					);
+					arrayAppend( thisRoute.patternParams, thisPatternParam );
 					break;
 				}
 
@@ -972,26 +931,14 @@ component
 							thisRegex = listFirst( thisRegex, "{" ) & "{#listLast( thisPattern, "{" )#)";
 							arrayAppend(
 								thisRoute.patternParams,
-								replace(
-									listFirst( thisPattern, "{" ),
-									":",
-									""
-								)
+								replace( listFirst( thisPattern, "{" ), ":", "" )
 							);
 						} else {
 							thisRegex = thisRegex & "+?)";
-							arrayAppend(
-								thisRoute.patternParams,
-								thisPatternParam
-							);
+							arrayAppend( thisRoute.patternParams, thisPatternParam );
 						}
 						// Override Constraints with your own REGEX
-						if (
-							structKeyExists(
-								thisRoute.constraints,
-								thisPatternParam
-							)
-						) {
+						if ( structKeyExists( thisRoute.constraints, thisPatternParam ) ) {
 							thisRegex = thisRoute.constraints[ thisPatternParam ];
 						}
 					} else {
@@ -1011,21 +958,14 @@ component
 						thisRegex = thisRegex & "+?)";
 					}
 					// Add Route Param
-					arrayAppend(
-						thisRoute.patternParams,
-						thisPatternParam
-					);
+					arrayAppend( thisRoute.patternParams, thisPatternParam );
 					break;
 				}
 
 				// ALPHA OPTIONAL
 				case "alpha": {
 					// Convert to Regex Pattern
-					thisRegex = "(" & reReplace(
-						thisPattern,
-						":.*?-alpha",
-						"[a-zA-Z]"
-					);
+					thisRegex = "(" & reReplace( thisPattern, ":.*?-alpha", "[a-zA-Z]" );
 					// Check Digits
 					if ( find( "{", thisPattern ) ) {
 						thisRegex = listFirst( thisRegex, "{" ) & "{#listLast( thisPattern, "{" )#)";
@@ -1033,10 +973,7 @@ component
 						thisRegex = thisRegex & "+?)";
 					}
 					// Add Route Param
-					arrayAppend(
-						thisRoute.patternParams,
-						thisPatternParam
-					);
+					arrayAppend( thisRoute.patternParams, thisPatternParam );
 					break;
 				}
 			}
@@ -1055,11 +992,7 @@ component
 			for ( var x = 1; x lte listLen( thisRoute.domain, "." ); x++ ) {
 				// Pattern and Pattern Param
 				var thisDomain      = listGetAt( thisRoute.domain, x, "." );
-				var thisDomainParam = replace(
-					listFirst( thisDomain, "-" ),
-					":",
-					""
-				);
+				var thisDomainParam = replace( listFirst( thisDomain, "-" ), ":", "" );
 
 				// Detect Optional Types
 				patternType = "alphanumeric";
@@ -1090,10 +1023,7 @@ component
 						// Pull out Regex Pattern
 						thisRegex = reReplace( thisDomain, ":.*?-regex:", "" );
 						// Add Route Param
-						arrayAppend(
-							thisRoute.domainParams,
-							thisDomainParam
-						);
+						arrayAppend( thisRoute.domainParams, thisDomainParam );
 						break;
 					}
 					// ALPHANUMERICAL OPTIONAL
@@ -1105,26 +1035,14 @@ component
 								thisRegex = listFirst( thisRegex, "{" ) & "{#listLast( thisDomain, "{" )#)";
 								arrayAppend(
 									thisRoute.domainParams,
-									replace(
-										listFirst( thisDomain, "{" ),
-										":",
-										""
-									)
+									replace( listFirst( thisDomain, "{" ), ":", "" )
 								);
 							} else {
 								thisRegex = thisRegex & "+?)";
-								arrayAppend(
-									thisRoute.domainParams,
-									thisDomainParam
-								);
+								arrayAppend( thisRoute.domainParams, thisDomainParam );
 							}
 							// Override Constraints with your own REGEX
-							if (
-								structKeyExists(
-									thisRoute.constraints,
-									thisDomainParam
-								)
-							) {
+							if ( structKeyExists( thisRoute.constraints, thisDomainParam ) ) {
 								thisRegex = thisRoute.constraints[ thisDomainParam ];
 							}
 						} else {
@@ -1143,10 +1061,7 @@ component
 							thisRegex = thisRegex & "+?)";
 						}
 						// Add Route Param
-						arrayAppend(
-							thisRoute.domainParams,
-							thisDomainParam
-						);
+						arrayAppend( thisRoute.domainParams, thisDomainParam );
 						break;
 					}
 					// ALPHA OPTIONAL
@@ -1160,10 +1075,7 @@ component
 							thisRegex = thisRegex & "+?)";
 						}
 						// Add Route Param
-						arrayAppend(
-							thisRoute.domainParams,
-							thisDomainParam
-						);
+						arrayAppend( thisRoute.domainParams, thisDomainParam );
 						break;
 					}
 				}
@@ -1458,10 +1370,7 @@ component
 	 * @map The structure of headers to issue
 	 * @overwrite Overwrite the elements
 	 */
-	function headers(
-		required map,
-		boolean overwrite = true
-	){
+	function headers( required map, boolean overwrite = true ){
 		// process a with closure if not empty
 		if ( !variables.withClosure.isEmpty() ) {
 			processWith( arguments );
@@ -1479,10 +1388,7 @@ component
 	 * @map The structure of metadata to store within the route
 	 * @overwrite Overwrite the elements
 	 */
-	function meta(
-		required map,
-		boolean overwrite = true
-	){
+	function meta( required map, boolean overwrite = true ){
 		// process a with closure if not empty
 		if ( !variables.withClosure.isEmpty() ) {
 			processWith( arguments );
@@ -1544,10 +1450,7 @@ component
 	 * @map The structure to append
 	 * @overwrite Overwrite elements, default behavior
 	 */
-	function rcAppend(
-		required map,
-		boolean overwrite = true
-	){
+	function rcAppend( required map, boolean overwrite = true ){
 		// process a with closure if not empty
 		if ( !variables.withClosure.isEmpty() ) {
 			processWith( arguments );
@@ -1592,10 +1495,7 @@ component
 	 * @map The structure to append
 	 * @overwrite Overwrite elements, default behavior
 	 */
-	function prcAppend(
-		required map,
-		boolean overwrite = true
-	){
+	function prcAppend( required map, boolean overwrite = true ){
 		// process a with closure if not empty
 		if ( !variables.withClosure.isEmpty() ) {
 			processWith( arguments );
@@ -2026,10 +1926,7 @@ component
 			processWith( arguments );
 		}
 		// Construct arguments
-		variables.thisRoute.append(
-			{ moduleRouting : arguments.module },
-			true
-		);
+		variables.thisRoute.append( { moduleRouting : arguments.module }, true );
 		// register the route
 		addRoute( argumentCollection = variables.thisRoute );
 		// reinit
@@ -2051,10 +1948,7 @@ component
 			processWith( arguments );
 		}
 		// Register route to namespace
-		addNamespace(
-			pattern   = variables.thisRoute.pattern,
-			namespace = arguments.namespace
-		);
+		addNamespace( pattern = variables.thisRoute.pattern, namespace = arguments.namespace );
 
 		// reinit
 		variables.thisRoute = initRouteDefinition();
@@ -2143,11 +2037,7 @@ component
 				// Register route
 				addRoute( argumentCollection = thisRoute );
 				// Remove last bit
-				routeList = listDeleteAt(
-					routeList,
-					listLen( routeList, "/" ),
-					"/"
-				);
+				routeList = listDeleteAt( routeList, listLen( routeList, "/" ), "/" );
 			} );
 
 		// Setup the base route again
