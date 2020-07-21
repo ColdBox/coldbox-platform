@@ -143,8 +143,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 						// Default Log Directory
 						ensureDefaultLogDirectory();
 						// Create log file
-						fileWrite( variables.logFullPath, '"Severity","Appender","Date","Time","Category","Message"
-						' );
+						fileWrite( variables.logFullPath, '"Severity","Appender","Date","Time","Category","Message"' );
 					} catch( Any e ) {
 						$log( "ERROR", "Cannot create appender's: #getName()# log file. File #variables.logFullpath#. #e.message# #e.detail#" );
 					}
