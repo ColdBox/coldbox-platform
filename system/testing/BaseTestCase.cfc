@@ -423,7 +423,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 			}
 
 			// add the query string parameters from the route to the request context
-			requestContext.collectionAppend( parseQueryString( arguments.queryString ) )
+			requestContext.collectionAppend( parseQueryString( arguments.queryString ) );
 
 			// Setup the request Context with setup FORM/URL variables set in the unit test.
 			cbController.getRequestService().setContext( requestContext );
