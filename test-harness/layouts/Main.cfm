@@ -10,9 +10,6 @@
 	<base href="#getSetting( "HTMLBaseURL" )#" />
 	<!---css --->
 	<link href="includes/css/bootstrap.min.css" rel="stylesheet">
-	<!---js --->
-	<script src="#html.elixirPath( "js/jquery.js" )#"></script>
-	<script src="#html.elixirPath( "js/bootstrap.min.js" )#"></script>
 	<style>
 	 /* Utility */
 	.centered { text-align: center !important; }
@@ -88,6 +85,10 @@
 			<a href="http://twitter.github.com/bootstrap">Twitter Boostrap</a>
 		</p>
 	</footer>
+
+	<!---js --->
+	<script src="#html.elixirPath( "js/jquery.js" )#"></script>
+	<script src="#html.elixirPath( "js/bootstrap.min.js" )#"></script>
 
 	<script>
 	$(function() {

@@ -112,6 +112,7 @@ component {
 		// Grab Exception From request collection, placed by ColdBox
 		var exceptionBean = event.getValue( name = "exception", private = true );
 		// Place exception handler below:
+		writedump( var="********** #exceptionBean.getMessage()#", output="console" );
 	}
 
 	function onMissingTemplate( event, rc, prc ){
