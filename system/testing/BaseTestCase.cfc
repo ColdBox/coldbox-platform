@@ -192,7 +192,9 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * @return coldbox.system.testing.mock.web.MockController
 	 */
 	function getMockController(){
-		return prepareMock( new coldbox.system.testing.mock.web.MockController( "/unittest", "unitTest" ) );
+		return prepareMock(
+			new coldbox.system.testing.mock.web.MockController( "/unittest", "unitTest" )
+		);
 	}
 
 	/**
@@ -216,10 +218,10 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 
 		// Create functioning request context
 		mockRC         = getMockBox().createMock( "coldbox.system.web.context.RequestContext" );
-		mockController = createObject( "component", "coldbox.system.testing.mock.web.MockController" ).init(
-			"/unittest",
-			"unitTest"
-		);
+		mockController = createObject(
+			"component",
+			"coldbox.system.testing.mock.web.MockController"
+		).init( "/unittest", "unitTest" );
 
 		// Create mock properties
 		rcProps.DefaultLayout     = "";
@@ -251,9 +253,15 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 		var mockLocation = getController().getWireBox().locateInstance( arguments.name );
 
 		if ( len( mockLocation ) ) {
-			return getMockBox().createMock( className = mockLocation, clearMethods = arguments.clearMethods );
+			return getMockBox().createMock(
+				className    = mockLocation,
+				clearMethods = arguments.clearMethods
+			);
 		} else {
-			throw( message = "Model object #arguments.name# could not be located.", type = "ModelNotFoundException" );
+			throw(
+				message = "Model object #arguments.name# could not be located.",
+				type    = "ModelNotFoundException"
+			);
 		}
 	}
 
@@ -377,6 +385,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 			if ( arguments.route == "/" ) {
 				arguments.event = getController().getSetting( "defaultEvent" );
 				requestContext.setValue( requestContext.getEventName(), arguments.event );
+				// Prepare all mocking data for simulating routing request
 				prepareMock( getController().getRoutingService() )
 					.$( "getCGIElement" )
 					.$args( "path_info", requestContext )
@@ -396,10 +405,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 				// separate the route into the route and the query string
 				var routeParts = explodeRoute( arguments.route );
 				// add the query string parameters from the route to the request context
-				requestContext
-					.collectionAppend( routeParts.queryStringCollection )
-					.collectionAppend( parseQueryString( arguments.queryString ) );
-
+				requestContext.collectionAppend( routeParts.queryStringCollection );
 				// mock the cleaned paths so SES routes will be recognized
 				prepareMock( getController().getRoutingService() )
 					.$( "getCGIElement" )
@@ -415,6 +421,9 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 				// If we were passed just an event, remove routing since we don't need it
 				getInstance( "router@coldbox" ).setEnabled( false );
 			}
+
+			// add the query string parameters from the route to the request context
+			requestContext.collectionAppend( parseQueryString( arguments.queryString ) )
 
 			// Setup the request Context with setup FORM/URL variables set in the unit test.
 			cbController.getRequestService().setContext( requestContext );
@@ -737,18 +746,16 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 		numeric asyncJoinTimeout = 0
 	){
 		// Backwards Compat: Remove by ColdBox 7
-		if( !isNull( arguments.interceptData ) ){
+		if ( !isNull( arguments.interceptData ) ) {
 			arguments.data = arguments.interceptData;
 		}
-		return getController()
-			.getInterceptorService()
-			.announce( argumentCollection = arguments );
+		return getController().getInterceptorService().announce( argumentCollection = arguments );
 	}
 
 	/**
 	 * @deprecated Please use `announce()` instead
 	 */
-	 function announceInterception(
+	function announceInterception(
 		required state,
 		struct interceptData     = {},
 		boolean async            = false,
@@ -836,7 +843,9 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 		queryString
 			.listToArray( "&" )
 			.each( function( item ){
-				queryParams[ urlDecode( item.getToken( 1, "=" ) ) ] = urlDecode( item.getToken( 2, "=" ) );
+				queryParams[ urlDecode( item.getToken( 1, "=" ) ) ] = urlDecode(
+					item.getToken( 2, "=" )
+				);
 			} );
 
 		return queryParams;
@@ -869,7 +878,9 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 		// Run custom Exception handler if Found, else run default exception routines
 		if ( len( arguments.controller.getSetting( "ExceptionHandler" ) ) ) {
 			try {
-				arguments.controller.runEvent( arguments.controller.getSetting( "Exceptionhandler" ) );
+				arguments.controller.runEvent(
+					arguments.controller.getSetting( "Exceptionhandler" )
+				);
 			} catch ( Any e ) {
 				// Log Original Error First
 				appLogger.error(
