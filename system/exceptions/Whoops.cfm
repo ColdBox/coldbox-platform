@@ -1,3 +1,4 @@
+<cfprocessingdirective pageEncoding="utf-8">
 <cfscript>
 	// Detect Session Scope
 	local.sessionScopeExists = getApplicationMetadata().sessionManagement;

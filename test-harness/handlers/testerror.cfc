@@ -1,5 +1,9 @@
 ﻿component output="false" {
 
+	/**
+	 * Test error actions 🙃
+	 * Esto es para probar utf8 mañana ümlau
+	 */
 	function index( event, rc, prc ){
 		rc.nullTest = javacast( "null", "" );
 		prc.nullTest = javacast( "null", "" );
