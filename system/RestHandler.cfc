@@ -196,10 +196,15 @@ component extends="EventHandler" {
 		event,
 		rc,
 		prc,
-		faultAction,
+		faultAction = "",
 		exception,
-		eventArguments
+		eventArguments = {}
 	){
+		// Try to discover exception, if not, hard error
+		if ( isNull( arguments.exception ) && !isNull( arguments.prc.exception ) ) {
+			arguments.exception = arguments.prc.exception.getExceptionStruct();
+		}
+
 		// If in development and not in testing mode, then show exception template, easier to debug
 		if (
 			getSetting( "environment" ) eq "development" && !isInstanceOf(
