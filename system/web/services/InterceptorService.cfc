@@ -40,6 +40,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			"onException",
 			"onRequestCapture",
 			"onInvalidEvent",
+			"onColdBoxShutdown",
 			// Life-cycle
 			"applicationEnd",
 			"sessionStart",

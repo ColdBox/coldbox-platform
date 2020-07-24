@@ -238,6 +238,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	LoaderService function processShutdown(){
 		variables.log.info( "† Shutting down ColdBox..." );
 
+		// Announce shutdown
+		variables.controller
+			.getInterceptorService()
+			.announce( "onColdBoxShutdown" );
+
+		// Start shutting things down
 		var wireBox      = variables.controller.getWireBox();
 		var asyncManager = wirebox.getInstance( "AsyncManager@coldbox" );
 
