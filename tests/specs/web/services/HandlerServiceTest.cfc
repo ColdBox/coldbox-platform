@@ -22,6 +22,8 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 			beforeEach( function(){
 				setup();
 				handlerService = controller.getHandlerService();
+				// Cleanup for invalid event handlers
+				structDelete( request, "_lastInvalidEvent" );
 			} );
 
 			it( "can register handlers", function(){

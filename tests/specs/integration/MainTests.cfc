@@ -38,6 +38,8 @@ component
 			beforeEach( function( currentSpec ){
 				// Setup as a new ColdBox request, VERY IMPORTANT. ELSE EVERYTHING LOOKS LIKE THE SAME REQUEST.
 				setup();
+				// Cleanup for invalid event handlers
+				structDelete( request, "_lastInvalidEvent" );
 			} );
 
 			xit( "can render the cache panel", function(){
