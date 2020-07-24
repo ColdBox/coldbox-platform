@@ -425,12 +425,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * @return HandlerService
 	 */
 	function invalidEvent( required string event, required ehBean ){
-		param request._lastInvalidEvent = variables.invalidEventHandler;
-		controller
-			.getRequestService()
-			.getContext()
-			.setHTTPHeader( statusCode = 404, statusText = "Not Found" );
-
+		// Announce it
 		var iData = {
 			"invalidEvent" : arguments.event,
 			"ehBean"       : arguments.ehBean,
@@ -443,13 +438,22 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			return this;
 		}
 
+		// Param our last invalid event just incase
+		param request._lastInvalidEvent = "";
+
+		// If we got here, we have an invalid event and no override, throw a 404 header
+		controller
+			.getRequestService()
+			.getContext()
+			.setHTTPHeader( statusCode = 404, statusText = "Not Found" );
+
 		// If invalidEventHandler is registered, use it
-		if ( len( trim( variables.invalidEventHandler ) ) ) {
+		if ( len( variables.invalidEventHandler ) ) {
 			// Test for invalid Event Error as well so we don't go in an endless error loop
 			if ( compareNoCase( arguments.event, request._lastInvalidEvent ) eq 0 ) {
 				throw(
-					message = "The invalidEventHandler event is also invalid: #variables.invalidEventHandler#",
-					type    = "HandlerService.InvalidEventHandlerException"
+					message : "The invalidEventHandler event is also invalid: #variables.invalidEventHandler#",
+					type    : "HandlerService.InvalidEventHandlerException"
 				);
 			}
 
@@ -490,8 +494,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 		// Throw Exception
 		throw(
-			message = "The event: #arguments.event# is not a valid registered event.",
-			type    = "EventHandlerNotRegisteredException"
+			message : "The event: #arguments.event# is not a valid registered event.",
+			type    : "EventHandlerNotRegisteredException"
 		);
 	}
 
