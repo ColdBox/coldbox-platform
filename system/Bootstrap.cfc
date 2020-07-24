@@ -111,7 +111,7 @@ component serializable="false" accessors="true"{
 		}
 
 		// Check if fwreinit is sent, if sent, ignore it, we are loading the framework
-		var reinitKey = application[ appKey ].getSetting( "reinitKey" );
+		var reinitKey = application[ appKey ].getSetting( "reinitKey", "fwreinit" );
 		if( structKeyExists( url, reinitKey ) ){
 			structDelete( url, reinitKey );
 		}
@@ -417,7 +417,7 @@ component serializable="false" accessors="true"{
 		}
 
 		// Verify the reinit key is passed
-		var reinitKey = application[ appKey ].getSetting( "reinitKey" );
+		var reinitKey = application[ appKey ].getSetting( "reinitKey", "fwreinit" );
 		if ( structKeyExists( url, reinitKey ) or structKeyExists( form, reinitKey ) ){
 
 			// Check if we have a reinit password at hand.
