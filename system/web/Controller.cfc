@@ -725,6 +725,11 @@ component serializable="false" accessors="true" {
 			"eventArguments" : arguments.eventArguments
 		};
 
+		// Reset Invalid Event if default, just in case listeners used metadata
+		if ( arguments.defaultEvent ) {
+			structDelete( request, "_lastInvalidEvent" );
+		}
+
 		// Validate the incoming event and get a handler bean to continue execution
 		results.ehBean = services.handlerService
 			.getHandlerBean( arguments.event )
