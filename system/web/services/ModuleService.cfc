@@ -36,7 +36,7 @@ component extends="coldbox.system.web.services.BaseService" {
 		// service properties
 		variables.logger            = "";
 		variables.mConfigCache      = {};
-		variables.moduleRegistry    = createObject( "java", "java.util.LinkedHashMap" ).init();
+		variables.moduleRegistry    = structNew( "ordered" );
 		variables.cfmappingRegistry = {};
 
 		return this;
@@ -103,7 +103,7 @@ component extends="coldbox.system.web.services.BaseService" {
 	}
 
 	/**
-	 * Register all modules for the application. Usually called by framework to load{configuration data.
+	 * Register all modules for the application. Usually called by framework to load configuration data.
 	 */
 	ModuleService function registerAllModules(){
 		var foundModules   = "";
@@ -113,7 +113,7 @@ component extends="coldbox.system.web.services.BaseService" {
 		// Register the initial empty module configuration holder structure
 		structClear( controller.getSetting( "modules" ) );
 		// clean the registry as we are registering all modules
-		variables.moduleRegistry = createObject( "java", "java.util.LinkedHashMap" ).init();
+		variables.moduleRegistry = structNew( "ordered" );
 		// Now rebuild it
 		rebuildModuleRegistry();
 
@@ -144,7 +144,9 @@ component extends="coldbox.system.web.services.BaseService" {
 			}
 		}
 
-		variables.logger.info( "+ Registered All Modules in #numberFormat( getTickCount() - totalTime )# ms" );
+		variables.logger.info(
+			"+ Registered All Modules in #numberFormat( getTickCount() - totalTime )# ms"
+		);
 
 		// interception
 		variables.interceptorService.announce(
@@ -192,7 +194,9 @@ component extends="coldbox.system.web.services.BaseService" {
 		// Check if incoming invocation path is sent, if so, register as new module
 		if ( len( arguments.invocationPath ) ) {
 			// Check if passed module name is already registered
-			if ( structKeyExists( variables.moduleRegistry, arguments.moduleName ) AND !arguments.force ) {
+			if (
+				structKeyExists( variables.moduleRegistry, arguments.moduleName ) AND !arguments.force
+			) {
 				variables.logger.info(
 					"> The module #arguments.moduleName# has already been registered, so skipping registration"
 				);
@@ -200,19 +204,9 @@ component extends="coldbox.system.web.services.BaseService" {
 			}
 			// register new incoming location
 			variables.moduleRegistry[ arguments.moduleName ] = {
-				locationPath : "/" & replace(
-					arguments.invocationPath,
-					".",
-					"/",
-					"all"
-				),
+				locationPath : "/" & replace( arguments.invocationPath, ".", "/", "all" ),
 				physicalPath : expandPath(
-					"/" & replace(
-						arguments.invocationPath,
-						".",
-						"/",
-						"all"
-					)
+					"/" & replace( arguments.invocationPath, ".", "/", "all" )
 				),
 				invocationPath : arguments.invocationPath
 			};
@@ -221,9 +215,9 @@ component extends="coldbox.system.web.services.BaseService" {
 		// Check if passed module name is not loaded into the registry
 		if ( NOT structKeyExists( variables.moduleRegistry, arguments.moduleName ) ) {
 			throw(
-				message = "The module #arguments.moduleName# is not valid",
-				detail  = "Valid module names are: #structKeyList( variables.moduleRegistry )#",
-				type    = "InvalidModuleName"
+				message: "The module #arguments.moduleName# is not valid",
+				detail : "Valid module names are: #structKeyList( variables.moduleRegistry )#",
+				type   : "InvalidModuleName"
 			);
 		}
 
@@ -361,15 +355,19 @@ component extends="coldbox.system.web.services.BaseService" {
 
 			// Load Module configuration from cfc and store it in module Config Cache
 			var oConfig = loadModuleConfiguration( mConfig, arguments.moduleName );
+
 			// Verify if module has been disabled
 			if ( mConfig.disabled ) {
 				if ( variables.logger.canInfo() ) {
-					variables.logger.info( "> Skipping module: #arguments.moduleName# as it has been disabled!" );
+					variables.logger.info(
+						"> Skipping module: #arguments.moduleName# as it has been disabled!"
+					);
 				}
 				return false;
 			} else {
 				variables.mConfigCache[ modName ] = oConfig;
 			}
+
 			// Store module configuration in main modules configuration
 			modulesConfiguration[ modName ] = mConfig;
 
@@ -409,11 +407,7 @@ component extends="coldbox.system.web.services.BaseService" {
 				.appendInterceptionPoints( mConfig.interceptorSettings.customInterceptionPoints );
 
 			// Register Parent Settings
-			structAppend(
-				appSettings,
-				mConfig.parentSettings,
-				true
-			);
+			structAppend( appSettings, mConfig.parentSettings, true );
 
 			// Inception?
 			var inceptionPaths = [ "modules", "modules_app" ];
@@ -457,7 +451,9 @@ component extends="coldbox.system.web.services.BaseService" {
 			);
 
 			// Log registration
-			variables.logger.info( "+ Module #arguments.moduleName# registered successfully." );
+			variables.logger.info(
+				"+ Module Registered => '#arguments.moduleName#' (version:#mConfig.version#, from:#mConfig.path#)"
+			);
 		}
 		// end lock
 
@@ -488,12 +484,16 @@ component extends="coldbox.system.web.services.BaseService" {
 				this.activateModule( moduleName );
 
 				if ( variables.logger.canDebug() ) {
-					variables.logger.debug( "===> + Activated #moduleName# in #getTickCount() - sTime# ms" );
+					variables.logger.debug(
+						"===> + Activated #moduleName# in #getTickCount() - sTime# ms"
+					);
 				}
 			}
 		}
 
-		variables.logger.info( "+ Activated All Modules in #numberFormat( getTickCount() - totalTime )# ms" );
+		variables.logger.info(
+			"+ Activated All Modules in #numberFormat( getTickCount() - totalTime )# ms"
+		);
 
 		// interception
 		variables.interceptorService.announce(
@@ -517,16 +517,18 @@ component extends="coldbox.system.web.services.BaseService" {
 		// If module not registered, throw exception
 		if ( isNull( modules[ arguments.moduleName ] ) ) {
 			throw(
-				message = "Cannot activate module: #arguments.moduleName#. Already processed #structKeyList( modules )#",
-				detail  = "The module has not been registered, register the module first and then activate it.",
-				type    = "IllegalModuleState"
+				message : "Cannot activate module: #arguments.moduleName#. Already processed #structKeyList( modules )#",
+				detail  : "The module has not been registered, register the module first and then activate it.",
+				type    : "IllegalModuleState"
 			);
 		}
 
 		// Check if module already activated
 		if ( modules[ arguments.moduleName ].activated ) {
 			// Log it
-			variables.logger.info( "> Module #arguments.moduleName# already activated, skipping activation." );
+			variables.logger.info(
+				"> Module '#arguments.moduleName#' already activated, skipping activation."
+			);
 			return this;
 		}
 
@@ -534,7 +536,7 @@ component extends="coldbox.system.web.services.BaseService" {
 		if ( !modules[ arguments.moduleName ].activate ) {
 			// Log it
 			variables.logger.info(
-				"> Module #arguments.moduleName# cannot be activated as it is flagged to not activate, skipping activation."
+				"> Module '#arguments.moduleName#' cannot be activated as it is flagged to not activate, skipping activation."
 			);
 			return this;
 		}
@@ -544,7 +546,9 @@ component extends="coldbox.system.web.services.BaseService" {
 
 		// Do we have dependencies to activate first
 		mConfig.dependencies.each( function( thisDependency ){
-			variables.logger.info( "+ Activating #moduleName# dependency activation: #thisDependency#" );
+			variables.logger.info(
+				"+ Activating '#moduleName#' dependency: #thisDependency#"
+			);
 			// Activate dependency first
 			activateModule( thisDependency );
 		} );
@@ -553,7 +557,7 @@ component extends="coldbox.system.web.services.BaseService" {
 		if ( modules[ arguments.moduleName ].activated ) {
 			// Log it
 			variables.logger.info(
-				"> Module #arguments.moduleName# already activated during dependency activation, skipping activation."
+				"> Module '#arguments.moduleName#' already activated during dependency activation, skipping activation."
 			);
 			return this;
 		}
@@ -601,7 +605,10 @@ component extends="coldbox.system.web.services.BaseService" {
 					);
 				} else {
 					// just register with no namespace
-					binder.mapDirectory( packagePath = packagePath, process = mConfig.autoProcessModels );
+					binder.mapDirectory(
+						packagePath = packagePath,
+						process     = mConfig.autoProcessModels
+					);
 				}
 
 				// Register Default Module Export if it exists as @moduleName, so you can do getInstance( "@moduleName" )
@@ -646,7 +653,11 @@ component extends="coldbox.system.web.services.BaseService" {
 				}
 
 				// Store Inherited Entry Point
-				mConfig.inheritedEntryPoint = parentEntryPoint & reReplace( mConfig.entryPoint, "^/", "" );
+				mConfig.inheritedEntryPoint = parentEntryPoint & reReplace(
+					mConfig.entryPoint,
+					"^/",
+					""
+				);
 
 				// Register Module Routing Entry Point + Struct Literals for routes and resources
 				appRouter.addModuleRoutes(
@@ -681,7 +692,9 @@ component extends="coldbox.system.web.services.BaseService" {
 				var conventionsRouteExists = mConfig.router
 					.getRoutes()
 					.find( function( item ){
-						return ( item.pattern == "/:handler/:action?" || item.pattern == ":handler/:action?" );
+						return (
+							item.pattern == "/:handler/:action?" || item.pattern == ":handler/:action?"
+						);
 					} );
 				if ( conventionsRouteExists == 0 ) {
 					mConfig.router.route( "/:handler/:action?" ).end();
@@ -717,7 +730,9 @@ component extends="coldbox.system.web.services.BaseService" {
 				variables.controller
 					.getAsyncManager()
 					.newExecutor( argumentCollection = arguments.config );
-				variables.logger.info( "+ Registered Module (#moduleName#) Executor: #arguments.key#" );
+				variables.logger.info(
+					"+ Registered Module (#moduleName#) Executor: #arguments.key#"
+				);
 			} );
 
 			// Call on module configuration object onLoad() if found
@@ -744,7 +759,7 @@ component extends="coldbox.system.web.services.BaseService" {
 			);
 
 			// Log it
-			variables.logger.info( "+ Module #arguments.moduleName# activated sucessfully." );
+			variables.logger.info( "+ Module Activated -> '#arguments.moduleName#' (version:#mConfig.version#, from: #mConfig.path#)" );
 		}
 		// end lock
 
@@ -793,7 +808,9 @@ component extends="coldbox.system.web.services.BaseService" {
 	 */
 	boolean function isModuleActive( required moduleName ){
 		var modules = variables.registeredModules;
-		return ( isModuleRegistered( arguments.moduleName ) and modules[ arguments.moduleName ].activated ? true : false );
+		return (
+			isModuleRegistered( arguments.moduleName ) and modules[ arguments.moduleName ].activated ? true : false
+		);
 	}
 
 	/**
@@ -850,7 +867,12 @@ component extends="coldbox.system.web.services.BaseService" {
 				controller.setSetting(
 					"applicationHelper",
 					arrayFilter( controller.getSetting( "applicationHelper" ), function( helper ){
-						return ( !arrayFindNoCase( appConfig.modules[ moduleName ].applicationHelper, helper ) );
+						return (
+							!arrayFindNoCase(
+								appConfig.modules[ moduleName ].applicationHelper,
+								helper
+							)
+						);
 					} )
 				);
 			}
@@ -872,9 +894,7 @@ component extends="coldbox.system.web.services.BaseService" {
 
 			// Remove executors
 			mConfig.executors.each( function( key, config ){
-				variables.controller
-					.getAsyncManager()
-					.deleteExecutor( arguments.key );
+				variables.controller.getAsyncManager().deleteExecutor( arguments.key );
 			} );
 
 			// Remove configuration
@@ -929,7 +949,9 @@ component extends="coldbox.system.web.services.BaseService" {
 		var appSettings = controller.getConfigSettings();
 
 		// Build a new router for this module so we can track its routes
-		arguments.config.router = variables.wirebox.getInstance( "coldbox.system.web.routing.Router" );
+		arguments.config.router = variables.wirebox.getInstance(
+			"coldbox.system.web.routing.Router"
+		);
 
 		// MixIn Variables Scope
 		oConfig
@@ -1009,7 +1031,9 @@ component extends="coldbox.system.web.services.BaseService" {
 		// Dependencies
 		if ( structKeyExists( oConfig, "dependencies" ) ) {
 			// set it always as an array
-			mConfig.dependencies = isSimpleValue( oConfig.dependencies ) ? listToArray( oConfig.dependencies ) : oConfig.dependencies;
+			mConfig.dependencies = isSimpleValue( oConfig.dependencies ) ? listToArray(
+				oConfig.dependencies
+			) : oConfig.dependencies;
 		}
 		// Application Helpers
 		if ( structKeyExists( oConfig, "applicationHelper" ) ) {
@@ -1063,11 +1087,7 @@ component extends="coldbox.system.web.services.BaseService" {
 			// Merge the parent module settings into module settings
 			var parentModuleSettings = controller
 				.getSetting( "ColdBoxConfig" )
-				.getPropertyMixin(
-					"moduleSettings",
-					"variables",
-					structNew()
-				);
+				.getPropertyMixin( "moduleSettings", "variables", structNew() );
 			if ( !structKeyExists( parentModuleSettings, mConfig.modelNamespace ) ) {
 				parentModuleSettings[ mConfig.modelNamespace ] = {};
 			}
@@ -1125,6 +1145,7 @@ component extends="coldbox.system.web.services.BaseService" {
 
 	/**
 	 * Build the modules registry
+	 *
 	 * @locations The array of locations to register
 	 */
 	private function buildRegistry( required array locations ){
@@ -1140,18 +1161,13 @@ component extends="coldbox.system.web.services.BaseService" {
 
 	/**
 	 * Get an array of modules found and add to the registry structure
+	 *
 	 * @dirPath The path to scan
 	 */
 	private function scanModulesDirectory( required dirPath ){
 		var expandedPath = expandPath( arguments.dirpath );
 
-		directoryList(
-			expandedPath,
-			false,
-			"array",
-			"",
-			"asc"
-		)
+		directoryList( expandedPath, false, "array", "", "asc" )
 			.filter( function( item ){
 				// Only directories please and no . folders
 				return ( directoryExists( item ) && !item.listLast( "\/" ).find( "." ) );
