@@ -200,7 +200,7 @@ component
 		if ( NOT len( arguments.view ) ) {
 			var explicitView = getExplicitView();
 			// Rendering an explicit Renderer view/layout combo?
-			if ( !explicitView.isEmpty() ) {
+			if ( explicitView.keyExists( "view" ) && explicitView.view.len() ) {
 				// Populate from explicit notation
 				arguments.view   = explicitView.view;
 				arguments.module = explicitView.module;

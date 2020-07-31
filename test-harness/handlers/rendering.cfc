@@ -52,6 +52,14 @@ component output="false" singleton {
 		);
 	}
 
+	/**
+	 * Render Layout issue https://ortussolutions.atlassian.net/browse/COLDBOX-903
+	 */
+	function renderLayout903( event, rc, prc ){
+		prc.welcomeMessage = renderLayout( layout:"Main", view:"main/mailcontent" );
+		event.setView( "main/index" );
+	}
+
 
 	/**
 	 * renderingRegions
