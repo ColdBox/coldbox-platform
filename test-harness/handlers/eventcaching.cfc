@@ -15,6 +15,11 @@
 		return cacheKeys( argumentCollection = arguments );
 	}
 
+	function clearPartial( event, rc, prc ){
+		getCache( "template" ).clearEvent( "eventcaching" );
+		return cacheKeys( argumentCollection = arguments );
+	}
+
 	// Default Action
 	function index( event, rc, prc ) cache="true" cacheTimeout="10"{
 		prc.data = [

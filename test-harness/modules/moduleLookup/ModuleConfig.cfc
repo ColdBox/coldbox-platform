@@ -21,6 +21,9 @@
 				pattern : "/",
 				handler : "main",
 				action  : "index"
+			},
+			{
+				pattern : ":handler/:action"
 			}
 		];
 	}
