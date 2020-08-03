@@ -1,12 +1,20 @@
-﻿<cfcomponent output="false">
-	<!--- Default Action ---><cffunction name="index" returntype="void" output="false" hint="My main event">
-		<cfargument name="event" required="true"><cfscript>
-		var rc = event.getCollection();
+﻿/**
+ * My Event Handler Hint
+ */
+component extends="coldbox.system.EventHandler"{
+
+	/**
+	 * Index
+	 */
+	any function index( event, rc, prc ){
 		event.paramValue( "layout", "module-level" );
 		event.paramValue( "view", "module-level" );
 		event.setLayout( rc.layout );
 		event.setView( rc.view );
-		</cfscript>
-	</cffunction>
-	<!------------------------------------------- PRIVATE EVENTS ------------------------------------------>
-</cfcomponent>
+	}
+
+	function onInvalidEvent( event, rc, prc ){
+		event.renderData( data = "<h1>Invalid Module Page</h1>", statusCode = 404 );
+	}
+
+}
