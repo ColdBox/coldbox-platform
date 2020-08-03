@@ -55,16 +55,10 @@ component extends="coldbox.system.testing.BaseModelTest" {
 						router.group( { pattern : "/api", handler : "api" }, function( options ){
 							router
 								.route( "/CountiesByZip/:zip" )
-								.withAction( {
-									get     : "CountiesByZip",
-									options : "returnOptions"
-								} )
+								.withAction( { get : "CountiesByZip", options : "returnOptions" } )
 								.end()
 								.route( "/UtcOffsetByZip/:zip" )
-								.toAction( {
-									get     : "UtcOffsetByZip",
-									options : "returnOptions"
-								} );
+								.toAction( { get : "UtcOffsetByZip", options : "returnOptions" } );
 						} );
 
 						var routes = router.getRoutes();
@@ -72,42 +66,29 @@ component extends="coldbox.system.testing.BaseModelTest" {
 
 						expect( routes[ 1 ].handler ).toBe( "api" );
 						expect( routes[ 1 ].pattern ).toBe( "api/CountiesByZip/:zip/" );
-						expect( routes[ 1 ].action ).toBe( {
-							get     : "CountiesByZip",
-							options : "returnOptions"
-						} );
+						expect( routes[ 1 ].action ).toBe( { get : "CountiesByZip", options : "returnOptions" } );
 
 						expect( routes[ 2 ].handler ).toBe( "api" );
 						expect( routes[ 2 ].pattern ).toBe( "api/UtcOffsetByZip/:zip/" );
-						expect( routes[ 2 ].action ).toBe( {
-							get     : "UtcOffsetByZip",
-							options : "returnOptions"
-						} );
+						expect( routes[ 2 ].action ).toBe( { get : "UtcOffsetByZip", options : "returnOptions" } );
 					} );
 				} );
 
 				given( "a grouped route with valid options", function(){
 					then( "it should store the route with common options", function(){
-						router.group(
-							{
-								target  : "api.",
-								handler : "api.",
-								pattern : "/api"
-							},
-							function( options ){
-								router
-									.route( "/", "main.index" )
-									.route( "/hello", "echo.index" )
-									.route( "/users/:id" )
-									.withAction( {
-										"get"    : "index",
-										"post"   : "save",
-										"put"    : "save",
-										"delete" : "delete"
-									} )
-									.toHandler( "users" );
-							}
-						);
+						router.group( { target : "api.", handler : "api.", pattern : "/api" }, function( options ){
+							router
+								.route( "/", "main.index" )
+								.route( "/hello", "echo.index" )
+								.route( "/users/:id" )
+								.withAction( {
+									"get"    : "index",
+									"post"   : "save",
+									"put"    : "save",
+									"delete" : "delete"
+								} )
+								.toHandler( "users" );
+						} );
 
 						var routes = router.getRoutes();
 						expect( routes ).toHaveLength( 3 );
@@ -181,10 +162,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 									invoke(
 										router,
 										data.method,
-										{
-											pattern : "/get",
-											target  : "main.#data.method#"
-										}
+										{ pattern : "/get", target : "main.#data.method#" }
 									);
 									var thisRoute = router
 										.getRoutes()
@@ -208,11 +186,11 @@ component extends="coldbox.system.testing.BaseModelTest" {
 						expect( routes ).toHaveLength( 1, "One route should be registered" );
 						expect( routes[ 1 ].pattern ).toBe( "photos/" );
 						expect( routes[ 1 ].action ).toBeStruct();
-						expect( routes[ 1 ].action ).toHaveLength( 2, "The registered route should have two actions" );
-						expect( routes[ 1 ].action ).toBe( {
-							"GET"  : "photos.index",
-							"POST" : "photos.create"
-						} );
+						expect( routes[ 1 ].action ).toHaveLength(
+							2,
+							"The registered route should have two actions"
+						);
+						expect( routes[ 1 ].action ).toBe( { "GET" : "photos.index", "POST" : "photos.create" } );
 					} );
 				} );
 			} );
@@ -265,7 +243,12 @@ component extends="coldbox.system.testing.BaseModelTest" {
 						var routes = router
 							.getRoutes()
 							.filter( function( item ){
-								return ( reFindNoCase( "^api", item.pattern ) && reFindNoCase( "luis", item.handler ) );
+								return (
+									reFindNoCase( "^api", item.pattern ) && reFindNoCase(
+										"luis",
+										item.handler
+									)
+								);
 							} );
 						expect( routes ).notToBeEmpty();
 					} );
@@ -284,6 +267,16 @@ component extends="coldbox.system.testing.BaseModelTest" {
 							.toHaveKey( "name" )
 							.toHaveKey( "age" );
 						expect( router.getThisRoute().headers.name ).toBe( "majano" );
+					} );
+				} );
+			} );
+
+			story( "Router will throw exception if a non-closure or string is passed to the body of a toResponse()", function(){
+				given( "Anything but a closure or string to the toResponse() body", function(){
+					then( "an InvalidArgumentException will be thrown", function(){
+						expect( function(){
+							router.route( "/home" ).toResponse( {} );
+						} ).toThrow();
 					} );
 				} );
 			} );

@@ -4,6 +4,8 @@ component {
 		setUniqueURLs( false );
 		// setFullRewrites( false );
 
+		route( "/bar" ).toModuleRouting( "resourcesTest" );
+
 		// Nested Resources
 		resources(
 			resource = "agents",
@@ -144,6 +146,7 @@ component {
 		route( "/health_check" )
 			.withAction( { get : "runCheck", options : "returnOptions" } )
 			.to( "utilities.HealthCheck" );
+
 	}
 
 }

@@ -1889,12 +1889,25 @@ component
 	 * @body The body of the response a lambda or closure
 	 * @statusCode The status code to use, defaults to 200
 	 * @statusText The status text to use, defaults to 'OK'
+	 *
+	 * @throws InvalidArgumentException
 	 */
 	function toResponse(
 		required body,
 		numeric statusCode = 200,
 		statusText         = "Ok"
 	){
+		// Arg Check
+		if (
+			!isClosure( arguments.body ) && !isCustomFunction( arguments.body ) && !isSimpleValue(
+				arguments.body
+			)
+		) {
+			throw(
+				type   : "InvalidArgumentException",
+				message: "The 'body' argument is not of type closure or string"
+			);
+		}
 		// process a with closure if not empty
 		if ( !variables.withClosure.isEmpty() ) {
 			processWith( arguments );
