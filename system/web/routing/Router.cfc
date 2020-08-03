@@ -500,7 +500,7 @@ component
 	 * @matchVariables A string of name-value pair variables to add to the request collection when this pattern matches. This is a comma delimmitted list. Ex: spaceFound=true,missingAction=onTest
 	 * @view The view to dispatch if pattern matches.  No event will be fired, so handler,action will be ignored.
 	 * @viewNoLayout If view is choosen, then you can choose to override and not display a layout with the view. Else the view renders in the assigned layout.
-	 * @valuePairTranslation Activate convention name value pair translations or not. Turned on by default
+	 * @valuePairTranslator Activate convention name value pair translations or not. Turned on by default
 	 * @constraints A structure of regex constraint overrides for variable placeholders. The key is the name of the variable, the value is the regex to try to match.
 	 * @module The module to add this route to
 	 * @moduleRouting Called internally by addModuleRoutes to add a module routing route.
@@ -520,7 +520,7 @@ component
 		string matchVariables,
 		string view,
 		boolean viewNoLayout,
-		boolean valuePairTranslation,
+		boolean valuePairTranslator,
 		any constraints,
 		string module,
 		string moduleRouting,
@@ -750,7 +750,7 @@ component
 	 * @matchVariables DEPRECATED: Use RC or PRC structs instead. A string of name-value pair variables to add to the request collection when this pattern matches. This is a comma delimmitted list. Ex: spaceFound=true,missingAction=onTest
 	 * @view The view to dispatch if pattern matches.  No event will be fired, so handler,action will be ignored.
 	 * @viewNoLayout If view is choosen, then you can choose to override and not display a layout with the view. Else the view renders in the assigned layout.
-	 * @valuePairTranslation  Activate convention name value pair translations or not. Turned on by default
+	 * @valuePairTranslator  Activate convention name value pair translations or not. Turned on by default
 	 * @constraints A structure of regex constraint overrides for variable placeholders. The key is the name of the variable, the value is the regex to try to match.
 	 * @module The module to add this route to
 	 * @moduleRouting Called internally by addModuleRoutes to add a module routing route.
@@ -785,7 +785,7 @@ component
 		string matchVariables         = "",
 		string view                   = "",
 		boolean viewNoLayout          = "false",
-		boolean valuePairTranslation  = "true",
+		boolean valuePairTranslator  = "true",
 		any constraints               = structNew(),
 		string module                 = "",
 		string moduleRouting          = "",
@@ -1165,7 +1165,7 @@ component
 			"ssl"                   : false, // Are we forcing SSL
 			"statusCode"            : 200, // The response status code
 			"statusText"            : "Ok", // The response status text
-			"valuePairTranslation"  : true, // If we translate name-value pairs in the URL by convention
+			"valuePairTranslator"  : true, // If we translate name-value pairs in the URL by convention
 			"verbs"                 : "", // The HTTP Verbs allowed
 			"view"                  : "", // The view to proxy to
 			"viewModule"            : "", // If the view comes from a module
