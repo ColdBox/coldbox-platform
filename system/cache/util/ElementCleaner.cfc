@@ -80,8 +80,6 @@ component
 			cacheKey &= "-" & variables.cacheProvider.getEventURLFacade().buildHash( arguments.queryString );
 		}
 
-		systemOutput( "***** Clearing using: #cacheKey#", true );
-
 		// Clear All Events by Criteria
 		return clearByKeySnippet( keySnippet=cacheKey, regex=true );
 	}
