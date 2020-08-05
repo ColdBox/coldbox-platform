@@ -629,7 +629,7 @@ component serializable="false" accessors="true"{
 	 * @success The closure/lambda to execute if the boolean value is true
 	 * @failure The closure/lambda to execute if the boolean value is false
 	 *
-	 * @return Returns the Reponse object for chaining
+	 * @return Returns the SuperType object for chaining
 	 */
 	function when( required boolean target, required success, failure ){
 		if( arguments.target ){
