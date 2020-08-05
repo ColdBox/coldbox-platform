@@ -1662,13 +1662,13 @@ component
 	/**
 	 * Turns on/off the value pair translator from extra metdata in a URL
 	 * <pre>
-	 * route( "hello", "main.index" ).valuePairTranslator( false );
+	 * route( "hello", "main.index" ).valuePairTranslation( false );
 	 * </pre>
 	 *
 	 * @toggle The boolean toggle
 	 */
-	function valuePairTranslator( required boolean toggle ){
-		variables.thisRoute.valuePairTranslator = arguments.toggle;
+	function valuePairTranslation( required boolean toggle ){
+		variables.thisRoute.valuePairTranslation = arguments.toggle;
 		return this;
 	}
 
