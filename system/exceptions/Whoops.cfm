@@ -176,7 +176,6 @@
 							class="exception__message"
 							title="Exception Message - Click to copy"
 							id="exceptionMessage"
-							onclick="copyToClipboard( 'exceptionMessage' )"
 						>
 							<i
 								onclick="copyToClipboard( 'exceptionMessage' )"
