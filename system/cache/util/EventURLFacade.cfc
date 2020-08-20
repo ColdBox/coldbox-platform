@@ -34,9 +34,9 @@ component accessors="true"{
 		);
 		var targetMixer	= {
 			// Get the original incoming context hash
-			"incomingHash" 	= incomingHash,
+			"incomingHash" = incomingHash,
 			// Multi-Host support
-			"cgihost" 		= CGI.HTTP_HOST
+			"cgihost"      = CGI.SERVER_NAME
 		};
 
 		// Incorporate Routed Structs
@@ -63,9 +63,9 @@ component accessors="true"{
 		//writeDump( var = "==> Hash Args Struct: #virtualRC.toString()#", output="console" );
 		var myStruct = {
 			// Get the original incoming context hash according to incoming arguments
-			"incomingHash" 	= hash( virtualRC.toString() ),
+			"incomingHash" = hash( virtualRC.toString() ),
 			// Multi-Host support
-			"cgihost" 		= CGI.HTTP_HOST
+			"cgihost"      = CGI.SERVER_NAME
 		};
 
 		// return hash from cache key struct

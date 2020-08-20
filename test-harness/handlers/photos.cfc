@@ -2,28 +2,28 @@
  * Manage photos
  * It will be your responsibility to fine tune this template, add validations, try/catch blocks, logging, etc.
  */
-component extends="coldbox.system.EventHandler"{
-	
-	// DI 
-	
+component extends="coldbox.system.EventHandler" {
+
+	// DI
+
 	// HTTP Method Security
 	this.allowedMethods = {
-		index  		= "GET", 
-		new    		= "GET", 
-		create   	= "POST,PUT", 
-		show 		= "GET", 
-		edit		= "GET",
-		update 		= "POST,PUT,PATCH",
-		delete 		= "DELETE"
+		index  : "GET",
+		new    : "GET",
+		create : "POST,PUT",
+		show   : "GET",
+		edit   : "GET",
+		update : "POST,PUT,PATCH",
+		delete : "DELETE"
 	};
-	
+
 	/**
 	 * Param incoming format, defaults to `html`
 	 */
 	function preHandler( event, rc, prc ){
 		event.paramValue( "format", "html" );
 	}
-		
+
 	/**
 	 * Display a list of photos
 	 */
@@ -51,7 +51,7 @@ component extends="coldbox.system.EventHandler"{
 	 */
 	function show( event, rc, prc ){
 		event.paramValue( "id", 0 );
-		
+
 		event.setView( "photos/show" );
 	}
 
@@ -60,7 +60,7 @@ component extends="coldbox.system.EventHandler"{
 	 */
 	function edit( event, rc, prc ){
 		event.paramValue( "id", 0 );
-		
+
 		event.setView( "photos/edit" );
 	}
 
@@ -69,7 +69,7 @@ component extends="coldbox.system.EventHandler"{
 	 */
 	function update( event, rc, prc ){
 		event.paramValue( "id", 0 );
-		
+
 		return "photo updated";
 	}
 
@@ -80,5 +80,5 @@ component extends="coldbox.system.EventHandler"{
 		event.paramValue( "id", 0 );
 		return "photo deleted";
 	}
-	
+
 }

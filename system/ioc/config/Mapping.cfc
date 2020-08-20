@@ -581,7 +581,7 @@ Description :
 	    	if( NOT instance.discovered ){
 				// announce inspection
 				iData = {mapping=this,binder=arguments.binder,injector=arguments.binder.getInjector()};
-				eventManager.processState("beforeInstanceInspection",iData);
+				eventManager.announce("beforeInstanceInspection",iData);
 
 				// Processing only done for CFC's,rest just mark and return
 				if( instance.type neq arguments.binder.TYPES.CFC ){
@@ -592,7 +592,7 @@ Description :
 					// finished processing mark as discovered
 					instance.discovered = true;
 					// announce it
-					eventManager.processState("afterInstanceInspection",iData);
+					eventManager.announce("afterInstanceInspection",iData);
 					return;
 				}
 
@@ -740,7 +740,7 @@ Description :
 				instance.discovered = true;
 
 				// announce it
-				eventManager.processState("afterInstanceInspection",iData);
+				eventManager.announce("afterInstanceInspection",iData);
 			}
 		</cfscript>
 		</cflock>

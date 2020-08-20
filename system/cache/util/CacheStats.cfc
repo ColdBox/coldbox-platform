@@ -84,11 +84,11 @@ component implements="coldbox.system.cache.util.IStats" accessors="true"{
 	 * @return IStats
 	 */
 	function clearStatistics(){
-		variables.lastReapDatetime 		= now();
-		variables.hits 					= 0;
-		variables.misses 				= 0;
-		variables.evictionCount 		= 0;
-		variables.garbageCollections 	= 0;
+		variables.lastReapDatetime   = now();
+		variables.hits               = 0;
+		variables.misses             = 0;
+		variables.evictionCount      = 0;
+		variables.garbageCollections = 0;
 
 		return this;
 	}

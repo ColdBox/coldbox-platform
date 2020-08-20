@@ -4,7 +4,7 @@
  * ---
  * Allows you to serialize/deserialize objects
  */
-component accessors="true"{
+component accessors="true" {
 
 	/**
 	 * Constructor
@@ -25,7 +25,7 @@ component accessors="true"{
 		var binaryData = serializeWithObjectSave( arguments.target );
 
 		// Save to File?
-		if( !isNull( arguments.filePath ) ){
+		if ( !isNull( arguments.filePath ) ) {
 			fileWrite( arguments.filePath, binaryData );
 		}
 
@@ -43,7 +43,7 @@ component accessors="true"{
 	 */
 	function deserializeObject( any binaryObject, string filePath ){
 		// Read From File?
-		if( !isNull( arguments.filePath ) ){
+		if ( !isNull( arguments.filePath ) ) {
 			arguments.binaryObject = fileRead( arguments.filePath );
 		}
 
@@ -51,9 +51,9 @@ component accessors="true"{
 	}
 
 	/**
-	* Serialize via objectSave()
-	* @target The complex object, such as a query or CFC, that will be serialized.
-	*/
+	 * Serialize via objectSave()
+	 * @target The complex object, such as a query or CFC, that will be serialized.
+	 */
 	function serializeWithObjectSave( any target ){
 		return toBase64( objectSave( arguments.target ) );
 	}
@@ -65,7 +65,9 @@ component accessors="true"{
 	 */
 	function deserializeWithObjectLoad( any binaryObject ){
 		// check if string
-		if( not isBinary( arguments.binaryObject ) ){ arguments.binaryObject = toBinary( arguments.binaryObject ); }
+		if ( not isBinary( arguments.binaryObject ) ) {
+			arguments.binaryObject = toBinary( arguments.binaryObject );
+		}
 
 		return objectLoad( arguments.binaryObject );
 	}
@@ -76,14 +78,14 @@ component accessors="true"{
 	 * @target The binary object to inflate
 	 */
 	function serializeGeneric( any target ){
-		var byteArrayOutput = createObject( "java", "java.io.ByteArrayOutputStream").init();
-        var objectOutput    = createObject( "java", "java.io.ObjectOutputStream").init( byteArrayOutput );
+		var byteArrayOutput = createObject( "java", "java.io.ByteArrayOutputStream" ).init();
+		var objectOutput    = createObject( "java", "java.io.ObjectOutputStream" ).init( byteArrayOutput );
 
-        // Serialize the incoming object.
-        objectOutput.writeObject( arguments.target );
-        objectOutput.close();
+		// Serialize the incoming object.
+		objectOutput.writeObject( arguments.target );
+		objectOutput.close();
 
-        return toBase64( byteArrayOutput.toByteArray() );
+		return toBase64( byteArrayOutput.toByteArray() );
 	}
 
 	/**
@@ -92,14 +94,16 @@ component accessors="true"{
 	 * @target The binary object to inflate
 	 */
 	function deserializeGeneric( any binaryObject ){
-		var byteArrayInput = createObject( "java", "java.io.ByteArrayInputStream").init( toBinary( arguments.binaryObject ) );
-		var ObjectInput    = createObject( "java", "java.io.ObjectInputStream").init( byteArrayInput );
-        var obj = "";
+		var byteArrayInput = createObject( "java", "java.io.ByteArrayInputStream" ).init(
+			toBinary( arguments.binaryObject )
+		);
+		var ObjectInput = createObject( "java", "java.io.ObjectInputStream" ).init( byteArrayInput );
+		var obj         = "";
 
-       	obj = objectInput.readObject();
-        objectInput.close();
+		obj = objectInput.readObject();
+		objectInput.close();
 
-        return obj;
+		return obj;
 	}
 
 }

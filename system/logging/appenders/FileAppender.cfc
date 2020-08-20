@@ -17,21 +17,6 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 	 */
 	property name="logFullpath";
 
-	/**
-	 * The default lock name
-	 */
-	property name="lockName";
-
-	/**
-	 * The default lock timeout
-	 */
-	property name="lockTimeout" default="25" type="numeric";
-
-	/**
-	 * Log Listener Queue
-	 */
-	property name="logListener" type="struct";
-
     /**
 	 * Constructor
 	 *
@@ -83,30 +68,18 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 			variables.logFullPath = expandPath( variables.logFullpath );
 		}
 
-		// lock information
-		variables.lockName 		= getHash() & getname() & "logOperation";
-		variables.lockTimeout 	= 25;
+		return this;
+	}
 
-		// Activate Log Listener Queue
-		variables.logListener = {
-			active 	= false,
-			queue 	= []
-		};
-
-		// Declare locking construct
-		variables.lock = function( type="exclusive", body ){
-			lock 	name="#getHash() & getName()#-logListener"
-					type=arguments.type
-					timeout="#variables.lockTimeout#"
-					throwOnTimeout=true{
-
-				return arguments.body();
-
-			}
-		};
+	/**
+	 * Called upon registration
+	 */
+	FileAppender function onRegistration(){
+		// Init the log location
+		initLogLocation();
 
 		return this;
-    }
+	}
 
     /**
 	 * Write an entry into the appender. You must implement this method yourself.
@@ -135,18 +108,8 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 			entry = '"#severityToString( logEvent.getSeverity() )#","#getname()#","#dateformat( timestamp, "MM/DD/YYYY" )#","#timeformat( timestamp, "HH:MM:SS" )#","#loge.getCategory()#","#message#"';
 		}
 
-		// Log it
-		append( entry );
-
-		return this;
-	}
-
-	/**
-	 * Called upon registration
-	 */
-	FileAppender function onRegistration(){
-		// Init the log location
-		initLogLocation();
+		// Queue it up
+		queueMessage( entry );
 
 		return this;
 	}
@@ -180,7 +143,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 						// Default Log Directory
 						ensureDefaultLogDirectory();
 						// Create log file
-						append( '"Severity","Appender","Date","Time","Category","Message"' );
+						fileWrite( variables.logFullPath, '"Severity","Appender","Date","Time","Category","Message"' );
 					} catch( Any e ) {
 						$log( "ERROR", "Cannot create appender's: #getName()# log file. File #variables.logFullpath#. #e.message# #e.detail#" );
 					}
@@ -193,130 +156,78 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 	}
 
 	/**
-	 * Start the log listener so we can queue up the logging to alleviate for disk operations
+	 * Fired once the listner starts queue processing
+	 *
+	 * @queueContext A struct of data attached to this processing queue thread
 	 */
-	function startLogListener(){
-
-		// Verify if listener has started.
-		var isActive = variables.lock( "readonly", function(){
-			return variables.logListener.active;
-		} );
-
-		if( isActive ){
-			//out( "Listener already active exiting startup..." );
-			return;
-		} else {
-			//out( "Listener needs to startup" );
-		}
-
-		thread  action="run" name="#variables.lockName#-#hash( createUUID() )#"{
-			// Activate listener
-			var isActivating = variables.lock( body=function(){
-				if( !variables.logListener.active ){
-					//out( "listener #getHash()# min: #getLevelMin()# max: #getLevelMax()# marked as active" );
-					variables.logListener.active = true;
-					return true;
-				} else {
-					//out( "listener was just marked as active, just existing lock" );
-					return false;
-				}
-			} );
-
-			if( !isActivating ){ return; }
-
-			var lastRun       = getTickCount();
-			var start         = lastRun;
-			var maxIdle       = 15000; // 15 seconds is how long the threads can live for.
-			var flushInterval = 1000; // 1 second
-			var sleepInterval = 50;
-			var count         = 0;
-
-			// Ensure Log File
-			initLogLocation();
-
-			var oFile         = fileOpen( variables.logFullPath, "append", this.getProperty( "fileEncoding" ) );
-			var hasMessages   = false;
-
-			try{
-				//out( "Starting #getName()# thread", true );
-
-				// Execute only if there are messages in the queue or the internal has been crossed
-				while(
-					variables.logListener.queue.len() || lastRun + maxIdle > getTickCount()
-				){
-
-					//out( "len: #variables.logListener.queue.len()# last run: #lastRun# idle: #maxIdle#" );
-
-					if( variables.logListener.queue.len() ){
-						// pop and dequeue
-						var thisMessage = variables.logListener.queue[ 1 ];
-						variables.logListener.queue.deleteAt( 1 );
-
-						if( isSimpleValue( oFile ) ){
-							oFile = fileOpen( variables.logFullPath, "append", this.getProperty( "fileEncoding" ) );
-						}
-
-						//out( "Wrote to file #thisMessage#" );
-
-						// Write to file
-						fileWriteLine( oFile, thisMessage );
-
-						// Mark the last run
-						lastRun = getTickCount();
-					}
-
-					// flush to disk every start + 1000ms
-					if( start + flushInterval < getTickCount() && !isSimpleValue( oFile ) ){
-						//out( "LogFile for #getName()# flushed at #start# + #flushInterval#", true );
-						fileClose( oFile );
-						oFile = "";
-						start = getTickCount();
-					}
-
-					//out( "Sleeping: lastRun #lastRun + maxIdle#" );
-
-					sleep( sleepInterval ); // take a nap
-				}
-
-			} catch( Any e ){
-				$log( "ERROR", "Error processing log listener: #e.message# #e.detail# #e.stacktrace#" );
-				//out( "Error with listener thread for #getName()#" & e.message & e.detail );
-			} finally {
-				//out( "Stopping listener thread for #getName()#, we have done our job" );
-
-				// Stop log listener
-				variables.lock( body=function(){
-					variables.logListener.active = false;
-				} );
-
-				if( !isSimpleValue( oFile ) ){
-					fileClose( oFile );
-					oFile = "";
-				}
-			}
-
-		} // end threading
+	function onLogListenerStart( required struct queueContext ){
+		// Open the file to stream lines to
+		arguments.queueContext.oFile = fileOpen(
+			variables.logFullPath,
+			"append",
+			this.getProperty( "fileEncoding" )
+		);
+		// The flusing interval to disk
+		arguments.queueContext.flushInterval = 1000;
 	}
 
-	/************************************ PRIVATE ************************************/
+	/**
+	 * Fired once the listener will go to sleep
+	 *
+	 * @queueContext A struct of data attached to this processing queue thread
+	 */
+	function onLogListenerSleep( required struct queueContext ){
+		// flush to disk every start + 1000ms
+		if(
+			arguments.queueContext.start + arguments.queueContext.flushInterval < getTickCount()
+			&&
+			!isSimpleValue( arguments.queueContext.oFile )
+		){
+			out( "LogFile for #getName()# flushed to disk at #now()# using interval: #arguments.queueContext.flushInterval#", true );
+			fileClose( arguments.queueContext.oFile );
+			arguments.queueContext.oFile = "";
+			arguments.queueContext.start = getTickCount();
+		}
+	}
 
 	/**
-	 * Append a message to the log file
+	 * Processes a queue element to a destination
+	 * This method is called by the log listeners asynchronously.
 	 *
-	 * @message The target message
+	 * @data The data element the queue needs processing
+	 * @queueContext The queue context in process
+	 *
+	 * @return ConsoleAppender
 	 */
-	private FileAppender function append( required message ){
-		// If we are not in a thread, then start the log listener, else queue it
-		if( !getUtil().inThread() ){
-			// Ensure log listener
-			startLogListener();
+	function processQueueElement( required data, required queueContext ){
+		// If simple value, open it
+		if( isSimpleValue( arguments.queueContext.oFile ) ){
+			arguments.queueContext.oFile = fileOpen(
+				variables.logFullPath,
+				"append",
+				this.getProperty( "fileEncoding" )
+			);
 		}
 
-		// queue message up
-		arrayAppend( variables.logListener.queue, arguments.message );
+		// Write to file
+		fileWriteLine( arguments.queueContext.oFile, arguments.data );
 
 		return this;
 	}
+
+	/**
+	 * Fired once the listner stops queue processing
+	 *
+	 * @queueContext A struct of data attached to this processing queue thread
+	 */
+	function onLogListenerEnd( required struct queueContext ){
+		if( !isNull( arguments.queueContext.oFile ) && !isSimpleValue( arguments.queueContext.oFile ) ){
+			fileClose( arguments.queueContext.oFile );
+			arguments.queueContext.oFile = "";
+		}
+	}
+
+	/************************************ PRIVATE ************************************/
 
 	/**
 	 * Ensures the log directory.

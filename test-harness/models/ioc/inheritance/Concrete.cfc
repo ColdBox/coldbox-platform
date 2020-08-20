@@ -1,4 +1,4 @@
-component extends="Abstract"{
+component extends="Abstract" {
 
 	function init(){
 		return this;

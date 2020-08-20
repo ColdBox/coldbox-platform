@@ -1,7 +1,5 @@
 ﻿<cfcomponent name="testGateway" output="false">
-
 	<cfscript>
-		instance = structnew();
+	instance = structNew();
 	</cfscript>
-
 </cfcomponent>

@@ -1,0 +1,372 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    height: 100vh;
+    width: 100vw;
+    font-size: 16px;
+    color: #131313;
+    font-family: 'Lato', sans-serif;
+}
+
+.slideup_row {
+    margin: -6px auto 0;
+}
+
+.slidebtn {
+    width: 57px;
+    text-align: center;
+}
+
+.whoops {
+    display: flex;
+    height: 100%;
+}
+
+.whoops__nav {
+    flex: 0 0 30%;
+    display: flex;
+    flex-direction: column;
+}
+
+.whoops__detail {
+    height: 100vh;
+    flex: 1 1 80%;
+    display: flex;
+    overflow: hidden;
+	flex-direction: column;
+}
+
+.exception {
+    flex-basis: 20%;
+    padding: 0em 2em 2em 2em;
+    background-color: #2a2a2a;
+
+    white-space: normal;
+    word-break: break-word;
+}
+
+.exception span{
+	margin-left: 5px;
+}
+
+.exception__logo{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-top: 10px;
+	margin-bottom: 20px;
+	border-bottom: 1px solid #7fcbe2;
+	padding-bottom: 10px;
+}
+
+.exception__logo img{
+	margin-right: 10px;
+}
+
+.exception__logo span{
+	color: white;
+	font-size: 1.5em;
+	margin-right: 5px;
+}
+
+.exception__timestamp {
+	font-size: 0.9em;
+	color: white;
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+	margin-bottom: 10px;
+}
+
+.exception__type {
+    color: #bebebe;
+	font-size: 0.9em;
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+	margin-bottom: 10px;
+}
+
+.exception__message {
+    color: white;
+	font-size: 1.2em;
+	border: 1px solid #7ac1d6;
+	padding: 10px;
+	letter-spacing: 1px;
+	line-height: 27px;
+
+}
+
+.highlight{
+	color: #eb4c4c;
+}
+
+.overflow-scroll{
+	overflow: auto;
+}
+
+.whoops__stacktrace_panel {
+    flex: 5;
+    padding: 0 1em 1em 1em;
+    overflow: scroll;
+    background-color: #ded8d8;
+}
+
+.whoops_stacktrace_panel_info {
+    padding: 0.5em 1em;
+    background-color: #ded8d8;
+}
+
+.data-stacktrace {
+    white-space: pre;
+    width: 100%;
+    padding: 8px;
+    font: 13px "Source Code Pro", Monaco, Consolas, "Lucida Console", monospace;
+}
+
+.stacktrace__list {
+    list-style: none;
+}
+
+.stacktrace {
+    padding: 1em;
+    background-color: #eeeeee;
+    color: #797878;
+    transition: all 100ms ease;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: inset 0px 0 0 0 #4288CE;
+    transition: all 300ms ease-in-out;
+}
+
+.stacktrace:hover {
+    background-color: #e6e3e3;
+}
+
+.stacktrace--active {
+    box-shadow: inset -5px 0 0 0 #4288CE;
+    color: #4288CE;
+}
+
+.stacktrace:not(:last-child) {
+    border-bottom: 1px solid rgba(0, 0, 0, .05);
+}
+
+.stacktrace__info {
+    flex: 1;
+}
+
+.stacktrace__location {
+    font-size: 0.8em;
+    padding: 0.5em;
+}
+
+.stacktrace__line-number {
+    color: black;
+}
+
+.stacktrace__code {
+    font-family: 'Fira Mono', monospace;
+    padding: 0.5em;
+    font-size: 0.65em;
+    color: #a29d9d;
+}
+
+.hidePreview {
+	flex: 0 !important;
+}
+
+.code-preview {
+    flex: 2;
+	font-family: 'Fira Mono', monospace;
+	font-size: 0.9em;
+	background-color: #002b36;
+    color: #E9E4E5;
+    overflow: scroll;
+	transition:flex 0.5s ease-out;
+	margin-top: -2px;
+}
+
+#code-toolbar{
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+	margin-left: 17px;
+}
+
+#code-toolbar span{
+	margin-left: 5px;
+}
+
+.request-info {
+    flex: 1;
+    padding-left: 2em;
+    display: flex;
+    flex-direction: column;
+	overflow: hidden;
+	background-color: #2a2a2a;
+	color: white;
+}
+
+#request-info-details {
+    overflow: scroll;
+}
+
+.badge {
+    background-color: #e3e3e3;
+    border-radius: 50%;
+    padding: 1em;
+    font-size: 0.5em;
+    margin-right: 1em;
+}
+
+.data-filter {
+    padding-bottom: 10px;
+	border-bottom: 1px solid rgba(0, 0, 0, .1);
+	background-color: #38414b;
+	padding: 10px;
+	font-size: 12px;
+	display: flex;
+	align-items: center;
+}
+
+.data-filter .button{
+	margin: 0px 3px;
+}
+
+.hidden {
+	display: none;
+}
+
+.show{
+	display: block;
+}
+
+a.button-icononly{
+	min-width: 50px;
+	text-align: center;
+}
+
+a.button {
+    display: inline-block;
+    background: #f3f3f3;
+    border-radius: 5px;
+    text-decoration: none;
+    padding: 5px;
+    font-size: 12px;
+    color: #4288CE;
+    border: 1px solid #ccc;
+}
+
+a.button:hover {
+    background: #cecece;
+}
+
+a.button.active {
+    background: #4288CE;
+    color: white;
+    border-color: #3377bb;
+}
+
+.editorLink__btn {
+    display: none;
+    background: #e2e2e2;
+    border-radius: 5px;
+    text-decoration: none;
+    padding: 5px;
+    font-size: 14px;
+    color: #4288CE;
+    border: 1px solid #ccc;
+}
+
+.editorLink__btn:hover {
+    background: #4288CE;
+    color: white;
+    border-color: #3377bb;
+}
+
+.stacktrace--active .editorLink__btn {
+    display: inline-block;
+}
+
+.data-table-container label {
+	font-size: 16px;
+	color: #c0d14c;
+	font-weight: bold;
+	margin: 10px 0;
+
+	display: block;
+
+	margin-bottom: 5px;
+	padding-bottom: 5px;
+}
+.data-table {
+	width: 100%;
+	margin-bottom: 10px;
+	color: white;
+}
+
+.data-table tbody {
+	font: 13px "Inconsolata", "Fira Mono", "Source Code Pro", Monaco, Consolas, "Lucida Console", monospace;
+}
+
+.data-table thead {
+	display: none;
+}
+
+.data-table tr {
+	padding: 5px 0;
+}
+.data-table tr td{
+	padding: 5px 0;
+	border-bottom: 1px solid #eaeaea;
+}
+
+.data-table td:first-child {
+	width: 20%;
+	min-width: 130px;
+	overflow: hidden;
+	font-weight: bold;
+	color: #7FCBE2;
+	padding-right: 5px;
+	font-weight: bold;
+}
+
+.data-table td:last-child {
+	width: 80%;
+	-ms-word-break: break-all;
+	word-break: break-all;
+	word-break: break-word;
+	-webkit-hyphens: auto;
+	-moz-hyphens: auto;
+	hyphens: auto;
+}
+
+.data-table span.empty {
+	color: rgba(0, 0, 0, .3);
+	font-weight: 300;
+}
+.data-table label.empty {
+	display: inline;
+}
+.details-container {
+	height: 100%;
+	overflow: auto;
+	float: right;
+	width: 70%;
+	background: #fafafa;
+}
+.details {
+	padding: 5px;
+}
+
+.details-heading {
+	color: white;
+	font-weight: 300;
+	padding-bottom: 10px;
+}

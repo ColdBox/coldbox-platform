@@ -1,5 +1,4 @@
-﻿component extends="coldbox.system.testing.BaseModelTest"{
-
+﻿component extends = "coldbox.system.testing.BaseModelTest"{
 	function setup(){
 		cp = createMock( "coldbox.system.cache.AbstractCacheBoxProvider" ).init();
 	}
@@ -12,30 +11,27 @@
 
 	function testEnabled(){
 		assertFalse( cp.isEnabled() );
-		cp.$property( "enabled", "variables" ,true);
+		cp.$property( "enabled", "variables", true );
 		assertTrue( cp.isEnabled() );
 	}
 
 	function testReportingEnabled(){
 		assertFalse( cp.isEnabled() );
-		cp.$property( "enabled", "variables" ,true);
+		cp.$property( "enabled", "variables", true );
 		assertTrue( cp.isEnabled() );
 	}
 
 	function testClearStatistics(){
 		mockStats = createMock( "coldbox.system.cache.util.CacheStats" );
 		mockStats.$( "clearStatistics" );
-		cp.$property( "stats", "variables" ,mockStats);
+		cp.$property( "stats", "variables", mockStats );
 		cp.clearStatistics();
-		asserttrue( arrayLen(mockStats.$callLog().clearStatistics) );
+		asserttrue( arrayLen( mockStats.$callLog().clearStatistics ) );
 		// debug( mockStats.$callLog() );
 	}
 
 	function testConfiguration(){
-		config = {
-			reapFrequency = 1,
-			timeout = 4
-		};
+		config = { reapFrequency : 1, timeout : 4 };
 		cp.setConfiguration( config );
 
 		assertEquals( config, cp.getConfiguration() );
@@ -55,5 +51,4 @@
 
 		assertEquals( mockEventManager, cp.getEventManager() );
 	}
-
 }

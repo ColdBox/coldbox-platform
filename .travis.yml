@@ -1,4 +1,5 @@
 language: java
+os: "linux"
 group: deprecated-2017Q2
 
 notifications:
@@ -8,13 +9,12 @@ notifications:
 env:
   global:
     # TARGET RELEASE VERSION: BUMP AS NEEDED
-    - COLDBOX_VERSION=5.6.2
+    - COLDBOX_VERSION=6.0.0
+    - COLDBOX_PRERELEASE=false
   matrix:
-    - ENGINE=lucee@4.5 ANT_TARGET=build.all
-    - ENGINE=lucee@5 ANT_TARGET=run-tests
-    - ENGINE=adobe@11	ANT_TARGET=run-tests
-    - ENGINE=adobe@2016	ANT_TARGET=run-tests
-    - ENGINE=adobe@2018	ANT_TARGET=run-tests
+    - ENGINE=lucee@5 # Build Entire Frameworks
+    - ENGINE=adobe@2016	ANT_TARGET=run-tests #just run tests
+    - ENGINE=adobe@2018	ANT_TARGET=run-tests #just run tests
 
 branches:
   only:
@@ -22,8 +22,6 @@ branches:
   - master
 
 dist: trusty
-
-sudo: required
 
 addons:
   apt:
@@ -47,6 +45,8 @@ install:
   - box config set endpoints.forgebox.APIToken=$FORGEBOX_API_TOKEN > /dev/null
 
 before_script:
+  # Set Travis Tag
+  - TRAVIS_TAG=${COLDBOX_VERSION}
   # create test database
   - mysql -u root -e 'create database coolblog;'
   # import database
@@ -61,7 +61,8 @@ before_script:
 
 script:
   # Execute build via ANT
-  - ant -Dcoldbox.version=$COLDBOX_VERSION -DisTravis=true -Dbuild.branch=$TRAVIS_BRANCH -Dbuild.number=$TRAVIS_BUILD_NUMBER -f build/build.xml $ANT_TARGET
+  - ant -DisPreRelease=${COLDBOX_PRERELEASE} -Dcoldbox.version=$COLDBOX_VERSION -DisTravis=true -Dbuild.branch=$TRAVIS_BRANCH -Dbuild.number=$TRAVIS_BUILD_NUMBER -f build/build.xml $ANT_TARGET
+  #- ls -l $TRAVIS_BUILD_DIR
 
 after_failure:
   - cd $TRAVIS_BUILD_DIR
@@ -71,7 +72,7 @@ after_failure:
   # Spit out our Commandbox log in case we need to debug
   - box server log name=$ENGINE
   - cat `box system-log`
-  - ls -l $TRAVIS_BUILD_DIR/apidocs
+  - ls -lr $TRAVIS_BUILD_DIR
 
 deploy:
   # Binary Deployments
@@ -80,22 +81,23 @@ deploy:
       branch:
         - master
         - development
-      condition: "$ENGINE = lucee@4.5"
+      condition: "$ENGINE = lucee@5"
     skip_cleanup: true
     #AWS Credentials need to be set in Travis
     access_key_id: $AWS_ACCESS_KEY
     secret_access_key: $AWS_ACCESS_SECRET
     bucket: "downloads.ortussolutions.com"
-    local-dir: artifacts
+    local-dir: $TRAVIS_BUILD_DIR/artifacts
     upload-dir: ortussolutions
     acl: public_read
+
   # API Docs Deployment
   - provider: s3
     on:
       branch:
         - master
         - development
-      condition: "$ENGINE = lucee@4.5"
+      condition: "$ENGINE = lucee@5"
     skip_cleanup: true
     #AWS Credentials need to be set in Travis
     access_key_id: $AWS_ACCESS_KEY
@@ -103,6 +105,39 @@ deploy:
     bucket: "apidocs.ortussolutions.com"
     local-dir: $TRAVIS_BUILD_DIR/build-coldbox/apidocs
     acl: public_read
+
+  # Github Release only on Master
+  - provider: releases
+    token: ${GITHUB_TOKEN}
+    on:
+      branch:
+        - master
+      condition: "$ENGINE = lucee@5"
+    skip_cleanup: true
+    edge: true
+    file_glob: true
+    file: $TRAVIS_BUILD_DIR/artifacts/**/*
+    release_notes_file: $TRAVIS_BUILD_DIR/changelog.md
+    name: v${TRAVIS_TAG}
+    tag_name: v${TRAVIS_TAG}
+    overwrite: true
+
+  # Github Pre-Releases
+  - provider: releases
+    token: ${GITHUB_TOKEN}
+    on:
+      branch:
+        - development
+      condition: "$ENGINE = lucee@5 && $COLDBOX_PRERELEASE = true"
+    skip_cleanup: true
+    edge: true
+    file_glob: true
+    file: $TRAVIS_BUILD_DIR/artifacts/**/*
+    release_notes_file: $TRAVIS_BUILD_DIR/changelog.md
+    name: v${COLDBOX_VERSION}
+    tag_name: v${COLDBOX_VERSION}
+    overwrite: true
+    prerelease: true
 
 after_deploy:
   # publish ColdBox

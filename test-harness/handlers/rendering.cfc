@@ -1,85 +1,93 @@
-component output="false" singleton{
+component output="false" singleton {
 
-	this.allowedMethods = {
-		"testHTTPMethod"  = "POST"
-	};
+	this.allowedMethods = { "testHTTPMethod" : "POST" };
 
 	data = [
-		{ id = createUUID(), name = "luis" },
-		{ id = createUUID(), name = "lucas" },
-		{ id = createUUID(), name = "fernando" }
+		{ id : createUUID(), name : "luis" },
+		{ id : createUUID(), name : "lucas" },
+		{ id : createUUID(), name : "fernando" }
 	];
 
 	// Default Action
 	function index( event, rc, prc ){
 		prc.data = variables.data;
-		event.renderData( data=prc.data, formats="json,xml,wddx,pdf,html" );
+		event.renderData( data = prc.data, formats = "json,xml,wddx,pdf,html" );
 	}
 
 	/**
-	* jsonprotected
-	*/
+	 * jsonprotected
+	 */
 	function jsonprotected( event, rc, prc ){
 		prc.data = variables.data;
-		event.renderData( data=prc.data, type="jsonp", jsonCallback="callback" );
-	}
-
-	/**
-	* Returning `event` should work, but ignored by ColdBox, since the data for the rendering is inside of it.
-	*/
-	function returnEvent( event, rc, prc ){
-		return event.setView( "main/index" )
-			.setPrivateValue( "welcomeMessage", "I can return the event!" );
-	}
-
-	/**
-	* normalRendering
-	*/
-	function normalRendering( event, rc, prc ){
-		return renderView( view="simpleview" );
-	}
-
-
-	/**
-	* Render layout with arguments and passthrough
-	*/
-	function renderLayoutWithArguments( event, rc, prc ){
-		return renderLayout(
-			view = 'viewWithArgs',
-			layout = 'Simple',
-			args = { data : 'abc123' }
+		event.renderData(
+			data         = prc.data,
+			type         = "jsonp",
+			jsonCallback = "callback"
 		);
 	}
 
+	/**
+	 * Returning `event` should work, but ignored by ColdBox, since the data for the rendering is inside of it.
+	 */
+	function returnEvent( event, rc, prc ){
+		return event.setView( "main/index" ).setPrivateValue( "welcomeMessage", "I can return the event!" );
+	}
 
 	/**
-	* renderingRegions
-	*/
-	function renderingRegions( event, rc, prc ){
+	 * normalRendering
+	 */
+	function normalRendering( event, rc, prc ){
+		return renderView( view = "simpleview" );
+	}
 
+
+	/**
+	 * Render layout with arguments and passthrough
+	 */
+	function renderLayoutWithArguments( event, rc, prc ){
+		return renderLayout(
+			view   = "viewWithArgs",
+			layout = "Simple",
+			args   = { data : "abc123" }
+		);
+	}
+
+	/**
+	 * Render Layout issue https://ortussolutions.atlassian.net/browse/COLDBOX-903
+	 */
+	function renderLayout903( event, rc, prc ){
+		prc.welcomeMessage = renderLayout( layout:"Main", view:"main/mailcontent" );
+		event.setView( "main/index" );
+	}
+
+
+	/**
+	 * renderingRegions
+	 */
+	function renderingRegions( event, rc, prc ){
 		// Normal Rendering
 		event.setView(
-			view 	= "rendering/withargs",
-			args 	= { isWidget = true },
-			name 	= "hola"
+			view = "rendering/withargs",
+			args = { isWidget : true },
+			name = "hola"
 		);
 
 		// Module Rendering
 		event.setView(
-			view 	= "home/index",
-			module 	= "inception",
-			name 	= "module"
+			view   = "home/index",
+			module = "inception",
+			name   = "module"
 		);
 
 		event.setView( "rendering/renderingRegions" );
 	}
 
-	function redirect( event, rc, prc ) {
+	function redirect( event, rc, prc ){
 		prc.data = variables.data;
 		event.renderData(
-			data = prc.data,
-			formats = "json,html",
-			formatsRedirect = { event = "Main.index" }
+			data            = prc.data,
+			formats         = "json,html",
+			formatsRedirect = { event : "Main.index" }
 		);
 	}
 

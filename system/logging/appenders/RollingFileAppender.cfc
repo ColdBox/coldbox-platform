@@ -43,39 +43,34 @@ component accessors="true" extends="coldbox.system.logging.appenders.FileAppende
 		variables.fileRotator = new coldbox.system.logging.util.FileRotator();
 
 		return this;
-    }
+	}
 
-    /**
-	 * Write an entry into the appender. You must implement this method yourself.
-	 *
-	 * @logEvent The logging event to log
+	/**
+	 * Called upon registration
 	 */
-	function logMessage( required coldbox.system.logging.LogEvent logEvent ){
-		// Log the message in the super class
-		super.logMessage( arguments.logEvent );
+	function onRegistration(){
+		super.onRegistration();
 
-		// Rotate
-		try{
-			// Verify if listener has started.
-			var isActive = variables.lock( "readonly", function(){
-				return variables.logListener.active;
-			} );
-
-			// Only process rotation if the log listener is disabled
-			if( !isActive ){
-				// Lock so we can do rotation
-				variables.lock( body=function(){
-					variables.fileRotator.checkRotation( this );
-				} );
-			}
-		} catch( Any e ) {
-			$log(
-				"ERROR",
-				"Could not zip and rotate log files in #getName()#. #e.message# #e.detail#"
-			);
-		}
+		variables.logbox
+			.getTaskScheduler()
+			.newSchedule( this, "logRotation" )
+				.delay( 1 ) // Don't start immediately, give it a breathing room
+				.spacedDelay( 1 ) // Runs again, after this spaced delay once each reap finalizes
+				.inMinutes()
+				.start();
 
 		return this;
+	}
+
+	function logRotation(){
+		try{
+			variables.fileRotator.checkRotation( this );
+		} catch( Any e ){
+			var errorMessage = "Error rotating #getName()# : #e.message# #e.detail# #e.stacktrace#";
+			err( errorMessage );
+			$log( "ERROR", errorMessage );
+			rethrow;
+		}
 	}
 
 }

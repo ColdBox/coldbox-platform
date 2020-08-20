@@ -96,6 +96,7 @@ component serializable="false" accessors="true"{
 		application[ appKey ] = new coldbox.system.web.Controller( COLDBOX_APP_ROOT_PATH, appKey );
 		// Setup the Framework And Application
 		application[ appKey ].getLoaderService().loadApplication( COLDBOX_CONFIG_FILE, COLDBOX_APP_MAPPING );
+		// Get the reinit key
 		// Application Start Handler
 		try {
 			if ( len( application[ appKey ].getSetting( "ApplicationStartHandler" ) ) ){
@@ -108,9 +109,11 @@ component serializable="false" accessors="true"{
 			// abort it, something went really wrong.
 			abort;
 		}
+
 		// Check if fwreinit is sent, if sent, ignore it, we are loading the framework
-		if( structKeyExists( url, "fwreinit" ) ){
-			structDelete( url, "fwreinit" );
+		var reinitKey = application[ appKey ].getSetting( "reinitKey", "fwreinit" );
+		if( structKeyExists( url, reinitKey ) ){
+			structDelete( url, reinitKey );
 		}
 
 		return this;
@@ -137,7 +140,7 @@ component serializable="false" accessors="true"{
 							// Load Module CF Mappings so modules can unload properly
 							application[ appKey ].getModuleService().loadMappings();
 							// process preReinit interceptors
-							application[ appKey ].getInterceptorService().processState( "preReinit" );
+							application[ appKey ].getInterceptorService().announce( "preReinit" );
 							// Shutdown the application services
 							application[ appKey ].getLoaderService().processShutdown();
 						}
@@ -203,9 +206,12 @@ component serializable="false" accessors="true"{
 			var event = cbController.getRequestService().requestCapture();
 
 			//****** PRE PROCESS *******/
-			interceptorService.processState( "preProcess" );
+			interceptorService.announce( "preProcess" );
 			if( len( cbController.getSetting( "RequestStartHandler" ) ) ){
-				cbController.runEvent( cbController.getSetting( "RequestStartHandler" ), true );
+				cbController.runEvent(
+					event 			: cbController.getSetting( "RequestStartHandler" ),
+					prePostExempt 	: true
+				);
 			}
 
 			//****** EVENT CACHING CONTENT DELIVERY *******/
@@ -257,7 +263,7 @@ component serializable="false" accessors="true"{
 					var renderedContent = "";
 
 					// pre layout
-					interceptorService.processState( "preLayout" );
+					interceptorService.announce( "preLayout" );
 
 					// Check for Marshalling and data render
 					var renderData = event.getRenderData();
@@ -290,7 +296,7 @@ component serializable="false" accessors="true"{
 					var interceptorData = {
 						renderedContent = renderedContent
 					};
-					interceptorService.processState( "preRender", interceptorData );
+					interceptorService.announce( "preRender", interceptorData );
 					// replace back content in case of modification, strings passed by value
 					renderedContent = interceptorData.renderedContent;
 
@@ -352,18 +358,23 @@ component serializable="false" accessors="true"{
 					} // end event caching
 
 					// Render Data? With stupid CF whitespace stuff.
-					if( !structisEmpty( renderData ) ){/*
-						*/renderData.controller = cbController;renderDataSetup( argumentCollection=renderData );/*
+					if( !structisEmpty( renderData ) ){
+						renderData.controller = cbController;
+						renderDataSetup( argumentCollection=renderData );
 						// Binary
-						*/if( renderData.isBinary ){ cbController.getDataMarshaller().renderContent( type="#renderData.contentType#", variable="#renderedContent#" ); }/*
+						if( renderData.isBinary ){
+							cbController.getDataMarshaller().renderContent( type="#renderData.contentType#", variable="#renderedContent#" );
+						}
 						// Non Binary
-						*/else{ writeOutput( renderedContent ); }
+						else{
+							writeOutput( renderedContent );
+						}
 					} else {
 						writeOutput( renderedContent );
 					}
 
 					// Post rendering event
-					interceptorService.processState( "postRender" );
+					interceptorService.announce( "postRender" );
 				} // end no render
 
 			} // end normal rendering procedures
@@ -372,7 +383,7 @@ component serializable="false" accessors="true"{
 			if( len( cbController.getSetting( "RequestEndHandler" ) ) ){
 				cbController.runEvent( event=cbController.getSetting("RequestEndHandler"), prePostExempt=true );
 			}
-			interceptorService.processState( "postProcess" );
+			interceptorService.announce( "postProcess" );
 
 			//****** FLASH AUTO-SAVE *******/
 			if( cbController.getSetting( "flash" ).autoSave ){
@@ -391,8 +402,8 @@ component serializable="false" accessors="true"{
 
 
 	/**
-	* Verify if a reinit is sent
-	*/
+	 * Verify if a reinit is sent
+	 */
 	boolean function isFWReinit(){
 		var appKey 	= locateAppKey();
 
@@ -406,10 +417,11 @@ component serializable="false" accessors="true"{
 		}
 
 		// Verify the reinit key is passed
-		if ( structKeyExists( url, "fwreinit" ) or structKeyExists( form, "fwreinit" ) ){
+		var reinitKey = application[ appKey ].getSetting( "reinitKey", "fwreinit" );
+		if ( structKeyExists( url, reinitKey ) or structKeyExists( form, reinitKey ) ){
 
 			// Check if we have a reinit password at hand.
-			var reinitPass = application[ appKey ].getSetting( name="ReinitPassword", defaultValue="" );
+			var reinitPass = application[ appKey ].getSetting( name="reinitPassword", defaultValue="" );
 
 			// pass Checks
 			if ( NOT len( reinitPass ) ){
@@ -418,10 +430,10 @@ component serializable="false" accessors="true"{
 
 			// Get the incoming pass from form or url
 			var incomingPass 	= "";
-			if( structKeyExists( form, "fwreinit" ) ){
-				incomingPass = form.fwreinit;
+			if( structKeyExists( form, reinitKey ) ){
+				incomingPass = form[ reinitKey ];
 			} else {
-				incomingPass = url.fwreinit;
+				incomingPass = url[ reinitKey ];
 			}
 
 			// Compare the passwords
@@ -506,7 +518,7 @@ component serializable="false" accessors="true"{
 			var cbController = application[ locateAppKey() ];
 		}
 		// Session start interceptors
-		cbController.getInterceptorService().processState( "sessionStart", session );
+		cbController.getInterceptorService().announce( "sessionStart", session );
 		//Execute Session Start Handler
 		if( len( cbController.getSetting( "SessionStartHandler" ) ) ){
 			cbController.runEvent( event=cbController.getSetting( "SessionStartHandler" ), prePostExempt=true );
@@ -536,7 +548,7 @@ component serializable="false" accessors="true"{
 				sessionReference = arguments.sessionScope,
 				applicationReference = arguments.appScope
 			};
-			cbController.getInterceptorService().processState( "sessionEnd", iData );
+			cbController.getInterceptorService().announce( "sessionEnd", iData );
 
 			// Execute Session End Handler
 			if ( len( cbController.getSetting( "SessionEndHandler" ) ) ){
@@ -565,7 +577,7 @@ component serializable="false" accessors="true"{
 		var cbController = arguments.appScope[ locateAppKey() ];
 
 		// Execute Application End interceptors
-		cbController.getInterceptorService().processState( "applicationEnd" );
+		cbController.getInterceptorService().announce( "applicationEnd" );
 		// Execute Application End Handler
 		if( len( cbController.getSetting( "applicationEndHandler" ) ) ){
 			cbController.runEvent( event=cbController.getSetting( "applicationEndHandler" ) ,prePostExempt=true );
@@ -592,7 +604,7 @@ component serializable="false" accessors="true"{
 
 		// Announce interception
 		arguments.controller.getInterceptorService()
-			.processState( "onException", { exception = arguments.exception } );
+			.announce( "onException", { exception = arguments.exception } );
 
 		// Store exception in private context
 		event.setPrivateValue( "exception", oException );
@@ -641,7 +653,7 @@ component serializable="false" accessors="true"{
 		} else {
 			// Default ColdBox Error Template
 			savecontent variable="local.exceptionReport"{
-				include "/coldbox/system/includes/BugReport-Public.cfm";
+				include "/coldbox/system/exceptions/BugReport-Public.cfm";
 			}
 		}
 
@@ -654,7 +666,7 @@ component serializable="false" accessors="true"{
 	private function processStackTrace( str ){
 		// Not using encodeForHTML() as it is too destructive and ruins whitespace chars and other stuff
 		arguments.str = HTMLEditFormat( arguments.str );
-		
+
 		var aMatches = REMatchNoCase( "\(([^\)]+)\)", arguments.str );
 		for( var aString in aMatches ){
 			arguments.str = replacenocase( arguments.str, aString, "<span class='highlight'>#aString#</span>", "all" );

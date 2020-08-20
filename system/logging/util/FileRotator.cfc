@@ -15,7 +15,7 @@ component accessors="true"{
 
 	/**
 	 * Checks the log file size. If greater than framework's settings, then zip and rotate.
-	 * 
+	 *
 	 * @appender The appender to rotate with
 	 * @appender.docbox_generic coldbox.system.logging.AbstractAppender
 	 */
@@ -23,28 +23,28 @@ component accessors="true"{
 		var oAppender       = arguments.appender;
 		var fileName        = oAppender.getProperty( "fileName" );
 		var logFullPath     = oAppender.getLogFullPath();
-		
-		//  Verify FileSize 
+
+		//  Verify FileSize
 		if ( getFileSize( logFullPath ) > ( oAppender.getProperty( "fileMaxSize" ) * 1024 ) ) {
-			//  How Many Log Files Do we Have 
+			//  How Many Log Files Do we Have
 			var qArchivedLogs = directoryList( getDirectoryFromPath( logFullPath ), false, "query", "#filename#*.zip", "dateLastModified" );
-			
-			lock 	name="#oAppender.getlockName()#" 
-					type="exclusive" 
-					timeout="#oAppender.getlockTimeout()#" 
-					throwontimeout="true" 
+
+			lock 	name="#oAppender.getName()#-logrotation"
+					type="exclusive"
+					timeout="#oAppender.getlockTimeout()#"
+					throwontimeout="true"
 			{
-				//  Should I remove log Files 
+				//  Should I remove log Files
 				if ( qArchivedLogs.recordcount >= oAppender.getProperty( "fileMaxArchives" ) ) {
 					var archiveToDelete = qArchivedLogs.directory[ 1 ] & "/" & qArchivedLogs.name[ 1 ];
-					//  Remove the oldest one 
+					//  Remove the oldest one
 					fileDelete( archiveToDelete );
 				}
 
-				//  Set the name of the archive 
+				//  Set the name of the archive
 				var zipFileName = getDirectoryFromPath( logFullPath ) & fileName & "." & dateformat( now(), "yyyymmdd" ) & "." & timeformat( now(), "HHmmss" ) & ".zip";
-				
-				//  Zip it 
+
+				//  Zip it
 				cfzip(
 					action    = "zip",
 					file      = "#zipFileName#",
@@ -55,10 +55,10 @@ component accessors="true"{
 				);
 			} // end lock
 
-			//  Clean & reinit Log File 
+			//  Clean & reinit Log File
 			oAppender.removeLogFile();
-			
-			//  Reinit The log File 
+
+			//  Reinit The log File
 			oAppender.initLoglocation();
 		}
 
@@ -67,7 +67,7 @@ component accessors="true"{
 
 	/**
 	 * Get the filesize of a file.
-	 * 
+	 *
 	 * @fileName The target file
 	 * @sizeFormat Available formats: [bytes][kbytes][mbytes][gbytes]
 	 */

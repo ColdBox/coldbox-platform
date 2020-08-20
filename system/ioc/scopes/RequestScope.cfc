@@ -38,9 +38,8 @@ component implements="coldbox.system.ioc.scopes.IScope" accessors="true"{
 	 * @mapping The linked WireBox injector
 	 * @mapping.doc_generic coldbox.system.ioc.config.Mapping
 	 * @initArguments The constructor struct of arguments to passthrough to initialization
-	 * @initArguments.doc_generic struct
 	 */
-	function getFromScope( required mapping, initArguments ){
+	function getFromScope( required mapping, struct initArguments ){
 		var cacheKey    = "wirebox:#arguments.mapping.getName()#";
 
         // Check if already in request scope

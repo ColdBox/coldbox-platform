@@ -1,9 +1,9 @@
 ﻿/**
-* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-* www.ortussolutions.com
-* ---
-* This component is used as a base for creating LogBox appenders
-**/
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * This component is used as a base for creating LogBox appenders
+ */
 component accessors="true"{
 
 	/**
@@ -41,8 +41,33 @@ component accessors="true"{
 	 */
 	property name="coldbox";
 
+	/**
+	 * Reference back to the running LogBox instance
+	 */
+	property name="logBox";
+
+	/**
+	 * Default lock timeout if using the base `lock()` method
+	 */
+	property name="lockTimeout" default="25" type="numeric";
+
+	/**
+	 * A base Log Listener Queue
+	 */
+	property name="logListener" type="struct";
+
+	/****************************************************************
+	 * Static Variables *
+	 ****************************************************************/
+
 	// The log levels enum as a public property
 	this.logLevels = new coldbox.system.logging.LogLevels();
+	// Java System
+	variables.system = createObject( "java", "java.lang.System" );
+
+	/****************************************************************
+	 * Methods *
+	 ****************************************************************/
 
 	/**
 	 * Constructor
@@ -80,6 +105,12 @@ component accessors="true"{
 		// Levels
 		variables.levelMin = arguments.levelMin;
 		variables.levelMax = arguments.levelMax;
+
+		// lock information
+		variables.lockTimeout = 25;
+
+		// Activate Log Listener Queue
+		variables.logListener = { active : false, queue : [] };
 
 		return this;
 	}
@@ -218,6 +249,165 @@ component accessors="true"{
 		return structKeyExists( variables.properties, arguments.property );
 	}
 
+	/**
+	 * --------------------------------------------------------------------------
+	 * Log Listener and Processing Queues
+	 * --------------------------------------------------------------------------
+	 */
+
+	/**
+	 * Start the log listener so we can queue up the logging
+	 */
+	function startLogListener(){
+		// Double lock to ensure thread isn't already requested
+		var isActive = variables.lock( function(){
+			return variables.logListener.active;
+		}, "readonly" );
+
+		// if no thread is active, enter exclusive lock and start one.
+		if ( !isActive ) {
+			variables.lock( function(){
+				if ( !variables.logListener.active ) {
+					// Mark listener as activated
+					out( "(#getName()#) ScheduleTask needs to be started..." );
+					variables.logListener.active = true;
+
+					// Create the runnable Log Listener, Start it up baby!
+					variables.logBox
+						.getTaskScheduler()
+						.schedule(
+							task           = this,
+							method         = "runLogListener",
+							loadAppContext = false
+						);
+
+					out( "(#getName()#) ScheduleTask started" );
+				}
+			} );
+		}
+	}
+
+	/**
+	 * Executed by our schedule tasks to move the queue elements into the appender's implemented
+	 * destination
+	 */
+	function runLogListener(){
+		try {
+			// Create a queue context for queue processing data
+			var queueContext = {
+				"lastRun"       : getTickCount(),
+				"start"         : getTickCount(),
+				"maxIdle"       : 15000,
+				"sleepInterval" : 25,
+				"count"         : 0,
+				"hasMessages"   : false
+			};
+
+			// Init Message
+			out( "- Starting (#getName()#) log listener with max life of #queueContext.maxIdle#ms", true );
+
+			// Start Advice
+			onLogListenerStart( queueContext );
+
+			while ( variables.logListener.queue.len() || queueContext.lastRun + queueContext.maxIdle > getTickCount() ) {
+				// out( "len: #variables.logListener.queue.len()# last run: #lastRun# idle: #queueContext.maxIdle#" );
+
+				if ( variables.logListener.queue.len() ) {
+					// pop and dequeue
+					var thisData = variables.logListener.queue[ 1 ];
+					variables.logListener.queue.deleteAt( 1 );
+
+					// out( "processing #thisData.toString()#" );
+
+					processQueueElement( thisData, queueContext );
+
+					// Mark the last run
+					queueContext.lastRun = getTickCount();
+				}
+
+				// out( "Sleeping: lastRun #lastRun + queueContext.maxIdle#" );
+
+				// Advice we are about to go to sleep
+				onLogListenerSleep( queueContext );
+
+				// Only take a nap if we've nothing to do
+				if( !variables.logListener.queue.len() ) {
+					sleep( queueContext.sleepInterval ); // take a nap
+				}
+			}
+		} catch ( Any e ) {
+			// send to CF logging
+			$log( "ERROR", "Error processing log listener: #e.message# #e.detail# #e.stacktrace#" );
+			// send to standard error out
+			variables.err( "Error with log listener thread for #getName()#: " & e.message & e.detail );
+			variables.err( e.stackTrace );
+		} finally {
+			// End Advice
+			onLogListenerEnd( queueContext );
+
+			// Advice
+			out(
+				"Stopping Log listener task for (#getName()#), it ran for #getTickCount() - queueContext.start#ms!"
+			);
+			// Stop log listener
+			variables.lock( function(){
+				variables.logListener.active = false;
+			} );
+		}
+	}
+
+	/**
+	 * Fired once the listener starts queue processing
+	 *
+	 * @queueContext A struct of data attached to this processing queue thread
+	 */
+	function onLogListenerStart( required struct queueContext ){
+	}
+
+	/**
+	 * Fired once the listener will go to sleep
+	 *
+	 * @queueContext A struct of data attached to this processing queue thread
+	 */
+	function onLogListenerSleep( required struct queueContext ){
+	}
+
+	/**
+	 * Fired once the listener stops queue processing
+	 *
+	 * @queueContext A struct of data attached to this processing queue thread
+	 */
+	function onLogListenerEnd( required struct queueContext ){
+	}
+
+	/**
+	 * Processes a queue element to a destination
+	 * This method is called by the log listeners asynchronously.
+	 *
+	 * @data The data element the queue needs processing
+	 * @queueContext The queue context in process
+	 *
+	 * @return AbstractAppender
+	 */
+	function processQueueElement( required data, required queueContext ){
+		variables.out( data.toString() );
+		return this;
+	}
+
+	/**
+	 * Appends a data struct into the logging array queue so the log listeners can deliver it
+	 * to the destination. This is a NON-Blocking operation
+	 *
+	 * @data The data to be queued up
+	 */
+	AbstractAppender function queueMessage( required data ){
+		// Ensure log listener
+		startLogListener();
+		// Queue it up
+		variables.logListener.queue.append( arguments.data );
+		return this;
+	}
+
 	/****************************************** PRIVATE *********************************************/
 
 	/**
@@ -238,16 +428,40 @@ component accessors="true"{
 	}
 
 	/**
-	 * Utiliy to send to output to console.
+	 * Utiliy to send to output to the output stream.
 	 *
 	 * @message Message to send
-	 * @addNewLine Add a line break or not, default is yes
 	 */
-	private function out( required message, boolean addNewLine=true ){
-		if( arguments.addNewLine ){
-			arguments.message &= chr( 13 ) & chr( 10 );
+	private function out( required message ){
+		variables.System.out.println( arguments.message.toString() );
+	}
+
+	/**
+	 * Utiliy to send to output to the error stream.
+	 *
+	 * @message Message to send
+	 */
+	private function err( required message ){
+		variables.System.err.println( arguments.message.toString() );
+	}
+
+	/**
+	 * A functional locking wrapper
+	 *
+	 * @body The function/closure/lambda to wrap under a lock call
+	 * @type The lock type. Exclusive or readonly. Defaults to exclusive if not passed
+	 *
+	 * @return The return of the arguments.body() call
+	 */
+	private function lock( body, type="exclusive" ){
+		lock
+			name 			= "#getHash() & getName()#-logListener"
+			type 			= arguments.type
+			timeout 		= "#variables.lockTimeout#"
+			throwOnTimeout 	= true
+		{
+			return arguments.body();
 		}
-		createObject( "java", "java.lang.System" ).out.println( arguments.message );
 	}
 
 }

@@ -37,14 +37,28 @@
 	 * The Event Manager object linkage
 	 */
 	property name="eventManager";
+
 	/**
 	 * The array of events this factory registers
 	 */
 	property name="eventStates" type="array";
+
 	/**
 	 * The registered caches this factory keeps track of
 	 */
 	property name="caches" type="struct";
+
+	/**
+	 * The Global AsyncManager
+	 * @see coldbox.system.async.AsyncManager
+	 */
+	property name="asyncManager";
+
+	/**
+	 * The logBox task scheduler executor
+	 * @see coldbox.system.async.tasks.ScheduledExecutor
+	 */
+	property name="taskScheduler";
 
 	/**
 	 * Constructor
@@ -121,7 +135,13 @@
 			variables.eventManager = variables.coldbox.getInterceptorService();
 			// Link Interception States
 			variables.coldbox.getInterceptorService().appendInterceptionPoints( variables.eventStates );
+			// Link async manager and scheduler
+			variables.asyncManager = variables.coldbox.getAsyncManager();
+			variables.taskScheduler = variables.asyncManager.getExecutor( "coldbox-tasks" );
 		} else {
+			// Register an async manager and scheduler
+			variables.asyncManager = new coldbox.system.async.AsyncManager();
+			variables.taskScheduler = variables.asyncManager.newScheduledExecutor( name : "cachebox-tasks", threads : 20 );
 			// Running standalone, so create our own logging first
 			configureLogBox( arguments.config.getLogBoxConfig() );
 			// Running standalone, so create our own event manager
@@ -214,7 +234,7 @@
 			}
 
 			// Announce To Listeners
-			variables.eventManager.processState( "afterCacheFactoryConfiguration", { cacheFactory = this } );
+			variables.eventManager.announce( "afterCacheFactoryConfiguration", { cacheFactory = this } );
 		}
 	}
 
@@ -299,7 +319,7 @@
 		}
 
 		// Notify Listeners
-		variables.eventManager.processState( "beforeCacheFactoryShutdown", { cacheFactory = this } );
+		variables.eventManager.announce( "beforeCacheFactoryShutdown", { cacheFactory = this } );
 
 		// safely iterate and shutdown caches
 		getCacheNames().each( function( item ){
@@ -312,13 +332,13 @@
 			}
 
 			//process listners
-			variables.eventManager.processState( "beforeCacheShutdown", { cache = cache } );
+			variables.eventManager.announce( "beforeCacheShutdown", { cache = cache } );
 
 			//Shutdown each cache
 			cache.shutdown();
 
 			//process listeners
-			variables.eventManager.processState( "afterCacheShutdown", { cache = cache } );
+			variables.eventManager.announce( "afterCacheShutdown", { cache = cache } );
 
 			// log
 			if( variables.log.canDebug() ){
@@ -333,7 +353,7 @@
 		removeFromScope();
 
 		// Notify Listeners
-		variables.eventManager.processState( "afterCacheFactoryShutdown", { cacheFactory = this } );
+		variables.eventManager.announce( "afterCacheFactoryShutdown", { cacheFactory = this } );
 
 		// Log shutdown complete
 		if( variables.log.canDebug() ){
@@ -370,13 +390,13 @@
 		}
 
 		// Notify Listeners
-		variables.eventManager.processState( "beforeCacheShutdown", { cache = cache } );
+		variables.eventManager.announce( "beforeCacheShutdown", { cache = cache } );
 
 		//Shutdown the cache
 		cache.shutdown();
 
 		//process listeners
-		variables.eventManager.processState( "afterCacheShutdown", { cache = cache } );
+		variables.eventManager.announce( "afterCacheShutdown", { cache = cache } );
 
 		// remove cache
 		removeCache( arguments.name );
@@ -419,7 +439,7 @@
 					var cache = variables.caches[ arguments.name ];
 
 					// Notify listeners here
-					variables.eventManager.processState( "beforeCacheRemoval", { cache = cache } );
+					variables.eventManager.announce( "beforeCacheRemoval", { cache = cache } );
 
 					// process shutdown
 					cache.shutdown();
@@ -428,7 +448,7 @@
 					structDelete( variables.caches, arguments.name );
 
 					// Announce it
-					variables.eventManager.processState( "afterCacheRemoval", { cache = arguments.name } );
+					variables.eventManager.announce( "afterCacheRemoval", { cache = arguments.name } );
 
 					// Log it
 					if( variables.log.canDebug() ){
@@ -514,7 +534,7 @@
 				newCache = arguments.decoratedCache
 			};
 
-			variables.eventManager.processState( "beforeCacheReplacement", iData	);
+			variables.eventManager.announce( "beforeCacheReplacement", iData	);
 
 			// remove old Cache
 			structDelete( variables.caches, name );
@@ -663,7 +683,7 @@
 					// Store it
 					variables.caches[ name ] = oCache;
 					// Announce new cache registration now
-					variables.eventManager.processState( "afterCacheRegistration", { cache = oCache } );
+					variables.eventManager.announce( "afterCacheRegistration", { cache = oCache } );
 				}
 			}
 		}

@@ -62,14 +62,21 @@
 		variables.utility		= arguments.injector.getUtil();
 		variables.customDSL		= {};
 
+		// Internal DSL Registry
+		variables.internalDSL = [
+			"coldbox", "box", "executor", "cachebox", "logbox", "model", "id", "provider", "wirebox", "java", "byType"
+		];
+
 		// Do we need to build the coldbox DSL namespace
 		if( variables.injector.isColdBoxLinked() ){
 			variables.coldboxDSL = new coldbox.system.ioc.dsl.ColdBoxDSL( arguments.injector );
 		}
+
 		// Is CacheBox Linked?
 		if( variables.injector.isCacheBoxLinked() ){
 			variables.cacheBoxDSL = new coldbox.system.ioc.dsl.CacheBoxDSL( arguments.injector );
 		}
+
 		// Build LogBox DSL Namespace
 		variables.logBoxDSL = new coldbox.system.ioc.dsl.LogBoxDSL( arguments.injector );
 
@@ -134,32 +141,39 @@
 		var thisMap 	= arguments.mapping;
 		var oModel 		= createObject( "component", thisMap.getPath() );
 
-		// Do we have virtual inheritance?
-		if( arguments.mapping.isVirtualInheritance() ){
+        // Do we have virtual inheritance?
+        var constructorArgs = thisMap.getDIConstructorArguments();
+        var constructorArgNames = constructorArgs.map( function( arg ) { return arg.name; } );
+		if( thisMap.isVirtualInheritance() ){
 			// retrieve the VI mapping.
-			var viMapping = variables.injector.getBinder().getMapping( arguments.mapping.getVirtualInheritance() );
+			var viMapping = variables.injector.getBinder().getMapping( thisMap.getVirtualInheritance() );
 			// Does it match the family already?
 			if( NOT isInstanceOf( oModel, viMapping.getPath() ) ){
 				// Virtualize it.
-				toVirtualInheritance( viMapping, oModel, arguments.mapping );
+                toVirtualInheritance( viMapping, oModel, thisMap );
+
+                // Only add virtual inheritance constructor args if we don't already have one with that name.
+                arrayAppend( constructorArgs, viMapping.getDIConstructorArguments().filter( function( arg ) {
+                    return !arrayContainsNoCase( constructorArgNames, arg.name );
+                } ), true );
 			}
 		}
 
 		// Constructor initialization?
 		if( thisMap.isAutoInit() AND structKeyExists( oModel, thisMap.getConstructor() ) ){
-			// Get Arguments
-			var constructorArgs = buildArgumentCollection( thisMap, thisMap.getDIConstructorArguments(), oModel );
+            // Get Arguments
+			var constructorArgCollection = buildArgumentCollection( thisMap, constructorArgs, oModel );
 
 			// Do We have initArguments to override
 			if( NOT structIsEmpty( arguments.initArguments ) ){
-				structAppend( constructorArgs, arguments.initArguments, true );
+				structAppend( constructorArgCollection, arguments.initArguments, true );
 			}
 
 			try {
 				// Invoke constructor
-				invoke( oModel, thisMap.getConstructor(), constructorArgs );
+				invoke( oModel, thisMap.getConstructor(), constructorArgCollection );
 			} catch( any e ){
-				
+
 				var reducedTagContext = e.tagContext.reduce( function(result, file) {
 						if( !result.done ) {
 							if( file.template.listLast( '/\' ) == 'Builder.cfc' ) {
@@ -170,13 +184,13 @@
 						}
 						return result;
 					}, {rows:[],done:false} ).rows.toList( chr(13)&chr(10) );
-					
+
 				throw(
 					type    = "Builder.BuildCFCDependencyException",
 					message = "Error building: #thisMap.getName()# -> #e.message#
 					#e.detail#.",
-					detail  = "DSL: #thisMap.getDSL()#, Path: #thisMap.getPath()#, 
-					Error Location: 
+					detail  = "DSL: #thisMap.getDSL()#, Path: #thisMap.getPath()#,
+					Error Location:
 					#reducedTagContext#"
 				);
 			}
@@ -265,7 +279,7 @@
 	 * @argumentArray The argument array of data
 	 * @targetObject The target object we are building the DSL dependency for
 	 */
-	 function buildArgumentCollection( required mapping, required argumentArray, required targetObject ){
+	function buildArgumentCollection( required mapping, required argumentArray, required targetObject ){
 		var thisMap 	= arguments.mapping;
 		var DIArgs 		= arguments.argumentArray;
 		var args		= {};
@@ -365,6 +379,8 @@
 	 * @dsl The dsl string to build
 	 * @targetID The target ID we are building this dependency for
 	 * @targetObject The target object we are building the DSL dependency for
+	 *
+	 * @return The requested DSL object
 	 */
 	function buildSimpleDSL( required dsl, required targetID, required targetObject = "" ){
 		var definition = {
@@ -380,11 +396,42 @@
 	}
 
 	/**
+	 * Verifies if the incoming string is a valid registered DSL namespace
+	 *
+	 * @target The string to verify if it's a registered namespace
+	 */
+	boolean function isDSLNamespace( required target ){
+		return (
+			variables.customDSL.keyExists( arguments.target )
+			||
+			arrayContainsNoCase( variables.internalDSL, arguments.target )
+		);
+	}
+
+	/**
+	 * Verifies if the incoming string is a valid registered DSL string
+	 *
+	 * @target The string to verify if it's a potential DSL
+	 */
+	boolean function isDSLString( required target ){
+		return (
+			isDSLNamespace( arguments.target )
+			||
+			find( ":", arguments.target )
+		);
+	}
+
+	/**
 	 * Build a DSL Dependency, if not found, returns null
 	 *
 	 * @definition The dependency definition structure: name, dsl as keys
 	 * @targetID The target ID we are building this dependency for
 	 * @targetObject The target object we are building the DSL dependency for
+	 *
+	 * @throws IllegalDSLException - When requesting a ColdBox/CacheBox DSL dependency and the library is not linked
+	 * @throws DSLDependencyNotFoundException - If the requested object is not found and it is required
+	 *
+	 * @return The requested object or null if not found and not required
 	 */
 	function buildDSLDependency( required definition, required targetID, targetObject = "" ){
 		var refLocal 			= {};
@@ -393,7 +440,7 @@
 		// Check if Custom DSL exists, if it does, execute it
 		if( structKeyExists( variables.customDSL, DSLNamespace ) ){
 			return variables.customDSL[ DSLNamespace ].process( argumentCollection=arguments );
-        }
+		}
 
 		// Determine Type of Injection according to type
 		// Some namespaces requires the ColdBox context, if not found, an exception is thrown.
@@ -408,6 +455,13 @@
 					);
 				}
 				refLocal.dependency = variables.coldboxDSL.process( argumentCollection=arguments );
+				break;
+			}
+
+			// Executor
+			case "executor" : {
+				// retrieve it
+				refLocal.dependency = getExecutorDSl( argumentCollection=arguments );
 				break;
 			}
 
@@ -471,7 +525,7 @@
 		}
 
 		// return only if found
-		if( structKeyExists( refLocal, "dependency" ) ){
+		if( !isNull( refLocal.dependency ) ){
 			return refLocal.dependency;
 		}
 
@@ -494,7 +548,16 @@
 			// Throw exception as DSL Dependency requested was not located
 			throw(
 				message = injectMessage,
-				detail  = arguments.definition.toString(),
+				// safe serialization that won't blow uo on complex values or do weird things with nulls (looking at you, Adobe)
+				detail  = serializeJSON ( arguments.definition.map( function(k,v){
+							if( isNull( v ) ) {
+								return;
+							} else if( !isSimpleValue( v ) ) {
+								return '[complex value]';
+							} else {
+								return v;
+							}
+						} ) ),
 				type    = "Builder.DSLDependencyNotFoundException"
 			);
 		}
@@ -557,6 +620,40 @@
 				}
 				break;
 			} // end level 3 main DSL
+		}
+	}
+
+	/**
+	 * Get executors
+	 *
+	 * @definition The dependency definition structure: name, dsl as keys
+	 * @targetObject The target object we are building the DSL dependency for
+	 */
+	private any function getExecutorDSl( required definition, targetObject ){
+		var asyncManager 		= variables.injector.getAsyncManager();
+		var thisType 			= arguments.definition.dsl;
+		var thisTypeLen 		= listLen( thisType, ":" );
+		var executorName 		= "";
+
+		// DSL stages
+		switch( thisTypeLen ){
+			// property name='myExecutorService' inject="executor";
+			case 1 : {
+				executorName = arguments.definition.name;
+				break;
+			}
+			// executor:{alias} stage
+			case 2 : {
+				executorName = getToken( thisType, 2, ":" );
+				break;
+			}
+		}
+
+		// Check if executor Exists
+		if( asyncManager.hasExecutor( executorName ) ){
+			return asyncManager.getExecutor( executorName );
+		} else if ( variables.log.canDebug() ){
+			variables.log.debug( "X getExecutorDsl() cannot find executor #executorName# using definition #arguments.definition.toString()#" );
 		}
 	}
 

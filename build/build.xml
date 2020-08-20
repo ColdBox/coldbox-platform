@@ -47,14 +47,17 @@
 		<loadproperties srcFile="build/build.properties"/>
 
 		<!-- Build Conditions -->
-		<condition property="cfengine" else="lucee@4.5">
+		<condition property="cfengine" else="lucee@5">
 			<isset property="cfengine"/>
 		</condition>
 		<condition property="isTravis" else="false">
-		<isset property="isTravis"/>
+			<isset property="isTravis"/>
 		</condition>
 		<condition property="build.branch" else="development">
-		<isset property="build.branch"/>
+			<isset property="build.branch"/>
+		</condition>
+		<condition property="isPreRelease" else="false">
+			<isset property="isPreRelease"/>
 		</condition>
 
 		<!-- Build Number -->
@@ -76,6 +79,8 @@
 		<!-- Cleanup + Init -->
 		<delete dir="${dir.build}" />
 		<mkdir dir="${dir.build}" />
+		<delete dir="${dir.exports}" />
+		<mkdir dir="${dir.exports}" />
 
 		<!-- Copy over original box.json as the getDependencies might update it -->
 		<copy file="box.json" toFile="box-original.json" encoding="UTF-8" overwrite="true"/>
@@ -127,6 +132,11 @@
     	<exec executable="box" dir="${basedir}" failonerror="true">
 			<arg line="testbox run runner='http://localhost:${server.port}/tests/runner-wirebox.cfm' verbose=false" />
 		</exec>
+
+		<!-- Run for Async -->
+		<exec executable="box" dir="${basedir}" failonerror="true">
+			<arg line="testbox run runner='http://localhost:${server.port}/tests/runner-async.cfm' verbose=false" />
+		</exec>
     </target>
 
 	<!-- Build All Releases -->
@@ -173,14 +183,25 @@
 		  <fileset dir="${dir.build}/coldbox" />
 		</replaceregexp>
 
-		<!-- Determine snapshot vs master artifact -->
+		<!-- Determine snapshot vs isPrerelease vs master artifact -->
 		<if>
-			<equals arg1="${build.branch}" arg2="development" />
+
+			<equals arg1="${isPreRelease}" arg2="true" />
 			<then>
-				<replaceregexp match='\+@build.number@' replace="-snapshot" flags="ig" byline="true" encoding="UTF-8">
-				  <fileset dir="${dir.build}/coldbox" />
+				<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true" encoding="UTF-8">
+					<fileset dir="${dir.build}/coldbox" />
 				</replaceregexp>
 			</then>
+
+			<elseif>
+				<equals arg1="${build.branch}" arg2="development" />
+				<then>
+					<replaceregexp match='\+@build.number@' replace="-snapshot" flags="ig" byline="true" encoding="UTF-8">
+					  <fileset dir="${dir.build}/coldbox" />
+					</replaceregexp>
+				</then>
+			</elseif>
+
 			<else>
 				<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true" encoding="UTF-8">
 				  <fileset dir="${dir.build}/coldbox" />
@@ -259,6 +280,9 @@
 		<!-- Copy src to cachebox namespace-->
       	<copy todir="${dir.build}/cachebox/system/cache" encoding="UTF-8" overwrite="true">
         	<fileset dir="system/cache" />
+		</copy>
+		<copy todir="${dir.build}/cachebox/system/async" encoding="UTF-8" overwrite="true">
+        	<fileset dir="system/async" />
         </copy>
 		<copy todir="${dir.build}/cachebox/system/core" encoding="UTF-8" overwrite="true">
         	<fileset dir="system/core">
@@ -373,6 +397,9 @@
 		<!-- Copy src to logbox namespace-->
       	<copy todir="${dir.build}/logbox/system/logging" encoding="UTF-8" overwrite="true">
         	<fileset dir="system/logging" />
+		</copy>
+		<copy todir="${dir.build}/logbox/system/async" encoding="UTF-8" overwrite="true">
+        	<fileset dir="system/async" />
         </copy>
 		<copy todir="${dir.build}/logbox/system/core" encoding="UTF-8" overwrite="true">
         	<fileset dir="system/core">
@@ -483,6 +510,9 @@
 		<!-- Copy src to WireBox namespace-->
       	<copy todir="${dir.build}/wirebox/system/ioc" encoding="UTF-8" overwrite="true">
         	<fileset dir="system/ioc" />
+		</copy>
+		<copy todir="${dir.build}/wirebox/system/async" encoding="UTF-8" overwrite="true">
+        	<fileset dir="system/async" />
         </copy>
 		<copy todir="${dir.build}/wirebox/system/aop" encoding="UTF-8" overwrite="true">
 			 <fileset dir="system/aop" />

@@ -65,7 +65,7 @@ component implements="coldbox.system.ioc.IProvider" accessors="true"{
 	/**
 	 * Get the provided object
 	 */
-	any function get() {
+	any function $get() {
 		var scopeInfo = variables.scopeRegistration;
 
 		// Return if scope exists, else throw exception
@@ -98,7 +98,7 @@ component implements="coldbox.system.ioc.IProvider" accessors="true"{
 	 * @missingMethodArguments missing method arguments
 	 */
 	any function onMissingMethod( required missingMethodName, required missingMethodArguments ){
-		var results = invoke( get(), arguments.missingMethodName, arguments.missingMethodArguments );
+		var results = invoke( $get(), arguments.missingMethodName, arguments.missingMethodArguments );
 
 		if ( !isNull( local.results ) ){
 			return results;

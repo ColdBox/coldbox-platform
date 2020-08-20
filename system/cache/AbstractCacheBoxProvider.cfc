@@ -65,25 +65,25 @@
 	 */
 	function init(){
 		// cache provider name
-		variables.name 				= "";
+		variables.name            = "";
 		// enabled flag
-		variables.enabled 			= false;
+		variables.enabled         = false;
 		// reporting flag
-		variables.reportingEnabled 	= false;
+		variables.reportingEnabled= false;
 		// stats reference will go here
-		variables.stats   			= "";
+		variables.stats           = "";
 		// configuration structure
-		variables.configuration 	= {};
+		variables.configuration   = {};
 		// cache factory instance
-		variables.cacheFactory 		= "";
+		variables.cacheFactory    = "";
 		// event manager instance
-		variables.eventManager		= "";
+		variables.eventManager    = "";
 		// cache internal identifier
-		variables.cacheID			= createObject( 'java','java.lang.System' ).identityHashCode( this );
+		variables.cacheID         = createObject( 'java','java.lang.System' ).identityHashCode( this );
 		// ColdBox Utility
-		variables.utility			= new coldbox.system.core.util.Util();
+		variables.utility         = new coldbox.system.core.util.Util();
 		// our UUID creation helper
-		variables.uuidHelper		= createobject( "java", "java.util.UUID" );
+		variables.uuidHelper      = createobject( "java", "java.util.UUID" );
 
 		return this;
 	}
@@ -208,9 +208,9 @@
 	 */
 	function setMulti(
 		required struct mapping,
-		timeout="",
+		timeout          ="",
 		lastAccessTimeout="",
-		prefix=""
+		prefix           =""
 	){
 		arguments.mapping.each( function( key, value ){
 			// Cache these puppies
@@ -333,11 +333,21 @@
 
 		// Async? IF so, do checks
 		if( arguments.async AND NOT inThread() ){
-			thread name="#threadName#" keySnippet="#arguments.keySnippet#" regex="#arguments.regex#"{
-				variables.elementCleaner.clearByKeySnippet( attribues.keySnippet, attribues.regex );
+			thread
+				name      ="#threadName#"
+				keySnippet="#arguments.keySnippet#"
+				regex     ="#arguments.regex#"
+			{
+				variables.elementCleaner.clearByKeySnippet(
+					attributes.keySnippet,
+					attributes.regex
+				);
 			}
-		} else{
-			variables.elementCleaner.clearByKeySnippet( arguments.keySnippet, arguments.regex );
+		} else {
+			variables.elementCleaner.clearByKeySnippet(
+				arguments.keySnippet,
+				arguments.regex
+			);
 		}
 
 		return this;
@@ -357,9 +367,9 @@
     any function getOrSet(
     	required any objectKey,
 		required any produce,
-		any timeout="",
+		any timeout          ="",
 		any lastAccessTimeout="",
-		any extra={}
+		any extra            ={}
 	){
 
 		// Verify if it exists? if so, return it.
@@ -425,8 +435,8 @@
 		if( !isEnabled ){
 			throw(
 				message = "The cache #getName()# is not yet enabled",
-				detail 	= "The cache was being accessed without the configuration being complete",
-				type 	= "IllegalStateException"
+				detail  = "The cache was being accessed without the configuration being complete",
+				type    = "IllegalStateException"
 			);
 		}
 	}

@@ -1,20 +1,19 @@
-
 /**
-* My Event Handler Hint
-*/
-component extends="coldbox.system.EventHandler"{
+ * My Event Handler Hint
+ */
+component extends="coldbox.system.EventHandler" {
 
 	/**
-	* Index
-	*/
+	 * Index
+	 */
 	any function index( event, rc, prc ){
-		event.setHTTPHeader( name="response", value="index" );
+		event.setHTTPHeader( name = "response", value = "index" );
 		return "index";
 	}
 
 	/**
-	* options
-	*/
+	 * options
+	 */
 	any function options( event, rc, prc ){
 		return "options";
 	}

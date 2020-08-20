@@ -23,11 +23,11 @@ component implements="coldbox.system.ioc.scopes.IScope" accessors="true"{
 
 	/**
 	 * Configure the scope for operation and returns itself
-	 * 
-	 * 
+	 *
+	 *
 	 * @injector The linked WireBox injector
 	 * @injector.doc_generic coldbox.system.ioc.Injector
-	 * 
+	 *
 	 * @return coldbox.system.ioc.scopes.IScope
 	 */
 	function init( required injector ){
@@ -39,14 +39,13 @@ component implements="coldbox.system.ioc.scopes.IScope" accessors="true"{
 
 	/**
 	 * Retrieve an object from scope or create it if not found in scope
-	 * 
-	 * 
+	 *
+	 *
 	 * @mapping The linked WireBox injector
 	 * @mapping.doc_generic coldbox.system.ioc.config.Mapping
 	 * @initArguments The constructor struct of arguments to passthrough to initialization
-	 * @initArguments.doc_generic struct
 	 */
-	function getFromScope( required mapping, initArguments ){
+	function getFromScope( required mapping, struct initArguments ){
 		var cacheProperties = arguments.mapping.getCacheProperties();
 		var refLocal		= {};
 		var cacheProvider	= variables.cacheBox.getCache( cacheProperties.provider );
@@ -59,16 +58,16 @@ component implements="coldbox.system.ioc.scopes.IScope" accessors="true"{
 		if( isNull( refLocal.target ) ){
 			// Lock it
 			lock	name="WireBox.#variables.injector.getInjectorID()#.CacheBoxScope.#arguments.mapping.getName()#"
-					type="exclusive" 
-					timeout="30" 
+					type="exclusive"
+					timeout="30"
 					throwontimeout="true"{
-				
+
 				// Double get just in case of race conditions
 				refLocal.target = cacheProvider.get( cacheKey );
 				if( !isNull( refLocal.target ) ){
 					return refLocal.target;
 				}
-				
+
 				// some nice debug info.
 				if( variables.log.canDebug() ){
 					variables.log.debug("Object: (#cacheProperties.toString()#) not found in cacheBox, beginning construction.");
@@ -80,9 +79,9 @@ component implements="coldbox.system.ioc.scopes.IScope" accessors="true"{
 				// If not in wiring thread safety, store in singleton cache to satisfy circular dependencies
 				if( NOT arguments.mapping.getThreadSafe() ){
 					cacheProvider.set(
-						cacheKey, 
-						refLocal.target, 
-						cacheProperties.timeout, 
+						cacheKey,
+						refLocal.target,
+						cacheProperties.timeout,
 						cacheProperties.lastAccessTimeout
 					);
 				}
@@ -93,9 +92,9 @@ component implements="coldbox.system.ioc.scopes.IScope" accessors="true"{
 				// If thread safe, then now store it in the cache, as all dependencies are now safely wired
 				if( arguments.mapping.getThreadSafe() ){
 					cacheProvider.set(
-						cacheKey, 
-						refLocal.target, 
-						cacheProperties.timeout, 
+						cacheKey,
+						refLocal.target,
+						cacheProperties.timeout,
 						cacheProperties.lastAccessTimeout
 					);
 				}
@@ -107,7 +106,7 @@ component implements="coldbox.system.ioc.scopes.IScope" accessors="true"{
 
 				// return it
 				return refLocal.target;
-			
+
 			}// end lock
 		} else {
 			return refLocal.target;
@@ -117,10 +116,10 @@ component implements="coldbox.system.ioc.scopes.IScope" accessors="true"{
 
 	/**
 	 * Indicates whether an object exists in scope
-	 * 
+	 *
 	 * @mapping The linked WireBox injector
 	 * @mapping.doc_generic coldbox.system.ioc.config.Mapping
-	 * 
+	 *
 	 * @return coldbox.system.ioc.scopes.IScope
 	 */
 	boolean function exists( required mapping ){

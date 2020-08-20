@@ -16,7 +16,7 @@ component{
 			// Define Appenders
 			appenders = {
 				console = {
-					class="coldbox.system.logging.appenders.ConsoleAppender"
+					class="ConsoleAppender"
 				}
 			},
 			// Root Logger

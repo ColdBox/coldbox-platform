@@ -4,5 +4,9 @@
     },
     "installPaths":{
         "route-visualizer":"modules/route-visualizer/"
-    }
+	},
+	"scripts" : {
+		"format" : "cfformat run config/,external/,handlers/,interceptors/,models/,remote/,tests/,models/",
+		"format:watch":"cfformat watch **/*.cfc ./.cfformat.json"
+	}
 }

@@ -2329,20 +2329,18 @@ component extends="coldbox.system.FrameworkSupertype" accessors=true singleton{
 	 * Adds the versioned path for an asset to the view using ColdBox Elixir
 	 *
 	 * @fileName The asset path to find relative to the `includes` convention directory
-	 * @buildDirectory The build directory inside the `includes` convention directory
 	 * @useModuleRoot If true, use the module root as the root of the file path
 	 * @version The elixir version algorithm to use, version 3 is the latest
 	 * @manifestRoot The root location in relative from the webroot where the `rev-manifest.json` file exists
 	 */
 	function elixirPath(
 		required fileName,
-		buildDirectory="build",
         boolean useModuleRoot=false,
 		numeric version=3,
 		manifestRoot=""
 	){
-		// Cleanup
-		arguments.fileName = reReplace( arguments.fileName, "^/", "" );
+		// Incoming Cleanup
+		arguments.fileName = reReplace( arguments.fileName, "^//?", "" );
 
 		// In local discovery cache?
 		if( variables.cachedPaths.keyExists( arguments.filename ) ){
@@ -2351,27 +2349,17 @@ component extends="coldbox.system.FrameworkSupertype" accessors=true singleton{
 
 		// Prepare state checks
 		var templateCache       = getCache( "template" );
-		var includesLocation 	= controller.getSetting( "IncludesConvention", true );
+		var includesLocation 	= controller.getColdBoxSetting( "IncludesConvention" );
 		var event 				= getRequestContext();
-		var currentModule 		= event.getCurrentModule();
+		arguments.currentModule = event.getCurrentModule();
 
-		// Calculate app path depending on module or app
-		var appPath = ( arguments.useModuleRoot && len( currentModule ) ) ?
-						controller.getSetting( "modules" ).find( currentModule ).path & "/":
-						controller.getSetting( "applicationPath" );
-		var mapping = ( arguments.useModuleRoot && len( currentModule ) ) ?
+		// Get the manifest location
+		var manifestPath = 	discoverElixirManifest( argumentCollection=arguments );
+
+		// Calculate mapping for the asset in question
+		var mapping = ( arguments.useModuleRoot && len( arguments.currentModule ) ) ?
 						event.getModuleRoot() :
 						controller.getSetting( "appMapping" );
-
-		// Calculate manifest location
-		var manifestPath = 	arguments.version == 3 ?
-							"#appPath##includesLocation#/rev-manifest.json" :
-							"#appPath##includesLocation#/#arguments.buildDirectory#/rev-manifest.json";
-
-		// Do we have a manifest override?
-		if( len( arguments.manifestRoot ) ){
-			manifestPath = controller.locateFilePath( "#arguments.manifestRoot#/rev-manifest.json" );
-		}
 
 		// Calculat href for asset delivery via Browser
 		if( mapping.len() ){
@@ -2379,13 +2367,7 @@ component extends="coldbox.system.FrameworkSupertype" accessors=true singleton{
 		} else {
 			var href = "/#includesLocation#/#arguments.fileName#";
 		}
-		var key = reReplace( href, "^/", "" );
-
-		// Verify manifest
-		if ( ! fileExists( manifestPath ) ) {
-			variables.cachedPaths[ arguments.fileName ] = arguments.fileName;
-			return href;
-		}
+		var key = reReplace( href, "^//?", "" );
 
 		// Only read, parse and store once
         var manifestDirectory = templateCache.getOrSet(
@@ -2399,22 +2381,53 @@ component extends="coldbox.system.FrameworkSupertype" accessors=true singleton{
             }
 		);
 
-        if ( arguments.version == 3 ) {
-			if ( ! structKeyExists( manifestDirectory, key ) ) {
-				variables.cachedPaths[ arguments.fileName ] = arguments.fileName;
-                return href;
-			}
-			variables.cachedPaths[ arguments.fileName ] = manifestDirectory[ key ];
-            return "#manifestDirectory[ key ]#";
-        }
-
+		// Is the key in the manifest?
 		if ( ! structKeyExists( manifestDirectory, key ) ) {
 			variables.cachedPaths[ arguments.fileName ] = arguments.fileName;
 			return href;
 		}
+		variables.cachedPaths[ arguments.fileName ] = manifestDirectory[ key ];
+		return "#manifestDirectory[ key ]#";
+	}
 
-		variables.cachedPaths[ arguments.fileName ] = "#mapping#/#includesLocation#/#arguments.buildDirectory#/#manifestDirectory[ key ]#";
-		return variables.cachedPaths[ arguments.fileName ];
+	/**
+	 * Discover the elixir manifest for this request using the following lookups:
+	 *
+	 * - Override
+	 * - Module Root
+	 * - App Root
+	 *
+	 * @currentModule Are we in a module call or not
+	 * @useModuleRoot Are we using a module root?
+	 * @version The elixir version
+	 * @manifestRoot Are we customizing the root
+	 */
+	function discoverElixirManifest(
+		string currentModule="",
+        boolean useModuleRoot=false,
+		numeric version=3,
+		manifestRoot=""
+	){
+		// Do we have a manifest override? Just return it
+		if( len( arguments.manifestRoot ) ){
+			return controller.locateFilePath( "#arguments.manifestRoot#/rev-manifest.json" );
+		}
+
+		// Use the module if requested and if it exists, else fall back on app root
+		if( arguments.useModuleRoot && len( arguments.currentModule ) ){
+			var manifestPath = controller.getSetting( "modules" ).find( arguments.currentModule ).path &
+				"/" &
+				controller.getColdBoxSetting( "IncludesConvention" ) &
+				"/rev-manifest.json";
+			if( fileExists( manifestPath ) ){
+				return manifestPath;
+			}
+		}
+
+		// Use App Root Path
+		return controller.getSetting( "applicationPath" ) &
+			controller.getColdBoxSetting( "IncludesConvention" ) &
+			"/rev-manifest.json";
 	}
 
 

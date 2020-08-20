@@ -1,4 +1,4 @@
-component{
+component {
 
 	property name="website" inject="id:WireBoxURL";
 
