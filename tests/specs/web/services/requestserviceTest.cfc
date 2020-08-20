@@ -8,7 +8,8 @@ Date                                           :	9/3/2007
 Description :
 Request service Test
 ----------------------------------------------------------------------->
-<cfcomponent extends="coldbox.system.testing.BaseTestCase" appMapping="/coldbox/test-harness">
+<cfcomponent extends="tests.resources.BaseIntegrationTest">
+
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
 		// Call the super setup method to setup the app.

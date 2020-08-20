@@ -1,15 +1,5 @@
-﻿<!-----------------------------------------------------------------------
-********************************************************************************
-Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.coldbox.org | www.luismajano.com | www.ortussolutions.com
-********************************************************************************
-Author                              :	Luis Majano
-Date                                           :	9/3/2007
-Description :
-Some tests just are expecting to execute
------------------------------------------------------------------------>
-<cfcomponent extends="coldbox.system.testing.BaseTestCase" appMapping="/cbtestharness">
-	<cfscript>
+﻿component extends="tests.resources.BaseIntegrationTest"{
+
 	function setup(){
 		super.setup();
 
@@ -31,37 +21,15 @@ Some tests just are expecting to execute
 	function testProcessShutdown(){
 		ls.processShutdown();
 	}
-	</cfscript>
 
-	<cffunction
-		name      ="createFile"
-		access    ="private"
-		hint      ="Create a new empty fileusing java.io.File."
-		returntype="void"
-		output    ="false"
-	>
-		<!--- ************************************************************* --->
-		<cfargument name="filename" type="String" required="yes" hint="The absolute path of the file to create.">
-		<!--- ************************************************************* --->
-		<cfscript>
+	private function createFile( required filename ){
 		var fileObj = createObject( "java", "java.io.File" ).init( javacast( "string", arguments.filename ) );
 		fileObj.createNewFile();
-		</cfscript>
-	</cffunction>
+	}
 
-	<cffunction
-		name      ="removeFile"
-		access    ="private"
-		hint      ="Remove a file using java.io.File"
-		returntype="boolean"
-		output    ="false"
-	>
-		<!--- ************************************************************* --->
-		<cfargument name="filename" type="string" required="yes" hint="The absolute path to the file.">
-		<!--- ************************************************************* --->
-		<cfscript>
+	private function removeFile( required filename ){
 		var fileObj = createObject( "java", "java.io.File" ).init( javacast( "string", arguments.filename ) );
 		return fileObj.delete();
-		</cfscript>
-	</cffunction>
-</cfcomponent>
+	}
+
+}

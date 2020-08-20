@@ -1,5 +1,5 @@
-﻿<cfcomponent extends="coldbox.system.testing.BaseTestCase">
-	<cfscript>
+﻿component extends="tests.resources.BaseIntegrationTest"{
+
 	this.loadColdBox = false;
 
 	function setup(){
@@ -227,5 +227,5 @@
 		injector.autowire( target = createStub(), targetID = "myTargetID" );
 		assertTrue( util.$once( "getInheritedMetaData" ) );
 	}
-	</cfscript>
-</cfcomponent>
+
+}

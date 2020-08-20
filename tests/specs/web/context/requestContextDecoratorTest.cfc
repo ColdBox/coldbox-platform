@@ -1,7 +1,7 @@
 ﻿/**
  * Request Context Decorator
  */
-component extends="coldbox.system.testing.BaseTestCase" {
+component extends="tests.resources.BaseIntegrationTest" {
 
 	/*********************************** LIFE CYCLE Methods ***********************************/
 

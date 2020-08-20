@@ -1,5 +1,5 @@
-﻿<cfcomponent extends="coldbox.system.testing.BaseTestCase">
-	<cfscript>
+﻿component extends="tests.resources.BaseIntegrationTest"{
+
 	this.loadColdBox = false;
 
 	function setup(){
@@ -164,5 +164,5 @@
 		assertEquals( "MyRandomOBJ", methods[ 1 ].mapping );
 		assertEquals( "createRandom", methods[ 1 ].method );
 	}
-	</cfscript>
-</cfcomponent>
+
+}

@@ -1,6 +1,7 @@
-﻿<cfcomponent extends="coldbox.system.testing.BaseTestCase">
-	<cfscript>
+﻿component extends="tests.resources.BaseIntegrationTest"{
+
 	this.loadColdBox = false;
+
 	function setup(){
 		super.setup();
 
@@ -121,9 +122,9 @@
 	}
 
 	function testParent(){
-		// 
+		//
 		// create "dependency" beans to be injected
-		// 
+		//
 
 		// alpha and bravo are in the abstract service
 		config.map( "someAlphaDAO" ).to( "models.parent.SomeAlphaDAO" );
@@ -748,5 +749,5 @@
 		config.unMap( "MyService" );
 		assertFalse( config.mappingExists( "MyService" ) );
 	}
-	</cfscript>
-</cfcomponent>
+
+}

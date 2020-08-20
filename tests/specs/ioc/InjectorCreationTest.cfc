@@ -1,4 +1,4 @@
-﻿component extends = "coldbox.system.testing.BaseTestCase"{
+﻿component extends = "tests.resources.BaseIntegrationTest"{
 	this.loadColdBox = false;
 
 	function setup(){
@@ -141,7 +141,7 @@
 	function testWebService(){
 		ws = injector.getInstance( "coldboxWS" );
 
-		// 
+		//
 		if ( listFindNoCase( "Lucee", server.coldfusion.productname ) ) {
 			expect( getMetadata( ws ).name ).toMatch( "rpc" );
 		}

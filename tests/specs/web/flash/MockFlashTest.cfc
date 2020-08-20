@@ -1,5 +1,5 @@
-<cfcomponent extends="coldbox.system.testing.BaseTestCase" output="false">
-	<cfscript>
+component extends="tests.resources.BaseIntegrationTest"{
+
 	this.loadColdBox = false;
 
 	function setup(){
@@ -52,5 +52,5 @@
 		flash.saveFlash();
 		assertEquals( flash.getMockFlash(), testScope );
 	}
-	</cfscript>
-</cfcomponent>
+
+}

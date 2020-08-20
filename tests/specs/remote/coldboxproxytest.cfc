@@ -1,4 +1,4 @@
-﻿component extends = "coldbox.system.testing.BaseTestCase" appMapping = "/cbTestHarness"{
+﻿component extends = "tests.resources.BaseIntegrationTest"{
 	function setup(){
 		super.setup();
 		proxy = createObject( "component", "cbtestharness.remote.MyProxy" );
