@@ -1,6 +1,7 @@
-﻿<cfcomponent extends="coldbox.system.testing.BaseTestCase" output="false">
-	<cfscript>
+﻿component extends="tests.resources.BaseIntegrationTest"{
+
 	this.loadColdBox = false;
+
 	function setup(){
 		flash          = createMock( "coldbox.system.web.flash.ClientFlash" );
 		mockController = createMock( className = "coldbox.system.web.Controller" );
@@ -58,5 +59,5 @@
 		assertTrue( structKeyExists( flash.getFlash(), "date" ) );
 		assertTrue( structKeyExists( flash.getFlash(), "test" ) );
 	}
-	</cfscript>
-</cfcomponent>
+
+}

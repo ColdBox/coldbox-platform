@@ -1,4 +1,4 @@
-component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarness" {
+component extends="tests.resources.BaseIntegrationTest"{
 
 	function run(){
 		describe( "subdomain routing", function(){

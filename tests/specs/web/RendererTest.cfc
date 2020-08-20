@@ -1,7 +1,7 @@
 ﻿/**
  * Renderer integration tests
  */
-component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbtestharness" {
+component extends="tests.resources.BaseIntegrationTest"{
 
 	/*********************************** LIFE CYCLE Methods ***********************************/
 

@@ -1,5 +1,5 @@
-﻿<cfcomponent extends="coldbox.system.testing.BaseTestCase">
-	<cfscript>
+﻿component extends="tests.resources.BaseIntegrationTest"{
+
 	this.loadColdBox = false;
 
 	function setup(){
@@ -66,5 +66,5 @@
 		r = provider.sayHello();
 		assertEquals( "luis", r );
 	}
-	</cfscript>
-</cfcomponent>
+
+}

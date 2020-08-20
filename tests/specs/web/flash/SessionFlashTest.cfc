@@ -1,6 +1,7 @@
-﻿<cfcomponent extends="coldbox.system.testing.BaseTestCase" output="false">
-	<cfscript>
+﻿component extends="tests.resources.BaseIntegrationTest"{
+
 	this.loadColdBox = false;
+
 	function setup(){
 		flash          = createMock( "coldbox.system.web.flash.SessionFlash" );
 		mockController = createMock( className = "coldbox.system.web.Controller" );
@@ -46,5 +47,5 @@
 		session[ flash.getFlashKey() ] = testscope;
 		assertEquals( flash.getFlash(), testScope );
 	}
-	</cfscript>
-</cfcomponent>
+
+}

@@ -1,4 +1,4 @@
-﻿component extends = "coldbox.system.testing.BaseTestCase" skip = "isLucee"{
+﻿component extends = "tests.resources.BaseIntegrationTest" skip = "isLucee"{
 	this.loadColdBox = false;
 
 	boolean function isLucee(){
