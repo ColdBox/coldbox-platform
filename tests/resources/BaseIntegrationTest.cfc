@@ -31,4 +31,12 @@ component
 		super.afterAll();
 	}
 
+	/**
+	 * Cleanup for invalid handler on all tests
+	 * @beforeEach
+	 */
+	function cleanupInvalidHandler(){
+		structDelete( request, "_lastInvalidEvent" );
+	}
+
 }

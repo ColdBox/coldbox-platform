@@ -14,9 +14,7 @@
  *	* eventArguments : The struct of args to pass to the event
  *	* renderResults : Render back the results of the event
  *******************************************************************************/
-component
-	extends="tests.resources.BaseIntegrationTest"
-{
+component extends="tests.resources.BaseIntegrationTest" {
 
 	function beforeAll(){
 		super.beforeAll();

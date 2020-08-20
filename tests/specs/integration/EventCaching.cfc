@@ -15,8 +15,7 @@
  *	* renderResults : Render back the results of the event
  *******************************************************************************/
 component
-	extends   ="coldbox.system.testing.BaseTestCase"
-	appMapping="/cbTestHarness"
+	extends="tests.resources.BaseIntegrationTest"
 {
 
 	/*********************************** LIFE CYCLE Methods ***********************************/
