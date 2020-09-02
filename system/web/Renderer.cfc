@@ -207,7 +207,7 @@ component
 				arguments.args.append( explicitView.args, false );
 
 				// clear the explicit view now that it has been used
-				setExplicitView( "", "", {} );
+				getRequestContext().removePrivateValue( "_explicitView" );
 			}
 			// Render the view in the context
 			else {
