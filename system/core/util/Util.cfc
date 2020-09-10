@@ -219,7 +219,12 @@ Description :
 			<cfif isObject(component)>
 				<cfset md = getMetaData(component)>
 			<cfelse>
-				<cfset md = getComponentMetaData(component)>
+				<cftry>
+					<cfset md = getComponentMetadata( component )>
+					<cfcatch type="any">
+						<cfthrow message="Error parsing metaData for component #component#, please check for errors" >
+					</cfcatch>
+				</cftry>
 			</cfif>
 		</cfif>
 
