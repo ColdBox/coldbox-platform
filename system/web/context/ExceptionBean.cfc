@@ -459,7 +459,7 @@ component accessors="true" {
 			list.append( "<tr>" );
 
 			// Null Checks
-			if( isNull( arguments.scope[ i ] ) ){
+			if ( !structKeyExists( arguments.scope , i ) || isNull( arguments.scope[ i ] ) ) {
 				arguments.scope[ i ] = "<span style='color: red'><strong>Java Null</strong></span>";
 			}
 
