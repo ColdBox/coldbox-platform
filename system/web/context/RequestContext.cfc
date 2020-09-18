@@ -1275,7 +1275,7 @@ component serializable="false" accessors="true" {
 		if( isStruct( arguments.queryString ) ){
 			arguments.queryString = arguments.queryString
 				.reduce( function( result, key, value ){
-					result.append( "#key#=#value#" );
+					result.append( "#encodeForURL( key )#=#encodeForURL( value )#" );
 					return result;
 				}, [] )
 				.toList( "&" );
