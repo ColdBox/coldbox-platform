@@ -40,7 +40,7 @@ component extends="coldbox.system.web.flash.AbstractFlashScope" accessors="true"
 	 */
 	boolean function flashExists(){
 		// Check if session is defined first
-		if ( NOT isDefined( "session" ) ) {
+		if ( NOT getApplicationMetadata().sessionManagement ) {
 			return false;
 		}
 		// Check if storage is set and not empty, try/catch due to ACF11 bug, trying it out.

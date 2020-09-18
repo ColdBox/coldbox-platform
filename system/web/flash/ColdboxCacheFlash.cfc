@@ -41,20 +41,22 @@ component extends="coldbox.system.web.flash.AbstractFlashScope" accessors="true"
 	 */
 	function getFlashKey(){
 		var prefix = "cbFlash:#variables.appName#";
+		var isSessionDefined = getApplicationMetadata().sessionManagement;
+
 		// Check jsession id First
-		if ( isDefined( "session" ) and structKeyExists( session, "sessionid" ) ) {
+		if ( isSessionDefined && structKeyExists( session, "sessionid" ) ) {
 			return "cbFlash:" & session.sessionid;
 		}
 		// Check normal cfid and cftoken in cookie
-		else if ( structKeyExists( cookie, "CFID" ) AND structKeyExists( cookie, "CFTOKEN" ) ) {
+		else if ( structKeyExists( cookie, "CFID" ) && structKeyExists( cookie, "CFTOKEN" ) ) {
 			return prefix & hash( cookie.cfid & cookie.cftoken );
 		}
 		// Check normal cfid and cftoken in URL
-		else if ( structKeyExists( URL, "CFID" ) AND structKeyExists( URL, "CFTOKEN" ) ) {
+		else if ( structKeyExists( URL, "CFID" ) && structKeyExists( URL, "CFTOKEN" ) ) {
 			return prefix & hash( URL.cfid & URL.cftoken );
 		}
 		// check session URL Token
-		else if ( isDefined( "session" ) and structKeyExists( session, "URLToken" ) ) {
+		else if ( isSessionDefined and structKeyExists( session, "URLToken" ) ) {
 			return prefix & session.URLToken;
 		} else {
 			throw(
