@@ -269,7 +269,7 @@ component accessors="true"{
 			variables.lock( function(){
 				if ( !variables.logListener.active ) {
 					// Mark listener as activated
-					out( "(#getName()#) ScheduleTask needs to be started..." );
+					//out( "(#getName()#) ScheduleTask needs to be started..." );
 					variables.logListener.active = true;
 
 					// Create the runnable Log Listener, Start it up baby!
@@ -281,7 +281,7 @@ component accessors="true"{
 							loadAppContext = false
 						);
 
-					out( "(#getName()#) ScheduleTask started" );
+					//out( "(#getName()#) ScheduleTask started" );
 				}
 			} );
 		}
@@ -304,7 +304,7 @@ component accessors="true"{
 			};
 
 			// Init Message
-			out( "- Starting (#getName()#) log listener with max life of #queueContext.maxIdle#ms", true );
+			//out( "- Starting (#getName()#) log listener with max life of #queueContext.maxIdle#ms", true );
 
 			// Start Advice
 			onLogListenerStart( queueContext );
@@ -346,9 +346,8 @@ component accessors="true"{
 			onLogListenerEnd( queueContext );
 
 			// Advice
-			out(
-				"Stopping Log listener task for (#getName()#), it ran for #getTickCount() - queueContext.start#ms!"
-			);
+			//out( "Stopping Log listener task for (#getName()#), it ran for #getTickCount() - queueContext.start#ms!" );
+
 			// Stop log listener
 			variables.lock( function(){
 				variables.logListener.active = false;

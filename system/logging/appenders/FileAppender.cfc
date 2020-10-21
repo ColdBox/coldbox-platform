@@ -183,7 +183,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 			&&
 			!isSimpleValue( arguments.queueContext.oFile )
 		){
-			out( "LogFile for #getName()# flushed to disk at #now()# using interval: #arguments.queueContext.flushInterval#", true );
+			//out( "LogFile for #getName()# flushed to disk at #now()# using interval: #arguments.queueContext.flushInterval#", true );
 			fileClose( arguments.queueContext.oFile );
 			arguments.queueContext.oFile = "";
 			arguments.queueContext.start = getTickCount();
