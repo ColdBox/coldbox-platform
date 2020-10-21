@@ -73,11 +73,11 @@
 	// Build ID
 	if ( local.sessionScopeExists ) {
 		local.fwString = "";
-		if ( isDefined( "client" ) ) {
+		if ( getApplicationMetadata().clientManagement ) {
 			if ( structKeyExists( client, "cfid" ) ) fwString &= "CFID=" & client.CFID;
 			if ( structKeyExists( client, "CFToken" ) ) fwString &= "<br/>CFToken=" & client.CFToken;
 		}
-		if ( isDefined( "session" ) ) {
+		if ( getApplicationMetadata().sessionManagement ) {
 			if ( structKeyExists( session, "cfid" ) ) fwString &= "CFID=" & session.CFID;
 			if ( structKeyExists( session, "CFToken" ) ) fwString &= "<br/>CFToken=" & session.CFToken;
 			if ( structKeyExists( session, "sessionID" ) ) fwString &= "<br/>JSessionID=" & session.sessionID;

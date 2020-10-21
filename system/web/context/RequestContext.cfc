@@ -1248,17 +1248,17 @@ component serializable="false" accessors="true" {
 	 * Builds links to events or URL Routes
 	 *
 	 * @to The event or route path you want to create the link to
-	 * @queryString The query string to append
+	 * @queryString The query string to append which can be a regular query string string, or a struct of name-value pairs
 	 * @translate Translate between . to / depending on the SES mode on to and queryString arguments. Defaults to true.
 	 * @ssl Turn SSl on/off on URL creation, by default is SSL is enabled, we will use it.
 	 * @baseURL If not using SES, you can use this argument to create your own base url apart from the default of index.cfm. Example: https://mysample.com/index.cfm
 	 */
 	string function buildLink(
 		to,
-		queryString       = "",
+		queryString = "",
 		boolean translate = true,
 		boolean ssl,
-		baseURL     = ""
+		baseURL = ""
 	){
 		// Is this a named route?
 		if( isStruct( arguments.to ) ){
@@ -1269,6 +1269,16 @@ component serializable="false" accessors="true" {
 				params : arguments.to.params,
 				ssl    : arguments.ssl
 			);
+		}
+
+		// Query String Struct to String
+		if( isStruct( arguments.queryString ) ){
+			arguments.queryString = arguments.queryString
+				.reduce( function( result, key, value ){
+					result.append( "#encodeForURL( key )#=#encodeForURL( value )#" );
+					return result;
+				}, [] )
+				.toList( "&" );
 		}
 
 		// Cleanups
@@ -1304,6 +1314,7 @@ component serializable="false" accessors="true" {
 
 			// Translate link or plain
 			if ( arguments.translate ) {
+
 				// Convert module into proper entry point
 				if ( listLen( arguments.to, ":" ) > 1 ) {
 					var mConfig = controller.getSetting( "modules" );
@@ -1313,7 +1324,8 @@ component serializable="false" accessors="true" {
 					}
 				}
 				arguments.to = replace( arguments.to, ".", "/", "all" );
-				// QuqeryString Conversions
+
+				// Conversions
 				if ( len( arguments.queryString ) ) {
 					if ( right( arguments.to, 1 ) neq "/" ) {
 						arguments.to = arguments.to & "/";

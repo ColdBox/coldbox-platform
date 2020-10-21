@@ -459,7 +459,7 @@ component accessors="true" {
 			list.append( "<tr>" );
 
 			// Null Checks
-			if( isNull( arguments.scope[ i ] ) ){
+			if ( !structKeyExists( arguments.scope , i ) || isNull( arguments.scope[ i ] ) ) {
 				arguments.scope[ i ] = "<span style='color: red'><strong>Java Null</strong></span>";
 			}
 
@@ -471,6 +471,9 @@ component accessors="true" {
 			} else if ( isSimpleValue( arguments.scope[ i ] ) ) {
 				list.append( "<td width=""250"">" & i & "</td>" );
 				list.append( "<td class=""overflow-scroll"">" & ( len( arguments.scope[ i ] ) ? arguments.scope[ i ] : "<em>---</em>" ) & "</td>" );
+			} else if( isObject( arguments.scope[ i ] ) ) {
+				list.append( "<td width=""250"">" & i & "</td>" );
+				list.append( "<td class=""overflow-scroll""> [" & getMetaData( arguments.scope[ i ] ).name & "] Instance</td>" );
 			} else {
 				savecontent variable="local.myContent" {
 					writeDump(

@@ -9,7 +9,7 @@ notifications:
 env:
   global:
     # TARGET RELEASE VERSION: BUMP AS NEEDED
-    - COLDBOX_VERSION=6.0.0
+    - COLDBOX_VERSION=6.1.0
     - COLDBOX_PRERELEASE=false
   matrix:
     - ENGINE=lucee@5 # Build Entire Frameworks
@@ -21,14 +21,15 @@ branches:
   - development
   - master
 
-dist: trusty
-
-addons:
-  apt:
-    packages:
-    - mysql-server-5.6
-    - mysql-client-core-5.6
-    - mysql-client-5.6
+dist: xenial
+services:
+  - mysql
+#addons:
+#  apt:
+#    packages:
+#    - mysql-server-5.6
+#    - mysql-client-core-5.6
+#    - mysql-client-5.6
 
 before_install:
   # CommandBox Keys

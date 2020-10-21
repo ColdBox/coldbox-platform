@@ -91,7 +91,7 @@ component {
 
 		switch ( arguments.scope ) {
 			case "session": {
-				return ( isDefined( "session" ) ? session : {} );
+				return ( getApplicationMetadata().sessionManagement ? session : {} );
 			}
 			case "application": {
 				return ( isDefined( "application" ) ? application : {} );

@@ -555,6 +555,17 @@ component extends="coldbox.system.testing.BaseModelTest" {
 			base & "/general/index/page/2/tests/4"
 		);
 
+		/* query string as struct transformation */
+		event.setSESEnabled( true );
+		event.setsesBaseURL( base );
+		testurl = event.buildLink(
+			to          = "general/index",
+			queryString = { page:2, tests:4 },
+			ssl         = false
+		);
+		expect( testurl ).toInclude( "tests/4" );
+		expect( testurl ).toInclude( "page/2" );
+
 		/* ssl test */
 		event.setSESEnabled( true );
 		event.setsesBaseURL( base );

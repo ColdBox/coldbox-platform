@@ -13,20 +13,22 @@ The main ColdBox utility library, it is built with tags to allow for dumb ACF10 
 	 * Builds the unique Session Key of a user request and returns it to you.
 	 */
 	string function getSessionIdentifier(){
+		var isSessionDefined = getApplicationMetadata().sessionManagement;
+
 		// Check jsession id First
-		if ( isDefined( "session" ) and structKeyExists( session, "sessionid" ) ) {
+		if ( isSessionDefined && structKeyExists( session, "sessionid" ) ) {
 			return session.sessionid;
 		}
 		// Check normal cfid and cftoken in cookie
-		else if ( structKeyExists( cookie, "CFID" ) AND structKeyExists( cookie, "CFTOKEN" ) ) {
+		else if ( structKeyExists( cookie, "CFID" ) && structKeyExists( cookie, "CFTOKEN" ) ) {
 			return hash( cookie.cfid & cookie.cftoken );
 		}
 		// Check normal cfid and cftoken in URL
-		else if ( structKeyExists( URL, "CFID" ) AND structKeyExists( URL, "CFTOKEN" ) ) {
+		else if ( structKeyExists( URL, "CFID" ) && structKeyExists( URL, "CFTOKEN" ) ) {
 			return hash( URL.cfid & URL.cftoken );
 		}
 		// check session URL Token
-		else if ( isDefined( "session" ) and structKeyExists( session, "URLToken" ) ) {
+		else if ( isSessionDefined && structKeyExists( session, "URLToken" ) ) {
 			return session.URLToken;
 		} else {
 			throw(
