@@ -321,12 +321,17 @@ component accessors="true" {
 	Response function setErrorMessage(
 		required errorMessage,
 		statusCode,
-		statusText = ""
+		statusText
 	){
 		setError( true );
 		addMessage( arguments.errorMessage );
 
 		if ( !isNull( arguments.statusCode ) ) {
+
+			if( isNull( arguments.statusText ) ){
+				arguments.statusText = arguments.errorMessage;
+			}
+
 			setStatus(
 				arguments.statusCode,
 				arguments.statusText
