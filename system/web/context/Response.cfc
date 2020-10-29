@@ -328,10 +328,6 @@ component accessors="true" {
 
 		if ( !isNull( arguments.statusCode ) ) {
 
-			if( isNull( arguments.statusText ) ){
-				arguments.statusText = arguments.errorMessage;
-			}
-
 			setStatus(
 				arguments.statusCode,
 				arguments.statusText
