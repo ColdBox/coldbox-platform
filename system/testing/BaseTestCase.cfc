@@ -169,11 +169,33 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 
 	/**
 	 * Reset the persistence of the unit test coldbox app, basically removes the controller from application scope
+	 *
+	 * @orm Reload ORM or not
+	 *
 	 * @return BaseTestCase
 	 */
-	function reset( boolean clearMethods = false, decorator ){
-		structDelete( application, getColdboxAppKey() );
+	function reset( boolean orm = false ){
 
+		// Graceful shutdown
+		if( structKeyExists( application, getColdboxAppKey() ) ){
+			application[ getColdboxAppKey() ].getLoaderService().processShutdown();
+		}
+
+		// Wipe app scopes
+		structDelete( application, getColdboxAppKey() );
+		structDelete( application, "wirebox" );
+
+		// Lucee Cleanups
+		if( server.keyExists( "lucee" ) ){
+			pagePoolClear();
+		}
+
+		// ORM
+		if( arguments.orm ){
+			ORMReload();
+		}
+
+		// Wipe out request scope.
 		if ( !structIsEmpty( request ) ) {
 			lock type="exclusive" scope="request" timeout=10 {
 				if ( !structIsEmpty( request ) ) {

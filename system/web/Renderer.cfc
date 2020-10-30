@@ -46,6 +46,7 @@ component
 
 	/**
 	 * Constructor
+	 *
 	 * @controller The ColdBox main controller
 	 * @controller.inject coldbox
 	 */

@@ -1,9 +1,5 @@
 component extends="tests.resources.BaseIntegrationTest" {
 
-	function beforeAll(){
-		super.beforeAll();
-	}
-
 	function run(){
 		describe( "ColdBox Restful Handlers", function(){
 			beforeEach( function( currentSpec ){

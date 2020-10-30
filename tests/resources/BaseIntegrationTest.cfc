@@ -19,11 +19,34 @@ component
 	appMapping="/cbTestHarness"
 {
 
+	// Load on first test
+	this.loadColdBox   = true;
+	// Never unload until the request dies
+	this.unloadColdBox = false;
+
 	/*********************************** LIFE CYCLE Methods ***********************************/
 
 	function beforeAll(){
 		super.beforeAll();
 		// do your own stuff here
+		structDelete( request, "_lastInvalidEvent" );
+		// Wire up the test object with dependencies
+		if( this.loadColdBox && structKeyExists( application, "wirebox" ) ){
+			application.wirebox.autowire( this );
+		}
+
+		// add custom matchers
+		addMatchers( {
+			toHavePartialKey : function( expectation, args = {} ){
+				// iterate over actual to find key
+				for ( var thisKey in arguments.expectation.actual ) {
+					if ( findNoCase( arguments.args[ 1 ], thisKey ) ) {
+						return true;
+					}
+				}
+				return false;
+			}
+		} );
 	}
 
 	function afterAll(){

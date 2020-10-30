@@ -2,13 +2,6 @@ component
 	extends="tests.resources.BaseIntegrationTest"
 {
 
-	function beforeAll(){
-		// forced cleanup
-		structDelete( application, "cbController" );
-		super.beforeAll();
-		// do your own stuff here
-	}
-
 	/*********************************** BDD SUITES ***********************************/
 
 	function run(){
@@ -62,31 +55,6 @@ component
 				} );
 			} );
 
-			story( "I want to listen to when the renderer is created", function(){
-				given( "A new renderer", function(){
-					then( "I can listen to renderer creations", function(){
-						// Mock the listener
-						var mockListener                    = createStub();
-						mockListener[ "afterRendererInit" ] = variables.afterRendererInit;
-
-						// register it
-						getController()
-							.getInterceptorService()
-							.registerInterceptor( interceptorObject = mockListener, interceptorName = "mockListener" );
-
-						try {
-							// Run it
-							var renderer = getController().getRenderer();
-							expect( renderer ).toHaveKey( "bdd" );
-						} finally {
-							getController()
-								.getInterceptorService()
-								.unregister( interceptorName = "mockListener", state = "afterRenderReinit" );
-						}
-					} );
-				} );
-			} );
-
 			story( "I want to be able to render multiple rendering regions", function(){
 				given( "a rendering region to setView()", function(){
 					then( "it should render using only its name", function(){
@@ -114,7 +82,6 @@ component
 				} );
 			} );
 
-
 			story( "I want to pass through rendering arguments to both layouts and views", function(){
 				given( "a renderLayout() call with custom arguments", function(){
 					then( "the view AND layout should receive them", function(){
@@ -124,12 +91,6 @@ component
 				} );
 			} );
 		} );
-	}
-
-	function afterRendererInit( event, data ){
-		if ( !isNull( arguments.data.this ) ) {
-			arguments.data.this.bdd = true;
-		}
 	}
 
 }

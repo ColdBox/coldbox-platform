@@ -2,31 +2,6 @@
 	extends="tests.resources.BaseIntegrationTest"
 {
 
-	/*********************************** LIFE CYCLE Methods ***********************************/
-
-	function beforeAll(){
-		super.beforeAll();
-		// do your own stuff here
-
-		// add custom matchers
-		addMatchers( {
-			toHavePartialKey : function( expectation, args = {} ){
-				// iterate over actual to find key
-				for ( var thisKey in arguments.expectation.actual ) {
-					if ( findNoCase( arguments.args[ 1 ], thisKey ) ) {
-						return true;
-					}
-				}
-				return false;
-			}
-		} );
-	}
-
-	function afterAll(){
-		// do your own stuff here
-		super.afterAll();
-	}
-
 	/*********************************** BDD SUITES ***********************************/
 
 	function run(){
