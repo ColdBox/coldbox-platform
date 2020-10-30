@@ -5,6 +5,18 @@
 		routingService = prepareMock( getController().getRoutingService() );
 	}
 
+	function afterAll(){
+		// Cleanup due to mods!
+
+		// Graceful shutdown
+		if( structKeyExists( application, getColdboxAppKey() ) ){
+			application[ getColdboxAppKey() ].getLoaderService().processShutdown();
+		}
+		// Wipe app scopes
+		structDelete( application, getColdboxAppKey() );
+		structDelete( application, "wirebox" );
+	}
+
 	function run(){
 		describe( "Routing Services", function(){
 			it( "can clean incoming pathing", function(){
