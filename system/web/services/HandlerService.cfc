@@ -450,7 +450,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// If invalidEventHandler is registered, use it
 		if ( len( variables.invalidEventHandler ) ) {
 			// Test for invalid Event Error as well so we don't go in an endless error loop
-			if ( compareNoCase( arguments.event, request._lastInvalidEvent ) eq 0 ) {
+			if (
+				compareNoCase( arguments.event, request._lastInvalidEvent ) eq 0 &&
+				!structKeyExists( controller, "mockController" ) // Verify this is a real and not a mock controller.
+			) {
 				throw(
 					message : "The invalidEventHandler event is also invalid: #variables.invalidEventHandler#",
 					type    : "HandlerService.InvalidEventHandlerException"
