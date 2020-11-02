@@ -11,7 +11,7 @@
 
 			it( "can register handlers", function(){
 				var context   = "";
-				var dummyFile = getController().getSetting( "HandlersPath" ) & "/dummy.cfc";y
+				var dummyFile = getController().getSetting( "HandlersPath" ) & "/dummy.cfc";
 
 				createFile( dummyFile );
 				getController().getHandlerService().registerHandlers();
