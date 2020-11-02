@@ -1,25 +1,29 @@
 ﻿component extends="tests.resources.BaseIntegrationTest"{
 
-	function setup(){
-		super.setup();
+	function run( testResults, testBox ){
 
-		ls = getController().getLoaderService();
-	}
-
-	function testRegisterHandlers(){
-		var context   = "";
-		var fs        = "/";
-		var dummyFile = getController().getSetting( "HandlersPath" ) & fs & "dummy.cfc";
-
-		createFile( dummyFile );
-		getController().getHandlerService().registerHandlers();
-		assertTrue( listFindNoCase( getController().getSetting( "RegisteredHandlers" ), "dummy" ) );
-		removeFile( dummyFile );
-	}
+		describe( "Loader services", function(){
+			beforeEach(function( currentSpec ){
+				setup();
+				ls = getController().getLoaderService();
+			});
 
 
-	function testProcessShutdown(){
-		ls.processShutdown();
+			it( "can register handlers", function(){
+				var context   = "";
+				var dummyFile = getController().getSetting( "HandlersPath" ) & "/dummy.cfc";y
+
+				createFile( dummyFile );
+				getController().getHandlerService().registerHandlers();
+
+				try{
+					assertTrue( listFindNoCase( getController().getSetting( "RegisteredHandlers" ), "dummy" ) );
+				} finally{
+					removeFile( dummyFile );
+				}
+			});
+
+		});
 	}
 
 	private function createFile( required filename ){
