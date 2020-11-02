@@ -268,18 +268,27 @@ component accessors="true"{
 		if ( !isActive ) {
 			variables.lock( function(){
 				if ( !variables.logListener.active ) {
-					// Mark listener as activated
-					//out( "(#getName()#) ScheduleTask needs to be started..." );
-					variables.logListener.active = true;
 
 					// Create the runnable Log Listener, Start it up baby!
-					variables.logBox
-						.getTaskScheduler()
-						.schedule(
-							task           = this,
-							method         = "runLogListener",
-							loadAppContext = false
-						);
+					try{
+						variables.logBox
+							.getTaskScheduler()
+							.schedule(
+								task           = this,
+								method         = "runLogListener",
+								loadAppContext = false
+							);
+
+						// Mark listener as activated
+						//out( "(#getName()#) ScheduleTask needs to be started..." );
+						variables.logListener.active = true;
+					} catch( any e ){
+						// Just in case it doesn't start, just skip it for now and let another thread
+						// kick start it.  We will just log the exception just in case
+						// Usually these exceptions can be on shutdowns or when the scheduler cannot take
+						// any more tasks.
+						out( "Error scheduling log listener: #e.message# #e.detail#" );
+					}
 
 					//out( "(#getName()#) ScheduleTask started" );
 				}

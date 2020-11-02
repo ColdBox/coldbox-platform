@@ -41,10 +41,6 @@ component{
 		structDelete( application, "cbController" );
 		structDelete( application, "wirebox" );
 
-		if( server.keyExists( "lucee" ) ){
-			pagePoolClear();
-		}
-
 		return true;
 	}
 
