@@ -476,12 +476,21 @@ component accessors="true" {
 				list.append( "<td class=""overflow-scroll""> [" & getMetaData( arguments.scope[ i ] ).name & "] Instance</td>" );
 			} else {
 				savecontent variable="local.myContent" {
-					writeDump(
-						var    = arguments.scope[ i ],
-						format = "html",
-						top    = 2,
-						expand = false
-					)
+					try{
+						writeDump(
+							var    = arguments.scope[ i ],
+							format = "html",
+							top    = 2,
+							expand = false
+						)
+					} catch( any e ){
+						writeDump(
+							var    = arguments.scope[ i ].toString(),
+							format = "html",
+							top    = 2,
+							expand = false
+						)
+					}
 				}
 				list.append( "<td width=""250"">" & i & "</td>" );
 				list.append( "<td class=""overflow-scroll"">" & local.myContent & "</td>" );
