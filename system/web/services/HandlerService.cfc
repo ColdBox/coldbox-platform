@@ -324,11 +324,11 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		}
 
 		// Run invalid event procedures, handler not found as a module or in all lists
-		invalidEvent( arguments.event, oHandlerBean );
+		arguments.event = invalidEvent( arguments.event, oHandlerBean );
 
 		// If we get here, then invalid event handler is active and we need to
 		// return an event handler bean that matches it
-		return getHandlerBean( oHandlerBean.getFullEvent() );
+		return getHandlerBean( arguments.event );
 	}
 
 	/**
@@ -415,16 +415,19 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	}
 
 	/**
-	 * Invalid Event procedures
+	 * Invalid Event procedures. An invalid event is detected, so this method
+	 * will verify if the application has an invalidEventHandler or an interceptor
+	 * listening to `onInvalidEvent` modifies the handler bean.  Then this method will
+	 * either return the invalid event handler event, or set an exception to be captured.
 	 *
 	 * @event The event that was found to be invalid
-	 * @ehBean The event handler bean
+	 * @ehBean The event handler bean representing the invalid event
 	 *
 	 * @throws EventHandlerNotRegisteredException,InvalidEventHandlerException
 	 *
-	 * @return HandlerService
+	 * @return The string event that should be executed as the invalid event handler or throws an EventHandlerNotRegisteredException
 	 */
-	function invalidEvent( required string event, required ehBean ){
+	string function invalidEvent( required string event, required ehBean ){
 		// Announce it
 		var iData = {
 			"invalidEvent" : arguments.event,
@@ -435,27 +438,22 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 		// If the override was changed by the interceptors then they updated the ehBean of execution
 		if ( iData.override ) {
-			return this;
+			return ehBean.getFullEvent();
 		}
 
 		// Param our last invalid event just incase
 		param request._lastInvalidEvent = "";
 
-		// If we got here, we have an invalid event and no override, throw a 404 header
-		controller
-			.getRequestService()
-			.getContext()
-			.setHTTPHeader( statusCode = 404, statusText = "Not Found" );
-
 		// If invalidEventHandler is registered, use it
 		if ( len( variables.invalidEventHandler ) ) {
 			// Test for invalid Event Error as well so we don't go in an endless error loop
 			if (
-				compareNoCase( arguments.event, request._lastInvalidEvent ) eq 0 &&
+				compareNoCase( arguments.event, request._lastInvalidEvent ) eq 0
+				&&
 				!structKeyExists( controller, "mockController" ) // Verify this is a real and not a mock controller.
 			) {
 				throw(
-					message : "The invalidEventHandler event is also invalid: #variables.invalidEventHandler#",
+					message : "The invalidEventHandler event (#variables.invalidEventHandler#) is also invalid: #arguments.event#",
 					type    : "HandlerService.InvalidEventHandlerException"
 				);
 			}
@@ -470,25 +468,15 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				.getContext()
 				.setPrivateValue( "invalidevent", arguments.event );
 
-			// Override Event With On Invalid Event
-			arguments.ehBean
-				.setHandler(
-					reReplace(
-						variables.invalidEventHandler,
-						"\.[^.]*$",
-						""
-					)
-				)
-				.setMethod( listLast( variables.invalidEventHandler, "." ) )
-				.setModule( "" );
-
-			// If module found in invalid event, set it for discovery
-			if ( find( ":", variables.invalidEventHandler ) ) {
-				arguments.ehBean.setModule( getToken( variables.invalidEventHandler, 1 ) );
-			}
-
-			return this;
+			// Override Event With On invalid handler event
+			return variables.invalidEventHandler;
 		}
+
+		// If we got here, we have an invalid event and no override, throw a 404 header
+		controller
+			.getRequestService()
+			.getContext()
+			.setHTTPHeader( statusCode = 404, statusText = "Not Found" );
 
 		// Invalid Event Detected, log it in the Application log, not a coldbox log but an app log
 		variables.log.error(
