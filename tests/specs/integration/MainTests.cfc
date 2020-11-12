@@ -26,7 +26,7 @@
 					execute( event = "invalid:bogus.index", renderResults = true );
 					fail( "The event handler was invalid and should have thrown an exception" );
 				} catch ( HandlerService.InvalidEventHandlerException e ) {
-					expect( e.message ).toInclude( "The invalidEventHandler event is also invalid" );
+					expect( e.message ).toInclude( "is also invalid" );
 				} finally {
 					getController().setSetting( "invalidEventHandler", originalInvalidEventHandler );
 					getController().getHandlerService().onConfigurationLoad();
