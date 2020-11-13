@@ -795,7 +795,7 @@ component accessors="true" {
 	}
 
 	/**
-	 * This function can accept an array of items or a struct and apply a function
+	 * This function can accept an array of items or a struct of items and apply a function
 	 * to each of the item's in parallel.  The `fn` argument receives the appropriate item
 	 * and must return a result.  Consider this a parallel map() operation
 	 *
@@ -806,52 +806,98 @@ component accessors="true" {
 	 * allApply( data, ( item ) => item.key & item.value.toString() )
 	 * </pre>
 	 *
-	 * @items An array to process
-	 * @fn The function that will be applied to each of the array's items
+	 * @items An array or struct to process in parallel
+	 * @fn The function that will be applied to each of the collection's items
 	 * @executor The custom executor to use if passed, else the forkJoin Pool
+	 * @timeout The timeout to use when waiting for each item to be processed
+	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is milliseconds
 	 *
-	 * @return An array with the items processed
+	 * @throws UnsuportedCollectionException - When something other than an array or struct is passed as items
+	 * @return An array or struct with the items processed in parallel
 	 */
-	any function allApply( any items, required fn, executor ){
-		var incomingExecutor = arguments.executor ?: "";
+	any function allApply( items, fn, executor, timeout, timeUnit ){
+		var incomingExecutor 	= arguments.executor ?: "";
+		// Boolean indicator to avoid `isObject()` calls on iterations
+		var usingExecutor 		= isObject( incomingExecutor );
+		// Cast it here, so it only happens once
+		var currentTimeout 		= javacast( "long", arguments.timeout ?: variables.futureTimeout.timeout );
+		var currentTimeunit 	= arguments.timeUnit ?: variables.futureTimeout.timeUnit;
+
+		// Create the function proxy once instead of many times during iterations
+		var jApply = createDynamicProxy(
+			new proxies.Function(
+				arguments.fn,
+				variables.debug,
+				variables.loadAppContext
+			),
+			[ "java.util.function.Function" ]
+		);
 
 		// Array Processing
 		if( isArray( arguments.items ) ){
+			// Return the array as a collection of processed values
 			return arguments.items
+				// Startup the tasks
 				.map( function( thisItem ){
-					if ( isObject( incomingExecutor ) ) {
-						return new Future( thisItem ).thenAsync( fn, incomingExecutor );
+					// Create a new completed future
+					var f = new Future( arguments.thisItem );
+
+					// Execute it on a custom executor or core
+					if( usingExecutor ){
+						return f.setNative(
+							f.getNative().thenApplyAsync( jApply, incomingExecutor )
+						);
 					}
-					return new Future( thisItem ).thenAsync( fn );
+
+					// Core Executor
+					return f.setNative(
+						f.getNative().thenApplyAsync( jApply )
+					);
 				} )
+				// Collect the tasks
 				.map( function( thisFuture ){
 					return arguments.thisFuture.get(
-						javacast( "long", variables.futureTimeout.timeout ),
-						arguments.thisFuture.$timeUnit.get( variables.futureTimeout.timeUnit )
+						currentTimeout,
+						currentTimeunit
 					);
 				} );
 		}
 		// Struct Processing
 		else if( isStruct( arguments.items ) ){
 			return arguments.items
+				// Startup the tasks
 				.map( function( key, value ){
-					if ( isObject( incomingExecutor ) ) {
-						return new Future( {
-							"key" : arguments.key,
-							"value" : arguments.value
-						} ).thenAsync( fn, incomingExecutor );
-					}
-					return new Future( {
-						"key" : arguments.key,
+					// Create a new completed future
+					var f = new Future( {
+						"key" 	: arguments.key,
 						"value" : arguments.value
-					} ).thenAsync( fn );
+					} );
+
+					// Execute it on a custom executor or core
+					if( usingExecutor ){
+						return f.setNative(
+							f.getNative().thenApplyAsync( jApply, incomingExecutor )
+						);
+					}
+
+					// Core Executor
+					return f.setNative(
+						f.getNative().thenApplyAsync( jApply )
+					);
 				} )
+				// Collect the tasks
 				.map( function( key, thisFuture ){
 					return arguments.thisFuture.get(
-						javacast( "long", variables.futureTimeout.timeout ),
-						arguments.thisFuture.$timeUnit.get( variables.futureTimeout.timeUnit )
+						currentTimeout,
+						currentTimeunit
 					);
 				} );
+		} else{
+			throw(
+				message : "The collection type passed is not yet supported!",
+				type : "UnsuportedCollectionException",
+				detail : getMetadata( arguments.items )
+			);
 		}
 
 	}
