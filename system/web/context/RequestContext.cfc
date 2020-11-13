@@ -1161,11 +1161,12 @@ component serializable="false" accessors="true" {
 	 * Handles SES urls gracefully.
 	 */
 	string function getFullURL(){
+		var appMapping = variables.controller.getSetting( "AppMapping" );
 		return arrayToList(
 			[
 				isSSL() ? "https://" : "http://",
-				CGI.SERVER_NAME,
-				listFind( "80,443", CGI.SERVER_PORT ) ? "" : ":" & CGI.SERVER_PORT,
+				CGI.HTTP_HOST,
+				len( appMapping ) ? "/#appMapping#" : "",
 				isSES() ? "" : "/index.cfm",
 				CGI.PATH_INFO,
 				CGI.QUERY_STRING != "" && CGI.PATH_INFO == "" ? "/" : "",
