@@ -190,7 +190,7 @@ A reporting template about exceptions in your ColdBox Apps
 			 </tr>
 			 <tr>
 			   <td align="right" class="info"> Host &amp; Server: </td>
-			   <td >#encodeForHTML( CGI.SERVER_NAME )# #encodeForHTML( local.thisInetHost )#</td>
+			   <td >#encodeForHTML( CGI.HTTP_HOST )# #encodeForHTML( local.thisInetHost )#</td>
 			 </tr>
 			 <tr>
 			   <td align="right" class="info">Query String: </td>
