@@ -19,8 +19,11 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		/* Init it */
 		mockController = getMockController()
 			.$( "getSetting" )
-			.$args( "modules" )
-			.$results( props.modules );
+				.$args( "modules" )
+				.$results( props.modules )
+			.$( "getSetting" )
+				.$args( "AppMapping" )
+				.$results( "" );
 		prepareMock( mockController.getInterceptorService() );
 		prepareMock( mockController.getWireBox() );
 
@@ -92,7 +95,6 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		// debug( r );
 		expect( r ).toBe( "http://jfetmac/applications/coldbox/test-harness/index.cfm/contactus/3" );
 	}
-
 
 	function testGetModuleEntryPoint(){
 		var event = getRequestContext()
@@ -897,6 +899,22 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		var event = getRequestContext();
 		debug( event.getFullUrl() );
 		expect( event.getFullUrl() ).toBeTypeOf( "url" );
+		var javaUrl = createObject( "java", "java.net.URL" ).init( event.getFullUrl() );
+		expect( javaUrl.getPort() ).toBe(
+			listFind( "80,443", CGI.SERVER_PORT ) > 0 ? -1 : CGI.SERVER_PORT
+		);
+	}
+
+	function testGetFullUrlWithAppMapping(){
+		mockController.$( "getSetting" )
+			.$args( "AppMapping" )
+			.$results( "test-harness" );
+
+		var event = getRequestContext();
+
+		debug( event.getFullUrl() );
+		expect( event.getFullUrl() ).toBeTypeOf( "url" );
+
 		var javaUrl = createObject( "java", "java.net.URL" ).init( event.getFullUrl() );
 		expect( javaUrl.getPort() ).toBe(
 			listFind( "80,443", CGI.SERVER_PORT ) > 0 ? -1 : CGI.SERVER_PORT
