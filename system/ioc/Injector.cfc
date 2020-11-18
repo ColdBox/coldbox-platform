@@ -258,7 +258,7 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 
 			// Check if binder has onLoad convention
 			if( structKeyExists( variables.binder, "onLoad" ) ){
-				variables.binder.onLoad();
+				variables.binder.onLoad( this );
 			}
 
 			// process mappings for metadata and initialization.
@@ -289,17 +289,17 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 
 		// Check if binder has onShutdown convention
 		if( structKeyExists( variables.binder, "onShutdown" ) ){
-			variables.binder.onShutdown();
+			variables.binder.onShutdown( this );
 		}
 
 		// Is parent linked
 		if( isObject( variables.parent ) ){
-			variables.parent.shutdown();
+			variables.parent.shutdown( this );
 		}
 
 		// standalone cachebox? Yes, then shut it down baby!
 		if( isCacheBoxLinked() ){
-			variables.cacheBox.shutdown();
+			variables.cacheBox.shutdown( this );
 		}
 
 		// Remove from scope
