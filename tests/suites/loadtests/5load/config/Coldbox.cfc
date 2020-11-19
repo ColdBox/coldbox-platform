@@ -43,7 +43,7 @@
 
 		// environment settings, create a detectEnvironment() method to detect it yourself.
 		// create a function with the name of the environment so it can be executed if that environment is detected
-		// the value of the environment is a list of regex patterns to match the CGI.SERVER_NAME.
+		// the value of the environment is a list of regex patterns to match the http host.
 		environments = {
 			//development = "localhost,127\.0\.0\.1"
 		};
