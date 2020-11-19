@@ -69,10 +69,10 @@ after_failure:
   - cd $TRAVIS_BUILD_DIR
   # Get response from test server to see what went wrong
   - curl http://localhost:8599/tests/runner.cfm?reporter=text
-  - curl http://localhost:8599/tests/tools/IDEDictionaries/builderDictionary.cfm?text=true
+  #- curl http://localhost:8599/tests/tools/IDEDictionaries/builderDictionary.cfm?text=true
   # Spit out our Commandbox log in case we need to debug
   - box server log name=$ENGINE
-  - cat `box system-log`
+  #- cat `box system-log`
   - ls -lr $TRAVIS_BUILD_DIR
 
 deploy:
