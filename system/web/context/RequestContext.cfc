@@ -1157,17 +1157,29 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
-	 * Returns the full url including the protocol, host, and path.
+	 * Returns the full url including the protocol, host, mapping, path info, and query string.
 	 * Handles SES urls gracefully.
 	 */
 	string function getFullURL(){
-		var appMapping = variables.controller.getSetting( "AppMapping" );
 		return arrayToList(
 			[
-				isSSL() ? "https://" : "http://",
-				CGI.HTTP_HOST,
-				len( appMapping ) ? "/#appMapping#" : "",
-				isSES() ? "" : "/index.cfm",
+				getSesBaseUrl(),
+				CGI.PATH_INFO,
+				CGI.QUERY_STRING != "" && CGI.PATH_INFO == "" ? "/" : "",
+				CGI.QUERY_STRING != "" ? "?" : "",
+				CGI.QUERY_STRING
+			],
+			""
+		);
+	}
+
+	/**
+	 * Returns the full relative path to the requested event: does not include protocol and host
+	 */
+	string function getFullPath(){
+		return arrayToList(
+			[
+				variables.controller.getRoutingService().getRouter().composeRoutingPath(),
 				CGI.PATH_INFO,
 				CGI.QUERY_STRING != "" && CGI.PATH_INFO == "" ? "/" : "",
 				CGI.QUERY_STRING != "" ? "?" : "",
@@ -1256,7 +1268,7 @@ component serializable="false" accessors="true" {
 	 */
 	string function buildLink(
 		to,
-		queryString = "",
+		queryString       = "",
 		boolean translate = true,
 		boolean ssl,
 		baseURL = ""

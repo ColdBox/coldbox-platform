@@ -113,9 +113,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 			// Load Module CF Mappings so modules can work properly
 			variables.controller.getModuleService().loadMappings();
 			// Auto registration of test as interceptor
-			variables.controller
-				.getInterceptorService()
-				.registerInterceptor( interceptorObject = this );
+			variables.controller.getInterceptorService().registerInterceptor( interceptorObject = this );
 		}
 	}
 
@@ -175,9 +173,8 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * @return BaseTestCase
 	 */
 	function reset( boolean orm = false ){
-
 		// Graceful shutdown
-		if( structKeyExists( application, getColdboxAppKey() ) ){
+		if ( structKeyExists( application, getColdboxAppKey() ) ) {
 			application[ getColdboxAppKey() ].getLoaderService().processShutdown();
 		}
 
@@ -186,13 +183,13 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 		structDelete( application, "wirebox" );
 
 		// Lucee Cleanups
-		if( server.keyExists( "lucee" ) ){
+		if ( server.keyExists( "lucee" ) ) {
 			pagePoolClear();
 		}
 
 		// ORM
-		if( arguments.orm ){
-			ORMReload();
+		if ( arguments.orm ) {
+			ormReload();
 		}
 
 		// Wipe out request scope.
@@ -214,9 +211,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * @return coldbox.system.testing.mock.web.MockController
 	 */
 	function getMockController(){
-		return prepareMock(
-			new coldbox.system.testing.mock.web.MockController( "/unittest", "unitTest" )
-		);
+		return prepareMock( new coldbox.system.testing.mock.web.MockController( "/unittest", "unitTest" ) );
 	}
 
 	/**
@@ -240,10 +235,10 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 
 		// Create functioning request context
 		mockRC         = getMockBox().createMock( "coldbox.system.web.context.RequestContext" );
-		mockController = createObject(
-			"component",
-			"coldbox.system.testing.mock.web.MockController"
-		).init( "/unittest", "unitTest" );
+		mockController = createObject( "component", "coldbox.system.testing.mock.web.MockController" ).init(
+			"/unittest",
+			"unitTest"
+		);
 
 		// Create mock properties
 		rcProps.DefaultLayout     = "";
@@ -275,10 +270,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 		var mockLocation = getController().getWireBox().locateInstance( arguments.name );
 
 		if ( len( mockLocation ) ) {
-			return getMockBox().createMock(
-				className    = mockLocation,
-				clearMethods = arguments.clearMethods
-			);
+			return getMockBox().createMock( className = mockLocation, clearMethods = arguments.clearMethods );
 		} else {
 			throw(
 				message = "Model object #arguments.name# could not be located.",
@@ -799,9 +791,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * @return Interceptor
 	 */
 	function getInterceptor( required interceptorName ){
-		return getController()
-			.getInterceptorService()
-			.getInterceptor( argumentCollection = arguments );
+		return getController().getInterceptorService().getInterceptor( argumentCollection = arguments );
 	}
 
 	/**
@@ -867,9 +857,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 		queryString
 			.listToArray( "&" )
 			.each( function( item ){
-				queryParams[ urlDecode( item.getToken( 1, "=" ) ) ] = urlDecode(
-					item.getToken( 2, "=" )
-				);
+				queryParams[ urlDecode( item.getToken( 1, "=" ) ) ] = urlDecode( item.getToken( 2, "=" ) );
 			} );
 
 		return queryParams;
@@ -889,9 +877,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 		var prc        = event.getPrivateCollection();
 
 		// Announce interception
-		arguments.controller
-			.getInterceptorService()
-			.announce( "onException", { exception : arguments.exception } );
+		arguments.controller.getInterceptorService().announce( "onException", { exception : arguments.exception } );
 
 		// Store exception in private context
 		event.setPrivateValue( "exception", oException );
@@ -902,9 +888,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 		// Run custom Exception handler if Found, else run default exception routines
 		if ( len( arguments.controller.getSetting( "ExceptionHandler" ) ) ) {
 			try {
-				arguments.controller.runEvent(
-					arguments.controller.getSetting( "Exceptionhandler" )
-				);
+				arguments.controller.runEvent( arguments.controller.getSetting( "Exceptionhandler" ) );
 			} catch ( Any e ) {
 				// Log Original Error First
 				appLogger.error(

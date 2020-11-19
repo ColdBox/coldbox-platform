@@ -169,22 +169,11 @@ component
 		variables.throwOnInvalidExtension = false;
 		// Initialize the valid extensions to detect
 		variables.validExtensions         = variables.VALID_EXTENSIONS;
-		// Base Routing URL, defaults to the domain and app mapping defined by the routing services
-		if ( len( controller.getSetting( "RoutingAppMapping" ) ) lte 1 ) {
-			variables.baseURL = "http://#CGI.SERVER_NAME#";
-			if ( CGI.SERVER_PORT != 80 && CGI.SERVER_PORT != 443 ) {
-				variables.baseURL &= ":#CGI.SERVER_PORT#";
-			}
-		} else {
-			variables.baseURL = "http://#CGI.SERVER_NAME#";
-			if ( CGI.SERVER_PORT != 80 && CGI.SERVER_PORT != 443 ) {
-				variables.baseURL &= ":#CGI.SERVER_PORT#";
-			}
-			variables.baseURL &= controller.getSetting( "RoutingAppMapping" );
-		}
+		// Initialize the base URL as empty in case the user overrides it in their own router.
+		variables.baseUrl                 = "";
 		// Are full rewrites enabled
-		variables.fullRewrites         = false;
-		variables.multiDomainDiscovery = true;
+		variables.fullRewrites            = false;
+		variables.multiDomainDiscovery    = true;
 
 		return this;
 	}
@@ -199,29 +188,28 @@ component
 
 	/**
 	 * This method is called by the Routing Services to make sure the router is ready for operation.
-	 * This is ONLY called by the routing services.
+	 * This is ONLY called by the routing services and only ONCE in the Application Life-Cycle
 	 */
 	function startup(){
+		// Verify baseUrl is still empty to default it for operation
+		if ( !len( variables.baseUrl ) ) {
+			variables.baseUrl = composeRoutingUrl();
+		}
+
 		// Check if rewrites turned off. If so, append the `index.cfm` to it.
 		if ( !variables.fullRewrites AND !findNoCase( "index.cfm", variables.baseURL ) ) {
 			variables.baseURL &= "/index.cfm";
 		}
-		// Remove any double slashes
+
+		// Remove any double slashes: sometimes proxies can interfere
 		variables.baseURL = reReplace( variables.baseURL, "\/\/$", "/", "all" );
 
-		// Save the base URL in the application settings
-		variables.controller.setSetting( "SESBaseURL", variables.baseURL );
-		variables.controller.setSetting(
-			"HTMLBaseURL",
-			replaceNoCase( variables.baseURL, "index.cfm", "" )
-		);
-
-		// Configure Context that we are enabled and with the base URL for routing
+		// Save the base URIs and Paths in the application settings
 		variables.controller
-			.getRequestService()
-			.getContext()
-			.setSESEnabled( variables.enabled )
-			.setSESBaseURL( variables.baseURL );
+			.setSetting( "SESBaseURL", variables.baseURL )
+			.setSetting( "SESBasePath", composeRoutingPath() )
+			.setSetting( "HTMLBaseURL", replaceNoCase( variables.baseURL, "index.cfm", "" ) )
+			.setSetting( "HTMLBasePath", replaceNoCase( composeRoutingPath(), "index.cfm", "" ) );
 	}
 
 	/**
@@ -929,10 +917,7 @@ component
 						// Check Digits Repetions
 						if ( find( "{", thisPattern ) ) {
 							thisRegex = listFirst( thisRegex, "{" ) & "{#listLast( thisPattern, "{" )#)";
-							arrayAppend(
-								thisRoute.patternParams,
-								replace( listFirst( thisPattern, "{" ), ":", "" )
-							);
+							arrayAppend( thisRoute.patternParams, replace( listFirst( thisPattern, "{" ), ":", "" ) );
 						} else {
 							thisRegex = thisRegex & "+?)";
 							arrayAppend( thisRoute.patternParams, thisPatternParam );
@@ -1033,10 +1018,7 @@ component
 							// Check Digits Repetions
 							if ( find( "{", thisDomain ) ) {
 								thisRegex = listFirst( thisRegex, "{" ) & "{#listLast( thisDomain, "{" )#)";
-								arrayAppend(
-									thisRoute.domainParams,
-									replace( listFirst( thisDomain, "{" ), ":", "" )
-								);
+								arrayAppend( thisRoute.domainParams, replace( listFirst( thisDomain, "{" ), ":", "" ) );
 							} else {
 								thisRegex = thisRegex & "+?)";
 								arrayAppend( thisRoute.domainParams, thisDomainParam );
@@ -1086,10 +1068,7 @@ component
 			}
 			// end looping of pattern optionals
 			if ( right( thisRoute.regexDomain, 1 ) == "." ) {
-				thisRoute.regexDomain = left(
-					thisRoute.regexDomain,
-					len( thisRoute.regexDomain ) - 1
-				);
+				thisRoute.regexDomain = left( thisRoute.regexDomain, len( thisRoute.regexDomain ) - 1 );
 			}
 		}
 
@@ -1206,10 +1185,8 @@ component
 				args = {
 					pattern : arguments.pattern,
 					event   : arguments.target,
-					verbs   : (
-						variables.thisRoute.keyExists( "verbs" ) ? variables.thisRoute.verbs : ""
-					),
-					name : arguments.name
+					verbs   : ( variables.thisRoute.keyExists( "verbs" ) ? variables.thisRoute.verbs : "" ),
+					name    : arguments.name
 				};
 			}
 			// Closure/Lambda => Response
@@ -1217,10 +1194,8 @@ component
 				args = {
 					pattern  : arguments.pattern,
 					response : arguments.target,
-					verbs    : (
-						variables.thisRoute.keyExists( "verbs" ) ? variables.thisRoute.verbs : ""
-					),
-					name : arguments.name
+					verbs    : ( variables.thisRoute.keyExists( "verbs" ) ? variables.thisRoute.verbs : "" ),
+					name     : arguments.name
 				};
 			}
 
@@ -1898,15 +1873,8 @@ component
 		statusText         = "Ok"
 	){
 		// Arg Check
-		if (
-			!isClosure( arguments.body ) && !isCustomFunction( arguments.body ) && !isSimpleValue(
-				arguments.body
-			)
-		) {
-			throw(
-				type   : "InvalidArgumentException",
-				message: "The 'body' argument is not of type closure or string"
-			);
+		if ( !isClosure( arguments.body ) && !isCustomFunction( arguments.body ) && !isSimpleValue( arguments.body ) ) {
+			throw( type: "InvalidArgumentException", message: "The 'body' argument is not of type closure or string" );
 		}
 		// process a with closure if not empty
 		if ( !variables.withClosure.isEmpty() ) {
@@ -1971,6 +1939,33 @@ component
 		return this;
 	}
 
+	/**
+	 * Composes the base URL for the server using the following composition:
+	 * - protocol
+	 * - host + port
+	 * - routing app mapping
+	 * - full Url routing or front controller routing
+	 */
+	string function composeRoutingUrl(){
+		return (
+			// Protocol
+			variables.controller
+				.getRequestService()
+				.getContext()
+				.isSSL() ? "https://" : "http://"
+		) &
+		CGI.HTTP_HOST & // multi-host
+		composeRoutingPath(); // Routing Path
+	}
+
+	/**
+	 * Composes the base routing path with no host or protocol
+	 */
+	string function composeRoutingPath(){
+		return variables.controller.getSetting( "RoutingAppMapping" ) & // routing app mapping
+		( variables.fullRewrites ? "" : "index.cfm" ); // full or controller routing
+	}
+
 	/*****************************************************************************************/
 	/************************************ PRIVATE ********************************************/
 	/*****************************************************************************************/
@@ -1988,11 +1983,7 @@ component
 	){
 		var actionSet = arguments.initial;
 
-		if (
-			structKeyExists( arguments, "only" ) && !isNull( arguments.only ) && !arrayIsEmpty(
-				arguments.only
-			)
-		) {
+		if ( structKeyExists( arguments, "only" ) && !isNull( arguments.only ) && !arrayIsEmpty( arguments.only ) ) {
 			actionSet = {};
 			for ( var HTTPVerb in arguments.initial ) {
 				var methodName = arguments.initial[ HTTPVerb ];
@@ -2004,11 +1995,7 @@ component
 			}
 		}
 
-		if (
-			structKeyExists( arguments, "except" ) && !isNull( arguments.except ) && !arrayIsEmpty(
-				arguments.except
-			)
-		) {
+		if ( structKeyExists( arguments, "except" ) && !isNull( arguments.except ) && !arrayIsEmpty( arguments.except ) ) {
 			for ( var HTTPVerb in arguments.initial ) {
 				var methodName = arguments.initial[ HTTPVerb ];
 				for ( var exceptAction in arguments.except ) {

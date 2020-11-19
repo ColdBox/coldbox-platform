@@ -41,7 +41,7 @@
 	"keywords.spacing_to_block": "spaced",
 	"keywords.spacing_to_group": true,
 	"keywords.empty_group_spacing": false,
-	"max_columns": 100,
+	"max_columns": 115,
 	"metadata.multiline.element_count": 3,
 	"metadata.multiline.min_length": 50,
 	"method_call.chain.multiline" : 3,
