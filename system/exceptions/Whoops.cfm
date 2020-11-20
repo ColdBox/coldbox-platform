@@ -371,7 +371,7 @@
 											style="cursor: pointer"></i>
 									</label>
 
-									<div id="rawStacktrace" class="data-stacktrace">#processStackTrace( oException.getstackTrace() )#</div>
+									<div id="rawStacktrace" class="data-stacktrace">#oException.processStackTrace( oException.getstackTrace() )#</div>
 								</div>
 							</div>
 						</cfoutput>

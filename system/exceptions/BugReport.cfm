@@ -148,7 +148,7 @@ A reporting template about exceptions in your ColdBox Apps
 		</table>
 
 		<h2>Stack Trace:</h2>
-		<div class="stacktrace">#processStackTrace( oException.getstackTrace() )#</div>
+		<div class="stacktrace">#oException.processStackTrace( oException.getstackTrace() )#</div>
 
 		<!--- FRAMEWORK SNAPSHOT --->
 		<h2>FRAMEWORK SNAPSHOT:</h2>

@@ -25,11 +25,11 @@ component serializable="false" accessors="true"{
 	property name="COLDBOX_FAIL_FAST";
 
 	// param the properties with defaults
-	param name="COLDBOX_CONFIG_FILE" 	default="";
+	param name="COLDBOX_CONFIG_FILE"     	default="";
 	param name="COLDBOX_APP_ROOT_PATH" 	default="#getDirectoryFromPath( getbaseTemplatePath() )#";
-	param name="COLDBOX_APP_KEY" 		default="cbController";
-	param name="COLDBOX_APP_MAPPING" 	default="";
-	param name="appHash"				default="#hash( getBaseTemplatePath() )#";
+	param name="COLDBOX_APP_KEY"             		default="cbController";
+	param name="COLDBOX_APP_MAPPING"     	default="";
+	param name="appHash"                            				default="#hash( getBaseTemplatePath() )#";
 	param name="lockTimeout"			default="30" type="numeric";
 	param name="COLDBOX_FAIL_FAST"		default="true";
 
@@ -46,7 +46,7 @@ component serializable="false" accessors="true"{
 		required string COLDBOX_APP_ROOT_PATH,
 		string COLDBOX_APP_KEY,
 		string COLDBOX_APP_MAPPING="",
-		any COLDBOX_FAIL_FAST=true
+		any COLDBOX_FAIL_FAST     =true
 	){
 		// Set vars for two main locations
 		setCOLDBOX_CONFIG_FILE( arguments.COLDBOX_CONFIG_FILE );
@@ -84,7 +84,7 @@ component serializable="false" accessors="true"{
 			);
 			throw(
 				message = "Cannot find the '/'coldbox' mapping",
-				detail 	= "It seems that you do not have a '/coldbox' mapping in your application and we cannot continue to process the request.
+				detail  = "It seems that you do not have a '/coldbox' mapping in your application and we cannot continue to process the request.
 				The good news is that you can easily resolve this by either creating a mapping in your Admnistrator or in this application's
 				Application.cfc that points to this directory: '#coldboxDirectory#'.  You can also copy the code snippet
 				below to add to your Application.cfc's pseudo constructor: this.mappings[ '/coldbox' ] = '#coldboxDirectory#'",
@@ -123,9 +123,9 @@ component serializable="false" accessors="true"{
 	* Request Reload procedures
 	*/
 	function reloadChecks(){
-		var appKey 			= locateAppKey();
-		var cbController 	= "";
-		var needReinit 		= isfwReinit();
+		var appKey       = locateAppKey();
+		var cbController = "";
+		var needReinit   = isfwReinit();
 
 		// Initialize the Controller If Needed, double locked
 		if( NOT structkeyExists( application, appkey ) OR NOT application[ appKey ].getColdboxInitiated() OR needReinit ){
@@ -194,8 +194,8 @@ component serializable="false" accessors="true"{
 			var cbController = application[ locateAppKey() ];
 		}
 		// Local references
-		var interceptorService 	= cbController.getInterceptorService();
-		var cacheBox 			= cbController.getCacheBox();
+		var interceptorService = cbController.getInterceptorService();
+		var cacheBox           = cbController.getCacheBox();
 
 		try{
 			// set request time, for info purposes
@@ -209,14 +209,14 @@ component serializable="false" accessors="true"{
 			interceptorService.announce( "preProcess" );
 			if( len( cbController.getSetting( "RequestStartHandler" ) ) ){
 				cbController.runEvent(
-					event 			: cbController.getSetting( "RequestStartHandler" ),
-					prePostExempt 	: true
+					event         : cbController.getSetting( "RequestStartHandler" ),
+					prePostExempt : true
 				);
 			}
 
 			//****** EVENT CACHING CONTENT DELIVERY *******/
-			var refResults	 = {};
-			var eCacheEntry	 = event.getEventCacheableEntry();
+			var refResults = {};
+			var eCacheEntry= event.getEventCacheableEntry();
 
 			// Verify if event caching item is in selected cache
 			if( eCacheEntry.keyExists( "cachekey" ) ){
@@ -328,14 +328,14 @@ component serializable="false" accessors="true"{
 
 							// prepare storage entry
 							var cacheEntry = {
-								renderedContent = renderedContent,
-								renderData		= false,
-								contentType 	= defaultContentType,
-								encoding		= "",
-								statusCode		= "",
-								statusText		= "",
-								isBinary		= false,
-								responseHeaders = event.getResponseHeaders()
+								renderedContent= renderedContent,
+								renderData     = false,
+								contentType    = defaultContentType,
+								encoding       = "",
+								statusCode     = "",
+								statusText     = "",
+								isBinary       = false,
+								responseHeaders= event.getResponseHeaders()
 							};
 
 							// is this a render data entry? If So, append data
@@ -400,7 +400,6 @@ component serializable="false" accessors="true"{
 	}
 
 
-
 	/**
 	 * Verify if a reinit is sent
 	 */
@@ -409,7 +408,7 @@ component serializable="false" accessors="true"{
 
 		// CF Parm Structures just in case
 		param name="FORM" 	default="#structNew()#";
-		param name="URL"	default="#structNew()#";
+		param name="URL"  	default="#structNew()#";
 
 		// Check if app exists already in scope
 		if( not structKeyExists( application, appKey ) ){
@@ -545,7 +544,7 @@ component serializable="false" accessors="true"{
 
 			// Execute interceptors
 			var iData = {
-				sessionReference = arguments.sessionScope,
+				sessionReference     = arguments.sessionScope,
 				applicationReference = arguments.appScope
 			};
 			cbController.getInterceptorService().announce( "sessionEnd", iData );
@@ -596,11 +595,11 @@ component serializable="false" accessors="true"{
 	*/
 	private string function processException( required controller, required exception ){
 		// prepare exception facade object + app logger
-		var oException	= new coldbox.system.web.context.ExceptionBean( arguments.exception );
-		var appLogger  	= arguments.controller.getLogBox().getLogger( this );
-		var event		= arguments.controller.getRequestService().getContext();
-		var rc 			= event.getCollection();
-		var prc 		= event.getPrivateCollection();
+		var oException= new coldbox.system.web.context.ExceptionBean( arguments.exception );
+		var appLogger = arguments.controller.getLogBox().getLogger( this );
+		var event     = arguments.controller.getRequestService().getContext();
+		var rc        = event.getCollection();
+		var prc       = event.getPrivateCollection();
 
 		// Announce interception
 		arguments.controller.getInterceptorService()
@@ -637,8 +636,8 @@ component serializable="false" accessors="true"{
 			if( len( arguments.controller.getSetting( "AppMapping" ) ) ){
 				appLocation = appLocation & arguments.controller.getSetting( "AppMapping" ) & "/";
 			}
-			var bugReportRelativePath 	= appLocation & reReplace( customErrorTemplate, "^/", "" );
-			var bugReportAbsolutePath 	= customErrorTemplate;
+			var bugReportRelativePath = appLocation & reReplace( customErrorTemplate, "^/", "" );
+			var bugReportAbsolutePath = customErrorTemplate;
 
 			// Show Bug Report
 			savecontent variable="local.exceptionReport"{
@@ -660,33 +659,7 @@ component serializable="false" accessors="true"{
 		return local.exceptionReport;
 	}
 
-	/**
-	* Process Stack trace for errors
-	*/
-	private function processStackTrace( str ){
-		// Not using encodeForHTML() as it is too destructive and ruins whitespace chars and other stuff
-		arguments.str = HTMLEditFormat( arguments.str );
-
-		var aMatches = REMatchNoCase( "\(([^\)]+)\)", arguments.str );
-		for( var aString in aMatches ){
-			arguments.str = replacenocase( arguments.str, aString, "<span class='highlight'>#aString#</span>", "all" );
-		}
-		var aMatches = REMatchNoCase( "\[([^\]]+)\]", arguments.str );
-		for( var aString in aMatches ){
-			arguments.str = replacenocase( arguments.str, aString, "<span class='highlight'>#aString#</span>", "all" );
-		}
-		var aMatches = REMatchNoCase( "\$([^(\(|\:)]+)(\:|\()", arguments.str );
-		for( var aString in aMatches ){
-			arguments.str = replacenocase( arguments.str, aString, "<span class='method'>#aString#</span>", "all" );
-		}
-		arguments.str = replace( arguments.str, chr( 13 ) & chr( 10 ), chr( 13 ) , 'all' );
-		arguments.str = replace( arguments.str, chr( 10 ), chr( 13 ) , 'all' );
-		arguments.str = replace( arguments.str, chr( 13 ), '<br>' , 'all' );
-		arguments.str = replaceNoCase( arguments.str, chr(9), repeatString( "&nbsp;", 4 ), "all" );
-		return arguments.str;
-	}
-
-	/**
+ 	/**
 	* Process render data setup
 	* @controller The ColdBox controller
 	* @statusCode The status code to send
