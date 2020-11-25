@@ -386,18 +386,21 @@
 			<!--- Make sure we are in Development only --->
 			<cfif local.eventDetails.environment eq local.safeEnvironment>
 				<cfloop from="1" to="#arrayLen( local.e.TagContext )#" index="i">
-					<cfset instance = local.e.TagContext[ i ]/>
-					<cfset highlighter = ( listLast( instance.template, "." ) eq "cfm" ? "cf" : "js" )/>
-					<pre
-						id="stack#stackFrames - i + 1#-code"
-						data-highlight-line="#instance.line#"
-						style="display: none;"
-					>
-						<script type="syntaxhighlighter" class="brush:#highlighter#; highlight: [#instance.line#];" async>
-							<![CDATA[<cfloop file="#instance.template#" index="line">#line##chr( 13 )##chr( 10 )#</cfloop>
-							]]>
-						</script>
-					</pre>
+					<!--- Verify if File Exists: Just in case it's a core CFML engine file --->
+					<cfif fileExists( instance.template )>
+						<cfset instance = local.e.TagContext[ i ]/>
+						<cfset highlighter = ( listLast( instance.template, "." ) eq "cfm" ? "cf" : "js" )/>
+						<pre
+							id="stack#stackFrames - i + 1#-code"
+							data-highlight-line="#instance.line#"
+							style="display: none;"
+						>
+							<script type="syntaxhighlighter" class="brush:#highlighter#; highlight: [#instance.line#];" async>
+								<![CDATA[<cfloop file="#instance.template#" index="line">#line##chr( 13 )##chr( 10 )#</cfloop>
+								]]>
+							</script>
+						</pre>
+					</cfif>
 				</cfloop>
 			</cfif>
 
