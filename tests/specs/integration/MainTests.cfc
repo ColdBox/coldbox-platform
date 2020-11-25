@@ -18,20 +18,6 @@
 				expect( event.getValue( "cbox_rendered_content" ) ).toInclude( "Invalid Page" );
 			} );
 
-			it( "can handle invalid onInvalidEvent handlers", function(){
-				var originalInvalidEventHandler = getController().getSetting( "invalidEventHandler" );
-				getController().setSetting( "invalidEventHandler", "notEvenAnAction" );
-				try {
-					getController().getHandlerService().onConfigurationLoad();
-					execute( event = "invalid:bogus.index", renderResults = true );
-					fail( "The event handler was invalid and should have thrown an exception" );
-				} catch ( HandlerService.InvalidEventHandlerException e ) {
-					expect( e.message ).toInclude( "is also invalid" );
-				} finally {
-					getController().setSetting( "invalidEventHandler", originalInvalidEventHandler );
-					getController().getHandlerService().onConfigurationLoad();
-				}
-			} );
 		} );
 	}
 
