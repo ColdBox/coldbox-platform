@@ -533,7 +533,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 			// In either case, if the interceptor doesn't exists, just ignore it.
 		} catch ( any e1 ) {
 			// Are we doing exception handling?
-			if ( withExceptionHandling ) {
+			if ( arguments.withExceptionHandling ) {
 				try {
 					processException( cbController, e1 );
 				} catch ( any e2 ) {

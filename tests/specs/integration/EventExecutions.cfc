@@ -64,13 +64,13 @@ component extends="tests.resources.BaseIntegrationTest"{
 			story( "I want the onException to have a default status code of 500", function(){
 				given( "an event that fires an exception", function(){
 					then( "it should default the status code to 500", function(){
-						expect( function(){
-							var e = execute(
-								event                 = "main.throwException",
-								renderResults         = true,
-								withExceptionHandling = true
-							);
-						} ).toThrow();
+						var e = execute(
+							event                 = "main.throwException",
+							renderResults         = true,
+							withExceptionHandling = true
+						);
+						expecT( e.getPrivateValue( "exception" ).getType() ).toBe( "CustomException" );
+						expecT( e.getPrivateValue( "exception" ).getMessage() ).toInclude( "Whoops" );
 						expect( getNativeStatusCode() ).toBe( 500 );
 					} );
 				} );
