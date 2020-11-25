@@ -267,6 +267,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		variables.log.info( "† Shutting down ColdBox Task Scheduler..." );
 		asyncManager.shutdownAllExecutors( force = true );
 
+		// Shutdown LogBox LAST
+		variables.log.info( "† Shutting down LogBox..." );
+		variables.controller.getLogBox().shutdown();
+
 		return this;
 	}
 

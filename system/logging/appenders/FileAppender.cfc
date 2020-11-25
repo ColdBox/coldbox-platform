@@ -177,9 +177,10 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 	 * @queueContext A struct of data attached to this processing queue thread
 	 */
 	function onLogListenerSleep( required struct queueContext ){
+		var isFlushNeeded =  ( arguments.queueContext.start + arguments.queueContext.flushInterval < getTickCount() ) || arguments.queueContext.force;
 		// flush to disk every start + 1000ms
 		if(
-			arguments.queueContext.start + arguments.queueContext.flushInterval < getTickCount()
+			isFlushNeeded
 			&&
 			!isSimpleValue( arguments.queueContext.oFile )
 		){
@@ -225,6 +226,13 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 			fileClose( arguments.queueContext.oFile );
 			arguments.queueContext.oFile = "";
 		}
+	}
+
+	/**
+	 * Process a shutdown!
+	 */
+	function shutdown(){
+		//runLogListener( force = true );
 	}
 
 	/************************************ PRIVATE ************************************/

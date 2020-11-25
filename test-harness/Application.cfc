@@ -70,7 +70,7 @@ component {
 		}
 
 		// Bootstrap Reinit
-		if ( not structKeyExists( application, "cbBootstrap" ) or application.cbBootStrap.isfwReinit() ) {
+		if ( not structKeyExists( application, "cbBootstrap" ) or structKeyExists( url, "bsReinit" ) ) {
 			lock name="coldbox.bootstrap_#this.name#" type="exclusive" timeout="5" throwonTimeout=true {
 				structDelete( application, "cbBootStrap" );
 				onApplicationStart();

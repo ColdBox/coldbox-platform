@@ -299,8 +299,10 @@ component accessors="true"{
 	/**
 	 * Executed by our schedule tasks to move the queue elements into the appender's implemented
 	 * destination
+	 *
+	 * @force This forces a flush with no waiting, usually called synchronously by a shutdown
 	 */
-	function runLogListener(){
+	function runLogListener( force = false ){
 		try {
 			// Create a queue context for queue processing data
 			var queueContext = {
@@ -309,7 +311,8 @@ component accessors="true"{
 				"maxIdle"       : 15000,
 				"sleepInterval" : 25,
 				"count"         : 0,
-				"hasMessages"   : false
+				"hasMessages"   : false,
+				"force"			: arguments.force
 			};
 
 			// Init Message
@@ -318,7 +321,7 @@ component accessors="true"{
 			// Start Advice
 			onLogListenerStart( queueContext );
 
-			while ( variables.logListener.queue.len() || queueContext.lastRun + queueContext.maxIdle > getTickCount() ) {
+			while ( arguments.force || variables.logListener.queue.len() || queueContext.lastRun + queueContext.maxIdle > getTickCount() ) {
 				// out( "len: #variables.logListener.queue.len()# last run: #lastRun# idle: #queueContext.maxIdle#" );
 
 				if ( variables.logListener.queue.len() ) {
@@ -339,8 +342,8 @@ component accessors="true"{
 				// Advice we are about to go to sleep
 				onLogListenerSleep( queueContext );
 
-				// Only take a nap if we've nothing to do
-				if( !variables.logListener.queue.len() ) {
+				// Only take a nap if we've nothing to do and we are not in force mode
+				if( !arguments.force && !variables.logListener.queue.len() ) {
 					sleep( queueContext.sleepInterval ); // take a nap
 				}
 			}
@@ -357,10 +360,12 @@ component accessors="true"{
 			// Advice
 			//out( "Stopping Log listener task for (#getName()#), it ran for #getTickCount() - queueContext.start#ms!" );
 
-			// Stop log listener
-			variables.lock( function(){
-				variables.logListener.active = false;
-			} );
+			// Stop log listener only if not in force mode
+			if( !arguments.force ){
+				variables.lock( function(){
+					variables.logListener.active = false;
+				} );
+			}
 		}
 	}
 
@@ -414,6 +419,12 @@ component accessors="true"{
 		// Queue it up
 		variables.logListener.queue.append( arguments.data );
 		return this;
+	}
+
+	/**
+	 * Each appender can shut itself down if needed. This callback is done by the LogBox engine during reinits or shutdowns
+	 */
+	function shutdown(){
 	}
 
 	/****************************************** PRIVATE *********************************************/
