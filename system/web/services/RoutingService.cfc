@@ -886,7 +886,6 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		var handler         = "";
 		var action          = "";
 		var newpath         = "";
-		var httpRequestData = getHTTPRequestData();
 		var rc              = event.getCollection();
 
 		/**
@@ -928,6 +927,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			}
 
 			// Setup Relocation
+			var httpRequestData = getHTTPRequestData();
 			var relocationUrl = "#arguments.event.getSESbaseURL()##newpath##serializeURL( httpRequestData.content, arguments.event )#";
 
 			if ( httpRequestData.method eq "GET" ) {
