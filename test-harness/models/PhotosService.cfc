@@ -1,46 +1,40 @@
 /**
-* I manage photos
-*/
-component singleton accessors="true"{
-	
+ * I manage photos
+ */
+component singleton accessors="true" {
+
 	// Properties
-	
+
 
 	/**
 	 * Constructor
 	 */
 	PhotosService function init(){
-		
 		return this;
 	}
-	
+
 	/**
-	* save
-	*/
+	 * save
+	 */
 	function save(){
-		
 	}
 
 	/**
-	* delete
-	*/
+	 * delete
+	 */
 	function delete(){
-		
 	}
 
 	/**
-	* list
-	*/
+	 * list
+	 */
 	function list(){
-		
 	}
 
 	/**
-	* get
-	*/
+	 * get
+	 */
 	function get(){
-		
 	}
-
 
 }

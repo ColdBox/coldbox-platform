@@ -3,7 +3,7 @@
  * www.ortussolutions.com
  * ---
  * A simple DB appender for MySQL, MSSQL, Oracle, PostgreSQL
- * 
+ *
  * Properties:
  * - dsn : the dsn to use for logging
  * - table : the table to store the logs in
@@ -11,9 +11,9 @@
  * - columnMap : A column map for aliasing columns. (Optional)
  * - autocreate : if true, then we will create the table. Defaults to false (Optional)
  * - ensureChecks : if true, then we will check the dsn and table existence.  Defaults to true (Optional)
- * 				   
+ *
  * The columns needed in the table are
- * 
+ *
  * - id : UUID
  * - severity : string
  * - category : string
@@ -21,14 +21,14 @@
  * - appendername : string
  * - message : string
  * - extrainfo : string
- * 
+ *
  * If you are building a mapper, the map must have the above keys in it.
 **/
 component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
-    
+
     /**
 	 * Constructor
-	 * 
+	 *
 	 * @name The unique name for this appender.
 	 * @properties A map of configuration properties for the appender"
 	 * @layout The layout class to use in this appender for custom message rendering.
@@ -44,21 +44,21 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 	){
        	// Init supertype
 		super.init( argumentCollection=arguments );
-		
+
 		// valid columns
 		variables.columns = "id,severity,category,logdate,appendername,message,extrainfo";
 		// UUID generator
 		variables.uuid = createobject( "java", "java.util.UUID" );
-		
+
 		// Verify properties
-		if( NOT propertyExists( 'dsn' ) ){ 
-			throw( message="No dsn property defined", type="DBAppender.InvalidProperty" ); 
+		if( NOT propertyExists( 'dsn' ) ){
+			throw( message="No dsn property defined", type="DBAppender.InvalidProperty" );
 		}
-		if( NOT propertyExists( 'table' ) ){ 
-			throw( message="No table property defined", type="DBAppender.InvalidProperty" ); 
+		if( NOT propertyExists( 'table' ) ){
+			throw( message="No table property defined", type="DBAppender.InvalidProperty" );
 		}
-		if( NOT propertyExists( 'autoCreate' ) OR NOT isBoolean( getProperty( 'autoCreate' ) ) ){ 
-			setProperty( 'autoCreate', false ); 
+		if( NOT propertyExists( 'autoCreate' ) OR NOT isBoolean( getProperty( 'autoCreate' ) ) ){
+			setProperty( 'autoCreate', false );
 		}
 		if( NOT propertyExists( 'defaultCategory' ) ){
 			setProperty( "defaultCategory", arguments.name );
@@ -81,12 +81,12 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 		if( NOT propertyExists( "schema" ) ){
 			setProperty( "schema", "" );
 		}
-		
+
 		// DB Rotation Time
 		variables.lastDBRotation = "";
 		return this;
 	}
-	
+
 	/**
 	 * Runs on registration
 	 */
@@ -100,57 +100,24 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 
     /**
 	 * Write an entry into the appender. You must implement this method yourself.
-	 * 
+	 *
 	 * @logEvent The logging event to log
 	 */
 	function logMessage( required coldbox.system.logging.LogEvent logEvent ){
-		var type 		= "cf_sql_tinyint";
-		var category 	= getProperty( "defaultCategory" );
-		var cmap 		= "";
-		var cols 		= "";
-		var loge 		= arguments.logEvent;
-		var message 	= loge.getMessage();
-		
+		var category = getProperty( "defaultCategory" );
+
 		// Check Category Sent?
-		if( NOT loge.getCategory() eq "" ){
-			category = loge.getCategory();
-		}
-		
-		// Column Maps
-		if( propertyExists( 'columnMap' ) ){
-			cmap = getProperty( 'columnMap' );
-			cols = "#cmap.id#,#cmap.severity#,#cmap.category#,#cmap.logdate#,#cmap.appendername#,#cmap.message#,#cmap.extrainfo#";
-		} else {
-			cols = variables.columns;
+		if( NOT arguments.logEvent.getCategory() eq "" ){
+			category = arguments.logEvent.getCategory();
 		}
 
-		queryExecute( 
-			"INSERT INTO #getTable()# (#cols#) 
-				VALUES (
-					:uuid,
-					:severity,
-					:category,
-					:timestamp,
-					:name,
-					:message,
-					:extraInfo
-				)
-			",
-			{
-				uuid      = { cfsqltype="cf_sql_varchar", 	value="#variables.uuid.randomUUID().toString()#" },
-				severity  = { cfsqltype="cf_sql_varchar", 	value="#severityToString( loge.getseverity() )#" },
-				category  = { cfsqltype="cf_sql_varchar", 	value="#left( category, 100 )#" },
-				timestamp = { cfsqltype="cf_sql_timestamp", value="#loge.getTimestamp()#" },
-				name      = { cfsqltype="cf_sql_varchar", 	value="#left( getName(), 100 )#" },
-				message   = { cfsqltype="cf_sql_varchar", 	value="#loge.getMessage()#" },
-				extraInfo = { cfsqltype="cf_sql_varchar", 	value="#loge.getExtraInfoAsString()#" }
-			},
-			{
-				datasource = getProperty( "dsn" )
-			}
-		);
-
-		this.rotationCheck();
+		queueMessage( {
+			severity 	: severityToString( arguments.logEvent.getseverity() ),
+			category 	: left( category, 100 ),
+			timestamp 	: arguments.logEvent.getTimestamp(),
+			message 	: arguments.logEvent.getMessage(),
+			extraInfo 	: arguments.logEvent.getExtraInfoAsString()
+		} );
 
 		return this;
 	}
@@ -160,13 +127,13 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 	 */
 	function rotationCheck(){
 		// Verify if in rotation frequency
-		if( isDate( variables.lastDBRotation ) AND dateDiff( "n",  variables.lastDBRotation, now() ) LTE getProperty( "rotationFrequency" ) ){
+		if( !getProperty( "rotate" ) OR ( isDate( variables.lastDBRotation ) AND dateDiff( "n",  variables.lastDBRotation, now() ) LTE getProperty( "rotationFrequency" ) ) ){
 			return;
 		}
-		
+
 		// Rotations
 		this.doRotation();
-		
+
 		// Store last profile time
 		variables.lastDBRotation = now();
 	}
@@ -179,10 +146,10 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 		var cols 		= variables.columns;
 		var targetDate 	= dateAdd( "d", "-#getProperty( "rotationDays" )#", now() );
 
-		queryExecute( 
+		queryExecute(
 			"DELETE
-			  FROM #getTable()#
-			 WHERE #listgetAt( cols,4)# < :datetime
+				FROM #getTable()#
+				WHERE #listgetAt( cols,4)# < :datetime
 			",
 			{
 				datetime = { cfsqltype="#getDateTimeDBType()#", value="#dateFormat( targetDate, 'mm/dd/yyyy' )#" }
@@ -191,18 +158,90 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 				datasource = getProperty( "dsn" )
 			}
 		);
-		
+
 		return this;
 	}
-		
+
+	/**
+	 * Fired once the listner starts queue processing
+	 *
+	 * @queueContext A struct of data attached to this processing queue thread
+	 */
+	function onLogListenerStart( required struct queueContext ){
+	}
+
+	/**
+	 * Fired once the listener will go to sleep
+	 *
+	 * @queueContext A struct of data attached to this processing queue thread
+	 */
+	function onLogListenerSleep( required struct queueContext ){
+		this.rotationCheck();
+	}
+
+	/**
+	 * Processes a queue element to a destination
+	 * This method is called by the log listeners asynchronously.
+	 *
+	 * @data The data element the queue needs processing
+	 * @queueContext The queue context in process
+	 *
+	 * @return ConsoleAppender
+	 */
+	function processQueueElement( required data, required queueContext ){
+		// Column Maps
+		if( propertyExists( 'columnMap' ) ){
+			var cmap = getProperty( 'columnMap' );
+			var cols = "#cmap.id#,#cmap.severity#,#cmap.category#,#cmap.logdate#,#cmap.appendername#,#cmap.message#,#cmap.extrainfo#";
+		} else {
+			var cols = variables.columns;
+		}
+
+		// Insert into table
+		queryExecute(
+			"INSERT INTO #getTable()# (#cols#)
+				VALUES (
+					:uuid,
+					:severity,
+					:category,
+					:timestamp,
+					:name,
+					:message,
+					:extraInfo
+				)
+			",
+			{
+				uuid      = { cfsqltype="cf_sql_varchar", 	value="#variables.uuid.randomUUID().toString()#" },
+				severity  = { cfsqltype="cf_sql_varchar", 	value="#arguments.data.severity#" },
+				category  = { cfsqltype="cf_sql_varchar", 	value="#arguments.data.category#" },
+				timestamp = { cfsqltype="cf_sql_timestamp", value="#arguments.data.timestamp#" },
+				name      = { cfsqltype="cf_sql_varchar", 	value="#left( getName(), 100 )#" },
+				message   = { cfsqltype="cf_sql_varchar", 	value="#arguments.data.message#" },
+				extraInfo = { cfsqltype="cf_sql_varchar", 	value="#arguments.data.extraInfo#" }
+			},
+			{
+				datasource = getProperty( "dsn" )
+			}
+		);
+		return this;
+	}
+
+	/**
+	 * Fired once the listner stops queue processing
+	 *
+	 * @queueContext A struct of data attached to this processing queue thread
+	 */
+	function onLogListenerEnd( required struct queueContext ){
+	}
+
 	/************************************************ PRIVATE ************************************************/
-	
+
 	/**
 	 * Return the table name with the schema included if found.
 	 */
 	private function getTable(){
 		if( len( getProperty( 'schema' ) ) ){
-			return getProperty( 'schema' ) & "." & getProperty( 'table' );  
+			return getProperty( 'schema' ) & "." & getProperty( 'table' );
 		}
 		return getProperty( 'table' );
 	}
@@ -216,7 +255,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 		var tableFound 		= false;
 		var qCreate 		= "";
 		var cols 			= variables.columns;
-	
+
 		if( getProperty( "autoCreate" ) ){
 			// Get Tables on this DSN
 			cfdbinfo( datasource="#dsn#", name="qTables", type="tables" );
@@ -229,7 +268,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 			}
 
 			if( NOT tableFound ){
-				queryExecute( 
+				queryExecute(
 					"CREATE TABLE #getTable()# (
 						#listgetAt( cols, 1 )# VARCHAR(36) NOT NULL,
 						#listgetAt( cols, 2 )# VARCHAR(10) NOT NULL,
@@ -251,18 +290,18 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 
 	/**
 	 * Check a column map definition
-	 * 
+	 *
 	 * @throws DBAppender.InvalidColumnMapException
 	 */
 	private function checkColumnMap(){
 		var map = getProperty( 'columnMap' );
-			
+
 		for( var key in map ){
 			if( NOT listFindNoCase( variables.columns, key ) ){
 				throw(
 					message = "Invalid column map key: #key#",
 					detail 	= "The available keys are #variables.columns#",
-					type 	= "DBAppender.InvalidColumnMapException" 
+					type 	= "DBAppender.InvalidColumnMapException"
 				);
 			}
 		}
@@ -273,9 +312,9 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 	 */
 	private function getDateTimeDBType(){
 		var qResults = "";
-		
+
 		cfdbinfo( type="Version", name="qResults", datasource="#getProperty( 'dsn' )#" );
-		
+
 		switch( qResults.database_productName ){
 			case "PostgreSQL" : {
 				return "cf_sql_timestamp";
@@ -292,7 +331,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 			default : {
 				return "cf_sql_timestamp";
 			}
-		}   
+		}
 	}
 
 	/**
@@ -300,9 +339,9 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 	 */
 	private function getTextColumnType(){
 		var qResults = "";
-		
+
 		cfdbinfo( type="Version", name="qResults", datasource="#getProperty( 'dsn' )#" );
-		
+
 		switch( qResults.database_productName ){
 			case "PostgreSQL" : {
 				return "TEXT";
@@ -319,7 +358,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 			default : {
 				return "TEXT";
 			}
-		}  
+		}
 	}
 
 	/**
@@ -327,9 +366,9 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 	 */
 	private function getDateTimeColumnType(){
 		var qResults = "";
-		
+
 		cfdbinfo( type="Version", name="qResults", datasource="#getProperty( 'dsn' )#" );
-		
+
 		switch( qResults.database_productName ){
 			case "PostgreSQL" : {
 				return "TIMESTAMP";
@@ -348,5 +387,5 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 			}
 		}
 	}
-   
+
 }

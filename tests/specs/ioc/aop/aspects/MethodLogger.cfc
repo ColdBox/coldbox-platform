@@ -1,10 +1,9 @@
 /**
-* My BDD Test
-*/
-component 	extends="coldbox.system.testing.BaseModelTest"
-			model="coldbox.system.aop.aspects.MethodLogger"{
-	
-/*********************************** LIFE CYCLE Methods ***********************************/
+ * My BDD Test
+ */
+component extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.aop.aspects.MethodLogger" {
+
+	/*********************************** LIFE CYCLE Methods ***********************************/
 
 	// executes before all suites+specs in the run() method
 	function beforeAll(){
@@ -24,31 +23,28 @@ component 	extends="coldbox.system.testing.BaseModelTest"
 		super.afterAll();
 	}
 
-/*********************************** BDD SUITES ***********************************/
+	/*********************************** BDD SUITES ***********************************/
 
 	function run( testResults, testBox ){
 		// all your suites go here.
 		describe( "Method Logger aspect", function(){
-
 			it( "can log execution calls", function(){
-				var mockInvocation = createMock( "coldbox.system.aop.MethodInvocation" )
-					.init(
-						method 	= "execute",
-						args 	= { name="luis majano" },
+				var mockInvocation = createMock( "coldbox.system.aop.MethodInvocation" ).init(
+						method         = "execute",
+						args           = { name : "luis majano" },
 						methodMetadata = "{}",
-						target = this,
-						targetname = "mymock",
-						targetMapping = "mymock",
-						interceptors = [] 
+						target         = this,
+						targetname     = "mymock",
+						targetMapping  = "mymock",
+						interceptors   = []
 					)
 					.$( "proceed", "called" );
-					
-				var results = model.invokeMethod( mockInvocation );
-				expect(	results ).toBe( "called" );
-				expect(	mockLogger.$times( 2, "debug" ) ).toBeTrue();
-			});
 
-		});
+				var results = model.invokeMethod( mockInvocation );
+				expect( results ).toBe( "called" );
+				expect( mockLogger.$times( 2, "debug" ) ).toBeTrue();
+			} );
+		} );
 	}
-	
+
 }

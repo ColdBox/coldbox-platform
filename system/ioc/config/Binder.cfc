@@ -318,7 +318,7 @@ Description :
 				<!--- Do this right away so aliases are picked up before this mapping potentially gets overwritten
 				This is neccessary for multuple CFCs with the same name in different folders, but with unique aliases --->
 				<cfif arguments.process>
-					<cfset currentMapping[ 1 ].process()>
+					<cfset currentMapping[ 1 ].process( binder=this, injector=instance.injector )>
 				</cfif>
 
 				<!--- Merge the full array of mappings back together --->
@@ -335,7 +335,7 @@ Description :
 	<cffunction name="process" output="false" access="public" returntype="any" hint="Auto process a mapping once defined, this is usually done if there are critical annotations that must be read upon startup, else avoid it and let them lazy load">
 		<cfscript>
 			for( var mapping in getCurrentMapping() ) {
-				mapping.process();
+				mapping.process( binder=this, injector=instance.injector );
 			}
 			return this;
 		</cfscript>

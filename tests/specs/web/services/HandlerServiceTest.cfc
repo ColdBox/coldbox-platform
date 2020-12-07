@@ -1,32 +1,18 @@
 ﻿/**
-* Request Context Decorator
-*/
-component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarness"{
-
-/*********************************** LIFE CYCLE Methods ***********************************/
-
-	// executes before all suites+specs in the run() method
-	function beforeAll(){
-		super.beforeAll();
-	}
-
-	// executes after all suites+specs in the run() method
-	function afterAll(){
-		super.afterAll();
-	}
-
-/*********************************** BDD SUITES ***********************************/
+ * Request Context Decorator
+ */
+component extends="tests.resources.BaseIntegrationTest" {
 
 	function run( testResults, testBox ){
 		describe( "Handler Service", function(){
-
 			beforeEach( function(){
 				setup();
 				handlerService = controller.getHandlerService();
+				// Cleanup for invalid event handlers
+				structDelete( request, "_lastInvalidEvent" );
 			} );
 
 			it( "can register handlers", function(){
-
 				handlerService.registerHandlers();
 
 				expect( getController().getSetting( "registeredHandlers" ) ).notToBeEmpty();
@@ -39,11 +25,10 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 
 				var files = handlerService.getHandlerListing( path );
 				expect( files ).notToBeEmpty();
-				expect( files.len() ).toBe( 11 );
+				expect( files.len() ).toBeGT( 10 );
 			} );
 
 			describe( "Retrieve handler beans", function(){
-
 				beforeEach( function(){
 					handlerService.setHandlerCaching( true );
 				} );
@@ -52,7 +37,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 					var results = handlerService.getHandlerBean( "invalid" );
 					expect( results.getMethod() ).toBe( "onInvalidEvent" );
 					expect( handlerService.getHandlerBeanCacheDictionary() ).notToHaveKey( "invalid" );
-				});
+				} );
 
 
 				it( "with a valid handler event", function(){
@@ -60,14 +45,14 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 					expect( results.getMethod() ).toBe( "index" );
 					expect( results.getHandler() ).toBe( "main" );
 					expect( handlerService.getHandlerBeanCacheDictionary() ).toHaveKey( "main.index" );
-				});
+				} );
 
 				it( "with a valid external handler event", function(){
 					var results = handlerService.getHandlerBean( "ehTest.dspExternal" );
 					expect( results.getMethod() ).toBe( "dspExternal" );
 					expect( results.getHandler() ).toBe( "ehTest" );
 					expect( handlerService.getHandlerBeanCacheDictionary() ).toHaveKey( "ehTest.dspExternal" );
-				});
+				} );
 
 				it( "with a valid module Event", function(){
 					var results = handlerService.getHandlerBean( "resourcesTest:Home.index" );
@@ -75,16 +60,14 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 					expect( results.getHandler() ).toBe( "Home" );
 					expect( results.getModule() ).toBe( "resourcesTest" );
 					expect( handlerService.getHandlerBeanCacheDictionary() ).toHaveKey( "resourcesTest:Home.index" );
-				});
+				} );
 
 				it( "with a valid view dispatch", function(){
 					var results = handlerService.getHandlerBean( "simpleview" );
 					expect( results.getViewDispatch() ).toBe( true );
 					expect( handlerService.getHandlerBeanCacheDictionary() ).toHaveKey( "simpleview" );
-				});
+				} );
 			} );
-
-
 		} );
 	}
 

@@ -3,57 +3,47 @@
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
-Author 	 :	Luis Majano
+Author      	 :	Luis Majano
 Description :
-	Your WireBox Configuration Binder
+Your WireBox Configuration Binder
 ----------------------------------------------------------------------->
-<cfcomponent output="false" hint="The default WireBox Injector configuration object" extends="coldbox.system.ioc.config.Binder">
-<cfscript>
-	
+<cfcomponent
+	output ="false"
+	hint   ="The default WireBox Injector configuration object"
+	extends="coldbox.system.ioc.config.Binder"
+>
+	<cfscript>
 	/**
-	* Configure WireBox, that's it!
-	*/
+	 * Configure WireBox, that's it!
+	 */
 	function configure(){
-		
 		// The WireBox configuration structure DSL
 		wireBox = {
 			// Scope registration, automatically register a wirebox injector instance on any CF scope
 			// By default it registeres itself on application scope
-			scopeRegistration = {
-				enabled = true,
-				scope   = "application", // server, session, application
-				key		= "wireBox"
+			scopeRegistration : {
+				enabled : true,
+				scope   : "application", // server, session, application
+				key     : "wireBox"
 			},
-
 			// DSL Namespace registrations
-			customDSL = {
-				// namespace = "mapping name"
-			},
-			
+			customDSL      : {},
 			// Custom Storage Scopes
-			customScopes = {
-				// annotationName = "mapping name"
-			},
-			
+			customScopes   : {},
 			// Package scan locations
-			scanLocations = [],
-			
+			scanLocations  : [],
 			// Stop Recursions
-			stopRecursions = [],
-			
+			stopRecursions : [],
 			// Parent Injector to assign to the configured injector, this must be an object reference
-			parentInjector = "",
-			
+			parentInjector : "",
 			// Register all event listeners here, they are created in the specified order
-			listeners = [
-				// { class="", name="", properties={} }
-			]			
+			listeners      : []
 		};
-		
+
 		// Map Bindings below
 		mapPath( "coldbox.test-harness.models.TestService" );
-		
-		map("WireBoxURL").toValue("www.coldbox.org");
-	}	
-</cfscript>
+
+		map( "WireBoxURL" ).toValue( "www.coldbox.org" );
+	}
+	</cfscript>
 </cfcomponent>

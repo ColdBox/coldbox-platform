@@ -1,0 +1,14 @@
+{
+	"line-length": false,
+	"single-h1": false,
+	"no-hard-tabs" : false,
+	"fenced-code-language" : false,
+	"no-bare-urls" : false,
+	"first-line-h1": false,
+	"no-multiple-blanks": {
+		"maximum": 2
+	},
+	"no-duplicate-header" : {
+		"siblings_only" : true
+	}
+}

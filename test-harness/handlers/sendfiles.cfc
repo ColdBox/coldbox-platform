@@ -1,27 +1,24 @@
 /**
-* My Event Handler Hint
-*/
-component extends="coldbox.system.EventHandler"{
-	
+ * My Event Handler Hint
+ */
+component extends="coldbox.system.EventHandler" {
+
 	/**
-	* Index
-	*/
+	 * Index
+	 */
 	any function index( event, rc, prc ){
-		event.sendFile(
-			file = expandPath( "/cbtestharness/robots.txt" ),
-			name = "MyRobots"
-		);
+		event.sendFile( file = expandPath( "/cbtestharness/robots.txt" ), name = "MyRobots" );
 	}
 
 	/**
-	* Index
-	*/
+	 * Index
+	 */
 	any function binary( event, rc, prc ){
 		event.sendFile(
-			file 		= fileReadBinary( expandPath( "/cbtestharness/includes/coldbox.pdf" ) ),
-			name 		= "coldbox",
-			extension 	= "pdf"
+			file      = fileReadBinary( expandPath( "/cbtestharness/includes/coldbox.pdf" ) ),
+			name      = "coldbox",
+			extension = "pdf"
 		);
 	}
-	
+
 }

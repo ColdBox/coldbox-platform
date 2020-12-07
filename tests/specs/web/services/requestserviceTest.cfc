@@ -1,141 +1,93 @@
-﻿<!-----------------------------------------------------------------------
-********************************************************************************
-Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.coldbox.org | www.luismajano.com | www.ortussolutions.com
-********************************************************************************
+﻿component extends="tests.resources.BaseIntegrationTest"{
 
-Author     :	Luis Majano
-Date        :	9/3/2007
-Description :
-	Request service Test
------------------------------------------------------------------------>
-<cfcomponent extends="coldbox.system.testing.BaseTestCase" appMapping="/coldbox/test-harness">
+	function run( testResults, testBox ){
+		// all your suites go here.
+		describe( "Request Services", function(){
 
-	<cffunction name="setUp" returntype="void" access="public" output="false">
-		<cfscript>
-		//Call the super setup method to setup the app.
-		super.setup();
-		</cfscript>
-	</cffunction>
+			beforeEach(function( currentSpec ){
+				setup();
+				requestService = getController().getRequestService();
+			});
 
-	<cffunction name="testRequestCapturesWithNoDecoration" access="public" returntype="void" output="false">
-		<cfscript>
-			var originalSetting = getcontroller().getSetting( "RequestContextDecorator" );
+			it( "can capture requests", function(){
+				var today         = now();
 
-			getcontroller().setSetting( "RequestContextDecorator","" );
-			testRequestCaptures();
-			getcontroller().setSetting( "RequestContextDecorator", originalSetting );
+				/* Setup test variables */
+				form.name  = "luis majano";
+				form.event = "ehGeneral.dspHome,movies.list";
 
-		</cfscript>
-	</cffunction>
+				url.name  = "pio majano";
+				url.today = today;
 
-	<cffunction name="testRequestCaptures" access="public" returntype="void" output="false">
-		<cfscript>
-		var service = getController().getRequestService();
-		var context = "";
-		var persistStruct = structnew();
-		var today = now();
+				/* Catpure the request */
+				var context = requestService.requestCapture();
 
-		/* Setup test variables */
-		form.name = 'luis majano';
-		form.event = "ehGeneral.dspHome,movies.list";
+				// debug(context.getCollection());
 
-		url.name = "pio majano";
-		url.today = today;
+				/* Tests */
+				expect( context ).toBeComponent();
+				expect( url.today ).toBe( context.getValue( "today" ) );
+				expect( url.name ).toBe( context.getValue( "name" ) );
+				expect( context.valueExists( "event" ) ).toBeTrue();
+			});
 
-		/* Catpure the request */
-		context = service.requestCapture();
+			it( "can capture a json body", function(){
+				var mockContext = prepareMock( requestService.getContext() )
+					.$( "getHTTPContent" )
+					.$callback( function( boolean json = false ){
+						var payload = {
+							"fullName" : "Jon Clausen",
+							"type" : "JSON"
+						};
 
-		// debug(context.getCollection());
+						if ( json ) {
+							return payload;
+						} else {
+							return serializeJSON( payload );
+						}
+					} );
+				// Mock it
+				request[ "cb_requestContext" ] = mockContext;
 
-		/* Tests */
-		AssertTrue( isObject(context), "Context Creation" );
-		AssertTrue(url.today eq context.getValue('today') , "URL Append" );
-		AssertTrue(context.valueExists('event'), "Multi-Event Test" );
-		</cfscript>
-	</cffunction>
+				/* Catpure the request */
+				var context = requestService.requestCapture();
 
-	<cffunction name="testRequestCaptureOfJSONBody" access="public" returntype="void" output="false">
-		<cfscript>
-		getController().setSetting( "jsonPayloadToRC", true );
-		var mockContext = prepareMock(
-								getController().getRequestService().getContext()
-							).$( "getHTTPContent" ).$callback(
-								function( boolean json=false ){
-									var payload = {
-										"name" : "Jon Clausen",
-										"type" : "JSON"
-									};
-
-									if( json ){
-										return payload;
-									} else {
-										return serializeJSON( payload );
-									}
-								}
-							);
-		var service = prepareMock( getController().getRequestService() )
-						.$( 'getContext' ).$callback(
-							function( ){
-								return mockContext;
-							}
-						 );
-
-		/* Catpure the request */
-		context = service.requestCapture();
-
-		debug( context.getCollection() );
-
-		/* Tests */
-		assertTrue( isObject(context), "Context Creation" );
-		assertTrue( context.valueExists( "name" ) , "JSON Append" );
-		assertTrue( context.valueExists( "type" ) , "JSON Append" );
-		assertEquals( context.getValue( "type" ), 'JSON' );
-		</cfscript>
-	</cffunction>
-
-	<cffunction name="testDefaultEvent" access="public" returntype="void" output="false">
-		<cfscript>
-		var service = getController().getRequestService();
-		var context = "";
-
-		/* Setup test variables */
-		url.event = "default";
-
-		/* Catpure the request */
-		context = service.requestCapture();
-
-		/* Tests */
-		AssertTrue( isObject(context), "Context Creation" );
-		AssertTrue( url.event eq context.getCurrentEvent(), "Event mismatch: #context.getCurrentEvent()#" );
-		</cfscript>
-	</cffunction>
-
-	<cffunction name="testContextGetterSetters" access="public" returntype="Void" output="false" >
-		<cfscript>
-		var service = getController().getRequestService();
-		var context = "";
-
-		context = service.getContext();
-		AssertTrue( isObject(context), "Context Create" );
-
-		structDelete(request, "cb_requestContext" );
-		assertFalse( service.contextExists() , "Context exists" );
-
-		service.setContext(context);
-		assertTrue( structKeyExists(request,"cb_requestContext" ) ,"setter in request" );
-
-		</cfscript>
-	</cffunction>
-
-	<cffunction name="tearDown" access="public" returntype="Void" hint="teardown" output="false" >
-		<cfscript>
-		// This errors sometimes on Adobe CF 11
-		try {
-			structClear(cookie);
-		} catch( any e ) {}
-		</cfscript>
-	</cffunction>
+				/* Tests */
+				expect( context ).toBeComponent();
+				expect( context.valueExists( "fullName" ) ).toBeTrue();
+				expect( context.valueExists( "type" ) ).toBeTrue();
+				expect( context.getValue( "type" ) ).toBe( "JSON" );
+			});
 
 
-</cfcomponent>
+			it( "can test the default event setup", function(){
+				/* Setup test variables */
+				form.event = url.event = "photos.index";
+
+				/* Catpure the request */
+				structDelete( request, "cb_requestContext" );
+				var context = requestService.requestCapture();
+
+				/* Tests */
+				expect( context ).toBeComponent();
+				expect( url.event ).toBe( context.getCurrentEvent() );
+			});
+
+
+			it( "can create and check for context in the request scope", function(){
+				var context = requestService.getContext();
+				expect( context ).toBeComponent();
+				expect( requestService.contextExists() ).toBeTrue();
+
+				structDelete( request, "cb_requestContext" );
+				expect( requestService.contextExists() ).toBeFalse();
+
+				requestService.setContext( context );
+				expect( requestService.contextExists() ).toBeTrue();
+				expect( request ).toHaveKey( "cb_requestContext" );
+			});
+
+		} );
+	}
+
+}

@@ -7,7 +7,7 @@
 <cfparam name="url.directory" 			default="tests.specs">
 
 <!--- Regex list of exclusions --->
-<cfparam name="url.directoryExcludes" 	default="/(cache|ioc|logging)">
+<cfparam name="url.directoryExcludes" 	default="/(cache|ioc|logging|async)">
 <cfparam name="url.recurse" 			default="true" type="boolean">
 <cfparam name="url.bundles" 			default="">
 <cfparam name="url.labels" 				default="">
@@ -15,7 +15,7 @@
 <cfparam name="url.propertiesFilename" 	default="TEST.properties">
 <cfparam name="url.propertiesSummary" 	default="false" type="boolean">
 
-<cfparam name="url.coverageEnabled" default="true">
+<cfparam name="url.coverageEnabled" default="false">
 <cfparam name="url.coverageSonarQubeXMLOutputPath" default="">
 <cfparam name="url.coveragePathToCapture" default="#expandPath( '/coldbox/system' )#">
 <cfparam name="url.coverageWhitelist" default="">
@@ -46,12 +46,27 @@ if( !directoryExists( url.reportPath ) ){
 	directoryCreate( url.reportPath );
 }
 
+options  =  {
+	coverage : {
+		enabled       	: url.coverageEnabled,
+		pathToCapture 	: url.coveragePathToCapture,
+		whitelist     	: url.coverageWhitelist,
+		blacklist     	: url.coverageBlacklist,
+		sonarQube     	: {
+			XMLOutputPath : url.coverageSonarQubeXMLOutputPath
+		},
+		browser			: {
+			outputDir : url.coverageBrowserOutputDir
+		}
+	}
+};
+
 // prepare for tests for bundles or directories
 if( len( url.bundles ) ){
-	testbox = new testbox.system.TestBox( bundles=url.bundles, labels=url.labels );
+	testbox = new testbox.system.TestBox( bundles=url.bundles, labels=url.labels, options = options );
 }
 else{
-	testbox = new testbox.system.TestBox( directory={ mapping=url.directory, filter=directoryFilter, recurse=url.recurse }, labels=url.labels );
+	testbox = new testbox.system.TestBox( directory={ mapping=url.directory, filter=directoryFilter, recurse=url.recurse }, labels=url.labels, options = options );
 }
 
 // Run Tests using correct reporter

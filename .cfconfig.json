@@ -1,4 +1,7 @@
 {
+	"systemErr":"System",
+    "systemOut":"System",
+	"adminPassword" : "coldbox",
     "caches": {
         "default": {
             "storage": "false",
@@ -26,5 +29,6 @@
     },
     "debuggingEnabled": false,
     "ajaxDebugWindowEnabled": false,
-    "debuggingReportExecutionTimes": false
+    "debuggingReportExecutionTimes": false,
+    "maxCFThreads":100
 }

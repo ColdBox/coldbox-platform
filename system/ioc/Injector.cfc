@@ -96,6 +96,18 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 	property name="injectorID";
 
 	/**
+	 * The Global AsyncManager
+	 * @see coldbox.system.async.AsyncManager
+	 */
+	property name="asyncManager";
+
+	/**
+	 * The logBox task scheduler executor
+	 * @see coldbox.system.async.tasks.ScheduledExecutor
+	 */
+	property name="taskScheduler";
+
+	/**
 	 * Constructor. If called without a configuration binder, then WireBox will instantiate the default configuration binder found in: coldbox.system.ioc.config.DefaultBinder
 	 *
 	 * @binder The WireBox binder or data CFC instance or instantiation path to configure this injector with
@@ -164,6 +176,15 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 		variables.lockName = "WireBox.Injector.#variables.injectorID#";
 		// Link ColdBox Context if passed
 		variables.coldbox = arguments.coldbox;
+
+		// Register the task scheduler according to operating mode
+		if( !isObject( variables.coldbox ) ){
+			variables.asyncManager = new coldbox.system.async.AsyncManager();
+			variables.taskScheduler = variables.asyncManager.newScheduledExecutor( name : "wirebox-tasks", threads : 20 );
+		} else {
+			variables.asyncManager = variables.coldbox.getAsyncManager();
+			variables.taskScheduler = variables.asyncManager.getExecutor( "coldbox-tasks" );
+		}
 
 		// Configure the injector for operation
 		configure( arguments.binder, arguments.properties );
@@ -237,7 +258,7 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 
 			// Check if binder has onLoad convention
 			if( structKeyExists( variables.binder, "onLoad" ) ){
-				variables.binder.onLoad();
+				variables.binder.onLoad( this );
 			}
 
 			// process mappings for metadata and initialization.
@@ -245,7 +266,7 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 
 			// Announce To Listeners we are online
 			iData.injector = this;
-			variables.eventManager.processState( "afterInjectorConfiguration", iData );
+			variables.eventManager.announce( "afterInjectorConfiguration", iData );
 		}
 
 		return this;
@@ -263,33 +284,39 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 		if( variables.log.canInfo() ){
 			variables.log.info( "Shutdown of Injector: #getInjectorID()# requested and started." );
 		}
+
 		// Notify Listeners
-		variables.eventManager.processState( "beforeInjectorShutdown", iData );
+		variables.eventManager.announce( "beforeInjectorShutdown", iData );
 
 		// Check if binder has onShutdown convention
 		if( structKeyExists( variables.binder, "onShutdown" ) ){
-			variables.binder.onShutdown();
+			variables.binder.onShutdown( this );
 		}
 
 		// Is parent linked
 		if( isObject( variables.parent ) ){
-			variables.parent.shutdown();
+			variables.parent.shutdown( this );
 		}
 
 		// standalone cachebox? Yes, then shut it down baby!
 		if( isCacheBoxLinked() ){
-			variables.cacheBox.shutdown();
+			variables.cacheBox.shutdown( this );
 		}
 
 		// Remove from scope
 		removeFromScope();
 
 		// Notify Listeners
-		variables.eventManager.processState( "afterInjectorShutdown", iData );
+		variables.eventManager.announce( "afterInjectorShutdown", iData );
 
 		// Log shutdown complete
 		if( variables.log.canInfo() ){
 			variables.log.info( "Shutdown of injector: #getInjectorID()# completed." );
+		}
+
+		// Shutdown LogBox last if not in ColdBox Mode
+		if( !isColdBoxLinked() ){
+			variables.logBox.shutdown();
 		}
 
 		return this;
@@ -299,14 +326,23 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 	 * Locates, Creates, Injects and Configures an object model instance
 	 *
 	 * @name The mapping name or CFC instance path to try to build up
-	 * @dsl The dsl string to use to retrieve the instance model object, mutually exclusive with 'name
 	 * @initArguments The constructor structure of arguments to passthrough when initializing the instance
-	 * @initArguments.doc_generic struct
+	 * @dsl The dsl string to use to retrieve the instance model object, mutually exclusive with 'name
 	 * @targetObject The object requesting the dependency, usually only used by DSL lookups
+	 *
+	 * @throws InstanceNotFoundException - When the requested instance cannot be found
+	 *
+	 * @return The requested instance
 	 **/
-	function getInstance( name, dsl, struct initArguments = structNew(), targetObject="" ){
+	function getInstance( name, struct initArguments = {}, dsl, targetObject="" ){
+
+		// Is the name a DSL?
+		if( !isNull( arguments.name ) && variables.builder.isDSLString( arguments.name ) ){
+			arguments.dsl = arguments.name;
+		}
+
 		// Get by DSL?
-		if( structKeyExists( arguments, "dsl" ) ){
+		if( !isNull( arguments.dsl ) ){
 			return variables.builder.buildSimpleDSL(
 				dsl          = arguments.dsl,
 				targetID     = "ExplicitCall",
@@ -344,8 +380,8 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 		// Check if the mapping has been discovered yet, and if it hasn't it must be autowired enabled in order to process.
 		if( NOT mapping.isDiscovered() ){
 			try {
-			// process inspection of instance
-			mapping.process( binder=variables.binder, injector=this );
+				// process inspection of instance
+				mapping.process( binder=variables.binder, injector=this );
 			} catch( any e ) {
 				// Remove bad mapping
 				var mappings = variables.binder.getMappings();
@@ -370,7 +406,7 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 			.getFromScope( mapping, arguments.initArguments );
 
 		// Announce creation, initialization and DI magicfinicitation!
-		variables.eventManager.processState(
+		variables.eventManager.announce(
 			"afterInstanceCreation",
 			{ mapping=mapping, target=target, injector=this }
 		);
@@ -384,13 +420,12 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 	 * @mapping The mapping to construct
 	 * @mapping.doc_generic coldbox.system.ioc.config.Mapping
 	 * @initArguments The constructor structure of arguments to passthrough when initializing the instance
-	 * @initArguments.doc_generic struct
 	 **/
 	function buildInstance( required mapping, struct initArguments = {} ){
 		var thisMap = arguments.mapping;
 
 		// before construction event
-		variables.eventManager.processState(
+		variables.eventManager.announce(
 			"beforeInstanceCreation",
 			{ mapping=arguments.mapping, injector=this }
 		);
@@ -429,7 +464,7 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 			case "provider" : {
 				// verify if it is a simple value or closure/UDF
 				if( isSimpleValue( thisMap.getPath() ) ){
-					oModel = getInstance( thisMap.getPath() ).get();
+					oModel = getInstance( thisMap.getPath() ).$get();
 				} else {
 					var closure = thisMap.getPath();
 					oModel = closure( injector = this );
@@ -461,7 +496,7 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 		}
 
 		// announce afterInstanceInitialized
-		variables.eventManager.processState(
+		variables.eventManager.announce(
 			"afterInstanceInitialized",
 			{ mapping=arguments.mapping, target=oModel, injector=this }
 		);
@@ -545,7 +580,7 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 		}
 
 		// Check Scan Locations In Order
-		for( var thisScanPath in scanLocations){
+		for( var thisScanPath in scanLocations ){
 			// Check if located? If so, return instantiation path
 			if( fileExists( scanLocations[ thisScanPath ] & CFCName ) ){
 				if( variables.log.canDebug() ){ variables.log.debug( "Instance: #arguments.name# located in #thisScanPath#" ); }
@@ -633,7 +668,7 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 				targetID = arguments.targetID,
 				injector = this
 			};
-			variables.eventManager.processState( "beforeInstanceAutowire", iData );
+			variables.eventManager.announce( "beforeInstanceAutowire", iData );
 
 			// prepare instance for wiring, done once for persisted objects and CFCs only
 			variables.utility.getMixerUtil().start( arguments.target );
@@ -661,7 +696,7 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 			processAfterCompleteDI( targetObject, thisMap.getOnDIComplete() );
 
 			// After Instance Autowire
-			variables.eventManager.processState( "afterInstanceAutowire", iData );
+			variables.eventManager.announce( "afterInstanceAutowire", iData );
 
 			// Debug Data
 			if( variables.log.canDebug() ){
@@ -775,7 +810,7 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 	/**
 	 * Return the core util object
 	 *
-	 * @doc_generic coldbox.system.core.util.Util
+	 * @return coldbox.system.core.util.Util
 	 */
 	function getUtil() {
 		return variables.utility;
@@ -796,7 +831,7 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 	 * @targetObject The target object to do some goodness on
 	 * @mapping The target mapping
 	 */
-	 private Injector function processMixins( required targetObject, required mapping ){
+	private Injector function processMixins( required targetObject, required mapping ){
 		// If no length, kick out
 		if( !arguments.mapping.getMixins().len() ){
 			return this;

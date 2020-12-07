@@ -10,9 +10,6 @@
 	<base href="#getSetting( "HTMLBaseURL" )#" />
 	<!---css --->
 	<link href="includes/css/bootstrap.min.css" rel="stylesheet">
-	<!---js --->
-	<script src="#html.elixirPath( "js/jquery.js" )#"></script>
-	<script src="#html.elixirPath( "js/bootstrap.min.js" )#"></script>
 	<style>
 	 /* Utility */
 	.centered { text-align: center !important; }
@@ -58,7 +55,7 @@
 							<i class="glyphicon glyphicon-info-sign"></i> About <b class="caret"></b>
 						</a>
 						<ul id="actions-submenu" class="dropdown-menu">
-							 <li><a href="">#getSetting("codename",1)# (#getsetting("suffix",1)#)</a></li>
+							 <li><a href="">#getColdBoxSetting("codename")# (#getColdBoxSetting("suffix")#)</a></li>
 							 <li><a href="mailto:bugs@coldbox.org?subject=DataBoss Bug Report"><i class="icon-fire"></i> Report a Bug</a></li>
 							 <li><a href="mailto:info@coldbox.org?subject=DataBoss Feedback"><i class="icon-bullhorn"></i> Send Us Feedback</a></li>
 							 <li><a href="http://www.ortussolutions.com/products/coldbox"><i class="icon-home"></i> Professional Support</a></li>
@@ -88,6 +85,10 @@
 			<a href="http://twitter.github.com/bootstrap">Twitter Boostrap</a>
 		</p>
 	</footer>
+
+	<!---js --->
+	<script src="#html.elixirPath( "js/jquery.js" )#"></script>
+	<script src="#html.elixirPath( "js/bootstrap.min.js" )#"></script>
 
 	<script>
 	$(function() {

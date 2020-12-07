@@ -1,0 +1,13 @@
+{
+	"name": "coldbox-bug-reporting",
+	"version": "1.0.0",
+	"description": "ColdBox Bug Reporting",
+	"main": "index.js",
+	"dependencies": {
+	"eva-icons": "^1.1.3"
+	},
+	"devDependencies": {},
+	"scripts": {
+	},
+	"author": "Ortus Solutions, Corp"
+}

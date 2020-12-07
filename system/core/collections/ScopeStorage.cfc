@@ -1,10 +1,10 @@
 ﻿/**
-* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-* www.ortussolutions.com
-* ---
-* A utility Facade to help in storing data in multiple CF Storages
-*/
-component{
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * A utility Facade to help in storing data in multiple CF Storages
+ */
+component {
 
 	// Static list of valid scopes
 	variables.SCOPES = "application|client|cookie|session|server|request";
@@ -22,8 +22,12 @@ component{
 	 * @value The value
 	 * @scope The ColdFusion Scope
 	 */
-	function put( required key, required value, required scope ){
-		var scopePointer = getScope( arguments.scope );
+	function put(
+		required key,
+		required value,
+		required scope
+	){
+		var scopePointer              = getScope( arguments.scope );
 		scopePointer[ arguments.key ] = arguments.value;
 		return this;
 	}
@@ -34,7 +38,11 @@ component{
 	 * @scope The ColdFusion Scope
 	 */
 	boolean function delete( required key, required scope ){
-		return structDelete( getScope( arguments.scope ), arguments.key, true );
+		return structDelete(
+			getScope( arguments.scope ),
+			arguments.key,
+			true
+		);
 	}
 
 	/**
@@ -43,20 +51,24 @@ component{
 	 * @scope The CF Scope
 	 * @defaultValue The default value
 	 */
-	function get( required key, required scope, defaultValue ){
+	function get(
+		required key,
+		required scope,
+		defaultValue
+	){
 		// Do stupid ACF Hack due to choking on `default` argument.
-		if( structKeyExists( arguments, "default" ) ){
+		if ( structKeyExists( arguments, "default" ) ) {
 			arguments.defaultValue = arguments.default;
 		}
 
-		if( exists( arguments.key, arguments.scope ) ){
-			return structfind( getscope( arguments.scope ), arguments.key );
-		} else if ( structKeyExists( arguments, "defaultValue" ) ){
+		if ( exists( arguments.key, arguments.scope ) ) {
+			return structFind( getscope( arguments.scope ), arguments.key );
+		} else if ( structKeyExists( arguments, "defaultValue" ) ) {
 			return arguments.defaultValue;
 		}
 
 		throw(
-			type 	= "ScopeStorage.KeyNotFound",
+			type    = "ScopeStorage.KeyNotFound",
 			message = "The key #arguments.key# does not exist in the #arguments.scope# scope."
 		);
 	}
@@ -77,18 +89,22 @@ component{
 	any function getScope( required scope ){
 		scopeCheck( arguments.scope );
 
-		switch( arguments.scope ){
-			case "session" : {
-				return ( isDefined( "session" ) ? session : {} );
+		switch ( arguments.scope ) {
+			case "session": {
+				return ( getApplicationMetadata().sessionManagement ? session : {} );
 			}
-			case "application"  : {
+			case "application": {
 				return ( isDefined( "application" ) ? application : {} );
 			};
-			case "server"  		: return server;
-			case "client"  		: return client;
-			case "cookie"  		: return cookie;
-			case "request"  	: return request;
- 		}
+			case "server":
+				return server;
+			case "client":
+				return client;
+			case "cookie":
+				return cookie;
+			case "request":
+				return request;
+		}
 	}
 
 	/**
@@ -131,9 +147,9 @@ component{
 	 * @scope The CF Scope
 	 */
 	any function scopeCheck( required scope ){
-		if( NOT reFindNoCase( "^(#variables.SCOPES#)$", arguments.scope ) ){
+		if ( NOT reFindNoCase( "^(#variables.SCOPES#)$", arguments.scope ) ) {
 			throw(
-				type 	= "ScopeStorage.InvalidScope",
+				type    = "ScopeStorage.InvalidScope",
 				message = "Invalid CF Scope, valid scopes are #variables.SCOPES#"
 			);
 		}

@@ -1,79 +1,71 @@
 component {
 
 	// Module Properties
-	this.title 				= "v1";
-	this.author 			= "";
-	this.webURL 			= "";
-	this.description 		= "";
-	this.version			= "1.0.0";
+	this.title              = "v1";
+	this.author             = "";
+	this.webURL             = "";
+	this.description        = "";
+	this.version            = "1.0.0";
 	// If true, looks for views in the parent first, if not found, then in the module. Else vice-versa
-	this.viewParentLookup 	= true;
+	this.viewParentLookup   = true;
 	// If true, looks for layouts in the parent first, if not found, then in module. Else vice-versa
 	this.layoutParentLookup = true;
 	// Module Entry Point -> Will inherit from parent so it will be /api/v1
-	this.entryPoint			= "v1";
-	this.inheritEntryPoint 	= true;
+	this.entryPoint         = "v1";
+	this.inheritEntryPoint  = true;
 
 	// Model Namespace
-	this.modelNamespace		= "v1";
+	this.modelNamespace = "v1";
 	// CF Mapping
-	this.cfmapping			= "v1";
+	this.cfmapping      = "v1";
 	// Auto-map models
-	this.autoMapModels		= true;
+	this.autoMapModels  = true;
 	// Module Dependencies
-	this.dependencies 		= [];
+	this.dependencies   = [];
 
 	function configure(){
-
 		// parent settings
-		parentSettings = {
-
-		};
+		parentSettings = {};
 
 		// module settings - stored in modules.name.settings
-		settings = {
-
-		};
+		settings = {};
 
 		// Layout Settings
-		layoutSettings = {
-			defaultLayout = ""
-		};
+		layoutSettings = { defaultLayout : "" };
 
 		// SES Routes
 		routes = [
 			// Module Entry Point
-			{ pattern="/", handler="home", action="index", name="home" },
+			{
+				pattern : "/",
+				handler : "home",
+				action  : "index",
+				name    : "home"
+			},
 			// Convention Route
-			{ pattern="/:handler/:action?" }
+			{ pattern : "/:handler/:action?" }
 		];
 
 		// Custom Declared Points
-		interceptorSettings = {
-			customInterceptionPoints = ""
-		};
+		interceptorSettings = { customInterceptionPoints : "" };
 
 		// Custom Declared Interceptors
-		interceptors = [
-		];
+		interceptors = [];
 
 		// Binder Mappings
 		// binder.map("Alias").to("#moduleMapping#.model.MyService");
-
 	}
 
 	/**
-	* Fired when the module is registered and activated.
-	*/
+	 * Fired when the module is registered and activated.
+	 */
 	function onLoad(){
-
 	}
 
 	/**
-	* Fired when the module is unregistered and unloaded
-	*/
+	 * Fired when the module is unregistered and unloaded
+	 */
 	function onUnload(){
-
 	}
 
 }

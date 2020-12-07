@@ -1,60 +1,39 @@
-﻿<!-----------------------------------------------------------------------
-********************************************************************************
-Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.coldbox.org | www.luismajano.com | www.ortussolutions.com
-********************************************************************************
+﻿component extends="tests.resources.BaseIntegrationTest"{
 
-Author     :	Luis Majano
-Date        :	9/3/2007
-Description :
-	Some tests just are expecting to execute
------------------------------------------------------------------------>
-<cfcomponent extends="coldbox.system.testing.BaseTestCase" appMapping="/cbtestharness">
-<cfscript>
+	function run( testResults, testBox ){
 
-	function setup(){
-		super.setup();
+		describe( "Loader services", function(){
+			beforeEach(function( currentSpec ){
+				setup();
+				ls = getController().getLoaderService();
+			});
 
-		ls = getController().getLoaderService();
+
+			it( "can register handlers", function(){
+				var context   = "";
+				var dummyFile = getController().getSetting( "HandlersPath" ) & "/dummy.cfc";
+
+				createFile( dummyFile );
+				getController().getHandlerService().registerHandlers();
+
+				try{
+					assertTrue( listFindNoCase( getController().getSetting( "RegisteredHandlers" ), "dummy" ) );
+				} finally{
+					removeFile( dummyFile );
+				}
+			});
+
+		});
 	}
 
-	function testRegisterHandlers(){
-		var context = "";
-		var fs = "/";
-		var dummyFile = getController().getSetting( "HandlersPath" ) & fs & "dummy.cfc";
-
-		createFile( dummyFile );
-		getController().getHandlerService().registerHandlers();
-		AssertTrue( listFindNocase(getController().getSetting( "RegisteredHandlers" ), "dummy" ) );
-		removeFile( dummyFile );
-	}
-
-
-	function testProcessShutdown(){
-		ls.processShutdown();
-	}
-</cfscript>
-
-
-	<cffunction name="createFile" access="private" hint="Create a new empty fileusing java.io.File." returntype="void" output="false">
-		<!--- ************************************************************* --->
-		<cfargument name="filename"	 		type="String"  required="yes" 	 hint="The absolute path of the file to create.">
-		<!--- ************************************************************* --->
-		<cfscript>
-		var fileObj = createObject( "java","java.io.File" ).init(JavaCast( "string",arguments.filename));
+	private function createFile( required filename ){
+		var fileObj = createObject( "java", "java.io.File" ).init( javacast( "string", arguments.filename ) );
 		fileObj.createNewFile();
-		</cfscript>
-	</cffunction>
+	}
 
-	<cffunction name="removeFile" access="private" hint="Remove a file using java.io.File" returntype="boolean" output="false">
-		<!--- ************************************************************* --->
-		<cfargument name="filename"	 		type="string"  required="yes" 	 hint="The absolute path to the file.">
-		<!--- ************************************************************* --->
-		<cfscript>
-		var fileObj = createObject( "java","java.io.File" ).init(JavaCast( "string",arguments.filename));
+	private function removeFile( required filename ){
+		var fileObj = createObject( "java", "java.io.File" ).init( javacast( "string", arguments.filename ) );
 		return fileObj.delete();
-		</cfscript>
-	</cffunction>
+	}
 
-
-</cfcomponent>
+}

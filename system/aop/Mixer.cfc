@@ -93,9 +93,9 @@ component accessors="true"{
 	/**
 	* Executes our AOP mixer after variabless are created and autowired
 	*/
-	function afterInstanceAutowire( required interceptData ){
-		var mapping 	= arguments.interceptData.mapping;
-		var target 		= arguments.interceptData.target;
+	function afterInstanceAutowire( required data ){
+		var mapping 	= arguments.data.mapping;
+		var target 		= arguments.data.target;
 
 		// check if target already mixed, if so just return, nothing else to do or if the  mapping is an aspect
 		if( structKeyExists( target, "$wbAOPMixed" ) OR mapping.isAspect() ){ return; }
@@ -154,7 +154,7 @@ component accessors="true"{
 						var aspectList = thisAspect.aspects;
 						if( isArray( aspectList ) ) {
 							aspectList = aspectList.toList();
-						} 
+						}
 						return aggregator.listAppend( aspectList );
 					}, '' );
 					variables.log.debug( "Aspect class matching dictionary built for mapping: [#mappingName#], aspects: [#matchingAspects#]" );

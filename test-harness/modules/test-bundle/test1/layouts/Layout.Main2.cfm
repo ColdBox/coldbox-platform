@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title><cfoutput>#controller.getSetting("Codename",1)# #controller.getSetting("Version",1)#</cfoutput></title>
+<title><cfoutput>#controller.getColdBoxSetting("Codename")# #controller.getColdBoxSetting("Version")#</cfoutput></title>
 <link href="includes/style.css" rel="stylesheet" type="text/css" />
 </head>
 <body>

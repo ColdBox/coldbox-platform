@@ -3,7 +3,7 @@
 	<img src="includes/images/ColdBoxLogoSquare_125.png" class="pull-left margin10" alt="logo"/>
 	<h1>#prc.welcomeMessage#</h1>
 	<p>
-		 <strong>#getSetting("codename",1)# #getSetting("version",1)# (#getsetting("suffix",1)#)</strong>.
+		 <strong>#getColdBoxSetting("codename")# #getColdBoxSetting("version")# (#getColdBoxSetting("suffix")#)</strong>.
 		Test Harness Application
 		<a class="btn btn-primary" href="index.cfm?fwreinit=1" >
 			<strong>Reinitialize Framework</strong>
@@ -17,7 +17,7 @@
 		<section id="eventHandlers">
 		<div class="page-header">
 			<h2>
-				Registered Event Handlers
+				Registered Event Handlers: #sayHello()# #sayViewHello()#
 			</h2>
 		</div>
 		<p>
@@ -56,9 +56,9 @@
 		</div>
 		<ul>
 			<li><a href="#event.route( "contactus" )#">#event.route( "contactus" )#</a></li>
-			<li><a href="#event.route( "testRoute" )#">#event.route( "testRoute" )#</a></li>
+			<li><a href="#event.buildLink( { name: "testRoute" } )#">#event.buildLink( { name: "testRoute" } )#</a></li>
 			<li><a href="#event.route( "testRouteWithParams", { id=1, name='test' } )#">#event.route( "testRouteWithParams", { id=1, name='test' } )#</a></li>
-			<li><a href="#event.route( "complexParams", { id=1, name='test' } )#">#event.route( "complexParams", { id=1, name='test' } )#</a></li>
+			<li><a href="#event.buildLink( { name: "complexParams", params : { id=1, name='test' } } )#">#event.route( "complexParams", { id=1, name='test' } )#</a></li>
 		</ul>
 		</section>
 

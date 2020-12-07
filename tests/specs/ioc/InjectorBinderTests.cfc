@@ -1,19 +1,20 @@
 /**
-* My BDD Test
-*/
-component extends="testbox.system.BaseSpec"{
-	
-/*********************************** BDD SUITES ***********************************/
+ * My BDD Test
+ */
+component extends="testbox.system.BaseSpec" {
+
+	/*********************************** BDD SUITES ***********************************/
 
 	function run( testResults, testBox ){
 		// all your suites go here.
 		describe( "Injector creation suite", function(){
-
 			story( "I want to create an Injector", function(){
 				given( "an instance of a binder", function(){
 					then( "I should create the injector successfully.", function(){
-						new coldbox.system.ioc.Injector( createObject( "component", "coldbox.system.ioc.config.DefaultBinder" ) );
-					});
+						new coldbox.system.ioc.Injector(
+							createObject( "component", "coldbox.system.ioc.config.DefaultBinder" )
+						);
+					} );
 				} );
 
 				given( "a path to a binder", function(){
@@ -27,10 +28,8 @@ component extends="testbox.system.BaseSpec"{
 						new coldbox.system.ioc.Injector();
 					} );
 				} );
-
 			} );
-
 		} );
 	}
-	
+
 }
