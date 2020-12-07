@@ -1741,14 +1741,17 @@ component serializable="false" accessors="true" {
 		boolean json = false,
 		boolean xml  = false
 	){
-		var content = getHTTPRequestData().content;
+		// Only read the content once
+		if ( !StructKeyExists( variables.privateContext, "_httpContent" ) ) {
+			variables.privateContext._httpContent = getHTTPRequestData().content;
+			if ( arguments.json and isJSON( toString( variables.privateContext._httpContent ) ) ) {
+				variables.privateContext._httpContent = deserializeJSON( toString( variables.privateContext._httpContent ) );
+			} else if ( arguments.xml and len( toString( variables.privateContext._httpContent ) ) and isXML( toString( variables.privateContext._httpContent ) ) ) {
+				variables.privateContext._httpContent = xmlParse( toString( variables.privateContext._httpContent ) );
+			}
+		}
 
-		// ToString() neccessary when body comes in as binary.
-		if ( arguments.json and isJSON( toString( content ) ) ) return deserializeJSON( toString( content ) );
-		if ( arguments.xml and len( toString( content ) ) and isXML( toString( content ) ) )
-			return xmlParse( toString( content ) );
-
-		return content;
+		return variables.privateContext._httpContent;
 	}
 
 	/**
