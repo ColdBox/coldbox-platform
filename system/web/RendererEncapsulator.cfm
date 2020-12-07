@@ -12,12 +12,7 @@
 	variables.renderedHelpers 		= {};
 
 	// Merge variables from renderer
-	variables.append(
-		attributes.rendererVariables.filter( function( key, value ){
-			return !listFindNoCase( "local,attributes,arguments", arguments.key );
-		} ),
-		true
-	);
+	structAppend( variables, attributes.rendererVariables, false );
 
 	// Localize context
 	variables.event = attributes.event;
