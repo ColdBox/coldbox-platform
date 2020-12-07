@@ -337,7 +337,7 @@
 
 								<div id="headers_scope" class="data-table">
 									<label>Headers</label>
-									#oException.displayScope( getHTTPRequestData().headers )#
+									#oException.displayScope( getHTTPRequestData( false ).headers )#
 								</div>
 
 								<div id="session_scope" class="data-table">

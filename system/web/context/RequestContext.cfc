@@ -1758,7 +1758,7 @@ component serializable="false" accessors="true" {
 	 * @defaultValue The default value, if not found
 	 */
 	function getHTTPHeader( required header, defaultValue = "" ){
-		var headers = getHTTPRequestData().headers;
+		var headers = getHTTPRequestData( false ).headers;
 
 		// ADOBE FIX YOUR ISNULL BS
 		if ( headers.keyExists( arguments.header ) ) {
