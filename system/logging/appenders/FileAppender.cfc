@@ -105,7 +105,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 			message = replace( message, chr(13), '  ', "all" );
 
 			// Entry string
-			entry = '"#severityToString( logEvent.getSeverity() )#","#getname()#","#dateformat( timestamp, "MM/DD/YYYY" )#","#timeformat( timestamp, "HH:MM:SS" )#","#loge.getCategory()#","#message#"';
+			entry = '"#severityToString( logEvent.getSeverity() )#","#getname()#","#dateformat( timestamp, "mm/dd/yyyy" )#","#timeformat( timestamp, "HH:mm:ss" )#","#loge.getCategory()#","#message#"';
 		}
 
 		// Queue it up
