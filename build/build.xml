@@ -47,9 +47,6 @@
 		<loadproperties srcFile="build/build.properties"/>
 
 		<!-- Build Conditions -->
-		<condition property="cfengine" else="lucee@5">
-			<isset property="cfengine"/>
-		</condition>
 		<condition property="isTravis" else="false">
 			<isset property="isTravis"/>
 		</condition>

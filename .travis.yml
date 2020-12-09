@@ -51,19 +51,16 @@ before_script:
   - mysql -u root -e 'create database coolblog;'
   # import database
   - mysql -u root < tests/resources/coolblog.sql
-  # add our custom engine to our properties
-  - printf "\ncfengine=$ENGINE" >> build/build.properties
-  - echo "************************ Runtime Properties ********************"
-  - cat build/build.properties
-  - echo "************************ END Runtime Properties ********************"
   # Seed our .env
   - echo "Seeding .env file"
-  - touch $TRAVIS_BUILD_DIR/.env
-  - printf "DB_HOST=127.0.0.1\n" >> $TRAVIS_BUILD_DIR/.env
-  - printf "DB_USER=root\n" >> $TRAVIS_BUILD_DIR/.env
-  - printf "DB_PASSWORD=\n" >> $TRAVIS_BUILD_DIR/.env
-  - printf "DB_BUNDLEVERSION=8.0.19\n" >> $TRAVIS_BUILD_DIR/.env
-  - printf "DB_BUNDLENAME=com.mysql.cj\n" >> $TRAVIS_BUILD_DIR/.env
+  - touch .env
+  - printf "DB_HOST=127.0.0.1\n" >> .env
+  - printf "DB_PORT=3306\n" >> .env
+  - printf "DB_USER=root\n" >> .env
+  - printf "DB_PASSWORD=\n" >> .env
+  - printf "DB_BUNDLEVERSION=8.0.19\n" >> .env
+  - printf "DB_BUNDLENAME=com.mysql.cj\n" >> .env
+  - cat .env
 
 script:
   # install dependencies
