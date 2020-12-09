@@ -68,7 +68,7 @@ A reporting template about exceptions in your ColdBox Apps
 			 </cfif>
 			<tr>
 				<td align="right" class="info"><strong>Timestamp: </strong></td>
-				<td>#dateformat(now(), "MM/DD/YYYY")# #timeformat(now(),"hh:MM:SS TT")#</td>
+				<td>#dateformat(now(), "mm/dd/yyyy")# #timeformat(now(),"hh:mm:ss tt")#</td>
 			</tr>
 			 <tr >
 				<th colspan="2" >Event Details:</th>
@@ -155,7 +155,7 @@ A reporting template about exceptions in your ColdBox Apps
 		<table class="table" align="center">
 			<tr>
 			   <td align="right" class="info">Bug Date:</td>
-			   <td >#dateformat(now(), "MM/DD/YYYY")# #timeformat(now(),"hh:MM:SS TT")#</td>
+			   <td >#dateformat(now(), "mm/dd/yyyy")# #timeformat(now(),"hh:mm:ss tt")#</td>
 			 </tr>
 
 			 <tr>
