@@ -6,7 +6,7 @@
     "slug":"coldbox",
     "packageDirectory":"coldbox",
     "type":"mvc",
-    "keywords":"mvc,hmvc,conventions,coldbox",
+    "keywords":"mvc,hmvc,conventions,coldbox",d
     "homepage":"https://www.coldbox.org",
     "documentation":"https://coldbox.ortusbooks.com/",
     "repository":{
@@ -39,7 +39,10 @@
         ]
     },
     "devDependencies":{
-        "testbox":"^4.1.0"
+		"testbox":"^4.1.0",
+		"commandbox-dotenv":"*",
+		"commandbox-cfconfig":"*",
+		"commandbox-cfformat":"*"
     },
     "installPaths":{
         "testbox":"testbox/"
