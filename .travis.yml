@@ -66,6 +66,12 @@ before_script:
   - printf "DB_BUNDLENAME=com.mysql.cj\n" >> $TRAVIS_BUILD_DIR/.env
 
 script:
+  # install dependencies
+  - box install
+  - cd apidocs && box install
+  - cd $TRAVIS_BUILD_DIR
+  # Startup the server to test
+  - box server start serverConfigFile="server-${cfengine}.json" --debug
   # Execute build via ANT
   - ant -DisPreRelease=${COLDBOX_PRERELEASE} -Dcoldbox.version=$COLDBOX_VERSION -DisTravis=true -Dbuild.branch=$TRAVIS_BRANCH -Dbuild.number=$TRAVIS_BUILD_NUMBER -f build/build.xml $ANT_TARGET
   #- ls -l $TRAVIS_BUILD_DIR
