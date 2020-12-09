@@ -59,10 +59,10 @@ before_script:
   # Seed our .env
   - echo "Seeding .env file"
   - touch $TRAVIS_BUILD_DIR/.env
-  - printf "DB_HOST=localhost\n" >> $TRAVIS_BUILD_DIR/.env
+  - printf "DB_HOST=127.0.0.1\n" >> $TRAVIS_BUILD_DIR/.env
   - printf "DB_USER=root\n" >> $TRAVIS_BUILD_DIR/.env
   - printf "DB_PASSWORD=\n" >> $TRAVIS_BUILD_DIR/.env
-  - printf "DB_BUNDLEVERSION=5.1.40\n" >> $TRAVIS_BUILD_DIR/.env
+  - printf "DB_BUNDLEVERSION=8.0.19\n" >> $TRAVIS_BUILD_DIR/.env
   - printf "DB_BUNDLENAME=com.mysql.cj\n" >> $TRAVIS_BUILD_DIR/.env
 
 script:
