@@ -75,7 +75,7 @@
 				<property file="build/build.number"/>
 			</then>
 		</if>
-s
+
 		<!-- Cleanup + Init -->
 		<delete dir="${dir.build}" />
 		<mkdir dir="${dir.build}" />
