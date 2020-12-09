@@ -21,7 +21,7 @@ branches:
   - development
   - master
 
-dist: xenial
+dist: focal
 services:
   - mysql
 #addons:
