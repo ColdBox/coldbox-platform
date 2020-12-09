@@ -1,6 +1,6 @@
 language: java
 os: "linux"
-group: deprecated-2017Q2
+dist: focal
 
 notifications:
   slack:
@@ -21,7 +21,6 @@ branches:
   - development
   - master
 
-dist: focal
 services:
   - mysql
 #addons:
@@ -57,8 +56,14 @@ before_script:
   - echo "************************ Runtime Properties ********************"
   - cat build/build.properties
   - echo "************************ END Runtime Properties ********************"
-  # Starting server twice due to stupid LUCEE 5 bug.
-  - box server start name=$ENGINE debug=true
+  # Seed our .env
+  - echo "Seeding .env file"
+  - touch $TRAVIS_BUILD_DIR/.env
+  - printf "DB_HOST=localhost\n" >> $TRAVIS_BUILD_DIR/.env
+  - printf "DB_USER=root\n" >> $TRAVIS_BUILD_DIR/.env
+  - printf "DB_PASSWORD=\n" >> $TRAVIS_BUILD_DIR/.env
+  - printf "DB_BUNDLEVERSION=5.1.40\n" >> $TRAVIS_BUILD_DIR/.env
+  - printf "DB_BUNDLENAME=com.mysql.cj\n" >> $TRAVIS_BUILD_DIR/.env
 
 script:
   # Execute build via ANT

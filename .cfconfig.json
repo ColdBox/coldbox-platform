@@ -16,15 +16,16 @@
     "cacheDefaultObject": "default",
     "datasources": {
         "coolblog": {
-            "clientHostname": false,
-            "host": "localhost",
-            "dbdriver": "MySQL",
-            "password": "${DB_PASSWORD}",
-            "dsn": "${DB_CONNECTIONSTRING}",
-            "custom": "",
+			"dbdriver": "MySQL",
+			"dsn":"jdbc:mysql://{host}:{port}/{database}",
+            "custom":"useUnicode=true&characterEncoding=UTF8&serverTimezone=America%2FChicago&useLegacyDatetimeCode=true&autoReconnect=true&useSSL=false",
+            "host":"${DB_HOST:localhost}",
             "username": "${DB_USER:root}",
+            "password": "${DB_PASSWORD}",
             "database": "coolblog",
-            "port": "3306"
+			"port": "${DB_PORT:3306}",
+			"bundleName": "${DB_BUNDLENAME}",
+			"bundleVersion": "${DB_BUNDLEVERSION}"
         }
     },
     "debuggingEnabled": false,
