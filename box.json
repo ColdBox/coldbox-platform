@@ -6,7 +6,7 @@
     "slug":"coldbox",
     "packageDirectory":"coldbox",
     "type":"mvc",
-    "keywords":"mvc,hmvc,conventions,coldbox",d
+    "keywords":"mvc,hmvc,conventions,coldbox",
     "homepage":"https://www.coldbox.org",
     "documentation":"https://coldbox.ortusbooks.com/",
     "repository":{
