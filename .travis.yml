@@ -60,12 +60,14 @@ before_script:
 script:
   # install dependencies
   - box install
-  - cd apidocs && box install
+  #- cd apidocs && box install
   - cd $TRAVIS_BUILD_DIR
   # Startup the server to test
   - box server start serverConfigFile="server-${ENGINE}.json" --debug
+  - box cfconfig show
+  - curl http://localhost:8599/test-harness/index.cfm
   # Execute build via ANT
-  - ant -DisPreRelease=${COLDBOX_PRERELEASE} -Dcoldbox.version=$COLDBOX_VERSION -DisTravis=true -Dbuild.branch=$TRAVIS_BRANCH -Dbuild.number=$TRAVIS_BUILD_NUMBER -f build/build.xml $ANT_TARGET
+  #- ant -DisPreRelease=${COLDBOX_PRERELEASE} -Dcoldbox.version=$COLDBOX_VERSION -DisTravis=true -Dbuild.branch=$TRAVIS_BRANCH -Dbuild.number=$TRAVIS_BUILD_NUMBER -f build/build.xml $ANT_TARGET
   #- ls -l $TRAVIS_BUILD_DIR
 
 after_failure:
