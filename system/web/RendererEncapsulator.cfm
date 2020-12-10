@@ -12,12 +12,12 @@
 	variables.renderedHelpers 		= {};
 
 	// Merge variables from renderer
-	variables.append(
-		attributes.rendererVariables.filter( function( key, value ){
-			return !listFindNoCase( "local,attributes,arguments", arguments.key );
-		} ),
-		true
-	);
+	// Moved to simple for/loop to avoid closure memory issues and slowdowns
+	for( myVar in attributes.rendererVariables ) {
+		if( !listFindNoCase( "local,attributes,arguments", myVar ) ) {
+			variables[ myVar ] = attributes.rendererVariables[ myVar ];
+		}
+	}
 
 	// Localize context
 	variables.event = attributes.event;
