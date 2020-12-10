@@ -23,12 +23,6 @@ branches:
 
 services:
   - mysql
-#addons:
-#  apt:
-#    packages:
-#    - mysql-server-5.6
-#    - mysql-client-core-5.6
-#    - mysql-client-5.6
 
 before_install:
   # CommandBox Keys
@@ -54,13 +48,12 @@ before_script:
   # Seed our .env
   - echo "Seeding .env file"
   - touch .env
-  - printf "DB_HOST=127.0.0.1\n" >> .env
-  - printf "DB_PORT=3306\n" >> .env
   - printf "DB_USER=root\n" >> .env
   - printf "DB_PASSWORD=\n" >> .env
   - printf "DB_BUNDLEVERSION=8.0.19\n" >> .env
   - printf "DB_BUNDLENAME=com.mysql.cj\n" >> .env
-  - cat .env
+  # This is the key for MySQL 8 to work
+  - printf "DB_CLASS=com.mysql.cj.jdbc.Driver\n" >> .env
 
 script:
   # install dependencies
