@@ -48,6 +48,7 @@ before_script:
   # Seed our .env
   - echo "Seeding .env file"
   - touch .env
+  - printf "DB_HOST=127.0.0.1\n" >> .env
   - printf "DB_USER=root\n" >> .env
   - printf "DB_PASSWORD=\n" >> .env
   - printf "DB_BUNDLEVERSION=8.0.19\n" >> .env

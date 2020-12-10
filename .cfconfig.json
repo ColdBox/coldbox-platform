@@ -35,7 +35,7 @@
 			"blob":"false",
 			"clob":"false",
 			"connectionTimeout":"1",
-            "class":"{DB_CLASS:com.mysql.jdbc.Driver}",
+            "class":"{DB_CLASS}",
 			"dbdriver": "MySQL",
 			"dsn":"jdbc:mysql://{host}:{port}/{database}",
             "custom":"useUnicode=true&characterEncoding=UTF8&serverTimezone=America%2FChicago&useLegacyDatetimeCode=true&autoReconnect=true&useSSL=false",
