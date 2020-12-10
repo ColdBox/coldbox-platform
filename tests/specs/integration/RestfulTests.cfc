@@ -10,8 +10,7 @@ component
 			} );
 
 			it( "can handle allowed HTTP methods in action annotations", function(){
-				prepareMock( getRequestContext() ).$( "getHTTPMethod", "POST" );
-				var event = execute( event = "main.actionAllowedMethod", renderResults = true );
+				var event = this.POST( "main.actionAllowedMethod" );
 				expect( event.getRenderedContent() ).toBe( "invalid http: main.actionAllowedMethod" );
 			} );
 

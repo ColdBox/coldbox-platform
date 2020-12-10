@@ -233,10 +233,6 @@ component accessors="true" {
 		// Incorporate their config.cfc settings and override
 		structAppend( configStruct, coldboxSettings, true );
 
-		// Common Structures for layouts and views
-		configStruct[ "layoutsRefMap" ] = {};
-		configStruct[ "viewsRefMap" ]   = {};
-
 		/* ::::::::::::::::::::::::::::::::::::::::: COLDBOX SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
 
 		// Check the defaultEvent, if no length, default it
