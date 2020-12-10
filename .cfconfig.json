@@ -23,7 +23,7 @@
     "cacheDefaultObject": "default",
     "datasources": {
         "coolblog": {
-			"allowAlter":true,lass
+			"allowAlter":true,
             "allowCreate":true,
             "allowDelete":true,
             "allowDrop":true,
