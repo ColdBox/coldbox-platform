@@ -59,7 +59,7 @@ WireBox injector is created
 			buffer : {
 				path              : "java.lang.StringBuilder",
 				type              : this.TYPES.JAVA,
-				DIConstructorArgs : [
+				DIConstructorArguments : [
 					{
 						name     : "buffer",
 						value    : "16",

@@ -11,7 +11,6 @@
 		assertEquals( "UnitTest", mapping.getName() );
 	}
 
-
 	function testProcessMemento(){
 		var data = {
 			alias             : [ "funky" ],
@@ -21,7 +20,7 @@
 			threadSafe        : true,
 			scope             : "singleton",
 			cache             : { key : "data", timeout : "30" },
-			DIConstructorArgs : [
+			DIConstructorArguments : [
 				{ name : "val", value : "0" },
 				{ name : "transfer", ref : "transfer" }
 			],
@@ -41,7 +40,7 @@
 					argName : "MyService"
 				}
 			],
-			DIMethodArgs : [
+			DIMethodArguments : [
 				{ name : "Joke", value : "You!" },
 				{ name : "service", ref : "MyService" }
 			]
@@ -54,7 +53,7 @@
 		assertEquals( data.type, mapping.getTYpe() );
 		assertEquals( data.path, mapping.getPath() );
 		assertEquals( "init", mapping.getConstructor() );
-		assertEquals( "", mapping.isAutowire() );
+		assertEquals( "", mapping.getAutoWire() );
 		assertEquals( true, mapping.isAutoInit() );
 		assertEquals( true, mapping.isEagerInit() );
 		assertEquals( data.scope, mapping.getScope() );
@@ -98,7 +97,7 @@
 			eagerInit         : true,
 			scope             : "singleton",
 			cache             : { key : "data", timeout : "30" },
-			DIConstructorArgs : [
+			DIConstructorArguments : [
 				{ name : "val", value : "0" },
 				{ name : "transfer", ref : "transfer" }
 			],
@@ -111,7 +110,7 @@
 					argName : "MyService"
 				}
 			],
-			DIMethodArgs : [
+			DIMethodArguments : [
 				{ name : "Joke", value : "You!" },
 				{ name : "service", ref : "MyService" }
 			]
@@ -132,7 +131,7 @@
 		// process memento should have copied over all other data except the ones above
 		assertEquals( data.type, mapping.getTYpe() );
 		assertEquals( "init", mapping.getConstructor() );
-		assertEquals( "", mapping.isAutowire() );
+		assertEquals( "", mapping.getAutoWire() );
 		assertEquals( true, mapping.isAutoInit() );
 		assertEquals( true, mapping.isEagerInit() );
 		assertEquals( data.scope, mapping.getScope() );
