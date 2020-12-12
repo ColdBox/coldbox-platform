@@ -58,7 +58,7 @@ before_script:
 script:
   # install dependencies
   - box install
-  #- cd apidocs && box install
+  - cd apidocs && box install
   - cd $TRAVIS_BUILD_DIR
   # Startup the server to test
   - box server start serverConfigFile="server-${ENGINE}.json" --debug
