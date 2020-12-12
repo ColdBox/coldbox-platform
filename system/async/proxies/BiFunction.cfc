@@ -23,8 +23,8 @@ component extends="BaseProxy" {
 		try {
 			lock name="#getConcurrentEngineLockName()#" type="exclusive" timeout="60" {
 				return variables.target(
-					arguments.t ?: javaCast( "null", "" ),
-					arguments.u ?: javaCast( "null", "" )
+					isNull( arguments.t ) ? javaCast( "null", "" ) : arguments.t,
+					isNull( arguments.u ) ? javaCast( "null", "" ) : arguments.u
 				);
 			}
 		} finally {

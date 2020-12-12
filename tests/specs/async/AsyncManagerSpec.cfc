@@ -173,6 +173,7 @@ component extends="BaseAsyncSpec" {
 
 				debug( "calculating BMI" );
 				var combinedFuture = weightFuture.thenCombine( heightFuture, function( weight, height ){
+					writeDump( var = arguments, output="console" );
 					var heightInMeters = arguments.height / 100;
 					return arguments.weight / ( heightInMeters * heightInMeters );
 				} );
