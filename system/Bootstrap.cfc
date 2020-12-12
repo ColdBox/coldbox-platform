@@ -25,13 +25,13 @@ component serializable="false" accessors="true"{
 	property name="COLDBOX_FAIL_FAST";
 
 	// param the properties with defaults
-	param name="COLDBOX_CONFIG_FILE"     	default="";
-	param name="COLDBOX_APP_ROOT_PATH" 	default="#getDirectoryFromPath( getbaseTemplatePath() )#";
-	param name="COLDBOX_APP_KEY"             		default="cbController";
-	param name="COLDBOX_APP_MAPPING"     	default="";
-	param name="appHash"                            				default="#hash( getBaseTemplatePath() )#";
-	param name="lockTimeout"			default="30" type="numeric";
-	param name="COLDBOX_FAIL_FAST"		default="true";
+	param name="COLDBOX_CONFIG_FILE"   default="";
+	param name="COLDBOX_APP_ROOT_PATH" default="#getDirectoryFromPath( getbaseTemplatePath() )#";
+	param name="COLDBOX_APP_KEY"       default="cbController";
+	param name="COLDBOX_APP_MAPPING"   default="";
+	param name="appHash"               default="#hash( getBaseTemplatePath() )#";
+	param name="lockTimeout"           default="30" type="numeric";
+	param name="COLDBOX_FAIL_FAST"     default="true";
 
 	/**
 	 * Constructor, called by your Application CFC

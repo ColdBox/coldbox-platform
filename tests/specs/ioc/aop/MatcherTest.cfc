@@ -9,7 +9,11 @@
 		var mockMapping = createMock( "coldbox.system.ioc.config.Mapping" )
 			.init( "UnitTest" )
 			.setPath( getMetadata( this ).name )
-			.$( "getObjectMetadata", getMetadata( this ) );
+			.$(
+				method             : "getObjectMetadata",
+				returns            : getMetadata( this ),
+				preserveReturnType : false
+			);
 
 		// any
 		matcher.any();
@@ -44,7 +48,11 @@
 		var mockMapping = createMock( "coldbox.system.ioc.config.Mapping" )
 			.init( "UnitTest" )
 			.setPath( getMetadata( this ).name )
-			.$( "getObjectMetadata", getMetadata( this ) );
+			.$(
+				method             : "getObjectMetadata",
+				returns            : getMetadata( this ),
+				preserveReturnType : false
+			);
 
 		// New AND Matcher
 		andM = createMock( "coldbox.system.aop.Matcher" ).init();
@@ -96,7 +104,11 @@
 		var mockMapping = createMock( "coldbox.system.ioc.config.Mapping" )
 			.init( "UnitTest" )
 			.setPath( getMetadata( this ).name )
-			.$( "getObjectMetadata", getMetadata( this ) );
+			.$(
+				method             : "getObjectMetadata",
+				returns            : getMetadata( this ),
+				preserveReturnType : false
+			);
 		var fncmd = getMetadata( variables.testMatchMethod );
 
 		// any

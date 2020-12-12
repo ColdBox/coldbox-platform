@@ -12,31 +12,31 @@ component accessors="true"{
 	 */
 
 	property name="name";
-	property name="alias";
+	property name="alias" type="array";
 	property name="type";
 	property name="value";
 	property name="path";
 	property name="method";
 	property name="constructor";
 	property name="autoWire";
-	property name="autoInit";
+	property name="autoInit" type="boolean";
 	property name="eagerInit";
 	property name="scope";
 	property name="dsl";
-	property name="cache";
+	property name="cache" type="struct";
 	property name="DIConstructorArguments";
-	property name="DIProperties";
-	property name="DISetters";
-	property name="DIMethodArguments";
-	property name="onDIComplete";
-	property name="discovered";
-	property name="objectMetadata";
-	property name="providerMethods";
-	property name="aspect";
-	property name="aspectAutoBinding";
+	property name="DIProperties" type="array";
+	property name="DISetters" type="array";
+	property name="DIMethodArguments" type="array";
+	property name="onDIComplete" type="array";
+	property name="discovered" type="boolean";
+	property name="objectMetadata" type="struct";
+	property name="providerMethods" type="array";
+	property name="aspect" type="boolean";
+	property name="aspectAutoBinding" type="boolean";
 	property name="virtualInheritance";
-	property name="extraAttributes";
-	property name="mixins";
+	property name="extraAttributes" type="struct";
+	property name="mixins" type="array";
 	property name="threadSafe";
 	property name="influenceClosure";
 
@@ -121,7 +121,7 @@ component accessors="true"{
 	}
 
 	/**
-	 * Process a mapping memento
+	 * Process a mapping memento. Basically takes in a struct of data to process the mapping's data with.
 	 *
 	 * @memento The data memento to process
 	 * @excludes List of memento keys to not process
@@ -465,7 +465,6 @@ component accessors="true"{
 		metadata
 	){
 		var md              = variables.objectMetadata;
-		var mappings        = arguments.binder.getMappings();
 		var eventManager    = arguments.injector.getEventManager();
 		var cacheProperties = {};
 
@@ -602,6 +601,7 @@ component accessors="true"{
 				var thisAliases = listToArray( md.alias );
 				variables.alias.addAll( thisAliases );
 				// register alias references on binder
+				var mappings = arguments.binder.getMappings();
 				for ( var x = 1; x lte arrayLen( thisAliases ); x++ ) {
 					mappings[ thisAliases[ x ] ] = this;
 				}
@@ -836,140 +836,79 @@ component accessors="true"{
 	 * @return Mapping
 	 */
 	private Mapping function processDIMetadata( required binder, required metadata, dependencies={} ){
-		var x      = 1;
-		var y      = 1;
-		var md     = arguments.metadata;
-		var fncLen = 0;
-		var params = "";
+		// Shortcut
+		var md = arguments.metadata;
 
-		// Look For properties for annotation injections
-		if ( structKeyExists( md, "properties" ) and arrayLen( md.properties ) GT 0 ) {
-			// Loop over each property and identify injectable properties
-			for ( x = 1; x lte arrayLen( md.properties ); x = x + 1 ) {
-				// Check if property not discovered or if inject annotation is found
-				if ( structKeyExists( md.properties[ x ], "inject" ) ) {
-					// prepare default params, we do this so we do not alter the md as it is cached by cf
-					params = {
-						scope    : "variables",
-						inject   : "model",
-						name     : md.properties[ x ].name,
-						required : true,
-						type     : "any"
-					};
-					// default property type
-					if ( structKeyExists( md.properties[ x ], "type" ) ) {
-						params.type = md.properties[ x ].type;
-					}
-					// default injection scope, if not found in object
-					if ( structKeyExists( md.properties[ x ], "scope" ) ) {
-						params.scope = md.properties[ x ].scope;
-					}
-					// Get injection if it exists
-					if ( len( md.properties[ x ].inject ) ) {
-						params.inject = md.properties[ x ].inject;
-					}
-					// Get required
-					if (
-						structKeyExists( md.properties[ x ], "required" ) and isBoolean(
-							md.properties[ x ].required
-						)
-					) {
-						params.required = md.properties[ x ].required;
-					}
-					// Add to property to mappings
-					addDIProperty(
-						name     = params.name,
-						dsl      = params.inject,
-						scope    = params.scope,
-						required = params.required,
-						type     = params.type
-					);
-				}
-			}
-		}
-		// end DI properties
+		// Look For properties for annotation injections and register them with the mapping
+		param md.properties = [];
+		md.properties
+			// Only process injectable properties
+			.filter( function( thisProperty ) {
+				return structKeyExists( thisProperty, "inject" );
+			} )
+			// Process each property
+			.each( function( thisProperty ){
+				addDIProperty(
+					name     : arguments.thisProperty.name,
+					dsl      : ( len( arguments.thisProperty.inject ) ? arguments.thisProperty.inject : "model" ),
+					scope    : ( structKeyExists( arguments.thisProperty, "scope" ) ? arguments.thisProperty.scope : "variables" ),
+					required : ( structKeyExists( arguments.thisProperty, "required" ) ? arguments.thisProperty.required : true ),
+					type     : ( structKeyExists( arguments.thisProperty, "type" ) ? arguments.thisProperty.type : "any" )
+				);
+			} );
 
-		// Method DI discovery
-		if ( structKeyExists( md, "functions" ) ) {
-			fncLen = arrayLen( md.functions );
-			for ( x = 1; x lte fncLen; x++ ) {
-				// Verify Processing or do we continue to next iteration for processing
-				// This is to avoid overriding by parent trees in inheritance chains
-				if ( structKeyExists( arguments.dependencies, md.functions[ x ].name ) ) {
-					continue;
-				}
-
+		// Look For functions for setter injections and more and register them with the mapping
+		param md.functions = [];
+		md.functions
+			// Verify Processing or do we continue to next iteration for processing
+			// This is to avoid overriding by parent trees in inheritance chains
+			.filter( function( thisFunction ) {
+				return !structKeyExists( dependencies, thisFunction.name );
+			} )
+			.each( function( thisFunction ){
 				// Constructor Processing if found
-				if ( md.functions[ x ].name eq variables.constructor ) {
-					// Loop Over Arguments to process them for dependencies
-					for ( y = 1; y lte arrayLen( md.functions[ x ].parameters ); y++ ) {
-						// prepare params as we do not alter md as cf caches it
-						params = {
-							required : false,
-							inject   : "model",
-							name     : md.functions[ x ].parameters[ y ].name,
-							type     : "any"
-						};
-						// check type annotation
-						if ( structKeyExists( md.functions[ x ].parameters[ y ], "type" ) ) {
-							params.type = md.functions[ x ].parameters[ y ].type;
-						}
-						// Check required annotation
-						if ( structKeyExists( md.functions[ x ].parameters[ y ], "required" ) ) {
-							params.required = md.functions[ x ].parameters[ y ].required;
-						}
+				if ( thisFunction.name eq variables.constructor ) {
+					// Process parameters for constructor injection
+					for( var thisParam in thisFunction.parameters ){
 						// Check injection annotation, if not found then no injection
-						if ( structKeyExists( md.functions[ x ].parameters[ y ], "inject" ) ) {
-							// Check if inject has value, else default it to 'model' or 'id' namespace
-							if ( len( md.functions[ x ].parameters[ y ].inject ) ) {
-								params.inject = md.functions[ x ].parameters[ y ].inject;
-							}
-
+						if ( structKeyExists( thisParam, "inject" ) ) {
 							// ADD Constructor argument
 							addDIConstructorArgument(
-								name     = params.name,
-								dsl      = params.inject,
-								required = params.required,
-								type     = params.type
+								name     = thisParam.name,
+								dsl      = ( len( thisParam.inject ) ? thisParam.inject : "model" ),
+								required = ( structKeyExists( thisParam, "required" ) ? thisParam.required : false ),
+								type     = ( structKeyExists( thisParam, "type" ) ? thisParam.type : "any" )
 							);
 						}
+
 					}
 					// add constructor to found list, so it is processed only once in recursions
-					arguments.dependencies[ md.functions[ x ].name ] = "constructor";
+					dependencies[ thisFunction.name ] = "constructor";
 				}
 
 				// Setter discovery, MUST be inject annotation marked to be processed.
-				if ( left( md.functions[ x ].name, 3 ) eq "set" AND structKeyExists( md.functions[ x ], "inject" ) ) {
-					// setup setter params in order to avoid touching the md struct as cf caches it
-					params = {
-						inject : "model",
-						name   : right( md.functions[ x ].name, len( md.functions[ x ].name ) - 3 )
-					};
-
-					// Check DSL marker if it has a value else use default of Model
-					if ( len( md.functions[ x ].inject ) ) {
-						params.inject = md.functions[ x ].inject;
-					}
+				if ( left( thisFunction.name, 3 ) eq "set" AND structKeyExists( thisFunction, "inject" ) ) {
 					// Add to setter to mappings and recursion lookup
-					addDISetter( name = params.name, dsl = params.inject );
-					arguments.dependencies[ md.functions[ x ].name ] = "setter";
+					addDISetter(
+						name : right( thisFunction.name, len( thisFunction.name ) - 3 ),
+						dsl  : ( len( thisFunction.inject ) ? thisFunction.inject : "model" )
+					);
+					dependencies[ thisFunction.name ] = "setter";
 				}
 
 				// Provider Methods Discovery
-				if ( structKeyExists( md.functions[ x ], "provider" ) AND len( md.functions[ x ].provider ) ) {
-					addProviderMethod( md.functions[ x ].name, md.functions[ x ].provider );
-					arguments.dependencies[ md.functions[ x ].name ] = "provider";
+				if ( structKeyExists( thisFunction, "provider" ) AND len( thisFunction.provider ) ) {
+					addProviderMethod( thisFunction.name, thisFunction.provider );
+					dependencies[ thisFunction.name ] = "provider";
 				}
 
 				// onDIComplete Method Discovery
-				if ( structKeyExists( md.functions[ x ], "onDIComplete" ) ) {
-					arrayAppend( variables.onDIComplete, md.functions[ x ].name );
-					arguments.dependencies[ md.functions[ x ].name ] = "onDIComplete";
+				if ( structKeyExists( thisFunction, "onDIComplete" ) ) {
+					arrayAppend( variables.onDIComplete, thisFunction.name );
+					dependencies[ thisFunction.name ] = "onDIComplete";
 				}
-			}
-			// end loop of functions
-		}
-		// end if functions found
+
+			} ); // End function processing
 
 		return this;
 	}
