@@ -97,9 +97,9 @@
 		// Tooltips
 		$("[rel=tooltip]").tooltip();
 		// Load Exception via AJAX
-		$.get(
-			"index.cfm/testerror"
-		);
+		//$.get(
+		//	"index.cfm/testerror"
+		//);
 
 	})
 	</script>

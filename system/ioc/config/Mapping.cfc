@@ -874,13 +874,12 @@ component accessors="true"{
 						if ( structKeyExists( thisParam, "inject" ) ) {
 							// ADD Constructor argument
 							addDIConstructorArgument(
-								name     = thisParam.name,
-								dsl      = ( len( thisParam.inject ) ? thisParam.inject : "model" ),
-								required = ( structKeyExists( thisParam, "required" ) ? thisParam.required : false ),
-								type     = ( structKeyExists( thisParam, "type" ) ? thisParam.type : "any" )
+								name     : thisParam.name,
+								dsl      : ( len( thisParam.inject ) ? thisParam.inject : "model" ),
+								required : ( structKeyExists( thisParam, "required" ) ? thisParam.required : false ),
+								type     : ( structKeyExists( thisParam, "type" ) ? thisParam.type : "any" )
 							);
 						}
-
 					}
 					// add constructor to found list, so it is processed only once in recursions
 					dependencies[ thisFunction.name ] = "constructor";
