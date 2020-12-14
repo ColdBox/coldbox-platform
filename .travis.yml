@@ -73,7 +73,7 @@ after_failure:
   - curl http://localhost:8599/tests/runner.cfm?reporter=text
   #- curl http://localhost:8599/tests/tools/IDEDictionaries/builderDictionary.cfm?text=true
   # Spit out our Commandbox log in case we need to debug
-  - box server log name=$ENGINE
+  - box server log serverConfigFile="server-${ENGINE}.json"
   #- cat `box system-log`
   - ls -lr $TRAVIS_BUILD_DIR
 
