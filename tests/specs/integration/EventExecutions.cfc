@@ -5,6 +5,7 @@ component extends="tests.resources.BaseIntegrationTest"{
 	function run(){
 		describe( "Event Execution System", function(){
 			beforeEach( function( currentSpec ){
+				structDelete( request, "_lastInvalidEvent" );
 				// Setup as a new ColdBox request, VERY IMPORTANT. ELSE EVERYTHING LOOKS LIKE THE SAME REQUEST.
 				setup();
 			} );
