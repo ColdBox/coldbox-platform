@@ -2,12 +2,14 @@
 <cfscript>
 	// Detect Session Scope
 	local.sessionScopeExists = getApplicationMetadata().sessionManagement;
+
 	// Detect host
 	try {
 		local.thisInetHost = createObject( "java", "java.net.InetAddress" ).getLocalHost().getHostName();
 	} catch ( any e ) {
 		local.thisInetHost = "localhost";
 	}
+
 	// Build event details
 	local.eventDetails = {
 		"Error Code"    : ( oException.getErrorCode() != 0 ) ? oException.getErrorCode() : "",
@@ -102,9 +104,28 @@
 		};
 	}
 
+	// Get exception information and mark the safe environment token
 	local.e = oException.getExceptionStruct();
 	stackFrames = arrayLen( local.e.TagContext );
 	local.safeEnvironment = "development";
+
+	// Is this an Ajax Request? If so, present the plain exception templates
+	local.requestHeaders = getHTTPRequestData( false ).headers;
+	if(
+		structKeyExists( local.requestHeaders, "X-Requested-With" )
+		&&
+		local.requestHeaders[ "X-Requested-With" ] eq "XMLHttpRequest"
+	){
+		// Development report
+		if( local.eventDetails.environment eq local.safeEnvironment ){
+			include "BugReport.cfm";
+		}
+		// Production Report
+		else {
+			include "BugReport-Public.cfm";
+		}
+		return;
+	}
 </cfscript>
 <cfoutput>
 	<html>
@@ -337,7 +358,7 @@
 
 								<div id="headers_scope" class="data-table">
 									<label>Headers</label>
-									#oException.displayScope( getHTTPRequestData( false ).headers )#
+									#oException.displayScope( local.requestHeaders )#
 								</div>
 
 								<div id="session_scope" class="data-table">
