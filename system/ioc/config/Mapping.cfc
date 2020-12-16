@@ -25,18 +25,18 @@ component accessors="true"{
 	property name="dsl";
 	property name="cache" type="struct";
 	property name="DIConstructorArguments";
-	property name="DIProperties" type="array";
-	property name="DISetters" type="array";
+	property name="DIProperties"      type="array";
+	property name="DISetters"         type="array";
 	property name="DIMethodArguments" type="array";
-	property name="onDIComplete" type="array";
-	property name="discovered" type="boolean";
-	property name="objectMetadata" type="struct";
-	property name="providerMethods" type="array";
-	property name="aspect" type="boolean";
+	property name="onDIComplete"      type="array";
+	property name="discovered"        type="boolean";
+	property name="objectMetadata"    type="struct";
+	property name="providerMethods"   type="array";
+	property name="aspect"            type="boolean";
 	property name="aspectAutoBinding" type="boolean";
 	property name="virtualInheritance";
 	property name="extraAttributes" type="struct";
-	property name="mixins" type="array";
+	property name="mixins"          type="array";
 	property name="threadSafe";
 	property name="influenceClosure";
 
@@ -209,28 +209,28 @@ component accessors="true"{
 	 * Flag describing if you are using autowire or not as Boolean
 	 */
 	boolean function isAutoWire(){
-		return variables.autowire;
+		return ( isBoolean( variables.autowire ) ? variables.autowire : false );
 	}
 
 	/**
 	 * Flag describing if this mapping is an AOP aspect or not
 	 */
 	boolean function isAspect(){
-		return variables.aspect;
+		return ( isBoolean( variables.aspect ) ? variables.aspect : false );
 	}
 
 	/**
 	 * Is this mapping an auto aspect binding
 	 */
 	boolean function isAspectAutoBinding(){
-		return variables.aspectAutoBinding;
+		return ( isBoolean( variables.aspectAutoBinding ) ? variables.aspectAutoBinding : false );
 	}
 
 	/**
 	 * Using auto init or not
 	 */
 	boolean function isAutoInit(){
-		return variables.autoInit;
+		return ( isBoolean( variables.autoInit ) ? variables.autoInit : false );
 	}
 
 	/**
@@ -430,7 +430,7 @@ component accessors="true"{
 	 * Is this mapping eager initialized or not as Boolean
 	 */
 	boolean function isEagerInit(){
-		return variables.eagerInit;
+		return ( isBoolean( variables.eagerInit ) ? variables.eagerInit : false );
 	}
 
 	/**

@@ -256,13 +256,18 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 				variables.eventManager.registerInterceptor( interceptorObject=variables.binder, interceptorName="wirebox-binder" );
 			}
 
-			// Check if binder has onLoad convention
+			// process mappings for metadata and initialization.
+			if( variables.binder.getAutoProcessMappings() ){
+				variables.binder.processMappings();
+			}
+
+			// Process Eager Inits
+			variables.binder.processEagerInits();
+
+			// Check if binder has onLoad convention and execute callback
 			if( structKeyExists( variables.binder, "onLoad" ) ){
 				variables.binder.onLoad( this );
 			}
-
-			// process mappings for metadata and initialization.
-			//variables.binder.processMappings();
 
 			// Announce To Listeners we are online
 			iData.injector = this;

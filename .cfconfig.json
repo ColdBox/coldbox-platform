@@ -1,4 +1,5 @@
 {
+	"adminPassword" : "coldbox",
 	"ajaxDebugWindowEnabled": false,
 	"debuggingEnabled": false,
 	"debuggingReportExecutionTimes": false,

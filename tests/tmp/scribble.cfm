@@ -1,6 +1,10 @@
-﻿<cfscript>
- f = createObject("java","java.lang.ThreadLocal").init();
- f.set("test");
+﻿<cfdirectory
+	action   ="list"
+	directory="#expandPath( "/test-harness/models" )#"
+	filter   ="*.cfc"
+	recurse  ="true"
+	listinfo ="name"
+	name     ="qObjects"
+>
 
- writeDump( f.get() );
-</cfscript>
+<cfdump var="#qObjects#">

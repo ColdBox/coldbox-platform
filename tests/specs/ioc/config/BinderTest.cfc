@@ -282,7 +282,7 @@
 	function testWith(){
 		try {
 			config.with( "Bogus" );
-		} catch ( "Binder.InvalidMappingStateException" e ) {
+		} catch ( "InvalidMappingStateException" e ) {
 		} catch ( Any e ) {
 			fail( e );
 		}

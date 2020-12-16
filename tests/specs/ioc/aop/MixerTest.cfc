@@ -100,14 +100,14 @@ component extends="tests.resources.BaseIntegrationTest" {
 	}
 
 	function testBuildClassMatchDictionary(){
-		aspects = [
+		var aspects = [
 			{
 				classes : createMock( "coldbox.system.aop.Matcher" ).init().$( "matchClass", true ),
 				methods : createMock( "coldbox.system.aop.Matcher" ).init(),
 				aspects : "Transaction"
 			}
 		];
-		mockBinder.$( "getAspectBindings", aspects );
+		mockBinder.setAspectBindings( aspects );
 		mockMapping = createMock( "coldbox.system.ioc.config.Mapping" ).$( "getName", "unitTest" );
 
 		makePublic( mixer, "buildClassMatchDictionary" );
