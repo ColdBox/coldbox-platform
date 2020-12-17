@@ -11,7 +11,7 @@
 	mockdata = new testbox.system.modules.mockdatacfc.models.MockData();
 	count = 1000;
 
-	// Traditional Approach
+	// Traditional Sync Approach of creation an state injection
 	sTime = getTickCount();
 	data = mockData.mock(
 		$num : count,
@@ -40,7 +40,7 @@
 	/*****************************************************/
 	/*****************************************************/
 	/*****************************************************/
-	// Using State Pattern Injection
+	// Using State Pattern Injection and still using sync processing
 
 	sTime = getTickCount();
 	data = mockData.mock(
@@ -78,7 +78,7 @@
 	/*****************************************************/
 	/*****************************************************/
 	/*****************************************************/
-	// Using State Pattern Injection + Futures with default 20 thread bound executor
+	// Using State Pattern Injection + ColdBox Futures with a default 20 thread bound executor
 
 	asyncManager = new coldbox.system.async.AsyncManager();
 
@@ -120,7 +120,7 @@
 	/*****************************************************/
 	/*****************************************************/
 	/*****************************************************/
-	// Using State Pattern Injection + Futures with default 20 thread bound executor
+	// Using State Pattern Injection + ColdBox Futures and a Cached Unbounded Thread Pool Executor
 
 	asyncManager = new coldbox.system.async.AsyncManager();
 	executor = asyncManager.$executors.newCachedThreadPool();
