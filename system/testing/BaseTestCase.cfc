@@ -22,6 +22,15 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * The application key for the ColdBox applicatin this test links to
 	 */
 	property name="coldboxAppKey";
+	/**
+	 * If in integration mode, you can tag for your tests to be automatically autowired with dependencies
+	 * by WireBox
+ 	 */
+	property name="autowire" type="boolean" default="false";
+	/**
+	 * The test case metadata
+	 */
+	property name="metadata" type="struct";
 
 	// Public Switch Properties
 	// TODO: Remove by ColdBox 4.2+ and move to variables scope.
@@ -33,6 +42,8 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	variables.configMapping = "";
 	variables.controller    = "";
 	variables.coldboxAppKey = "cbController";
+	variables.autowire 		= false;
+	variables.metadata 		= {};
 
 	/********************************************* LIFE-CYCLE METHODS *********************************************/
 
@@ -41,26 +52,30 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * @return BaseTestCase
 	 */
 	function metadataInspection(){
-		var md = new coldbox.system.core.util.Util().getInheritedMetadata( this );
+		variables.metadata = new coldbox.system.core.util.Util().getInheritedMetadata( this );
 		// Inspect for appMapping annotation
-		if ( structKeyExists( md, "appMapping" ) ) {
-			variables.appMapping = md.appMapping;
+		if ( structKeyExists( variables.metadata, "appMapping" ) ) {
+			variables.appMapping = variables.metadata.appMapping;
 		}
 		// Configuration File mapping
-		if ( structKeyExists( md, "configMapping" ) ) {
-			variables.configMapping = md.configMapping;
+		if ( structKeyExists( variables.metadata, "configMapping" ) ) {
+			variables.configMapping = variables.metadata.configMapping;
 		}
 		// ColdBox App Key
-		if ( structKeyExists( md, "coldboxAppKey" ) ) {
-			variables.coldboxAppKey = md.coldboxAppKey;
+		if ( structKeyExists( variables.metadata, "coldboxAppKey" ) ) {
+			variables.coldboxAppKey = variables.metadata.coldboxAppKey;
 		}
 		// Load coldBox annotation
-		if ( structKeyExists( md, "loadColdbox" ) ) {
-			this.loadColdbox = md.loadColdbox;
+		if ( structKeyExists( variables.metadata, "loadColdbox" ) ) {
+			this.loadColdbox = variables.metadata.loadColdbox;
 		}
 		// unLoad coldBox annotation
-		if ( structKeyExists( md, "unLoadColdbox" ) ) {
-			this.unLoadColdbox = md.unLoadColdbox;
+		if ( structKeyExists( variables.metadata, "unLoadColdbox" ) ) {
+			this.unLoadColdbox = variables.metadata.unLoadColdbox;
+		}
+		// autowire
+		if ( structKeyExists( variables.metadata, "autowire" ) ) {
+			this.autowire = variables.metadata.autowire;
 		}
 		return this;
 	}
@@ -114,7 +129,17 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 			variables.controller.getModuleService().loadMappings();
 			// Auto registration of test as interceptor
 			variables.controller.getInterceptorService().registerInterceptor( interceptorObject = this );
+			// Do we need to autowire this test?
+			if( variables.autowire ){
+				variables.controller.getWireBox().autowire(
+					target 		: this,
+					targetId 	: variables.metadata.path
+				);
+			}
 		}
+
+		// Let's add Custom Matchers
+		addMatchers( "coldbox.system.testing.CustomMatchers" );
 	}
 
 	/**
@@ -130,7 +155,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 				variables.controller = application[ getColdBoxAppKey() ];
 			}
 			// remove context + reset headers
-			getController().getRequestService().removeContext();
+			variables.controller.getRequestService().removeContext();
 			getPageContextResponse().reset();
 			request._lastInvalidEvent = "";
 		}
@@ -141,7 +166,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 */
 	function afterTests(){
 		if ( this.unLoadColdbox ) {
-			structDelete( application, getColdboxAppKey() );
+			shutdownColdBox();
 		}
 	}
 
@@ -166,13 +191,9 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	}
 
 	/**
-	 * Reset the persistence of the unit test coldbox app, basically removes the controller from application scope
-	 *
-	 * @orm Reload ORM or not
-	 *
-	 * @return BaseTestCase
+	 * Gracefully shutdown ColdBox
 	 */
-	function reset( boolean orm = false ){
+	function shutdownColdBox(){
 		// Graceful shutdown
 		if ( structKeyExists( application, getColdboxAppKey() ) ) {
 			application[ getColdboxAppKey() ].getLoaderService().processShutdown();
@@ -181,6 +202,19 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 		// Wipe app scopes
 		structDelete( application, getColdboxAppKey() );
 		structDelete( application, "wirebox" );
+	}
+
+	/**
+	 * Reset the persistence of the unit test coldbox app, basically removes the controller from application scope
+	 *
+	 * @orm Reload ORM or not
+	 * @wipeRequest Wipe the request scope
+	 *
+	 * @return BaseTestCase
+	 */
+	function reset( boolean orm = false, boolean wipeRequest = true ){
+		// Shutdown gracefully ColdBox
+		shutdownColdBox();
 
 		// Lucee Cleanups
 		if ( server.keyExists( "lucee" ) ) {
@@ -193,7 +227,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 		}
 
 		// Wipe out request scope.
-		if ( !structIsEmpty( request ) ) {
+		if ( arguments.wipeRequest && !structIsEmpty( request ) ) {
 			lock type="exclusive" scope="request" timeout=10 {
 				if ( !structIsEmpty( request ) ) {
 					structClear( request );
@@ -786,6 +820,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 
 	/**
 	 * Get an interceptor reference
+	 *
 	 * @interceptorName The name of the interceptor to retrieve
 	 *
 	 * @return Interceptor
