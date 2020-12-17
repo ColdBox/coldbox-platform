@@ -20,12 +20,12 @@ component
 			} );
 
 			it( "can do json data renderings", function(){
-				getRequestContext().setValue( "format", thisFormat );
+				getRequestContext().setValue( "format", "json" );
 				var event = execute( event = "rendering.index", renderResults = true );
 				var prc   = event.getPrivateCollection();
 
 				expect( prc.cbox_renderData ).toBeStruct();
-				expect( prc.cbox_renderData.contenttype ).toMatch( thisFormat );
+				expect( prc.cbox_renderData.contenttype ).toMatch( "json" );
 			} );
 
 			it( "can redirect only for html formats with the `formatsRedirect` parameter", function(){
