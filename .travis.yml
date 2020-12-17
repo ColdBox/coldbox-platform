@@ -9,7 +9,7 @@ notifications:
 env:
   global:
     # TARGET RELEASE VERSION: BUMP AS NEEDED
-    - COLDBOX_VERSION=6.2.0
+    - COLDBOX_VERSION=6.3.0
     - COLDBOX_PRERELEASE=false
   matrix:
     - ENGINE=lucee@5 # Build Entire Frameworks
