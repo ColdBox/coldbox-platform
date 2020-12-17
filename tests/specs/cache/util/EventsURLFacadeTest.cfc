@@ -9,12 +9,14 @@ Description :
 Request service Test
 ----------------------------------------------------------------------->
 <cfcomponent extends="coldbox.system.testing.BaseModelTest" output="false">
+
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfparam name="FORM" default="#structNew()#">
 		<cfscript>
 		cm = createEmptyMock( "coldbox.system.cache.providers.MockProvider" );
 		cm.$( "getEventCacheKeyPrefix", "mock" );
-		facade = new coldbox.system.cache.util.EventURLFacade( cm );
+		facade = prepareMock( new coldbox.system.cache.util.EventURLFacade( cm ) )
+			.$( "buildAppLink", "http://localhost/test-harness" );
 		</cfscript>
 	</cffunction>
 
@@ -23,7 +25,9 @@ Request service Test
 		var routedStruct = { name : "luis" };
 
 		/* Mocks */
-		var context = createMock( "coldbox.system.web.context.RequestContext" ).setRoutedStruct( routedStruct ).setContext( { event : "main.index", id : "123" } );
+		var context = createMock( "coldbox.system.web.context.RequestContext" )
+			.setRoutedStruct( routedStruct )
+			.setContext( { event : "main.index", id : "123" } );
 
 		var testHash = facade.getUniqueHash( context );
 
@@ -38,7 +42,7 @@ Request service Test
 		var testargs = { "id" : 1, "name" : "luis" };
 		var target   = {
 			"incomingHash" : hash( testargs.toString() ),
-			"cgihost"      : CGI.SERVER_NAME
+			"cgihost"      : "http://localhost/test-harness"
 		};
 
 		expect( testHash ).toBe( hash( target.toString() ) );

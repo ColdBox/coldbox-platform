@@ -162,6 +162,27 @@ component accessors="true"{
 	}
 
 	/**
+	 * Shutdown the injector gracefully by calling the shutdown events internally.
+	 **/
+	function shutdown(){
+
+		// Check if config has onShutdown convention
+		if( structKeyExists( variables.config, "onShutdown" ) ){
+			variables.config.onShutdown( this );
+		}
+
+		// Shutdown Executors if not in ColdBox Mode
+		if( !isObject( variables.coldbox ) ){
+			variables.asyncManager.shutdownAllExecutors( force = true );
+		}
+
+		// Shutdown appenders
+		variables.appenderRegistry.each( function( key, appender ){
+			arguments.appender.shutdown();
+		} );
+	}
+
+	/**
 	 * Get the root logger object
 	 *
 	 * @return coldbox.system.logging.Logger

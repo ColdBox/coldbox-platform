@@ -105,7 +105,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 			message = replace( message, chr(13), '  ', "all" );
 
 			// Entry string
-			entry = '"#severityToString( logEvent.getSeverity() )#","#getname()#","#dateformat( timestamp, "MM/DD/YYYY" )#","#timeformat( timestamp, "HH:MM:SS" )#","#loge.getCategory()#","#message#"';
+			entry = '"#severityToString( logEvent.getSeverity() )#","#getname()#","#dateformat( timestamp, "mm/dd/yyyy" )#","#timeformat( timestamp, "HH:mm:ss" )#","#loge.getCategory()#","#message#"';
 		}
 
 		// Queue it up
@@ -143,7 +143,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 						// Default Log Directory
 						ensureDefaultLogDirectory();
 						// Create log file
-						fileWrite( variables.logFullPath, '"Severity","Appender","Date","Time","Category","Message"' );
+						fileWrite( variables.logFullPath, '"Severity","Appender","Date","Time","Category","Message"#chr( 13 )##chr( 10 )#' );
 					} catch( Any e ) {
 						$log( "ERROR", "Cannot create appender's: #getName()# log file. File #variables.logFullpath#. #e.message# #e.detail#" );
 					}
@@ -177,9 +177,10 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 	 * @queueContext A struct of data attached to this processing queue thread
 	 */
 	function onLogListenerSleep( required struct queueContext ){
+		var isFlushNeeded =  ( arguments.queueContext.start + arguments.queueContext.flushInterval < getTickCount() ) || arguments.queueContext.force;
 		// flush to disk every start + 1000ms
 		if(
-			arguments.queueContext.start + arguments.queueContext.flushInterval < getTickCount()
+			isFlushNeeded
 			&&
 			!isSimpleValue( arguments.queueContext.oFile )
 		){
@@ -225,6 +226,13 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 			fileClose( arguments.queueContext.oFile );
 			arguments.queueContext.oFile = "";
 		}
+	}
+
+	/**
+	 * Process a shutdown!
+	 */
+	function shutdown(){
+		//runLogListener( force = true );
 	}
 
 	/************************************ PRIVATE ************************************/

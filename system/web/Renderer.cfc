@@ -46,11 +46,12 @@ component
 
 	/**
 	 * Constructor
+	 *
 	 * @controller The ColdBox main controller
 	 * @controller.inject coldbox
 	 */
 	function init( required controller ){
-		// setup controller
+		// Register the Controller
 		variables.controller = arguments.controller;
 		// Register LogBox
 		variables.logBox     = arguments.controller.getLogBox();
@@ -64,14 +65,17 @@ component
 		variables.wireBox    = arguments.controller.getWireBox();
 
 		// Set Conventions, Settings and Properties
-		variables.layoutsConvention       = variables.controller.getColdBoxSetting( "layoutsConvention" );
-		variables.viewsConvention         = variables.controller.getColdBoxSetting( "viewsConvention" );
-		variables.appMapping              = variables.controller.getSetting( "AppMapping" );
-		variables.viewsExternalLocation   = variables.controller.getSetting( "ViewsExternalLocation" );
-		variables.layoutsExternalLocation = variables.controller.getSetting( "LayoutsExternalLocation" );
-		variables.modulesConfig           = variables.controller.getSetting( "modules" );
-		variables.viewsHelper             = variables.controller.getSetting( "viewsHelper" );
-		variables.viewCaching             = variables.controller.getSetting( "viewCaching" );
+		variables.layoutsConvention       	= variables.controller.getColdBoxSetting( "layoutsConvention" );
+		variables.viewsConvention         	= variables.controller.getColdBoxSetting( "viewsConvention" );
+		variables.appMapping              	= variables.controller.getSetting( "AppMapping" );
+		variables.viewsExternalLocation   	= variables.controller.getSetting( "ViewsExternalLocation" );
+		variables.layoutsExternalLocation 	= variables.controller.getSetting( "LayoutsExternalLocation" );
+		variables.modulesConfig           	= variables.controller.getSetting( "modules" );
+		variables.viewsHelper             	= variables.controller.getSetting( "viewsHelper" );
+		variables.viewCaching             	= variables.controller.getSetting( "viewCaching" );
+		// Layouts + Views Reference Maps
+		variables.layoutsRefMap 			= {};
+		variables.viewsRefMap 				= {};
 
 		// Verify View Helper Template extension + location
 		if ( len( variables.viewsHelper ) ) {
@@ -619,10 +623,12 @@ component
 
 			// Check cached paths first
 			if (
-				structKeyExists( controller.getSetting( "layoutsRefMap" ), cbox_layoutLocationKey ) AND variables.isDiscoveryCaching
+				structKeyExists( variables.layoutsRefMap, cbox_layoutLocationKey )
+				AND
+				variables.isDiscoveryCaching
 			) {
 				lock name="#cbox_layoutLocationKey#.#lockName#" type="readonly" timeout="15" throwontimeout="true" {
-					cbox_layoutLocation = structFind( controller.getSetting( "layoutsRefMap" ), cbox_layoutLocationKey );
+					cbox_layoutLocation = structFind( variables.layoutsRefMap, cbox_layoutLocationKey );
 				}
 			} else {
 				lock name="#cbox_layoutLocationKey#.#lockname#" type="exclusive" timeout="15" throwontimeout="true" {
@@ -632,7 +638,7 @@ component
 						explicitModule = cbox_explicitModule
 					);
 					structInsert(
-						controller.getSetting( "layoutsRefMap" ),
+						variables.layoutsRefMap,
 						cbox_layoutLocationKey,
 						cbox_layoutLocation,
 						true
@@ -849,12 +855,11 @@ component
 		var locationKey = arguments.view & arguments.module & arguments.explicitModule;
 		var locationUDF = variables.locateView;
 		var refMap      = { viewPath : "", viewHelperPath : [] };
-		var viewsRefMap = controller.getSetting( "viewsRefMap" );
 
 		// Check cached paths first --->
 		lock name="#locationKey#.#lockName#" type="readonly" timeout="15" throwontimeout="true" {
-			if ( structKeyExists( viewsRefMap, locationKey ) AND variables.isDiscoveryCaching ) {
-				return structFind( viewsRefMap, locationKey );
+			if ( structKeyExists( variables.viewsRefMap, locationKey ) AND variables.isDiscoveryCaching ) {
+				return structFind( variables.viewsRefMap, locationKey );
 			}
 		}
 
@@ -895,10 +900,10 @@ component
 		}
 
 		// Lock and create view entry
-		if ( NOT structKeyExists( viewsRefMap, locationKey ) ) {
+		if ( NOT structKeyExists( variables.viewsRefMap, locationKey ) ) {
 			lock name="#locationKey#.#lockName#" type="exclusive" timeout="15" throwontimeout="true" {
 				structInsert(
-					viewsRefMap,
+					variables.viewsRefMap,
 					locationKey,
 					refMap,
 					true

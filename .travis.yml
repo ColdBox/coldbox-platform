@@ -1,6 +1,6 @@
 language: java
 os: "linux"
-group: deprecated-2017Q2
+dist: focal
 
 notifications:
   slack:
@@ -9,7 +9,7 @@ notifications:
 env:
   global:
     # TARGET RELEASE VERSION: BUMP AS NEEDED
-    - COLDBOX_VERSION=6.1.0
+    - COLDBOX_VERSION=6.2.0
     - COLDBOX_PRERELEASE=false
   matrix:
     - ENGINE=lucee@5 # Build Entire Frameworks
@@ -21,15 +21,8 @@ branches:
   - development
   - master
 
-dist: xenial
 services:
   - mysql
-#addons:
-#  apt:
-#    packages:
-#    - mysql-server-5.6
-#    - mysql-client-core-5.6
-#    - mysql-client-5.6
 
 before_install:
   # CommandBox Keys
@@ -52,27 +45,36 @@ before_script:
   - mysql -u root -e 'create database coolblog;'
   # import database
   - mysql -u root < tests/resources/coolblog.sql
-  # add our custom engine to our properties
-  - printf "\ncfengine=$ENGINE" >> build/build.properties
-  - echo "************************ Runtime Properties ********************"
-  - cat build/build.properties
-  - echo "************************ END Runtime Properties ********************"
-  # Starting server twice due to stupid LUCEE 5 bug.
-  - box server start name=$ENGINE debug=true
+  # Seed our .env
+  - echo "Seeding .env file"
+  - touch .env
+  - printf "DB_USER=travis\n" >> .env
+  - printf "DB_PASSWORD=\n" >> .env
+  - printf "DB_BUNDLEVERSION=8.0.19\n" >> .env
+  - printf "DB_BUNDLENAME=com.mysql.cj\n" >> .env
+  # This is the key for MySQL 8 to work
+  - printf "DB_CLASS=com.mysql.cj.jdbc.Driver\n" >> .env
 
 script:
+  # install dependencies
+  - box install
+  - cd apidocs && box install
+  - cd $TRAVIS_BUILD_DIR
+  # Startup the server to test
+  - box server start serverConfigFile="server-${ENGINE}.json" --debug
   # Execute build via ANT
   - ant -DisPreRelease=${COLDBOX_PRERELEASE} -Dcoldbox.version=$COLDBOX_VERSION -DisTravis=true -Dbuild.branch=$TRAVIS_BRANCH -Dbuild.number=$TRAVIS_BUILD_NUMBER -f build/build.xml $ANT_TARGET
   #- ls -l $TRAVIS_BUILD_DIR
 
 after_failure:
   - cd $TRAVIS_BUILD_DIR
+  - box cfconfig show
   # Get response from test server to see what went wrong
   - curl http://localhost:8599/tests/runner.cfm?reporter=text
-  - curl http://localhost:8599/tests/tools/IDEDictionaries/builderDictionary.cfm?text=true
+  #- curl http://localhost:8599/tests/tools/IDEDictionaries/builderDictionary.cfm?text=true
   # Spit out our Commandbox log in case we need to debug
-  - box server log name=$ENGINE
-  - cat `box system-log`
+  - box server log serverConfigFile="server-${ENGINE}.json"
+  #- cat `box system-log`
   - ls -lr $TRAVIS_BUILD_DIR
 
 deploy:

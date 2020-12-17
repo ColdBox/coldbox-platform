@@ -96,6 +96,11 @@
 		$('.dropdown-toggle').dropdown();
 		// Tooltips
 		$("[rel=tooltip]").tooltip();
+		// Load Exception via AJAX
+		//$.get(
+		//	"index.cfm/testerror"
+		//);
+
 	})
 	</script>
 </body>

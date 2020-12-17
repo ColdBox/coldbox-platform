@@ -29,16 +29,35 @@ function toggleActiveClasses( id ) {
 }
 
 function changeCodePanel( id ) {
+	// activate the stackframe
 	toggleActiveClasses( id );
-    var code = document.getElementById( id + "-code" );
-	var highlightLine = code.getAttribute( "data-highlight-line" );
+	// get access to pre tag so we can populate and highlight it
+	var code = document.getElementById( id + "-code" );
+	// get access to pre > script tag so we can populate it with template code when needed
+	var codeScript = document.getElementById( id + "-script" );
+	// Get the template id for inejcting the source
+	var templateSource = document.getElementById( "stackframe-" + code.getAttribute( "data-template-id" ) );
 
+	// Only assign sources if codeContainer exists, else ignore.
 	if( codeContainer == null ){
 		return;
 	}
 
+	// Activate highlighting only if template not rendered already
+	if( code.getAttribute( "data-template-rendered" ) == "false" ){
+		// Inject template source into highlighter source
+		codeScript.innerHTML = templateSource.innerHTML;
+		codeScript.setAttribute( "type", "syntaxhighlighter" );
+		// Activate it
+		SyntaxHighlighter.highlight( {}, id + "-script" );
+		// Mark as rendered
+		code.setAttribute( "data-template-rendered", "true" );
+	}
+
+	// Inject the source to the code container for visualizations
 	codeContainer.innerHTML = code.innerHTML;
-    scrollToLine( highlightLine );
+	// Scroll to the highlighted line
+    scrollToLine( code.getAttribute( "data-highlight-line" ) );
 }
 
 function reinitframework( usingPassword ){
@@ -103,6 +122,8 @@ Array.from( document.querySelectorAll( ".stacktrace" ) )
     } );
 
 document.addEventListener( "DOMContentLoaded", function() {
-    var initialStackTrace = document.querySelector( ".stacktrace__list .stacktrace" );
-    setTimeout(function(){ changeCodePanel( initialStackTrace.id ); }, 500);
+	var initialStackTrace = document.querySelector( ".stacktrace__list .stacktrace" );
+    setTimeout( function(){
+		changeCodePanel( initialStackTrace.id );
+	}, 500 );
 } );

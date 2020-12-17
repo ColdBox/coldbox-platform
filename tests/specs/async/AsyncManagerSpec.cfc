@@ -6,6 +6,8 @@ component extends="BaseAsyncSpec" {
 	/*********************************** BDD SUITES ***********************************/
 
 	function run( testResults, testBox ){
+		variables.out = createObject( "java", "java.lang.System" ).out;
+
 		// all your suites go here.
 		describe( "ColdBox Async Programming", function(){
 			beforeEach( function( currentSpec ){
@@ -19,7 +21,7 @@ component extends="BaseAsyncSpec" {
 					.runAsync( function(){
 						debug( "runAsync: " & getThreadName() );
 						var message = "hello from in closure land";
-						createObject( "java", "java.lang.System" ).out.println( message );
+						variables.out.println( message );
 						debug( "Hello debugger" );
 
 						sleep( randRange( 1, 1000 ) );
@@ -171,6 +173,7 @@ component extends="BaseAsyncSpec" {
 
 				debug( "calculating BMI" );
 				var combinedFuture = weightFuture.thenCombine( heightFuture, function( weight, height ){
+					writeDump( var = arguments, output="console" );
 					var heightInMeters = arguments.height / 100;
 					return arguments.weight / ( heightInMeters * heightInMeters );
 				} );

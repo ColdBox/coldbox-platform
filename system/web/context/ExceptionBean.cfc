@@ -348,63 +348,22 @@ component accessors="true" {
 	 * @return The nicer trace
 	 */
 	function processStackTrace( required str ){
-		// Not using encodeForHTML() as it is too destructive and ruins whitespace chars and other stuff
-		arguments.str = htmlEditFormat( arguments.str );
+		// cfformat-ignore-start
 
-		var aMatches = reMatchNoCase( "\(([^\)]+)\)", arguments.str );
-		for ( var aString in aMatches ) {
-			arguments.str = replaceNoCase(
-				arguments.str,
-				aString,
-				"<span class='highlight'>#aString#</span>",
-				"all"
-			);
-		}
-		var aMatches = reMatchNoCase( "\[([^\]]+)\]", arguments.str );
-		for ( var aString in aMatches ) {
-			arguments.str = replaceNoCase(
-				arguments.str,
-				aString,
-				"<span class='highlight'>#aString#</span>",
-				"all"
-			);
-		}
-		var aMatches = reMatchNoCase(
-			"\$([^(\(|\:)]+)(\:|\()",
-			arguments.str
-		);
-		for ( var aString in aMatches ) {
-			arguments.str = replaceNoCase(
-				arguments.str,
-				aString,
-				"<span class='method'>#aString#</span>",
-				"all"
-			);
-		}
-		arguments.str = replace(
-			arguments.str,
-			chr( 13 ) & chr( 10 ),
-			chr( 13 ),
-			"all"
-		);
-		arguments.str = replace(
-			arguments.str,
-			chr( 10 ),
-			chr( 13 ),
-			"all"
-		);
-		arguments.str = replace(
-			arguments.str,
-			chr( 13 ),
-			"<br>",
-			"all"
-		);
-		arguments.str = replaceNoCase(
-			arguments.str,
-			chr( 9 ),
-			repeatString( "&nbsp;", 4 ),
-			"all"
-		);
+		// Not using encodeForHTML() as it is too destructive and ruins whitespace chars and other stuff
+		arguments.str = HTMLEditFormat( arguments.str );
+		// process functions e.g. $funcINDEX.runFunction(
+		arguments.str = reReplaceNoCase( arguments.str, "\$([^(\(|\:)]+)(\:|\()", "<span class='method'>$\1</span>(", "ALL" );
+		// process characters within parentheses e.g. (ServletAuthenticationCallHandler.java:57)
+		arguments.str = reReplaceNoCase( arguments.str, "\(([^\)]+)\)", "<span class='highlight'>(\1)</span>", "ALL" );
+		// process characters in brackets e.g. [hello world]
+		arguments.str = reReplaceNoCase( arguments.str, "\[([^\]]+)\]", "<span class='highlight'>[\1]</span>", "ALL" );
+		arguments.str = replace( arguments.str, chr( 13 ) & chr( 10 ), chr( 13 ) , 'all' );
+		arguments.str = replace( arguments.str, chr( 10 ), chr( 13 ) , 'all' );
+		arguments.str = replace( arguments.str, chr( 13 ), '<br>' , 'all' );
+		arguments.str = replaceNoCase( arguments.str, chr(9), repeatString( "&nbsp;", 4 ), "all" );
+
+		// cfformat-ignore-end
 
 		return arguments.str;
 	}
@@ -419,7 +378,8 @@ component accessors="true" {
 			str = replace(
 				str,
 				arguments.item,
-				"<span class='highlight'>#arguments.item#</span>",
+				"<span class='highlight'>#arguments.item#</span>
+",
 				"all"
 			);
 		} );
@@ -448,7 +408,9 @@ component accessors="true" {
 	 * @return The HTML of the scope data
 	 */
 	function displayScope( required scope ){
-		var list = createObject( "java", "java.lang.StringBuilder" ).init( "<table class="" data-table""><tbody>" );
+		var list = createObject( "java", "java.lang.StringBuilder" ).init( "<table class="" data-table "">
+	<tbody>
+		" );
 		var orderedArr = arguments.scope;
 
 		if ( structKeyExists( arguments.scope, "itemorder" ) ) {
@@ -456,48 +418,78 @@ component accessors="true" {
 		}
 
 		for ( var i in orderedArr ) {
-			list.append( "<tr>" );
+			list.append( "<tr>
+			" );
 
 			// Null Checks
 			if ( !structKeyExists( arguments.scope , i ) || isNull( arguments.scope[ i ] ) ) {
-				arguments.scope[ i ] = "<span style='color: red'><strong>Java Null</strong></span>";
+				arguments.scope[ i ] = "<span style='color: red'>
+				<strong>Java Null</strong>
+			</span>
+			";
 			}
 
 			if ( isDate( arguments.scope[ i ] ) ) {
-				list.append( "<td width=""250"">" & i & "</td>" );
-				list.append( "<td class=""overflow-scroll"">" &
+				list.append( "<td width="" 250 "">" & i & "</td>
+			" );
+				list.append( "<td class="" overflow-scroll "">" &
 					dateFormat( arguments.scope[ i ], "mm/dd/yyyy" ) & " " &
-					timeFormat( arguments.scope[ i ], "HH:mm:ss" ) & "</td>" );
+					timeFormat( arguments.scope[ i ], "HH:mm:ss" ) & "</td>
+			" );
 			} else if ( isSimpleValue( arguments.scope[ i ] ) ) {
-				list.append( "<td width=""250"">" & i & "</td>" );
-				list.append( "<td class=""overflow-scroll"">" & ( len( arguments.scope[ i ] ) ? arguments.scope[ i ] : "<em>---</em>" ) & "</td>" );
+				list.append( "<td width="" 250 "">" & i & "</td>
+			" );
+				list.append( "<td class="" overflow-scroll "">
+				" & ( len( arguments.scope[ i ] ) ? arguments.scope[ i ] : "<em>---</em>
+				" ) & "
+			</td>
+			" );
 			} else if( isObject( arguments.scope[ i ] ) ) {
-				list.append( "<td width=""250"">" & i & "</td>" );
-				list.append( "<td class=""overflow-scroll""> [" & getMetaData( arguments.scope[ i ] ).name & "] Instance</td>" );
+				list.append( "<td width="" 250 "">" & i & "</td>
+			" );
+				list.append( "<td class="" overflow-scroll "">[" & getMetaData( arguments.scope[ i ] ).name & "] Instance</td>
+			" );
 			} else {
 				savecontent variable="local.myContent" {
-					writeDump(
-						var    = arguments.scope[ i ],
-						format = "html",
-						top    = 2,
-						expand = false
-					)
+					try{
+						writeDump(
+							var    = arguments.scope[ i ],
+							format = "html",
+							top    = 2,
+							expand = false
+						)
+					} catch( any e ){
+						writeDump(
+							var    = arguments.scope[ i ].toString(),
+							format = "html",
+							top    = 2,
+							expand = false
+						)
+					}
 				}
-				list.append( "<td width=""250"">" & i & "</td>" );
-				list.append( "<td class=""overflow-scroll"">" & local.myContent & "</td>" );
+				list.append( "<td width="" 250 "">" & i & "</td>
+			" );
+				list.append( "<td class="" overflow-scroll "">" & local.myContent & "</td>
+			" );
 			}
-			list.append( "</tr>" );
+			list.append( "
+		</tr>
+		" );
 		}
 
 		if ( !structCount( arguments.scope ) ) {
 			list.append( "<tr>
-				<td>
-					<em>No details found!</em>
-				</td>
-			</tr>" );
+			<td>
+				<em>No details found!</em>
+			</td>
+		</tr>
+		" );
 		}
 
-		list.append( "</tbody></table>" );
+		list.append( "
+	</tbody>
+</table>
+" );
 
 		return list.toString();
 	}

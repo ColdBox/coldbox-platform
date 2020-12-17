@@ -1,9 +1,5 @@
 component extends="tests.resources.BaseIntegrationTest" {
 
-	function beforeAll(){
-		super.beforeAll();
-	}
-
 	function run(){
 		describe( "ColdBox Restful Handlers", function(){
 			beforeEach( function( currentSpec ){
@@ -11,12 +7,13 @@ component extends="tests.resources.BaseIntegrationTest" {
 				setup();
 			} );
 
-			it( "can handle vanilla restful execution", function(){
+			it( "can handle vanilla restful execution with custom matchers", function(){
 				var e        = this.get( "/restfulHandler" );
 				var response = e.getResponse();
 
 				expect( response.getError() ).toBeFalse( response.getMessagesString() );
 				expect( response.getData() ).toBe( "hello" );
+				expect( response ).toHaveStatus( 200 );
 			} );
 
 			it( "can handle handler return results", function(){

@@ -1,4 +1,5 @@
 {
 	"test-harness/includes/js/jquery.js": "/test-harness/includes/js/jquery.1.js",
+	"test-harness/includes/js/bootstrap.min.js": "/test-harness/includes/js/bootstrap.min.js",
 	"test-harness/modules_app/contentbox-custom/_modules/cctManager/includes/js/cctManager.js": "/modules_app/contentbox-custom/_modules/cctManager/includes/js/cctManager.8613ac4947980152a2e0.js"
 }

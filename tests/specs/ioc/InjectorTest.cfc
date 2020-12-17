@@ -86,8 +86,8 @@
 	function testRegisterListeners(){
 		makePublic( injector, "registerListeners" );
 
-		// Mocking
-		listeners = [
+		// Mock listeners
+		var listeners = [
 			{
 				class      : "coldbox.tests.specs.ioc.config.listeners.MyListener",
 				name       : "myDude",
@@ -99,8 +99,10 @@
 				properties : {}
 			}
 		];
-		binder = injector.getBinder();
-		prepareMock( binder ).$( "getListeners", listeners );
+		injector
+			.getBinder()
+			.setListeners( listeners );
+
 		prepareMock( injector.getEventManager() ).$( "register" );
 
 		injector.registerListeners();
@@ -115,7 +117,10 @@
 				properties : {}
 			}
 		];
-		prepareMock( binder ).$( "getListeners", listeners );
+		injector
+			.getBinder()
+			.setListeners( listeners );
+
 		try {
 			injector.registerListeners();
 		} catch ( "Injector.ListenerCreationException" e ) {
@@ -126,16 +131,19 @@
 
 	function testdoScopeRegistration(){
 		makePublic( injector, "doScopeRegistration" );
-		scopeReg = {
-			key   : "wirebox",
-			scope : "application"
-		};
 
-		binder = injector.getBinder();
-		prepareMock( binder ).$( "getScopeRegistration", scopeReg );
-		injector.doScopeRegistration();
-		structKeyExists( application, "wirebox" );
-		structDelete( application, "wirebox" );
+		injector.getBinder().scopeRegistration(
+			key   : "mockWireBox",
+			scope : "application"
+		);
+
+		try{
+			structDelete( application, "mockWireBox" );
+			injector.doScopeRegistration();
+			structKeyExists( application, "mockWireBox" );
+		} finally{
+			structDelete( application, "mockWireBox" );
+		}
 	}
 
 	function testConfigureCacheBox(){
@@ -205,17 +213,15 @@
 	}
 
 	function testRemoveFromScope(){
-		scopeReg = {
+		injector.getBinder().scopeRegistration(
 			enabled : true,
-			key     : "wirebox",
+			key     : "mockWireBox",
 			scope   : "application"
-		};
-		binder = injector.getBinder();
-		prepareMock( binder ).$( "getScopeRegistration", scopeReg );
-		application.wirebox = createStub();
+		);
+		application.mockWireBox = createStub();
 
 		injector.removeFromScope();
-		assertFalse( structKeyExists( application, "wirebox" ) );
+		assertFalse( structKeyExists( application, "mockWireBox" ) );
 	}
 
 	function testAutowireCallsGetInheritedMetaDataForTargetID(){

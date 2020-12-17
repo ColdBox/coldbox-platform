@@ -5,10 +5,8 @@
     "dependencies":{
         "docbox":"^2.0.7"
     },
-    "devDependencies":{
-        
-    },
+    "devDependencies":{},
     "installPaths":{
-        "docbox":"docbox"
+        "docbox":"docbox/"
     }
 }

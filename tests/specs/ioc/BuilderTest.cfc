@@ -225,7 +225,8 @@
 
 	function testregisterCustomBuilders(){
 		var customDSL  = { coolLuis : "coldbox.tests.specs.ioc.dsl.MyTestingDSL" };
-		var mockBinder = createMock( "coldbox.system.ioc.config.Binder" ).$( "getCustomDSL", customDSL );
+		var mockBinder = createMock( "coldbox.system.ioc.config.Binder" ).setCustomDSL( customDSL );
+
 		mockInjector.setBinder( mockBinder );
 		builder.registerCustomBuilders();
 
@@ -239,7 +240,7 @@
 			dsl  : "coolLuis:woopee"
 		};
 		var customDSL  = { coolLuis : "coldbox.tests.specs.ioc.dsl.MyTestingDSL" };
-		var mockBinder = createMock( "coldbox.system.ioc.config.Binder" ).$( "getCustomDSL", customDSL );
+		var mockBinder = createMock( "coldbox.system.ioc.config.Binder" ).setCustomDSL( customDSL );
 		mockInjector.setBinder( mockBinder );
 		builder.registerCustomBuilders();
 
@@ -327,7 +328,7 @@
 			dsl  : "wirebox:properties"
 		};
 		props      = { prop1 : "hello", name : "luis" };
-		mockBinder = createMock( "coldbox.system.ioc.config.Binder" ).$( "getProperties", props );
+		mockBinder = createMock( "coldbox.system.ioc.config.Binder" ).setProperties( props );
 		mockInjector.setBinder( mockBinder );
 		p = builder.getWireBoxDSL( data );
 		assertEquals( props, p );

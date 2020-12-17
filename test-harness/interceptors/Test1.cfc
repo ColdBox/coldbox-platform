@@ -15,6 +15,11 @@ component extends="coldbox.system.Interceptor" {
 		log.info( "Executing request capture" );
 	}
 
+	function afterRendererInit( event, data, rc, prc ){
+		log.info( "Executing render init" );
+		arguments.data.this.bdd = true;
+	}
+
 	void function onCustomState( event, struct data, rc ){
 		var threadName = createObject( "java", "java.lang.Thread" )
 			.currentThread()

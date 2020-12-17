@@ -84,7 +84,6 @@ DEPRECATED USE IStats.cfc instead
 		returntype="any"
 		output    ="false"
 		hint      ="Get the total cache's misses"
-		colddoc
 	>
 
 	</cffunction>

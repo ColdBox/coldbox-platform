@@ -1,7 +1,15 @@
 {
-	"systemErr":"System",
-    "systemOut":"System",
 	"adminPassword" : "coldbox",
+	"ajaxDebugWindowEnabled": false,
+	"debuggingEnabled": false,
+	"debuggingReportExecutionTimes": false,
+	"inspectTemplate":"always",
+	"maxCFThreads":100,
+	"requestTimeout":"0,0,0,90",
+	"robustExceptionEnabled":true,
+	"systemErr":"System",
+	"systemOut":"System",
+	"whitespaceManagement":"white-space-pref",
     "caches": {
         "default": {
             "storage": "false",
@@ -16,19 +24,31 @@
     "cacheDefaultObject": "default",
     "datasources": {
         "coolblog": {
-            "clientHostname": false,
-            "host": "localhost",
-            "dbdriver": "MySQL",
+			"allowAlter":true,
+            "allowCreate":true,
+            "allowDelete":true,
+            "allowDrop":true,
+            "allowGrant":true,
+            "allowInsert":true,
+            "allowRevoke":true,
+            "allowSelect":true,
+			"allowUpdate":true,
+			"blob":"false",
+			"clob":"false",
+			"connectionTimeout":"1",
+            "class":"${DB_CLASS}",
+			"dbdriver": "MySQL",
+			"dsn":"jdbc:mysql://{host}:{port}/{database}",
+            "custom":"useUnicode=true&characterEncoding=UTF8&serverTimezone=America%2FChicago&useLegacyDatetimeCode=true&autoReconnect=true&useSSL=false",
+            "host":"${DB_HOST:127.0.0.1}",
+            "username": "${DB_USER}",
             "password": "${DB_PASSWORD}",
-            "dsn": "${DB_CONNECTIONSTRING}",
-            "custom": "",
-            "username": "${DB_USER:root}",
             "database": "coolblog",
-            "port": "3306"
+			"port": "${DB_PORT:3306}",
+			"storage":"false",
+			"bundleName": "${DB_BUNDLENAME}",
+			"bundleVersion": "${DB_BUNDLEVERSION}",
+			"validate":"false"
         }
-    },
-    "debuggingEnabled": false,
-    "ajaxDebugWindowEnabled": false,
-    "debuggingReportExecutionTimes": false,
-    "maxCFThreads":100
+    }
 }

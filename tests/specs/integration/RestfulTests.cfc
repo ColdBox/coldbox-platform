@@ -10,8 +10,7 @@ component
 			} );
 
 			it( "can handle allowed HTTP methods in action annotations", function(){
-				prepareMock( getRequestContext() ).$( "getHTTPMethod", "POST" );
-				var event = execute( event = "main.actionAllowedMethod", renderResults = true );
+				var event = this.POST( "main.actionAllowedMethod" );
 				expect( event.getRenderedContent() ).toBe( "invalid http: main.actionAllowedMethod" );
 			} );
 
@@ -20,16 +19,13 @@ component
 				expect( event.getValue( "cbox_rendered_content" ) ).toBe( "Yep, onInvalidHTTPMethod works!" );
 			} );
 
-			var formats = [ "json" ];
-			// var formats = [ "json", "xml", "pdf", "wddx", "html" ];
-			it( "can do #formats.toString()# data renderings", function(){
-				for ( var thisFormat in formats ) {
-					getRequestContext().setValue( "format", thisFormat );
-					var event = execute( event = "rendering.index", renderResults = true );
-					var prc   = event.getCollection( private = true );
-					expect( prc.cbox_renderData ).toBeStruct();
-					expect( prc.cbox_renderData.contenttype ).toMatch( thisFormat );
-				}
+			it( "can do json data renderings", function(){
+				getRequestContext().setValue( "format", "json" );
+				var event = execute( event = "rendering.index", renderResults = true );
+				var prc   = event.getPrivateCollection();
+
+				expect( prc.cbox_renderData ).toBeStruct();
+				expect( prc.cbox_renderData.contenttype ).toMatch( "json" );
 			} );
 
 			it( "can redirect only for html formats with the `formatsRedirect` parameter", function(){

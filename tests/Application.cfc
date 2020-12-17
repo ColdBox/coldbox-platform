@@ -34,7 +34,12 @@ component{
 
 	function onRequestStart( required targetPage ){
 
-		//ORMReload();
+		// Cleanup
+		if( !isNull( application.cbController ) ){
+			application.cbController.getLoaderService().processShutdown();
+		}
+		structDelete( application, "cbController" );
+		structDelete( application, "wirebox" );
 
 		return true;
 	}

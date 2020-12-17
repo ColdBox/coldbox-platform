@@ -1157,16 +1157,29 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
-	 * Returns the full url including the protocol, host, and path.
+	 * Returns the full url including the protocol, host, mapping, path info, and query string.
 	 * Handles SES urls gracefully.
 	 */
 	string function getFullURL(){
 		return arrayToList(
 			[
-				isSSL() ? "https://" : "http://",
-				CGI.SERVER_NAME,
-				listFind( "80,443", CGI.SERVER_PORT ) ? "" : ":" & CGI.SERVER_PORT,
-				isSES() ? "" : "/index.cfm",
+				getSesBaseUrl(),
+				CGI.PATH_INFO,
+				CGI.QUERY_STRING != "" && CGI.PATH_INFO == "" ? "/" : "",
+				CGI.QUERY_STRING != "" ? "?" : "",
+				CGI.QUERY_STRING
+			],
+			""
+		);
+	}
+
+	/**
+	 * Returns the full relative path to the requested event: does not include protocol and host
+	 */
+	string function getFullPath(){
+		return arrayToList(
+			[
+				variables.controller.getRoutingService().getRouter().composeRoutingPath(),
 				CGI.PATH_INFO,
 				CGI.QUERY_STRING != "" && CGI.PATH_INFO == "" ? "/" : "",
 				CGI.QUERY_STRING != "" ? "?" : "",
@@ -1255,7 +1268,7 @@ component serializable="false" accessors="true" {
 	 */
 	string function buildLink(
 		to,
-		queryString = "",
+		queryString       = "",
 		boolean translate = true,
 		boolean ssl,
 		baseURL = ""
@@ -1728,14 +1741,17 @@ component serializable="false" accessors="true" {
 		boolean json = false,
 		boolean xml  = false
 	){
-		var content = getHTTPRequestData().content;
+		// Only read the content once
+		if ( !StructKeyExists( variables.privateContext, "_httpContent" ) ) {
+			variables.privateContext._httpContent = getHTTPRequestData().content;
+			if ( arguments.json and isJSON( toString( variables.privateContext._httpContent ) ) ) {
+				variables.privateContext._httpContent = deserializeJSON( toString( variables.privateContext._httpContent ) );
+			} else if ( arguments.xml and len( toString( variables.privateContext._httpContent ) ) and isXML( toString( variables.privateContext._httpContent ) ) ) {
+				variables.privateContext._httpContent = xmlParse( toString( variables.privateContext._httpContent ) );
+			}
+		}
 
-		// ToString() neccessary when body comes in as binary.
-		if ( arguments.json and isJSON( toString( content ) ) ) return deserializeJSON( toString( content ) );
-		if ( arguments.xml and len( toString( content ) ) and isXML( toString( content ) ) )
-			return xmlParse( toString( content ) );
-
-		return content;
+		return variables.privateContext._httpContent;
 	}
 
 	/**
@@ -1745,7 +1761,7 @@ component serializable="false" accessors="true" {
 	 * @defaultValue The default value, if not found
 	 */
 	function getHTTPHeader( required header, defaultValue = "" ){
-		var headers = getHTTPRequestData().headers;
+		var headers = getHTTPRequestData( false ).headers;
 
 		// ADOBE FIX YOUR ISNULL BS
 		if ( headers.keyExists( arguments.header ) ) {

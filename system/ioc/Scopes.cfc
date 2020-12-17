@@ -18,6 +18,7 @@ component{
 
 	/**
 	 * Verify if an incoming scope is valid
+	 *
 	 * @scope The scope to check
 	 */
 	boolean function isValidScope( required scope ){

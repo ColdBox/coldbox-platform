@@ -65,10 +65,22 @@ component extends="coldbox.system.FrameworkSupertype" serializable="false" acces
 	 * @property The property to retrieve
 	 * @defaultValue The default value to return if property does not exist
 	 *
+	 * @throws InvalidPropertyException
 	 * @return The property value requested or the default value if not found
 	 */
 	any function getProperty( required property, defaultValue ){
-		return ( structKeyExists( variables.properties, arguments.property ) ? variables.properties[ arguments.property ] : arguments.defaultValue );
+		if( structKeyExists( variables.properties, arguments.property ) ){
+			return variables.properties[ arguments.property ];
+		}
+
+		if( !isNull( arguments.defaultValue ) ){
+			return arguments.defaultValue;
+		}
+
+		throw(
+			message = "The requested property #arguments.property# does not exist.",
+			type 	= "InvalidPropertyException"
+		);
 	}
 
 	/**

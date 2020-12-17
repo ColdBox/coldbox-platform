@@ -6,6 +6,9 @@
  */
 component extends="coldbox.system.web.Controller" accessors="true" {
 
+	// Easy public marker for easy recognition of the mock controller.
+	this.mockController = true;
+
 	/**
 	 * Constructor
 	 */

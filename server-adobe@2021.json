@@ -1,9 +1,9 @@
 {
     "app":{
-        "cfengine":"adobe@2018",
-        "serverHomeDirectory":".engine/adobe2018"
-    },
-    "name":"coldbox-adobe@2018",
+        "cfengine":"adobe@2021",
+        "serverHomeDirectory":".engine/adobe2021"
+	},
+    "name":"coldbox-adobe@2021",
     "force":true,
     "openBrowser":false,
     "web":{

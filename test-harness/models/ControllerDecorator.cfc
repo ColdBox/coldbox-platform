@@ -3,6 +3,8 @@ component extends="coldbox.system.web.ControllerDecorator" {
 	this.decorator = "true";
 
 	function configure(){
+
+		variables.logger = getLogBox().getLogger( this );
 	}
 
 	/**
@@ -49,8 +51,12 @@ component extends="coldbox.system.web.ControllerDecorator" {
 		throw( message = "Relocating via relocate: #arguments.toString()#", type = "TestController.relocate" );
 	}
 
-	function runEvent(){
-		getLogBox().getLogger( this ).info( " Called decorator runEvent(#arguments.toString()#)" );
+	function runEvent( event="" ){
+		// useful debugging to pinpoint execution exceptions
+		logger.info(
+			"=>Called decorator runEvent(#arguments.toString()#)",
+			!len( arguments.event ) ? callStackGet() : ""
+		);
 		return getController().runEvent( argumentCollection = arguments );
 	}
 

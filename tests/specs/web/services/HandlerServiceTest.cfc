@@ -3,20 +3,6 @@
  */
 component extends="tests.resources.BaseIntegrationTest" {
 
-	/*********************************** LIFE CYCLE Methods ***********************************/
-
-	// executes before all suites+specs in the run() method
-	function beforeAll(){
-		super.beforeAll();
-	}
-
-	// executes after all suites+specs in the run() method
-	function afterAll(){
-		super.afterAll();
-	}
-
-	/*********************************** BDD SUITES ***********************************/
-
 	function run( testResults, testBox ){
 		describe( "Handler Service", function(){
 			beforeEach( function(){

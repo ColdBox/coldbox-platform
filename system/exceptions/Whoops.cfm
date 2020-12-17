@@ -2,12 +2,14 @@
 <cfscript>
 	// Detect Session Scope
 	local.sessionScopeExists = getApplicationMetadata().sessionManagement;
+
 	// Detect host
 	try {
 		local.thisInetHost = createObject( "java", "java.net.InetAddress" ).getLocalHost().getHostName();
 	} catch ( any e ) {
 		local.thisInetHost = "localhost";
 	}
+
 	// Build event details
 	local.eventDetails = {
 		"Error Code"    : ( oException.getErrorCode() != 0 ) ? oException.getErrorCode() : "",
@@ -51,7 +53,7 @@
 		"Coldfusion ID"  : "Session Scope Not Enabled",
 		"Template Path"  : CGI.CF_TEMPLATE_PATH,
 		"Path Info"      : CGI.PATH_INFO,
-		"Host"           : CGI.SERVER_NAME,
+		"Host"           : CGI.HTTP_HOST,
 		"Server"         : local.thisInetHost,
 		"Query String"   : CGI.QUERY_STRING,
 		"Referrer"       : CGI.HTTP_REFERER,
@@ -102,9 +104,28 @@
 		};
 	}
 
+	// Get exception information and mark the safe environment token
 	local.e = oException.getExceptionStruct();
 	stackFrames = arrayLen( local.e.TagContext );
 	local.safeEnvironment = "development";
+
+	// Is this an Ajax Request? If so, present the plain exception templates
+	local.requestHeaders = getHTTPRequestData( false ).headers;
+	if(
+		structKeyExists( local.requestHeaders, "X-Requested-With" )
+		&&
+		local.requestHeaders[ "X-Requested-With" ] eq "XMLHttpRequest"
+	){
+		// Development report
+		if( local.eventDetails.environment eq local.safeEnvironment ){
+			include "BugReport.cfm";
+		}
+		// Production Report
+		else {
+			include "BugReport-Public.cfm";
+		}
+		return;
+	}
 </cfscript>
 <cfoutput>
 	<html>
@@ -120,7 +141,7 @@
 				SyntaxHighlighter.defaults[ 'gutter' ] 		= true;
 				SyntaxHighlighter.defaults[ 'smart-tabs' ] 	= false;
 				SyntaxHighlighter.defaults[ 'tab-size' ]   	=  4;
-				SyntaxHighlighter.all();
+				//SyntaxHighlighter.all();
 			</script>
 		</head>
 		<body>
@@ -337,7 +358,7 @@
 
 								<div id="headers_scope" class="data-table">
 									<label>Headers</label>
-									#oException.displayScope( getHTTPRequestData().headers )#
+									#oException.displayScope( local.requestHeaders )#
 								</div>
 
 								<div id="session_scope" class="data-table">
@@ -371,7 +392,7 @@
 											style="cursor: pointer"></i>
 									</label>
 
-									<div id="rawStacktrace" class="data-stacktrace">#processStackTrace( oException.getstackTrace() )#</div>
+									<div id="rawStacktrace" class="data-stacktrace">#oException.processStackTrace( oException.getstackTrace() )#</div>
 								</div>
 							</div>
 						</cfoutput>
@@ -380,24 +401,45 @@
 			</div>
 
 			<!----------------------------------------------------------------------------------------->
-			<!--- Global File Getters --->
+			<!--- Global File Getters + Source --->
 			<!----------------------------------------------------------------------------------------->
 
 			<!--- Make sure we are in Development only --->
 			<cfif local.eventDetails.environment eq local.safeEnvironment>
-				<cfloop from="1" to="#arrayLen( local.e.TagContext )#" index="i">
-					<cfset instance = local.e.TagContext[ i ]/>
-					<cfset highlighter = ( listLast( instance.template, "." ) eq "cfm" ? "cf" : "js" )/>
-					<pre
-						id="stack#stackFrames - i + 1#-code"
-						data-highlight-line="#instance.line#"
-						style="display: none;"
-					>
-						<script type="syntaxhighlighter" class="brush:#highlighter#; highlight: [#instance.line#];" async>
-							<![CDATA[<cfloop file="#instance.template#" index="line">#line##chr( 13 )##chr( 10 )#</cfloop>
-							]]>
-						</script>
-					</pre>
+				<cfset stackRenderings = {}>
+				<cfloop array="#local.e.tagContext#" item="thisTagContext" index="i">
+					<!--- Verify if File Exists: Just in case it's a core CFML engine file, else don't add it --->
+					<cfif fileExists( thisTagContext.template )>
+
+						<!--- Determine Source Highlighter --->
+						<cfset highlighter = ( listLast( thisTagContext.template, "." ) eq "cfm" ? "cf" : "js" )/>
+
+						<!--- Output code only once per instance found --->
+						<cfif NOT structKeyExists( stackRenderings, thisTagContext.template )>
+							<script
+								id="stackframe-#hash( thisTagContext.template )#"
+								type="text"
+								async
+							><![CDATA[<cfloop file="#thisTagContext.template#" index="line">#line##chr( 13 )##chr( 10 )#</cfloop>]]></script>
+							<cfset stackRenderings[ thisTagContext.template ] = true>
+						</cfif>
+
+						<!--- Pre source holder --->
+						<pre
+							id="stack#stackFrames - i + 1#-code"
+							data-highlight-line="#thisTagContext.line#"
+							data-template-id="#hash( thisTagContext.template )#"
+							data-template-rendered="false"
+							style="display: none;"
+						>
+							<script
+								id="stack#stackFrames - i + 1#-script"
+								type="text"
+								class="brush:#highlighter#; highlight: [#thisTagContext.line#];"
+								async
+							><![CDATA[]]></script>
+						</pre>
+					</cfif>
 				</cfloop>
 			</cfif>
 
@@ -406,6 +448,7 @@
 			<!----------------------------------------------------------------------------------------->
 			<script src="/coldbox/system/exceptions/js/whoops.js"></script>
 			<script>
+				// activate icons
 				eva.replace();
 			</script>
 		</body>

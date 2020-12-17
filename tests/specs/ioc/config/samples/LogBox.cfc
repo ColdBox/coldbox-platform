@@ -9,21 +9,14 @@ component {
 
 	function configure(){
 		var system  = createObject( "java", "java.lang.System" );
-		var homeDir = expandPath( "/coldbox/tests" );
+		var homeDir = expandPath( "/tests" );
 
 		logBox = {};
 
-
 		// Define Appenders
 		logBox.appenders = {
-			fileAppender : {
-				class      : "coldbox.system.logging.appenders.RollingFileAppender",
-				properties : {
-					fileMaxArchives : 5,
-					filename        : "commandbox",
-					filepath        : homeDir & "/logs",
-					async           : true
-				}
+			consoleAppender : {
+				class      : "ConsoleAppender"
 			}
 		};
 
@@ -31,7 +24,7 @@ component {
 		logBox.root = {
 			levelmax  : "INFO",
 			levelMin  : "FATAL",
-			appenders : "fileAppender"
+			appenders : "consoleAppender"
 		};
 	}
 

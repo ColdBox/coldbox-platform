@@ -28,6 +28,10 @@ component
 					expect( getController().getAsyncManager().hasExecutor( "resourcesPool" ) ).toBeTrue();
 					getController().getModuleService().unload( "resourcesTest" );
 					expect( getController().getAsyncManager().hasExecutor( "resourcesPool" ) ).toBeFalse();
+
+					// Load it back up, we need it :)
+					getController().getModuleService().registerAndActivateModule( "resourcesTest" );
+					expect( getController().getAsyncManager().hasExecutor( "resourcesPool" ) ).toBeTrue();
 				} );
 			} );
 		} );

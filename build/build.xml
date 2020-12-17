@@ -47,9 +47,6 @@
 		<loadproperties srcFile="build/build.properties"/>
 
 		<!-- Build Conditions -->
-		<condition property="cfengine" else="lucee@5">
-			<isset property="cfengine"/>
-		</condition>
 		<condition property="isTravis" else="false">
 			<isset property="isTravis"/>
 		</condition>
@@ -84,17 +81,6 @@
 
 		<!-- Copy over original box.json as the getDependencies might update it -->
 		<copy file="box.json" toFile="box-original.json" encoding="UTF-8" overwrite="true"/>
-
-		<!-- Get Build Dependencies -->
- 		<antcall target="getDependencies" />
-
-		<!-- Make sure we start the embedded server, for builds and tests -->
-		<exec executable="box" dir="${basedir}">
-			<arg line="server stop name=${cfengine} directory=${basedir} serverConfigFile=${basedir}/server-${cfengine}.json" />
-		</exec>
-		<exec executable="box" dir="${basedir}">
-			<arg line="server start name=${cfengine} directory=${basedir} serverConfigFile=${basedir}/server-${cfengine}.json" />
-		</exec>
 
 		<!-- Mark as init -->
 		<property name="src.isInit" value="true" />
@@ -610,17 +596,6 @@
 			  tofile="${be.wirebox.exports}/${wirebox.slug}-be.zip"
 			  overwrite="true"
 			  encoding="UTF-8"/>
-	</target>
-
-	<!-- Get Dependencies -->
-	<target name="getDependencies" description="Get all the necessary dependencies for the build process">
-		<!-- Install dependencies for project -->
-		<exec executable="box" dir="${basedir}">
-			<arg line="install" />
-		</exec>
-		<exec executable="box" dir="${basedir}/apidocs">
-			<arg line="install" />
-		</exec>
 	</target>
 
 </project>

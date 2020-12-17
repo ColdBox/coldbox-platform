@@ -68,7 +68,7 @@ A reporting template about exceptions in your ColdBox Apps
 			 </cfif>
 			<tr>
 				<td align="right" class="info"><strong>Timestamp: </strong></td>
-				<td>#dateformat(now(), "MM/DD/YYYY")# #timeformat(now(),"hh:MM:SS TT")#</td>
+				<td>#dateformat(now(), "mm/dd/yyyy")# #timeformat(now(),"hh:mm:ss tt")#</td>
 			</tr>
 			 <tr >
 				<th colspan="2" >Event Details:</th>
@@ -148,14 +148,14 @@ A reporting template about exceptions in your ColdBox Apps
 		</table>
 
 		<h2>Stack Trace:</h2>
-		<div class="stacktrace">#processStackTrace( oException.getstackTrace() )#</div>
+		<div class="stacktrace">#oException.processStackTrace( oException.getstackTrace() )#</div>
 
 		<!--- FRAMEWORK SNAPSHOT --->
 		<h2>FRAMEWORK SNAPSHOT:</h2>
 		<table class="table" align="center">
 			<tr>
 			   <td align="right" class="info">Bug Date:</td>
-			   <td >#dateformat(now(), "MM/DD/YYYY")# #timeformat(now(),"hh:MM:SS TT")#</td>
+			   <td >#dateformat(now(), "mm/dd/yyyy")# #timeformat(now(),"hh:mm:ss tt")#</td>
 			 </tr>
 
 			 <tr>
@@ -190,7 +190,7 @@ A reporting template about exceptions in your ColdBox Apps
 			 </tr>
 			 <tr>
 			   <td align="right" class="info"> Host &amp; Server: </td>
-			   <td >#encodeForHTML( CGI.SERVER_NAME )# #encodeForHTML( local.thisInetHost )#</td>
+			   <td >#encodeForHTML( CGI.HTTP_HOST )# #encodeForHTML( local.thisInetHost )#</td>
 			 </tr>
 			 <tr>
 			   <td align="right" class="info">Query String: </td>

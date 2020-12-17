@@ -12,7 +12,8 @@
 		this.TYPES     = createObject( "component", "coldbox.system.ioc.Types" );
 		mockInjector   = createMock( "coldbox.system.ioc.Injector" )
 			.setColdBox( createStub().$( "getSetting", "coldbox.test" ) )
-			.setEventManager( createStub().$( "announce" ) );
+			.setEventManager( createStub().$( "announce" ) )
+			.setUtility( new coldbox.system.core.util.Util() );
 		config = createObject( "component", "coldbox.system.ioc.config.Binder" ).init(
 			injector = mockInjector,
 			config   = dataConfigPath
@@ -256,21 +257,24 @@
 	}
 
 	function testEagerInit(){
-		config.mapPath( "Test" );
-		mapping = config.getMapping( "Test" );
-		assertEquals( "", mapping.isEagerInit() );
+		config.mapPath( "tests.resources.Test" );
+		mapping = config.getMapping( "Test" ).process(
+			config,
+			mockInjector
+		);
+		expect( mapping.isEagerInit() ).toBeFalse();
 
-		config.mapPath( "Test" ).asEagerInit();
+		config.mapPath( "tests.resources.Test" ).asEagerInit();
 		mapping = config.getMapping( "Test" );
 		assertEquals( true, mapping.isEagerInit() );
 	}
 
 	function testNoAutowire(){
-		config.mapPath( "Test" );
+		config.mapPath( "tests.resources.Test" );
 		mapping = config.getMapping( "Test" );
-		assertEquals( "", mapping.isAutowire() );
+		assertEquals( "", mapping.getAutoWire() );
 
-		config.mapPath( "Test" ).noAutowire();
+		config.mapPath( "tests.resources.Test" ).noAutowire();
 		mapping = config.getMapping( "Test" );
 		assertEquals( false, mapping.isAutowire() );
 	}
@@ -278,7 +282,7 @@
 	function testWith(){
 		try {
 			config.with( "Bogus" );
-		} catch ( "Binder.InvalidMappingStateException" e ) {
+		} catch ( "InvalidMappingStateException" e ) {
 		} catch ( Any e ) {
 			fail( e );
 		}

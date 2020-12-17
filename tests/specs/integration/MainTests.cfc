@@ -1,18 +1,9 @@
 ﻿component
 	extends="tests.resources.BaseIntegrationTest"
+	autowire
 {
 
-	/*********************************** LIFE CYCLE Methods ***********************************/
-
-	function beforeAll(){
-		super.beforeAll();
-		// do your own stuff here
-	}
-
-	function afterAll(){
-		// do your own stuff here
-		super.afterAll();
-	}
+	property name="logger" inject="logbox:logger:{this}";
 
 	/*********************************** BDD SUITES ***********************************/
 
@@ -25,31 +16,19 @@
 				structDelete( request, "_lastInvalidEvent" );
 			} );
 
-			xit( "can render the cache panel", function(){
-				// Why can't I just call GET() ACF, why do you make things hard!
-				var event = this.request( route = "main/cachePanel" );
-				expect( event.getRenderedContent() ).toInclude( "cachebox_cache" );
-			} );
+			it( "can handle autowire annotations for tests", function(){
+				expect( variables.logger ).toBeComponent();
+			});
+
+			it( "reads metadata for the test and stores it", function(){
+				expect( variables.metadata ).notToBeEmpty();
+			});
 
 			it( "can handle invalid events", function(){
 				var event = execute( event = "invalid:bogus.index", renderResults = true );
 				expect( event.getValue( "cbox_rendered_content" ) ).toInclude( "Invalid Page" );
 			} );
 
-			it( "can handle invalid onInvalidEvent handlers", function(){
-				var originalInvalidEventHandler = getController().getSetting( "invalidEventHandler" );
-				getController().setSetting( "invalidEventHandler", "notEvenAnAction" );
-				try {
-					getController().getHandlerService().onConfigurationLoad();
-					execute( event = "invalid:bogus.index", renderResults = true );
-					fail( "The event handler was invalid and should have thrown an exception" );
-				} catch ( HandlerService.InvalidEventHandlerException e ) {
-					expect( e.message ).toInclude( "The invalidEventHandler event is also invalid" );
-				} finally {
-					getController().setSetting( "invalidEventHandler", originalInvalidEventHandler );
-					getController().getHandlerService().onConfigurationLoad();
-				}
-			} );
 		} );
 	}
 

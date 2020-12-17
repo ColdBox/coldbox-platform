@@ -50,7 +50,7 @@ component {
 	}
 
 	function throwException( event, rc, prc ){
-		throw( "Whoops!" );
+		throw( message : "Whoops!", type : "CustomException" );
 	}
 
 	/**

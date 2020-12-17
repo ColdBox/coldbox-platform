@@ -13,11 +13,22 @@ component accessors="true"{
 
 	/**
 	 * Constructor
+	 *
 	 * @cacheProvider Provider to connect to
 	 */
 	function init( required cacheProvider ){
 		variables.cacheProvider = arguments.cacheProvider;
 		return this;
+	}
+
+	/**
+	 * Build an app link via the request context object
+	 */
+	string function buildAppLink(){
+		return variables.cacheProvider.getColdBox()
+			.getRequestService()
+			.getContext()
+			.getSesBaseUrl();
 	}
 
 	/**
@@ -36,7 +47,7 @@ component accessors="true"{
 			// Get the original incoming context hash
 			"incomingHash" = incomingHash,
 			// Multi-Host support
-			"cgihost"      = CGI.SERVER_NAME
+			"cgihost"      = arguments.event.getSesBaseUrl()
 		};
 
 		// Incorporate Routed Structs
@@ -65,7 +76,7 @@ component accessors="true"{
 			// Get the original incoming context hash according to incoming arguments
 			"incomingHash" = hash( virtualRC.toString() ),
 			// Multi-Host support
-			"cgihost"      = CGI.SERVER_NAME
+			"cgihost"      = buildAppLink()
 		};
 
 		// return hash from cache key struct
@@ -102,6 +113,5 @@ component accessors="true"{
 	string function buildBasicCacheKey( required keySuffix, required targetEvent ){
 		return variables.cacheProvider.getEventCacheKeyPrefix() & arguments.targetEvent & "-" & arguments.keySuffix & "-";
 	}
-
 
 }

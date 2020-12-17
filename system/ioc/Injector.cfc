@@ -256,13 +256,18 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 				variables.eventManager.registerInterceptor( interceptorObject=variables.binder, interceptorName="wirebox-binder" );
 			}
 
-			// Check if binder has onLoad convention
-			if( structKeyExists( variables.binder, "onLoad" ) ){
-				variables.binder.onLoad();
+			// process mappings for metadata and initialization.
+			if( variables.binder.getAutoProcessMappings() ){
+				variables.binder.processMappings();
 			}
 
-			// process mappings for metadata and initialization.
-			//variables.binder.processMappings();
+			// Process Eager Inits
+			variables.binder.processEagerInits();
+
+			// Check if binder has onLoad convention and execute callback
+			if( structKeyExists( variables.binder, "onLoad" ) ){
+				variables.binder.onLoad( this );
+			}
 
 			// Announce To Listeners we are online
 			iData.injector = this;
@@ -284,22 +289,23 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 		if( variables.log.canInfo() ){
 			variables.log.info( "Shutdown of Injector: #getInjectorID()# requested and started." );
 		}
+
 		// Notify Listeners
 		variables.eventManager.announce( "beforeInjectorShutdown", iData );
 
 		// Check if binder has onShutdown convention
 		if( structKeyExists( variables.binder, "onShutdown" ) ){
-			variables.binder.onShutdown();
+			variables.binder.onShutdown( this );
 		}
 
 		// Is parent linked
 		if( isObject( variables.parent ) ){
-			variables.parent.shutdown();
+			variables.parent.shutdown( this );
 		}
 
 		// standalone cachebox? Yes, then shut it down baby!
 		if( isCacheBoxLinked() ){
-			variables.cacheBox.shutdown();
+			variables.cacheBox.shutdown( this );
 		}
 
 		// Remove from scope
@@ -311,6 +317,11 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 		// Log shutdown complete
 		if( variables.log.canInfo() ){
 			variables.log.info( "Shutdown of injector: #getInjectorID()# completed." );
+		}
+
+		// Shutdown LogBox last if not in ColdBox Mode
+		if( !isColdBoxLinked() ){
+			variables.logBox.shutdown();
 		}
 
 		return this;

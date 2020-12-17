@@ -3,18 +3,6 @@
  *******************************************************************************/
 component extends="tests.resources.BaseIntegrationTest" {
 
-	/*********************************** LIFE CYCLE Methods ***********************************/
-
-	function beforeAll(){
-		super.beforeAll();
-		// do your own stuff here
-	}
-
-	function afterAll(){
-		// do your own stuff here
-		super.afterAll();
-	}
-
 	/*********************************** BDD SUITES ***********************************/
 
 	function run(){
