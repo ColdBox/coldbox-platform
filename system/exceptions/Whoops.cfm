@@ -141,7 +141,7 @@
 				SyntaxHighlighter.defaults[ 'gutter' ] 		= true;
 				SyntaxHighlighter.defaults[ 'smart-tabs' ] 	= false;
 				SyntaxHighlighter.defaults[ 'tab-size' ]   	=  4;
-				SyntaxHighlighter.all();
+				//SyntaxHighlighter.all();
 			</script>
 		</head>
 		<body>
@@ -401,25 +401,43 @@
 			</div>
 
 			<!----------------------------------------------------------------------------------------->
-			<!--- Global File Getters --->
+			<!--- Global File Getters + Source --->
 			<!----------------------------------------------------------------------------------------->
 
 			<!--- Make sure we are in Development only --->
 			<cfif local.eventDetails.environment eq local.safeEnvironment>
-				<cfloop from="1" to="#arrayLen( local.e.TagContext )#" index="i">
-					<!--- Verify if File Exists: Just in case it's a core CFML engine file --->
-					<cfif fileExists( instance.template )>
-						<cfset instance = local.e.TagContext[ i ]/>
-						<cfset highlighter = ( listLast( instance.template, "." ) eq "cfm" ? "cf" : "js" )/>
+				<cfset stackRenderings = {}>
+				<cfloop array="#local.e.tagContext#" item="thisTagContext" index="i">
+					<!--- Verify if File Exists: Just in case it's a core CFML engine file, else don't add it --->
+					<cfif fileExists( thisTagContext.template )>
+
+						<!--- Determine Source Highlighter --->
+						<cfset highlighter = ( listLast( thisTagContext.template, "." ) eq "cfm" ? "cf" : "js" )/>
+
+						<!--- Output code only once per instance found --->
+						<cfif NOT structKeyExists( stackRenderings, thisTagContext.template )>
+							<script
+								id="stackframe-#hash( thisTagContext.template )#"
+								type="text"
+								async
+							><![CDATA[<cfloop file="#thisTagContext.template#" index="line">#line##chr( 13 )##chr( 10 )#</cfloop>]]></script>
+							<cfset stackRenderings[ thisTagContext.template ] = true>
+						</cfif>
+
+						<!--- Pre source holder --->
 						<pre
 							id="stack#stackFrames - i + 1#-code"
-							data-highlight-line="#instance.line#"
+							data-highlight-line="#thisTagContext.line#"
+							data-template-id="#hash( thisTagContext.template )#"
+							data-template-rendered="false"
 							style="display: none;"
 						>
-							<script type="syntaxhighlighter" class="brush:#highlighter#; highlight: [#instance.line#];" async>
-								<![CDATA[<cfloop file="#instance.template#" index="line">#line##chr( 13 )##chr( 10 )#</cfloop>
-								]]>
-							</script>
+							<script
+								id="stack#stackFrames - i + 1#-script"
+								type="text"
+								class="brush:#highlighter#; highlight: [#thisTagContext.line#];"
+								async
+							><![CDATA[]]></script>
 						</pre>
 					</cfif>
 				</cfloop>
@@ -430,6 +448,7 @@
 			<!----------------------------------------------------------------------------------------->
 			<script src="/coldbox/system/exceptions/js/whoops.js"></script>
 			<script>
+				// activate icons
 				eva.replace();
 			</script>
 		</body>
