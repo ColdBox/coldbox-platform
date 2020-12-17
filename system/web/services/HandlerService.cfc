@@ -136,6 +136,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 *
 	 * @ehBean The event handler bean representation
 	 * @requestContext The request context object
+	 *
+	 * @return The event handler object represented by the ehBean
 	 */
 	function getHandler( required ehBean, required requestContext ){
 		var oRequestContext = arguments.requestContext;
@@ -164,12 +166,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				return oEventHandler;
 			}
 
-			// Invalid Event procedures
-			invalidEvent( arguments.ehBean.getFullEvent(), arguments.ehBean );
+			// The handler exists but the action requested does not, let's go into invalid execution mode
+			var targetInvalidEvent = invalidEvent( arguments.ehBean.getFullEvent(), arguments.ehBean );
 
-			// If we get here, then the invalid event kicked in and exists, else an exception is thrown
+			// If we get here, then the invalid event kicked in and exists, else an exception is thrown above
 			// Go retrieve the handler that will handle the invalid event so it can execute.
-			return getHandler( getHandlerBean( arguments.ehBean.getFullEvent() ), oRequestContext );
+			return getHandler( getHandlerBean( targetInvalidEvent ), oRequestContext );
 		}
 		// method check finalized.
 
@@ -478,9 +480,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 			// Override Event With On invalid handler event
 			return variables.invalidEventHandler;
-		}
+		} // end invalidEventHandler found
 
-		// If we got here, we have an invalid event and no override, throw a 404 header
+		// If we got here, we have an invalid event and no override, throw a 404 ERROR
 		controller
 			.getRequestService()
 			.getContext()
