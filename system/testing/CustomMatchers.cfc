@@ -91,7 +91,9 @@ component{
 			try {
 				expect(
 					expectation.actual.getData()[ args.field ]
-						.map( ( item ) => item.message )
+						.map( function( item ){
+							return item.message;
+						} )
 						.toList()
 				).toInclude( args.error );
 			} catch ( any e ) {
