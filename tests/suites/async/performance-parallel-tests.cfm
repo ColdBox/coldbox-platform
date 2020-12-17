@@ -112,7 +112,7 @@
 	);
 
 	writeDump( var={
-		label: "State injection futures apply()",
+		label: "State injection futures allApply()",
 		value : "#getTickCount() - sTime#ms"
 	} );
 
@@ -156,7 +156,7 @@
 	);
 
 	writeDump( var={
-		label: "State injections futures apply() with custom executor",
+		label: "State injections futures allApply() with custom executor",
 		value : "#getTickCount() - sTime#ms"
 	} );
 	executor.shutdown();
@@ -193,7 +193,7 @@
 	}, true );
 
 	writeDump( var={
-		label: "State injection with Parallel Map",
+		label: "State injection with native Lucee Parallel Map",
 		value : "#getTickCount() - sTime#ms"
 	} );
 </cfscript>
