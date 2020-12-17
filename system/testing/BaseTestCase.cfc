@@ -379,7 +379,8 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 */
 	function setupRequest( required event ){
 		// Setup the incoming event
-		URL[ getController().getSetting( "EventName" ) ] = arguments.event;
+		URL[ getController().getSetting( "EventName" ) ] 	= arguments.event;
+		FORM[ getController().getSetting( "EventName" ) ] 	= arguments.event;
 		// Cleanup for invalid event handlers
 		structDelete( request, "_lastInvalidEvent" );
 		// Capture the request
