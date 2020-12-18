@@ -88,14 +88,14 @@ component accessors="true" {
 	property name="aspectBindings" type="array";
 
 	/**
-	 * The parent injector mapping
+	 * The parent injector reference
 	 */
-	property name="parentInjector";
+	property name="oParentInjector";
 
 	/**
 	 * The stop recursions for the binder
 	 */
-	property name="stopRecursions" type="array";
+	property name="aStopRecursions" type="array";
 
 	/**
 	 * The metadata cache for this binder
@@ -124,9 +124,9 @@ component accessors="true" {
 	 */
 
 	// Available WireBox public scopes
-	this.SCOPES  = new coldbox.system.ioc.Scopes();
+	this.SCOPES = new coldbox.system.ioc.Scopes();
 	// Available WireBox public types
-	this.TYPES   = new coldbox.system.ioc.Types();
+	this.TYPES  = new coldbox.system.ioc.Types();
 
 	// WireBox Operational Defaults
 	variables.DEFAULTS = {
@@ -202,35 +202,35 @@ component accessors="true" {
 	 */
 	Binder function reset(){
 		// Contains the mappings currently being affected by the DSL.
-		variables.currentMapping    = [];
+		variables.currentMapping      = [];
 		// Main wirebox structure
-		variables.wirebox           = {};
+		variables.wirebox             = {};
 		// logBox File
-		variables.logBoxConfig      = variables.DEFAULTS.logBoxConfig;
+		variables.logBoxConfig        = variables.DEFAULTS.logBoxConfig;
 		// CacheBox integration
-		variables.cacheBox          = variables.DEFAULTS.cacheBox;
+		variables.cacheBox            = variables.DEFAULTS.cacheBox;
 		// Scope Registration
-		variables.scopeRegistration = variables.DEFAULTS.scopeRegistration;
+		variables.scopeRegistration   = variables.DEFAULTS.scopeRegistration;
 		// Custom DSL namespaces
-		variables.customDSL         = {};
+		variables.customDSL           = {};
 		// Custom Storage Scopes
-		variables.customScopes      = {};
+		variables.customScopes        = {};
 		// Package Scan Locations
-		variables.scanLocations     = structNew( "ordered" );
+		variables.scanLocations       = structNew( "ordered" );
 		// Parent Injector Mapping
-		variables.parentInjector    = "";
+		variables.oParentInjector      = "";
 		// Stop Recursion classes
-		variables.stopRecursions    = [];
+		variables.aStopRecursions      = [];
 		// Listeners
-		variables.listeners         = [];
+		variables.listeners           = [];
 		// Object Mappings
-		variables.mappings          = {};
+		variables.mappings            = {};
 		// Aspect Bindings
-		variables.aspectBindings    = [];
+		variables.aspectBindings      = [];
 		// Binding Properties
-		variables.properties        = {};
+		variables.properties          = {};
 		// Meatadata cache
-		variables.metadataCache     = "";
+		variables.metadataCache       = "";
 		// Auto Process Mappings
 		variables.autoProcessMappings = variables.DEFAULTS.autoProcessMappings;
 
@@ -296,6 +296,22 @@ component accessors="true" {
 	 */
 	Boolean function propertyExists( required name ){
 		return structKeyExists( variables.properties, arguments.name );
+	}
+
+	/**
+	 * Get the stop recursions: Different method to comply with previous API
+	 * TODO: Change in v7 to break compat.
+	 */
+	function getStopRecursions(){
+		return variables.aStopRecursions;
+	}
+
+	/**
+	 * Get the parent injector: Different method to comply with previous API
+	 * TODO: Change in v7 to break compat.
+	 */
+	function getParentInjector(){
+		return variables.oParentInjector;
 	}
 
 	/**
@@ -414,7 +430,7 @@ component accessors="true" {
 		boolean process = false
 	){
 		// check directory exists
-		var targetDirectory   = expandPath( "/#replace( arguments.packagePath, ".", "/", "all" )#" );
+		var targetDirectory = expandPath( "/#replace( arguments.packagePath, ".", "/", "all" )#" );
 		if ( NOT directoryExists( targetDirectory ) ) {
 			throw(
 				message = "Directory does not exist",
@@ -428,15 +444,15 @@ component accessors="true" {
 
 		// Scan + Process Objects
 		directoryList(
-				targetDirectory, // path
-				true, // recurse
-				"path", // list info
-				"*.cfc" // filter
-			)
+			targetDirectory, // path
+			true, // recurse
+			"path", // list info
+			"*.cfc" // filter
+		)
 			// Skip hidden files/dirs and also paths not in the include/exclude lists
 			.filter( function( thisPath ){
 				// Skip hidden dirs (like .Appledouble)
-				if( left( arguments.thisPath, 1 ) EQ "." ){
+				if ( left( arguments.thisPath, 1 ) EQ "." ) {
 					return false;
 				}
 				// If any of the following are true, then process it, else skip it
@@ -474,15 +490,19 @@ component accessors="true" {
 
 				// Map the path
 				mapPath(
-					path      : arguments.thisPath,
-					namespace : namespace,
-					prepend   : prepend,
-					force     : true
+					path     : arguments.thisPath,
+					namespace: namespace,
+					prepend  : prepend,
+					force    : true
 				);
 
 				// Are we influencing?
-				if( !isNull( influence ) ){
-					influence( this, arguments.thisPath, variables.currentMapping[ 1 ] );
+				if ( !isNull( influence ) ) {
+					influence(
+						this,
+						arguments.thisPath,
+						variables.currentMapping[ 1 ]
+					);
 				}
 
 				/**
@@ -490,7 +510,7 @@ component accessors="true" {
 				 * This is neccessary for multuple CFCs with the same name in different folders, but with unique aliases
 				 * TODO: Move to async
 				 */
-				if( process ){
+				if ( process ) {
 					variables.currentMapping[ 1 ].process( binder = this, injector = variables.injector );
 				}
 
@@ -507,7 +527,7 @@ component accessors="true" {
 	 */
 	Binder function process(){
 		variables.mappings.each( function( thisMapping ){
-			arguments.thisMapping.process( binder : this, injector : variables.injector );
+			arguments.thisMapping.process( binder: this, injector: variables.injector );
 		} );
 		return this;
 	}
@@ -791,7 +811,7 @@ component accessors="true" {
 	Binder function initArg(
 		name,
 		ref,
-		dsl = "",
+		dsl,
 		value,
 		javaCast,
 		required required=true,
@@ -984,7 +1004,7 @@ component accessors="true" {
 	 * @injector A parent injector to link
 	 */
 	Binder function parentInjector( required injector ){
-		variables.parentInjector = arguments.injector;
+		variables.oParentInjector = arguments.injector;
 		return this;
 	}
 
@@ -999,7 +1019,7 @@ component accessors="true" {
 			arguments.classes = listToArray( arguments.classes );
 		}
 		// Save them
-		variables.stopRecursions = arguments.classes;
+		variables.aStopRecursions = arguments.classes;
 
 		return this;
 	}
@@ -1181,7 +1201,7 @@ component accessors="true" {
 
 		// Register Parent Injector
 		if ( structKeyExists( wireBoxDSL, "parentInjector" ) ) {
-			variables.parentInjector = wireBoxDSL.parentInjector;
+			variables.oParentInjector = wireBoxDSL.parentInjector;
 		}
 
 		// Register Server Scope Registration
