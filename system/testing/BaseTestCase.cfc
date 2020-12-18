@@ -157,7 +157,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 			// remove context + reset headers
 			variables.controller.getRequestService().removeContext();
 			getPageContextResponse().reset();
-			request._lastInvalidEvent = "";
+			structDelete( request, "_lastInvalidEvent" );
 		}
 	}
 
@@ -383,8 +383,6 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 		// Setup the incoming event
 		URL[ eventName ] 	= arguments.event;
 		FORM[ eventName ] 	= arguments.event;
-		// Cleanup for invalid event handlers
-		structDelete( request, "_lastInvalidEvent" );
 		// Capture the request
 		controller.getRequestService().requestCapture( arguments.event );
 		return this;
@@ -425,6 +423,8 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 		var requestContext  = getRequestContext();
 		var relocationTypes = "TestController.relocate";
 		var cbController    = getController();
+		var requestService 	= cbController.getRequestService();
+		var routingService 	= cbController.getRoutingService();
 		var renderData      = "";
 		var renderedContent = "";
 		var iData           = {};
@@ -439,7 +439,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 				arguments.event = getController().getSetting( "defaultEvent" );
 				requestContext.setValue( requestContext.getEventName(), arguments.event );
 				// Prepare all mocking data for simulating routing request
-				prepareMock( getController().getRoutingService() )
+				prepareMock( routingService )
 					.$( "getCGIElement" )
 					.$args( "path_info", requestContext )
 					.$results( arguments.route )
@@ -450,6 +450,8 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 					.$args( "domain", requestContext )
 					.$results( CGI.SERVER_NAME );
 				arguments.route = "";
+				// Capture the route request
+				controller.getRequestService().requestCapture();
 			}
 			// if we were passed a route, parse it and prepare the SES interceptor for routing.
 			else if ( arguments.route.len() ) {
@@ -460,7 +462,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 				// add the query string parameters from the route to the request context
 				requestContext.collectionAppend( routeParts.queryStringCollection );
 				// mock the cleaned paths so SES routes will be recognized
-				prepareMock( getController().getRoutingService() )
+				prepareMock( routingService )
 					.$( "getCGIElement" )
 					.$args( "path_info", requestContext )
 					.$results( routeParts.route )
@@ -470,17 +472,21 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 					.$( "getCGIElement" )
 					.$args( "domain", requestContext )
 					.$results( CGI.SERVER_NAME );
+				// Capture the route request
+				controller.getRequestService().requestCapture();
 			} else {
 				// If we were passed just an event, remove routing since we don't need it
 				getInstance( "router@coldbox" ).setEnabled( false );
+				// Capture the request using our passed in event to execute
+				controller.getRequestService().requestCapture( arguments.event );
 			}
 
 			// add the query string parameters from the route to the request context
 			requestContext.collectionAppend( parseQueryString( arguments.queryString ) );
 
 			// Setup the request Context with setup FORM/URL variables set in the unit test.
-			cbController.getRequestService().setContext( requestContext );
-			setupRequest( arguments.event );
+			requestService.setContext( requestContext );
+			//setupRequest( arguments.event );
 
 			// App Start Handler
 			if ( len( cbController.getSetting( "ApplicationStartHandler" ) ) ) {
