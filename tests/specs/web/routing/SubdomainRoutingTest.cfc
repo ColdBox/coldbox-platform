@@ -14,8 +14,8 @@ component extends="tests.resources.BaseIntegrationTest"{
 					.$results( "subdomain-routing.dev" );
 
 				var event = execute( route = "/" );
-
 				var rc = event.getCollection();
+
 				expect( rc ).toHaveKey( "event" );
 				expect( rc.event ).toBe( "subdomain.index" );
 			} );
