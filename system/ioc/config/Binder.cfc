@@ -1244,7 +1244,7 @@ component accessors="true" {
 
 		// Append Register Stop Recursions
 		if ( structKeyExists( wireBoxDSL, "stopRecursions" ) ) {
-			this.aStopRecursions( wireBoxDSL.stopRecursions );
+			this.stopRecursions( wireBoxDSL.stopRecursions );
 		}
 
 		// Register listeners
