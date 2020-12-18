@@ -5,8 +5,7 @@ component {
 	this.allowedMethods = { "index" : "GET" };
 
 	function testJsonRCPayload( event, rc, prc ){
-		writeDump( var=rc );
-		abort;
+		return rc;
 	}
 
 	function routeRunner( event, rc, prc ){
