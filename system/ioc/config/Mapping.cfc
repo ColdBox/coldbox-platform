@@ -25,18 +25,18 @@ component accessors="true"{
 	property name="dsl";
 	property name="cache" type="struct";
 	property name="DIConstructorArguments";
-	property name="DIProperties"      type="array";
-	property name="DISetters"         type="array";
+	property name="DIProperties"           type="array";
+	property name="DISetters"                 type="array";
 	property name="DIMethodArguments" type="array";
-	property name="onDIComplete"      type="array";
-	property name="discovered"        type="boolean";
-	property name="objectMetadata"    type="struct";
-	property name="providerMethods"   type="array";
-	property name="aspect"            type="boolean";
+	property name="onDIComplete"           type="array";
+	property name="discovered"               type="boolean";
+	property name="objectMetadata"       type="struct";
+	property name="providerMethods"     type="array";
+	property name="aspect"                       type="boolean";
 	property name="aspectAutoBinding" type="boolean";
 	property name="virtualInheritance";
 	property name="extraAttributes" type="struct";
-	property name="mixins"          type="array";
+	property name="mixins"                   type="array";
 	property name="threadSafe";
 	property name="influenceClosure";
 
