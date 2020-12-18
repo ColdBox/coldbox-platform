@@ -279,7 +279,7 @@ component accessors="true"{
 	Mapping function addDIConstructorArgument(
 		name,
 		ref,
-		dsl="",
+		dsl,
 		value,
 		javaCast,
 		required required=true,
