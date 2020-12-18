@@ -66,6 +66,8 @@ component extends="coldbox.system.web.services.BaseService" {
 			isJSON( context.getHTTPContent() )
 		) {
 			var payload = context.getHTTPContent( json = true );
+			writeDump( var=payload );
+			abort;
 			if ( isStruct( payload ) ) {
 				structAppend( rc, payload );
 			}

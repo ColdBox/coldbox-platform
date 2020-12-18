@@ -1742,13 +1742,16 @@ component serializable="false" accessors="true" {
 		boolean xml  = false
 	){
 		// Only read the content once
-		if ( !StructKeyExists( variables.privateContext, "_httpContent" ) ) {
+		if ( !structKeyExists( variables.privateContext, "_httpContent" ) ) {
 			variables.privateContext._httpContent = getHTTPRequestData().content;
-			if ( arguments.json and isJSON( toString( variables.privateContext._httpContent ) ) ) {
-				variables.privateContext._httpContent = deserializeJSON( toString( variables.privateContext._httpContent ) );
-			} else if ( arguments.xml and len( toString( variables.privateContext._httpContent ) ) and isXML( toString( variables.privateContext._httpContent ) ) ) {
-				variables.privateContext._httpContent = xmlParse( toString( variables.privateContext._httpContent ) );
-			}
+		}
+
+		// leave translations NOT cached, as you could ask for different types of formats
+		// during a single request.
+		if ( arguments.json and isJSON( toString( variables.privateContext._httpContent ) ) ) {
+			return deserializeJSON( toString( variables.privateContext._httpContent ) );
+		} else if ( arguments.xml and len( toString( variables.privateContext._httpContent ) ) and isXML( toString( variables.privateContext._httpContent ) ) ) {
+			return xmlParse( toString( variables.privateContext._httpContent ) );
 		}
 
 		return variables.privateContext._httpContent;
