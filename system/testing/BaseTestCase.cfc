@@ -380,17 +380,13 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	function setupRequest( required event ){
 		var controller 	= getController();
 		var eventName 	= controller.getSetting( "eventName" );
-
 		// Setup the incoming event
 		URL[ eventName ] 	= arguments.event;
 		FORM[ eventName ] 	= arguments.event;
 		// Cleanup for invalid event handlers
 		structDelete( request, "_lastInvalidEvent" );
 		// Capture the request
-		var context = controller.getRequestService().requestCapture();
-		// Set event again, just in case of funky tests sometimes clearing it
-		context.setValue( eventName, arguments.event );
-
+		controller.getRequestService().requestCapture( arguments.event );
 		return this;
 	}
 

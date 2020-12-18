@@ -44,14 +44,16 @@ component extends="coldbox.system.web.services.BaseService" {
 	/**
 	 * I capture an incoming request. Returns: coldbox.system.web.context.RequestContext
 	 *
+	 * @event Override to instead use this as the main event instead of looking for it in form/url
+	 *
 	 * @return coldbox.system.web.context.RequestContext
 	 */
-	any function requestCapture(){
+	any function requestCapture( event ){
 		var context = getContext();
 		var rc      = context.getCollection();
 		var prc     = context.getCollection( private = true );
 
-		// Capture FORM/URL
+		// Capture FORM/URL or direct overrride
 		if ( isDefined( "FORM" ) ) {
 			structAppend( rc, FORM );
 		}
@@ -78,6 +80,12 @@ component extends="coldbox.system.web.services.BaseService" {
 
 		// First, process the request through the RoutingService
 		variables.routingService.requestCapture( context );
+
+		// Do we have an override
+		if( !isNull( arguments.event ) && len( arguments.event ) ){
+			rc[ variables.eventName ] = arguments.event;
+		}
+
 		// Execute onRequestCapture interceptionPoint
 		variables.interceptorService.announce( "onRequestCapture" );
 
