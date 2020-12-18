@@ -811,7 +811,7 @@ component accessors="true" {
 	Binder function initArg(
 		name,
 		ref,
-		dsl = "",
+		dsl,
 		value,
 		javaCast,
 		required required=true,
