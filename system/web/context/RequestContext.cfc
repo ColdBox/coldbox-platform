@@ -452,7 +452,7 @@ component serializable="false" accessors="true" {
 	 * @defaultValue default value
 	 * @private Private or public, defaults public.
 	 */
-	function getTrimValue(
+	function getTrimValue(CGI.PATH_INFO
 		required name,
 		defaultValue,
 		boolean private = false
@@ -1030,7 +1030,7 @@ component serializable="false" accessors="true" {
 		return this;
 	}
 
-	/**
+	/**CGI.PATH_INFO
 	 * Override the default layout for a request
 	 * @return RequestContext
 	 */
@@ -1161,16 +1161,15 @@ component serializable="false" accessors="true" {
 	 * Handles SES urls gracefully.
 	 */
 	string function getFullURL(){
-		return arrayToList(
-			[
-				getSesBaseUrl(),
-				CGI.PATH_INFO,
-				CGI.QUERY_STRING != "" && CGI.PATH_INFO == "" ? "/" : "",
-				CGI.QUERY_STRING != "" ? "?" : "",
-				CGI.QUERY_STRING
-			],
-			""
-		);
+		var javaURI = createObject( "java", "java.net.URI" );
+		var baseUrl = javaURI.create( getSESBaseURL() );
+		return javaURI.init(
+			baseUrl.getScheme(),
+			baseUrl.getAuthority(),
+			CGI.PATH_INFO != "" ? CGI.PATH_INFO : javacast( "null", "" ),
+			CGI.QUERY_STRING != "" ? CGI.QUERY_STRING : javacast( "null", "" ),
+			javacast( "null", "" )
+		).toString();
 	}
 
 	/**
@@ -1180,7 +1179,7 @@ component serializable="false" accessors="true" {
 		return arrayToList(
 			[
 				variables.controller.getRoutingService().getRouter().composeRoutingPath(),
-				CGI.PATH_INFO,
+				left( CGI.PATH_INFO, 1 ) == "/" ? right( CGI.PATH_INFO, -1 ) : CGI.PATH_INFO,
 				CGI.QUERY_STRING != "" && CGI.PATH_INFO == "" ? "/" : "",
 				CGI.QUERY_STRING != "" ? "?" : "",
 				CGI.QUERY_STRING
