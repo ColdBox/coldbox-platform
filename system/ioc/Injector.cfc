@@ -324,6 +324,12 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 			variables.logBox.shutdown();
 		}
 
+		// Shutdown Executors if not in ColdBox Mode
+		// This needs to happen AFTER logbox is shutdown since they share the taskScheduler
+		if( !isColdBoxLinked() ){
+			variables.asyncManager.shutdownAllExecutors( force = true );
+		}
+
 		return this;
 	}
 
@@ -1144,7 +1150,7 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 
 			// Create CacheBox
 			var oConfig = createObject( "component", "#arguments.config.classNamespace#.config.CacheBoxConfig" ).init( argumentCollection=args );
-			variables.cacheBox = createObject( "component", "#arguments.config.classNamespace#.CacheFactory" ).init( oConfig );
+			variables.cacheBox = createObject( "component", "#arguments.config.classNamespace#.CacheFactory" ).init( config=oConfig, wirebox=this );
 			// debugging
 			if( variables.log.canDebug() ){
 				variables.log.debug( "Configured Injector #getInjectorID()# with CacheBox instance: #variables.cacheBox.getFactoryID()# and configuration file: #arguments.config.configFile#" );
@@ -1179,7 +1185,7 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 		var config = new coldbox.system.logging.config.LogBoxConfig( argumentCollection=args );
 
 		// Create LogBox
-		variables.logBox = new coldbox.system.logging.LogBox( config );
+		variables.logBox = new coldbox.system.logging.LogBox( config=config, wirebox=this );
 		// Configure Logging for this injector
 		variables.log = variables.logBox.getLogger( this );
 

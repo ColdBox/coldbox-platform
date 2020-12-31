@@ -42,6 +42,11 @@ component accessors="true"{
 	property name="coldbox";
 
 	/**
+	 * WireBox Linkage, empty if in standalone mode.
+	 */
+	property name="wirebox";
+
+	/**
 	 * Reference back to the running LogBox instance
 	 */
 	property name="logBox";

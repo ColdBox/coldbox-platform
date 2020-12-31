@@ -74,8 +74,9 @@ component serializable="false" accessors="true" {
 	 * @appKey The application registered application key, default is cbController
 	 */
 	function init( required appRootPath, appKey = "cbController" ){
-		// This will be lazy loaded on first use since the framework isn't ready to create it yet
+		// These will be lazy loaded on first use since the framework isn't ready to create it yet
 		variables.renderer = "";
+		variables.wireBox = "";
 
 		// Create Utility
 		variables.util         = new coldbox.system.core.util.Util();

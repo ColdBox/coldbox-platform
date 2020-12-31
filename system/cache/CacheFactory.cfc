@@ -26,6 +26,10 @@
 	 */
 	property name="coldbox";
 	/**
+	 * The WireBox object linkage
+	 */
+	property name="wirebox";
+	/**
 	 * The LogBox object linkage
 	 */
 	property name="logbox";
@@ -68,11 +72,13 @@
 	 * @coldbox A coldbox application that this instance of CacheBox can be linked to, if not using it, just ignore it.
 	 * @coldbox.doc_generic coldbox.system.web.Controller
 	 * @factoryID A unique ID or name for this factory. If not passed I will make one up for you.
+	 * @wirebox A configured wirebox instance to get logbox, asyncManager, and EventManager from.  If not passed, I will create new ones.
 	 */
 	function init(
 		config,
 		coldbox,
-		factoryId=""
+		factoryId="",
+		wirebox
 	){
 		var defaultConfigPath = "coldbox.system.cache.config.DefaultConfiguration";
 
@@ -84,6 +90,8 @@
 		variables.config  = "";
 		// ColdBox Application Link
 		variables.coldbox = "";
+		// ColdBox Application Link
+		variables.wirebox = "";
 		// Event Manager Link
 		variables.eventManager = "";
 		// Configured Event States
@@ -129,6 +137,8 @@
 		if( !isNull( arguments.coldbox ) ){
 			// Link ColdBox
 			variables.coldbox = arguments.coldbox;
+			// Link to WireBox
+			variables.wirebox = variables.coldbox.getWireBox();				
 			// link LogBox
 			variables.logBox  = variables.coldbox.getLogBox();
 			// Link Event Manager
@@ -139,13 +149,28 @@
 			variables.asyncManager = variables.coldbox.getAsyncManager();
 			variables.taskScheduler = variables.asyncManager.getExecutor( "coldbox-tasks" );
 		} else {
+			if( !isNull( arguments.wirebox ) ) {
+				// Link to WireBox
+				variables.wirebox = arguments.wirebox;
+				// If WireBox linked, get LogBox and EventManager, and asyncmanager from it
+				variables.asyncManager = variables.wirebox.getAsyncManager();
+				variables.taskScheduler = variables.wirebox.getTaskScheduler();				
+				variables.logBox = variables.wirebox.getLogBox();				
+				// link LogBox
+				variables.eventManager = variables.wirebox.getEventManager();
+				// register the points to listen to
+				variables.eventManager.appendInterceptionPoints( variables.eventStates );
+			} else {
+				
 			// Register an async manager and scheduler
 			variables.asyncManager = new coldbox.system.async.AsyncManager();
 			variables.taskScheduler = variables.asyncManager.newScheduledExecutor( name : "cachebox-tasks", threads : 20 );
+				
 			// Running standalone, so create our own logging first
 			configureLogBox( arguments.config.getLogBoxConfig() );
 			// Running standalone, so create our own event manager
 			configureEventManager();
+		}
 		}
 
 		// Configure Logging for the Cache Factory
@@ -352,6 +377,14 @@
 		// remove scope registration
 		removeFromScope();
 
+		// Shutdown LogBox and Executors if not in ColdBox Mode or WireBox mode
+		if( !isObject( variables.coldbox ) && !isObject( variables.wirebox ) ){
+			if( isObject( variables.logBox ) ) {
+				variables.logBox.shutdown();
+			}
+			variables.asyncManager.shutdownAllExecutors( force = true );
+		}
+		
 		// Notify Listeners
 		variables.eventManager.announce( "afterCacheFactoryShutdown", { cacheFactory = this } );
 
@@ -675,6 +708,10 @@
 					// Link ColdBox if using it
 					if( isObject( variables.coldbox ) AND structKeyExists( oCache, "setColdBox" ) ){
 						oCache.setColdBox( variables.coldbox );
+					}
+					// Link WireBox if using it
+					if( isObject( variables.wirebox ) AND structKeyExists( oCache, "setWireBox" ) ){
+						oCache.setWireBox( variables.wirebox );
 					}
 					// Link Event Manager
 					oCache.setEventManager( variables.eventManager );

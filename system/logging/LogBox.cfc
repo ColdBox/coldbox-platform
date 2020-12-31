@@ -48,6 +48,11 @@ component accessors="true"{
 	property name="coldbox";
 
 	/**
+	* WireBox linkage class
+	*/
+	property name="wirebox";
+
+	/**
 	 * The Global AsyncManager
 	 * @see coldbox.system.async.AsyncManager
 	 */
@@ -67,12 +72,14 @@ component accessors="true"{
 	 *
 	 * @config The LogBoxConfig object to use to configure this instance of LogBox or a path to your configuration object
 	 * @coldbox A coldbox application that this instance of logbox can be linked to.
+	 * @wirebox A wirebox injector that this instance of logbox can be linked to.
 	 *
 	 * @return A configured and loaded LogBox instance
 	 */
 	function init(
 		config="coldbox.system.logging.config.DefaultConfig",
-		coldbox=""
+		coldbox="",
+		wirebox=""
 	){
 		// LogBox Unique ID
 		variables.logboxID          = createObject( 'java', 'java.lang.System' ).identityHashCode( this );
@@ -87,6 +94,9 @@ component accessors="true"{
 
 		// Link incoming ColdBox instance
 		variables.coldbox = arguments.coldbox;
+		// Link incoming WireBox instance
+		variables.wirebox = arguments.wirebox;
+		
 
 		// Registered system appenders
 		variables.systemAppenders = directoryList(
@@ -99,12 +109,16 @@ component accessors="true"{
 		} );
 
 		// Register the task scheduler according to operating mode
-		if( !isObject( variables.coldbox ) ){
-			variables.asyncManager = new coldbox.system.async.AsyncManager();
-			variables.taskScheduler = variables.asyncManager.newScheduledExecutor( name : "logbox-tasks", threads : 20 );
-		} else {
+		if( isObject( variables.coldbox ) ){
+			variables.wirebox = variables.coldbox.getWireBox();
 			variables.asyncManager = variables.coldbox.getAsyncManager();
 			variables.taskScheduler = variables.asyncManager.getExecutor( "coldbox-tasks" );
+		} else if( isObject( arguments.wirebox ) ){
+			variables.asyncManager = variables.wirebox.getAsyncManager();
+			variables.taskScheduler = variables.wirebox.getTaskScheduler();
+		} else {
+			variables.asyncManager = new coldbox.system.async.AsyncManager();
+			variables.taskScheduler = variables.asyncManager.newScheduledExecutor( name : "logbox-tasks", threads : 20 );
 		}
 
 		// Configure LogBox
@@ -171,8 +185,8 @@ component accessors="true"{
 			variables.config.onShutdown( this );
 		}
 
-		// Shutdown Executors if not in ColdBox Mode
-		if( !isObject( variables.coldbox ) ){
+		// Shutdown Executors if not in ColdBox Mode or WireBox mode
+		if( !isObject( variables.coldbox ) && !isObject( variables.wirebox ) ){
 			variables.asyncManager.shutdownAllExecutors( force = true );
 		}
 
@@ -294,6 +308,7 @@ component accessors="true"{
 					variables.appenderRegistry[ arguments.name ] = new "#getLoggerClass( arguments.class )#"( argumentCollection=arguments )
 						.setLogBox( this )
 						.setColdBox( variables.coldbox )
+						.setWireBox( variables.wirebox )
 						.onRegistration()
 						.setInitialized( true );
 
