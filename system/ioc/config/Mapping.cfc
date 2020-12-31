@@ -520,15 +520,18 @@ component accessors="true"{
 			if ( structKeyExists( arguments, "metadata" ) ) {
 				md = arguments.metadata;
 			} else {
+				
+				var produceMetadataUDF = function() { return injector.getUtil().getInheritedMetaData(variables.path, binder.getStopRecursions()); };
+				
 				// Are we caching metadata? or just using it
 				if ( len( arguments.binder.getMetadataCache() ) ) {
 					// Get from cache or produce on demand
 					md = arguments.injector
 						.getCacheBox()
 						.getCache( arguments.binder.getMetadataCache() )
-						.getOrSet( variables.path, produceMetadataUDF( arguments.injector, arguments.binder ) );
+						.getOrSet( variables.path, produceMetadataUDF );
 				} else {
-					md = produceMetadataUDF( arguments.injector, arguments.binder );
+					md = produceMetadataUDF();
 				}
 			}
 
@@ -686,21 +689,6 @@ component accessors="true"{
 	 * Private Methods
 	 * ---------------------------------------------------
 	 */
-
-	/**
-	 * Produce metadata helper
-	 *
-	 * @injector The injector to use
-	 * @binder The binder to use
-	 *
-	 * @return Metadata struct
-	 */
-	private function produceMetadataUDF( required injector, required binder ){
-		return arguments
-			.injector
-			.getUtil()
-			.getInheritedMetaData( variables.path, arguments.binder.getStopRecursions() );
-	};
 
 	/**
 	 * Process the AOP self binding aspects
