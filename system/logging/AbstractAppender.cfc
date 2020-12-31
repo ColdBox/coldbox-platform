@@ -348,11 +348,15 @@ component accessors="true"{
 				}
 			}
 		} catch ( Any e ) {
+			if( e.message contains 'interrupted' ) {
+				// Ignore interruptions, it's just the thread pool being shutdown cleanly
+			} else {
 			// send to CF logging
 			$log( "ERROR", "Error processing log listener: #e.message# #e.detail# #e.stacktrace#" );
 			// send to standard error out
 			variables.err( "Error with log listener thread for #getName()#: " & e.message & e.detail );
 			variables.err( e.stackTrace );
+			}
 		} finally {
 			// End Advice
 			onLogListenerEnd( queueContext );
