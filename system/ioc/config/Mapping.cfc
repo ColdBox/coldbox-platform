@@ -5,7 +5,7 @@
  * I model a WireBox object mapping in all of its glory and splendour to create the
  * object it represents
  */
-component accessors="true"{
+component accessors="true" {
 
 	/**
 	 * Mapping Properties
@@ -25,18 +25,18 @@ component accessors="true"{
 	property name="dsl";
 	property name="cache" type="struct";
 	property name="DIConstructorArguments";
-	property name="DIProperties"           type="array";
-	property name="DISetters"                 type="array";
+	property name="DIProperties"      type="array";
+	property name="DISetters"         type="array";
 	property name="DIMethodArguments" type="array";
-	property name="onDIComplete"           type="array";
-	property name="discovered"               type="boolean";
-	property name="objectMetadata"       type="struct";
-	property name="providerMethods"     type="array";
-	property name="aspect"                       type="boolean";
+	property name="onDIComplete"      type="array";
+	property name="discovered"        type="boolean";
+	property name="objectMetadata"    type="struct";
+	property name="providerMethods"   type="array";
+	property name="aspect"            type="boolean";
 	property name="aspectAutoBinding" type="boolean";
 	property name="virtualInheritance";
 	property name="extraAttributes" type="struct";
-	property name="mixins"                   type="array";
+	property name="mixins"          type="array";
 	property name="threadSafe";
 	property name="influenceClosure";
 
@@ -126,7 +126,7 @@ component accessors="true"{
 	 * @memento The data memento to process
 	 * @excludes List of memento keys to not process
 	 */
-	Mapping function processMemento( required memento, excludes="" ){
+	Mapping function processMemento( required memento, excludes = "" ){
 		// if excludes is passed as an array, convert to list
 		if ( isArray( arguments.excludes ) ) {
 			arguments.excludes = arrayToList( arguments.excludes );
@@ -149,7 +149,9 @@ component accessors="true"{
 				// process constructor args
 				case "DIConstructorArguments": {
 					for ( var x = 1; x lte arrayLen( arguments.memento.DIConstructorArguments ); x++ ) {
-						addDIConstructorArgument( argumentCollection = arguments.memento.DIConstructorArguments[ x ] );
+						addDIConstructorArgument(
+							argumentCollection = arguments.memento.DIConstructorArguments[ x ]
+						);
 					}
 					break;
 				}
@@ -250,9 +252,9 @@ component accessors="true"{
 	 */
 	function setCacheProperties(
 		required key,
-		timeout          ="",
-		lastAccessTimeout="",
-		provider         ="default"
+		timeout           = "",
+		lastAccessTimeout = "",
+		provider          = "default"
 	){
 		structAppend( variables.cache, arguments, true );
 		return this;
@@ -283,7 +285,7 @@ component accessors="true"{
 		value,
 		javaCast,
 		required required=true,
-		type             ="any"
+		type             = "any"
 	){
 		// check if already registered, if it is, just return
 		for ( var x = 1; x lte arrayLen( variables.DIConstructorArguments ); x++ ) {
@@ -322,7 +324,7 @@ component accessors="true"{
 		value,
 		javaCast,
 		required required=true,
-		type             ="any"
+		type             = "any"
 	){
 		// check if already registered, if it is, just return
 		for ( var x = 1; x lte arrayLen( variables.DIMethodArguments ); x++ ) {
@@ -330,7 +332,7 @@ component accessors="true"{
 				structKeyExists( variables.DIMethodArguments[ x ], "name" ) AND
 				variables.DIMethodArguments[ x ].name == arguments.name
 			) {
-					return this;
+				return this;
 			}
 		}
 
@@ -360,9 +362,9 @@ component accessors="true"{
 		dsl,
 		value,
 		javaCast,
-		scope            ="variables",
+		scope            = "variables",
 		required required=true,
-		type             ="any"
+		type             = "any"
 	){
 		// check if already registered, if it is, just return
 		for ( var x = 1; x lte arrayLen( variables.DIProperties ); x++ ) {
@@ -459,22 +461,18 @@ component accessors="true"{
 	 *
 	 * @return Mapping
 	 */
-	Mapping function process(
-		required binder,
-		required injector,
-		metadata
-	){
+	Mapping function process( required binder, required injector, metadata ){
 		var md              = variables.objectMetadata;
 		var eventManager    = arguments.injector.getEventManager();
 		var cacheProperties = {};
 
 		// Short circuit, if mapping already discovered, then just exit out.
-		if( variables.discovered ){
+		if ( variables.discovered ) {
 			return this;
 		}
 
 		// Generate a lock token
-		if ( isSimpleValue( variables.path ) ){
+		if ( isSimpleValue( variables.path ) ) {
 			var lockToken = variables.path;
 		} else {
 			var lockToken = createUUID();
@@ -485,10 +483,9 @@ component accessors="true"{
 			name          ="Mapping.#arguments.injector.getInjectorID()#.MetadataProcessing.#lockToken#"
 			type          ="exclusive"
 			timeout       ="20"
-			throwOnTimeout="true"
-		{
+			throwOnTimeout="true" {
 			// announce inspection
-			var iData = {
+			var iData     = {
 				mapping  : this,
 				binder   : arguments.binder,
 				injector : arguments.binder.getInjector()
@@ -520,9 +517,10 @@ component accessors="true"{
 			if ( structKeyExists( arguments, "metadata" ) ) {
 				md = arguments.metadata;
 			} else {
-				
-				var produceMetadataUDF = function() { return injector.getUtil().getInheritedMetaData(variables.path, binder.getStopRecursions()); };
-				
+				var produceMetadataUDF = function(){
+					return injector.getUtil().getInheritedMetaData( variables.path, binder.getStopRecursions() );
+				};
+
 				// Are we caching metadata? or just using it
 				if ( len( arguments.binder.getMetadataCache() ) ) {
 					// Get from cache or produce on demand
@@ -589,11 +587,7 @@ component accessors="true"{
 				// Check if lastAccessTimeout set by configuration or discovery
 				if ( NOT len( variables.cache.lastAccessTimeout ) ) {
 					// Discovery by annocations
-					if (
-						structKeyExists( md, "cacheLastAccessTimeout" ) AND isNumeric(
-							md.cacheLastAccessTimeout
-						)
-					) {
+					if ( structKeyExists( md, "cacheLastAccessTimeout" ) AND isNumeric( md.cacheLastAccessTimeout ) ) {
 						variables.cache.lastAccessTimeout = md.cacheLastAccessTimeout;
 					}
 				}
@@ -624,9 +618,7 @@ component accessors="true"{
 			if ( NOT len( variables.threadSafe ) ) {
 				if ( structKeyExists( md, "threadSafe" ) AND NOT len( md.threadSafe ) ) {
 					variables.threadSafe = true;
-				} else if (
-					structKeyExists( md, "threadSafe" ) AND len( md.threadSafe ) AND isBoolean( md.threadSafe )
-				) {
+				} else if ( structKeyExists( md, "threadSafe" ) AND len( md.threadSafe ) AND isBoolean( md.threadSafe ) ) {
 					variables.threadSafe = md.threadSafe;
 				} else {
 					// defaults to non thread safe wiring
@@ -655,7 +647,7 @@ component accessors="true"{
 			// look for parent metadata referring to an abstract parent (by alias) to copy
 			// dependencies and definitions from
 			if ( structKeyExists( md, "parent" ) and len( trim( md.parent ) ) ) {
-				arguments.binder.parent( alias : md.parent );
+				arguments.binder.parent( alias: md.parent );
 			}
 
 			// Only process if autowiring
@@ -679,7 +671,8 @@ component accessors="true"{
 
 			// announce it
 			eventManager.announce( "afterInstanceInspection", iData );
-		} // End lock
+		}
+		// End lock
 
 		return this;
 	}
@@ -823,7 +816,11 @@ component accessors="true"{
 	 *
 	 * @return Mapping
 	 */
-	private Mapping function processDIMetadata( required binder, required metadata, dependencies={} ){
+	private Mapping function processDIMetadata(
+		required binder,
+		required metadata,
+		dependencies = {}
+	){
 		// Shortcut
 		var md = arguments.metadata;
 
@@ -831,17 +828,21 @@ component accessors="true"{
 		param md.properties = [];
 		md.properties
 			// Only process injectable properties
-			.filter( function( thisProperty ) {
+			.filter( function( thisProperty ){
 				return structKeyExists( thisProperty, "inject" );
 			} )
 			// Process each property
 			.each( function( thisProperty ){
 				addDIProperty(
-					name     : arguments.thisProperty.name,
-					dsl      : ( len( arguments.thisProperty.inject ) ? arguments.thisProperty.inject : "model" ),
-					scope    : ( structKeyExists( arguments.thisProperty, "scope" ) ? arguments.thisProperty.scope : "variables" ),
-					required : ( structKeyExists( arguments.thisProperty, "required" ) ? arguments.thisProperty.required : true ),
-					type     : ( structKeyExists( arguments.thisProperty, "type" ) ? arguments.thisProperty.type : "any" )
+					name : arguments.thisProperty.name,
+					dsl  : ( len( arguments.thisProperty.inject ) ? arguments.thisProperty.inject : "model" ),
+					scope: (
+						structKeyExists( arguments.thisProperty, "scope" ) ? arguments.thisProperty.scope : "variables"
+					),
+					required: (
+						structKeyExists( arguments.thisProperty, "required" ) ? arguments.thisProperty.required : true
+					),
+					type: ( structKeyExists( arguments.thisProperty, "type" ) ? arguments.thisProperty.type : "any" )
 				);
 			} );
 
@@ -850,22 +851,22 @@ component accessors="true"{
 		md.functions
 			// Verify Processing or do we continue to next iteration for processing
 			// This is to avoid overriding by parent trees in inheritance chains
-			.filter( function( thisFunction ) {
+			.filter( function( thisFunction ){
 				return !structKeyExists( dependencies, thisFunction.name );
 			} )
 			.each( function( thisFunction ){
 				// Constructor Processing if found
 				if ( thisFunction.name eq variables.constructor ) {
 					// Process parameters for constructor injection
-					for( var thisParam in thisFunction.parameters ){
+					for ( var thisParam in thisFunction.parameters ) {
 						// Check injection annotation, if not found then no injection
 						if ( structKeyExists( thisParam, "inject" ) ) {
 							// ADD Constructor argument
 							addDIConstructorArgument(
-								name     : thisParam.name,
-								dsl      : ( len( thisParam.inject ) ? thisParam.inject : "model" ),
-								required : ( structKeyExists( thisParam, "required" ) ? thisParam.required : false ),
-								type     : ( structKeyExists( thisParam, "type" ) ? thisParam.type : "any" )
+								name    : thisParam.name,
+								dsl     : ( len( thisParam.inject ) ? thisParam.inject : "model" ),
+								required: ( structKeyExists( thisParam, "required" ) ? thisParam.required : false ),
+								type    : ( structKeyExists( thisParam, "type" ) ? thisParam.type : "any" )
 							);
 						}
 					}
@@ -877,8 +878,8 @@ component accessors="true"{
 				if ( left( thisFunction.name, 3 ) eq "set" AND structKeyExists( thisFunction, "inject" ) ) {
 					// Add to setter to mappings and recursion lookup
 					addDISetter(
-						name : right( thisFunction.name, len( thisFunction.name ) - 3 ),
-						dsl  : ( len( thisFunction.inject ) ? thisFunction.inject : "model" )
+						name: right( thisFunction.name, len( thisFunction.name ) - 3 ),
+						dsl : ( len( thisFunction.inject ) ? thisFunction.inject : "model" )
 					);
 					dependencies[ thisFunction.name ] = "setter";
 				}
@@ -894,7 +895,6 @@ component accessors="true"{
 					arrayAppend( variables.onDIComplete, thisFunction.name );
 					dependencies[ thisFunction.name ] = "onDIComplete";
 				}
-
 			} ); // End function processing
 
 		return this;
@@ -916,4 +916,5 @@ component accessors="true"{
 			"type"     : "any"
 		};
 	}
+
 }
