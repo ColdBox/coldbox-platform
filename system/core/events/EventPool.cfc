@@ -114,7 +114,10 @@ component accessors="true" {
 		var results = invoke(
 			arguments.target,
 			variables.state,
-			{ data : arguments.data }
+			{
+				interceptData : arguments.data,
+				data : arguments.data
+			}
 		);
 
 		if ( !isNull( local.results ) && isBoolean( results ) ) {
