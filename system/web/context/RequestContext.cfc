@@ -452,7 +452,7 @@ component serializable="false" accessors="true" {
 	 * @defaultValue default value
 	 * @private Private or public, defaults public.
 	 */
-	function getTrimValue(CGI.PATH_INFO
+	function getTrimValue(
 		required name,
 		defaultValue,
 		boolean private = false
@@ -1030,7 +1030,7 @@ component serializable="false" accessors="true" {
 		return this;
 	}
 
-	/**CGI.PATH_INFO
+	/**
 	 * Override the default layout for a request
 	 * @return RequestContext
 	 */
