@@ -574,6 +574,16 @@ component accessors="true" {
 	}
 
 	/**
+	 * Create a mapping to an object overwriting any existing registration.
+	 *
+	 * @alias A single alias or a list or an array of aliases for this mapping. Remember an object can be refered by many names
+	 */
+	Binder function forceMap( required alias ) {
+		arguments.force = true;
+		return map( argumentCollection = arguments );
+	}
+
+	/**
 	 * Map to a destination CFC class path.
 	 *
 	 * @path The class path to the object to map
