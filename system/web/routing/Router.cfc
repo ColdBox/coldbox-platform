@@ -830,6 +830,9 @@ component
 		// Check for existing route matches
 		var matchingRoutes = variables.routes.filter( function( route ){
 			return (
+				// Always register a new route when a condition is specified on either route
+				isSimpleValue( thisRoute.condition ) && isSimpleValue( route.condition )
+				&&
 				route.pattern == thisRoute.pattern
 				&&
 				route.domain == thisRoute.domain
