@@ -491,7 +491,6 @@ component extends="coldbox.system.testing.BaseModelTest" {
 					then( "I should have a suite of routes for that resource", function(){
 						router.resources( [ "photos", "videos" ] );
 						var routes = router.getRoutes();
-						writeDump( var = routes );
 						expect( routes ).toBeArray();
 						expect( routes ).toHaveLength( 8 );
 						expect( routes[ 1 ].pattern ).toBe( "photos/:id/edit/" );
@@ -526,7 +525,6 @@ component extends="coldbox.system.testing.BaseModelTest" {
 					then( "I should have a suite of routes for that resource", function(){
 						router.resources( "photos,videos" );
 						var routes = router.getRoutes();
-						writeDump( var = routes );
 						expect( routes ).toBeArray();
 						expect( routes ).toHaveLength( 8 );
 						expect( routes[ 1 ].pattern ).toBe( "photos/:id/edit/" );
