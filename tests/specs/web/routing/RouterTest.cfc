@@ -493,7 +493,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				given( "I register a route with a condition", function() {
 					then( "I should have a route with a condition closure specified", function() {
 						router.route( "/about" )
-							.withCondition( () => {
+							.withCondition( function() {
 								return url.keyExists( "firstName" );
 							} )
 							.withAction( { "GET": "getFirstName" } )
@@ -516,14 +516,14 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				given( "I register two routes with the same pattern and different conditions", function() {
 					then( "I should have two routes showing both conditions", function() {
 						router.route( "/about" )
-							.withCondition( () => {
+							.withCondition( function() {
 								return url.keyExists( "firstName" );
 							} )
 							.withAction( { "GET": "getFirstName" } )
 							.toHandler( "About" );
 
 						router.route( "/about" )
-							.withCondition( () => {
+							.withCondition( function() {
 								return url.keyExists( "lastName" );
 							} )
 							.withAction( { "GET": "getLastName" } )
