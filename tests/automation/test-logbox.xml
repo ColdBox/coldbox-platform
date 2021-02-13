@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!--
-This ANT build can be used to execute your tests with automation using our included runner.cfm.  
+This ANT build can be used to execute your tests with automation using our included runner.cfm.
 You can executes directories, bundles and so much more.  It can also produce JUnit reports using the
 ANT junitreport tag.  This is meant to be a template for you to spice up.
 
@@ -17,7 +17,7 @@ ant -f test.xml run-junit
 PLEASE NOTE THAT YOU MUST ALTER THE RUNNER'S URL ACCORDING TO YOUR ENVIRONMENT.
 -->
 <project name="logbox-testbox-runner" default="run" basedir=".">
-	
+
 	<!-- FILL OUT THE BUNDLES TO TEST, CAN BE A LIST OF CFC PATHS -->
 	<property name="test.bundles"		value="" />
 	<!-- FILL OUT THE DIRECTORY MAPPING TO TEST -->
@@ -28,11 +28,11 @@ PLEASE NOTE THAT YOU MUST ALTER THE RUNNER'S URL ACCORDING TO YOUR ENVIRONMENT.
 	<property name="test.labels"		value="" />
 	<!-- FILL OUT THE TEST REPORTER YOU WANT, AVAILABLE REPORTERS ARE: ANTJunit, Codexwiki, console, dot, doc, json, junit, min, raw, simple, tap, text, xml -->
 	<property name="test.reporter"		value="text" />
-	<!-- FILL OUT WHERE REPORTING RESULTS ARE STORED --> 
+	<!-- FILL OUT WHERE REPORTING RESULTS ARE STORED -->
 	<property name="report.dir"  		value="${basedir}/results-logbox" />
 	<property name="junitreport.dir"  	value="${report.dir}/junitreport" />
-	
+
 	<!-- Import Test File -->
 	<import file="base-test.xml"/>
-	
+
 </project>

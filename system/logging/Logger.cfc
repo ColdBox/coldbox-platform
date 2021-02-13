@@ -371,10 +371,10 @@ component accessors="true"{
 						thread.logEvent = new coldbox.system.logging.LogEvent( message=attributes.message, severity=attributes.severity, extraInfo=attributes.extraInfo );
 						thisAppender.logMessage( thread.logEvent );
 					}
-					  
+
 				} else {
 					if( isNull( logEvent ) ) {
-						var logEvent = new coldbox.system.logging.LogEvent( argumentCollection=arguments );	
+						var logEvent = new coldbox.system.logging.LogEvent( argumentCollection=arguments );
 					}
 					thisAppender.logMessage( logEvent );
 				}

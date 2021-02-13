@@ -7,9 +7,9 @@
 component 	implements="coldbox.system.aop.MethodInterceptor"
 			accessors="true"{
 
-	// DI 
+	// DI
 	property name="log" inject="logbox:logger:{this}";
-	
+
 	/**
 	* Log results
 	*/
@@ -32,22 +32,22 @@ component 	implements="coldbox.system.aop.MethodInterceptor"
 	function invokeMethod( required invocation ) output="false"{
 		var refLocal = {};
 		var debugString = "target: #arguments.invocation.getTargetName()#,method: #arguments.invocation.getMethod()#,arguments:#serializeJSON(arguments.invocation.getArgs())#";
-		
+
 		// log incoming call
 		if( log.canDebug() ){
 			log.debug( debugString );
 		}
-		
+
 		// proceed execution
 		refLocal.results = arguments.invocation.proceed();
-		
+
 		// result logging and returns
-		if( structKeyExists( refLocal, "results") ){ 
+		if( structKeyExists( refLocal, "results") ){
 			if( variables.logResults and log.canDebug() ){
 				log.debug( "#debugString#, results:", refLocal.results );
 			}
-			return refLocal.results; 
+			return refLocal.results;
 		}
 	}
-	
+
 }

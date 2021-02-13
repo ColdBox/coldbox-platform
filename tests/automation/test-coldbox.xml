@@ -3,7 +3,7 @@
 Executes the entire ColdBox Platform Test Suite
 -->
 <project name="coldbox-platform-runner" default="run" basedir=".">
-	
+
 	<!-- FILL OUT THE BUNDLES TO TEST, CAN BE A LIST OF CFC PATHS -->
 	<property name="test.bundles"		value="" />
 	<!-- FILL OUT THE DIRECTORY MAPPING TO TEST -->
@@ -16,10 +16,10 @@ Executes the entire ColdBox Platform Test Suite
 	<property name="test.labels"		value="" />
 	<!-- FILL OUT THE TEST REPORTER YOU WANT, AVAILABLE REPORTERS ARE: ANTJunit, Codexwiki, console, dot, doc, json, junit, min, raw, simple, tap, text, xml -->
 	<property name="test.reporter"		value="text" />
-	<!-- FILL OUT WHERE REPORTING RESULTS ARE STORED --> 
+	<!-- FILL OUT WHERE REPORTING RESULTS ARE STORED -->
 	<property name="report.dir"  		value="${basedir}/results" />
 	<property name="junitreport.dir"  	value="${report.dir}/junitreport" />
-	
+
 	<!-- Import Test File -->
 	<import file="base-test.xml"/>
 </project>

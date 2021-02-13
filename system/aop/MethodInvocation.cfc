@@ -3,7 +3,7 @@
 * www.ortussolutions.com
 * ---
 * This object is used when implementing AOP advices.  Each advice you create will implement
-* a `invokeMethod()` and receive this object as an argument.  
+* a `invokeMethod()` and receive this object as an argument.
 * You can then use any of the properties in this object to construct your advice.
 * Please see the property documentation below to understand each of the properties.
 * Just remember that in order to continue the execution of the Adviced method you will need to call `proceed()`
@@ -46,7 +46,7 @@ component accessors="true"{
 	* The number of interceptors applied
 	*/
 	property name="interceptorLen";
-	
+
 
 	/**
 	* Constructor
@@ -67,8 +67,8 @@ component accessors="true"{
     	required targetName,
     	required targetMapping,
     	required interceptors
-    ){    
-			
+    ){
+
 		// Method intercepted
 		variables.method  			= arguments.method;
 		// Arguments intercepted
@@ -87,7 +87,7 @@ component accessors="true"{
 		variables.interceptorIndex 	= 1;
 		// Length of interceptor
 		variables.interceptorLen	= arrayLen( arguments.interceptors );
-		
+
 		return this;
 	}
 
@@ -95,11 +95,11 @@ component accessors="true"{
 	* Increment the interceptor index pointer
 	* @return MethodInvocation
 	*/
-	function incrementInterceptorIndex(){    
+	function incrementInterceptorIndex(){
     	variables.interceptorIndex++;
-		return this;	    
-	}	
-	
+		return this;
+	}
+
 	/**
 	* Set args
 	* @return MethodInvocation
@@ -108,21 +108,21 @@ component accessors="true"{
 		variables.args = arguments.args;
 		return this;
 	}
-    
+
     /**
     * Proceed execution of the method invocation
     */
    	function proceed(){
    		// We will now proceed with our interceptor execution chain or regular method pointer call
 		// execute the next interceptor in the chain
-			
+
 		// Check Current Index against interceptor length
 		if( variables.interceptorIndex <= variables.interceptorLen ){
 			return variables.interceptors[ variables.interceptorIndex ].invokeMethod( this.incrementInterceptorIndex() );
 		}
-		
+
 		// If we get here all interceptors have fired and we need to fire the original proxied method
 		return variables.target.$wbAOPInvokeProxy( method=variables.method, args=variables.args );
    	}
-    
+
 }

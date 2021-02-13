@@ -17,7 +17,7 @@ component accessors="true"{
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @CFCConfig The logBox Data Configuration CFC
 	 * @CFCConfigPath The logBox Data Configuration CFC path to use
 	 */
@@ -26,7 +26,7 @@ component accessors="true"{
 		if( structKeyExists( arguments, "CFCConfigPath" ) ){
 			arguments.CFCConfig = createObject( "component", arguments.CFCConfigPath );
 		}
-		
+
 		// Test and load via Data CFC
 		if( structKeyExists( arguments, "CFCConfig") and isObject( arguments.CFCConfig ) ){
 			// Decorate our data CFC
@@ -38,7 +38,7 @@ component accessors="true"{
 			// Load the DSL
 			loadDataDSL( logBoxDSL );
 		}
-		
+
 		// Just return, most likely programmatic config
 		return this;
 	}
@@ -58,7 +58,7 @@ component accessors="true"{
 
 	/**
 	 * Load a data configuration CFC data DSL
-	 * 
+	 *
 	 * @rawDSL The data configuration DSL structure
 	 */
 	LogBoxConfig function loadDataDSL( required struct rawDSL ){
@@ -69,13 +69,13 @@ component accessors="true"{
 			logBoxDSL.appenders[ key ].name = key;
 			appender( argumentCollection=logBoxDSL.appenders[ key ] );
 		}
-		
+
 		// Register Root Logger
 		if( NOT structKeyExists( logBoxDSL, "root" ) ){
 			logBoxDSL.root = { appenders = "*" };
 		}
 		root( argumentCollection=logBoxDSL.root );
-		
+
 		// Register Categories
 		if( structKeyExists( logBoxDSL, "categories") ){
 			for( var key in logBoxDSL.categories ){
@@ -83,28 +83,28 @@ component accessors="true"{
 				category( argumentCollection=logBoxDSL.categories[ key ] );
 			}
 		}
-		
+
 		// Register Level Categories
-		if( structKeyExists( logBoxDSL, "debug" ) ){ 
+		if( structKeyExists( logBoxDSL, "debug" ) ){
 			DEBUG( argumentCollection=variables.utility.arrayToStruct( logBoxDSL.debug ) );
 		}
-		if( structKeyExists( logBoxDSL, "info" ) ){ 
+		if( structKeyExists( logBoxDSL, "info" ) ){
 			INFO( argumentCollection=variables.utility.arrayToStruct( logBoxDSL.info ) );
 		}
-		if( structKeyExists( logBoxDSL, "warn" ) ){ 
+		if( structKeyExists( logBoxDSL, "warn" ) ){
 			WARN( argumentCollection=variables.utility.arrayToStruct( logBoxDSL.warn ) );
 		}
-		if( structKeyExists( logBoxDSL, "error" ) ){ 
+		if( structKeyExists( logBoxDSL, "error" ) ){
 			ERROR( argumentCollection=variables.utility.arrayToStruct( logBoxDSL.error ) );
 		}
-		if( structKeyExists( logBoxDSL, "fatal" ) ){ 
+		if( structKeyExists( logBoxDSL, "fatal" ) ){
 			FATAL( argumentCollection=variables.utility.arrayToStruct( logBoxDSL.fatal ) );
 		}
-		if( structKeyExists( logBoxDSL, "off" ) ){ 
+		if( structKeyExists( logBoxDSL, "off" ) ){
 			OFF( argumentCollection=variables.utility.arrayToStruct( logBoxDSL.off ) );
-		}		
+		}
 
-		return this;		
+		return this;
 	}
 
 	/**
@@ -140,7 +140,7 @@ component accessors="true"{
 
 	/**
 	 * Validates the configuration. If not valid, it will throw an appropriate exception.
-	 * 
+	 *
 	 * @throws AppenderNotFound
 	 */
 	LogBoxConfig function validate(){
@@ -149,7 +149,7 @@ component accessors="true"{
 			// Auto register a root logger
 			root( appenders="*" );
 		}
-		
+
 		// All root appenders?
 		if( instance.rootLogger.appenders eq "*" ){
 			instance.rootLogger.appenders = structKeyList( getAllAppenders() );
@@ -165,15 +165,15 @@ component accessors="true"{
 				);
 			}
 		}
-		
+
 		// Check all Category Appenders
 		for( var key in instance.categories ){
-			
+
 			// Check * all appenders
 			if( instance.categories[ key ].appenders eq "*" ){
 				instance.categories[ key ].appenders = structKeyList( getAllAppenders() );
 			}
-			
+
 			for( var x=1; x lte listlen( instance.categories[ key ].appenders ); x++ ){
 				if( NOT structKeyExists( instance.appenders, listGetAt( instance.categories[ key ].appenders, x ) ) ){
 					throw(
@@ -190,7 +190,7 @@ component accessors="true"{
 
 	/**
 	 * Add an appender configuration
-	 * 
+	 *
 	 * @name A unique name for the appender to register. Only unique names can be registered per instance
 	 * @class The appender's class to register. We will create, init it and register it for you
 	 * @properties The structure of properties to configure this appender with.
@@ -198,8 +198,8 @@ component accessors="true"{
 	 * @levelMin The default log level for the root logger, by default it is 0 (FATAL). Optional. ex: config.logLevels.WARN
 	 * @levelMax The default log level for the root logger, by default it is 4 (DEBUG). Optional. ex: config.logLevels.WARN
 	 */
-	LogBoxConfig function appender( 
-		required name, 
+	LogBoxConfig function appender(
+		required name,
 		required class,
 		struct properties={},
 		layout="",
@@ -208,36 +208,36 @@ component accessors="true"{
 	){
 		// Convert Levels
 		convertLevels( arguments );
-		
+
 		// Check levels
 		levelChecks( arguments.levelMin, arguments.levelMax );
-		
+
 		// Register appender
 		instance.appenders[ arguments.name ] = arguments;
-		
+
 		return this;
 	}
 
 	/**
 	 * Add an appender configuration
-	 * 
+	 *
 	 * @appenders A list of appenders to configure the root logger with. Send a * to add all appenders
 	 * @levelMin The default log level for the root logger, by default it is 0 (FATAL). Optional. ex: config.logLevels.WARN
 	 * @levelMax The default log level for the root logger, by default it is 4 (DEBUG). Optional. ex: config.logLevels.WARN
-	 * 
+	 *
 	 * @throws InvalidAppenders
 	 */
-	LogBoxConfig function root( 
-		required appenders, 
+	LogBoxConfig function root(
+		required appenders,
 		levelMin=0,
 		levelMax=4
 	){
 		// Convert Levels
 		convertLevels( arguments );
-		
+
 		// Check levels
 		levelChecks( arguments.levelMin, arguments.levelMax );
-		
+
 		//Verify appender list
 		if( NOT listLen(arguments.appenders) ){
 			throw(
@@ -249,7 +249,7 @@ component accessors="true"{
 
 		// Add definition
 		instance.rootLogger = arguments;
-		
+
 		return this;
 	}
 
@@ -302,7 +302,7 @@ component accessors="true"{
 
 	/**
 	 * Check if a category definition exists
-	 * 
+	 *
 	 * @name The category name
 	 */
 	boolean function categoryExists( required name ){
@@ -404,23 +404,23 @@ component accessors="true"{
 	/**
 	 * Level checks on incoming levels
 	 *
-	 * @levelMin 
-	 * @levelMax 
-	 * 
+	 * @levelMin
+	 * @levelMax
+	 *
 	 * @throws InvalidLevel
 	 */
 	private function levelChecks( required levelMin, required levelMax ){
 		if ( !this.logLevels.isLevelValid( arguments.levelMin ) ) {
-			throw( 
-				message = "LevelMin #arguments.levelMin# is not a valid level.", 
-				type    = "InvalidLevel" 
+			throw(
+				message = "LevelMin #arguments.levelMin# is not a valid level.",
+				type    = "InvalidLevel"
 			);
 		} else if ( !this.logLevels.isLevelValid( arguments.levelMax ) ) {
-			throw( 
-				message = "LevelMin #arguments.levelMax# is not a valid level.", 
-				type    = "InvalidLevel" 
+			throw(
+				message = "LevelMin #arguments.levelMax# is not a valid level.",
+				type    = "InvalidLevel"
 			);
 		}
 	}
-	
+
 }

@@ -6,7 +6,7 @@
 **/
 component accessors="true"{
 
-	
+
 	/**
 	* The category to log messages under
 	*/
@@ -31,10 +31,10 @@ component accessors="true"{
 	* Any extra info to log
 	*/
 	property name="extrainfo" default="";
-	
+
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @message The message to log.
 	 * @severity The severity level to log.
 	 * @extraInfo Extra information to send to the loggers.
@@ -48,34 +48,34 @@ component accessors="true"{
 
 		for( var key in arguments ){
 			if( isSimpleValue( arguments[ key ] ) ){
-				arguments[ key ] = trim( arguments[ key ] );	
+				arguments[ key ] = trim( arguments[ key ] );
 			}
 			variables[ key ] = arguments[ key ];
 		}
 		return this;
 	}
-	
+
 	/**
 	 * Get the extra info as a string representation
 	 */
 	function getExtraInfoAsString(){
 		// Simple value, just return it
-		if( isSimpleValue( variables.extraInfo ) ){ 
-			return variables.extraInfo; 
+		if( isSimpleValue( variables.extraInfo ) ){
+			return variables.extraInfo;
 		}
-		
+
 		// Convention translation: $toString();
-		if( isObject( variables.extraInfo ) AND structKeyExists( variables.extraInfo, "$toString" ) ){ 
-			return variables.extraInfo.$toString(); 
+		if( isObject( variables.extraInfo ) AND structKeyExists( variables.extraInfo, "$toString" ) ){
+			return variables.extraInfo.$toString();
 		}
-	
+
 		// Component XML conversion
 		if( isObject( variables.extraInfo ) ){
 			return variables.xmlConverter.toXML( variables.extraInfo );
 		}
-		
+
 		// Complex values, return serialized in json
-		return serializeJSON( variables.extraInfo );	
+		return serializeJSON( variables.extraInfo );
 	}
 
 }

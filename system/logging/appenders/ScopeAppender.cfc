@@ -9,10 +9,10 @@
  * - limit : a limit to the amount of logs to rotate. Defaults to 0, unlimited (optional)
 **/
 component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
-    
+
     /**
 	 * Constructor
-	 * 
+	 *
 	 * @name The unique name for this appender.
 	 * @properties A map of configuration properties for the appender"
 	 * @layout The layout class to use in this appender for custom message rendering.
@@ -28,7 +28,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 	){
         // Init supertype
 		super.init( argumentCollection=arguments );
-		
+
 		// Verify properties
 		if( NOT propertyExists( "scope" ) ){
 			setProperty( "scope", "request" );
@@ -39,38 +39,38 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 		if( NOT propertyExists( "limit" ) OR NOT isNumeric( getProperty( "limit" ) ) ){
 			setProperty( "limit", 0 );
 		}
-		
+
 		// Scope storage
 		variables.scopeStorage = new coldbox.system.core.collections.ScopeStorage();
 		// Scope Checks
 		variables.scopeStorage.scopeCheck( getproperty( "scope" ) );
 		// UUID generator
 		variables.uuid = createobject( "java", "java.util.UUID" );
-		
+
 		return this;
     }
 
     /**
 	 * Write an entry into the appender. You must implement this method yourself.
-	 * 
+	 *
 	 * @logEvent The logging event to log
 	 */
 	function logMessage( required coldbox.system.logging.LogEvent logEvent ){
 		var entry    = structnew();
 		var limit    = getProperty( "limit" );
 		var loge     = arguments.logEvent;
-		
+
 		// Verify storage
 		ensureStorage();
-		
+
 		// Check Limits
 		var logStack = getStorage();
-		
+
 		if( limit GT 0 and arrayLen( logStack ) GTE limit ){
 			// pop one out, the oldest
 			arrayDeleteAt( logStack, 1 );
 		}
-		
+
 		// Log Away
 		entry.id           = variables.uuid.randomUUID().toString();
 		entry.logDate      = loge.getTimeStamp();
@@ -79,10 +79,10 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 		entry.message      = loge.getMessage();
 		entry.extraInfo    = loge.getextraInfo();
 		entry.category     = loge.getCategory();
-		
+
 		// Save Storage
 		arrayAppend( logStack, entry );
-		saveStorage( logStack );	
+		saveStorage( logStack );
 
 		return this;
 	}
@@ -100,7 +100,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 
 	/**
 	 * Save Storage
-	 * 
+	 *
 	 * @data The data to store
 	 */
 	private function saveStorage( required data ){
