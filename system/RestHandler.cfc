@@ -77,6 +77,11 @@ component extends="EventHandler" {
 			arguments.exception = e;
 			this.onEntityNotFoundException( argumentCollection = arguments );
 		}
+		// Permission Exceptions
+		catch ( "PermissionDenied" e ) {
+			arguments.exception = e;
+			this.onAuthorizationFailure( argumentCollection = arguments );
+		}		
 		// Record Not Found
 		catch ( "RecordNotFound" e ) {
 			arguments.exception = e;
