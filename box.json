@@ -39,11 +39,10 @@
         ]
     },
     "devDependencies":{
-        "testbox":"^4.1.0",
+        "testbox":"^4.2.1+400",
         "commandbox-dotenv":"*",
         "commandbox-cfconfig":"*",
-		"commandbox-cfformat":"*",
-		"commandbox-docbox":"*"
+        "commandbox-cfformat":"*"
     },
     "installPaths":{
         "testbox":"testbox/"
