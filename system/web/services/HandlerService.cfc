@@ -170,6 +170,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			var targetInvalidEvent = invalidEvent( arguments.ehBean.getFullEvent(), arguments.ehBean );
 
 			// If we get here, then the invalid event kicked in and exists, else an exception is thrown above
+            // set the invalid event handler as the current event
+            oRequestContext.overrideEvent( targetInvalidEvent );
 			// Go retrieve the handler that will handle the invalid event so it can execute.
 			return getHandler( getHandlerBean( targetInvalidEvent ), oRequestContext );
 		}
