@@ -124,7 +124,6 @@ component serializable="false" accessors="true"{
 	*/
 	function reloadChecks(){
 		var appKey       = locateAppKey();
-		var cbController = "";
 		var needReinit   = isfwReinit();
 
 		// Initialize the Controller If Needed, double locked
@@ -159,9 +158,7 @@ component serializable="false" accessors="true"{
 
 		try{
 			// Get Controller Reference
-			lock type="readonly" name="#appHash#" timeout="#lockTimeout#" throwontimeout="true"{
-				cbController = application[ appKey ];
-			}
+			var cbController = application[ appKey ];
 			// WireBox Singleton AutoReload
 			if( cbController.getSetting( "Wirebox" ).singletonReload ){
 				lock type="exclusive" name="#appHash#" timeout="#lockTimeout#" throwontimeout="true"{
@@ -174,8 +171,7 @@ component serializable="false" accessors="true"{
 					cbController.getHandlerService().registerHandlers();
 				}
 			}
-		}
-		catch(Any e){
+		} catch( Any e ) {
 			// process the exception
 			writeOutput( processException( cbController, e ) );
 			// abort it, something went really wrong.
