@@ -213,7 +213,7 @@ component
      */
     struct function getStoreMetadataReport(){
 		return getKeys()
-			.reduce( function( item, result ){
+			.reduce( function( result, item ){
 				result[ item ] = getCachedObjectMetadata( item );
 				return result;
 			}, {} );
