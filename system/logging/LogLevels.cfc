@@ -14,14 +14,14 @@ component{
 	this.WARN 	= 2;
 	this.INFO 	= 3;
 	this.DEBUG 	= 4;
-	
+
 	// List of valid levels
 	this.VALIDLEVELS = "off,fatal,error,warn,info,debug";
-	
+
 	// Max
 	this.MINLEVEL = -1;
 	this.MAXLEVEL = 4;
-	
+
 	/**
 	 * Lookup a level in our numeric enum, else it returns void.
 	 *
@@ -34,10 +34,10 @@ component{
 			case 1: return "ERROR";
 			case 2: return "WARN";
 			case 3: return "INFO";
-			case 4: return "DEBUG";		
+			case 4: return "DEBUG";
 		}
 	}
-	
+
 	/**
 	 * Lookup level in numeric format from a string. If not found a 999 is returned
 	 *
@@ -52,11 +52,11 @@ component{
 			case "WARNING"     : return 2;
 			case "INFO"        : return 3;
 			case "INFORMATION" : return 3;
-			case "DEBUG"       : return 4;	
-			default            : return 999;	
+			case "DEBUG"       : return 4;
+			default            : return 999;
 		}
 	}
-	
+
 	/**
 	 * Lookup a CF level using a number
 	 *
@@ -70,10 +70,10 @@ component{
 			case 2: return "Warning";
 			case 3: return "Information";
 			case 4: return "Information";
-			default: return "Information";		
+			default: return "Information";
 		}
 	}
-	
+
 	/**
 	 * Verifies if a level is valid or not
 	 *
