@@ -6,7 +6,7 @@
 * a `invokeMethod()` and receive this object as an argument.
 * You can then use any of the properties in this object to construct your advice.
 * Please see the property documentation below to understand each of the properties.
-* Just remember that in order to continue the execution of the Adviced method you will need to call `proceed()`
+* Just remember that in order to continue the execution of the Advised method you will need to call `proceed()`
 */
 component accessors="true"{
 

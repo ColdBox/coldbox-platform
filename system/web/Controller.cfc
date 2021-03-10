@@ -147,7 +147,7 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
-	 * Get the system web renderer, you can also retreive it from wirebox via renderer@coldbox
+	 * Get the system web renderer, you can also retrieve it from wirebox via renderer@coldbox
 	 *
 	 * @return coldbox.system.web.Renderer
 	 */
@@ -160,7 +160,7 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
-	 *  Get the system data marshaller, you can also retreive it from wirebox via dataMarshaller@coldbox
+	 *  Get the system data marshaller, you can also retrieve it from wirebox via dataMarshaller@coldbox
 	 *
 	 * @return coldbox.system.core.conversion.DataMarhsaller
 	 */
@@ -835,9 +835,9 @@ component serializable="false" accessors="true" {
 				// PREEVENT Interceptor
 				services.interceptorService.announce( "preEvent", iData );
 
-				// Verify if event was overriden
+				// Verify if event was overridden
 				if ( arguments.event NEQ iData.processedEvent ) {
-					// Validate the overriden event
+					// Validate the overridden event
 					results.ehBean = services.handlerService.getHandlerBean( iData.processedEvent );
 					// Get new handler to follow execution
 					oHandler       = services.handlerService.getHandler( results.ehBean, oRequestContext );
@@ -871,9 +871,9 @@ component serializable="false" accessors="true" {
 				}
 			}
 
-			// Verify if event was overriden
+			// Verify if event was overridden
 			if ( arguments.defaultEvent and arguments.event NEQ oRequestContext.getCurrentEvent() ) {
-				// Validate the overriden event
+				// Validate the overridden event
 				results.ehBean = services.handlerService.getHandlerBean(
 					oRequestContext.getCurrentEvent()
 				);

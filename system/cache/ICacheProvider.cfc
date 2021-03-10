@@ -68,7 +68,7 @@ Description :
     </cffunction>
 
 	<!--- configure --->
-    <cffunction name="configure" output="false" access="public" returntype="void" hint="This method makes the cache ready to accept elements and run.  Usualy a cache is first created (init), then wired and then the factory calls configure() on it">
+    <cffunction name="configure" output="false" access="public" returntype="void" hint="This method makes the cache ready to accept elements and run.  Usually a cache is first created (init), then wired and then the factory calls configure() on it">
     </cffunction>
 
 	<!--- shutdown --->
@@ -104,7 +104,7 @@ Description :
     </cffunction>
 
 	<!--- getQuiet --->
-    <cffunction name="getQuiet" output="false" access="public" returntype="any" hint="Get an object from the cache without updating stats or listners">
+    <cffunction name="getQuiet" output="false" access="public" returntype="any" hint="Get an object from the cache without updating stats or listeners">
     	<cfargument name="objectKey" type="any" required="true" hint="The object key"/>
     </cffunction>
 
@@ -166,7 +166,7 @@ Description :
 	</cffunction>
 
 	<!--- expireAll --->
-    <cffunction name="expireAll" output="false" access="public" returntype="void" hint="Expire all the elments in the cache (if supported by the provider)">
+    <cffunction name="expireAll" output="false" access="public" returntype="void" hint="Expire all the elements in the cache (if supported by the provider)">
     </cffunction>
 
 	<!--- expireObject --->

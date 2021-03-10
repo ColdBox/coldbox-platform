@@ -92,7 +92,7 @@ component accessors="true"{
 	){
 		// Appender Unique ID */
 		variables._hash        = createObject( 'java', 'java.lang.System' ).identityHashCode( this );
-		// Flag denoting if the appender is inited or not. This will be set by LogBox upon succesful creation and registration.
+		// Flag denoting if the appender is inited or not. This will be set by LogBox upon successful creation and registration.
 		variables.initialized  = false;
 
 		// Appender's Name

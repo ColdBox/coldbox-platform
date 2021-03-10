@@ -108,7 +108,7 @@ component accessors="true"{
 	/**
 	 * Builds a basic cache key without the hash component
 	 * @keySuffix The key suffix used
-	 * @targetEvent The targetged ColdBox event string
+	 * @targetEvent The targeted ColdBox event string
 	 */
 	string function buildBasicCacheKey( required keySuffix, required targetEvent ){
 		return variables.cacheProvider.getEventCacheKeyPrefix() & arguments.targetEvent & "-" & arguments.keySuffix & "-";

@@ -46,7 +46,7 @@
 	}
 
 	/**
-	 * This method makes the cache ready to accept elements and run.  Usualy a cache is first created (init), then wired and then the factory calls configure() on it
+	 * This method makes the cache ready to accept elements and run.  Usually a cache is first created (init), then wired and then the factory calls configure() on it
 	 *
 	 * @return MockProvider
 	 */
@@ -125,7 +125,7 @@
 	}
 
 	/**
-	 * Get an object from the cache without updating stats or listners
+	 * Get an object from the cache without updating stats or listeners
 	 *
 	 * @objectKey The key to retrieve
 	 */
@@ -258,7 +258,7 @@
 	}
 
 	/**
-	 * Expire all the elments in the cache (if supported by the provider)
+	 * Expire all the elements in the cache (if supported by the provider)
 	 */
 	function expireAll(){
 		return this;
@@ -349,8 +349,8 @@
 	/**
 	 * Clears all the event permutations from the cache according to the list of snippets and querystrings. Be careful when using incomplete event name with query strings as partial event names are not guaranteed to match with query string permutations
 	 *
-	 * @eventSnippet The comma-delimmitted list event snippet to clear on. Can be partial or full
-	 * @queryString The comma-delimmitted list of queryStrings passed in. If passed in, it will create a unique hash out of it. For purging purposes.  If passed in the list length must be equal to the list length of the event snippets passed in
+	 * @eventSnippet The comma-delimited list event snippet to clear on. Can be partial or full
+	 * @queryString The comma-delimited list of queryStrings passed in. If passed in, it will create a unique hash out of it. For purging purposes.  If passed in the list length must be equal to the list length of the event snippets passed in
 	 *
 	 * @return MockProvider
 	 */
@@ -372,7 +372,7 @@
 	/**
 	 * Clears all view name permutations from the cache according to the view name.
 	 *
-	 * @viewSnippets The comma-delimmitted list or array of view snippet to clear on. Can be partial or full
+	 * @viewSnippets The comma-delimited list or array of view snippet to clear on. Can be partial or full
 	 */
 	function clearViewMulti( required viewSnippets ){
 		return this;

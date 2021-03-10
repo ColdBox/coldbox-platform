@@ -727,7 +727,7 @@ component
 
 		// Check parent view order setup
 		if ( variables.modulesConfig[ moduleName ].layoutParentLookup ) {
-			// We check if layout is overriden in parent first.
+			// We check if layout is overridden in parent first.
 			if ( fileExists( expandPath( parentModuleLayoutPath ) ) ) {
 				return parentModuleLayoutPath;
 			}
@@ -747,7 +747,7 @@ component
 		if ( fileExists( expandPath( moduleLayoutPath ) ) ) {
 			return moduleLayoutPath;
 		}
-		// We check if layout is overriden in parent first.
+		// We check if layout is overridden in parent first.
 		if ( fileExists( expandPath( parentModuleLayoutPath ) ) ) {
 			return parentModuleLayoutPath;
 		}
@@ -805,7 +805,7 @@ component
 
 		// Check parent view order setup
 		if ( variables.modulesConfig[ moduleName ].viewParentLookup ) {
-			// We check if view is overriden in parent first.
+			// We check if view is overridden in parent first.
 			if ( fileExists( expandPath( parentModuleViewPath & ".cfm" ) ) ) {
 				return parentModuleViewPath;
 			}
@@ -825,7 +825,7 @@ component
 		if ( fileExists( expandPath( moduleViewPath & ".cfm" ) ) ) {
 			return moduleViewPath;
 		}
-		// We check if view is overriden in parent first.
+		// We check if view is overridden in parent first.
 		if ( fileExists( expandPath( parentModuleViewPath & ".cfm" ) ) ) {
 			return parentModuleViewPath;
 		}

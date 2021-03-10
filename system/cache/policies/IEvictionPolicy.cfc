@@ -3,7 +3,7 @@
 * www.ortussolutions.com
 * ----
 *
-* CacheBox Eviction polify interface
+* CacheBox Eviction policy interface
 */
 interface{
 

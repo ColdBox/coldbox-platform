@@ -163,7 +163,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 	}
 
 	/**
-	 * Fired once the listner starts queue processing
+	 * Fired once the listener starts queue processing
 	 *
 	 * @queueContext A struct of data attached to this processing queue thread
 	 */
@@ -227,7 +227,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 	}
 
 	/**
-	 * Fired once the listner stops queue processing
+	 * Fired once the listener stops queue processing
 	 *
 	 * @queueContext A struct of data attached to this processing queue thread
 	 */

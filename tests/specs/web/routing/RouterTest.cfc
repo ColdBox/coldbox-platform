@@ -256,7 +256,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 			} );
 
 			story( "I can register route headers", function(){
-				given( "A single or mulitple headers", function(){
+				given( "A single or multiple headers", function(){
 					then( "they will register correctly", function(){
 						router
 							.route( "/withHeaders" )
@@ -291,7 +291,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 			} );
 
 			story( "I can register route rc parameters", function(){
-				given( "A single or mulitple params", function(){
+				given( "A single or multiple params", function(){
 					then( "they will register correctly", function(){
 						router
 							.route( "/withRC" )
@@ -307,7 +307,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 			} );
 
 			story( "I can register route prc parameters", function(){
-				given( "A single or mulitple params", function(){
+				given( "A single or multiple params", function(){
 					then( "they will register correctly", function(){
 						router
 							.route( "/withPRC" )

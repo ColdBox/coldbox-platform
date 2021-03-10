@@ -91,7 +91,7 @@ interface{
 	function setEventManager( required eventManager );
 
 	/**
-	 * This method makes the cache ready to accept elements and run.  Usualy a cache is first created (init), then wired and then the factory calls configure() on it
+	 * This method makes the cache ready to accept elements and run.  Usually a cache is first created (init), then wired and then the factory calls configure() on it
 	 *
 	 * @return ICacheProvider
 	 */
@@ -141,7 +141,7 @@ interface{
 	function get( required objectKey );
 
 	/**
-	 * Get an object from the cache without updating stats or listners
+	 * Get an object from the cache without updating stats or listeners
 	 *
 	 * @objectKey The key to retrieve
 	 */
@@ -240,7 +240,7 @@ interface{
 	boolean function clearQuiet( required objectKey );
 
 	/**
-	 * Expire all the elments in the cache (if supported by the provider)
+	 * Expire all the elements in the cache (if supported by the provider)
 	 *
 	 * @return ICacheProvider
 	 */

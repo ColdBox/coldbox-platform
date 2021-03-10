@@ -297,7 +297,7 @@ component extends="coldbox.system.web.services.BaseService" {
 				autoMapModels         : true,
 				// Auto process models for metadata and annotations, default is lazy loading now due to performance
 				autoProcessModels     : false,
-				// when this registration ocurred
+				// when this registration occurred
 				loadTime              : now(),
 				// Flag that denotes if the module has been activated or not
 				activated             : false,

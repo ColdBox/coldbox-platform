@@ -425,7 +425,7 @@ The main ColdBox utility library, it is built with tags to allow for dumb ACF10 
 
 		// Mix in methods
 		for ( var key in baseObject ) {
-			// If handler has overriden method, then don't override it with mixin, simulated inheritance
+			// If handler has overridden method, then don't override it with mixin, simulated inheritance
 			if ( NOT structKeyExists( arguments.target, key ) ) {
 				arguments.target.$injectUDF( key, baseObject[ key ] );
 			}
