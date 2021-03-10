@@ -1,12 +1,12 @@
 # Welcome to the ColdBox Test Suite
 
 ```
-   ____      _     _ ____            
+   ____      _     _ ____
   / ___|___ | | __| | __ )  _____  __
  | |   / _ \| |/ _` |  _ \ / _ \ \/ /
- | |__| (_) | | (_| | |_) | (_) >  < 
+ | |__| (_) | | (_| | |_) | (_) >  <
   \____\___/|_|\__,_|____/ \___/_/\_\
-                                     
+
 ```
 
 Copyright Since 2005 ColdBox Platform by Luis Majano and Ortus Solutions, Corp
@@ -20,7 +20,7 @@ Because of God's grace, this project exists. If you don't like this, then don't 
 By whom also we have access by faith into this grace wherein we stand, and rejoice in hope of the glory of God.
 And not only so, but we glory in tribulations also: knowing that tribulation worketh patience;
 And patience, experience; and experience, hope:
-And hope maketh not ashamed; because the love of God is shed abroad in our hearts by the 
+And hope maketh not ashamed; because the love of God is shed abroad in our hearts by the
 Holy Ghost which is given unto us. ." Romans 5:5
 
 ----
@@ -78,7 +78,7 @@ Modify those values as you need to change the connection details or remove the d
 
 ### Lucee Optional: `Default` Cache
 
-If you are in the Lucee CFML engine, then you will need to register a `default` cache in the administrator so CacheBox can be tested.  
+If you are in the Lucee CFML engine, then you will need to register a `default` cache in the administrator so CacheBox can be tested.
 
 ## Test Harness
 

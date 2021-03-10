@@ -17,7 +17,7 @@ component accessors="true"{
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @appender The appender this layout is linked to.
 	 */
 	function init( required appender ){
@@ -27,7 +27,7 @@ component accessors="true"{
 
 	/**
 	 * Format a logging event message into your own format
-	 * 
+	 *
 	 * @logEvent The LogBox logging event object
 	 */
 	function format( required logEvent ){
@@ -36,5 +36,5 @@ component accessors="true"{
 			type 	= "FormatNotImplementedException"
 		)
 	}
-	
+
 }

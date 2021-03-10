@@ -3,7 +3,7 @@
  * www.ortussolutions.com
  * ---
  * An appender that sends out emails
- * 
+ *
  * Properties:
  *	- subject - Get's pre-pended with the category field.
  *	- from - required
@@ -16,10 +16,10 @@
  *	- mailport (optional - 25)
 **/
 component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
-    
+
     /**
 	 * Constructor
-	 * 
+	 *
 	 * @name The unique name for this appender.
 	 * @properties A map of configuration properties for the appender"
 	 * @layout The layout class to use in this appender for custom message rendering.
@@ -35,7 +35,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 	){
         // Init supertype
 		super.init( argumentCollection=arguments );
-		
+
 		// Property Checks
 		if( NOT propertyExists( "from" ) ){
 			throw(message="from email is required",type="EmailAppender.PropertyNotFound" );
@@ -76,7 +76,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 
     /**
 	 * Write an entry into the appender. You must implement this method yourself.
-	 * 
+	 *
 	 * @logEvent The logging event to log
 	 */
 	function logMessage( required coldbox.system.logging.LogEvent logEvent ){
@@ -138,7 +138,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 			}
 
 		} catch( Any e ){
-			$log( 
+			$log(
 				"ERROR",
 				"Error sending email from appender #getName()#. #e.message# #e.detail# #e.stacktrace#"
 			);

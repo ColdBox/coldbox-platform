@@ -1,21 +1,21 @@
 ﻿```
- ___       ___    _____   ______      _____   ______      ____     __     __  
-(  (       )  )  (_   _) (   __ \    / ___/  (_   _ \    / __ \   (_ \   / _) 
- \  \  _  /  /     | |    ) (__) )  ( (__      ) (_) )  / /  \ \    \ \_/ /   
-  \  \/ \/  /      | |   (    __/    ) __)     \   _/  ( ()  () )    \   /    
-   )   _   (       | |    ) \ \  _  ( (        /  _ \  ( ()  () )    / _ \    
-   \  ( )  /      _| |__ ( ( \ \_))  \ \___   _) (_) )  \ \__/ /   _/ / \ \_  
-    \_/ \_/      /_____(  )_) \__/    \____\ (______/    \____/   (__/   \__) 
+ ___       ___    _____   ______      _____   ______      ____     __     __
+(  (       )  )  (_   _) (   __ \    / ___/  (_   _ \    / __ \   (_ \   / _)
+ \  \  _  /  /     | |    ) (__) )  ( (__      ) (_) )  / /  \ \    \ \_/ /
+  \  \/ \/  /      | |   (    __/    ) __)     \   _/  ( ()  () )    \   /
+   )   _   (       | |    ) \ \  _  ( (        /  _ \  ( ()  () )    / _ \
+   \  ( )  /      _| |__ ( ( \ \_))  \ \___   _) (_) )  \ \__/ /   _/ / \ \_
+    \_/ \_/      /_____(  )_) \__/    \____\ (______/    \____/   (__/   \__)
 
 ```
-   
+
 Copyright Since 2005 ColdBox Platform by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.ortussolutions.com
 
 ----
 
 # Welcome to WireBox
-WireBox is a conventions based ColdFusion (CFML) dependency injection and AOP framework. 
+WireBox is a conventions based ColdFusion (CFML) dependency injection and AOP framework.
 
 ## License
 Apache License, Version 2.0.
@@ -62,7 +62,7 @@ Official Site
 - ColdFusion 11+
 
 ## Quick Installation
-Please go to our [documentation](https://wirebox.ortusbooks.com) for expanded instructions. 
+Please go to our [documentation](https://wirebox.ortusbooks.com) for expanded instructions.
 
 **CommandBox (Recommended)**
 
@@ -91,5 +91,5 @@ Because of God's grace, this project exists. If you don't like this, then don't 
 By whom also we have access by faith into this grace wherein we stand, and rejoice in hope of the glory of God.
 And not only so, but we glory in tribulations also: knowing that tribulation worketh patience;
 And patience, experience; and experience, hope:
-And hope maketh not ashamed; because the love of God is shed abroad in our hearts by the 
+And hope maketh not ashamed; because the love of God is shed abroad in our hearts by the
 Holy Ghost which is given unto us. ." Romans 5:5
