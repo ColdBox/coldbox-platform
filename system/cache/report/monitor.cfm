@@ -8,7 +8,7 @@ www.ortussolutions.com
 Author 	    :	Luis Majano
 Description :
 	Custom tag for displaying CacheBox Cache reports.
-	
+
 ATTRIBUTES:
 - cacheBox : An instance reference to the cacheBox factory to report on
 - baseURL (optional='default') : An optional baseURL that will be used to post to this monitor on. Default is CGI.SCRIPT_NAME
@@ -25,7 +25,7 @@ ATTRIBUTES:
 
 <!--- CacheBox Factory --->
 <cfparam name="attributes.cacheFactory" 	type="any" default="">
-<!--- BaseURL --->	
+<!--- BaseURL --->
 <cfparam name="attributes.baseURL" 			type="string" default="#CGI.SCRIPT_NAME#">
 <!--- Skin To Use --->
 <cfparam name="attributes.skin"				type="string" default="default">
@@ -84,7 +84,7 @@ ATTRIBUTES:
 	<cfcase value="cacheViewer">
 		<cfset ajaxRender = true>
 		<cfset report = reportHandler.renderCacheDumper(cacheName=url.cbox_cacheName,cacheEntry=url.cbox_cacheEntry)>
-	</cfcase>		
+	</cfcase>
 </cfswitch>
 
 <!--- Ajax Rendering --->
