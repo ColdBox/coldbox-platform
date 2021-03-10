@@ -624,7 +624,7 @@ component
 	 */
 	function resources(
 		required resource,
-		handler          = arguments.resource,
+		handler,
 		parameterName    = "id",
 		only             = [],
 		except           = [],
@@ -660,7 +660,7 @@ component
 			if ( !structIsEmpty( actionSet ) ) {
 				addRoute(
 					pattern  : "#thisPattern#/:#arguments.parameterName#/edit",
-					handler  : arguments.handler,
+					handler  : isNull( arguments.handler ) ? thisResource : arguments.handler,
 					action   : actionSet,
 					module   : arguments.module,
 					namespace: arguments.namespace,
@@ -677,7 +677,7 @@ component
 			if ( !structIsEmpty( actionSet ) ) {
 				addRoute(
 					pattern  : "#thisPattern#/new",
-					handler  : arguments.handler,
+					handler  : isNull( arguments.handler ) ? thisResource : arguments.handler,
 					action   : actionSet,
 					module   : arguments.module,
 					namespace: arguments.namespace,
@@ -699,7 +699,7 @@ component
 			if ( !structIsEmpty( actionSet ) ) {
 				addRoute(
 					pattern  : "#thisPattern#/:#arguments.parameterName#",
-					handler  : arguments.handler,
+					handler  : isNull( arguments.handler ) ? thisResource : arguments.handler,
 					action   : actionSet,
 					module   : arguments.module,
 					namespace: arguments.namespace,
@@ -716,7 +716,7 @@ component
 			if ( !structIsEmpty( actionSet ) ) {
 				addRoute(
 					pattern  : "#thisPattern#",
-					handler  : arguments.handler,
+					handler  : isNull( arguments.handler ) ? thisResource : arguments.handler,
 					action   : actionSet,
 					module   : arguments.module,
 					namespace: arguments.namespace,

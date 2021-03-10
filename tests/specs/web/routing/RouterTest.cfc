@@ -487,6 +487,74 @@ component extends="coldbox.system.testing.BaseModelTest" {
 						expect( routes[ 4 ].action ).toBe( { "GET" : "index", "POST" : "create" } );
 					} );
 				} );
+				given( "I register multiple resources using an array", function(){
+					then( "I should have a suite of routes for that resource", function(){
+						router.resources( [ "photos", "videos" ] );
+						var routes = router.getRoutes();
+						expect( routes ).toBeArray();
+						expect( routes ).toHaveLength( 8 );
+						expect( routes[ 1 ].pattern ).toBe( "photos/:id/edit/" );
+						expect( routes[ 1 ].action ).toBe( { "GET" : "edit" } );
+						expect( routes[ 2 ].pattern ).toBe( "photos/new/" );
+						expect( routes[ 2 ].action ).toBe( { "GET" : "new" } );
+						expect( routes[ 3 ].pattern ).toBe( "photos/:id/" );
+						expect( routes[ 3 ].action ).toBe( {
+							"GET"    : "show",
+							"PATCH"  : "update",
+							"PUT"    : "update",
+							"DELETE" : "delete"
+						} );
+						expect( routes[ 4 ].pattern ).toBe( "photos/" );
+						expect( routes[ 4 ].action ).toBe( { "GET" : "index", "POST" : "create" } );
+						expect( routes[ 5 ].pattern ).toBe( "videos/:id/edit/" );
+						expect( routes[ 5 ].action ).toBe( { "GET" : "edit" } );
+						expect( routes[ 6 ].pattern ).toBe( "videos/new/" );
+						expect( routes[ 6 ].action ).toBe( { "GET" : "new" } );
+						expect( routes[ 7 ].pattern ).toBe( "videos/:id/" );
+						expect( routes[ 7 ].action ).toBe( {
+							"GET"    : "show",
+							"PATCH"  : "update",
+							"PUT"    : "update",
+							"DELETE" : "delete"
+						} );
+						expect( routes[ 8 ].pattern ).toBe( "videos/" );
+						expect( routes[ 8 ].action ).toBe( { "GET" : "index", "POST" : "create" } );
+					} );
+				} );
+				given( "I register multiple resources using a list", function(){
+					then( "I should have a suite of routes for that resource", function(){
+						router.resources( "photos,videos" );
+						var routes = router.getRoutes();
+						expect( routes ).toBeArray();
+						expect( routes ).toHaveLength( 8 );
+						expect( routes[ 1 ].pattern ).toBe( "photos/:id/edit/" );
+						expect( routes[ 1 ].action ).toBe( { "GET" : "edit" } );
+						expect( routes[ 2 ].pattern ).toBe( "photos/new/" );
+						expect( routes[ 2 ].action ).toBe( { "GET" : "new" } );
+						expect( routes[ 3 ].pattern ).toBe( "photos/:id/" );
+						expect( routes[ 3 ].action ).toBe( {
+							"GET"    : "show",
+							"PATCH"  : "update",
+							"PUT"    : "update",
+							"DELETE" : "delete"
+						} );
+						expect( routes[ 4 ].pattern ).toBe( "photos/" );
+						expect( routes[ 4 ].action ).toBe( { "GET" : "index", "POST" : "create" } );
+						expect( routes[ 5 ].pattern ).toBe( "videos/:id/edit/" );
+						expect( routes[ 5 ].action ).toBe( { "GET" : "edit" } );
+						expect( routes[ 6 ].pattern ).toBe( "videos/new/" );
+						expect( routes[ 6 ].action ).toBe( { "GET" : "new" } );
+						expect( routes[ 7 ].pattern ).toBe( "videos/:id/" );
+						expect( routes[ 7 ].action ).toBe( {
+							"GET"    : "show",
+							"PATCH"  : "update",
+							"PUT"    : "update",
+							"DELETE" : "delete"
+						} );
+						expect( routes[ 8 ].pattern ).toBe( "videos/" );
+						expect( routes[ 8 ].action ).toBe( { "GET" : "index", "POST" : "create" } );
+					} );
+				} );
 			} );
 
 			story( "I can register a route with a condition", function() {
