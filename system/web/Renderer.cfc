@@ -857,10 +857,8 @@ component
 		var refMap      = { viewPath : "", viewHelperPath : [] };
 
 		// Check cached paths first --->
-		lock name="#locationKey#.#lockName#" type="readonly" timeout="15" throwontimeout="true" {
-			if ( structKeyExists( variables.viewsRefMap, locationKey ) AND variables.isDiscoveryCaching ) {
-				return structFind( variables.viewsRefMap, locationKey );
-			}
+		if ( structKeyExists( variables.viewsRefMap, locationKey ) AND variables.isDiscoveryCaching ) {
+			return structFind( variables.viewsRefMap, locationKey );
 		}
 
 		if ( left( arguments.view, 1 ) EQ "/" ) {
@@ -901,14 +899,12 @@ component
 
 		// Lock and create view entry
 		if ( NOT structKeyExists( variables.viewsRefMap, locationKey ) ) {
-			lock name="#locationKey#.#lockName#" type="exclusive" timeout="15" throwontimeout="true" {
-				structInsert(
-					variables.viewsRefMap,
-					locationKey,
-					refMap,
-					true
-				);
-			}
+			structInsert(
+				variables.viewsRefMap,
+				locationKey,
+				refMap,
+				true
+			);
 		}
 
 		return refMap;

@@ -25,6 +25,7 @@ component
 				given( "A return data from a handler with a renderadata annotation of json", function(){
 					then( "it should render the data back in json", function(){
 						var e = execute( event = "actionRendering.asJSON", renderResults = true );
+						debug( e.getRenderedContent() );
 						expect( e.getRenderedContent() ).toBeJSON();
 					} );
 				} );

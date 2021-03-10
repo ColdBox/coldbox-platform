@@ -13,9 +13,9 @@ component{
 		logBox = {
 			// Define Appenders
 			appenders = {
-				coldboxTracer = { 
+				coldboxTracer = {
 					class="coldbox.system.logging.appenders.ConsoleAppender",
-					layout="coldbox.testing.cases.logging.MockLayout", 
+					layout="coldbox.testing.cases.logging.MockLayout",
 					properties = {
 						name = "awesome"
 					}
@@ -34,7 +34,7 @@ component{
 			warn = [ "hello.model", "yes.wow.wow" ],
 			error = [ "hello.model", "yes.wow.wow" ],
 			fatal = [ "hello.model", "yes.wow.wow" ],
-			OFF = [ "hello.model", "yes.wow.wow" ] 
+			OFF = [ "hello.model", "yes.wow.wow" ]
 		};
 	}
 

@@ -3,6 +3,6 @@
 
 #renderView(
     view = "main/routeTable",
-    args = { routes = prc.aRoutes } 
+    args = { routes = prc.aRoutes }
 )#
 </cfoutput>

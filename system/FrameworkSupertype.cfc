@@ -556,34 +556,46 @@ component serializable="false" accessors="true"{
 	 * @return FrameworkSuperType
 	 */
 	any function includeUDF( required udflibrary ){
-		var appMapping		= variables.controller.getSetting( "AppMapping" );
-		var UDFFullPath 	= expandPath( arguments.udflibrary );
-		var UDFRelativePath = expandPath( "/" & appMapping & "/" & arguments.udflibrary );
+		// Init the mixin location and caches reference
+		var templateCache   	= getCache( "template" );
+		var mixinLocationKey 	= hash( variables.controller.getAppHash() & arguments.udfLibrary );
 
-		var targetLocation = "";
+		var targetLocation = templateCache.getOrSet(
+			// Key
+            "includeUDFLocation-#mixinLocationKey#",
+			// Producer
+            function(){
+				var appMapping		= variables.controller.getSetting( "AppMapping" );
+				var UDFFullPath 	= expandPath( udflibrary );
+				var UDFRelativePath = expandPath( "/" & appMapping & "/" & udflibrary );
 
-		// Relative Checks First
-		if( fileExists( UDFRelativePath ) ){
-			targetLocation = "/" & appMapping & "/" & arguments.udflibrary;
-		}
-		// checks if no .cfc or .cfm where sent
-		else if ( fileExists(UDFRelativePath & ".cfc") ){
-			targetLocation = "/" & appMapping & "/" & arguments.udflibrary & ".cfc";
-		} else if ( fileExists(UDFRelativePath & ".cfm") ){
-			targetLocation = "/" & appMapping & "/" & arguments.udflibrary & ".cfm";
-		} else if ( fileExists( UDFFullPath ) ){
-			targetLocation = "#udflibrary#";
-		} else if ( fileExists( UDFFullPath & ".cfc" ) ){
-			targetLocation = "#udflibrary#.cfc";
-		} else if ( fileExists( UDFFullPath & ".cfm" ) ){
-			targetLocation = "#udflibrary#.cfm";
-		} else {
-			throw(
-				message = "Error loading UDF library: #arguments.udflibrary#",
-				detail 	= "The UDF library was not found.  Please make sure you verify the file location.",
-				type 	= "UDFLibraryNotFoundException"
-			);
-		}
+				// Relative Checks First
+				if( fileExists( UDFRelativePath ) ){
+					targetLocation = "/" & appMapping & "/" & udflibrary;
+				}
+				// checks if no .cfc or .cfm where sent
+				else if ( fileExists(UDFRelativePath & ".cfc") ){
+					targetLocation = "/" & appMapping & "/" & udflibrary & ".cfc";
+				} else if ( fileExists(UDFRelativePath & ".cfm") ){
+					targetLocation = "/" & appMapping & "/" & udflibrary & ".cfm";
+				} else if ( fileExists( UDFFullPath ) ){
+					targetLocation = "#udflibrary#";
+				} else if ( fileExists( UDFFullPath & ".cfc" ) ){
+					targetLocation = "#udflibrary#.cfc";
+				} else if ( fileExists( UDFFullPath & ".cfm" ) ){
+					targetLocation = "#udflibrary#.cfm";
+				} else {
+					throw(
+						message = "Error loading UDF library: #udflibrary#",
+						detail 	= "The UDF library was not found.  Please make sure you verify the file location.",
+						type 	= "UDFLibraryNotFoundException"
+					);
+				}
+				return targetLocation;
+            },
+			// Timeout: 1 week
+			10080
+		);
 
 		// Include the UDF
 		include targetLocation;

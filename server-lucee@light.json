@@ -1,9 +1,9 @@
 {
     "app":{
-        "cfengine":"adobe@2021",
-        "serverHomeDirectory":".engine/adobe2021"
+        "cfengine":"lucee-light@5",
+        "serverHomeDirectory":".engine/lucee-light5"
     },
-    "name":"coldbox-adobe@2021",
+    "name":"coldbox-lucee-light@5",
     "force":true,
     "openBrowser":false,
     "web":{

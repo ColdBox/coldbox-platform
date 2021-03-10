@@ -3,7 +3,7 @@ User-agent: Slurp
 Crawl-delay: 100
 Disallow:
 
-User-agent: gsa-crawler-www 
+User-agent: gsa-crawler-www
 Crawl-delay: 100
 
 User-agent: Googlebot

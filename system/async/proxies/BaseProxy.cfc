@@ -54,6 +54,7 @@ component accessors="true" {
 				variables.cfContext   = getCFMLContext().getApplicationContext();
 				variables.pageContext = getCFMLContext();
 			} else {
+				variables.DataSrcImplStatic		= createObject( "java", "coldfusion.sql.DataSrcImpl" );
 				variables.fusionContextStatic   = createObject( "java", "coldfusion.filter.FusionContext" );
 				variables.originalFusionContext = fusionContextStatic.getCurrent();
 				variables.originalPageContext   = getCFMLContext();
@@ -135,6 +136,8 @@ component accessors="true" {
 		if ( server.keyExists( "lucee" ) ) {
 			// Nothing right now
 		} else {
+			// Ensure any DB connections used get returned to the connection pool. Without clearSqlProxy an executor will hold onto any connections it touched while running and they will not timeout/close, and no other code can use the connection except for the executor that last touched it.   Credit to Brad Wood for finding this!
+			variables.DataSrcImplStatic.clearSqlProxy();
 			variables.fusionContextStatic.setCurrent( javacast( "null", "" ) );
 		}
 	}

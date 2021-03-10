@@ -1,7 +1,7 @@
-﻿<cfoutput>		
+﻿<cfoutput>
 <!--- Attributes In Use for this skin --->
 <cfparam name="attributes.contentReport"	type="boolean" default="true" >
-   
+
 <!--- Id & Name --->
 <div class="cachebox_debugTitleCell">
   Cache Name
@@ -31,7 +31,7 @@
  <em>#NumberFormat((JVMFreeMemory/JVMMaxMemory)*100,"99.99")# % Free </em> |
  <em>Max: </em> #NumberFormat(JVMMaxMemory)# KB
  <em>Total: </em> #NumberFormat(JVMTotalMemory)# KB |
- <em>Free: </em> #NumberFormat(JVMFreeMemory)# KB		 
+ <em>Free: </em> #NumberFormat(JVMFreeMemory)# KB
 </div>
 
 <!--- Last Reap --->
@@ -45,15 +45,15 @@
 	</div>
 </cfif>
 
-<!--- Cache Charting ---> 
+<!--- Cache Charting --->
 <cfinclude template="CacheCharting.cfm">
 
 <!--- Cache Configuration --->
 <h3>Cache Configuration
-	<input type="button" value="Show/Hide" 
+	<input type="button" value="Show/Hide"
 		   name="cboxbutton_cacheproperties"
-		   style="font-size:10px" 
-		   title="View Cache Properties" 
+		   style="font-size:10px"
+		   title="View Cache Properties"
 		   onClick="cachebox_toggleDiv('cachebox_cacheConfigurationTable','table')" />
 </h3>
 <div id="cachebox_cacheConfiguration">
@@ -82,39 +82,39 @@
 	<h3>Cache Content Report</h3>
 
 	<!--- Reload Contents --->
-	<input type="button" value="Reload Contents" 
+	<input type="button" value="Reload Contents"
 		   name="cboxbutton_reloadContents"
-		   style="font-size:10px" 
-		   title="Reload the contents" 
+		   style="font-size:10px"
+		   title="Reload the contents"
 		   onClick="cachebox_cacheContentReport('#URLBase#','#arguments.cacheName#')" />
-		   
+
 	<!--- Expire All Keys --->
-	<input type="button" value="Expire All Keys" 
+	<input type="button" value="Expire All Keys"
 		   name="cboxbutton_expirekeys" id="cboxbutton_expirekeys"
-		   style="font-size:10px" 
-		   title="Expire all the keys in the cache" 
+		   style="font-size:10px"
+		   title="Expire all the keys in the cache"
 		   onclick="cachebox_cacheContentCommand('#URLBase#','expirecache', '#arguments.cacheName#')" />
 
 	<!--- Clear All Keys --->
-	<input type="button" value="Clear All Keys" 
+	<input type="button" value="Clear All Keys"
 		   name="cboxbutton_clearkeys" id="cboxbutton_clearkeys"
-		   style="font-size:10px" 
-		   title="Clear all the keys in the cache" 
+		   style="font-size:10px"
+		   title="Clear all the keys in the cache"
 		   onclick="cachebox_cacheContentCommand('#URLBase#','clearcache', '#arguments.cacheName#')" />
 
 	<!--- ColdBox Application Commands --->
 	<cfif cacheBox.isColdBoxLinked()>
 		<!--- Clear All Events --->
-		<input type="button" value="Clear All Events" 
+		<input type="button" value="Clear All Events"
 			   name="cboxbutton_clearallevents" id="cboxbutton_clearallevents"
-			   style="font-size:10px" 
-			   title="Remove all the events in the cache" 
+			   style="font-size:10px"
+			   title="Remove all the events in the cache"
 			   onclick="cachebox_cacheContentCommand('#URLBase#','clearallevents', '#arguments.cacheName#')" />
 		<!--- Clear All Views --->
-		<input type="button" value="Clear All Views" 
+		<input type="button" value="Clear All Views"
 			   name="cboxbutton_clearallviews" id="cboxbutton_clearallviews"
-			   style="font-size:10px" 
-			   title="Remove all the views in the cache" 
+			   style="font-size:10px"
+			   title="Remove all the views in the cache"
 			   onclick="cachebox_cacheContentCommand('#URLBase#','clearallviews', '#arguments.cacheName#')" />
 	</cfif>
 

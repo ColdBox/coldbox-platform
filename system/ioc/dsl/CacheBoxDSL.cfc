@@ -23,37 +23,37 @@ component implements="coldbox.system.ioc.dsl.IDSLBuilder" accessors="true"{
 
 	/**
 	 * Configure the DSL Builder for operation and returns itself
-	 * 
+	 *
 	 * @injector The linked WireBox Injector
 	 * @injector.doc_generic coldbox.system.ioc.Injector
-	 * 
+	 *
 	 * @return coldbox.system.ioc.dsl.IDSLBuilder
 	 */
 	function init( required injector ){
 		variables.injector 	= arguments.injector;
 		variables.cacheBox 	= variables.injector.getCacheBox();
 		variables.log		= variables.injector.getLogBox().getLogger( this );
-		
+
 		return this;
 	}
 
 	/**
 	 * Process an incoming DSL definition and produce an object with it
-	 * 
+	 *
 	 * @definition The injection dsl definition structure to process. Keys: name, dsl
 	 * @targetObject The target object we are building the DSL dependency for. If empty, means we are just requesting building
-	 * 
+	 *
 	 * @return coldbox.system.ioc.dsl.IDSLBuilder
 	 */
 	function process( required definition, targetObject ){
 		var thisType 		= arguments.definition.dsl;
 		var thisTypeLen 	= listLen( thisType, ":" );
-			
+
 		// DSL stages
 		switch( thisTypeLen ){
 			// CacheBox
-			case 1 : { 
-				return variables.cacheBox; 
+			case 1 : {
+				return variables.cacheBox;
 			}
 
 			// CacheBox:CacheName
@@ -84,5 +84,5 @@ component implements="coldbox.system.ioc.dsl.IDSLBuilder" accessors="true"{
 			} // end level 3 main DSL
 		}
 	}
-	
+
 }

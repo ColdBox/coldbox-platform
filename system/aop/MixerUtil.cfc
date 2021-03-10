@@ -19,7 +19,7 @@ component{
     * Store JointPoint information
     * @jointpoint The jointpoint to proxy
     * @interceptors The jointpoint interceptors
-    * 
+    *
     * @return instance
     */
     function $wbAOPStoreJointPoint( required jointpoint, required interceptors ){
@@ -42,7 +42,7 @@ component{
     /**
     * Mix in a template on an injected target
     * @templatePath The template to mix in
-    * 
+    *
     * @return Instance
     */
     function $wbAOPInclude( required templatePath ){
@@ -53,7 +53,7 @@ component{
     /**
     * Remove a method from this target mixin
     * @methodName The method to poof away!
-    * 
+    *
     * @return Instance
     */
     function $wbAOPRemove( required methodName ){
@@ -69,7 +69,7 @@ component{
     * Write an aspect to disk
     * @genPath The location path
     * @code The code to write
-    * 
+    *
     * @return Instance
     */
     function writeAspect( required genPath, required code ){
@@ -80,7 +80,7 @@ component{
     /**
     * Remove an aspect from disk
     * @filePath The location path
-    * 
+    *
     * @return Instance
     */
     function removeAspect( required filePath ){

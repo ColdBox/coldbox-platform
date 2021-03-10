@@ -15,15 +15,15 @@ component extends="coldbox.system.ioc.config.Binder"{
 		// The WireBox configuration structure DSL
 		wireBox = {
 			// Default LogBox Configuration file
-			logBoxConfig 	= "coldbox.system.ioc.config.LogBox", 
+			logBoxConfig 	= "coldbox.system.ioc.config.LogBox",
 
 			// CacheBox Integration OFF by default
 			cacheBox = {
-				enabled = false 
+				enabled = false
 				// configFile = "coldbox.system.ioc.config.CacheBox", An optional configuration file to use for loading CacheBox
 				// cacheFactory = ""  A reference to an already instantiated CacheBox CacheFactory
 				// classNamespace = "" A class path namespace to use to create CacheBox: Default=coldbox.system.cache or wirebox.system.cache
-			},			
+			},
 
 			// Name of a CacheBox cache to store metadata in to speed up start time.
 			// Since metadata is already stored in memory, this is only useful for a disk, etc cache that persists across restarts.
@@ -59,8 +59,8 @@ component extends="coldbox.system.ioc.config.Binder"{
 			// Register all event listeners here, they are created in the specified order
 			listeners = [
 				// { class="", name="", properties={} }
-			]			
+			]
 		};
-	}	
+	}
 
 }

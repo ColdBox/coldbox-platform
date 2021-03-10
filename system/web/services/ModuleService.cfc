@@ -132,15 +132,7 @@ component extends="coldbox.system.web.services.BaseService" {
 		var aModules = structKeyArray( variables.moduleRegistry );
 		for ( var thisModule in aModules ) {
 			if ( canLoad( thisModule ) ) {
-				var sTime = getTickCount();
-
 				registerModule( thisModule );
-
-				if ( variables.logger.canDebug() ) {
-					variables.logger.debug(
-						"===> + Registered Module: #thisModule# in #getTickCount() - sTime# ms"
-					);
-				}
 			}
 		}
 
@@ -186,6 +178,7 @@ component extends="coldbox.system.web.services.BaseService" {
 		boolean force  = false
 	){
 		// Module To Load
+		var sTime 				 = getTickCount();
 		var modName              = arguments.moduleName;
 		var modulesConfiguration = controller.getSetting( "modules" );
 		var appSettings          = controller.getConfigSettings();
@@ -452,7 +445,7 @@ component extends="coldbox.system.web.services.BaseService" {
 
 			// Log registration
 			variables.logger.info(
-				"+ Module Registered => '#arguments.moduleName#' (version:#mConfig.version#, from:#mConfig.path#)"
+				"+ Module (#arguments.moduleName#) Registered (#getTickCount() - sTime#ms) => { version: #mConfig.version#, from: #mConfig.path# }"
 			);
 		}
 		// end lock
@@ -479,15 +472,7 @@ component extends="coldbox.system.web.services.BaseService" {
 		for ( var moduleName in aModules ) {
 			// Can we load module and has it been registered?
 			if ( structKeyExists( variables.registeredModules, moduleName ) && canLoad( moduleName ) ) {
-				var sTime = getTickCount();
-
 				this.activateModule( moduleName );
-
-				if ( variables.logger.canDebug() ) {
-					variables.logger.debug(
-						"===> + Activated #moduleName# in #getTickCount() - sTime# ms"
-					);
-				}
 			}
 		}
 
@@ -512,6 +497,7 @@ component extends="coldbox.system.web.services.BaseService" {
 	 * @return The Service
 	 */
 	ModuleService function activateModule( required moduleName ){
+		var sTime 	= getTickCount();
 		var modules = variables.registeredModules;
 
 		// If module not registered, throw exception
@@ -526,8 +512,8 @@ component extends="coldbox.system.web.services.BaseService" {
 		// Check if module already activated
 		if ( modules[ arguments.moduleName ].activated ) {
 			// Log it
-			variables.logger.info(
-				"> Module '#arguments.moduleName#' already activated, skipping activation."
+			variables.logger.debug(
+				"==> Module '#arguments.moduleName#' already activated, skipping activation."
 			);
 			return this;
 		}
@@ -536,7 +522,7 @@ component extends="coldbox.system.web.services.BaseService" {
 		if ( !modules[ arguments.moduleName ].activate ) {
 			// Log it
 			variables.logger.info(
-				"> Module '#arguments.moduleName#' cannot be activated as it is flagged to not activate, skipping activation."
+				"==> Module '#arguments.moduleName#' cannot be activated as it is flagged to not activate, skipping activation."
 			);
 			return this;
 		}
@@ -546,8 +532,8 @@ component extends="coldbox.system.web.services.BaseService" {
 
 		// Do we have dependencies to activate first
 		mConfig.dependencies.each( function( thisDependency ){
-			variables.logger.info(
-				"+ Activating '#moduleName#' dependency: #thisDependency#"
+			variables.logger.debug(
+				"==> Activating '#moduleName#' dependency: #thisDependency#"
 			);
 			// Activate dependency first
 			activateModule( thisDependency );
@@ -557,7 +543,7 @@ component extends="coldbox.system.web.services.BaseService" {
 		if ( modules[ arguments.moduleName ].activated ) {
 			// Log it
 			variables.logger.info(
-				"> Module '#arguments.moduleName#' already activated during dependency activation, skipping activation."
+				"==> Module '#arguments.moduleName#' already activated during dependency activation, skipping activation."
 			);
 			return this;
 		}
@@ -759,7 +745,7 @@ component extends="coldbox.system.web.services.BaseService" {
 			);
 
 			// Log it
-			variables.logger.info( "+ Module Activated -> '#arguments.moduleName#' (version:#mConfig.version#, from: #mConfig.path#)" );
+			variables.logger.info( "+ Module (#arguments.moduleName#) Activated (#getTickCount() - sTime#ms) => { version: #mConfig.version#, from: #mConfig.path# }" );
 		}
 		// end lock
 

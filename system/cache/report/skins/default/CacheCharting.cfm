@@ -12,14 +12,14 @@
 			<div>
 				<cfoutput>
 				<!--- RunGC --->
-				<input type="button" value="Run Garbage Collection" 
+				<input type="button" value="Run Garbage Collection"
 				   	   name="cboxbutton_gc" id="cboxbutton_gc"
-				   	   style="font-size:10px" 
-				   	   title="Try to influence a garbage collection." 
+				   	   style="font-size:10px"
+				   	   title="Try to influence a garbage collection."
 				   	   onClick="cachebox_cacheGC('#URLBase#','#arguments.cacheName#',this.id)" />
 				</cfoutput>
 			</div>
-		
+
 		</td>
 		<td align="center">
 		<cfif structKeyExists( cacheConfig, "maxObjects" )>
@@ -29,9 +29,9 @@
 				<cfchartdata item="Used Size" value="#cacheSize#">
 			</cfchartseries>
 		</cfchart>
-		</cfif> 
-		
-		<cfchart format="png" show3d="false" backgroundcolor="##ffffff" 
+		</cfif>
+
+		<cfchart format="png" show3d="false" backgroundcolor="##ffffff"
 				 chartwidth="275" chartheight="275" showlegend="true" title="Cache Performance Report">
 			<cfchartseries type="bar" colorlist="131cd7,ED2939,gray,d47f00">
 				<cfchartdata item="Hits" value="#cacheStats.getHits()#">

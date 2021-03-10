@@ -1,0 +1,1 @@
+<cffeed attributeCollection = #feedAttributes# >

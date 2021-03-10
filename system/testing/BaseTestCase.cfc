@@ -75,7 +75,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 		}
 		// autowire
 		if ( structKeyExists( variables.metadata, "autowire" ) ) {
-			this.autowire = variables.metadata.autowire;
+			variables.autowire = ( !len( variables.metadata.autowire ) ? true : variables.metadata.autowire );
 		}
 		return this;
 	}

@@ -5,11 +5,11 @@
 * A simple ColdFusion transaction Aspect for WireBox
 */
 component 	implements="coldbox.system.aop.MethodInterceptor"
-			classMatcher="any" 
+			classMatcher="any"
 			accessors="true"
 			methodMatcher="annotatedWith:transactional"{
 
-	// DI 
+	// DI
 	property name="log" inject="logbox:logger:{this}";
 
 	/**
@@ -30,7 +30,7 @@ component 	implements="coldbox.system.aop.MethodInterceptor"
 		// Are we already in a transaction?
 		if( structKeyExists( request, "cbox_aop_transaction" ) ){
 			// debug?
-			if( log.canDebug() ){ 
+			if( log.canDebug() ){
 				log.debug( "Call to '#arguments.invocation.getTargetName()#.#arguments.invocation.getMethod()#()' already transactioned, just executing it" );
 			}
 			// Just execute and return;
