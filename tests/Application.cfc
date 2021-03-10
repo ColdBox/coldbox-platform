@@ -32,16 +32,32 @@ component{
 	// Core Application.cfc mixins - ORM Settings, etc
 	include "../test-harness/config/ApplicationMixins.cfm";
 
-	function onRequestStart( required targetPage ){
+	public boolean function onRequestStart( targetPage ){
+		// Set a high timeout for long running tests
+		setting requestTimeout="9999";
 
-		// Cleanup
-		if( !isNull( application.cbController ) ){
-			application.cbController.getLoaderService().processShutdown();
+		// ORM Reload for fresh results
+		if( structKeyExists( url, "fwreinit" ) ){
+			if( structKeyExists( server, "lucee" ) ){
+				pagePoolClear();
+			}
+			ormReload();
 		}
-		structDelete( application, "cbController" );
-		structDelete( application, "wirebox" );
 
 		return true;
+	}
+
+	public void function onRequestEnd( required targetPage ) {
+
+		thread name="testbox-shutdown" {
+			if( !isNull( application.cbController ) ){
+				application.cbController.getLoaderService().processShutdown();
+			}
+
+			structDelete( application, "cbController" );
+			structDelete( application, "wirebox" );
+		}
+
 	}
 
 }
