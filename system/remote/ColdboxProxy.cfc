@@ -33,7 +33,7 @@ component serializable="false" accessors="true" {
 	private any function process(){
 		var refLocal = {};
 
-		cfsetting( showdebugoutput="false" );
+		cfsetting( showdebugoutput = "false" );
 
 		try {
 			// Locate ColdBox Controller
@@ -96,6 +96,9 @@ component serializable="false" accessors="true" {
 				.getDataMarshaller()
 				.marshallData( argumentCollection = refLocal.marshalData );
 
+			// Set output content header
+			event.setHTTPHeader( name: "content-type", value: refLocal.marshalData.type );
+
 			// Set Return Format according to Marshalling Type if not incoming
 			if ( not structKeyExists( arguments, "returnFormat" ) ) {
 				arguments.returnFormat = refLocal.marshalData.type;
@@ -105,9 +108,7 @@ component serializable="false" accessors="true" {
 		// Return results from handler only if found, else method will produce a null result
 		if ( !isNull( refLocal.results ) ) {
 			// preProxyResults interception call
-			cbController
-				.getInterceptorService()
-				.announce( "preProxyResults", { "proxyResults" : refLocal } );
+			cbController.getInterceptorService().announce( "preProxyResults", { "proxyResults" : refLocal } );
 
 			// Return The results
 			return refLocal.results;
@@ -123,12 +124,10 @@ component serializable="false" accessors="true" {
 	private boolean function announce( required state, struct data = {} ){
 		try {
 			// Backwards Compat: Remove by ColdBox 7
-			if( !isNull( arguments.interceptData ) ){
+			if ( !isNull( arguments.interceptData ) ) {
 				arguments.data = arguments.interceptData;
 			}
-			getController()
-				.getInterceptorService()
-				.announce( arguments.state, arguments.data );
+			getController().getInterceptorService().announce( arguments.state, arguments.data );
 		} catch ( any e ) {
 			handleException( e );
 			rethrow;
@@ -142,15 +141,15 @@ component serializable="false" accessors="true" {
 	 */
 	private function announceInterception(
 		required state,
-		struct interceptData={},
-		boolean async=false,
-		boolean asyncAll=false,
-		boolean asyncAllJoin=true,
-		asyncPriority="NORMAL",
-		numeric asyncJoinTimeout=0
+		struct interceptData     = {},
+		boolean async            = false,
+		boolean asyncAll         = false,
+		boolean asyncAllJoin     = true,
+		asyncPriority            = "NORMAL",
+		numeric asyncJoinTimeout = 0
 	){
-		arguments.data 	= arguments.interceptData;
-		return announce( argumentCollection=arguments );
+		arguments.data = arguments.interceptData;
+		return announce( argumentCollection = arguments );
 	}
 
 	/**
@@ -258,8 +257,8 @@ component serializable="false" accessors="true" {
 	 */
 	private any function getModel( required name, dsl, initArguments ){
 		throw(
-			message="getModel() is now fully deprecated in favor of getInstance().",
-			type = "DeprecationException"
+			message = "getModel() is now fully deprecated in favor of getInstance().",
+			type    = "DeprecationException"
 		);
 	}
 
@@ -268,9 +267,7 @@ component serializable="false" accessors="true" {
 	 * Get an interceptor
 	 */
 	private any function getInterceptor( string interceptorName, boolean deepSearch = "false" ){
-		return getController()
-			.getInterceptorService()
-			.getInterceptor( argumentCollection = arguments );
+		return getController().getInterceptorService().getInterceptor( argumentCollection = arguments );
 	}
 
 
