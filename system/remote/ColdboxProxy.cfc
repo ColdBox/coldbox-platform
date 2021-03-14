@@ -43,7 +43,7 @@ component serializable="false" accessors="true" {
 			// Create the request context
 			var event = cbController.getRequestService().requestCapture();
 
-			// Test event Name in the arguemnts.
+			// Test event Name in the arguments.
 			if ( not structKeyExists( arguments, event.getEventName() ) ) {
 				throw(
 					message = "Event not detected",

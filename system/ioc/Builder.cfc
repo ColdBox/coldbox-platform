@@ -17,7 +17,7 @@
 	property name="logBox";
 
 	/**
-	 * Logging utilty object
+	 * Logging utility object
 	 */
 	property name="log";
 
@@ -342,7 +342,7 @@
 			argStruct[ thisArg.name ] = thisArg.value;
 		}
 
-		// Do we ahve overrides
+		// Do we have overrides
 		if( NOT structIsEmpty( arguments.initArguments ) ){
 			structAppend( argStruct, arguments.initArguments, true );
 		}
@@ -812,7 +812,7 @@
 
 		// Mix in public methods and public properties
 		for( var key in baseObject ){
-			// If target has overriden method, then don't override it with mixin, simulated inheritance
+			// If target has overridden method, then don't override it with mixin, simulated inheritance
 			if( NOT structKeyExists( arguments.target, key ) AND NOT listFindNoCase( excludedProperties, key ) ){
 				// inject method in both variables and this scope to simulate public access
 				arguments.target.injectMixin( key, baseObject[ key ] );

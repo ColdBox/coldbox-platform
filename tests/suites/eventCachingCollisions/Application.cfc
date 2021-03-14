@@ -7,7 +7,7 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 Author     :	Luis Majano
 Date        :	10/16/2007
 Description :
-	This is the Application.cfc for usage withing the ColdBox Framework.
+	This is the Application.cfc for usage within the ColdBox Framework.
 	Make sure that it extends the coldbox object:
 	coldbox.system.Coldbox
 

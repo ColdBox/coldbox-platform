@@ -288,7 +288,7 @@ component accessors="true" {
 	 * in the future pipeline.  Whatever this function returns, will be used for the next
 	 * registered functions in the pipeline.
 	 *
-	 * The function takes in the exception that ocurred and can return a new value as well:
+	 * The function takes in the exception that occurred and can return a new value as well:
 	 *
 	 * <pre>
 	 * ( exception ) => newValue;

@@ -6,7 +6,7 @@
  * Properties
  * - name : The cache name
  * - enabled : Boolean flag if cache is enabled
- * - reportingEnabled: Boolean falg if cache can report
+ * - reportingEnabled: Boolean flag if cache can report
  * - stats : The statistics object
  * - configuration : The configuration structure
  * - cacheFactory : The linkage to the cachebox factory
@@ -199,7 +199,7 @@
 	/************************************ CACHING UTILITIES ************************************/
 
 	/**
-	 * Sets Multiple Ojects in the cache. Sets might be expensive. If the JVM threshold is used and it has been reached, the object won't be cached. If the pool is at maximum it will expire using its eviction policy and still cache the object. Cleanup will be done later.
+	 * Sets Multiple Objects in the cache. Sets might be expensive. If the JVM threshold is used and it has been reached, the object won't be cached. If the pool is at maximum it will expire using its eviction policy and still cache the object. Cleanup will be done later.
 	 *
 	 * @mapping The structure of name value pairs to cache
 	 * @timeout The timeout to use on the object (if any, provider specific)
@@ -323,7 +323,7 @@
 	 * Clear by key snippet
 	 *
 	 * @keySnippet The key snippet partial to clear out
-	 * @regex Wethere to use regex matching or not, defaults to false
+	 * @regex Whether to use regex matching or not, defaults to false
 	 * @async To do this in async mode or sync mode, defaults to false
 	 *
 	 * @return LuceeProvider

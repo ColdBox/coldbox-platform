@@ -52,7 +52,7 @@ component 	implements="coldbox.system.aop.MethodInterceptor"
 
 		} catch( any e ){
 			structDelete( request, "cbox_aop_transaction" );
-			log.error( "An exception ocurred in the AOPed transactio for target: #arguments.invocation.getTargetName()#, method: #arguments.invocation.getMethod()#: #cfcatch.message# #cfcatch.detail#", cfcatch );
+			log.error( "An exception occurred in the AOPed transactio for target: #arguments.invocation.getTargetName()#, method: #arguments.invocation.getMethod()#: #cfcatch.message# #cfcatch.detail#", cfcatch );
 			rethrow;
 		}
 

@@ -552,7 +552,7 @@ component extends="EventHandler" {
 	 * @event The request context
 	 * @rc The rc reference
 	 * @prc The prc reference
-	 * @message The failure message sent in the request packge
+	 * @message The failure message sent in the request package
 	 *
 	 * @returns 417:Expectation Failed
 	 */

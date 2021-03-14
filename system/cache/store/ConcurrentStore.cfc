@@ -194,7 +194,7 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true"{
 		// Set new Object into cache pool
 		variables.pool.put( arguments.objectKey, arguments.object );
 
-		// Create object's metdata
+		// Create object's metadata
 		var metaData = {
 			"hits"              = 1,
 			"timeout"           = arguments.timeout,

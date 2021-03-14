@@ -170,7 +170,7 @@ component accessors="true" singleton {
 	}
 
 	/**
-	 * Get a registered executor registerd in this async manager
+	 * Get a registered executor registered in this async manager
 	 *
 	 * @name The executor name
 	 *
@@ -242,7 +242,7 @@ component accessors="true" singleton {
 	/**
 	 * Shutdown all registered executors in the system
 	 *
-	 * @force By default (false) it gracefullly shuts them down, else uses the shutdownNow() methods
+	 * @force By default (false) it gracefully shuts them down, else uses the shutdownNow() methods
 	 *
 	 * @return AsyncManager
 	 */

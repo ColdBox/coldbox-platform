@@ -556,7 +556,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	}
 
 	/**
-	 * Get an event string's metdata entry. If not found, then you will get a new metadata entry using the `getNewMDEntry()` method.
+	 * Get an event string's metadata entry. If not found, then you will get a new metadata entry using the `getNewMDEntry()` method.
 	 *
 	 * @targetEvent The event to match for metadata.
 	 */

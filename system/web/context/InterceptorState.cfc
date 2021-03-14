@@ -331,7 +331,7 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 
 		// Loop and execute each interceptor as registered in order
 		for ( var key in interceptors ) {
-			// Retreive interceptor
+			// Retrieve interceptor
 			var thisInterceptor = interceptors.get( key );
 
 			// Check if we can execute this Interceptor

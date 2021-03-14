@@ -644,7 +644,7 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 			// Now that we know we have an identity, let's verify if we have a mapping already
 			if( NOT variables.binder.mappingExists( arguments.targetID ) ){
 				// No mapping found, means we need to map this object for the first time.
-				// Is md retreived? If not, retrieve it as we need to register it for the first time.
+				// Is md retrieved? If not, retrieve it as we need to register it for the first time.
 				if( isSimpleValue( md ) ){
 					md = variables.utility.getInheritedMetaData( arguments.target, getBinder().getStopRecursions() );
 				}
@@ -919,7 +919,7 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 	/**
 	 * Process property and setter injection
 	 *
-	 * @tagetObject The target object to do some goodness on
+	 * @targetObject The target object to do some goodness on
 	 * @DIData The DI data to use
 	 * @targetID The target ID to process injections
 	 */
@@ -943,7 +943,7 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 					targetObject = arguments.targetObject
 				);
 			}
-			// else we have to have a reference ID or a nasty bug has ocurred
+			// else we have to have a reference ID or a nasty bug has occurred
 			else{
 				refLocal.dependency = getInstance( arguments.DIData[ x ].ref );
 			}

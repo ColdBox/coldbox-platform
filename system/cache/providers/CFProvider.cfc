@@ -501,7 +501,7 @@ component
 	}
 
 	/**
-	 * Expire all the elments in the cache (if supported by the provider):  Not implemented by this cache
+	 * Expire all the elements in the cache (if supported by the provider):  Not implemented by this cache
 	 *
 	 * @return ICacheProvider
 	 */

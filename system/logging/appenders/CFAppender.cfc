@@ -36,7 +36,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 			// Check types
 			if( NOT reFindNoCase( "^(file|application)$", getProperty( "logType" ) ) ){
 				throw(
-					message = "Invalid logtype choosen #getProperty("logType")#",
+					message = "Invalid logtype chosen #getProperty("logType")#",
 					detail  = "Valid types are file or application",
 					type    = "CFAppender.InvalidLogTypeException"
 				);

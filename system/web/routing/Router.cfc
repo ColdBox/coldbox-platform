@@ -485,9 +485,9 @@ component
 	 * @handler The handler to execute if pattern matched.
 	 * @action The action in a handler to execute if a pattern is matched.  This can also be a structure based on the HTTP method(GET,POST,PUT,DELETE). ex: {GET:'show', PUT:'update', DELETE:'delete', POST:'save'}
 	 * @packageResolverExempt If this is set to true, then the interceptor will not try to do handler package resolving. Else a package will always be resolved. Only works if :handler is in a pattern
-	 * @matchVariables A string of name-value pair variables to add to the request collection when this pattern matches. This is a comma delimmitted list. Ex: spaceFound=true,missingAction=onTest
+	 * @matchVariables A string of name-value pair variables to add to the request collection when this pattern matches. This is a comma delimited list. Ex: spaceFound=true,missingAction=onTest
 	 * @view The view to dispatch if pattern matches.  No event will be fired, so handler,action will be ignored.
-	 * @viewNoLayout If view is choosen, then you can choose to override and not display a layout with the view. Else the view renders in the assigned layout.
+	 * @viewNoLayout If view is chosen, then you can choose to override and not display a layout with the view. Else the view renders in the assigned layout.
 	 * @valuePairTranslation Activate convention name value pair translations or not. Turned on by default
 	 * @constraints A structure of regex constraint overrides for variable placeholders. The key is the name of the variable, the value is the regex to try to match.
 	 * @module The module to add this route to
@@ -571,7 +571,7 @@ component
 	/**
 	 * This is the new approach to the <code>with</code> closure approach which has been marked as deprecated.
 	 * You can pass any route option via the <code>options</code> structure and those values will be prefixed against
-	 * any routing values done withing the <code>body</code> closure.
+	 * any routing values done within the <code>body</code> closure.
 	 *
 	 * <pre>
 	 * group( { pattern="/api", target="api", handler="api" }, function( options ){
@@ -735,9 +735,9 @@ component
 	 * @handler The handler to execute if pattern matched.
 	 * @action The action in a handler to execute if a pattern is matched.  This can also be a structure based on the HTTP method(GET,POST,PUT,DELETE). ex: {GET:'show', PUT:'update', DELETE:'delete', POST:'save'}
 	 * @packageResolverExempt If this is set to true, then the interceptor will not try to do handler package resolving. Else a package will always be resolved. Only works if :handler is in a pattern
-	 * @matchVariables DEPRECATED: Use RC or PRC structs instead. A string of name-value pair variables to add to the request collection when this pattern matches. This is a comma delimmitted list. Ex: spaceFound=true,missingAction=onTest
+	 * @matchVariables DEPRECATED: Use RC or PRC structs instead. A string of name-value pair variables to add to the request collection when this pattern matches. This is a comma delimited list. Ex: spaceFound=true,missingAction=onTest
 	 * @view The view to dispatch if pattern matches.  No event will be fired, so handler,action will be ignored.
-	 * @viewNoLayout If view is choosen, then you can choose to override and not display a layout with the view. Else the view renders in the assigned layout.
+	 * @viewNoLayout If view is chosen, then you can choose to override and not display a layout with the view. Else the view renders in the assigned layout.
 	 * @valuePairTranslation  Activate convention name value pair translations or not. Turned on by default
 	 * @constraints A structure of regex constraint overrides for variable placeholders. The key is the name of the variable, the value is the regex to try to match.
 	 * @module The module to add this route to
@@ -757,8 +757,8 @@ component
 	 * @verbs The allowed HTTP Verbs for the route
 	 * @layout The view layout to use
 	 * @headers The HTTP headers to attach to the response if route matches
-	 * @rc The RC name value pairs to attach if the reponse matches
-	 * @prc The PRC name value pairs to attach if the reponse matches
+	 * @rc The RC name value pairs to attach if the response matches
+	 * @prc The PRC name value pairs to attach if the response matches
 	 * @viewModule The module the view belongs to
 	 * @layoutModule The module the layout belongs to
 	 * @meta Additional metadata to add to the incoming route
@@ -1157,7 +1157,7 @@ component
 
 	/**
 	 * Initiate a new route registration.  Please note that you must finalize the registration by calling a terminator
-	 * fluently.  Unless, you pass in a target which can be a reponse closure/lambda or an event string.
+	 * fluently.  Unless, you pass in a target which can be a response closure/lambda or an event string.
 	 *
 	 * <pre>
 	 * // with terminator
@@ -1638,7 +1638,7 @@ component
 	}
 
 	/**
-	 * Turns on/off the value pair translator from extra metdata in a URL
+	 * Turns on/off the value pair translator from extra metadata in a URL
 	 * <pre>
 	 * route( "hello", "main.index" ).valuePairTranslation( false );
 	 * </pre>

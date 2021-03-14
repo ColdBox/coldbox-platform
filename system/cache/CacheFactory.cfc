@@ -356,7 +356,7 @@
 				variables.log.debug( "Shutting down cache: #item# on factoryID: #getFactoryID()#." );
 			}
 
-			//process listners
+			//process listeners
 			variables.eventManager.announce( "beforeCacheShutdown", { cache = cache } );
 
 			//Shutdown each cache
@@ -455,7 +455,7 @@
 	}
 
 	/**
-	 * Try to remove a named cache from this factory, returns Boolean if successfull or not
+	 * Try to remove a named cache from this factory, returns Boolean if successful or not
 	 *
 	 * @name The name of the cache to remove
 	 */

@@ -4,7 +4,7 @@
  * ---
  * @author Luis Majano
  *
- * I am the fastest way to cache objects. I am so fast because I dont do anything. I'm really a tool to use when working on caching strategies. When I am in use nothing is cached. It just vanishes.
+ * I am the fastest way to cache objects. I am so fast because I don't do anything. I'm really a tool to use when working on caching strategies. When I am in use nothing is cached. It just vanishes.
  */
 component implements="coldbox.system.cache.store.IObjectStore" accessors=true{
 
