@@ -7,7 +7,7 @@
 component accessors="true" {
 
 	/**
-	 * The collection of listeners in the pool backed by a linked hashmap which is synchornized for threading
+	 * The collection of listeners in the pool backed by a linked hashmap which is synchronized for threading
 	 */
 	property name="pool" doc_generic="java.util.LinkedHashMap";
 

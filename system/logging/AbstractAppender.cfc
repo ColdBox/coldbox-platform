@@ -456,7 +456,7 @@ component accessors="true"{
 	}
 
 	/**
-	 * Utiliy to send to output to the output stream.
+	 * Utility to send to output to the output stream.
 	 *
 	 * @message Message to send
 	 */
@@ -465,7 +465,7 @@ component accessors="true"{
 	}
 
 	/**
-	 * Utiliy to send to output to the error stream.
+	 * Utility to send to output to the error stream.
 	 *
 	 * @message Message to send
 	 */

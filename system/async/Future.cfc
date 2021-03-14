@@ -55,7 +55,7 @@ component accessors="true" {
 		boolean debug          = false,
 		boolean loadAppContext = true
 	){
-		// Preapre the completable future
+		// Prepare the completable future
 		variables.native         = createObject( "java", "java.util.concurrent.CompletableFuture" );
 		variables.debug          = arguments.debug;
 		variables.loadAppContext = arguments.loadAppContext;
@@ -812,7 +812,7 @@ component accessors="true" {
 	 * @timeout The timeout to use when waiting for each item to be processed
 	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is milliseconds
 	 *
-	 * @throws UnsuportedCollectionException - When something other than an array or struct is passed as items
+	 * @throws UnsupportedCollectionException - When something other than an array or struct is passed as items
 	 * @return An array or struct with the items processed in parallel
 	 */
 	any function allApply( items, fn, executor, timeout, timeUnit ){
@@ -895,7 +895,7 @@ component accessors="true" {
 		} else{
 			throw(
 				message : "The collection type passed is not yet supported!",
-				type : "UnsuportedCollectionException",
+				type : "UnsupportedCollectionException",
 				detail : getMetadata( arguments.items )
 			);
 		}
