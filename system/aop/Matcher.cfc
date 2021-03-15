@@ -31,11 +31,11 @@ component accessors="true"{
 	*/
 	property name="instanceOf";
 	/**
-	* Matchin regex
+	* Matching regex
 	*/
 	property name="regex";
 	/**
-	* Mathching method names
+	* Matching method names
 	*/
 	property name="methods";
 	/**

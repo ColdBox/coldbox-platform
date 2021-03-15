@@ -2,7 +2,7 @@
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * Allows you to maninpulate CF mappings
+ * Allows you to manipulate CF mappings
  */
 component {
 

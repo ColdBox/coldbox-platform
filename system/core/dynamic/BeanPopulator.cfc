@@ -352,7 +352,7 @@ component {
 							nullValue = false;
 						}
 						// Is value nullable (e.g., simple, empty string)? If so, set null...
-						// short circuit evealuaton of IsNull added, so it won't break IsSimpleValue with Real null values. Real nulls are already set.
+						// short circuit evaluation of IsNull added, so it won't break IsSimpleValue with Real null values. Real nulls are already set.
 						if (
 							!isNull( local.propertyValue ) && isSimpleValue( propertyValue ) && !len(
 								trim( propertyValue )
