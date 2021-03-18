@@ -557,10 +557,10 @@ component serializable="false" accessors="true"{
 	 */
 	any function includeUDF( required udflibrary ){
 		// Init the mixin location and caches reference
-		var templateCache   	= getCache( "template" );
+		var defaultCache   		= getCache( "default" );
 		var mixinLocationKey 	= hash( variables.controller.getAppHash() & arguments.udfLibrary );
 
-		var targetLocation = templateCache.getOrSet(
+		var targetLocation = defaultCache.getOrSet(
 			// Key
             "includeUDFLocation-#mixinLocationKey#",
 			// Producer
