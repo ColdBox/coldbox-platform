@@ -39,7 +39,7 @@ component accessors="true" singleton {
 		required data,
 		encoding                = "UTF-8",
 		jsonCallback            = "",
-		boolean jsonQueryFormat = true,
+		jsonQueryFormat 				= true,
 		xmlColumnList           = "",
 		boolean xmlUseCDATA     = false,
 		xmlListDelimiter        = ",",
