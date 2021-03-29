@@ -303,8 +303,9 @@ component
 	 * @objectKey The key to retrieve
      */
     function getQuiet( required objectKey ){
+		var ACFModernEngines = [ 2018, 2021 ];
 
-		if( server.coldfusion.productVersion.listFirst() == 2018 ){
+		if( ACFModernEngines.contains( server.coldfusion.productVersion.listFirst() ) ){
 			var element = getObjectStore().getQuiet( arguments.objectKey );
 		} else {
 			var element = getObjectStore().getQuiet( ucase( arguments.objectKey ) );
@@ -493,7 +494,9 @@ component
 	 * @objectKey The object cache key
 	 */
 	boolean function clearQuiet( required objectKey ){
-		if( server.coldfusion.productVersion.listFirst() == 2018 ){
+		var ACFModernEngines = [ 2018, 2021 ];
+
+		if( ACFModernEngines.contains( server.coldfusion.productVersion.listFirst() ) ){
 			return getObjectStore().removeQuiet( arguments.objectKey );
 		} else {
 			return getObjectStore().removeQuiet( ucase( arguments.objectKey ) );
