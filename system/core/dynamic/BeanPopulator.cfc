@@ -362,8 +362,7 @@ component {
 						}
 
 						var getEntityMap = function(){
-							var ACFModernEngines = [ 2018, 2021 ];
-							if( ACFModernEngines.contains( server.coldfusion.productVersion.listFirst() ) ){
+							if( server.coldfusion.productVersion.listFirst() == 2018 || server.coldfusion.productVersion.listFirst() == 2021 ){
 								return arrayToList( ormGetSessionFactory().getMetaModel().getAllEntityNames() ).listToArray();
 							} else {
 								return structKeyArray( ormGetSessionFactory().getAllClassMetadata() );
