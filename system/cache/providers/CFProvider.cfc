@@ -303,8 +303,7 @@ component
 	 * @objectKey The key to retrieve
      */
     function getQuiet( required objectKey ){
-
-		if( server.coldfusion.productVersion.listFirst() == 2018 ){
+		if( server.coldfusion.productVersion.listFirst() == 2018 || server.coldfusion.productVersion.listFirst() == 2021 ){
 			var element = getObjectStore().getQuiet( arguments.objectKey );
 		} else {
 			var element = getObjectStore().getQuiet( ucase( arguments.objectKey ) );
@@ -493,7 +492,7 @@ component
 	 * @objectKey The object cache key
 	 */
 	boolean function clearQuiet( required objectKey ){
-		if( server.coldfusion.productVersion.listFirst() == 2018 ){
+		if( server.coldfusion.productVersion.listFirst() == 2018 || server.coldfusion.productVersion.listFirst() == 2021 ){
 			return getObjectStore().removeQuiet( arguments.objectKey );
 		} else {
 			return getObjectStore().removeQuiet( ucase( arguments.objectKey ) );
