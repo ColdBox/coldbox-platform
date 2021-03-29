@@ -41,11 +41,7 @@ component implements="coldbox.system.cache.util.IStats" accessors="true"{
 	 * Get the associated cache's live object count
 	 */
 	numeric function getObjectCount(){
-		if( server.coldfusion.productVersion.listFirst() == 11 ){
-			return getCacheStats().getObjectCount();
-		} else {
-			return getCacheStats().getSize();
-		}
+		return getCacheStats().getSize();
 	}
 
 	/**
@@ -54,9 +50,6 @@ component implements="coldbox.system.cache.util.IStats" accessors="true"{
 	 * @return IStats
 	 */
 	function clearStatistics(){
-		if( server.coldfusion.productVersion.listFirst() == 11 ){
-			getCacheStats().clearStatistics();
-		}
 		return this;
 	}
 
@@ -71,33 +64,21 @@ component implements="coldbox.system.cache.util.IStats" accessors="true"{
 	 * Get the total cache's eviction count
 	 */
 	numeric function getEvictionCount(){
-		if( server.coldfusion.productVersion.listFirst() == 11 ){
-			return getCacheStats().getEvictionCount();
-		} else {
-			return getCacheStats().cacheEvictionCount();
-		}
+		return getCacheStats().cacheEvictionCount();
 	}
 
 	/**
 	 * Get the total cache's hits
 	 */
 	numeric function getHits(){
-		if( server.coldfusion.productVersion.listFirst() == 11 ){
-			return getCacheStats().getCacheHits();
-		} else {
-			return getCacheStats().cacheHitCount();
-		}
+		return getCacheStats().cacheHitCount();
 	}
 
 	/**
 	 * Get the total cache's misses
 	 */
 	numeric function getMisses(){
-		if( server.coldfusion.productVersion.listFirst() == 11 ){
-			return getCacheStats().getCacheMisses();
-		} else {
-			return getCacheStats().cacheMissCount();
-		}
+		return getCacheStats().cacheMissCount();
 	}
 
 	/**
@@ -114,11 +95,7 @@ component implements="coldbox.system.cache.util.IStats" accessors="true"{
 	********************************************************/
 
 	any function getAverageGetTime(){
-		if( server.coldfusion.productVersion.listFirst() == 11 ){
-			return getCacheStats().getAverageGetTime();
-		} else {
-			return "";
-		}
+		return "";
 	}
 
 }

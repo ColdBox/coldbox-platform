@@ -362,7 +362,8 @@ component {
 						}
 
 						var getEntityMap = function(){
-							if( server.coldfusion.productVersion.listFirst() == 2018 || server.coldfusion.productVersion.listFirst() == 2021 ){
+							if( listFind( "2018,2021", server.coldfusion.productVersion.listFirst() ) ){
+								// Double array functions to convert from native java to cf java
 								return arrayToList( ormGetSessionFactory().getMetaModel().getAllEntityNames() ).listToArray();
 							} else {
 								return structKeyArray( ormGetSessionFactory().getAllClassMetadata() );

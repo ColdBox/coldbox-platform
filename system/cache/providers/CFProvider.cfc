@@ -184,12 +184,7 @@ component
 	 * @return ICacheProvider
 	 */
 	function clearStatistics(){
-		if( server.coldfusion.productVersion.listFirst() == 11 ){
-			getObjectStore().clearStatistics();
-		} else {
-			// New version of ehcache removed this feature.
-		}
-
+		// New version of ehcache removed this feature.
 		return this;
 	}
 
@@ -303,7 +298,8 @@ component
 	 * @objectKey The key to retrieve
      */
     function getQuiet( required objectKey ){
-		if( server.coldfusion.productVersion.listFirst() == 2018 || server.coldfusion.productVersion.listFirst() == 2021 ){
+		// Don't touch the casing on 2018+
+		if( listFind( "2018,2021", server.coldfusion.productVersion.listFirst() ) ){
 			var element = getObjectStore().getQuiet( arguments.objectKey );
 		} else {
 			var element = getObjectStore().getQuiet( ucase( arguments.objectKey ) );
@@ -492,7 +488,7 @@ component
 	 * @objectKey The object cache key
 	 */
 	boolean function clearQuiet( required objectKey ){
-		if( server.coldfusion.productVersion.listFirst() == 2018 || server.coldfusion.productVersion.listFirst() == 2021 ){
+		if( listFind( "2018,2021", server.coldfusion.productVersion.listFirst() ) ){
 			return getObjectStore().removeQuiet( arguments.objectKey );
 		} else {
 			return getObjectStore().removeQuiet( ucase( arguments.objectKey ) );
