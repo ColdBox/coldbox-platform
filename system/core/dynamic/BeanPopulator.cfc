@@ -362,7 +362,8 @@ component {
 						}
 
 						var getEntityMap = function(){
-							if ( find( "2018", server.coldfusion.productVersion ) || find( "2021", server.coldfusion.productVersion ) ) {
+							var ACFModernEngines = [ 2018, 2021 ];
+							if( ACFModernEngines.contains( server.coldfusion.productVersion.listFirst() ) ){
 								return arrayToList( ormGetSessionFactory().getMetaModel().getAllEntityNames() ).listToArray();
 							} else {
 								return structKeyArray( ormGetSessionFactory().getAllClassMetadata() );
