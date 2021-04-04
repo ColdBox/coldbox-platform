@@ -89,6 +89,10 @@ component extends="EventHandler" {
 		} catch ( Any e ) {
 			arguments.exception = e;
 			this.onAnyOtherException( argumentCollection = arguments );
+            // If in development, let's show the error template
+            if ( getSetting( "environment" ) eq "development" ) {
+                rethrow;
+            }
 		}
 
 		// Development additions
@@ -558,11 +562,6 @@ component extends="EventHandler" {
             .setStatusCode( arguments.event.STATUS.INTERNAL_ERROR )
             .setStatusText( "General application error" );
 
-        // If in development, let's show the error template
-        if ( getSetting( "environment" ) eq "development" ) {
-            rethrow;
-        }
-        
     }
     
 	/**
