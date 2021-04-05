@@ -548,9 +548,9 @@ component extends="EventHandler" {
         
         // Log Exception
         log.error(
-            "Error calling #arguments.event.getCurrentEvent()#: #exception.message# #exception.detail#",
+            "Error calling #arguments.event.getCurrentEvent()#: #arguments.exception.message# #arguments.exception.detail#",
             {
-                "_stacktrace" : exception.stacktrace,
+                "_stacktrace" : arguments.exception.stacktrace,
                 "httpData"    : getHTTPRequestData( false )
             }
         );
@@ -558,7 +558,7 @@ component extends="EventHandler" {
         // Setup General Error Response
         arguments.prc.response
             .setError( true )
-            .addMessage( "General application error: #exception.message#" )
+            .addMessage( "General application error: #arguments.exception.message#" )
             .setStatusCode( arguments.event.STATUS.INTERNAL_ERROR )
             .setStatusText( "General application error" );
 
