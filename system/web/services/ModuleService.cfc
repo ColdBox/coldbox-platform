@@ -432,9 +432,12 @@ component extends="coldbox.system.web.services.BaseService" {
 						}
 					}
 				}
-			}
+			} // end inception loading
 
-			// interception
+			// Log Registration Time
+			mConfig.registrationTime = getTickCount() - sTime;
+
+			// Announce module registered
 			variables.interceptorService.announce(
 				"postModuleRegistration",
 				{
@@ -445,7 +448,7 @@ component extends="coldbox.system.web.services.BaseService" {
 
 			// Log registration
 			variables.logger.info(
-				"+ Module (#arguments.moduleName#) Registered (#getTickCount() - sTime#ms) => { version: #mConfig.version#, from: #mConfig.path# }"
+				"+ Module (#arguments.moduleName#) Registered (#mConfig.registrationTime#ms) => { version: #mConfig.version#, from: #mConfig.path# }"
 			);
 		}
 		// end lock
@@ -734,6 +737,9 @@ component extends="coldbox.system.web.services.BaseService" {
 				activateModule( moduleName = thisChild );
 			} );
 
+			// Lock activation time
+			mConfig.activationTime = getTickCount() - sTime;
+
 			// postModuleLoad interception
 			variables.interceptorService.announce(
 				"postModuleLoad",
@@ -745,7 +751,7 @@ component extends="coldbox.system.web.services.BaseService" {
 			);
 
 			// Log it
-			variables.logger.info( "+ Module (#arguments.moduleName#) Activated (#getTickCount() - sTime#ms) => { version: #mConfig.version#, from: #mConfig.path# }" );
+			variables.logger.info( "+ Module (#arguments.moduleName#) Activated (#mConfig.activationTime#ms) => { version: #mConfig.version#, from: #mConfig.path# }" );
 		}
 		// end lock
 
