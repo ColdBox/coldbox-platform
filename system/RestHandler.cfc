@@ -87,26 +87,12 @@ component extends="EventHandler" {
 			arguments.exception = e;
 			this.onEntityNotFoundException( argumentCollection = arguments );
 		} catch ( Any e ) {
-			// Log Exception
-			log.error(
-				"Error calling #arguments.event.getCurrentEvent()#: #e.message# #e.detail#",
-				{
-					"_stacktrace" : e.stacktrace,
-					"httpData"    : getHTTPRequestData( false )
-				}
-			);
-
-			// Setup General Error Response
-			arguments.prc.response
-				.setError( true )
-				.addMessage( "General application error: #e.message#" )
-				.setStatusCode( arguments.event.STATUS.INTERNAL_ERROR )
-				.setStatusText( "General application error" );
-
-			// If in development, let's show the error template
-			if ( getSetting( "environment" ) eq "development" ) {
-				rethrow;
-			}
+			arguments.exception = e;
+			this.onAnyOtherException( argumentCollection = arguments );
+            // If in development, let's show the error template
+            if ( getSetting( "environment" ) eq "development" ) {
+                rethrow;
+            }
 		}
 
 		// Development additions
@@ -543,6 +529,41 @@ component extends="EventHandler" {
 			.addMessage( "The resource requested (#event.getCurrentRoutedURL()#) could not be found" );
 	}
 
+    /**
+     * Action for 'any' exceptions, ie when not caught by previous catch statements
+     *  
+	 * @event The request context
+	 * @rc The rc reference
+	 * @prc The prc reference
+	 * @eventArguments The original event arguments
+	 * @exception The thrown exception
+	 */
+	function onAnyOtherException(
+		event,
+		rc,
+		prc,
+		eventArguments,
+		exception
+	){
+        
+        // Log Exception
+        log.error(
+            "Error calling #arguments.event.getCurrentEvent()#: #arguments.exception.message# #arguments.exception.detail#",
+            {
+                "_stacktrace" : arguments.exception.stacktrace,
+                "httpData"    : getHTTPRequestData( false )
+            }
+        );
+
+        // Setup General Error Response
+        arguments.prc.response
+            .setError( true )
+            .addMessage( "General application error: #arguments.exception.message#" )
+            .setStatusCode( arguments.event.STATUS.INTERNAL_ERROR )
+            .setStatusText( "General application error" );
+
+    }
+    
 	/**
 	 * Utility method for when an expectation of the request fails ( e.g. an expected parameter is not provided )
 	 * - It will output a 417 status code (event.STATUS.EXPECTATION_FAILED)
