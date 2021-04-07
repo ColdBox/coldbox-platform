@@ -24,6 +24,11 @@ component accessors="true" {
 	property name="loadAppContext" type="boolean";
 
 	/**
+	 * Are we unloading the context or not, default is true. Usually this is set to false for adobe tasks so they can recur.
+	 */
+	property name="unloadAppContext" type="boolean";
+
+	/**
 	 * The target function to be applied via dynamic proxy to the required Java interface(s)
 	 */
 	property name="target";
@@ -34,19 +39,22 @@ component accessors="true" {
 	 * @target The target function to be applied via dynamic proxy to the required Java interface(s)
 	 * @debug Add debugging messages for monitoring
 	 * @loadAppContext By default, we load the Application context into the running thread. If you don't need it, then don't load it.
+	 * @unloadAppContext By default we unload the context if set. You can turn this off if you want to leave a task with the context loaded.
 	 */
 	function init(
 		required target,
 		boolean debug          = false,
-		boolean loadAppContext = true
+		boolean loadAppContext = true,
+		boolean unloadAppContext = true
 	){
 		variables.System          = createObject( "java", "java.lang.System" );
 		variables.Thread          = createObject( "java", "java.lang.Thread" );
 		variables.debug           = arguments.debug;
 		variables.target          = arguments.target;
 		variables.UUID            = createUUID();
-		variables.oneHundredYears = ( 60 * 60 * 24 * 365 * 100 );
 		variables.loadAppContext  = arguments.loadAppContext;
+		variables.unloadAppContext = arguments.unloadAppContext;
+		variables.contextIsLoaded = false;
 
 		// If loading App context or not
 		if ( arguments.loadAppContext ) {
@@ -92,32 +100,44 @@ component accessors="true" {
 	 * Ability to load the context into the running thread
 	 */
 	function loadContext(){
+
 		// Are we loading the context or not?
 		if ( !variables.loadAppContext ) {
 			return;
 		}
 
+		// If the context is already load it, don't try again
+		if( variables.contextIsLoaded ){
+			//out( "=====> EXITING, CONTEXT IS LOADED ALREADY!" );
+			return;
+		}
+
 		// out( "==> Context NOT loaded for thread: #getCurrentThread().toString()# loading it..." );
 
-		// Lucee vs Adobe Implementations
-		if ( server.keyExists( "lucee" ) ) {
-			getCFMLContext().setApplicationContext( variables.cfContext );
-		} else {
-			var fusionContext = variables.originalFusionContext.clone();
-			var pageContext   = variables.originalPageContext.clone();
-			pageContext.resetLocalScopes();
-			var page             = variables.originalPage._clone();
-			page.pageContext     = pageContext;
-			fusionContext.parent = page;
+		try{
+			// Lucee vs Adobe Implementations
+			if ( server.keyExists( "lucee" ) ) {
+				getCFMLContext().setApplicationContext( variables.cfContext );
+			} else {
+				var fusionContext = variables.originalFusionContext.clone();
+				var pageContext   = variables.originalPageContext.clone();
+				pageContext.resetLocalScopes();
+				var page             = variables.originalPage._clone();
+				page.pageContext     = pageContext;
+				fusionContext.parent = page;
 
-			variables.fusionContextStatic.setCurrent( fusionContext );
-			fusionContext.pageContext = pageContext;
-			pageContext.setFusionContext( fusionContext );
-			pageContext.initializeWith(
-				page,
-				pageContext,
-				pageContext.getVariableScope()
-			);
+				variables.fusionContextStatic.setCurrent( fusionContext );
+				fusionContext.pageContext = pageContext;
+				pageContext.setFusionContext( fusionContext );
+				pageContext.initializeWith(
+					page,
+					pageContext,
+					pageContext.getVariableScope()
+				);
+			}
+			variables.contextIsLoaded = true;
+		} catch( any e ){
+			err( "Error loading context #e.toString()#" );
 		}
 	}
 
@@ -130,20 +150,31 @@ component accessors="true" {
 			return;
 		}
 
-		// out( "==> Removing context for thread: #getCurrentThread().toString()#." );
+		//out( "==> Removing context for thread: #getCurrentThread().toString()#." );
 
-		// Lucee vs Adobe Implementations
-		if ( server.keyExists( "lucee" ) ) {
-			// Nothing right now
-		} else {
-			// Ensure any DB connections used get returned to the connection pool. Without clearSqlProxy an executor will hold onto any connections it touched while running and they will not timeout/close, and no other code can use the connection except for the executor that last touched it.   Credit to Brad Wood for finding this!
-			variables.DataSrcImplStatic.clearSqlProxy();
-			variables.fusionContextStatic.setCurrent( javacast( "null", "" ) );
+		try{
+			// Lucee vs Adobe Implementations
+			if ( server.keyExists( "lucee" ) ) {
+				// Nothing right now
+				if( variables.unloadAppContext ){
+				}
+			} else {
+				// Ensure any DB connections used get returned to the connection pool. Without clearSqlProxy an executor will hold onto any connections it touched while running and they will not timeout/close, and no other code can use the connection except for the executor that last touched it.   Credit to Brad Wood for finding this!
+				variables.DataSrcImplStatic.clearSqlProxy();
+
+				// Unload the fusion context only if marked, else ignore on ADOBE
+				// Adobe kills the tasks if you do this for periodic tasks.
+				if( variables.unloadAppContext ){
+					variables.fusionContextStatic.setCurrent( javacast( "null", "" ) );
+				}
+			}
+		} catch( any e ){
+			err( "Error Unloading context #e.toString()#" );
 		}
 	}
 
 	/**
-	 * Utility to send to output to console from a runnable
+	 * Utiliy to send to output to console from a runanble
 	 *
 	 * @var Variable/Message to send
 	 */
@@ -152,7 +183,7 @@ component accessors="true" {
 	}
 
 	/**
-	 * Utility to send to output to console from a runnable via the error stream
+	 * Utiliy to send to output to console from a runanble via the error stream
 	 *
 	 * @var Variable/Message to send
 	 */
@@ -160,11 +191,10 @@ component accessors="true" {
 		variables.System.err.println( arguments.var.toString() );
 	}
 
-
 	/**
 	 * Engine-specific lock name. For Adobe, lock is shared for this CFC instance.  On Lucee, it is random (i.e. not locked).
 	 * This singlethreading on Adobe is to workaround a thread safety issue in the PageContext that needs fixed.
-	 * Amend this check once Adobe fixes this in a later update
+	 * Ammend this check once Adobe fixes this in a later update
 	 */
 	function getConcurrentEngineLockName(){
 		if ( server.keyExists( "lucee" ) ) {

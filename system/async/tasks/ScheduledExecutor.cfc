@@ -49,10 +49,12 @@ component
 		// build out the java callable
 		var jCallable = createDynamicProxy(
 			new coldbox.system.async.proxies.Callable(
-				arguments.task,
-				arguments.method,
-				variables.debug,
-				variables.loadAppContext
+				supplier = arguments.task,
+				method = arguments.method,
+				debug = variables.debug,
+				loadAppContext = variables.loadAppContext,
+				// Do not unload app context's on tasks
+				unloadAppContext = false
 			),
 			[ "java.util.concurrent.Callable" ]
 		);
@@ -162,7 +164,7 @@ component
 	 ****************************************************************/
 
 	/**
-	 * Build out a Java Runnable from the incoming cfc/closure/lambda/udf
+	 * Build out a Java Runnable from the incoming cfc/closure/lambda/udf that will be sent to the schedulers.
 	 *
 	 * @task The runnable task closure/lambda/cfc
 	 * @method The default method to execute if the runnable is a CFC, defaults to `run()`
@@ -172,10 +174,12 @@ component
 	function buildJavaRunnable( required task, required method ){
 		return createDynamicProxy(
 			new coldbox.system.async.proxies.Runnable(
-				arguments.task,
-				arguments.method,
-				variables.debug,
-				variables.loadAppContext
+				target = arguments.task,
+				method = arguments.method,
+				debug = variables.debug,
+				loadAppContext = variables.loadAppContext,
+				// Do not unload app context's on tasks
+				unloadAppContext = false
 			),
 			[ "java.lang.Runnable" ]
 		);
