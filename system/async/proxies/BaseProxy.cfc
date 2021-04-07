@@ -194,7 +194,7 @@ component accessors="true" {
 	/**
 	 * Engine-specific lock name. For Adobe, lock is shared for this CFC instance.  On Lucee, it is random (i.e. not locked).
 	 * This singlethreading on Adobe is to workaround a thread safety issue in the PageContext that needs fixed.
-	 * Ammend this check once Adobe fixes this in a later update
+	 * Amend this check once Adobe fixes this in a later update
 	 */
 	function getConcurrentEngineLockName(){
 		if ( server.keyExists( "lucee" ) ) {
