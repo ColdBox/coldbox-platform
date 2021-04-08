@@ -130,7 +130,6 @@ component accessors="true" {
 					pageContext.getVariableScope()
 				);
 			}
-			variables.contextIsLoaded = true;
 		} catch( any e ){
 			err( "Error loading context #e.toString()#" );
 		}
