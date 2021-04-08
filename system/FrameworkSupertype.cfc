@@ -386,7 +386,7 @@ component serializable="false" accessors="true"{
 	 * @event The name of the event to run, if not passed, then it will use the default event found in your configuration file
 	 * @URL The full URL you would like to relocate to instead of an event: ex: URL='http://www.google.com'
 	 * @URI The relative URI you would like to relocate to instead of an event: ex: URI='/mypath/awesome/here'
-	 * @queryString The query string to append, if needed. If in SES mode it will be translated to convention name value pairs
+	 * @queryString The query string or struct to append, if needed. If in SES mode it will be translated to convention name value pairs
 	 * @persist What request collection keys to persist in flash ram
 	 * @persistStruct A structure key-value pairs to persist in flash ram
 	 * @addToken Wether to add the tokens or not. Default is false

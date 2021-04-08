@@ -313,7 +313,7 @@ component serializable="false" accessors="true" {
 	 * Relocate user browser requests to other events, URLs, or URIs.
 	 *
 	 * @event The name of the event to relocate to, if not passed, then it will use the default event found in your configuration file.
-	 * @queryString The query string to append, if needed. If in SES mode it will be translated to convention name value pairs
+	 * @queryString The query string or a struct to append, if needed. If in SES mode it will be translated to convention name value pairs
 	 * @addToken Wether to add the tokens or not to the relocation. Default is false
 	 * @persist What request collection keys to persist in flash RAM automatically for you
 	 * @persistStruct A structure of key-value pairs to persist in flash RAM automatically for you
@@ -366,8 +366,8 @@ component serializable="false" accessors="true" {
 		if( isStruct( arguments.queryString ) ){
 			arguments.queryString = arguments.queryString
 				.reduce( function( result, key, value ){
-					result.append( "#encodeForURL( key )#=#encodeForURL( value )#" );
-					return result;
+					arguments.result.append( "#encodeForURL( arguments.key )#=#encodeForURL( arguments.value )#" );
+					return arguments.result;
 				}, [] )
 				.toList( "&" );
 		}
