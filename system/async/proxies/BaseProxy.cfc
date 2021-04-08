@@ -66,7 +66,7 @@ component accessors="true" {
 				variables.originalFusionContext = fusionContextStatic.getCurrent().clone();
 				variables.productVersion = listFirst( listFirst( server.coldfusion.productVersion, "," ) );
 				if( variables.productVersion > 2016 ){
-					variables.originalAppScope 	= fusionContextStatic.getApplicationScope();
+					variables.originalAppScope 	= variables.originalFusionContext.getApplicationScope();
 				} else {
 					variables.originalAppScope 	= variables.originalFusionContext.getAppHelper().getAppScope();
 				}
