@@ -362,6 +362,15 @@ component serializable="false" accessors="true" {
 		if ( len( trim( arguments.event ) ) eq 0 ) {
 			arguments.event = getSetting( "DefaultEvent" );
 		}
+        // Query String Struct to String
+		if( isStruct( arguments.queryString ) ){
+			arguments.queryString = arguments.queryString
+				.reduce( function( result, key, value ){
+					result.append( "#encodeForURL( key )#=#encodeForURL( value )#" );
+					return result;
+				}, [] )
+				.toList( "&" );
+		}
 		// Overriding Front Controller via baseURL argument
 		if ( len( trim( arguments.baseURL ) ) ) {
 			frontController = arguments.baseURL;
