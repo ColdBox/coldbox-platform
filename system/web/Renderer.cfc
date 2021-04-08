@@ -145,7 +145,7 @@ component
 	 * @deprecated Use `view()` instead
 	 */
 	function renderView(){
-		return view( argumentCollection = arguments );
+		return this.view( argumentCollection = arguments );
 	}
 
 	/**
@@ -477,7 +477,7 @@ component
 	 * @deprecated Use `externalView()` instead
 	 */
 	function renderExternalView(){
-		return externalView( argumentCollection = arguments );
+		return this.externalView( argumentCollection = arguments );
 	}
 
 	/**
@@ -552,7 +552,7 @@ component
 	 * @deprecated Use `layout()` instead
 	 */
 	function renderLayout(){
-		return layout( argumentCollection = arguments );
+		return this.layout( argumentCollection = arguments );
 	}
 
 	/**
