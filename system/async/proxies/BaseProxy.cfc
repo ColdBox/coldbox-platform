@@ -43,16 +43,16 @@ component accessors="true" {
 	 */
 	function init(
 		required target,
-		boolean debug          = false,
-		boolean loadAppContext = true,
+		boolean debug            = false,
+		boolean loadAppContext   = true,
 		boolean unloadAppContext = true
 	){
-		variables.System          = createObject( "java", "java.lang.System" );
-		variables.Thread          = createObject( "java", "java.lang.Thread" );
-		variables.debug           = arguments.debug;
-		variables.target          = arguments.target;
-		variables.UUID            = createUUID();
-		variables.loadAppContext  = arguments.loadAppContext;
+		variables.System           = createObject( "java", "java.lang.System" );
+		variables.Thread           = createObject( "java", "java.lang.Thread" );
+		variables.debug            = arguments.debug;
+		variables.target           = arguments.target;
+		variables.UUID             = createUUID();
+		variables.loadAppContext   = arguments.loadAppContext;
 		variables.unloadAppContext = arguments.unloadAppContext;
 
 		// If loading App context or not
@@ -61,17 +61,17 @@ component accessors="true" {
 				variables.cfContext   = getCFMLContext().getApplicationContext();
 				variables.pageContext = getCFMLContext();
 			} else {
-				variables.DataSrcImplStatic		= createObject( "java", "coldfusion.sql.DataSrcImpl" );
+				variables.DataSrcImplStatic     = createObject( "java", "coldfusion.sql.DataSrcImpl" );
 				variables.fusionContextStatic   = createObject( "java", "coldfusion.filter.FusionContext" );
 				variables.originalFusionContext = fusionContextStatic.getCurrent().clone();
-				variables.productVersion = listFirst( listFirst( server.coldfusion.productVersion, "," ) );
-				if( variables.productVersion > 2016 ){
-					variables.originalAppScope 	= variables.originalFusionContext.getApplicationScope();
+				variables.productVersion        = listFirst( server.coldfusion.productVersion );
+				if ( variables.productVersion > 2016 ) {
+					variables.originalAppScope = variables.originalFusionContext.getApplicationScope();
 				} else {
-					variables.originalAppScope 	= variables.originalFusionContext.getAppHelper().getAppScope();
+					variables.originalAppScope = variables.originalFusionContext.getAppHelper().getAppScope();
 				}
-				variables.originalPageContext   = getCFMLContext();
-				variables.originalPage          = variables.originalPageContext.getPage();
+				variables.originalPageContext = getCFMLContext();
+				variables.originalPage        = variables.originalPageContext.getPage();
 			}
 			// out( "==> Storing contexts for thread: #getCurrentThread().toString()#." );
 		}
@@ -105,7 +105,6 @@ component accessors="true" {
 	 * Ability to load the context into the running thread
 	 */
 	function loadContext(){
-
 		// Are we loading the context or not?
 		if ( !variables.loadAppContext ) {
 			return;
@@ -113,7 +112,7 @@ component accessors="true" {
 
 		// out( "==> Context NOT loaded for thread: #getCurrentThread().toString()# loading it..." );
 
-		try{
+		try {
 			// Lucee vs Adobe Implementations
 			if ( server.keyExists( "lucee" ) ) {
 				getCFMLContext().setApplicationContext( variables.cfContext );
@@ -135,7 +134,7 @@ component accessors="true" {
 					pageContext.getVariableScope()
 				);
 			}
-		} catch( any e ){
+		} catch ( any e ) {
 			err( "Error loading context #e.toString()#" );
 		}
 	}
@@ -149,13 +148,13 @@ component accessors="true" {
 			return;
 		}
 
-		//out( "==> Removing context for thread: #getCurrentThread().toString()#." );
+		// out( "==> Removing context for thread: #getCurrentThread().toString()#." );
 
-		try{
+		try {
 			// Lucee vs Adobe Implementations
 			if ( server.keyExists( "lucee" ) ) {
 				// Nothing right now
-				if( variables.unloadAppContext ){
+				if ( variables.unloadAppContext ) {
 				}
 			} else {
 				// Ensure any DB connections used get returned to the connection pool. Without clearSqlProxy an executor will hold onto any connections it touched while running and they will not timeout/close, and no other code can use the connection except for the executor that last touched it.   Credit to Brad Wood for finding this!
@@ -163,11 +162,11 @@ component accessors="true" {
 
 				// Unload the fusion context only if marked, else ignore on ADOBE
 				// Adobe kills the tasks if you do this for periodic tasks.
-				if( variables.unloadAppContext ){
+				if ( variables.unloadAppContext ) {
 					variables.fusionContextStatic.setCurrent( javacast( "null", "" ) );
 				}
 			}
-		} catch( any e ){
+		} catch ( any e ) {
 			err( "Error Unloading context #e.toString()#" );
 		}
 	}
