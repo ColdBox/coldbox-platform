@@ -65,17 +65,17 @@ component
 		variables.wireBox    = arguments.controller.getWireBox();
 
 		// Set Conventions, Settings and Properties
-		variables.layoutsConvention       	= variables.controller.getColdBoxSetting( "layoutsConvention" );
-		variables.viewsConvention         	= variables.controller.getColdBoxSetting( "viewsConvention" );
-		variables.appMapping              	= variables.controller.getSetting( "AppMapping" );
-		variables.viewsExternalLocation   	= variables.controller.getSetting( "ViewsExternalLocation" );
-		variables.layoutsExternalLocation 	= variables.controller.getSetting( "LayoutsExternalLocation" );
-		variables.modulesConfig           	= variables.controller.getSetting( "modules" );
-		variables.viewsHelper             	= variables.controller.getSetting( "viewsHelper" );
-		variables.viewCaching             	= variables.controller.getSetting( "viewCaching" );
+		variables.layoutsConvention       = variables.controller.getColdBoxSetting( "layoutsConvention" );
+		variables.viewsConvention         = variables.controller.getColdBoxSetting( "viewsConvention" );
+		variables.appMapping              = variables.controller.getSetting( "AppMapping" );
+		variables.viewsExternalLocation   = variables.controller.getSetting( "ViewsExternalLocation" );
+		variables.layoutsExternalLocation = variables.controller.getSetting( "LayoutsExternalLocation" );
+		variables.modulesConfig           = variables.controller.getSetting( "modules" );
+		variables.viewsHelper             = variables.controller.getSetting( "viewsHelper" );
+		variables.viewCaching             = variables.controller.getSetting( "viewCaching" );
 		// Layouts + Views Reference Maps
-		variables.layoutsRefMap 			= {};
-		variables.viewsRefMap 				= {};
+		variables.layoutsRefMap           = {};
+		variables.viewsRefMap             = {};
 
 		// Verify View Helper Template extension + location
 		if ( len( variables.viewsHelper ) ) {
@@ -142,6 +142,15 @@ component
 	/**
 	 * Render out a view
 	 *
+	 * @deprecated Use `view()` instead
+	 */
+	function renderView(){
+		return view( argumentCollection = arguments );
+	}
+
+	/**
+	 * Render out a view
+	 *
 	 * @view The the view to render, if not passed, then we look in the request context for the current set view.
 	 * @args A struct of arguments to pass into the view for rendering, will be available as 'args' in the view.
 	 * @module The module to render the view from explicitly
@@ -158,7 +167,7 @@ component
 	 * @prePostExempt If true, pre/post view interceptors will not be fired. By default they do fire
 	 * @name The name of the rendering region to render out, Usually all arguments are coming from the stored region but you override them using this function's arguments.
 	 */
-	function renderView(
+	function view(
 		view                   = "",
 		struct args            = getRequestContext().getCurrentViewArgs(),
 		module                 = "",
@@ -447,19 +456,28 @@ component
 
 		savecontent variable="cbox_renderedView" {
 			cfmodule(
-				template         ="RendererEncapsulator.cfm",
-				view             =arguments.view,
-				viewPath         =arguments.viewPath,
-				viewHelperPath   =arguments.viewHelperPath,
-				args             =arguments.args,
+				template          = "RendererEncapsulator.cfm",
+				view              = arguments.view,
+				viewPath          = arguments.viewPath,
+				viewHelperPath    = arguments.viewHelperPath,
+				args              = arguments.args,
 				rendererVariables = ( isNull( attributes.rendererVariables ) ? variables : attributes.rendererVariables ),
-				event            =event,
-				rc               =event.getCollection(),
-				prc              =event.getPrivateCollection()
+				event             = event,
+				rc                = event.getCollection(),
+				prc               = event.getPrivateCollection()
 			);
 		}
 
 		return cbox_renderedView;
+	}
+
+	/**
+	 * Render an external view
+	 *
+	 * @deprecated Use `externalView()` instead
+	 */
+	function renderExternalView(){
+		return externalView( argumentCollection = arguments );
 	}
 
 	/**
@@ -472,7 +490,7 @@ component
 	 * @cacheSuffix The suffix to add into the cache entry for this view rendering
 	 * @cacheProvider The provider to cache this view in, defaults to 'template'
 	 */
-	function renderExternalView(
+	function externalView(
 		required view,
 		struct args            = getRequestContext().getCurrentViewArgs(),
 		boolean cache          = false,
@@ -529,6 +547,15 @@ component
 	/************************************** LAYOUT METHODS *********************************************/
 
 	/**
+	 * Render a layout
+	 *
+	 * @deprecated Use `layout()` instead
+	 */
+	function renderLayout(){
+		return layout( argumentCollection = arguments );
+	}
+
+	/**
 	 * Render a layout or a layout + view combo
 	 *
 	 * @layout The layout to render out
@@ -538,7 +565,7 @@ component
 	 * @viewModule The module to explicitly render the view from
 	 * @prePostExempt If true, pre/post layout interceptors will not be fired. By default they do fire
 	 */
-	function renderLayout(
+	function layout(
 		layout,
 		module                = "",
 		view                  = "",
@@ -862,10 +889,7 @@ component
 		}
 
 		if ( left( arguments.view, 1 ) EQ "/" ) {
-			refMap = {
-				viewPath       : arguments.view,
-				viewHelperPath : []
-			};
+			refMap = { viewPath : arguments.view, viewHelperPath : [] };
 		} else {
 			// view discovery based on relative path
 
