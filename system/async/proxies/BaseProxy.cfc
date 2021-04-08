@@ -64,7 +64,12 @@ component accessors="true" {
 				variables.DataSrcImplStatic		= createObject( "java", "coldfusion.sql.DataSrcImpl" );
 				variables.fusionContextStatic   = createObject( "java", "coldfusion.filter.FusionContext" );
 				variables.originalFusionContext = fusionContextStatic.getCurrent().clone();
-				variables.originalAppScope 		= fusionContextStatic.getApplicationScope();
+				variables.productVersion = listFirst( listFirst( server.coldfusion.productVersion, "," ) );
+				if( variables.productVersion > 2016 ){
+					variables.originalAppScope 	= fusionContextStatic.getApplicationScope();
+				} else {
+					variables.originalAppScope 	= variables.originalFusionContext.getAppHelper().getAppScope();
+				}
 				variables.originalPageContext   = getCFMLContext();
 				variables.originalPage          = variables.originalPageContext.getPage();
 			}
