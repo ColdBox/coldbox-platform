@@ -52,9 +52,7 @@ component
 				supplier = arguments.task,
 				method = arguments.method,
 				debug = variables.debug,
-				loadAppContext = variables.loadAppContext,
-				// Do not unload app context's on tasks
-				unloadAppContext = false
+				loadAppContext = variables.loadAppContext
 			),
 			[ "java.util.concurrent.Callable" ]
 		);
@@ -177,9 +175,7 @@ component
 				target = arguments.task,
 				method = arguments.method,
 				debug = variables.debug,
-				loadAppContext = variables.loadAppContext,
-				// Do not unload app context's on tasks
-				unloadAppContext = false
+				loadAppContext = variables.loadAppContext
 			),
 			[ "java.lang.Runnable" ]
 		);
