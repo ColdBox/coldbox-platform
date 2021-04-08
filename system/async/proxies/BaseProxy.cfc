@@ -54,7 +54,6 @@ component accessors="true" {
 		variables.UUID            = createUUID();
 		variables.loadAppContext  = arguments.loadAppContext;
 		variables.unloadAppContext = arguments.unloadAppContext;
-		variables.contextIsLoaded = false;
 
 		// If loading App context or not
 		if ( arguments.loadAppContext ) {
@@ -64,7 +63,13 @@ component accessors="true" {
 			} else {
 				variables.DataSrcImplStatic		= createObject( "java", "coldfusion.sql.DataSrcImpl" );
 				variables.fusionContextStatic   = createObject( "java", "coldfusion.filter.FusionContext" );
-				variables.originalFusionContext = fusionContextStatic.getCurrent();
+				variables.originalFusionContext = fusionContextStatic.getCurrent().clone();
+				variables.productVersion = listFirst( listFirst( server.coldfusion.productVersion, "," ) );
+				if( variables.productVersion > 2016 ){
+					variables.originalAppScope 	= variables.originalFusionContext.getApplicationScope();
+				} else {
+					variables.originalAppScope 	= variables.originalFusionContext.getAppHelper().getAppScope();
+				}
 				variables.originalPageContext   = getCFMLContext();
 				variables.originalPage          = variables.originalPageContext.getPage();
 			}
@@ -106,12 +111,6 @@ component accessors="true" {
 			return;
 		}
 
-		// If the context is already load it, don't try again
-		if( variables.contextIsLoaded ){
-			//out( "=====> EXITING, CONTEXT IS LOADED ALREADY!" );
-			return;
-		}
-
 		// out( "==> Context NOT loaded for thread: #getCurrentThread().toString()# loading it..." );
 
 		try{
@@ -128,6 +127,7 @@ component accessors="true" {
 
 				variables.fusionContextStatic.setCurrent( fusionContext );
 				fusionContext.pageContext = pageContext;
+				fusionContext.SymTab_setApplicationScope( variables.originalAppScope );
 				pageContext.setFusionContext( fusionContext );
 				pageContext.initializeWith(
 					page,
@@ -135,7 +135,6 @@ component accessors="true" {
 					pageContext.getVariableScope()
 				);
 			}
-			variables.contextIsLoaded = true;
 		} catch( any e ){
 			err( "Error loading context #e.toString()#" );
 		}
