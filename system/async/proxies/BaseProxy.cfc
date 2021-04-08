@@ -24,11 +24,6 @@ component accessors="true" {
 	property name="loadAppContext" type="boolean";
 
 	/**
-	 * Are we unloading the context or not, default is true. Usually this is set to false for adobe tasks so they can recur.
-	 */
-	property name="unloadAppContext" type="boolean";
-
-	/**
 	 * The target function to be applied via dynamic proxy to the required Java interface(s)
 	 */
 	property name="target";
@@ -39,13 +34,11 @@ component accessors="true" {
 	 * @target The target function to be applied via dynamic proxy to the required Java interface(s)
 	 * @debug Add debugging messages for monitoring
 	 * @loadAppContext By default, we load the Application context into the running thread. If you don't need it, then don't load it.
-	 * @unloadAppContext By default we unload the context if set. You can turn this off if you want to leave a task with the context loaded.
 	 */
 	function init(
 		required target,
 		boolean debug            = false,
-		boolean loadAppContext   = true,
-		boolean unloadAppContext = true
+		boolean loadAppContext   = true
 	){
 		variables.System           = createObject( "java", "java.lang.System" );
 		variables.Thread           = createObject( "java", "java.lang.Thread" );
@@ -53,7 +46,6 @@ component accessors="true" {
 		variables.target           = arguments.target;
 		variables.UUID             = createUUID();
 		variables.loadAppContext   = arguments.loadAppContext;
-		variables.unloadAppContext = arguments.unloadAppContext;
 
 		// If loading App context or not
 		if ( arguments.loadAppContext ) {
@@ -153,18 +145,10 @@ component accessors="true" {
 		try {
 			// Lucee vs Adobe Implementations
 			if ( server.keyExists( "lucee" ) ) {
-				// Nothing right now
-				if ( variables.unloadAppContext ) {
-				}
 			} else {
 				// Ensure any DB connections used get returned to the connection pool. Without clearSqlProxy an executor will hold onto any connections it touched while running and they will not timeout/close, and no other code can use the connection except for the executor that last touched it.   Credit to Brad Wood for finding this!
 				variables.DataSrcImplStatic.clearSqlProxy();
-
-				// Unload the fusion context only if marked, else ignore on ADOBE
-				// Adobe kills the tasks if you do this for periodic tasks.
-				if ( variables.unloadAppContext ) {
-					variables.fusionContextStatic.setCurrent( javacast( "null", "" ) );
-				}
+				variables.fusionContextStatic.setCurrent( javacast( "null", "" ) );
 			}
 		} catch ( any e ) {
 			err( "Error Unloading context #e.toString()#" );
