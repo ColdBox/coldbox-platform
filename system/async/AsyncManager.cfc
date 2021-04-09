@@ -120,8 +120,7 @@ component accessors="true" singleton {
 				arguments.executor = this.$executors.newScheduledThreadPool( arguments.threads );
 				return new tasks.ScheduledExecutor( argumentCollection = arguments );
 			}
-			default : {
-
+			default: {
 			}
 		}
 		throw(
@@ -344,6 +343,10 @@ component accessors="true" singleton {
 	 * Utilities *
 	 ****************************************************************/
 
+	Duration function duration(){
+		return new util.Duration();
+	}
+
 	/**
 	 * Build an array out of a range of numbers or using our range syntax.
 	 * You can also build negative ranges
@@ -357,22 +360,20 @@ component accessors="true" singleton {
 	 * @from The initial index, defaults to 1 or you can use the {start}..{end} notation
 	 * @to The last index item
 	 */
-	array function arrayRange( any from=1, numeric to ){
+	array function arrayRange( any from = 1, numeric to ){
 		// shortcut notation
-		if( find( "..", arguments.from ) ){
-			arguments.to 	= getToken( arguments.from, 2, ".." );
-			arguments.from 	= getToken( arguments.from, 1, ".." );
+		if ( find( "..", arguments.from ) ) {
+			arguments.to   = getToken( arguments.from, 2, ".." );
+			arguments.from = getToken( arguments.from, 1, ".." );
 		}
 
 		// cap to if larger than from
-		if( arguments.to < arguments.from ){
+		if ( arguments.to < arguments.from ) {
 			arguments.to = arguments.from;
 		}
 
 		// build it up
-		return IntStream
-			.rangeClosed( arguments.from, arguments.to )
-			.toArray();
+		return IntStream.rangeClosed( arguments.from, arguments.to ).toArray();
 	}
 
 }
