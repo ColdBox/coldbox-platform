@@ -138,7 +138,7 @@
 			// Link ColdBox
 			variables.coldbox = arguments.coldbox;
 			// Link to WireBox
-			variables.wirebox = variables.coldbox.getWireBox();				
+			variables.wirebox = variables.coldbox.getWireBox();
 			// link LogBox
 			variables.logBox  = variables.coldbox.getLogBox();
 			// Link Event Manager
@@ -154,18 +154,18 @@
 				variables.wirebox = arguments.wirebox;
 				// If WireBox linked, get LogBox and EventManager, and asyncmanager from it
 				variables.asyncManager = variables.wirebox.getAsyncManager();
-				variables.taskScheduler = variables.wirebox.getTaskScheduler();				
-				variables.logBox = variables.wirebox.getLogBox();				
+				variables.taskScheduler = variables.wirebox.getTaskScheduler();
+				variables.logBox = variables.wirebox.getLogBox();
 				// link LogBox
 				variables.eventManager = variables.wirebox.getEventManager();
 				// register the points to listen to
 				variables.eventManager.appendInterceptionPoints( variables.eventStates );
 			} else {
-				
+
 			// Register an async manager and scheduler
 			variables.asyncManager = new coldbox.system.async.AsyncManager();
 			variables.taskScheduler = variables.asyncManager.newScheduledExecutor( name : "cachebox-tasks", threads : 20 );
-				
+
 			// Running standalone, so create our own logging first
 			configureLogBox( arguments.config.getLogBoxConfig() );
 			// Running standalone, so create our own event manager
@@ -356,7 +356,7 @@
 				variables.log.debug( "Shutting down cache: #item# on factoryID: #getFactoryID()#." );
 			}
 
-			//process listners
+			//process listeners
 			variables.eventManager.announce( "beforeCacheShutdown", { cache = cache } );
 
 			//Shutdown each cache
@@ -384,7 +384,7 @@
 			}
 			variables.asyncManager.shutdownAllExecutors( force = true );
 		}
-		
+
 		// Notify Listeners
 		variables.eventManager.announce( "afterCacheFactoryShutdown", { cacheFactory = this } );
 
@@ -455,7 +455,7 @@
 	}
 
 	/**
-	 * Try to remove a named cache from this factory, returns Boolean if successfull or not
+	 * Try to remove a named cache from this factory, returns Boolean if successful or not
 	 *
 	 * @name The name of the cache to remove
 	 */

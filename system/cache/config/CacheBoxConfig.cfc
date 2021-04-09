@@ -286,7 +286,7 @@ component accessors="true"{
 	}
 
 	/**
-	 * Get a specifed cache definition
+	 * Get a specified cache definition
 	 *
 	 * @name The cache name
 	 */
@@ -308,7 +308,7 @@ component accessors="true"{
 	 *
 	 * @class The class of the listener
 	 * @properties The struct of properties for the listener
-	 * @name The unique name of the listner
+	 * @name The unique name of the listener
 	 */
 	CacheBoxConfig function listener( required class, struct properties={}, name="" ){
 		// Name check?

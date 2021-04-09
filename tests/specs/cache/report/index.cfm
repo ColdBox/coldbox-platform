@@ -35,7 +35,7 @@
 		<input type="button" value="Reinit" onclick="window.location='index.cfm?reinit'"/>
 		<p><b>CacheFactory</b> v#cacheBox.getVersion()# ID:#cacheBox.getFactoryID()#</p>
 	</div>
-	
+
 	<!--- Render Report Here --->
 	<cfmodule template="/coldbox/system/cache/report/monitor.cfm" cacheFactory="#cacheBox#"/>
 

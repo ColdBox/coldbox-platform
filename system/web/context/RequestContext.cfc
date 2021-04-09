@@ -1568,7 +1568,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Use this method to tell the framework to render data for you. The framework will take care of marshalling the data for you
-	 * @type The type of data to render. Valid types are JSON, JSONP, JSONT, XML, WDDX, PLAIN/HTML, TEXT, PDF. The deafult is HTML or PLAIN. If an invalid type is sent in, this method will throw an error
+	 * @type The type of data to render. Valid types are JSON, JSONP, JSONT, XML, WDDX, PLAIN/HTML, TEXT, PDF. The default is HTML or PLAIN. If an invalid type is sent in, this method will throw an error
 	 * @data The data you would like to marshall and return by the framework
 	 * @contentType The content type of the data. This will be used in the cfcontent tag: text/html, text/plain, text/xml, text/json, etc. The default value is text/html. However, if you choose JSON this method will choose application/json, if you choose WDDX or XML this method will choose text/xml for you.
 	 * @encoding The default character encoding to use.  The default encoding is utf-8

@@ -26,7 +26,7 @@ WireBox injector is created
 				// classNamespace = "" A class path namespace to use to create CacheBox: Default=coldbox.system.cache or wirebox.system.cache
 			},
 			// Scope registration, automatically register a wirebox injector instance on any CF scope
-			// By default it registeres itself on application scope
+			// By default it registers itself on application scope
 			scopeRegistration : {
 				enabled : true,
 				scope   : "application", // server, session, application

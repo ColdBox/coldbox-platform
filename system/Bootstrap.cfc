@@ -597,7 +597,7 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
-	 * ON applicaiton end
+	 * ON application end
 	 */
 	function onApplicationEnd( struct appScope ){
 		var cbController = arguments.appScope[ locateAppKey() ];

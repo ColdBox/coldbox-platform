@@ -45,8 +45,8 @@ Description :
 
 	<!--- Clear an event Multi --->
 	<cffunction name="clearEventMulti" access="public" output="false" returntype="void" hint="Clears all the event permutations from the cache according to the list of snippets and querystrings. Be careful when using incomplete event name with query strings as partial event names are not guaranteed to match with query string permutations">
-		<cfargument name="eventsnippets"    type="any"   	required="true"  hint="The comma-delimmitted list event snippet to clear on. Can be partial or full">
-		<cfargument name="queryString"      type="any"   required="false" default="" hint="The comma-delimmitted list of queryStrings passed in. If passed in, it will create a unique hash out of it. For purging purposes.  If passed in the list length must be equal to the list length of the event snippets passed in."/>
+		<cfargument name="eventsnippets"    type="any"   	required="true"  hint="The comma-delimited list event snippet to clear on. Can be partial or full">
+		<cfargument name="queryString"      type="any"   required="false" default="" hint="The comma-delimited list of queryStrings passed in. If passed in, it will create a unique hash out of it. For purging purposes.  If passed in the list length must be equal to the list length of the event snippets passed in."/>
       </cffunction>
 
 	<!--- clearView --->
@@ -56,7 +56,7 @@ Description :
 
 	<!--- clearViewMulti --->
 	<cffunction name="clearViewMulti" output="false" access="public" returntype="void" hint="Clears all view name permutations from the cache according to the view name.">
-		<cfargument name="viewSnippets"    type="any"   required="true"  hint="The comma-delimmitted list or array of view snippet to clear on. Can be partial or full">
+		<cfargument name="viewSnippets"    type="any"   required="true"  hint="The comma-delimited list or array of view snippet to clear on. Can be partial or full">
 	</cffunction>
 
 	<!--- Clear All The Views from the Cache. --->

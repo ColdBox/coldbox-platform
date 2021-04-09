@@ -352,7 +352,7 @@ component {
 							nullValue = false;
 						}
 						// Is value nullable (e.g., simple, empty string)? If so, set null...
-						// short circuit evealuaton of IsNull added, so it won't break IsSimpleValue with Real null values. Real nulls are already set.
+						// short circuit evaluation of IsNull added, so it won't break IsSimpleValue with Real null values. Real nulls are already set.
 						if (
 							!isNull( local.propertyValue ) && isSimpleValue( propertyValue ) && !len(
 								trim( propertyValue )
@@ -362,7 +362,8 @@ component {
 						}
 
 						var getEntityMap = function(){
-							if ( find( "2018", server.coldfusion.productVersion ) ) {
+							if( listFind( "2018,2021", server.coldfusion.productVersion.listFirst() ) ){
+								// Double array functions to convert from native java to cf java
 								return arrayToList( ormGetSessionFactory().getMetaModel().getAllEntityNames() ).listToArray();
 							} else {
 								return structKeyArray( ormGetSessionFactory().getAllClassMetadata() );

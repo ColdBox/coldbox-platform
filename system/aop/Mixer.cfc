@@ -91,7 +91,7 @@ component accessors="true"{
 	}
 
 	/**
-	* Executes our AOP mixer after variabless are created and autowired
+	* Executes our AOP mixer after variables are created and autowired
 	*/
 	function afterInstanceAutowire( required data ){
 		var mapping 	= arguments.data.mapping;
@@ -273,7 +273,7 @@ component accessors="true"{
 	* @target The incoming target
 	* @mapping The incoming target mapping
 	* @jointPoint The jointpoint to proxy
-	* @jointPointMD The jointpoint metdata to proxy
+	* @jointPointMD The jointpoint metadata to proxy
 	* @aspects The aspects to weave into the jointpoint
 	*
 	*/

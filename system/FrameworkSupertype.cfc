@@ -128,6 +128,8 @@ component serializable="false" accessors="true"{
 	/**
 	 * Render out a view
 	 *
+	 * @deprecated Use view() instead
+	 *
 	 * @view The the view to render, if not passed, then we look in the request context for the current set view.
 	 * @args A struct of arguments to pass into the view for rendering, will be available as 'args' in the view.
 	 * @module The module to render the view from explicitly
@@ -167,7 +169,50 @@ component serializable="false" accessors="true"{
 	}
 
 	/**
+	 * Render out a view
+	 *
+	 * @view The the view to render, if not passed, then we look in the request context for the current set view.
+	 * @args A struct of arguments to pass into the view for rendering, will be available as 'args' in the view.
+	 * @module The module to render the view from explicitly
+	 * @cache Cached the view output or not, defaults to false
+	 * @cacheTimeout The time in minutes to cache the view
+	 * @cacheLastAccessTimeout The time in minutes the view will be removed from cache if idle or requested
+	 * @cacheSuffix The suffix to add into the cache entry for this view rendering
+	 * @cacheProvider The provider to cache this view in, defaults to 'template'
+	 * @collection A collection to use by this Renderer to render the view as many times as the items in the collection (Array or Query)
+	 * @collectionAs The name of the collection variable in the partial rendering.  If not passed, we will use the name of the view by convention
+	 * @collectionStartRow The start row to limit the collection rendering with
+	 * @collectionMaxRows The max rows to iterate over the collection rendering with
+	 * @collectionDelim  A string to delimit the collection renderings by
+	 * @prePostExempt If true, pre/post view interceptors will not be fired. By default they do fire
+	 * @name The name of the rendering region to render out, Usually all arguments are coming from the stored region but you override them using this function's arguments.
+	 *
+	 * @return The rendered view
+	 */
+	function view(
+		view="",
+		struct args={},
+		module="",
+		boolean cache=false,
+		cacheTimeout="",
+		cacheLastAccessTimeout="",
+		cacheSuffix="",
+		cacheProvider="template",
+		collection,
+		collectionAs="",
+		numeric collectionStartRow="1",
+		numeric collectionMaxRows=0,
+		collectionDelim="",
+		boolean prePostExempt=false,
+		name
+	){
+		return variables.controller.getRenderer().renderView( argumentCollection=arguments );
+	}
+
+	/**
      * Renders an external view anywhere that cfinclude works.
+	 *
+	 * @deprecated Use `externalView()` instead
 	 *
      * @view The the view to render
 	 * @args A struct of arguments to pass into the view for rendering, will be available as 'args' in the view.
@@ -192,7 +237,34 @@ component serializable="false" accessors="true"{
 	}
 
 	/**
+     * Renders an external view anywhere that cfinclude works.
+	 *
+     * @view The the view to render
+	 * @args A struct of arguments to pass into the view for rendering, will be available as 'args' in the view.
+	 * @cache Cached the view output or not, defaults to false
+	 * @cacheTimeout The time in minutes to cache the view
+	 * @cacheLastAccessTimeout The time in minutes the view will be removed from cache if idle or requested
+	 * @cacheSuffix The suffix to add into the cache entry for this view rendering
+	 * @cacheProvider The provider to cache this view in, defaults to 'template'
+	 *
+	 * @return The rendered view
+	 */
+    function externalView(
+    	required view,
+    	struct args={},
+    	boolean cache=false,
+    	cacheTimeout="",
+    	cacheLastAccessTimeout="",
+    	cacheSuffix="",
+    	cacheProvider="template"
+    ){
+		return variables.controller.getRenderer().renderExternalView( argumentCollection=arguments );
+	}
+
+	/**
 	 * Render a layout or a layout + view combo
+	 *
+	 * @deprecated Use `layout()` instead
 	 *
 	 * @layout The layout to render out
 	 * @module The module to explicitly render this layout from
@@ -204,6 +276,29 @@ component serializable="false" accessors="true"{
 	 * @return The rendered layout
 	 */
 	function renderLayout(
+		layout,
+		module="",
+		view="",
+		struct args={},
+		viewModule="",
+		boolean prePostExempt=false
+	){
+		return variables.controller.getRenderer().renderLayout( argumentCollection=arguments );
+	}
+
+	/**
+	 * Render a layout or a layout + view combo
+	 *
+	 * @layout The layout to render out
+	 * @module The module to explicitly render this layout from
+	 * @view The view to render within this layout
+	 * @args An optional set of arguments that will be available to this layouts/view rendering ONLY
+	 * @viewModule The module to explicitly render the view from
+	 * @prePostExempt If true, pre/post layout interceptors will not be fired. By default they do fire
+	 *
+	 * @return The rendered layout
+	 */
+	function layout(
 		layout,
 		module="",
 		view="",
@@ -386,7 +481,7 @@ component serializable="false" accessors="true"{
 	 * @event The name of the event to run, if not passed, then it will use the default event found in your configuration file
 	 * @URL The full URL you would like to relocate to instead of an event: ex: URL='http://www.google.com'
 	 * @URI The relative URI you would like to relocate to instead of an event: ex: URI='/mypath/awesome/here'
-	 * @queryString The query string to append, if needed. If in SES mode it will be translated to convention name value pairs
+	 * @queryString The query string or struct to append, if needed. If in SES mode it will be translated to convention name value pairs
 	 * @persist What request collection keys to persist in flash ram
 	 * @persistStruct A structure key-value pairs to persist in flash ram
 	 * @addToken Wether to add the tokens or not. Default is false
@@ -540,7 +635,7 @@ component serializable="false" accessors="true"{
 	 * Add a js/css asset(s) to the html head section. You can also pass in a list of assets. This method
 	 * keeps track of the loaded assets so they are only loaded once
 	 *
-	 * @asset The asset(s) to load, only js or css files. This can also be a comma delimmited list.
+	 * @asset The asset(s) to load, only js or css files. This can also be a comma delimited list.
 	 */
 	string function addAsset( required asset ){
 		return getInstance( "@HTMLHelper" ).addAsset( argumentCollection=arguments );
@@ -557,10 +652,10 @@ component serializable="false" accessors="true"{
 	 */
 	any function includeUDF( required udflibrary ){
 		// Init the mixin location and caches reference
-		var templateCache   	= getCache( "template" );
+		var defaultCache   		= getCache( "default" );
 		var mixinLocationKey 	= hash( variables.controller.getAppHash() & arguments.udfLibrary );
 
-		var targetLocation = templateCache.getOrSet(
+		var targetLocation = defaultCache.getOrSet(
 			// Key
             "includeUDFLocation-#mixinLocationKey#",
 			// Producer

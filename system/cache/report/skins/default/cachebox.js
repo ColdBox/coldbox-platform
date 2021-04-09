@@ -16,7 +16,7 @@ function cachebox_openwindow(mypage,myname,w,h,features) {
 	}
 	if (winl < 0) winl = 0;
 	if (wint < 0) wint = 0;
-	
+
 	var settings = 'height=' + h + ',';
 	settings += 'width=' + w + ',';
 	settings += 'top=' + wint + ',';
@@ -126,7 +126,7 @@ function cachebox_toggleDiv(targetDiv, displayStyle){
 	}
 	else{
 		target.style.display = displayStyle;
-	}	
+	}
 }
 // Timed Refresh
 function cachebox_timedRefresh(timeoutPeriod) {

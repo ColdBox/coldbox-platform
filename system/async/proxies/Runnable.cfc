@@ -16,7 +16,7 @@ component extends="BaseProxy" {
 		required target,
 		method                 = "run",
 		boolean debug          = false,
-		boolean loadAppContext = true
+		boolean loadAppContext = true,
 	){
 		super.init(
 			arguments.target,
@@ -29,7 +29,6 @@ component extends="BaseProxy" {
 
 	function run(){
 		loadContext();
-
 		try {
 			lock name="#getConcurrentEngineLockName()#" type="exclusive" timeout="60" {
 				if ( isClosure( variables.target ) || isCustomFunction( variables.target ) ) {

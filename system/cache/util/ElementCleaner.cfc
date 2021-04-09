@@ -88,8 +88,8 @@ component
 	 * Clears all the event permutations from the cache according to the list of snippets and querystrings.
 	 * Be careful when using incomplete event name with query strings as partial event names are not guaranteed to match with query string permutations
 	 *
-	 * @eventsnippets The comma-delimmitted list event snippet to clear on. Can be partial or full
-	 * @queryString The comma-delimmitted list of queryStrings passed in. If passed in, it will create a unique hash out of it. For purging purposes.  If passed in the list length must be equal to the list length of the event snippets passed in
+	 * @eventsnippets The comma-delimited list event snippet to clear on. Can be partial or full
+	 * @queryString The comma-delimited list of queryStrings passed in. If passed in, it will create a unique hash out of it. For purging purposes.  If passed in the list length must be equal to the list length of the event snippets passed in
 	 */
 	ElementCleaner function clearEventMulti( required eventsnippets, queryString="" ){
 		var regexCacheKey = "";
@@ -147,7 +147,7 @@ component
 	/**
 	 * Clears all view name permutations from the cache according to the view name.
 	 *
-	 * @viewSnippet The comma-delimmitted list or array of view snippet to clear on. Can be partial or full
+	 * @viewSnippet The comma-delimited list or array of view snippet to clear on. Can be partial or full
 	 */
 	ElementCleaner function clearViewMulti( required viewSnippets ){
 		var regexCacheKey= "";

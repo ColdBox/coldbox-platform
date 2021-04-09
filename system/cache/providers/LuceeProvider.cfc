@@ -385,7 +385,7 @@ component
 	}
 
 	/**
-	 * Expire all the elments in the cache (if supported by the provider)
+	 * Expire all the elements in the cache (if supported by the provider)
 	 * THIS FUNCTION IS NOT IMPLEMENTED IN THIS PROVIDER
 	 *
 	 * @return ICacheProvider

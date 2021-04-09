@@ -12,7 +12,7 @@ component{
 
 	// Core Mappings
 	this.mappings[ "/docbox" ] 	= API_ROOT & "docbox";
-	
+
 	// Standlone mappings
 	this.mappings[ "/coldbox" ]  = ( structKeyExists( url, "coldbox_root" )  ? url.coldbox_root  : COLDBOX_ROOT );
 	this.mappings[ "/cachebox" ] = ( structKeyExists( url, "cachebox_root" ) ? url.cachebox_root : COLDBOX_ROOT );

@@ -92,7 +92,7 @@ component accessors="true"{
 	){
 		// Appender Unique ID */
 		variables._hash        = createObject( 'java', 'java.lang.System' ).identityHashCode( this );
-		// Flag denoting if the appender is inited or not. This will be set by LogBox upon succesful creation and registration.
+		// Flag denoting if the appender is inited or not. This will be set by LogBox upon successful creation and registration.
 		variables.initialized  = false;
 
 		// Appender's Name
@@ -456,7 +456,7 @@ component accessors="true"{
 	}
 
 	/**
-	 * Utiliy to send to output to the output stream.
+	 * Utility to send to output to the output stream.
 	 *
 	 * @message Message to send
 	 */
@@ -465,7 +465,7 @@ component accessors="true"{
 	}
 
 	/**
-	 * Utiliy to send to output to the error stream.
+	 * Utility to send to output to the error stream.
 	 *
 	 * @message Message to send
 	 */

@@ -3,7 +3,7 @@
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.ortussolutions.com
 ********************************************************************************
-A public error template that just shows that an exception ocurred.
+A public error template that just shows that an exception occurred.
 ----------------------------------------------------------------------->
 <cfoutput>
 <!--- StyleSheets --->

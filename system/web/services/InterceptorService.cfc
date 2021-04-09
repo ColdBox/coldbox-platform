@@ -281,7 +281,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * @interceptorClass Mutex with interceptorObject, this is the qualified class of the interceptor to register
 	 * @interceptorObject Mutex with interceptor Class, this is used to register an already instantiated object as an interceptor
 	 * @interceptorProperties The structure of properties to register this interceptor with.
-	 * @customPoints A comma delimmited list or array of custom interception points, if the object or class sent in observes them.
+	 * @customPoints A comma delimited list or array of custom interception points, if the object or class sent in observes them.
 	 * @interceptorName The name to use for the interceptor when stored. If not used, we will use the name found in the object's class
 	 *
 	 * @return InterceptorService
@@ -422,7 +422,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	/**
 	 * Append a list of custom interception points to the CORE interception points and returns itself
 	 *
-	 * @customPoints A comma delimmited list or array of custom interception points to append. If they already exists, then they will not be added again.
+	 * @customPoints A comma delimited list or array of custom interception points to append. If they already exists, then they will not be added again.
 	 *
 	 * @return  The current interception points
 	 */

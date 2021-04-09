@@ -15,7 +15,7 @@ component accessors="true" {
 	property name="eventStates";
 
 	/**
-	 * Stop recurssion classes
+	 * Stop recursion classes
 	 */
 	property name="stopRecursionClasses";
 
@@ -69,7 +69,7 @@ component accessors="true" {
 	 *
 	 * @target The target object to register in an event pool
 	 * @name The name to use when registering the object.  If not passed, the name will be used from the object's metadata
-	 * @customStates A comma delimmited list of custom states, if the object or class sent in observes them
+	 * @customStates A comma delimited list of custom states, if the object or class sent in observes them
 	 *
 	 * @return EventPoolManager
 	 */
@@ -162,7 +162,7 @@ component accessors="true" {
 	/**
 	 * Append a list of custom interception points to the CORE interception points and returns the points
 	 *
-	 * @customStates A comma delimmited list or array of custom interception states to append. If they already exists, then they will not be added again.
+	 * @customStates A comma delimited list or array of custom interception states to append. If they already exists, then they will not be added again.
 	 *
 	 * @return  The current interception points
 	 */

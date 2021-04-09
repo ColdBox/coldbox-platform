@@ -75,7 +75,7 @@ component
 	 *
 	 * This method tracks assets in the PRC via the key: <strong>cbox_assets</strong>
 	 *
-	 * @asset The asset(s) to load, only js or css files. This can also be a comma delimmited list.
+	 * @asset The asset(s) to load, only js or css files. This can also be a comma delimited list.
 	 * @sendToHeader Send to header or returned HTML content
 	 * @async HTML5 JavaScript argument: Specifies that the script is executed asynchronously (only for external scripts)
 	 * @defer HTML5 JavaScript argument: Specifies that the script is executed when the page has finished parsing (only for external scripts)

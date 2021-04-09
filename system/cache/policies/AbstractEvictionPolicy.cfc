@@ -94,7 +94,7 @@ component serializable=false implements="coldbox.system.cache.policies.IEviction
 	}
 
 	/**
-	* Get utiliy object
+	* Get utility object
 	* @return coldbox.system.core.util.Util
 	*/
 	private function getUtil(){
