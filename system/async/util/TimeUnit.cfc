@@ -16,25 +16,25 @@ component singleton {
 	function get( required timeUnit = "milliseconds" ){
 		switch ( arguments.timeUnit ) {
 			case "days": {
-				return jTimeUnit.DAYS;
+				return variables.jTimeUnit.DAYS;
 			}
 			case "hours": {
-				return jTimeUnit.HOURS;
+				return variables.jTimeUnit.HOURS;
 			}
 			case "microseconds": {
-				return jTimeUnit.MICROSECONDS;
+				return variables.jTimeUnit.MICROSECONDS;
 			}
 			case "milliseconds": {
-				return jTimeUnit.MILLISECONDS;
+				return variables.jTimeUnit.MILLISECONDS;
 			}
 			case "minutes": {
-				return jTimeUnit.MINUTES;
+				return variables.jTimeUnit.MINUTES;
 			}
 			case "nanoseconds": {
-				return jTimeUnit.NANOSECONDS;
+				return variables.jTimeUnit.NANOSECONDS;
 			}
 			case "seconds": {
-				return jTimeUnit.SECONDS;
+				return variables.jTimeUnit.SECONDS;
 			}
 		}
 	}
