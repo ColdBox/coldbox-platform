@@ -1,5 +1,5 @@
 /**
- * Duration Specs
+ * period Specs
  */
 component extends="tests.specs.async.BaseAsyncSpec" {
 
@@ -7,99 +7,152 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 
 	function run( testResults, testBox ){
 		// all your suites go here.
-		describe( "Duration", function(){
+		describe( "Period", function(){
 			beforeEach( function( currentSpec ){
-				duration = new coldbox.system.async.util.Duration();
+				period = new coldbox.system.async.time.Period();
 			} );
 
 			it( "can be created", function(){
-				expect( duration ).toBeComponent();
+				expect( period ).toBeComponent();
 			} );
 
 			it( "can do creations with of methods", function(){
-				expect( duration.ofDays( 7 ).toString() ).toBe( "PT168H" );
-				expect( duration.ofHours( 8 ).toString() ).toBe( "PT8H" );
-				expect( duration.ofMinutes( 15 ).toString() ).toBe( "PT15M" );
-				expect( duration.ofSeconds( 10 ).toString() ).toBe( "PT10S" );
-				expect( duration.ofSeconds( 30, 123456789 ).toString() ).toBe( "PT30.123456789S" );
-				expect( duration.between( "2017-10-03T10:15:30.00Z", "2017-10-03T10:16:30.00Z" ).getSeconds() ).toBe(
-					60
-				);
-				expect( duration.between( "2021-01-01 00:00:00", "2021-01-01 00:00:01" ).toString() ).toBe(
-					"PT1S"
-				);
-				expect(
-					duration
-						.between( createDateTime( 2019, 1, 1, 0, 0, 0 ), createDateTime( 2021, 1, 1, 0, 0, 0 ) )
-						.toString()
-				).toBe( "PT17544H" );
+				var p = period.of();
+				expect( p.getyears() ).toBe( 0 );
+				expect( p.getMonths() ).toBe( 0 );
+				expect( p.getDays() ).toBe( 0 );
+
+				var p = period.of( 1, 5, 2 );
+				expect( p.getyears() ).toBe( 1 );
+				expect( p.getMonths() ).toBe( 5 );
+				expect( p.getDays() ).toBe( 2 );
 			} );
 
-			it( "can parse strings into durations", function(){
-				var d = duration.parse( "P1DT8H15M10.345000S" );
-				expect( d.getSeconds() ).toBe( 116110 );
-				expect( d.getNano() ).toBe( 345000000 );
-				expect( d.getUnits() ).toInclude( "seconds" ).toInclude( "nanos" );
+			it( "can build days", function(){
+				expect( period.ofDays( 10 ).getDays() ).toBe( 10 );
+			} );
+
+			it( "can build months", function(){
+				expect( period.ofMonths( 10 ).getMonths() ).toBe( 10 );
+			} );
+
+			it( "can build weeks", function(){
+				var p = period.ofWeeks( 2 );
+				expect( p.getDays() ).toBe( 14 );
+			} );
+
+			it( "can build years", function(){
+				expect( period.ofyears( 10 ).getyears() ).toBe( 10 );
+			} );
+
+			it( "can parse strings into periods", function(){
+				var p = period.parse( "P2Y" );
+				expect( p.getYears() ).toBe( 2 );
+
+				var p = period.parse( "P2Y5M" );
+				expect( p.getYears() ).toBe( 2 );
+				expect( p.getMonths() ).toBe( 5 );
+
+				var p = period.parse( "P2Y5M10D" );
+				expect( p.getYears() ).toBe( 2 );
+				expect( p.getMonths() ).toBe( 5 );
+				expect( p.getDays() ).toBe( 10 );
 			} );
 
 			it( "can check utility methods", function(){
-				expect( duration.iszero() ).toBeTrue();
-				expect( duration.get() ).toBe( 0 );
-				expect( duration.getSeconds() ).toBe( 0 );
-				expect( duration.getNano() ).toBe( 0 );
-				expect( duration.isNegative() ).toBeFalse();
+				expect( period.iszero() ).toBeTrue();
+				expect( period.get() ).toBe( 0 );
+				expect( period.isNegative() ).toBeFalse();
+			} );
+
+			it( "can get total months", function(){
+				var p = period.parse( "P10Y5M20D" )
+				expect( p.toTotalMonths() ).toBe( 125 );
 			} );
 
 			it( "can do minus", function(){
-				var d = duration.of( 10 );
-				expect( duration.minus( 1 ).get() ).toBe( 9 );
+				expect(
+					period
+						.of( 5 )
+						.minus( period.ofDays( 5 ) )
+						.getDays()
+				).toBe( 0 );
+
+				expect(
+					period
+						.init()
+						.ofDays( 5 )
+						.minusDays( 1 )
+						.getDays()
+				).toBe( 4 );
+
+				expect(
+					period
+						.init()
+						.ofMonths( 5 )
+						.minusMonths( 1 )
+						.getMonths()
+				).toBe( 4 );
+
+				expect(
+					period
+						.init()
+						.ofYears( 5 )
+						.minusYears( 1 )
+						.getYears()
+				).toBe( 4 );
 			} );
 
 			it( "can do plus", function(){
-				var d = duration.of( 10 );
-				expect( duration.plus( 1 ).get() ).toBe( 11 );
+				expect(
+					period
+						.of( 5 )
+						.plus( period.ofDays( 5 ) )
+						.getDays()
+				).toBe( 10 );
+
+				expect(
+					period
+						.ofDays( 5 )
+						.plusDays( 1 )
+						.getDays()
+				).toBe( 6 );
+
+				expect(
+					period
+						.init()
+						.ofMonths( 5 )
+						.plusMonths( 1 )
+						.getMonths()
+				).toBe( 6 );
+
+				expect(
+					period
+						.init()
+						.ofYears( 5 )
+						.plusYears( 1 )
+						.getYears()
+				).toBe( 6 );
 			} );
 
 			it( "can do multiplication", function(){
-				var d = duration.of( 10 );
-				expect( duration.multipliedBy( 10 ).get() ).toBe( 100 );
-			} );
-
-			it( "can do division", function(){
-				var d = duration.of( 10 );
-				expect( duration.dividedBy( 10 ).get() ).toBe( 1 );
+				var d = period.ofDays( 10 );
+				expect( period.multipliedBy( 10 ).getDays() ).toBe( 100 );
 			} );
 
 			it( "can do negations", function(){
-				var d = duration.of( -1 );
+				var d = period.ofDays( -1 );
 				expect( d.negated().isNegative() ).toBeFalse();
 
-				var d = duration.of( -1 );
+				var d = period.ofDays( -1 );
 				expect( d.isNegative() ).toBeTrue();
-				expect( d.abs().isNegative() ).toBeFalse();
 			} );
 
-			it( "can create it from another duration", function(){
-				var test = duration.ofSeconds( 5 );
-				expect( duration.from( test ).get() ).toBe( 5 );
-			} );
+			it( "can addTo", function(){
+				var p      = period.of( 2, 5, 10 );
+				var target = "2021-01-01";
 
-			it( "can convert to other time units", function(){
-				expect( duration.ofMinutes( 60 ).toHours() ).toBe( 1 );
-				expect( duration.ofMinutes( 60 ).toSeconds() ).toBe( 60 * 60 );
-				expect( duration.ofMinutes( 60 ).toMillis() ).toBe( 60 * 60 * 1000 );
-			} );
-
-			it( "can add durations to date/time objects", function(){
-				var now = now();
-				var t   = duration.ofDays( 10 ).addTo( now );
-				expect( dateDiff( "d", now, t ) ).toBe( 10 );
-			} );
-
-			it( "can subtract durations to date/time objects", function(){
-				var now = now();
-				var t   = duration.ofDays( 10 ).subtractFrom( now );
-				expect( dateDiff( "d", now, t ) ).toBe( -10 );
+				expect( p.addTo( target ) ).tobe( "2023-06-11" )
 			} );
 		} );
 	}

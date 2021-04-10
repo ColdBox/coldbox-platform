@@ -9,7 +9,7 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 		// all your suites go here.
 		describe( "Duration", function(){
 			beforeEach( function( currentSpec ){
-				duration = new coldbox.system.async.util.Duration();
+				duration = new coldbox.system.async.time.Duration();
 			} );
 
 			it( "can be created", function(){

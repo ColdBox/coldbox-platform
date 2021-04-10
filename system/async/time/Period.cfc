@@ -115,7 +115,7 @@ component accessors="true" {
 	 * Gets the number of Days in this period.
 	 */
 	numeric function getDays(){
-		return this.get();
+		return this.get( "days" );
 	}
 
 	/**
@@ -165,26 +165,26 @@ component accessors="true" {
 	 * Adds this period to the specified temporal object and return back to you a date/time object
 	 *
 	 * @target The date/time object or string to incorporate the period into
-	 * @asInstant Return the result either as a date/time string or a java.time.Instant object
+	 * @asLocalDate If true, we will give you the java.time.LocalDate object, else a ColdFusion date/time string
 	 *
-	 * @return Return the result either as a date/time string or a java.time.Instant object
+	 * @return The date/time object with the period added to it or a java LocalDate
 	 */
-	function addTo( required target, boolean asInstant = false ){
-		var results = variables.jPeriod.addTo( this.CHRONO_UNIT.toInstant( arguments.target ) );
-		return ( arguments.asInstant ? results : results.toString() );
+	function addTo( required target, boolean asLocalDate = false ){
+		var results = variables.jPeriod.addTo( this.CHRONO_UNIT.toLocalDate( arguments.target ) );
+		return ( arguments.asLocalDate ? results : results.toString() );
 	}
 
 	/**
-	 * Subtracts this period to the specified temporal object and return back to you a date/time object
+	 * Subtracts this period to the specified temporal object and return back to you a date/time object or a Java LocalDate object
 	 *
-	 * @target The date/time object or string to subtract the period from
-	 * @asInstant Return the result either as a date/time string or a java.time.Instant object
+	 * @target The date/time object or string to incorporate the period into
+	 * @asLocalDate If true, we will give you the java.time.LocalDate object, else a ColdFusion date/time string
 	 *
-	 * @return Return the result either as a date/time string or a java.time.Instant object
+	 * @return Return the result either as a date/time string or a java.time.LocalDate object
 	 */
-	function subtractFrom( required target, boolean asInstant = false ){
-		var results = variables.jPeriod.subtractFrom( this.CHRONO_UNIT.toInstant( arguments.target ) );
-		return ( arguments.asInstant ? results : results.toString() );
+	function subtractFrom( required target, boolean asLocalDate = false ){
+		var results = variables.jPeriod.subtractFrom( this.CHRONO_UNIT.toLocalDate( arguments.target ) );
+		return ( arguments.asLocalDate ? results : results.toString() );
 	}
 
 	/**
@@ -200,8 +200,8 @@ component accessors="true" {
 	Period function between( required start, required end ){
 		// Do it!
 		variables.jPeriod = variables.jPeriod.between(
-			this.CHRONO_UNIT.toLocalDate( arguments.start ),
-			this.CHRONO_UNIT.toLocalDate( arguments.end )
+			this.CHRONO_UNIT.toJavaDate( arguments.start ),
+			this.CHRONO_UNIT.toJavaDate( arguments.end )
 		);
 		return this;
 	}
@@ -341,9 +341,9 @@ component accessors="true" {
 	 */
 	Period function of( years = 0, months = 0, days = 0 ){
 		variables.jPeriod = variables.jPeriod.of(
-			javacast( "long", arguments.years ),
-			javacast( "long", arguments.months ),
-			javacast( "long", arguments.days )
+			javacast( "int", arguments.years ),
+			javacast( "int", arguments.months ),
+			javacast( "int", arguments.days )
 		);
 		return this;
 	}
@@ -354,7 +354,7 @@ component accessors="true" {
 	 * @days The number of days, positive or negative
 	 */
 	Period function ofDays( required days ){
-		variables.jPeriod = variables.jPeriod.ofDays( javacast( "long", arguments.days ) );
+		variables.jPeriod = variables.jPeriod.ofDays( javacast( "int", arguments.days ) );
 		return this;
 	}
 
@@ -364,7 +364,17 @@ component accessors="true" {
 	 * @months The number of months, positive or negative
 	 */
 	Period function ofMonths( required months ){
-		variables.jPeriod = variables.jPeriod.ofMonths( javacast( "long", arguments.days ) );
+		variables.jPeriod = variables.jPeriod.ofMonths( javacast( "int", arguments.months ) );
+		return this;
+	}
+
+	/**
+	 * Obtains a Period representing a number of weeks.
+	 *
+	 * @weeks The number of weeks, positive or negative
+	 */
+	Period function ofWeeks( required weeks ){
+		variables.jPeriod = variables.jPeriod.ofWeeks( javacast( "int", arguments.weeks ) );
 		return this;
 	}
 
@@ -374,7 +384,7 @@ component accessors="true" {
 	 * @years The number of years, positive or negative
 	 */
 	Period function ofYears( required years ){
-		variables.jPeriod = variables.jPeriod.ofYears( javacast( "long", arguments.days ) );
+		variables.jPeriod = variables.jPeriod.ofYears( javacast( "int", arguments.years ) );
 		return this;
 	}
 

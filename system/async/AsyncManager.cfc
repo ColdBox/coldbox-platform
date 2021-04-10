@@ -344,7 +344,7 @@ component accessors="true" singleton {
 	 ****************************************************************/
 
 	Duration function duration(){
-		return new util.Duration();
+		return new time.Duration();
 	}
 
 	/**
