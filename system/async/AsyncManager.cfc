@@ -24,10 +24,7 @@ component accessors="true" singleton {
 	property name="executors" type="struct";
 
 	// Static class to Executors: java.util.concurrent.Executors
-	this.$executors = new util.Executors();
-
-	// Helpers
-	variables.IntStream = createObject( "java", "java.util.stream.IntStream" );
+	this.$executors = new coldbox.system.async.executors.ExecutorBuilder();
 
 	/**
 	 * Constructor
@@ -66,7 +63,7 @@ component accessors="true" singleton {
 	 * @debug Add output debugging
 	 * @loadAppContext Load the CFML App contexts or not, disable if not used
 	 *
-	 * @return The ColdBox Schedule class to work with the schedule: coldbox.system.async.tasks.Executor
+	 * @return The ColdBox Schedule class to work with the schedule: coldbox.system.async.executors.Executor
 	 */
 	Executor function newExecutor(
 		required name,
@@ -106,19 +103,19 @@ component accessors="true" singleton {
 		switch ( arguments.type ) {
 			case "fixed": {
 				arguments.executor = this.$executors.newFixedThreadPool( arguments.threads );
-				return new tasks.Executor( argumentCollection = arguments );
+				return new executors.Executor( argumentCollection = arguments );
 			}
 			case "cached": {
 				arguments.executor = this.$executors.newCachedThreadPool();
-				return new tasks.Executor( argumentCollection = arguments );
+				return new executors.Executor( argumentCollection = arguments );
 			}
 			case "single": {
 				arguments.executor = this.$executors.newFixedThreadPool( 1 );
-				return new tasks.Executor( argumentCollection = arguments );
+				return new executors.Executor( argumentCollection = arguments );
 			}
 			case "scheduled": {
 				arguments.executor = this.$executors.newScheduledThreadPool( arguments.threads );
-				return new tasks.ScheduledExecutor( argumentCollection = arguments );
+				return new executors.ScheduledExecutor( argumentCollection = arguments );
 			}
 			default: {
 			}
@@ -174,7 +171,7 @@ component accessors="true" singleton {
 	 * @name The executor name
 	 *
 	 * @throws ExecutorNotFoundException
-	 * @return The executor object: coldbox.system.async.tasks.Executor
+	 * @return The executor object: coldbox.system.async.executors.Executor
 	 */
 	Executor function getExecutor( required name ){
 		if ( hasExecutor( arguments.name ) ) {
@@ -294,7 +291,7 @@ component accessors="true" singleton {
 		boolean debug          = false,
 		boolean loadAppContext = true
 	){
-		return new Future( argumentCollection = arguments );
+		return new tasks.Future( argumentCollection = arguments );
 	}
 
 	/**
@@ -311,7 +308,7 @@ component accessors="true" singleton {
 		boolean debug          = false,
 		boolean loadAppContext = true
 	){
-		return new Future( argumentCollection = arguments );
+		return new tasks.Future( argumentCollection = arguments );
 	}
 
 	/****************************************************************
@@ -343,8 +340,18 @@ component accessors="true" singleton {
 	 * Utilities *
 	 ****************************************************************/
 
+	/**
+	 * Build out a new Duration class
+	 */
 	Duration function duration(){
-		return new time.Duration();
+		return new time.Duration( argumentCollection = arguments );
+	}
+
+	/**
+	 * Build out a new Period class
+	 */
+	Period function period(){
+		return new time.Period( argumentCollection = arguments );
 	}
 
 	/**
@@ -373,7 +380,9 @@ component accessors="true" singleton {
 		}
 
 		// build it up
-		return IntStream.rangeClosed( arguments.from, arguments.to ).toArray();
+		return createObject( "java", "java.util.stream.IntStream" )
+			.rangeClosed( arguments.from, arguments.to )
+			.toArray();
 	}
 
 }

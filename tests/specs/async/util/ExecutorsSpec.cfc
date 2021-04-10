@@ -9,7 +9,7 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 		// all your suites go here.
 		describe( "Executors", function(){
 			beforeEach( function( currentSpec ){
-				executors = new coldbox.system.async.util.Executors();
+				executors = new coldbox.system.async.executors.ExecutorBuilder();
 			} );
 
 			it( "can be created", function(){

@@ -12,11 +12,7 @@
  * use to monitor and get results from the tasks at hand, if any.
  *
  */
-component
-	extends  ="Executor"
-	accessors="true"
-	singleton
-{
+component extends="Executor" accessors="true" singleton {
 
 	/****************************************************************
 	 * Scheduling Methods *
@@ -49,9 +45,9 @@ component
 		// build out the java callable
 		var jCallable = createDynamicProxy(
 			new coldbox.system.async.proxies.Callable(
-				supplier = arguments.task,
-				method = arguments.method,
-				debug = variables.debug,
+				supplier       = arguments.task,
+				method         = arguments.method,
+				debug          = variables.debug,
 				loadAppContext = variables.loadAppContext
 			),
 			[ "java.util.concurrent.Callable" ]
@@ -65,7 +61,7 @@ component
 		);
 
 		// Return the results
-		return new ScheduledFuture( jScheduledFuture );
+		return new coldbox.system.async.tasks.ScheduledFuture( jScheduledFuture );
 	}
 
 	/**
@@ -106,7 +102,7 @@ component
 		);
 
 		// Return the results
-		return new ScheduledFuture( jScheduledFuture );
+		return new coldbox.system.async.tasks.ScheduledFuture( jScheduledFuture );
 	}
 
 	/**
@@ -145,7 +141,7 @@ component
 		);
 
 		// Return the results
-		return new ScheduledFuture( jScheduledFuture );
+		return new coldbox.system.async.tasks.ScheduledFuture( jScheduledFuture );
 	}
 
 	/****************************************************************
@@ -154,7 +150,7 @@ component
 
 	ScheduledTask function newSchedule( required task, method = "run" ){
 		arguments.executor = this;
-		return new ScheduledTask( argumentCollection = arguments );
+		return new coldbox.system.async.tasks.ScheduledTask( argumentCollection = arguments );
 	}
 
 	/****************************************************************
@@ -172,9 +168,9 @@ component
 	function buildJavaRunnable( required task, required method ){
 		return createDynamicProxy(
 			new coldbox.system.async.proxies.Runnable(
-				target = arguments.task,
-				method = arguments.method,
-				debug = variables.debug,
+				target         = arguments.task,
+				method         = arguments.method,
+				debug          = variables.debug,
 				loadAppContext = variables.loadAppContext
 			),
 			[ "java.lang.Runnable" ]

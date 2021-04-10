@@ -39,7 +39,7 @@ component accessors="true" {
 	property name="futureTimeout" type="struct";
 
 	// Prepare the static time unit class
-	this.$timeUnit = new time.TimeUnit();
+	this.$timeUnit = new coldbox.system.async.time.TimeUnit();
 
 	/**
 	 * Construct a new ColdBox Future backed by a Java Completable Future
@@ -307,7 +307,7 @@ component accessors="true" {
 	Future function exceptionally( required target ){
 		variables.native = variables.native.exceptionally(
 			createDynamicProxy(
-				new proxies.Function(
+				new coldbox.system.async.proxies.Function(
 					arguments.target,
 					variables.debug,
 					variables.loadAppContext
@@ -343,7 +343,7 @@ component accessors="true" {
 		any executor = variables.executor
 	){
 		var jSupplier = createDynamicProxy(
-			new proxies.Supplier(
+			new coldbox.system.async.proxies.Supplier(
 				arguments.supplier,
 				arguments.method,
 				variables.debug,
@@ -411,7 +411,7 @@ component accessors="true" {
 	 */
 	Future function handle( required action ){
 		var biFunction = createDynamicProxy(
-			new proxies.BiFunction(
+			new coldbox.system.async.proxies.BiFunction(
 				arguments.action,
 				variables.debug,
 				variables.loadAppContext
@@ -449,7 +449,7 @@ component accessors="true" {
 	 */
 	Future function handleAsync( required action, executor ){
 		var biFunction = createDynamicProxy(
-			new proxies.BiFunction(
+			new coldbox.system.async.proxies.BiFunction(
 				arguments.action,
 				variables.debug,
 				variables.loadAppContext
@@ -486,7 +486,7 @@ component accessors="true" {
 	 */
 	Future function whenComplete( required action ){
 		var biConsumer = createDynamicProxy(
-			new proxies.BiConsumer(
+			new coldbox.system.async.proxies.BiConsumer(
 				arguments.action,
 				variables.debug,
 				variables.loadAppContext
@@ -523,7 +523,7 @@ component accessors="true" {
 	 */
 	Future function whenCompleteAsync( required action, executor ){
 		var biConsumer = createDynamicProxy(
-			new proxies.BiConsumer(
+			new coldbox.system.async.proxies.BiConsumer(
 				arguments.action,
 				variables.debug,
 				variables.loadAppContext
@@ -560,7 +560,7 @@ component accessors="true" {
 	 */
 	Future function then( required target ){
 		var apply = createDynamicProxy(
-			new proxies.Function(
+			new coldbox.system.async.proxies.Function(
 				arguments.target,
 				variables.debug,
 				variables.loadAppContext
@@ -607,7 +607,7 @@ component accessors="true" {
 	 */
 	Future function thenAsync( required target, executor ){
 		var apply = createDynamicProxy(
-			new proxies.Function(
+			new coldbox.system.async.proxies.Function(
 				arguments.target,
 				variables.debug,
 				variables.loadAppContext
@@ -650,7 +650,7 @@ component accessors="true" {
 	 */
 	Future function thenRun( required target ){
 		var fConsumer = createDynamicProxy(
-			new proxies.Consumer(
+			new coldbox.system.async.proxies.Consumer(
 				arguments.target,
 				variables.debug,
 				variables.loadAppContext
@@ -692,7 +692,7 @@ component accessors="true" {
 	 */
 	Future function thenRunAsync( required target, executor ){
 		var fConsumer = createDynamicProxy(
-			new proxies.Consumer(
+			new coldbox.system.async.proxies.Consumer(
 				arguments.target,
 				variables.debug,
 				variables.loadAppContext
@@ -730,7 +730,7 @@ component accessors="true" {
 	Future function thenCompose( required fn ){
 		variables.native = variables.native.thenCompose(
 			createDynamicProxy(
-				new proxies.FutureFunction(
+				new coldbox.system.async.proxies.FutureFunction(
 					arguments.fn,
 					variables.debug,
 					variables.loadAppContext
@@ -752,7 +752,7 @@ component accessors="true" {
 		variables.native = variables.native.thenCombine(
 			arguments.future.getNative(),
 			createDynamicProxy(
-				new proxies.BiFunction(
+				new coldbox.system.async.proxies.BiFunction(
 					arguments.fn,
 					variables.debug,
 					variables.loadAppContext
@@ -825,7 +825,7 @@ component accessors="true" {
 
 		// Create the function proxy once instead of many times during iterations
 		var jApply = createDynamicProxy(
-			new proxies.Function(
+			new coldbox.system.async.proxies.Function(
 				arguments.fn,
 				variables.debug,
 				variables.loadAppContext

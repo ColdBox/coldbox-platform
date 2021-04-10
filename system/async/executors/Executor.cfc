@@ -71,7 +71,7 @@ component accessors="true" singleton {
 		);
 
 		// Send for execution
-		return new FutureTask( variables.native.submit( jCallable ) );
+		return new coldbox.system.async.tasks.FutureTask( variables.native.submit( jCallable ) );
 	}
 
 	/****************************************************************
