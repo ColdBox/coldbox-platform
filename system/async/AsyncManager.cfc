@@ -18,6 +18,12 @@
 component accessors="true" singleton {
 
 	/**
+	 * --------------------------------------------------------------------------
+	 * Properties
+	 * --------------------------------------------------------------------------
+	 */
+
+	/**
 	 * A collection of executors you can register in the async manager
 	 * so you can run queues, tasks or even scheduled tasks
 	 */

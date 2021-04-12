@@ -170,7 +170,7 @@ component accessors="true" {
 	 * @return The date/time object with the period added to it or a java LocalDate
 	 */
 	function addTo( required target, boolean asLocalDate = false ){
-		var results = variables.jPeriod.addTo( this.CHRONO_UNIT.toLocalDate( arguments.target ) );
+		var results = variables.jPeriod.addTo( this.CHRONO_UNIT.toLocalDateTime( arguments.target ) );
 		return ( arguments.asLocalDate ? results : results.toString() );
 	}
 
@@ -183,7 +183,7 @@ component accessors="true" {
 	 * @return Return the result either as a date/time string or a java.time.LocalDate object
 	 */
 	function subtractFrom( required target, boolean asLocalDate = false ){
-		var results = variables.jPeriod.subtractFrom( this.CHRONO_UNIT.toLocalDate( arguments.target ) );
+		var results = variables.jPeriod.subtractFrom( this.CHRONO_UNIT.toLocalDateTime( arguments.target ) );
 		return ( arguments.asLocalDate ? results : results.toString() );
 	}
 

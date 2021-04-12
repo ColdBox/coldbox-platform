@@ -1,5 +1,7 @@
 /**
- * Static class to map ColdFusion string timeouts to Java Timeouts
+ * Static class to map ColdFusion strings units to Java units
+ * A TimeUnit does not maintain time information,
+ * but only helps organize and use time representations that may be maintained separately across various contexts
  */
 component singleton {
 
