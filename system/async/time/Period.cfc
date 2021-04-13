@@ -165,26 +165,26 @@ component accessors="true" {
 	 * Adds this period to the specified temporal object and return back to you a date/time object
 	 *
 	 * @target The date/time object or string to incorporate the period into
-	 * @asLocalDate If true, we will give you the java.time.LocalDate object, else a ColdFusion date/time string
+	 * @asNative If true, we will give you the java.time.LocalDate object, else a ColdFusion date/time string
 	 *
 	 * @return The date/time object with the period added to it or a java LocalDate
 	 */
-	function addTo( required target, boolean asLocalDate = false ){
-		var results = variables.jPeriod.addTo( this.CHRONO_UNIT.toLocalDateTime( arguments.target ) );
-		return ( arguments.asLocalDate ? results : results.toString() );
+	function addTo( required target, boolean asNative = false ){
+		var results = variables.jPeriod.addTo( this.CHRONO_UNIT.toLocalDate( arguments.target ) );
+		return ( arguments.asNative ? results : results.toString() );
 	}
 
 	/**
 	 * Subtracts this period to the specified temporal object and return back to you a date/time object or a Java LocalDate object
 	 *
 	 * @target The date/time object or string to incorporate the period into
-	 * @asLocalDate If true, we will give you the java.time.LocalDate object, else a ColdFusion date/time string
+	 * @asNative If true, we will give you the java.time.LocalDate object, else a ColdFusion date/time string
 	 *
 	 * @return Return the result either as a date/time string or a java.time.LocalDate object
 	 */
-	function subtractFrom( required target, boolean asLocalDate = false ){
-		var results = variables.jPeriod.subtractFrom( this.CHRONO_UNIT.toLocalDateTime( arguments.target ) );
-		return ( arguments.asLocalDate ? results : results.toString() );
+	function subtractFrom( required target, boolean asNative = false ){
+		var results = variables.jPeriod.subtractFrom( this.CHRONO_UNIT.toLocalDate( arguments.target ) );
+		return ( arguments.asNative ? results : results.toString() );
 	}
 
 	/**

@@ -148,7 +148,30 @@ component extends="Executor" accessors="true" singleton {
 	 * Builder Methods *
 	 ****************************************************************/
 
+	/**
+	 * Build out a new scheduled task
+	 *
+	 * @deprecated DO NOT USE, use newTask() instead
+	 *
+	 * @task The closure or cfc that represents the task
+	 * @method The method on the cfc to call, defaults to "run" (optional)
+	 */
 	ScheduledTask function newSchedule( required task, method = "run" ){
+		return this.newTask( argumentCollection = arguments );
+	}
+
+	/**
+	 * Build out a new scheduled task representation. Calling this method does not mean that the task is executed.
+	 *
+	 * @name The name of the task
+	 * @task The closure or cfc that represents the task (optional)
+	 * @method The method on the cfc to call, defaults to "run" (optional)
+	 */
+	ScheduledTask function newTask(
+		name = "task-#getName()#-#createUUID()#",
+		task,
+		method = "run"
+	){
 		arguments.executor = this;
 		return new coldbox.system.async.tasks.ScheduledTask( argumentCollection = arguments );
 	}

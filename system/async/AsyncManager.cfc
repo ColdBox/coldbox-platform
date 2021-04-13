@@ -29,6 +29,11 @@ component accessors="true" singleton {
 	 */
 	property name="executors" type="struct";
 
+	/**
+	 * This scheduler can be linked to a ColdBox context
+	 */
+	property name="coldbox";
+
 	// Static class to Executors: java.util.concurrent.Executors
 	this.$executors = new coldbox.system.async.executors.ExecutorBuilder();
 
@@ -38,7 +43,10 @@ component accessors="true" singleton {
 	 * @debug Add debugging logs to System out, disabled by default
 	 */
 	AsyncManager function init( boolean debug = false ){
-		variables.debug     = arguments.debug;
+		variables.System = createObject( "java", "java.lang.System" );
+		variables.debug  = arguments.debug;
+
+		// Build out our executors map
 		variables.executors = {};
 
 		return this;
@@ -347,6 +355,16 @@ component accessors="true" singleton {
 	 ****************************************************************/
 
 	/**
+	 * Build out a scheduler for usage within this async manager context and return it to you.
+	 * You must manage it's persistence, we only wire it and create it for you.
+	 *
+	 * @name The unique name for the scheduler
+	 */
+	Scheduler function newScheduler( required name ){
+		return new coldbox.system.async.tasks.Scheduler( arguments.name, this );
+	}
+
+	/**
 	 * Build out a new Duration class
 	 */
 	Duration function duration(){
@@ -389,6 +407,24 @@ component accessors="true" singleton {
 		return createObject( "java", "java.util.stream.IntStream" )
 			.rangeClosed( arguments.from, arguments.to )
 			.toArray();
+	}
+
+	/**
+	 * Utility to send to output to the output stream
+	 *
+	 * @var Variable/Message to send
+	 */
+	function out( required var ){
+		variables.System.out.println( arguments.var.toString() );
+	}
+
+	/**
+	 * Utility to send to output to the error stream
+	 *
+	 * @var Variable/Message to send
+	 */
+	function err( required var ){
+		variables.System.err.println( arguments.var.toString() );
 	}
 
 }
