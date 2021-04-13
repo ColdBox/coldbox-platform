@@ -355,8 +355,9 @@ component accessors="true" singleton {
 	 ****************************************************************/
 
 	/**
-	 * Build out a scheduler for usage within this async manager context and return it to you.
-	 * You must manage it's persistence, we only wire it and create it for you.
+	 * Build out a scheduler object for usage within this async manager context and return it to you.
+	 * You must manage it's persistence, we only wire it and create it for you so you can use it
+	 * to schedule tasks.
 	 *
 	 * @name The unique name for the scheduler
 	 */

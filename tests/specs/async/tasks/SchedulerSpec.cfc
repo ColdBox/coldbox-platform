@@ -51,7 +51,6 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 				} ).toThrow();
 			} );
 
-
 			it( "can register and run the tasks with life cycle methods", function(){
 				var atomicLong = createObject( "java", "java.util.concurrent.atomic.AtomicLong" ).init( 0 );
 
@@ -82,6 +81,7 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 						var results = atomicLong.incrementAndGet();
 						toConsole( "Running test2 (#results#) from:#getThreadName()#" );
 					} );
+
 				scheduler
 					.task( "test3" )
 					.call( function(){

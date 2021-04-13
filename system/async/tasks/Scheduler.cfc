@@ -1,5 +1,5 @@
 /**
- * The ColdBox Scheduler is in charge of registering scheduled tasks, starting them, monitoring them and shutting them down if needed.
+ * The Async Scheduler is in charge of registering scheduled tasks, starting them, monitoring them and shutting them down if needed.
  *
  * In a ColdBox context, you might have the global scheduler in charge of the global tasks and also 1 per module as well in HMVC fashion.
  * In a ColdBox context, this object will inherit from the ColdBox super type as well dynamically at runtime.
@@ -46,10 +46,8 @@ component accessors="true" singleton {
 		variables.asyncManager = arguments.asyncManager;
 		// The collection of tasks we will run
 		variables.tasks        = structNew( "ordered" );
-		// time unit helper
-		variables.chronoUnit   = new coldbox.system.async.time.ChronoUnit();
 		// Default TimeZone to UTC for all tasks
-		variables.timezone     = variables.chronoUnit.ZoneOffset.UTC;
+		variables.timezone     = createObject( "java", "java.time.ZoneId" ).systemDefault();
 		// Build out the executor for this scheduler
 		variables.executor     = arguments.asyncManager.newExecutor(
 			name: arguments.name & "-scheduler",
@@ -72,7 +70,7 @@ component accessors="true" singleton {
 	 * @timezone The timezone string identifier
 	 */
 	Scheduler function setTimezone( required timezone ){
-		variables.timezone = variables.chronoUnit.ZoneId.of( arguments.timezone );
+		variables.timezone = createObject( "java", "java.time.ZoneId" ).of( arguments.timezone );
 		return this;
 	}
 
