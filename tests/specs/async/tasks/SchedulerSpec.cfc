@@ -113,6 +113,7 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 					sleep( 1000 );
 					var stats = scheduler.getTaskStats();
 
+					debug( scheduler.getTasks() );
 					debug( stats );
 
 					expect( stats.test1.neverRun ).toBeFalse( "test 1 neverRun" );

@@ -43,6 +43,8 @@ component accessors="true" singleton {
 	 * @asyncManager The async manager we are linked to
 	 */
 	function init( required name, required asyncManager ){
+		// Utility class
+		variables.util         = new coldbox.system.core.util.Util();
 		// Name
 		variables.name         = arguments.name;
 		// The async manager
@@ -109,7 +111,11 @@ component accessors="true" singleton {
 			// Any error messages when scheduling
 			"errorMessage" : "",
 			// The exception stacktrace if something went wrong scheduling the task
-			"stacktrace"   : ""
+			"stacktrace"   : "",
+			// Server Host
+			"inetHost"     : variables.util.discoverInetHost(),
+			// Server IP
+			"localIp"      : variables.util.getServerIp()
 		};
 
 		return oTask;

@@ -10,6 +10,24 @@ The main ColdBox utility library, it is built with tags to allow for dumb ACF10 
 <cfcomponent output="false" hint="The main ColdBox utility library filled with lots of nice goodies.">
 	<cfscript>
 	/**
+	 * Get the hostname of the executing machine.
+	 */
+	function discoverInetHost(){
+		try {
+			return createObject( "java", "java.net.InetAddress" ).getLocalHost().getHostName();
+		} catch ( any e ) {
+			return cgi.SERVER_NAME;
+		}
+	}
+
+	/**
+	 * Get the server IP Address
+	 */
+	function getServerIp(){
+		return ( isNull( cgi.local_addr ) ? "0.0.0.0" : cgi.local_addr );
+	}
+
+	/**
 	 * Builds the unique Session Key of a user request and returns it to you.
 	 */
 	string function getSessionIdentifier(){
@@ -202,11 +220,7 @@ The main ColdBox utility library, it is built with tags to allow for dumb ACF10 
 			// Found?
 			if ( lookup.pos[ 1 ] ) {
 				// Get Variable Name From Pattern
-				var varName = mid(
-					returnString,
-					lookup.pos[ 2 ],
-					lookup.len[ 2 ]
-				);
+				var varName  = mid( returnString, lookup.pos[ 2 ], lookup.len[ 2 ] );
 				var varValue = "VAR_NOT_FOUND";
 
 				// Lookup Value
@@ -218,17 +232,9 @@ The main ColdBox utility library, it is built with tags to allow for dumb ACF10 
 					varValue = structFindKey( arguments.settings, varName )[ 1 ].value;
 				}
 				// Remove PlaceHolder Entirely
-				returnString = removeChars(
-					returnString,
-					lookup.pos[ 1 ],
-					lookup.len[ 1 ]
-				);
+				returnString = removeChars( returnString, lookup.pos[ 1 ], lookup.len[ 1 ] );
 				// Insert Var Value
-				returnString = insert(
-					varValue,
-					returnString,
-					lookup.pos[ 1 ] - 1
-				);
+				returnString = insert( varValue, returnString, lookup.pos[ 1 ] - 1 );
 			} else {
 				break;
 			}

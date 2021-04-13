@@ -77,6 +77,8 @@ component accessors="true" {
 		any task = "",
 		method   = "run"
 	){
+		// Utility class
+		variables.util        = new coldbox.system.core.util.Util();
 		// Link up the executor and name
 		variables.executor    = arguments.executor;
 		variables.name        = arguments.name;
@@ -99,15 +101,28 @@ component accessors="true" {
 		variables.scheduler   = "";
 		// Prepare execution tracking stats
 		variables.stats       = {
+			// When task got created
 			"created"           : now(),
+			// The last execution run timestamp
 			"lastRun"           : "",
+			// When's the next execution
 			"nextRun"           : "",
+			// Total runs
 			"totalRuns"         : 0,
+			// Total faiulres
 			"totalFailures"     : 0,
+			// Total successful task executions
 			"totalSuccess"      : 0,
+			// How long the last execution took
 			"lastExecutionTime" : 0,
+			// The latest result if any
 			"lastResult"        : "",
-			"neverRun"          : true
+			// If the task has never ran or not
+			"neverRun"          : true,
+			// Server Host
+			"inetHost"          : variables.util.discoverInetHost(),
+			// Server IP
+			"localIp"           : variables.util.getServerIp()
 		};
 		// Life cycle methods
 		variables.beforeTask    = "";
