@@ -1,6 +1,9 @@
 /**
  * The Async Scheduler is in charge of registering scheduled tasks, starting them, monitoring them and shutting them down if needed.
  *
+ * Each scheduler is bound to an scheduled executor class. You can override the executor using the `setExecutor()` method if you so desire.
+ * The scheduled executor will be named <code>{name}-scheduler</code>
+ *
  * In a ColdBox context, you might have the global scheduler in charge of the global tasks and also 1 per module as well in HMVC fashion.
  * In a ColdBox context, this object will inherit from the ColdBox super type as well dynamically at runtime.
  *
@@ -55,9 +58,8 @@ component accessors="true" singleton {
 		);
 		// Bit that denotes if this scheduler has been started or not
 		variables.started = false;
-
 		// Send notice
-		arguments.asyncManager.out( "Scheduler (#arguments.name#) has been registered" );
+		arguments.asyncManager.out( "√ Scheduler (#arguments.name#) has been registered" );
 
 		return this;
 	}
@@ -126,20 +128,20 @@ component accessors="true" singleton {
 		if ( !variables.started ) {
 			lock name="scheduler-#getName()#-startup" type="exclusive" timeout="45" throwOnTimeout="true" {
 				if ( !variables.started ) {
-					// Iterate over tasks and send them off for execution
+					// Iterate over tasks and send them off for scheduling
 					variables.tasks.each( function( taskName, taskRecord ){
 						// Verify we can start it up the task or not
 						if ( arguments.taskRecord.task.isDisabled() ) {
 							arguments.taskRecord.disabled = true;
 							variables.asyncManager.out(
-								"Scheduler (#getName()#) skipping task (#arguments.taskRecord.task.getName()#) as it is disabled."
+								"- Scheduler (#getName()#) skipping task (#arguments.taskRecord.task.getName()#) as it is disabled."
 							);
 							// Continue iteration
 							return;
 						} else {
 							// Log scheduling startup
 							variables.asyncManager.out(
-								"Scheduler (#getName()#) scheduling task (#arguments.taskRecord.task.getName()#)..."
+								"- Scheduler (#getName()#) scheduling task (#arguments.taskRecord.task.getName()#)..."
 							);
 						}
 
@@ -148,11 +150,11 @@ component accessors="true" singleton {
 							arguments.taskRecord.future      = arguments.taskRecord.task.start();
 							arguments.taskRecord.scheduledAt = now();
 							variables.asyncManager.out(
-								"Task (#arguments.taskRecord.task.getName()#) scheduled successfully"
+								"√ Task (#arguments.taskRecord.task.getName()#) scheduled successfully."
 							);
 						} catch ( any e ) {
 							variables.asyncManager.err(
-								"Error scheduling task (#arguments.taskRecord.task.getName()#) => #e.message# #e.detail#"
+								"X Error scheduling task (#arguments.taskRecord.task.getName()#) => #e.message# #e.detail#"
 							);
 							arguments.taskRecord.error        = true;
 							arguments.taskRecord.errorMessage = e.message & e.detail;
@@ -167,7 +169,7 @@ component accessors="true" singleton {
 					this.onStartup();
 
 					// Log it
-					variables.asyncManager.out( "Scheduler (#getname()#) has started!" );
+					variables.asyncManager.out( "√ Scheduler (#getname()#) has started!" );
 				}
 				// end double if not started
 			}
@@ -186,7 +188,7 @@ component accessors="true" singleton {
 	}
 
 	/**
-	 * Shutdown this scheduler by calling the executor to shutdown.
+	 * Shutdown this scheduler by calling the executor to shutdown and disabling all tasks
 	 */
 	Scheduler function shutdown(){
 		// callback
@@ -196,18 +198,20 @@ component accessors="true" singleton {
 		// Mark it
 		variables.started = false;
 		// Log it
-		variables.asyncManager.out( "Scheduler (#getname()#) has been shutdown!" );
+		variables.asyncManager.out( "√ Scheduler (#getName()#) has been shutdown!" );
 		return this;
 	}
 
 	/**
 	 * Called before the scheduler is going to be shutdown
+	 * @abstract
 	 */
 	function onShutdown(){
 	}
 
 	/**
 	 * Called after the scheduler has registered all schedules
+	 * @abstract
 	 */
 	function onStartup(){
 	}

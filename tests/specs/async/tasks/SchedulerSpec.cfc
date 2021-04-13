@@ -92,6 +92,7 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 
 				// Startup the scheduler
 				try {
+					expect( scheduler.hasStarted() ).toBeFalse();
 					scheduler.startup();
 					expect( scheduler.hasStarted() ).toBeTrue();
 
