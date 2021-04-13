@@ -1,6 +1,6 @@
 /**
- * This object represents a scheduled task that will be sent in to an executor for scheduling.
- * It has a fluent and human dsl for setting it up and restricting is scheduling.
+ * This object represents a scheduled task that will be sent in to a scheduled executor for scheduling.
+ * It has a fluent and human dsl for setting it up and restricting is scheduling and frequency of scheduling.
  *
  * A task can be represented as either a closure or a cfc with a `run()` or custom runnable method.
  */
@@ -12,7 +12,8 @@ component accessors="true" {
 	property name="delay" type="numeric";
 
 	/**
-	 * The period of execution of the tasks in this schedule
+	 * A fixed time period of execution of the tasks in this schedule. It does not wait for tasks to finish,
+	 * tasks are fired exactly at that time period.
 	 */
 	property name="period" type="numeric";
 
@@ -22,7 +23,7 @@ component accessors="true" {
 	property name="spacedDelay" type="numeric";
 
 	/**
-	 * The task closure or CFC to execute
+	 * The task closure or CFC to execute in the task
 	 */
 	property name="task";
 
@@ -42,7 +43,8 @@ component accessors="true" {
 	property name="disabled" type="boolean";
 
 	/**
-	 * A closure, that if registered, determines if this task will be sent for scheduling or not
+	 * A closure, that if registered, determines if this task will be sent for scheduling or not.
+	 * It is both evaluated at scheduling and at runtime.
 	 */
 	property name="when" type="any";
 
@@ -57,7 +59,7 @@ component accessors="true" {
 	property name="scheduler";
 
 	/**
-	 * The collection of stats for the task: { created, lastRun, nextRun, totalRuns, totalFailures, totalSuccess }
+	 * The collection of stats for the task: { created, lastRun, nextRun, totalRuns, totalFailures, totalSuccess, lastResult, neverRun, lastExecutionTime }
 	 */
 	property name="stats" type="struct";
 
@@ -104,7 +106,7 @@ component accessors="true" {
 			"totalFailures"     : 0,
 			"totalSuccess"      : 0,
 			"lastExecutionTime" : 0,
-			"lastResults"       : "",
+			"lastResult"        : "",
 			"neverRun"          : true
 		};
 		// Life cycle methods
@@ -150,7 +152,7 @@ component accessors="true" {
 	 * @timezone The timezone string identifier
 	 */
 	ScheduledTask function setTimezone( required timezone ){
-		variables.timezone = variables.chronoUnit.ZoneId.of( arguments.timezone );
+		variables.timezone = createObject( "java", "java.time.ZoneId" ).of( arguments.timezone );
 		return this;
 	}
 
@@ -240,31 +242,31 @@ component accessors="true" {
 		variables.stats.neverRun = false;
 
 		try {
-			// Life-Cycle methods
+			// Before Interceptor
 			if ( isClosure( variables.beforeTask ) ) {
 				variables.beforeTask( this );
 			}
 
-			// Target task call proxy
+			// Target task call callable
 			if ( isClosure( variables.task ) || isCustomFunction( variables.task ) ) {
-				variables.stats.lastResults = variables.task() ?: "";
+				variables.stats.lastResult = variables.task() ?: "";
 			} else {
-				variables.stats.lastResults = invoke( variables.task, variables.method ) ?: "";
+				variables.stats.lastResult = invoke( variables.task, variables.method ) ?: "";
 			}
 
-			// Life-Cycle methods
+			// After Interceptor
 			if ( isClosure( variables.afterTask ) ) {
-				variables.afterTask( this, variables.stats.lastResults );
+				variables.afterTask( this, variables.stats.lastResult );
 			}
 
-			// store successes
-			variables.stats.totalSuccess++;
+			// store successes and call success interceptor
+			variables.stats.totalSuccess = variables.stats.totalSuccess + 1;
 			if ( isClosure( variables.onTaskSuccess ) ) {
-				variables.onTaskSuccess( this, variables.stats.lastResults );
+				variables.onTaskSuccess( this, variables.stats.lastResult );
 			}
 		} catch ( any e ) {
 			// store failures
-			variables.stats.totalFailures++;
+			variables.stats.totalFailures = variables.stats.totalFailures + 1;
 			// Life Cycle
 			if ( isClosure( variables.onTaskFailure ) ) {
 				variables.onTaskFailure( this, e );

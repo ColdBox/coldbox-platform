@@ -417,6 +417,7 @@ component accessors="true" singleton {
 	 */
 	AsyncManager function out( required var ){
 		variables.System.out.println( arguments.var.toString() );
+		return this;
 	}
 
 	/**
@@ -426,6 +427,7 @@ component accessors="true" singleton {
 	 */
 	AsyncManager function err( required var ){
 		variables.System.err.println( arguments.var.toString() );
+		return this;
 	}
 
 }

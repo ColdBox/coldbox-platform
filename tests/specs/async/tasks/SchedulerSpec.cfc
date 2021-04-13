@@ -110,22 +110,22 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 					expect( record.scheduledAt ).toBeEmpty();
 
 					// Wait for them to execute
-					sleep( 500 );
+					sleep( 1000 );
 					var stats = scheduler.getTaskStats();
 
 					debug( stats );
 
-					expect( stats.test1.neverRun ).toBeFalse();
-					expect( stats.test2.neverRun ).toBeFalse();
-					expect( stats.test3.neverRun ).toBeTrue();
+					expect( stats.test1.neverRun ).toBeFalse( "test 1 neverRun" );
+					expect( stats.test2.neverRun ).toBeFalse( "test 2 neverRun" );
+					expect( stats.test3.neverRun ).toBeTrue( "test 3 neverRun" );
 
-					expect( stats.test1.totalRuns ).toBe( 1 );
-					expect( stats.test2.totalRuns ).toBe( 1 );
-					expect( stats.test3.totalRuns ).toBe( 0 );
+					expect( stats.test1.totalRuns ).toBe( 1, "test1 totalRuns" );
+					expect( stats.test2.totalRuns ).toBe( 1, "test2 totalRuns" );
+					expect( stats.test3.totalRuns ).toBe( 0, "test3 totalRuns" );
 				} finally {
 					sleep( 1000 );
 					scheduler.shutdown();
-					expect( scheduler.hasStarted() ).toBeFalse();
+					expect( scheduler.hasStarted() ).toBeFalse( "Final scheduler stopped" );
 				}
 			} );
 		} );
