@@ -80,6 +80,8 @@ component accessors="true" {
 		variables.name        = arguments.name;
 		// time unit helper
 		variables.chronoUnit  = new coldbox.system.async.time.ChronoUnit();
+		// System Helper
+		variables.System      = createObject( "java", "java.lang.System" );
 		// Init Properties
 		variables.task        = arguments.task;
 		variables.method      = arguments.method;
@@ -119,6 +121,26 @@ component accessors="true" {
 	 * Utility and Operational
 	 * --------------------------------------------------------------------------
 	 */
+
+	/**
+	 * Utility to send to output to the output stream
+	 *
+	 * @var Variable/Message to send
+	 */
+	ScheduledTask function out( required var ){
+		variables.System.out.println( arguments.var.toString() );
+		return this;
+	}
+
+	/**
+	 * Utility to send to output to the error stream
+	 *
+	 * @var Variable/Message to send
+	 */
+	ScheduledTask function err( required var ){
+		variables.System.err.println( arguments.var.toString() );
+		return this;
+	}
 
 	/**
 	 * Set the timezone for this task using the task identifier else we default to our scheduler

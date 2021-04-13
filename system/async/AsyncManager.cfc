@@ -414,7 +414,7 @@ component accessors="true" singleton {
 	 *
 	 * @var Variable/Message to send
 	 */
-	function out( required var ){
+	AsyncManager function out( required var ){
 		variables.System.out.println( arguments.var.toString() );
 	}
 
@@ -423,7 +423,7 @@ component accessors="true" singleton {
 	 *
 	 * @var Variable/Message to send
 	 */
-	function err( required var ){
+	AsyncManager function err( required var ){
 		variables.System.err.println( arguments.var.toString() );
 	}
 
