@@ -106,7 +106,8 @@ component extends="coldbox.system.async.tasks.ScheduledTask" accessors="true" {
 
 		// Environments Check
 		if (
-			variables.environments.len() && !variables.environments.containsNoCase(
+			variables.environments.len() && !arrayContainsNoCase(
+				variables.environments,
 				variables.controller.getSetting( "environment" )
 			)
 		) {

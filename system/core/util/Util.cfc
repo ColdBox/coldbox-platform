@@ -127,10 +127,10 @@ component {
 	/**
 	 * Convert an array to struct argument notation
 	 *
-	 * @in The array to convert
+	 * @target The array to convert
 	 */
-	struct function arrayToStruct( required array in ){
-		return arguments.in.reduce( function( result, item, index ){
+	struct function arrayToStruct( required array target ){
+		return arguments.target.reduce( function( result, item, index ){
 			arguments.result[ arguments.index ] = arguments.item;
 			return arguments.result;
 		}, {} );
