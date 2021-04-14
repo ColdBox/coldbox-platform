@@ -140,4 +140,18 @@ component singleton {
 		return arguments.target;
 	}
 
+	/**
+	 * Build out a new Duration class
+	 */
+	Duration function duration(){
+		return new coldbox.system.async.time.Duration( argumentCollection = arguments );
+	}
+
+	/**
+	 * Build out a new Period class
+	 */
+	Period function period(){
+		return new coldbox.system.async.time.Period( argumentCollection = arguments );
+	}
+
 }

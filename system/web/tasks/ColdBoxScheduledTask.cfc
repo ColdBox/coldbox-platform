@@ -49,7 +49,7 @@ component extends="coldbox.system.async.tasks.ScheduledTask" accessors="true" {
 	 * @task The closure or cfc that represents the task (optional)
 	 * @method The method on the cfc to call, defaults to "run" (optional)
 	 */
-	ScheduledTask function init(
+	ColdBoxScheduledTask function init(
 		required name,
 		required executor,
 		any task = "",

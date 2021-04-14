@@ -23,6 +23,11 @@ component accessors="true" {
 	property name="spacedDelay" type="numeric";
 
 	/**
+	 * The time unit string used to schedule the task
+	 */
+	property name="timeunit";
+
+	/**
 	 * The task closure or CFC to execute in the task
 	 */
 	property name="task";
@@ -64,6 +69,26 @@ component accessors="true" {
 	property name="stats" type="struct";
 
 	/**
+	 * The before task closure
+	 */
+	property name="beforeTask";
+
+	/**
+	 * The after task closure
+	 */
+	property name="afterTask";
+
+	/**
+	 * The task success closure
+	 */
+	property name="onTaskSuccess";
+
+	/**
+	 * The task failure closure
+	 */
+	property name="onTaskFailure";
+
+	/**
 	 * Constructor
 	 *
 	 * @name The name of this task
@@ -78,29 +103,31 @@ component accessors="true" {
 		method   = "run"
 	){
 		// Utility class
-		variables.util        = new coldbox.system.core.util.Util();
+		variables.util             = new coldbox.system.core.util.Util();
 		// Link up the executor and name
-		variables.executor    = arguments.executor;
-		variables.name        = arguments.name;
+		variables.executor         = arguments.executor;
+		variables.name             = arguments.name;
 		// time unit helper
-		variables.chronoUnit  = new coldbox.system.async.time.ChronoUnit();
+		variables.chronoUnitHelper = new coldbox.system.async.time.ChronoUnit();
+		variables.timeUnitHelper   = new coldbox.system.async.time.TimeUnit();
 		// System Helper
-		variables.System      = createObject( "java", "java.lang.System" );
+		variables.System           = createObject( "java", "java.lang.System" );
 		// Init Properties
-		variables.task        = arguments.task;
-		variables.method      = arguments.method;
+		variables.task             = arguments.task;
+		variables.method           = arguments.method;
 		// Default Frequencies
-		variables.period      = 0;
-		variables.delay       = 0;
-		variables.spacedDelay = 0;
-		variables.timeUnit    = "milliseconds";
+		variables.period           = 0;
+		variables.delay            = 0;
+		variables.spacedDelay      = 0;
+		variables.timeUnit         = "milliseconds";
+		variables.noOverlap        = false;
 		// Constraints
-		variables.disabled    = false;
-		variables.when        = "";
+		variables.disabled         = false;
+		variables.when             = "";
 		// Probable Scheduler or not
-		variables.scheduler   = "";
+		variables.scheduler        = "";
 		// Prepare execution tracking stats
-		variables.stats       = {
+		variables.stats            = {
 			// When task got created
 			"created"           : now(),
 			// The last execution run timestamp
@@ -335,7 +362,7 @@ component accessors="true" {
 			);
 		}
 
-		// Start off the one-off task
+		// Start off a one-off task
 		return variables.executor.schedule(
 			task    : this,
 			delay   : variables.delay,
@@ -402,7 +429,7 @@ component accessors="true" {
 	 * @delay The delay that will be used before executing the task
 	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is milliseconds
 	 */
-	Scheduledtask function delay( numeric delay, timeUnit = "milliseconds" ){
+	ScheduledTask function delay( numeric delay, timeUnit = "milliseconds" ){
 		variables.delay    = arguments.delay;
 		variables.timeUnit = arguments.timeUnit;
 		return this;
@@ -414,7 +441,7 @@ component accessors="true" {
 	 * @delay The delay that will be used before executing the task
 	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is milliseconds
 	 */
-	Scheduledtask function spacedDelay( numeric spacedDelay, timeUnit = "milliseconds" ){
+	ScheduledTask function spacedDelay( numeric spacedDelay, timeUnit = "milliseconds" ){
 		variables.spacedDelay = arguments.spacedDelay;
 		variables.timeUnit    = arguments.timeUnit;
 		return this;
@@ -426,16 +453,231 @@ component accessors="true" {
 	 * @period The period of execution
 	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is milliseconds
 	 */
-	Scheduledtask function every( numeric period, timeUnit = "milliseconds" ){
+	ScheduledTask function every( numeric period, timeUnit = "milliseconds" ){
 		variables.period   = arguments.period;
 		variables.timeUnit = arguments.timeUnit;
 		return this;
 	}
 
 	/**
+	 * Set the period to be every minute from the time it get's scheduled
+	 */
+	ScheduledTask function everyMinute(){
+		variables.period   = 1;
+		variables.timeUnit = "minutes";
+		return this;
+	}
+
+	/**
+	 * Set the period to be every hour from the time it get's scheduled
+	 */
+	ScheduledTask function everyHour(){
+		variables.period   = 1;
+		variables.timeUnit = "hours";
+		return this;
+	}
+
+	/**
+	 * Set the period to be every day from the time it get's scheduled
+	 */
+	ScheduledTask function everyDay(){
+		variables.period   = 1;
+		variables.timeUnit = "days";
+		return this;
+	}
+
+	/**
+	 * Set the period to be every week (7 days) from the time it get's scheduled
+	 */
+	ScheduledTask function everyWeek(){
+		variables.period   = 7;
+		variables.timeUnit = "days";
+		return this;
+	}
+
+	/**
+	 * Set the period to be every month (30 days) from the time it get's scheduled
+	 */
+	ScheduledTask function everyMonth(){
+		variables.period   = 30;
+		variables.timeUnit = "days";
+		return this;
+	}
+
+	/**
+	 * Set the period to be every year (365 days) from the time it get's scheduled
+	 */
+	ScheduledTask function everyYear(){
+		variables.period   = 365;
+		variables.timeUnit = "days";
+		return this;
+	}
+
+	/**
+	 * Set the period to be hourly at a specific minute mark
+	 *
+	 * @minutes The minutes past the hour mark
+	 */
+	ScheduledTask function everyHourAt( required numeric minutes ){
+		// Get times
+		var now     = variables.chronoUnitHelper.toLocalDateTime( now() );
+		var nextRun = now.withMinute( javacast( "int", arguments.minutes ) );
+		// If we passed it, then move the hour by 1
+		if ( now.compareTo( nextRun ) > 0 ) {
+			nextRun = nextRun.plusHours( javacast( "int", 1 ) )
+		}
+		// Get the duration time for the next run and delay accordingly
+		this.delay(
+			variables.chronoUnitHelper
+				.duration()
+				.getNative()
+				.between( now, nextRun )
+				.getSeconds(),
+			"seconds"
+		);
+		// Set the period to every day in seconds
+		variables.period   = variables.timeUnitHelper.get( "hours" ).toSeconds( 1 );
+		variables.timeUnit = "seconds";
+
+		return this;
+	}
+
+	/**
+	 * Set the period to be daily at a specific time
+	 *
+	 * @time The specific time using 24 hour format => HH:mm
+	 */
+	ScheduledTask function everyDayAt( required string time ){
+		// Check for mintues else add them
+		if ( !find( ":", arguments.time ) ) {
+			arguments.time &= ":00";
+		}
+		// Validate it
+		validateTime( arguments.time );
+		// Get times
+		var now     = variables.chronoUnitHelper.toLocalDateTime( now() );
+		var nextRun = now
+			.withHour( javacast( "int", getToken( arguments.time, 1, ":" ) ) )
+			.withMinute( javacast( "int", getToken( arguments.time, 2, ":" ) ) );
+		// If we passed it, then move the day
+		if ( now.compareTo( nextRun ) > 0 ) {
+			nextRun = nextRun.plusDays( javacast( "int", 1 ) )
+		}
+		// Get the duration time for the next run and delay accordingly
+		this.delay(
+			variables.chronoUnitHelper
+				.duration()
+				.getNative()
+				.between( now, nextRun )
+				.getSeconds(),
+			"seconds"
+		);
+		// Set the period to every day in seconds
+		variables.period   = variables.timeUnitHelper.get( "DAYS" ).toSeconds( 1 );
+		variables.timeUnit = "seconds";
+
+		return this;
+	}
+
+	/**
+	 * Set the period to be weekly at a specific time at a specific day of the week
+	 *
+	 * @dayOfWeek The day of the week from 1 (Monday) -> 7 (Sunday)
+	 * @time The specific time using 24 hour format => HH:mm
+	 */
+	ScheduledTask function everyWeekOn( required dayOfWeek, required string time ){
+		return this;
+	}
+
+	/**
+	 * Set the period to be weekly at a specific time at a specific day of the week
+	 *
+	 * @day Which day of the month
+	 * @time The specific time using 24 hour format => HH:mm
+	 */
+	ScheduledTask function everyMonthOn( required day, required string time ){
+		return this;
+	}
+
+	/**
+	 * Set the period to be weekly at a specific time at a specific day of the week
+	 *
+	 * @month The month in numeric format 1-12
+	 * @day Which day of the month
+	 * @time The specific time using 24 hour format => HH:mm, defaults to 00:00
+	 */
+	ScheduledTask function everyYearOn(
+		required numeric month,
+		required numeric day,
+		required string time = "00:00"
+	){
+		return this;
+	}
+
+	/**
+	 * Set the period to be the first day of the month
+	 *
+	 * @time The specific time using 24 hour format => HH:mm, defaults to 00:00
+	 */
+	ScheduledTask function firstDayOfTheMonth( string time = "00:00" ){
+		return this;
+	}
+
+	/**
+	 * Set the period to be the first business day of the month
+	 *
+	 * @time The specific time using 24 hour format => HH:mm, defaults to 00:00
+	 */
+	ScheduledTask function firstBusinessDayOfTheMonth( string time = "00:00" ){
+		return this;
+	}
+
+	/**
+	 * Set the period to be the last day of the month
+	 *
+	 * @time The specific time using 24 hour format => HH:mm, defaults to 00:00
+	 */
+	ScheduledTask function lastDayOfTheMonth( string time = "00:00" ){
+		return this;
+	}
+
+	/**
+	 * Set the period to be the last business day of the month
+	 *
+	 * @time The specific time using 24 hour format => HH:mm, defaults to 00:00
+	 */
+	ScheduledTask function lastBusinessDayOfTheMonth( string time = "00:00" ){
+		return this;
+	}
+
+	/**
+	 * Set the period to be on saturday and sundays
+	 *
+	 * @time The specific time using 24 hour format => HH:mm, defaults to 00:00
+	 */
+	ScheduledTask function weekends( string time = "00:00" ){
+		return this;
+	}
+
+	/**
+	 * Set the period to be from Monday - Friday
+	 *
+	 * @time The specific time using 24 hour format => HH:mm, defaults to 00:00
+	 */
+	ScheduledTask function weekdays( string time = "00:00" ){
+		return this;
+	}
+
+	/**
+	 * --------------------------------------------------------------------------
+	 * TimeUnit Methods
+	 * --------------------------------------------------------------------------
+	 */
+
+	/**
 	 * Set the time unit in days
 	 */
-	Scheduledtask function inDays(){
+	ScheduledTask function inDays(){
 		variables.timeUnit = "days";
 		return this;
 	}
@@ -443,7 +685,7 @@ component accessors="true" {
 	/**
 	 * Set the time unit in hours
 	 */
-	Scheduledtask function inHours(){
+	ScheduledTask function inHours(){
 		variables.timeUnit = "hours";
 		return this;
 	}
@@ -451,7 +693,7 @@ component accessors="true" {
 	/**
 	 * Set the time unit in microseconds
 	 */
-	Scheduledtask function inMicroseconds(){
+	ScheduledTask function inMicroseconds(){
 		variables.timeUnit = "microseconds";
 		return this;
 	}
@@ -459,7 +701,7 @@ component accessors="true" {
 	/**
 	 * Set the time unit in milliseconds
 	 */
-	Scheduledtask function inMilliseconds(){
+	ScheduledTask function inMilliseconds(){
 		variables.timeUnit = "milliseconds";
 		return this;
 	}
@@ -467,7 +709,7 @@ component accessors="true" {
 	/**
 	 * Set the time unit in minutes
 	 */
-	Scheduledtask function inMinutes(){
+	ScheduledTask function inMinutes(){
 		variables.timeUnit = "minutes";
 		return this;
 	}
@@ -475,7 +717,7 @@ component accessors="true" {
 	/**
 	 * Set the time unit in nanoseconds
 	 */
-	Scheduledtask function inNanoseconds(){
+	ScheduledTask function inNanoseconds(){
 		variables.timeUnit = "nanoseconds";
 		return this;
 	}
@@ -483,9 +725,26 @@ component accessors="true" {
 	/**
 	 * Set the time unit in seconds
 	 */
-	Scheduledtask function inSeconds(){
+	ScheduledTask function inSeconds(){
 		variables.timeUnit = "seconds";
 		return this;
+	}
+
+	/**
+	 * Validates an incoming string to adhere to either: HH:mm
+	 *
+	 * @time The time to check
+	 *
+	 * @throws InvalidTimeException - If the time is invalid, else it just continues operation
+	 */
+	private function validateTime( required time ){
+		// Regex check
+		if ( !reFind( "^[0-2][0-4]\:[0-5][0-9]$", arguments.time ) ) {
+			throw(
+				message = "Invalid time representation. Time is represented in 24 hour minute format => HH:mm",
+				type    = "InvalidTimeException"
+			);
+		}
 	}
 
 }
