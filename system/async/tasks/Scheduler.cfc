@@ -95,6 +95,8 @@ component accessors="true" singleton {
 		var oTask = variables.executor
 			// Give me the task broda!
 			.newTask( arguments.name )
+			// Register ourselves in the task
+			.setScheduler( this )
 			// Set default timezone into the task
 			.setTimezone( getTimezone().getId() );
 
@@ -129,7 +131,7 @@ component accessors="true" singleton {
 
 	/**
 	 * --------------------------------------------------------------------------
-	 * Life - Cycle Methods
+	 * Startup/Shutdown Methods
 	 * --------------------------------------------------------------------------
 	 */
 
@@ -215,17 +217,60 @@ component accessors="true" singleton {
 	}
 
 	/**
+	 * --------------------------------------------------------------------------
+	 * Life - Cycle Callbacks
+	 * --------------------------------------------------------------------------
+	 */
+
+	/**
 	 * Called before the scheduler is going to be shutdown
-	 * @abstract
 	 */
 	function onShutdown(){
 	}
 
 	/**
 	 * Called after the scheduler has registered all schedules
-	 * @abstract
 	 */
 	function onStartup(){
+	}
+
+	/**
+	 * Called whenever ANY task fails
+	 *
+	 * @task The task that got executed
+	 * @exception The ColdFusion exception object
+	 *
+	 */
+	function onAnyTaskError( required task, required exception ){
+	}
+
+	/**
+	 * Called whenever ANY task succeeds
+	 *
+	 * @task The task that got executed
+	 * @result The result (if any) that the task produced
+	 *
+	 */
+	function onAnyTaskSuccess( required task, result ){
+	}
+
+	/**
+	 * Called before ANY task runs
+	 *
+	 * @task The task about to be executed
+	 *
+	 */
+	function beforeAnyTask( required task ){
+	}
+
+	/**
+	 * Called after ANY task runs
+	 *
+	 * @task The task that got executed
+	 * @result The result (if any) that the task produced
+	 *
+	 */
+	function afterAnyTask( required task, result ){
 	}
 
 	/**

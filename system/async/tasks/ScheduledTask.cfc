@@ -257,7 +257,10 @@ component accessors="true" {
 		variables.stats.neverRun = false;
 
 		try {
-			// Before Interceptor
+			// Before Interceptors
+			if ( hasScheduler() ) {
+				getScheduler().beforeAnyTask( this );
+			}
 			if ( isClosure( variables.beforeTask ) ) {
 				variables.beforeTask( this );
 			}
@@ -273,11 +276,17 @@ component accessors="true" {
 			if ( isClosure( variables.afterTask ) ) {
 				variables.afterTask( this, variables.stats.lastResult );
 			}
+			if ( hasScheduler() ) {
+				getScheduler().afterAnyTask( this, variables.stats.lastResult );
+			}
 
 			// store successes and call success interceptor
 			variables.stats.totalSuccess = variables.stats.totalSuccess + 1;
 			if ( isClosure( variables.onTaskSuccess ) ) {
 				variables.onTaskSuccess( this, variables.stats.lastResult );
+			}
+			if ( hasScheduler() ) {
+				getScheduler().onAnyTaskSuccess( this, variables.stats.lastResult );
 			}
 		} catch ( any e ) {
 			// store failures
@@ -285,6 +294,9 @@ component accessors="true" {
 			// Life Cycle
 			if ( isClosure( variables.onTaskFailure ) ) {
 				variables.onTaskFailure( this, e );
+			}
+			if ( hasScheduler() ) {
+				getScheduler().onAnyTaskError( this, e );
 			}
 		} finally {
 			// Store finalization stats

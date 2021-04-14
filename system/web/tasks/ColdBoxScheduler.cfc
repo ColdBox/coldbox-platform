@@ -86,6 +86,8 @@ component
 				"coldbox.system.web.tasks.ColdBoxScheduledTask",
 				{ name : arguments.name, executor : variables.executor }
 			)
+			// Set ourselves into the task
+			.setScheduler( this )
 			// Set default timezone into the task
 			.setTimezone( getTimezone().getId() );
 
