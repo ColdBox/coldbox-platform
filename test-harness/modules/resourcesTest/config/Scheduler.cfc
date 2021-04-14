@@ -1,18 +1,17 @@
 component {
 
-	property name="userService" inject="UserService";
+	property name="photosService" inject="PhotosService";
 
 	function configure(){
 
-		task( "vistacaballo-notifications" )
-			.call( () => runEvent( "tasks.sendNotifications" ) )
-			.dailyAt( "9:00" )
-			.environments( [ "staging", "production"] )
-			.before( ( task ) => notifyJorge )
-			.after( ( results ) => notifyJorge )
-			.onFailure( ( task, exception ) => {} )
-			.onSuccess( ( task, results ) => {} )
-			.onOneServer();
+		task( "photoNumbers" )
+			.call( function(){
+				var random = variables.photosService.getRandom();
+				writeDump( var="xxxxxxx> Photo numbers: #random#", output="console" );
+				return random;
+			} )
+			.every( 5, "seconds" )
+			.onEnvironment( "development" );
 
 	}
 

@@ -72,7 +72,7 @@ component extends="coldbox.system.async.tasks.ScheduledTask" accessors="true" {
 	 *
 	 * @environment A string, a list, or an array of environments
 	 */
-	ColdBoxScheduledTask function setEnvironments( required environment ){
+	ColdBoxScheduledTask function onEnvironment( required environment ){
 		if ( isSimpleValue( arguments.environment ) ) {
 			arguments.environment = listToArray( arguments.environment );
 		}
@@ -110,6 +110,9 @@ component extends="coldbox.system.async.tasks.ScheduledTask" accessors="true" {
 				variables.controller.getSetting( "environment" )
 			)
 		) {
+			variables.log.info(
+				"Skipping task (#getName()#) as it is disabled in the current environment: #variables.controller.getSetting( "environment" )#"
+			);
 			return true;
 		}
 

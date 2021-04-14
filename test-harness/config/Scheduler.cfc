@@ -20,8 +20,7 @@ component {
 					writeDump( var='====> test schedule just failed!! #exception.message#', output="console" );
 				} )
 				.onSuccess( function( task, results ){
-					writeDump( var='====> Test scheduler success!!', output="console" );
-					writeDump( var="====> Stats: #task.getStats().toString()#", output="console" );
+					writeDump( var="====> Test scheduler success : Stats: #task.getStats().toString()#", output="console" );
 				} );
 
 	}
