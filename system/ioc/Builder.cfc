@@ -669,6 +669,9 @@ component serializable="false" accessors="true" {
 					case "eventManager": {
 						return variables.injector.getEventManager();
 					}
+					case "asyncManager": {
+						return variables.injector.getAsyncManager();
+					}
 					case "binder": {
 						return variables.injector.getBinder();
 					}
