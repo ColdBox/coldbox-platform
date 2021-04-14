@@ -197,8 +197,6 @@ component serializable="false" accessors="true" {
 					constructorArgCollection
 				);
 			} catch ( any e ) {
-				writeDump( var = e );
-				abort;
 				var reducedTagContext = e.tagContext
 					.reduce( function( result, file ){
 						if ( !result.done ) {
