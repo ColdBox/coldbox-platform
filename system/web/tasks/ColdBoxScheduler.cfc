@@ -55,7 +55,7 @@ component
 		required controller
 	){
 		// Super init
-		super.init( argumentCollection = arguments );
+		super.init( arguments.name, arguments.asyncManager );
 		// Controller
 		variables.controller = arguments.controller;
 		// Register Log object
@@ -89,10 +89,31 @@ component
 			// Set default timezone into the task
 			.setTimezone( getTimezone().getId() );
 
-		// Super init
-		super.init( arguments.name );
-		// Overwrite task object with ColdBox one
-		variables.tasks[ arguments.name ].task = oColdBoxTask;
+		// Register the task by name
+		variables.tasks[ arguments.name ] = {
+			// task name
+			"name"         : arguments.name,
+			// task object
+			"task"         : oColdBoxTask,
+			// task scheduled future object
+			"future"       : "",
+			// when it registers
+			"registeredAt" : now(),
+			// when it's scheduled
+			"scheduledAt"  : "",
+			// Tracks if the task has been disabled for startup purposes
+			"disabled"     : false,
+			// If there is an error scheduling the task
+			"error"        : false,
+			// Any error messages when scheduling
+			"errorMessage" : "",
+			// The exception stacktrace if something went wrong scheduling the task
+			"stacktrace"   : "",
+			// Server Host
+			"inetHost"     : variables.util.discoverInetHost(),
+			// Server IP
+			"localIp"      : variables.util.getServerIp()
+		};
 
 		return oColdBoxTask;
 	}

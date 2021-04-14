@@ -67,6 +67,12 @@ component accessors="true" singleton {
 	}
 
 	/**
+	 * Usually where concrete implementations add their tasks and configs
+	 */
+	function configure(){
+	}
+
+	/**
 	 * Set the timezone for all tasks to use using the timezone string identifier
 	 *
 	 * @see https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/ZoneId.html

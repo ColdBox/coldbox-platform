@@ -1,18 +1,28 @@
 component {
 
-	property name="userService" inject="UserService";
-
 	function configure(){
 
-		task( "vistacaballo-notifications" )
-			.call( () => runEvent( "tasks.sendNotifications" ) )
-				.dailyAt( "9:00" )
-				.environments( [ "staging", "production"] )
-				.before( ( task ) => notifyJorge )
-				.after( ( task, results ) => notifyJorge )
-				.onFailure( ( task, exception ) => {} )
-				.onSuccess( ( task, results ) => {} )
-				.onOneServer();
+		task( "testharness-Heartbeat" )
+			.call( function() {
+				if ( randRange(1, 5) eq 1 ){
+					throw( message = "I am throwing up randomly!", type="RandomThrowup" );
+				}
+				writeDump( var='====> I am in a test harness test schedule!', output="console" );
+			}  )
+				.every( "5", "seconds" )
+				.before( function( task ) {
+					writeDump( var='====> Running before the task!', output="console" );
+				} )
+				.after( function( task, results ){
+					writeDump( var='====> Running after the task!', output="console" );
+				} )
+				.onFailure( function( task, exception ){
+					writeDump( var='====> test schedule just failed!! #exception.message#', output="console" );
+				} )
+				.onSuccess( function( task, results ){
+					writeDump( var='====> Test scheduler success!!', output="console" );
+					writeDump( var="====> Stats: #task.getStats().toString()#", output="console" );
+				} );
 
 	}
 
