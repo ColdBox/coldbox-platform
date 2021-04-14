@@ -943,7 +943,17 @@ component serializable="false" accessors="true" {
 			.getVariablesMixin()
 			// filter out overrides
 			.filter( function( key, value ){
-				return ( !targetVariables.keyExists( key ) AND NOT listFindNoCase( excludedProperties, key ) );
+				// If it's a function and not excluded and not overriden, then inject it
+				if (
+					isCustomFunction( arguments.value ) AND
+					!listFindNoCase( excludedProperties, arguments.key ) AND
+					!targetVariables.keyExists( arguments.key )
+				) {
+					return true;
+				}
+
+				// Check for just data now
+				return ( !listFindNoCase( excludedProperties, arguments.key ) );
 			} )
 			.each( function( propertyName, propertyValue ){
 				// inject the property/method now

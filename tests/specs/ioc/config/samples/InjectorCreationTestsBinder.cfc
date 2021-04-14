@@ -1,4 +1,5 @@
-﻿component extends = "coldbox.system.ioc.config.Binder"{
+﻿component extends="coldbox.system.ioc.config.Binder" {
+
 	/**
 	 * Configure WireBox, that's it!
 	 */
@@ -138,7 +139,7 @@
 
 		map( "virtually-inherited-class" )
 			.to( "tests.resources.ChildClass" )
-			.virtualInheritance( "tests.resources.VirtualParentClass" )
-			.initArg( name = "data", value = "My Data" );
+			.virtualInheritance( "tests.resources.VirtualParentClass" );
 	}
+
 }
