@@ -170,6 +170,21 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 			} );
 
 			describe( "can register frequencies with constraints", function(){
+				it( "can register to fire onFirstBusinessDayOfTheMonth()", function(){
+					var t = scheduler.task( "test" ).onFirstBusinessDayOfTheMonth( "09:00" );
+					expect( t.getPeriod() ).toBe( 86400 );
+					expect( t.getTimeUnit() ).toBe( "seconds" );
+					expect( t.getDayOfTheMonth() ).toBe( 1 );
+				} );
+
+				it( "can register to fire onLastBusinessDayOfTheMonth()", function(){
+					var t = scheduler.task( "test" ).onLastBusinessDayOfTheMonth( "09:00" );
+					expect( t.getPeriod() ).toBe( 86400 );
+					expect( t.getTimeUnit() ).toBe( "seconds" );
+					expect( t.getLastBusinessDay() ).toBeTrue();
+				} );
+
+
 				it( "can register to fire onWeekends()", function(){
 					var t = scheduler.task( "test" ).onWeekends( "09:00" );
 					expect( t.getPeriod() ).toBe( 86400 );

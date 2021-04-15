@@ -109,6 +109,11 @@ component accessors="true" {
 	property name="weekdays" type="boolean";
 
 	/**
+	 * Constraint to run only on the last business day of the month
+	 */
+	property name="lastBusinessDay" type="boolean";
+
+	/**
 	 * Constructor
 	 *
 	 * @name The name of this task
@@ -147,6 +152,7 @@ component accessors="true" {
 		variables.dayOfTheMonth    = 0;
 		variables.weekends         = false;
 		variables.weekdays         = false;
+		variables.lastBusinessDay  = false;
 		// Probable Scheduler or not
 		variables.scheduler        = "";
 		// Prepare execution tracking stats
@@ -745,6 +751,109 @@ component accessors="true" {
 		variables.period        = variables.timeUnitHelper.get( "days" ).toSeconds( 1 );
 		variables.timeUnit      = "seconds";
 		variables.dayOfTheMonth = arguments.day;
+		return this;
+	}
+
+	/**
+	 * Run the task on the first Monday of every month
+	 *
+	 * @time The specific time using 24 hour format => HH:mm, defaults to midnight
+	 */
+	ScheduledTask function onFirstBusinessDayOfTheMonth( string time = "00:00" ){
+		var now = variables.chronoUnitHelper.toLocalDateTime( now(), getTimezone() );
+		// Check for mintues else add them
+		if ( !find( ":", arguments.time ) ) {
+			arguments.time &= ":00";
+		}
+		// Validate time format
+		validateTime( arguments.time );
+		// Get new time
+		var nextRun = now
+			// First business day of the month
+			.with(
+				createObject( "java", "java.time.temporal.TemporalAdjusters" ).firstInMonth(
+					createObject( "java", "java.time.DayOfWeek" ).MONDAY
+				)
+			)
+			// Specific Time
+			.withHour( javacast( "int", getToken( arguments.time, 1, ":" ) ) )
+			.withMinute( javacast( "int", getToken( arguments.time, 2, ":" ) ) )
+			.withSecond( javacast( "int", 0 ) );
+		// Have we passed it
+		if ( now.compareTo( nextRun ) > 0 ) {
+			nextRun = nextRun.plusMonths( javacast( "int", 1 ) );
+		}
+		// Get the duration time for the next run and delay accordingly
+		this.delay(
+			variables.chronoUnitHelper
+				.duration()
+				.getNative()
+				.between( now, nextRun )
+				.getSeconds(),
+			"seconds"
+		);
+		// Set the period to one day. And make sure we add a constraint for it
+		// Mostly because every month is different
+		variables.period        = variables.timeUnitHelper.get( "days" ).toSeconds( 1 );
+		variables.timeUnit      = "seconds";
+		variables.dayOfTheMonth = 1;
+		return this;
+	}
+
+	/**
+	 * Run the task on the last business day of the month
+	 *
+	 * @time The specific time using 24 hour format => HH:mm, defaults to midnight
+	 */
+	ScheduledTask function onLastBusinessDayOfTheMonth( string time = "00:00" ){
+		var now = variables.chronoUnitHelper.toLocalDateTime( now(), getTimezone() );
+		// Check for mintues else add them
+		if ( !find( ":", arguments.time ) ) {
+			arguments.time &= ":00";
+		}
+		// Validate time format
+		validateTime( arguments.time );
+
+		// Get the last day of the month
+		var lastDay = now.with( createObject( "java", "java.time.temporal.TemporalAdjusters" ).lastDayOfMonth() );
+		// Verify if on weekend
+		switch ( lastDay.getDayOfWeek().getValue() ) {
+			// Sunday - 2 days
+			case 7: {
+				lastDay = lastDay.minusDays( 2 );
+				break;
+			}
+			// Saturday - 1 day
+			case 6: {
+				lastDay = lastDay.minusDays( 1 );
+				break;
+			}
+		}
+
+		// Get new time
+		var nextRun = lastDay
+			// Specific Time
+			.withHour( javacast( "int", getToken( arguments.time, 1, ":" ) ) )
+			.withMinute( javacast( "int", getToken( arguments.time, 2, ":" ) ) )
+			.withSecond( javacast( "int", 0 ) );
+		// Have we passed it
+		if ( now.compareTo( nextRun ) > 0 ) {
+			nextRun = nextRun.plusMonths( javacast( "int", 1 ) );
+		}
+		// Get the duration time for the next run and delay accordingly
+		this.delay(
+			variables.chronoUnitHelper
+				.duration()
+				.getNative()
+				.between( now, nextRun )
+				.getSeconds(),
+			"seconds"
+		);
+		// Set the period to one day. And make sure we add a constraint for it
+		// Mostly because every month is different
+		variables.period          = variables.timeUnitHelper.get( "days" ).toSeconds( 1 );
+		variables.timeUnit        = "seconds";
+		variables.lastBusinessDay = true;
 		return this;
 	}
 
