@@ -11,7 +11,7 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 		// all your suites go here.
 		describe( "Scheduled Task", function(){
 			beforeEach( function( currentSpec ){
-				variables.scheduler = asyncManager.newScheduler( "bdd-test" );
+				variables.scheduler = asyncManager.newScheduler( "bdd-test" ).setTimezone( "America/Chicago" );
 			} );
 
 			afterEach( function( currentSpec ){
@@ -112,24 +112,6 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 					expect( t.getTimeUnit() ).toBe( "hours" );
 				} );
 
-				it( "can register everyWeek()", function(){
-					var t = scheduler.task( "test" ).everyWeek();
-					expect( t.getPeriod() ).toBe( 7 );
-					expect( t.getTimeUnit() ).toBe( "days" );
-				} );
-
-				it( "can register everyMonth()", function(){
-					var t = scheduler.task( "test" ).everyMonth();
-					expect( t.getPeriod() ).toBe( 30 );
-					expect( t.getTimeUnit() ).toBe( "days" );
-				} );
-
-				it( "can register everyYear()", function(){
-					var t = scheduler.task( "test" ).everyYear();
-					expect( t.getPeriod() ).toBe( 365 );
-					expect( t.getTimeUnit() ).toBe( "days" );
-				} );
-
 				it( "can register everyHourAt()", function(){
 					var t = scheduler.task( "test" ).everyHourAt( 15 );
 					expect( t.getDelay() ).notToBeEmpty();
@@ -137,10 +119,52 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 					expect( t.getTimeUnit() ).toBe( "seconds" );
 				} );
 
+				it( "can register everyDay()", function(){
+					var t = scheduler.task( "test" ).everyDay();
+					expect( t.getPeriod() ).toBe( 86400 );
+					expect( t.getTimeUnit() ).toBe( "seconds" );
+				} );
+
 				it( "can register everyDayAt()", function(){
 					var t = scheduler.task( "test" ).everyDayAt( "04:00" );
 					expect( t.getDelay() ).notToBeEmpty();
 					expect( t.getPeriod() ).toBe( 86400 );
+					expect( t.getTimeUnit() ).toBe( "seconds" );
+				} );
+
+				it( "can register everyWeek()", function(){
+					var t = scheduler.task( "test" ).everyWeek();
+					expect( t.getPeriod() ).toBe( 604800 );
+					expect( t.getTimeUnit() ).toBe( "seconds" );
+				} );
+
+				it( "can register everyWeekOn()", function(){
+					var t = scheduler.task( "test" ).everyWeekOn( 4, "09:00" );
+					expect( t.getPeriod() ).toBe( 604800 );
+					expect( t.getTimeUnit() ).toBe( "seconds" );
+				} );
+
+				it( "can register everyMonth()", function(){
+					var t = scheduler.task( "test" ).everyMonth();
+					expect( t.getPeriod() ).toBe( 86400 );
+					expect( t.getTimeUnit() ).toBe( "seconds" );
+				} );
+
+				it( "can register everyMonthOn()", function(){
+					var t = scheduler.task( "test" ).everyMonthOn( 10, "09:00" );
+					expect( t.getPeriod() ).toBe( 86400 );
+					expect( t.getTimeUnit() ).toBe( "seconds" );
+				} );
+
+				it( "can register everyYear()", function(){
+					var t = scheduler.task( "test" ).everyYear();
+					expect( t.getPeriod() ).toBe( 31536000 );
+					expect( t.getTimeUnit() ).toBe( "seconds" );
+				} );
+
+				it( "can register everyYearOn()", function(){
+					var t = scheduler.task( "test" ).everyYearOn( 4, 15, "09:00" );
+					expect( t.getPeriod() ).toBe( 31536000 );
 					expect( t.getTimeUnit() ).toBe( "seconds" );
 				} );
 			} );

@@ -89,6 +89,11 @@ component accessors="true" {
 	property name="onTaskFailure";
 
 	/**
+	 * The constraint of what day of the month we need to run on: 1-31
+	 */
+	property name="dayOfTheMonth" type="numeric";
+
+	/**
 	 * Constructor
 	 *
 	 * @name The name of this task
@@ -124,6 +129,7 @@ component accessors="true" {
 		// Constraints
 		variables.disabled         = false;
 		variables.when             = "";
+		variables.dayOfTheMonth    = 0;
 		// Probable Scheduler or not
 		variables.scheduler        = "";
 		// Prepare execution tracking stats
@@ -436,7 +442,7 @@ component accessors="true" {
 	}
 
 	/**
-	 * Set the spaced delay between the executions of this scheduled task
+	 * Run the task every custom spaced delay of execution, meaning no overlaps
 	 *
 	 * @delay The delay that will be used before executing the task
 	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is milliseconds
@@ -448,7 +454,7 @@ component accessors="true" {
 	}
 
 	/**
-	 * Set the period of execution for the schedule
+	 * Run the task every custom period of execution
 	 *
 	 * @period The period of execution
 	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is milliseconds
@@ -460,7 +466,7 @@ component accessors="true" {
 	}
 
 	/**
-	 * Set the period to be every minute from the time it get's scheduled
+	 * Run the task every minute from the time it get's scheduled
 	 */
 	ScheduledTask function everyMinute(){
 		variables.period   = 1;
@@ -469,7 +475,7 @@ component accessors="true" {
 	}
 
 	/**
-	 * Set the period to be every hour from the time it get's scheduled
+	 * Run the task every hour from the time it get's scheduled
 	 */
 	ScheduledTask function everyHour(){
 		variables.period   = 1;
@@ -478,53 +484,46 @@ component accessors="true" {
 	}
 
 	/**
-	 * Set the period to be every day from the time it get's scheduled
-	 */
-	ScheduledTask function everyDay(){
-		variables.period   = 1;
-		variables.timeUnit = "days";
-		return this;
-	}
-
-	/**
-	 * Set the period to be every week (7 days) from the time it get's scheduled
-	 */
-	ScheduledTask function everyWeek(){
-		variables.period   = 7;
-		variables.timeUnit = "days";
-		return this;
-	}
-
-	/**
-	 * Set the period to be every month (30 days) from the time it get's scheduled
-	 */
-	ScheduledTask function everyMonth(){
-		variables.period   = 30;
-		variables.timeUnit = "days";
-		return this;
-	}
-
-	/**
-	 * Set the period to be every year (365 days) from the time it get's scheduled
-	 */
-	ScheduledTask function everyYear(){
-		variables.period   = 365;
-		variables.timeUnit = "days";
-		return this;
-	}
-
-	/**
-	 * Set the period to be hourly at a specific minute mark
+	 * Set the period to be hourly at a specific minute mark and 00 seconds
 	 *
 	 * @minutes The minutes past the hour mark
 	 */
 	ScheduledTask function everyHourAt( required numeric minutes ){
-		// Get times
-		var now     = variables.chronoUnitHelper.toLocalDateTime( now() );
-		var nextRun = now.withMinute( javacast( "int", arguments.minutes ) );
+		var now     = variables.chronoUnitHelper.toLocalDateTime( now(), getTimezone() );
+		var nextRun = now.withMinute( javacast( "int", arguments.minutes ) ).withSecond( javacast( "int", 0 ) );
 		// If we passed it, then move the hour by 1
 		if ( now.compareTo( nextRun ) > 0 ) {
-			nextRun = nextRun.plusHours( javacast( "int", 1 ) )
+			nextRun = nextRun.plusHours( javacast( "int", 1 ) );
+		}
+		// Get the duration time for the next run and delay accordingly
+		this.delay(
+			variables.chronoUnitHelper
+				.duration()
+				.getNative()
+				.between( now, nextRun )
+				.getSeconds(),
+			"seconds"
+		);
+		// Set the period to be every hour
+		variables.period   = variables.timeUnitHelper.get( "hours" ).toSeconds( 1 );
+		variables.timeUnit = "seconds";
+
+		return this;
+	}
+
+	/**
+	 * Run the task every day at midnight
+	 */
+	ScheduledTask function everyDay(){
+		var now     = variables.chronoUnitHelper.toLocalDateTime( now(), getTimezone() );
+		// Set at midnight
+		var nextRun = now
+			.withHour( javacast( "int", 0 ) )
+			.withMinute( javacast( "int", 0 ) )
+			.withSecond( javacast( "int", 0 ) );
+		// If we passed it, then move to the next day
+		if ( now.compareTo( nextRun ) > 0 ) {
+			nextRun = nextRun.plusDays( javacast( "int", 1 ) );
 		}
 		// Get the duration time for the next run and delay accordingly
 		this.delay(
@@ -536,14 +535,15 @@ component accessors="true" {
 			"seconds"
 		);
 		// Set the period to every day in seconds
-		variables.period   = variables.timeUnitHelper.get( "hours" ).toSeconds( 1 );
+		variables.period   = variables.timeUnitHelper.get( "days" ).toSeconds( 1 );
 		variables.timeUnit = "seconds";
 
 		return this;
 	}
 
 	/**
-	 * Set the period to be daily at a specific time
+	 * Set the period to be daily at a specific time in 24 hour format: HH:mm
+	 * We will always add 0 seconds for you.
 	 *
 	 * @time The specific time using 24 hour format => HH:mm
 	 */
@@ -552,14 +552,15 @@ component accessors="true" {
 		if ( !find( ":", arguments.time ) ) {
 			arguments.time &= ":00";
 		}
-		// Validate it
+		// Validate time format
 		validateTime( arguments.time );
 		// Get times
-		var now     = variables.chronoUnitHelper.toLocalDateTime( now() );
+		var now     = variables.chronoUnitHelper.toLocalDateTime( now(), getTimezone() );
 		var nextRun = now
 			.withHour( javacast( "int", getToken( arguments.time, 1, ":" ) ) )
-			.withMinute( javacast( "int", getToken( arguments.time, 2, ":" ) ) );
-		// If we passed it, then move the day
+			.withMinute( javacast( "int", getToken( arguments.time, 2, ":" ) ) )
+			.withSecond( javacast( "int", 0 ) );
+		// If we passed it, then move to the next day
 		if ( now.compareTo( nextRun ) > 0 ) {
 			nextRun = nextRun.plusDays( javacast( "int", 1 ) )
 		}
@@ -580,22 +581,183 @@ component accessors="true" {
 	}
 
 	/**
-	 * Set the period to be weekly at a specific time at a specific day of the week
-	 *
-	 * @dayOfWeek The day of the week from 1 (Monday) -> 7 (Sunday)
-	 * @time The specific time using 24 hour format => HH:mm
+	 * Run the task every Sunday at midnight
 	 */
-	ScheduledTask function everyWeekOn( required dayOfWeek, required string time ){
+	ScheduledTask function everyWeek(){
+		var now     = variables.chronoUnitHelper.toLocalDateTime( now(), getTimezone() );
+		// Set at midnight
+		var nextRun = now
+			// Sunday
+			.with( variables.chronoUnitHelper.ChronoField.DAY_OF_WEEK, javacast( "int", 7 ) )
+			// Midnight
+			.withHour( javacast( "int", 0 ) )
+			.withMinute( javacast( "int", 0 ) )
+			.withSecond( javacast( "int", 0 ) );
+		// If we passed it, then move to the next week
+		if ( now.compareTo( nextRun ) > 0 ) {
+			nextRun = nextRun.plusWeeks( javacast( "int", 1 ) );
+		}
+		// Get the duration time for the next run and delay accordingly
+		this.delay(
+			variables.chronoUnitHelper
+				.duration()
+				.getNative()
+				.between( now, nextRun )
+				.getSeconds(),
+			"seconds"
+		);
+		// Set the period to every week in seconds
+		variables.period   = variables.timeUnitHelper.get( "days" ).toSeconds( 7 );
+		variables.timeUnit = "seconds";
 		return this;
 	}
 
 	/**
-	 * Set the period to be weekly at a specific time at a specific day of the week
+	 * Run the task weekly on the given day of the week and time
+	 *
+	 * @dayOfWeek The day of the week from 1 (Monday) -> 7 (Sunday)
+	 * @time The specific time using 24 hour format => HH:mm, defaults to midnight
+	 */
+	ScheduledTask function everyWeekOn( required numeric dayOfWeek, string time = "00:00" ){
+		var now = variables.chronoUnitHelper.toLocalDateTime( now(), getTimezone() );
+		// Check for mintues else add them
+		if ( !find( ":", arguments.time ) ) {
+			arguments.time &= ":00";
+		}
+		// Validate time format
+		validateTime( arguments.time );
+		var nextRun = now
+			// Given day
+			.with( variables.chronoUnitHelper.ChronoField.DAY_OF_WEEK, javacast( "int", arguments.dayOfWeek ) )
+			// Given time
+			.withHour( javacast( "int", getToken( arguments.time, 1, ":" ) ) )
+			.withMinute( javacast( "int", getToken( arguments.time, 2, ":" ) ) )
+			.withSecond( javacast( "int", 0 ) );
+		// If we passed it, then move to the next week
+		if ( now.compareTo( nextRun ) > 0 ) {
+			nextRun = nextRun.plusWeeks( javacast( "int", 1 ) );
+		}
+		// Get the duration time for the next run and delay accordingly
+		this.delay(
+			variables.chronoUnitHelper
+				.duration()
+				.getNative()
+				.between( now, nextRun )
+				.getSeconds(),
+			"seconds"
+		);
+		// Set the period to every week in seconds
+		variables.period   = variables.timeUnitHelper.get( "days" ).toSeconds( 7 );
+		variables.timeUnit = "seconds";
+		return this;
+	}
+
+	/**
+	 * Run the task on the first day of every month at midnight
+	 */
+	ScheduledTask function everyMonth(){
+		var now     = variables.chronoUnitHelper.toLocalDateTime( now(), getTimezone() );
+		// Set at midnight
+		var nextRun = now
+			// First day of the month
+			.with( variables.chronoUnitHelper.ChronoField.DAY_OF_MONTH, javacast( "int", 1 ) )
+			// Midnight
+			.withHour( javacast( "int", 0 ) )
+			.withMinute( javacast( "int", 0 ) )
+			.withSecond( javacast( "int", 0 ) );
+
+		if ( now.compareTo( nextRun ) > 0 ) {
+			nextRun = nextRun.plusMonths( javacast( "int", 1 ) );
+		}
+		// Get the duration time for the next run and delay accordingly
+		this.delay(
+			variables.chronoUnitHelper
+				.duration()
+				.getNative()
+				.between( now, nextRun )
+				.getSeconds(),
+			"seconds"
+		);
+		// Set the period to one day. And make sure we add a constraint for it
+		// Mostly because every month is different
+		variables.period        = variables.timeUnitHelper.get( "days" ).toSeconds( 1 );
+		variables.timeUnit      = "seconds";
+		variables.dayOfTheMonth = 1;
+		return this;
+	}
+
+	/**
+	 * Run the task every month on a specific day and time
 	 *
 	 * @day Which day of the month
-	 * @time The specific time using 24 hour format => HH:mm
+	 * @time The specific time using 24 hour format => HH:mm, defaults to midnight
 	 */
-	ScheduledTask function everyMonthOn( required day, required string time ){
+	ScheduledTask function everyMonthOn( required numeric day, string time = "00:00" ){
+		var now = variables.chronoUnitHelper.toLocalDateTime( now(), getTimezone() );
+		// Check for mintues else add them
+		if ( !find( ":", arguments.time ) ) {
+			arguments.time &= ":00";
+		}
+		// Validate time format
+		validateTime( arguments.time );
+		// Get new time
+		var nextRun = now
+			// First day of the month
+			.with( variables.chronoUnitHelper.ChronoField.DAY_OF_MONTH, javacast( "int", arguments.day ) )
+			// Specific Time
+			.withHour( javacast( "int", getToken( arguments.time, 1, ":" ) ) )
+			.withMinute( javacast( "int", getToken( arguments.time, 2, ":" ) ) )
+			.withSecond( javacast( "int", 0 ) );
+		// Have we passed it
+		if ( now.compareTo( nextRun ) > 0 ) {
+			nextRun = nextRun.plusMonths( javacast( "int", 1 ) );
+		}
+		// Get the duration time for the next run and delay accordingly
+		this.delay(
+			variables.chronoUnitHelper
+				.duration()
+				.getNative()
+				.between( now, nextRun )
+				.getSeconds(),
+			"seconds"
+		);
+		// Set the period to one day. And make sure we add a constraint for it
+		// Mostly because every month is different
+		variables.period        = variables.timeUnitHelper.get( "days" ).toSeconds( 1 );
+		variables.timeUnit      = "seconds";
+		variables.dayOfTheMonth = arguments.day;
+		return this;
+	}
+
+	/**
+	 * Run the task on the first day of the year at midnight
+	 */
+	ScheduledTask function everyYear(){
+		var now     = variables.chronoUnitHelper.toLocalDateTime( now(), getTimezone() );
+		// Set at midnight
+		var nextRun = now
+			// First day of the month
+			.with( variables.chronoUnitHelper.ChronoField.DAY_OF_YEAR, javacast( "int", 1 ) )
+			// Midnight
+			.withHour( javacast( "int", 0 ) )
+			.withMinute( javacast( "int", 0 ) )
+			.withSecond( javacast( "int", 0 ) );
+
+		if ( now.compareTo( nextRun ) > 0 ) {
+			nextRun = nextRun.plusYears( javacast( "int", 1 ) );
+		}
+		// Get the duration time for the next run and delay accordingly
+		this.delay(
+			variables.chronoUnitHelper
+				.duration()
+				.getNative()
+				.between( now, nextRun )
+				.getSeconds(),
+			"seconds"
+		);
+		// Set the period to
+		variables.period   = variables.timeUnitHelper.get( "days" ).toSeconds( 365 );
+		variables.timeUnit = "seconds";
 		return this;
 	}
 
@@ -611,42 +773,38 @@ component accessors="true" {
 		required numeric day,
 		required string time = "00:00"
 	){
-		return this;
-	}
-
-	/**
-	 * Set the period to be the first day of the month
-	 *
-	 * @time The specific time using 24 hour format => HH:mm, defaults to 00:00
-	 */
-	ScheduledTask function firstDayOfTheMonth( string time = "00:00" ){
-		return this;
-	}
-
-	/**
-	 * Set the period to be the first business day of the month
-	 *
-	 * @time The specific time using 24 hour format => HH:mm, defaults to 00:00
-	 */
-	ScheduledTask function firstBusinessDayOfTheMonth( string time = "00:00" ){
-		return this;
-	}
-
-	/**
-	 * Set the period to be the last day of the month
-	 *
-	 * @time The specific time using 24 hour format => HH:mm, defaults to 00:00
-	 */
-	ScheduledTask function lastDayOfTheMonth( string time = "00:00" ){
-		return this;
-	}
-
-	/**
-	 * Set the period to be the last business day of the month
-	 *
-	 * @time The specific time using 24 hour format => HH:mm, defaults to 00:00
-	 */
-	ScheduledTask function lastBusinessDayOfTheMonth( string time = "00:00" ){
+		var now = variables.chronoUnitHelper.toLocalDateTime( now(), getTimezone() );
+		// Check for mintues else add them
+		if ( !find( ":", arguments.time ) ) {
+			arguments.time &= ":00";
+		}
+		// Validate time format
+		validateTime( arguments.time );
+		var nextRun = now
+			// Specific month
+			.with( variables.chronoUnitHelper.ChronoField.MONTH_OF_YEAR, javacast( "int", arguments.month ) )
+			// Specific day of the month
+			.with( variables.chronoUnitHelper.ChronoField.DAY_OF_MONTH, javacast( "int", arguments.day ) )
+			// Midnight
+			.withHour( javacast( "int", getToken( arguments.time, 1, ":" ) ) )
+			.withMinute( javacast( "int", getToken( arguments.time, 2, ":" ) ) )
+			.withSecond( javacast( "int", 0 ) );
+		// Have we passed it?
+		if ( now.compareTo( nextRun ) > 0 ) {
+			nextRun = nextRun.plusYears( javacast( "int", 1 ) );
+		}
+		// Get the duration time for the next run and delay accordingly
+		this.delay(
+			variables.chronoUnitHelper
+				.duration()
+				.getNative()
+				.between( now, nextRun )
+				.getSeconds(),
+			"seconds"
+		);
+		// Set the period to
+		variables.period   = variables.timeUnitHelper.get( "days" ).toSeconds( 365 );
+		variables.timeUnit = "seconds";
 		return this;
 	}
 
@@ -802,9 +960,9 @@ component accessors="true" {
 	 */
 	private function validateTime( required time ){
 		// Regex check
-		if ( !reFind( "^[0-2][0-4]\:[0-5][0-9]$", arguments.time ) ) {
+		if ( !reFind( "^[0-2][0-9]\:[0-5][0-9]$", arguments.time ) ) {
 			throw(
-				message = "Invalid time representation. Time is represented in 24 hour minute format => HH:mm",
+				message = "Invalid time representation (#arguments.time#). Time is represented in 24 hour minute format => HH:mm",
 				type    = "InvalidTimeException"
 			);
 		}

@@ -9,8 +9,9 @@
 component singleton {
 
 	// TimeZone Helpers
-	this.ZoneOffset = createObject( "java", "java.time.ZoneOffset" );
-	this.ZoneId     = createObject( "java", "java.time.ZoneId" );
+	this.ZoneOffset  = createObject( "java", "java.time.ZoneOffset" );
+	this.ZoneId      = createObject( "java", "java.time.ZoneId" );
+	this.ChronoField = createObject( "java", "java.time.temporal.ChronoField" );
 
 	// The java chrono unit we model
 	variables.jChronoUnit = createObject( "java", "java.time.temporal.ChronoUnit" );
