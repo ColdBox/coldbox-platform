@@ -66,7 +66,7 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 			} );
 
 			it( "can get total months", function(){
-				var p = period.parse( "P10Y5M20D" )
+				var p = period.parse( "P10Y5M20D" );
 				expect( p.toTotalMonths() ).toBe( 125 );
 			} );
 
@@ -152,7 +152,7 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 				var p      = period.of( 2, 5, 10 );
 				var target = "2021-01-01";
 
-				expect( p.addTo( target ) ).tobe( "2023-06-11" )
+				expect( p.addTo( target ) ).tobe( "2023-06-11" );
 			} );
 		} );
 	}
