@@ -405,9 +405,12 @@ component accessors="true" singleton {
 		}
 
 		// build it up
-		return createObject( "java", "java.util.stream.IntStream" )
+		var javaArray = createObject( "java", "java.util.stream.IntStream" )
 			.rangeClosed( arguments.from, arguments.to )
 			.toArray();
+		var cfArray = [];
+		cfArray.append( javaArray, true );
+		return cfArray;
 	}
 
 	/**
