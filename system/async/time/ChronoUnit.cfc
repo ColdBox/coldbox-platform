@@ -77,7 +77,11 @@ component singleton {
 	function toLocalDateTime( required target, timezone ){
 		return this
 			.toInstant( arguments.target )
-			.atZone( isNull( arguments.timezone ) ? this.ZoneOffset.UTC : this.ZoneId.of( arguments.timezone ) )
+			.atZone(
+				isNull( arguments.timezone ) ? this.ZoneOffset.UTC : this.ZoneId.of(
+					javacast( "string", arguments.timezone )
+				)
+			)
 			.toLocalDateTime();
 	}
 
@@ -95,7 +99,11 @@ component singleton {
 	function toLocalDate( required target, timezone ){
 		return this
 			.toInstant( arguments.target )
-			.atZone( isNull( arguments.timezone ) ? this.ZoneOffset.UTC : this.ZoneId.of( arguments.timezone ) )
+			.atZone(
+				isNull( arguments.timezone ) ? this.ZoneOffset.UTC : this.ZoneId.of(
+					javacast( "string", arguments.timezone )
+				)
+			)
 			.toLocalDate();
 	}
 
@@ -112,7 +120,7 @@ component singleton {
 	 * @return Java Timezone java.time.ZoneId
 	 */
 	function getTimezone( required timezone ){
-		return this.ZoneId.of( arguments.timezone );
+		return this.ZoneId.of( javacast( "string", arguments.timezone ) );
 	}
 
 	/**

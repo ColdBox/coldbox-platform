@@ -585,7 +585,7 @@ component accessors="true" {
 			.withSecond( javacast( "int", 0 ) );
 		// If we passed it, then move to the next day
 		if ( now.compareTo( nextRun ) > 0 ) {
-			nextRun = nextRun.plusDays( javacast( "int", 1 ) )
+			nextRun = nextRun.plusDays( javacast( "int", 1 ) );
 		}
 		// Get the duration time for the next run and delay accordingly
 		this.delay(
@@ -956,7 +956,7 @@ component accessors="true" {
 			.withSecond( javacast( "int", 0 ) );
 		// If we passed it, then move to the next day
 		if ( now.compareTo( nextRun ) > 0 ) {
-			nextRun = nextRun.plusDays( javacast( "int", 1 ) )
+			nextRun = nextRun.plusDays( javacast( "int", 1 ) );
 		}
 		// Get the duration time for the next run and delay accordingly
 		this.delay(
@@ -997,7 +997,7 @@ component accessors="true" {
 			.withSecond( javacast( "int", 0 ) );
 		// If we passed it, then move to the next day
 		if ( now.compareTo( nextRun ) > 0 ) {
-			nextRun = nextRun.plusDays( javacast( "int", 1 ) )
+			nextRun = nextRun.plusDays( javacast( "int", 1 ) );
 		}
 		// Get the duration time for the next run and delay accordingly
 		this.delay(

@@ -26,7 +26,7 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 			} );
 
 			it( "can register a new task and get it's record", function(){
-				var task = scheduler.task( "bddTest" )
+				var task = scheduler.task( "bddTest" );
 				expect( scheduler.hasTask( "bddTest" ) ).toBeTrue();
 				expect( scheduler.getRegisteredTasks() ).toInclude( "bddTest" );
 				expect( scheduler.getTaskRecord( "bddTest" ).task.getName() ).toBe( "bddTest" );
@@ -39,7 +39,7 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 			} );
 
 			it( "can remove a task", function(){
-				var task = scheduler.task( "bddTest" )
+				var task = scheduler.task( "bddTest" );
 				expect( scheduler.hasTask( "bddTest" ) ).toBeTrue();
 				scheduler.removeTask( "bddTest" );
 				expect( scheduler.hasTask( "bddTest" ) ).toBeFalse();
