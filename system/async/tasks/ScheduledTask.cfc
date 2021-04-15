@@ -94,6 +94,21 @@ component accessors="true" {
 	property name="dayOfTheMonth" type="numeric";
 
 	/**
+	 * The constraint of what day of the week we need to run on: 1 (Monday) -7 (Sunday)
+	 */
+	property name="dayOfTheWeek" type="numeric";
+
+	/**
+	 * Constraint to run only on weekends
+	 */
+	property name="weekends" type="boolean";
+
+	/**
+	 * Constraint to run only on weekdays
+	 */
+	property name="weekdays" type="boolean";
+
+	/**
 	 * Constructor
 	 *
 	 * @name The name of this task
@@ -130,6 +145,9 @@ component accessors="true" {
 		variables.disabled         = false;
 		variables.when             = "";
 		variables.dayOfTheMonth    = 0;
+		variables.dayOfTheWeek     = 0;
+		variables.weekends         = false;
+		variables.weekdays         = false;
 		// Probable Scheduler or not
 		variables.scheduler        = "";
 		// Prepare execution tracking stats
@@ -814,6 +832,37 @@ component accessors="true" {
 	 * @time The specific time using 24 hour format => HH:mm, defaults to 00:00
 	 */
 	ScheduledTask function onWeekends( string time = "00:00" ){
+		// Check for mintues else add them
+		if ( !find( ":", arguments.time ) ) {
+			arguments.time &= ":00";
+		}
+		// Validate time format
+		validateTime( arguments.time );
+		// Get times
+		var now     = variables.chronoUnitHelper.toLocalDateTime( now(), getTimezone() );
+		var nextRun = now
+			.withHour( javacast( "int", getToken( arguments.time, 1, ":" ) ) )
+			.withMinute( javacast( "int", getToken( arguments.time, 2, ":" ) ) )
+			.withSecond( javacast( "int", 0 ) );
+		// If we passed it, then move to the next day
+		if ( now.compareTo( nextRun ) > 0 ) {
+			nextRun = nextRun.plusDays( javacast( "int", 1 ) )
+		}
+		// Get the duration time for the next run and delay accordingly
+		this.delay(
+			variables.chronoUnitHelper
+				.duration()
+				.getNative()
+				.between( now, nextRun )
+				.getSeconds(),
+			"seconds"
+		);
+		// Set the period to every day in seconds
+		variables.period   = variables.timeUnitHelper.get( "DAYS" ).toSeconds( 1 );
+		variables.timeUnit = "seconds";
+		// Constraint to only run on weekends
+		variables.weekends = true;
+
 		return this;
 	}
 
@@ -823,6 +872,36 @@ component accessors="true" {
 	 * @time The specific time using 24 hour format => HH:mm, defaults to 00:00
 	 */
 	ScheduledTask function onWeekdays( string time = "00:00" ){
+		// Check for mintues else add them
+		if ( !find( ":", arguments.time ) ) {
+			arguments.time &= ":00";
+		}
+		// Validate time format
+		validateTime( arguments.time );
+		// Get times
+		var now     = variables.chronoUnitHelper.toLocalDateTime( now(), getTimezone() );
+		var nextRun = now
+			.withHour( javacast( "int", getToken( arguments.time, 1, ":" ) ) )
+			.withMinute( javacast( "int", getToken( arguments.time, 2, ":" ) ) )
+			.withSecond( javacast( "int", 0 ) );
+		// If we passed it, then move to the next day
+		if ( now.compareTo( nextRun ) > 0 ) {
+			nextRun = nextRun.plusDays( javacast( "int", 1 ) )
+		}
+		// Get the duration time for the next run and delay accordingly
+		this.delay(
+			variables.chronoUnitHelper
+				.duration()
+				.getNative()
+				.between( now, nextRun )
+				.getSeconds(),
+			"seconds"
+		);
+		// Set the period to every day in seconds
+		variables.period   = variables.timeUnitHelper.get( "DAYS" ).toSeconds( 1 );
+		variables.timeUnit = "seconds";
+		// Constraint to only run on weekdays
+		variables.weekdays = true;
 		return this;
 	}
 
