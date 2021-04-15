@@ -862,6 +862,7 @@ component accessors="true" {
 		variables.timeUnit = "seconds";
 		// Constraint to only run on weekends
 		variables.weekends = true;
+		variables.weekdays = false;
 
 		return this;
 	}
@@ -902,6 +903,7 @@ component accessors="true" {
 		variables.timeUnit = "seconds";
 		// Constraint to only run on weekdays
 		variables.weekdays = true;
+		variables.weekends = false;
 		return this;
 	}
 

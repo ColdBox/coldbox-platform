@@ -168,6 +168,24 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 					expect( t.getTimeUnit() ).toBe( "seconds" );
 				} );
 			} );
+
+			describe( "can register frequencies with constraints", function(){
+				it( "can register to fire onWeekends()", function(){
+					var t = scheduler.task( "test" ).onWeekends( "09:00" );
+					expect( t.getPeriod() ).toBe( 86400 );
+					expect( t.getTimeUnit() ).toBe( "seconds" );
+					expect( t.getWeekends() ).toBeTrue();
+					expect( t.getWeekdays() ).toBeFalse();
+				} );
+
+				it( "can register to fire onWeekdays()", function(){
+					var t = scheduler.task( "test" ).onWeekdays( "09:00" );
+					expect( t.getPeriod() ).toBe( 86400 );
+					expect( t.getTimeUnit() ).toBe( "seconds" );
+					expect( t.getWeekends() ).toBeFalse();
+					expect( t.getWeekdays() ).toBeTrue();
+				} );
+			} );
 		} );
 	}
 
