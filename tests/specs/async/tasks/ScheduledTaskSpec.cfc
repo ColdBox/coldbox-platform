@@ -185,6 +185,30 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 					expect( t.getWeekends() ).toBeFalse();
 					expect( t.getWeekdays() ).toBeTrue();
 				} );
+
+				var daysOfTheWeek = [
+					"mondays",
+					"tuesdays",
+					"wednesdays",
+					"thursdays",
+					"fridays",
+					"saturdays",
+					"sundays"
+				];
+				daysOfTheWeek.each( function( thisDay ){
+					it(
+						title = "can register to fire on the #thisDay#",
+						body  = function( data ){
+							var t = scheduler.task( "test" );
+
+							invoke( t, "on#data.thisDay#" );
+
+							expect( t.getPeriod() ).toBe( 604800 );
+							expect( t.getTimeUnit() ).toBe( "seconds" );
+						},
+						data = { thisDay : thisDay }
+					);
+				} );
 			} );
 		} );
 	}

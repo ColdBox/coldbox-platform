@@ -94,7 +94,7 @@ component accessors="true" {
 	property name="dayOfTheMonth" type="numeric";
 
 	/**
-	 * The constraint of what day of the week we need to run on: 1 (Monday) -7 (Sunday)
+	 * The constraint of what day of the week this runs on: 1-7
 	 */
 	property name="dayOfTheWeek" type="numeric";
 
@@ -145,7 +145,6 @@ component accessors="true" {
 		variables.disabled         = false;
 		variables.when             = "";
 		variables.dayOfTheMonth    = 0;
-		variables.dayOfTheWeek     = 0;
 		variables.weekends         = false;
 		variables.weekdays         = false;
 		// Probable Scheduler or not
@@ -625,8 +624,9 @@ component accessors="true" {
 			"seconds"
 		);
 		// Set the period to every week in seconds
-		variables.period   = variables.timeUnitHelper.get( "days" ).toSeconds( 7 );
-		variables.timeUnit = "seconds";
+		variables.period       = variables.timeUnitHelper.get( "days" ).toSeconds( 7 );
+		variables.timeUnit     = "seconds";
+		variables.dayOfTheWeek = 7;
 		return this;
 	}
 
@@ -665,8 +665,9 @@ component accessors="true" {
 			"seconds"
 		);
 		// Set the period to every week in seconds
-		variables.period   = variables.timeUnitHelper.get( "days" ).toSeconds( 7 );
-		variables.timeUnit = "seconds";
+		variables.period       = variables.timeUnitHelper.get( "days" ).toSeconds( 7 );
+		variables.timeUnit     = "seconds";
+		variables.dayOfTheWeek = arguments.dayOfWeek;
 		return this;
 	}
 
@@ -913,7 +914,7 @@ component accessors="true" {
 	 * @time The specific time using 24 hour format => HH:mm, defaults to 00:00
 	 */
 	ScheduledTask function onMondays( string time = "00:00" ){
-		return this;
+		return this.everyWeekOn( 1, arguments.time );
 	}
 
 	/**
@@ -922,7 +923,7 @@ component accessors="true" {
 	 * @time The specific time using 24 hour format => HH:mm, defaults to 00:00
 	 */
 	ScheduledTask function onTuesdays( string time = "00:00" ){
-		return this;
+		return this.everyWeekOn( 2, arguments.time );
 	}
 
 	/**
@@ -931,7 +932,7 @@ component accessors="true" {
 	 * @time The specific time using 24 hour format => HH:mm, defaults to 00:00
 	 */
 	ScheduledTask function onWednesdays( string time = "00:00" ){
-		return this;
+		return this.everyWeekOn( 3, arguments.time );
 	}
 
 	/**
@@ -940,7 +941,7 @@ component accessors="true" {
 	 * @time The specific time using 24 hour format => HH:mm, defaults to 00:00
 	 */
 	ScheduledTask function onThursdays( string time = "00:00" ){
-		return this;
+		return this.everyWeekOn( 4, arguments.time );
 	}
 
 	/**
@@ -949,7 +950,7 @@ component accessors="true" {
 	 * @time The specific time using 24 hour format => HH:mm, defaults to 00:00
 	 */
 	ScheduledTask function onFridays( string time = "00:00" ){
-		return this;
+		return this.everyWeekOn( 5, arguments.time );
 	}
 
 	/**
@@ -958,7 +959,7 @@ component accessors="true" {
 	 * @time The specific time using 24 hour format => HH:mm, defaults to 00:00
 	 */
 	ScheduledTask function onSaturdays( string time = "00:00" ){
-		return this;
+		return this.everyWeekOn( 6, arguments.time );
 	}
 
 	/**
@@ -967,7 +968,7 @@ component accessors="true" {
 	 * @time The specific time using 24 hour format => HH:mm, defaults to 00:00
 	 */
 	ScheduledTask function onSundays( string time = "00:00" ){
-		return this;
+		return this.everyWeekOn( 7, arguments.time );
 	}
 
 	/**
