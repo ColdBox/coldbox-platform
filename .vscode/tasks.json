@@ -2,14 +2,32 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"label": "Run Task",
+			"label": "Run CommandBox Task",
 			"type": "shell",
 			"command": "box task run ${relativeFile}",
-			"group": "build",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
 			"presentation": {
 				"reveal": "always",
 				"panel": "new"
-			}
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Run CommandBox Task",
+			"type": "shell",
+			"command": "box testbox run bundles=${relativeFile}",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"presentation": {
+				"reveal": "always",
+				"panel": "new"
+			},
+			"problemMatcher": []
 		}
 	]
 }

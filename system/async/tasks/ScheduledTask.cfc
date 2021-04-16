@@ -114,6 +114,13 @@ component accessors="true" {
 	property name="lastBusinessDay" type="boolean";
 
 	/**
+	 * By default tasks execute in an interval frequency which can cause overlaps if tasks
+	 * take longer than their periods. With this boolean flag turned on, the schedulers
+	 * don't kick off the intervals until the tasks finish executing. Meaning no overlaps.
+	 */
+	property name="noOverlaps" type="boolean";
+
+	/**
 	 * Constructor
 	 *
 	 * @name The name of this task
@@ -153,6 +160,7 @@ component accessors="true" {
 		variables.weekends         = false;
 		variables.weekdays         = false;
 		variables.lastBusinessDay  = false;
+		variables.noOverlaps       = false;
 		// Probable Scheduler or not
 		variables.scheduler        = "";
 		// Prepare execution tracking stats
@@ -272,6 +280,14 @@ component accessors="true" {
 	}
 
 	/**
+	 * Enable the task when disabled so we can run again
+	 */
+	ScheduledTask function enable(){
+		variables.disabled = false;
+		return this;
+	}
+
+	/**
 	 * Verifies if we can schedule this task or not by looking at the following constraints:
 	 *
 	 * - disabled
@@ -369,7 +385,12 @@ component accessors="true" {
 	 * @return A ScheduledFuture from where you can monitor the task, an empty ScheduledFuture if the task was not registered
 	 */
 	ScheduledFuture function start(){
-		// Startup a spaced frequency task
+		// If we have overlaps and the spaced delay is 0 then grab it from the period
+		if ( variables.noOverlaps and variables.spacedDelay eq 0 ) {
+			variables.spacedDelay = variables.period;
+		}
+
+		// Startup a spaced frequency task: no overlaps
 		if ( variables.spacedDelay > 0 ) {
 			return variables.executor.scheduleWithFixedDelay(
 				task       : this,
@@ -473,6 +494,18 @@ component accessors="true" {
 	ScheduledTask function spacedDelay( numeric spacedDelay, timeUnit = "milliseconds" ){
 		variables.spacedDelay = arguments.spacedDelay;
 		variables.timeUnit    = arguments.timeUnit;
+		return this;
+	}
+
+	/**
+	 * Calling this method prevents task frequencies to overlap.  By default all tasks are executed with an
+	 * interval but ccould potentially overlap if they take longer to execute than the period.
+	 *
+	 * @period
+	 * @timeUnit
+	 */
+	ScheduledTask function withNoOverlaps(){
+		variables.noOverlaps = true;
 		return this;
 	}
 

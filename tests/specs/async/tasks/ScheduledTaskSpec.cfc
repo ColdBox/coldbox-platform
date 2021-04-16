@@ -24,7 +24,7 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 				expect( t.hasScheduler() ).toBeTrue();
 			} );
 
-			it( "can call when", function(){
+			it( "can have truth based restrictions using when()", function(){
 				var t = scheduler
 					.task( "test" )
 					.when( function(){
@@ -44,37 +44,39 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 				expect( t.disable().isDisabled() ).toBeTrue();
 			} );
 
-			it( "can call before", function(){
-				var t = scheduler
-					.task( "test" )
-					.before( function(){
-						return true;
-					} );
-				expect( isClosure( t.getBeforeTask() ) ).toBeTrue();
-			} );
-			it( "can call after", function(){
-				var t = scheduler
-					.task( "test" )
-					.after( function(){
-						return true;
-					} );
-				expect( isClosure( t.getafterTask() ) ).toBeTrue();
-			} );
-			it( "can call onTaskSuccess", function(){
-				var t = scheduler
-					.task( "test" )
-					.onSuccess( function(){
-						return true;
-					} );
-				expect( isClosure( t.getonTaskSuccess() ) ).toBeTrue();
-			} );
-			it( "can call onTaskFailure", function(){
-				var t = scheduler
-					.task( "test" )
-					.onFailure( function(){
-						return true;
-					} );
-				expect( isClosure( t.getonTaskFailure() ) ).toBeTrue();
+			describe( "can have life cycle methods", function(){
+				it( "can call before", function(){
+					var t = scheduler
+						.task( "test" )
+						.before( function(){
+							return true;
+						} );
+					expect( isClosure( t.getBeforeTask() ) ).toBeTrue();
+				} );
+				it( "can call after", function(){
+					var t = scheduler
+						.task( "test" )
+						.after( function(){
+							return true;
+						} );
+					expect( isClosure( t.getafterTask() ) ).toBeTrue();
+				} );
+				it( "can call onTaskSuccess", function(){
+					var t = scheduler
+						.task( "test" )
+						.onSuccess( function(){
+							return true;
+						} );
+					expect( isClosure( t.getonTaskSuccess() ) ).toBeTrue();
+				} );
+				it( "can call onTaskFailure", function(){
+					var t = scheduler
+						.task( "test" )
+						.onFailure( function(){
+							return true;
+						} );
+					expect( isClosure( t.getonTaskFailure() ) ).toBeTrue();
+				} );
 			} );
 
 			describe( "can register multiple frequencies using everyXXX() method calls", function(){
@@ -224,6 +226,16 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 						data = { thisDay : thisDay }
 					);
 				} );
+			} );
+
+			it( "can register tasks with no overlaps", function(){
+				var t = scheduler
+					.task( "test" )
+					.everyMinute()
+					.withNoOverlaps();
+				expect( t.getPeriod() ).toBe( 1 );
+				expect( t.getNoOverlaps() ).toBeTrue();
+				expect( t.getTimeUnit() ).toBe( "minutes" );
 			} );
 		} );
 	}
