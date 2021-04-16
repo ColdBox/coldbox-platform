@@ -92,15 +92,21 @@ component extends="coldbox.system.async.tasks.ScheduledTask" accessors="true" {
 	}
 
 	/**
-	 * Verifies if we can schedule this task or not by looking at the following constraints:
+	 * This method verifies if the running task is constrained to run on specific valid constraints:
 	 *
-	 * - disabled
+	 * - when
+	 * - dayOfTheMonth
+	 * - dayOfTheWeek
+	 * - lastBusinessDay
+	 * - weekends
+	 * - weekdays
 	 * - environments
-	 * - when closure
+	 *
+	 * This method is called by the `run()` method at runtime to determine if the task can be ran at that point in time
 	 */
-	boolean function isDisabled(){
+	boolean function isConstrained(){
 		// Call super and if disabled already, then just exit out.
-		if ( super.isDisabled() ) {
+		if ( super.isConstrained() ) {
 			return true;
 		}
 

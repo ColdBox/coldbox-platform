@@ -299,18 +299,7 @@ component accessors="true" {
 	 * - when closure
 	 */
 	boolean function isDisabled(){
-		// Disabled bit
-		if ( variables.disabled ) {
-			return true;
-		}
-
-		// When Closure that dictates if the task can be scheduled: true => yes, false => no
-		if ( isClosure( variables.when ) ) {
-			return !variables.when( this );
-		}
-
-		// Not disabled
-		return false;
+		return variables.disabled;
 	}
 
 	/**
@@ -320,6 +309,69 @@ component accessors="true" {
 	 */
 
 	/**
+	 * This method verifies if the running task is constrained to run on specific valid constraints:
+	 *
+	 * - when
+	 * - dayOfTheMonth
+	 * - dayOfTheWeek
+	 * - lastBusinessDay
+	 * - weekends
+	 * - weekdays
+	 *
+	 * This method is called by the `run()` method at runtime to determine if the task can be ran at that point in time
+	 */
+	boolean function isConstrained(){
+		var now = variables.chronoUnitHelper.toLocalDateTime( now(), getTimezone() );
+
+		// When Closure that dictates if the task can be scheduled/ran: true => yes, false => no
+		if ( isClosure( variables.when ) && !variables.when( this ) ) {
+			return true;
+		}
+
+		// Do we have a day of the month constraint? and the same as the running date/time? Else skip it
+		if (
+			variables.dayOfTheMonth > 0 &&
+			now.getDayOfMonth() != variables.dayOfTheMonth
+		) {
+			return true;
+		}
+
+		// Do we have a last business day constraint
+		if (
+			variables.lastBusinessDay &&
+			now.getDayOfMonth() != getLastDayOfTheMonth().getDayOfMonth()
+		) {
+			return true;
+		}
+
+		// Do we have weekends?
+		if (
+			variables.weekends &&
+			now.getDayOfWeek() <= 5
+		) {
+			return true;
+		}
+
+		// Do we have weekdays?
+		if (
+			variables.weekdays &&
+			now.getDayOfWeek() > 5
+		) {
+			return true;
+		}
+
+		// Do we have day of the week?
+		if (
+			variables.dayOfTheWeek > 0 &&
+			now.getDayOfWeek() != variables.dayOfTheWeek
+		) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
 	 * This is the runnable proxy method that executes your code by the executors
 	 */
 	function run(){
@@ -327,6 +379,11 @@ component accessors="true" {
 
 		// If disabled, skip run
 		if ( isDisabled() ) {
+			return;
+		}
+
+		// Check for specific Constraints
+		if ( isConstrained() ) {
 			return;
 		}
 
@@ -839,21 +896,13 @@ component accessors="true" {
 	}
 
 	/**
-	 * Run the task on the last business day of the month
-	 *
-	 * @time The specific time using 24 hour format => HH:mm, defaults to midnight
+	 * This utility method gives us the last day of the month in Java format
 	 */
-	ScheduledTask function onLastBusinessDayOfTheMonth( string time = "00:00" ){
-		var now = variables.chronoUnitHelper.toLocalDateTime( now(), getTimezone() );
-		// Check for mintues else add them
-		if ( !find( ":", arguments.time ) ) {
-			arguments.time &= ":00";
-		}
-		// Validate time format
-		validateTime( arguments.time );
-
+	private function getLastDayOfTheMonth(){
 		// Get the last day of the month
-		var lastDay = now.with( createObject( "java", "java.time.temporal.TemporalAdjusters" ).lastDayOfMonth() );
+		var lastDay = variables.chronoUnitHelper
+			.toLocalDateTime( now(), getTimezone() )
+			.with( createObject( "java", "java.time.temporal.TemporalAdjusters" ).lastDayOfMonth() );
 		// Verify if on weekend
 		switch ( lastDay.getDayOfWeek().getValue() ) {
 			// Sunday - 2 days
@@ -868,8 +917,24 @@ component accessors="true" {
 			}
 		}
 
-		// Get new time
-		var nextRun = lastDay
+		return lastDay;
+	}
+
+	/**
+	 * Run the task on the last business day of the month
+	 *
+	 * @time The specific time using 24 hour format => HH:mm, defaults to midnight
+	 */
+	ScheduledTask function onLastBusinessDayOfTheMonth( string time = "00:00" ){
+		var now = variables.chronoUnitHelper.toLocalDateTime( now(), getTimezone() );
+		// Check for mintues else add them
+		if ( !find( ":", arguments.time ) ) {
+			arguments.time &= ":00";
+		}
+		// Validate time format
+		validateTime( arguments.time );
+		// Get the last day of the month
+		var nextRun = getLastDayOfTheMonth()
 			// Specific Time
 			.withHour( javacast( "int", getToken( arguments.time, 1, ":" ) ) )
 			.withMinute( javacast( "int", getToken( arguments.time, 2, ":" ) ) )
