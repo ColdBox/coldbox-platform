@@ -1,0 +1,15 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Run Task",
+			"type": "shell",
+			"command": "box task run ${relativeFile}",
+			"group": "build",
+			"presentation": {
+				"reveal": "always",
+				"panel": "new"
+			}
+		}
+	]
+}
