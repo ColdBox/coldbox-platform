@@ -121,6 +121,11 @@ component accessors="true" {
 	property name="noOverlaps" type="boolean";
 
 	/**
+	 * Get the ColdBox utility object
+	 */
+	property name="util";
+
+	/**
 	 * Constructor
 	 *
 	 * @name The name of this task
@@ -598,7 +603,7 @@ component accessors="true" {
 	}
 
 	/**
-	 * Set the period to be daily at a specific time in 24 hour format: HH:mm
+	 * Run the task daily with a specific time in 24 hour format: HH:mm
 	 * We will always add 0 seconds for you.
 	 *
 	 * @time The specific time using 24 hour format => HH:mm
@@ -970,7 +975,7 @@ component accessors="true" {
 	}
 
 	/**
-	 * Set the period to be on saturday and sundays
+	 * Run the task on saturday and sundays
 	 *
 	 * @time The specific time using 24 hour format => HH:mm, defaults to 00:00
 	 */
