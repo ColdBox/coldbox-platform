@@ -162,6 +162,7 @@ component accessors="true" {
 		variables.disabled         = false;
 		variables.when             = "";
 		variables.dayOfTheMonth    = 0;
+		variables.dayOfTheWeek     = 0;
 		variables.weekends         = false;
 		variables.weekdays         = false;
 		variables.lastBusinessDay  = false;
@@ -170,6 +171,8 @@ component accessors="true" {
 		variables.scheduler        = "";
 		// Prepare execution tracking stats
 		variables.stats            = {
+			// Save name just in case
+			"name"              : arguments.name,
 			// When task got created
 			"created"           : now(),
 			// The last execution run timestamp
@@ -321,7 +324,7 @@ component accessors="true" {
 	 * This method is called by the `run()` method at runtime to determine if the task can be ran at that point in time
 	 */
 	boolean function isConstrained(){
-		var now = variables.chronoUnitHelper.toLocalDateTime( now(), getTimezone() );
+		var now = getJavaNow();
 
 		// When Closure that dictates if the task can be scheduled/ran: true => yes, false => no
 		if ( isClosure( variables.when ) && !variables.when( this ) ) {
@@ -347,7 +350,7 @@ component accessors="true" {
 		// Do we have weekends?
 		if (
 			variables.weekends &&
-			now.getDayOfWeek() <= 5
+			now.getDayOfWeek().getValue() <= 5
 		) {
 			return true;
 		}
@@ -355,7 +358,7 @@ component accessors="true" {
 		// Do we have weekdays?
 		if (
 			variables.weekdays &&
-			now.getDayOfWeek() > 5
+			now.getDayOfWeek().getValue() > 5
 		) {
 			return true;
 		}
@@ -363,7 +366,7 @@ component accessors="true" {
 		// Do we have day of the week?
 		if (
 			variables.dayOfTheWeek > 0 &&
-			now.getDayOfWeek() != variables.dayOfTheWeek
+			now.getDayOfWeek().getValue() != variables.dayOfTheWeek
 		) {
 			return true;
 		}
@@ -607,7 +610,7 @@ component accessors="true" {
 	 * @minutes The minutes past the hour mark
 	 */
 	ScheduledTask function everyHourAt( required numeric minutes ){
-		var now     = variables.chronoUnitHelper.toLocalDateTime( now(), getTimezone() );
+		var now     = getJavaNow();
 		var nextRun = now.withMinute( javacast( "int", arguments.minutes ) ).withSecond( javacast( "int", 0 ) );
 		// If we passed it, then move the hour by 1
 		if ( now.compareTo( nextRun ) > 0 ) {
@@ -633,7 +636,7 @@ component accessors="true" {
 	 * Run the task every day at midnight
 	 */
 	ScheduledTask function everyDay(){
-		var now     = variables.chronoUnitHelper.toLocalDateTime( now(), getTimezone() );
+		var now     = getJavaNow();
 		// Set at midnight
 		var nextRun = now
 			.withHour( javacast( "int", 0 ) )
@@ -673,7 +676,7 @@ component accessors="true" {
 		// Validate time format
 		validateTime( arguments.time );
 		// Get times
-		var now     = variables.chronoUnitHelper.toLocalDateTime( now(), getTimezone() );
+		var now     = getJavaNow();
 		var nextRun = now
 			.withHour( javacast( "int", getToken( arguments.time, 1, ":" ) ) )
 			.withMinute( javacast( "int", getToken( arguments.time, 2, ":" ) ) )
@@ -702,7 +705,7 @@ component accessors="true" {
 	 * Run the task every Sunday at midnight
 	 */
 	ScheduledTask function everyWeek(){
-		var now     = variables.chronoUnitHelper.toLocalDateTime( now(), getTimezone() );
+		var now     = getJavaNow();
 		// Set at midnight
 		var nextRun = now
 			// Sunday
@@ -738,7 +741,7 @@ component accessors="true" {
 	 * @time The specific time using 24 hour format => HH:mm, defaults to midnight
 	 */
 	ScheduledTask function everyWeekOn( required numeric dayOfWeek, string time = "00:00" ){
-		var now = variables.chronoUnitHelper.toLocalDateTime( now(), getTimezone() );
+		var now = getJavaNow();
 		// Check for mintues else add them
 		if ( !find( ":", arguments.time ) ) {
 			arguments.time &= ":00";
@@ -776,7 +779,7 @@ component accessors="true" {
 	 * Run the task on the first day of every month at midnight
 	 */
 	ScheduledTask function everyMonth(){
-		var now     = variables.chronoUnitHelper.toLocalDateTime( now(), getTimezone() );
+		var now     = getJavaNow();
 		// Set at midnight
 		var nextRun = now
 			// First day of the month
@@ -813,7 +816,7 @@ component accessors="true" {
 	 * @time The specific time using 24 hour format => HH:mm, defaults to midnight
 	 */
 	ScheduledTask function everyMonthOn( required numeric day, string time = "00:00" ){
-		var now = variables.chronoUnitHelper.toLocalDateTime( now(), getTimezone() );
+		var now = getJavaNow();
 		// Check for mintues else add them
 		if ( !find( ":", arguments.time ) ) {
 			arguments.time &= ":00";
@@ -855,7 +858,7 @@ component accessors="true" {
 	 * @time The specific time using 24 hour format => HH:mm, defaults to midnight
 	 */
 	ScheduledTask function onFirstBusinessDayOfTheMonth( string time = "00:00" ){
-		var now = variables.chronoUnitHelper.toLocalDateTime( now(), getTimezone() );
+		var now = getJavaNow();
 		// Check for mintues else add them
 		if ( !find( ":", arguments.time ) ) {
 			arguments.time &= ":00";
@@ -926,7 +929,7 @@ component accessors="true" {
 	 * @time The specific time using 24 hour format => HH:mm, defaults to midnight
 	 */
 	ScheduledTask function onLastBusinessDayOfTheMonth( string time = "00:00" ){
-		var now = variables.chronoUnitHelper.toLocalDateTime( now(), getTimezone() );
+		var now = getJavaNow();
 		// Check for mintues else add them
 		if ( !find( ":", arguments.time ) ) {
 			arguments.time &= ":00";
@@ -964,7 +967,7 @@ component accessors="true" {
 	 * Run the task on the first day of the year at midnight
 	 */
 	ScheduledTask function everyYear(){
-		var now     = variables.chronoUnitHelper.toLocalDateTime( now(), getTimezone() );
+		var now     = getJavaNow();
 		// Set at midnight
 		var nextRun = now
 			// First day of the month
@@ -1004,7 +1007,7 @@ component accessors="true" {
 		required numeric day,
 		required string time = "00:00"
 	){
-		var now = variables.chronoUnitHelper.toLocalDateTime( now(), getTimezone() );
+		var now = getJavaNow();
 		// Check for mintues else add them
 		if ( !find( ":", arguments.time ) ) {
 			arguments.time &= ":00";
@@ -1052,7 +1055,7 @@ component accessors="true" {
 		// Validate time format
 		validateTime( arguments.time );
 		// Get times
-		var now     = variables.chronoUnitHelper.toLocalDateTime( now(), getTimezone() );
+		var now     = getJavaNow();
 		var nextRun = now
 			.withHour( javacast( "int", getToken( arguments.time, 1, ":" ) ) )
 			.withMinute( javacast( "int", getToken( arguments.time, 2, ":" ) ) )
@@ -1093,7 +1096,7 @@ component accessors="true" {
 		// Validate time format
 		validateTime( arguments.time );
 		// Get times
-		var now     = variables.chronoUnitHelper.toLocalDateTime( now(), getTimezone() );
+		var now     = getJavaNow();
 		var nextRun = now
 			.withHour( javacast( "int", getToken( arguments.time, 1, ":" ) ) )
 			.withMinute( javacast( "int", getToken( arguments.time, 2, ":" ) ) )
@@ -1260,6 +1263,13 @@ component accessors="true" {
 				type    = "InvalidTimeException"
 			);
 		}
+	}
+
+	/**
+	 * Get a Java localDateTime object using the current date/time and timezone
+	 */
+	function getJavaNow(){
+		return variables.chronoUnitHelper.toLocalDateTime( now(), getTimezone() );
 	}
 
 }

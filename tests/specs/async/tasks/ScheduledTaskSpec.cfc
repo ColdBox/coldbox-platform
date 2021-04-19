@@ -237,6 +237,102 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 				expect( t.getNoOverlaps() ).toBeTrue();
 				expect( t.getTimeUnit() ).toBe( "minutes" );
 			} );
+
+			describe( "can have multiple constraints", function(){
+				it( "can have a truth value constraint", function(){
+					var t = scheduler
+						.task( "test" )
+						.when( function(){
+							return false;
+						} );
+					expect( t.isConstrained() ).toBeTrue();
+				} );
+
+				it( "can have a day of the month constraint", function(){
+					var t = scheduler.task( "test" );
+					t.setDayOfTheMonth( day( dateAdd( "d", 1, now() ) ) );
+					expect( t.isConstrained() ).toBeTrue();
+
+					t.setDayOfTheMonth( day( now() ) );
+					expect( t.isConstrained() ).toBeFalse();
+				} );
+
+				it( "can have a last business day of the month constraint", function(){
+					var t = scheduler.task( "test" ).setLastBusinessDay( true );
+					expect( t.isConstrained() ).toBeTrue();
+
+					var mockNow = t.getJavaNow();
+					prepareMock( t ).$( "getLastDayOfTheMonth", mockNow );
+
+					expect( t.isConstrained() ).toBeFalse();
+				} );
+
+				it( "can have a day of the week constraint", function(){
+					var t       = scheduler.task( "test" );
+					var mockNow = t.getJavaNow();
+					// Reduce date enough to do computations on it
+					if ( mockNow.getDayOfWeek().getValue() > 6 ) {
+						mockNow = mockNow.minusDays( javacast( "long", 3 ) );
+					}
+
+					t.setDayOfTheWeek( mockNow.getDayOfWeek().getValue() + 1 );
+					expect( t.isConstrained() ).toBeTrue( "Constrained!!" );
+
+					t.setDayOfTheWeek(
+						t.getJavaNow()
+							.getDayOfWeek()
+							.getValue()
+					);
+					expect( t.isConstrained() ).toBeFalse( "Should execute" );
+				} );
+
+				it( "can have a weekend constraint", function(){
+					var t = scheduler.task( "test" ).setWeekends( true );
+
+					// build a weekend date
+					var mockNow   = t.getJavaNow();
+					var dayOfWeek = mockNow.getDayOfWeek().getValue();
+
+					if ( dayOfWeek < 6 ) {
+						mockNow = mockNow.plusDays( javacast( "long", 6 - dayOfWeek ) );
+					}
+
+					prepareMock( t ).$( "getJavaNow", mockNow );
+					expect( t.isConstrained() ).toBeFalse(
+						"Weekend day (#mockNow.getDayOfWeek().getvalue()#) should pass"
+					);
+
+					// Test non weekend
+					mockNow = mockNow.minusDays( javacast( "long", 3 ) );
+					t.$( "getJavaNow", mockNow );
+					expect( t.isConstrained() ).toBeTrue(
+						"Weekday (#mockNow.getDayOfWeek().getvalue()#) should be constrained"
+					);
+				} );
+
+				it( "can have a weekday constraint", function(){
+					var t = scheduler.task( "test" ).setWeekdays( true );
+
+					// build a weekday date
+					var mockNow   = t.getJavaNow();
+					var dayOfWeek = mockNow.getDayOfWeek().getValue();
+					if ( dayOfWeek >= 6 ) {
+						mockNow = mockNow.minusDays( javacast( "long", 3 ) );
+					}
+
+					prepareMock( t ).$( "getJavaNow", mockNow );
+					expect( t.isConstrained() ).toBeFalse(
+						"Weekday (#mockNow.getDayOfWeek().getvalue()#) should pass"
+					);
+
+					// Test weekend
+					mockNow = mockNow.plusDays( javacast( "long", 6 - mockNow.getDayOfWeek().getValue() ) );
+					t.$( "getJavaNow", mockNow );
+					expect( t.isConstrained() ).toBeTrue(
+						"Weekend (#mockNow.getDayOfWeek().getvalue()#) should be constrained"
+					);
+				} );
+			} );
 		} );
 	}
 
