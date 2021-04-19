@@ -41,6 +41,16 @@ component
 	property name="log";
 
 	/**
+	 * The cache name to use for server fixation and more. By default we use the <code>template</code> region
+	 */
+	property name="cacheName";
+
+	/**
+	 * The bit that can be used to set all tasks created by this scheduler to always run on one server
+	 */
+	property name="serverFixation" type="boolean";
+
+	/**
 	 * Constructor
 	 *
 	 * @name The name of this scheduler
@@ -57,13 +67,17 @@ component
 		// Super init
 		super.init( arguments.name, arguments.asyncManager );
 		// Controller
-		variables.controller = arguments.controller;
+		variables.controller     = arguments.controller;
 		// Register Log object
-		variables.log        = variables.controller.getLogBox().getLogger( this );
+		variables.log            = variables.controller.getLogBox().getLogger( this );
 		// Register CacheBox
-		variables.cacheBox   = arguments.controller.getCacheBox();
+		variables.cacheBox       = arguments.controller.getCacheBox();
 		// Register WireBox
-		variables.wireBox    = arguments.controller.getWireBox();
+		variables.wireBox        = arguments.controller.getWireBox();
+		// CacheBox Region
+		variables.cacheName      = "template";
+		// Server fixation
+		variables.serverFixation = false;
 		return this;
 	}
 
@@ -88,6 +102,10 @@ component
 			)
 			// Set ourselves into the task
 			.setScheduler( this )
+			// Set the default cachename into the task
+			.setCacheName( getCacheName() )
+			// Server fixation
+			.setServerFixation( getServerFixation() )
 			// Set default timezone into the task
 			.setTimezone( getTimezone().getId() );
 

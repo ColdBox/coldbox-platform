@@ -380,17 +380,17 @@ component accessors="true" {
 	function run(){
 		var sTime = getTickCount();
 
-		// If disabled, skip run
+		// If disabled or paused
 		if ( isDisabled() ) {
 			return;
 		}
 
-		// Check for specific Constraints
+		// Check for constraints of execution
 		if ( isConstrained() ) {
 			return;
 		}
 
-		// Init now as it is running
+		// Mark the task as it wil run now for the first time
 		variables.stats.neverRun = false;
 
 		try {
@@ -440,7 +440,17 @@ component accessors="true" {
 			variables.stats.lastRun           = now();
 			variables.stats.totalRuns         = variables.stats.totalRuns + 1;
 			variables.stats.lastExecutionTime = getTickCount() - sTime;
+			// Call internal cleanups event
+			cleanupTaskRun();
 		}
+	}
+
+	/**
+	 * This method is called ALWAYS after a task runs, wether in failure or success but used internally for
+	 * any type of cleanups
+	 */
+	function cleanupTaskRun(){
+		// no cleanups for now
 	}
 
 	/**
