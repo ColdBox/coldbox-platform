@@ -1,0 +1,12 @@
+{
+    "cfml.mappings": [
+		{
+		  "logicalPath": "/coldbox",
+		  "directoryPath": "."
+		},
+		{
+			"logicalPath": "/testbox",
+			"directoryPath": "./testbox"
+		  }
+	  ]
+}

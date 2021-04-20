@@ -109,17 +109,28 @@ component accessors="true" {
 			if ( server.keyExists( "lucee" ) ) {
 				getCFMLContext().setApplicationContext( variables.cfContext );
 			} else {
+				// Set the current thread's class loader from the CF space to avoid
+				// No class defined issues in thread land.
+				getCurrentThread().setContextClassLoader( variables.originalFusionContext.getClass().getClassLoader() );
+
+				// Prepare a new context in ACF for the thread
 				var fusionContext = variables.originalFusionContext.clone();
+				// Create a new page context for the thread
 				var pageContext   = variables.originalPageContext.clone();
+				// Reset it's scopes, else bad things happen
 				pageContext.resetLocalScopes();
+				// Set the cf context into it
+				pageContext.setFusionContext( fusionContext );
+				fusionContext.pageContext = pageContext;
+				fusionContext.SymTab_setApplicationScope( variables.originalAppScope );
+
+				// Create a fake page to run this thread in and link it to the fake page context and fusion context
 				var page             = variables.originalPage._clone();
 				page.pageContext     = pageContext;
 				fusionContext.parent = page;
 
+				// Set the current context of execution now
 				variables.fusionContextStatic.setCurrent( fusionContext );
-				fusionContext.pageContext = pageContext;
-				fusionContext.SymTab_setApplicationScope( variables.originalAppScope );
-				pageContext.setFusionContext( fusionContext );
 				pageContext.initializeWith(
 					page,
 					pageContext,

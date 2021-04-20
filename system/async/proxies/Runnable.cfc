@@ -16,7 +16,7 @@ component extends="BaseProxy" {
 		required target,
 		method                 = "run",
 		boolean debug          = false,
-		boolean loadAppContext = true,
+		boolean loadAppContext = true
 	){
 		super.init(
 			arguments.target,

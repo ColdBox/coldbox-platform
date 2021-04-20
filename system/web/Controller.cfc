@@ -76,7 +76,7 @@ component serializable="false" accessors="true" {
 	function init( required appRootPath, appKey = "cbController" ){
 		// These will be lazy loaded on first use since the framework isn't ready to create it yet
 		variables.renderer = "";
-		variables.wireBox = "";
+		variables.wireBox  = "";
 
 		// Create Utility
 		variables.util         = new coldbox.system.core.util.Util();
@@ -112,7 +112,6 @@ component serializable="false" accessors="true" {
 		// LogBox Default Configuration & Creation
 		variables.logBox       = services.loaderService.createDefaultLogBox();
 		variables.log          = variables.logBox.getLogger( this );
-
 		variables.log.info( "+ LogBox created" );
 
 		// Setup the ColdBox Services
@@ -121,6 +120,7 @@ component serializable="false" accessors="true" {
 		services.handlerService     = new coldbox.system.web.services.HandlerService( this );
 		services.routingService     = new coldbox.system.web.services.RoutingService( this );
 		services.moduleService      = new coldbox.system.web.services.ModuleService( this );
+		services.schedulerService   = new coldbox.system.web.services.SchedulerService( this );
 
 		variables.log.info( "+ ColdBox services created" );
 
@@ -219,6 +219,13 @@ component serializable="false" accessors="true" {
 	 */
 	function getRoutingService(){
 		return services.routingService;
+	}
+
+	/**
+	 * Get the scheduling service
+	 */
+	function getSchedulerService(){
+		return services.schedulerService;
 	}
 
 	/****************************************************************
@@ -362,8 +369,8 @@ component serializable="false" accessors="true" {
 		if ( len( trim( arguments.event ) ) eq 0 ) {
 			arguments.event = getSetting( "DefaultEvent" );
 		}
-        // Query String Struct to String
-		if( isStruct( arguments.queryString ) ){
+		// Query String Struct to String
+		if ( isStruct( arguments.queryString ) ) {
 			arguments.queryString = arguments.queryString
 				.reduce( function( result, key, value ){
 					arguments.result.append( "#encodeForURL( arguments.key )#=#encodeForURL( arguments.value )#" );
@@ -422,19 +429,9 @@ component serializable="false" accessors="true" {
 					// If the routestring ends with '/' we do not want to
 					// double append '/'
 					if ( right( routeString, 1 ) NEQ "/" ) {
-						routeString = routeString & "/" & replace(
-							arguments.queryString,
-							"&",
-							"/",
-							"all"
-						);
+						routeString = routeString & "/" & replace( arguments.queryString, "&", "/", "all" );
 					} else {
-						routeString = routeString & replace(
-							arguments.queryString,
-							"&",
-							"/",
-							"all"
-						);
+						routeString = routeString & replace( arguments.queryString, "&", "/", "all" );
 					}
 					routeString = replace( routeString, "=", "/", "all" );
 				}
@@ -590,10 +587,7 @@ component serializable="false" accessors="true" {
 			);
 		}
 
-		throw(
-			type    = "InvalidArgumentException",
-			message = "The named route '#arguments.name#' does not exist"
-		);
+		throw( type = "InvalidArgumentException", message = "The named route '#arguments.name#' does not exist" );
 	}
 
 	/**
@@ -672,10 +666,7 @@ component serializable="false" accessors="true" {
 			// Do action Rendering
 			services.requestService
 				.getContext()
-				.renderdata(
-					type = results.ehBean.getActionMetadata( "renderdata" ),
-					data = results.data
-				);
+				.renderdata( type = results.ehBean.getActionMetadata( "renderdata" ), data = results.data );
 		}
 
 		// Are we caching
@@ -883,11 +874,9 @@ component serializable="false" accessors="true" {
 			// Verify if event was overridden
 			if ( arguments.defaultEvent and arguments.event NEQ oRequestContext.getCurrentEvent() ) {
 				// Validate the overridden event
-				results.ehBean = services.handlerService.getHandlerBean(
-					oRequestContext.getCurrentEvent()
-				);
+				results.ehBean = services.handlerService.getHandlerBean( oRequestContext.getCurrentEvent() );
 				// Get new handler to follow execution
-				oHandler = services.handlerService.getHandler( results.ehBean, oRequestContext );
+				oHandler       = services.handlerService.getHandler( results.ehBean, oRequestContext );
 			}
 
 			// Invoke onMissingAction event
@@ -1108,12 +1097,7 @@ component serializable="false" accessors="true" {
 	){
 		if (
 			(
-				(
-					len( arguments.inclusion ) AND listFindNoCase(
-						arguments.inclusion,
-						arguments.action
-					)
-				)
+				( len( arguments.inclusion ) AND listFindNoCase( arguments.inclusion, arguments.action ) )
 				OR
 				( NOT len( arguments.inclusion ) )
 			)

@@ -49,14 +49,12 @@ component{
 
 	public void function onRequestEnd( required targetPage ) {
 
-		thread name="testbox-shutdown" {
-			if( !isNull( application.cbController ) ){
-				application.cbController.getLoaderService().processShutdown();
-			}
-
-			structDelete( application, "cbController" );
-			structDelete( application, "wirebox" );
+		if( !isNull( application.cbController ) ){
+			application.cbController.getLoaderService().processShutdown();
 		}
+
+		structDelete( application, "cbController" );
+		structDelete( application, "wirebox" );
 
 	}
 

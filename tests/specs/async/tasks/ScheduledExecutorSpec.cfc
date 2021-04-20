@@ -135,14 +135,14 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 				} );
 			} );
 
-
 			story( "Ability to use a builder to schedule tasks", function(){
 				it( "can use the builder to schedule a one-time task", function(){
 					var scheduler  = asyncManager.newScheduledExecutor( "myExecutor" );
 					var atomicLong = createObject( "java", "java.util.concurrent.atomic.AtomicLong" ).init( 0 );
 
 					var sFuture = scheduler
-						.newSchedule( function(){
+						.newTask( "autoIncrementTask" )
+						.call( function(){
 							var results = atomicLong.incrementAndGet();
 							toConsole( "running periodic task (#results#) from:#getThreadName()#" );
 						} )

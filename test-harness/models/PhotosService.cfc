@@ -37,4 +37,8 @@ component singleton accessors="true" {
 	function get(){
 	}
 
+	function getRandom(){
+		return randRange( 1, 1000 );
+	}
+
 }

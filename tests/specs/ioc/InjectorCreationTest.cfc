@@ -229,6 +229,6 @@
 
 	function testVirtualInheritanceCreation(){
 		var c = injector.getInstance( "virtually-inherited-class" );
-		expect( c.getData() ).toBe( "My Data" );
+		expect( c.getData() ).toBe( "Default Data" );
 	}
 }

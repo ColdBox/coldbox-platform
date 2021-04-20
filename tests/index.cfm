@@ -33,7 +33,7 @@
 </cfif>
 
 <!--- Get list of files --->
-<cfdirectory action="list" directory="#rootPath & url.path#" name="qResults" sort="asc" >
+<cfdirectory action="list" directory="#rootPath & url.path#" name="qResults" sort="name asc" >
 <!--- Get the execute path --->
 <cfset executePath = rootMapping & ( url.path eq "/" ? "/" : url.path & "/" )>
 <!--- Get the Back Path --->

@@ -136,9 +136,7 @@ component extends="coldbox.system.web.services.BaseService" {
 			}
 		}
 
-		variables.logger.info(
-			"+ Registered All Modules in #numberFormat( getTickCount() - totalTime )# ms"
-		);
+		variables.logger.info( "+ Registered All Modules in #numberFormat( getTickCount() - totalTime )# ms" );
 
 		// interception
 		variables.interceptorService.announce(
@@ -178,7 +176,7 @@ component extends="coldbox.system.web.services.BaseService" {
 		boolean force  = false
 	){
 		// Module To Load
-		var sTime 				 = getTickCount();
+		var sTime                = getTickCount();
 		var modName              = arguments.moduleName;
 		var modulesConfiguration = controller.getSetting( "modules" );
 		var appSettings          = controller.getConfigSettings();
@@ -187,9 +185,7 @@ component extends="coldbox.system.web.services.BaseService" {
 		// Check if incoming invocation path is sent, if so, register as new module
 		if ( len( arguments.invocationPath ) ) {
 			// Check if passed module name is already registered
-			if (
-				structKeyExists( variables.moduleRegistry, arguments.moduleName ) AND !arguments.force
-			) {
+			if ( structKeyExists( variables.moduleRegistry, arguments.moduleName ) AND !arguments.force ) {
 				variables.logger.info(
 					"> The module #arguments.moduleName# has already been registered, so skipping registration"
 				);
@@ -197,10 +193,8 @@ component extends="coldbox.system.web.services.BaseService" {
 			}
 			// register new incoming location
 			variables.moduleRegistry[ arguments.moduleName ] = {
-				locationPath : "/" & replace( arguments.invocationPath, ".", "/", "all" ),
-				physicalPath : expandPath(
-					"/" & replace( arguments.invocationPath, ".", "/", "all" )
-				),
+				locationPath   : "/" & replace( arguments.invocationPath, ".", "/", "all" ),
+				physicalPath   : expandPath( "/" & replace( arguments.invocationPath, ".", "/", "all" ) ),
 				invocationPath : arguments.invocationPath
 			};
 		}
@@ -329,21 +323,31 @@ component extends="coldbox.system.web.services.BaseService" {
 				interceptors          : [],
 				interceptorSettings   : { customInterceptionPoints : "" },
 				layoutSettings        : { defaultLayout : "" },
+				// Routing + resources
 				routes                : [],
 				resources             : [],
+				// Module Conventions
 				conventions           : {
-					handlersLocation : "handlers",
-					layoutsLocation  : "layouts",
-					viewsLocation    : "views",
-					modelsLocation   : "models",
-					includesLocation : "includes",
-					routerLocation   : "config.Router"
+					handlersLocation  : "handlers",
+					layoutsLocation   : "layouts",
+					viewsLocation     : "views",
+					modelsLocation    : "models",
+					includesLocation  : "includes",
+					routerLocation    : "config.Router",
+					schedulerLocation : "config.Scheduler"
 				},
-				childModules         : [],
-				parent               : arguments.parent,
-				router               : "",
-				routerInvocationPath : modulesInvocationPath & "." & modName,
-				routerPhysicalPath   : modLocation
+				// My Children
+				childModules            : [],
+				// My Daddy!
+				parent                  : arguments.parent,
+				// Module Router
+				router                  : "",
+				routerInvocationPath    : modulesInvocationPath & "." & modName,
+				routerPhysicalPath      : modLocation,
+				// Task Scheduler
+				scheduler               : "",
+				schedulerInvocationPath : modulesInvocationPath & "." & modName,
+				schedulerPhysicalpath   : modLocation
 			};
 
 			// Load Module configuration from cfc and store it in module Config Cache
@@ -352,9 +356,7 @@ component extends="coldbox.system.web.services.BaseService" {
 			// Verify if module has been disabled
 			if ( mConfig.disabled ) {
 				if ( variables.logger.canInfo() ) {
-					variables.logger.info(
-						"> Skipping module: #arguments.moduleName# as it has been disabled!"
-					);
+					variables.logger.info( "> Skipping module: #arguments.moduleName# as it has been disabled!" );
 				}
 				return false;
 			} else {
@@ -385,8 +387,12 @@ component extends="coldbox.system.web.services.BaseService" {
 				"all"
 			)#";
 			mConfig.modelsPhysicalPath &= "/#mConfig.conventions.modelsLocation#";
+			// Router
 			mConfig.routerInvocationPath &= ".#mConfig.conventions.routerLocation#";
 			mConfig.routerPhysicalPath &= "/#mConfig.conventions.routerLocation.replace( ".", "/", "all" )#.cfc";
+			// Scheduler
+			mConfig.schedulerInvocationPath &= ".#mConfig.conventions.schedulerLocation#";
+			mConfig.schedulerPhysicalPath &= "/#mConfig.conventions.schedulerLocation.replace( ".", "/", "all" )#.cfc";
 
 			// Register CFML Mapping if it exists, for loading purposes
 			if ( len( trim( mConfig.cfMapping ) ) ) {
@@ -432,7 +438,8 @@ component extends="coldbox.system.web.services.BaseService" {
 						}
 					}
 				}
-			} // end inception loading
+			}
+			// end inception loading
 
 			// Log Registration Time
 			mConfig.registrationTime = getTickCount() - sTime;
@@ -479,9 +486,7 @@ component extends="coldbox.system.web.services.BaseService" {
 			}
 		}
 
-		variables.logger.info(
-			"+ Activated All Modules in #numberFormat( getTickCount() - totalTime )# ms"
-		);
+		variables.logger.info( "+ Activated All Modules in #numberFormat( getTickCount() - totalTime )# ms" );
 
 		// interception
 		variables.interceptorService.announce(
@@ -500,24 +505,22 @@ component extends="coldbox.system.web.services.BaseService" {
 	 * @return The Service
 	 */
 	ModuleService function activateModule( required moduleName ){
-		var sTime 	= getTickCount();
+		var sTime   = getTickCount();
 		var modules = variables.registeredModules;
 
 		// If module not registered, throw exception
 		if ( isNull( modules[ arguments.moduleName ] ) ) {
 			throw(
-				message : "Cannot activate module: #arguments.moduleName#. Already processed #structKeyList( modules )#",
-				detail  : "The module has not been registered, register the module first and then activate it.",
-				type    : "IllegalModuleState"
+				message: "Cannot activate module: #arguments.moduleName#. Already processed #structKeyList( modules )#",
+				detail : "The module has not been registered, register the module first and then activate it.",
+				type   : "IllegalModuleState"
 			);
 		}
 
 		// Check if module already activated
 		if ( modules[ arguments.moduleName ].activated ) {
 			// Log it
-			variables.logger.debug(
-				"==> Module '#arguments.moduleName#' already activated, skipping activation."
-			);
+			variables.logger.debug( "==> Module '#arguments.moduleName#' already activated, skipping activation." );
 			return this;
 		}
 
@@ -535,9 +538,7 @@ component extends="coldbox.system.web.services.BaseService" {
 
 		// Do we have dependencies to activate first
 		mConfig.dependencies.each( function( thisDependency ){
-			variables.logger.debug(
-				"==> Activating '#moduleName#' dependency: #thisDependency#"
-			);
+			variables.logger.debug( "==> Activating '#moduleName#' dependency: #thisDependency#" );
 			// Activate dependency first
 			activateModule( thisDependency );
 		} );
@@ -594,10 +595,7 @@ component extends="coldbox.system.web.services.BaseService" {
 					);
 				} else {
 					// just register with no namespace
-					binder.mapDirectory(
-						packagePath = packagePath,
-						process     = mConfig.autoProcessModels
-					);
+					binder.mapDirectory( packagePath = packagePath, process = mConfig.autoProcessModels );
 				}
 
 				// Register Default Module Export if it exists as @moduleName, so you can do getInstance( "@moduleName" )
@@ -642,11 +640,7 @@ component extends="coldbox.system.web.services.BaseService" {
 				}
 
 				// Store Inherited Entry Point
-				mConfig.inheritedEntryPoint = parentEntryPoint & reReplace(
-					mConfig.entryPoint,
-					"^/",
-					""
-				);
+				mConfig.inheritedEntryPoint = parentEntryPoint & reReplace( mConfig.entryPoint, "^/", "" );
 
 				// Register Module Routing Entry Point + Struct Literals for routes and resources
 				appRouter.addModuleRoutes(
@@ -681,9 +675,7 @@ component extends="coldbox.system.web.services.BaseService" {
 				var conventionsRouteExists = mConfig.router
 					.getRoutes()
 					.find( function( item ){
-						return (
-							item.pattern == "/:handler/:action?" || item.pattern == ":handler/:action?"
-						);
+						return ( item.pattern == "/:handler/:action?" || item.pattern == ":handler/:action?" );
 					} );
 				if ( conventionsRouteExists == 0 ) {
 					mConfig.router.route( "/:handler/:action?" ).end();
@@ -716,13 +708,19 @@ component extends="coldbox.system.web.services.BaseService" {
 			// Register Executors if any are registered
 			mConfig.executors.each( function( key, config ){
 				arguments.config.name = arguments.key;
-				variables.controller
-					.getAsyncManager()
-					.newExecutor( argumentCollection = arguments.config );
-				variables.logger.info(
-					"+ Registered Module (#moduleName#) Executor: #arguments.key#"
-				);
+				variables.controller.getAsyncManager().newExecutor( argumentCollection = arguments.config );
+				variables.logger.info( "+ Registered Module (#moduleName#) Executor: #arguments.key#" );
 			} );
+
+			// Register Scheduler if it exists as scheduler@moduleName
+			if ( fileExists( mConfig.schedulerPhysicalPath ) ) {
+				mConfig.scheduler = variables.controller
+					.getSchedulerService()
+					.loadScheduler(
+						name: "cbScheduler@#arguments.moduleName#",
+						path: mConfig.schedulerInvocationPath
+					);
+			}
 
 			// Call on module configuration object onLoad() if found
 			if ( structKeyExists( variables.mConfigCache[ arguments.moduleName ], "onLoad" ) ) {
@@ -751,7 +749,9 @@ component extends="coldbox.system.web.services.BaseService" {
 			);
 
 			// Log it
-			variables.logger.info( "+ Module (#arguments.moduleName#) Activated (#mConfig.activationTime#ms) => { version: #mConfig.version#, from: #mConfig.path# }" );
+			variables.logger.info(
+				"+ Module (#arguments.moduleName#) Activated (#mConfig.activationTime#ms) => { version: #mConfig.version#, from: #mConfig.path# }"
+			);
 		}
 		// end lock
 
@@ -836,10 +836,7 @@ component extends="coldbox.system.web.services.BaseService" {
 			var mConfig = appConfig.modules[ arguments.moduleName ];
 
 			// Before unloading a module interception
-			variables.interceptorService.announce(
-				"preModuleUnload",
-				{ moduleName : arguments.moduleName }
-			);
+			variables.interceptorService.announce( "preModuleUnload", { moduleName : arguments.moduleName } );
 
 			// Call on module configuration object onLoad() if found
 			if ( structKeyExists( variables.mConfigCache[ arguments.moduleName ], "onUnload" ) ) {
@@ -854,17 +851,17 @@ component extends="coldbox.system.web.services.BaseService" {
 				}
 			}
 
+			// Unregister scheduler if loaded
+			if ( isObject( mConfig.scheduler ) ) {
+				variables.controller.getSchedulerService().removeScheduler( mConfig.scheduler.getName() );
+			}
+
 			// Unregister app Helpers
 			if ( arrayLen( mConfig.applicationHelper ) ) {
 				controller.setSetting(
 					"applicationHelper",
 					arrayFilter( controller.getSetting( "applicationHelper" ), function( helper ){
-						return (
-							!arrayFindNoCase(
-								appConfig.modules[ moduleName ].applicationHelper,
-								helper
-							)
-						);
+						return ( !arrayFindNoCase( appConfig.modules[ moduleName ].applicationHelper, helper ) );
 					} )
 				);
 			}
@@ -879,9 +876,7 @@ component extends="coldbox.system.web.services.BaseService" {
 
 			// Remove SES if enabled.
 			if ( controller.settingExists( "sesBaseURL" ) ) {
-				variables.wirebox
-					.getInstance( "router@coldbox" )
-					.removeModuleRoutes( arguments.moduleName );
+				variables.wirebox.getInstance( "router@coldbox" ).removeModuleRoutes( arguments.moduleName );
 			}
 
 			// Remove executors
@@ -896,10 +891,7 @@ component extends="coldbox.system.web.services.BaseService" {
 			structDelete( variables.mConfigCache, arguments.moduleName );
 
 			// After unloading a module interception
-			variables.interceptorService.announce(
-				"postModuleUnload",
-				{ moduleName : arguments.moduleName }
-			);
+			variables.interceptorService.announce( "postModuleUnload", { moduleName : arguments.moduleName } );
 
 			// Log it
 			if ( variables.logger.canInfo() ) {
@@ -941,9 +933,7 @@ component extends="coldbox.system.web.services.BaseService" {
 		var appSettings = controller.getConfigSettings();
 
 		// Build a new router for this module so we can track its routes
-		arguments.config.router = variables.wirebox.getInstance(
-			"coldbox.system.web.routing.Router"
-		);
+		arguments.config.router = variables.wirebox.getInstance( "coldbox.system.web.routing.Router" );
 
 		// MixIn Variables Scope
 		oConfig
@@ -1023,9 +1013,7 @@ component extends="coldbox.system.web.services.BaseService" {
 		// Dependencies
 		if ( structKeyExists( oConfig, "dependencies" ) ) {
 			// set it always as an array
-			mConfig.dependencies = isSimpleValue( oConfig.dependencies ) ? listToArray(
-				oConfig.dependencies
-			) : oConfig.dependencies;
+			mConfig.dependencies = isSimpleValue( oConfig.dependencies ) ? listToArray( oConfig.dependencies ) : oConfig.dependencies;
 		}
 		// Application Helpers
 		if ( structKeyExists( oConfig, "applicationHelper" ) ) {
