@@ -66,7 +66,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			// feed the base class
 			variables.wirebox
 				.registerNewInstance( name = variables.baseScheduler, instancePath = variables.baseScheduler )
-				.addDIConstructorArgument( name = "name", value = "variables.baseScheduler" );
+				.addDIConstructorArgument( name = "name", value = variables.baseScheduler );
 		}
 
 		// Check if the convention exists, else just build out a simple scheduler
