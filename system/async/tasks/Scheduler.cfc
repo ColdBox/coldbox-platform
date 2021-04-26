@@ -98,7 +98,7 @@ component accessors="true" singleton {
 			// Register ourselves in the task
 			.setScheduler( this )
 			// Set default timezone into the task
-			.setTimezone( getTimezone().getId() );
+			.setTimezone( this.getTimezone().getId() );
 
 		// Register the task by name
 		variables.tasks[ arguments.name ] = {

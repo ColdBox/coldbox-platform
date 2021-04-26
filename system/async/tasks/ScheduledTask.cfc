@@ -914,7 +914,7 @@ component accessors="true" {
 	private function getLastDayOfTheMonth(){
 		// Get the last day of the month
 		var lastDay = variables.chronoUnitHelper
-			.toLocalDateTime( now(), getTimezone() )
+			.toLocalDateTime( now(), this.getTimezone() )
 			.with( createObject( "java", "java.time.temporal.TemporalAdjusters" ).lastDayOfMonth() );
 		// Verify if on weekend
 		switch ( lastDay.getDayOfWeek().getValue() ) {
@@ -1279,7 +1279,7 @@ component accessors="true" {
 	 * Get a Java localDateTime object using the current date/time and timezone
 	 */
 	function getJavaNow(){
-		return variables.chronoUnitHelper.toLocalDateTime( now(), getTimezone() );
+		return variables.chronoUnitHelper.toLocalDateTime( now(), this.getTimezone() );
 	}
 
 }
