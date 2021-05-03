@@ -327,7 +327,10 @@ component accessors="true" {
 		var now = getJavaNow();
 
 		// When Closure that dictates if the task can be scheduled/ran: true => yes, false => no
-		if ( isClosure( variables.whenClosure ) && !variables.whenClosure( this ) ) {
+		if (
+			( isClosure( variables.whenClosure ) || isCustomFunction( variables.whenClosure ) )
+			&&
+			!variables.whenClosure( this ) ) {
 			return true;
 		}
 
@@ -398,7 +401,7 @@ component accessors="true" {
 			if ( hasScheduler() ) {
 				getScheduler().beforeAnyTask( this );
 			}
-			if ( isClosure( variables.beforeTask ) ) {
+			if ( isClosure( variables.beforeTask ) || isCustomFunction( variables.beforeTask ) ) {
 				variables.beforeTask( this );
 			}
 
@@ -410,7 +413,7 @@ component accessors="true" {
 			}
 
 			// After Interceptor
-			if ( isClosure( variables.afterTask ) ) {
+			if ( isClosure( variables.afterTask ) || isCustomFunction( variables.afterTask ) ) {
 				variables.afterTask( this, variables.stats.lastResult );
 			}
 			if ( hasScheduler() ) {
@@ -419,7 +422,7 @@ component accessors="true" {
 
 			// store successes and call success interceptor
 			variables.stats.totalSuccess = variables.stats.totalSuccess + 1;
-			if ( isClosure( variables.onTaskSuccess ) ) {
+			if ( isClosure( variables.onTaskSuccess ) || isCustomFunction( variables.onTaskSuccess ) ) {
 				variables.onTaskSuccess( this, variables.stats.lastResult );
 			}
 			if ( hasScheduler() ) {
@@ -429,7 +432,7 @@ component accessors="true" {
 			// store failures
 			variables.stats.totalFailures = variables.stats.totalFailures + 1;
 			// Life Cycle
-			if ( isClosure( variables.onTaskFailure ) ) {
+			if ( isClosure( variables.onTaskFailure ) || isCustomFunction( variables.onTaskFailure )) {
 				variables.onTaskFailure( this, e );
 			}
 			if ( hasScheduler() ) {
