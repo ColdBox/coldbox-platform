@@ -51,7 +51,7 @@ component accessors="true" {
 	 * A closure, that if registered, determines if this task will be sent for scheduling or not.
 	 * It is both evaluated at scheduling and at runtime.
 	 */
-	property name="when" type="any";
+	property name="whenClosure" type="any";
 
 	/**
 	 * The timezone this task runs under, by default we use the timezone defined in the schedulers
@@ -160,7 +160,7 @@ component accessors="true" {
 		variables.noOverlap        = false;
 		// Constraints
 		variables.disabled         = false;
-		variables.when             = "";
+		variables.whenClosure      = "";
 		variables.dayOfTheMonth    = 0;
 		variables.dayOfTheWeek     = 0;
 		variables.weekends         = false;
@@ -275,7 +275,7 @@ component accessors="true" {
 	 * If the closure returns true we schedule, else we disable it.
 	 */
 	ScheduledTask function when( target ){
-		variables.when = arguments.target;
+		variables.whenClosure = arguments.target;
 		return this;
 	}
 
@@ -327,7 +327,7 @@ component accessors="true" {
 		var now = getJavaNow();
 
 		// When Closure that dictates if the task can be scheduled/ran: true => yes, false => no
-		if ( isClosure( variables.when ) && !variables.when( this ) ) {
+		if ( isClosure( variables.whenClosure ) && !variables.whenClosure( this ) ) {
 			return true;
 		}
 
