@@ -30,7 +30,7 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 					.when( function(){
 						return true;
 					} );
-				expect( isClosure( t.getWhen() ) ).toBeTrue();
+				expect( isClosure( t.getWhenClosure() ) ).toBeTrue();
 			} );
 
 			it( "can set a timezone", function(){
