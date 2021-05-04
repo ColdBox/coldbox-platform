@@ -67,6 +67,10 @@ component extends="EventHandler" {
 		catch ( "InvalidCredentials" e ) {
 			this.onAuthenticationFailure( argumentCollection = arguments );
 		}
+		// Token Decoding Issues
+		catch( "TokenInvalidException" e ){
+			this.onAuthenticationFailure( argumentCollection = arguments );
+		}
 		// Validation Exceptions
 		catch ( "ValidationException" e ) {
 			arguments.exception = e;
@@ -531,7 +535,7 @@ component extends="EventHandler" {
 
     /**
      * Action for 'any' exceptions, ie when not caught by previous catch statements
-     *  
+     *
 	 * @event The request context
 	 * @rc The rc reference
 	 * @prc The prc reference
@@ -545,7 +549,7 @@ component extends="EventHandler" {
 		eventArguments,
 		exception
 	){
-        
+
         // Log Exception
         log.error(
             "Error calling #arguments.event.getCurrentEvent()#: #arguments.exception.message# #arguments.exception.detail#",
@@ -563,7 +567,7 @@ component extends="EventHandler" {
             .setStatusText( "General application error" );
 
     }
-    
+
 	/**
 	 * Utility method for when an expectation of the request fails ( e.g. an expected parameter is not provided )
 	 * - It will output a 417 status code (event.STATUS.EXPECTATION_FAILED)
