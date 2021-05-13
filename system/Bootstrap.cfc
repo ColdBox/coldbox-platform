@@ -156,7 +156,8 @@ component serializable="false" accessors="true" {
 						// Remove any context stragglers
 						structDelete( request, "cb_requestContext" );
 					} catch ( any e ) {
-						application.fwReinit = false;
+						// reset our application state to prevent any stale app keys from hanging around
+						applicationStop();
 						rethrow;
 					}
 				}
