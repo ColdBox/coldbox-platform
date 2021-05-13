@@ -156,9 +156,8 @@ component serializable="false" accessors="true" {
 						// Remove any context stragglers
 						structDelete( request, "cb_requestContext" );
 					} catch ( any e ) {
-						rethrow;
-					} finally {
 						application.fwReinit = false;
+						rethrow;
 					}
 				}
 			}
