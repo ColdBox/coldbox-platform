@@ -139,6 +139,7 @@ component serializable="false" accessors="true" {
 					try {
 						// Tell the word we are reiniting
 						application.fwReinit = true;
+						request.isReinitRequestor = true;
 						// Verify if we are Reiniting?
 						if (
 							structKeyExists( application, appKey ) AND application[ appKey ].getColdboxInitiated() AND needReinit
@@ -476,9 +477,10 @@ component serializable="false" accessors="true" {
 	boolean function onRequestStart( required targetPage ) output=true{
 		// Global flag to denote if we are in mid reinit or not.
 		cfparam( name = "application.fwReinit", default = false );
+		cfparam( name = "request.isReinitRequestor", default = false );
 
 		// Fail fast so users coming in during a reinit just get a please try again message.
-		if ( application.fwReinit ) {
+		if ( application.fwReinit && !request.isReinitRequestor ) {
 			// Closure or UDF
 			if ( isClosure( variables.COLDBOX_FAIL_FAST ) || isCustomFunction( variables.COLDBOX_FAIL_FAST ) ) {
 				variables.COLDBOX_FAIL_FAST();
