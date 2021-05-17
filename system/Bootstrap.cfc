@@ -139,7 +139,6 @@ component serializable="false" accessors="true" {
 					try {
 						// Tell the word we are reiniting
 						application.fwReinit = true;
-						request.isReinitRequestor = true;
 						// Verify if we are Reiniting?
 						if (
 							structKeyExists( application, appKey ) AND application[ appKey ].getColdboxInitiated() AND needReinit
@@ -155,9 +154,13 @@ component serializable="false" accessors="true" {
 						loadColdBox();
 						// Remove any context stragglers
 						structDelete( request, "cb_requestContext" );
+						application.fwReinit = false;
 					} catch ( any e ) {
-						// reset our application state to prevent any stale app keys from hanging around
-						applicationStop();
+						// Something really went wrong reiniting. Try to clear out things
+						structDelete( application, appKey );
+						structDelete( application, "wirebox" );
+						structClear( request );
+						application.fwReinit = false;
 						rethrow;
 					}
 				}
