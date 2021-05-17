@@ -86,10 +86,6 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// Activate All Modules
 		variables.controller.getModuleService().activateAllModules();
 
-		// Flag the initiation, Framework is ready to serve requests. Praise be to GOD.
-		variables.controller.setColdboxInitiated( true );
-		variables.log.info( "+++ ColdBox is ready to serve requests" );
-
 		// Execute afterConfigurationLoad
 		variables.controller
 			.getInterceptorService()
@@ -104,6 +100,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		variables.controller
 			.getInterceptorService()
 			.announce( "afterAspectsLoad" );
+
+		// Flag the initiation, Framework is ready to serve requests. Praise be to GOD.
+		variables.controller.setColdboxInitiated( true );
+		variables.log.info( "+++ ColdBox is ready to serve requests" );
 
 		// We are now done, rock and roll!!
 		return this;
