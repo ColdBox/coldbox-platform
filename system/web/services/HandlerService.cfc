@@ -463,7 +463,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 					requestEvent : request._lastInvalidEvent ?: "NONE",
 					registeredHandlers : variables.registeredHandlers,
 					fullEvent          : ehBean.getFullEvent(),
-					callStack : callStackDump()
+					callStack : callStackGet()
 				} );
 				// Now throw the exception
 				throw(
