@@ -460,8 +460,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				// Extra Debugging for illusive CI/Tests exceptions: Remove at one point if discovered.
 				variables.log.error( exceptionMessage, {
 					event              : arguments.event,
+					requestEvent : request._lastInvalidEvent ?: "NONE",
 					registeredHandlers : variables.registeredHandlers,
-					fullEvent          : ehBean.getFullEvent()
+					fullEvent          : ehBean.getFullEvent(),
+					callStack : callStackDump()
 				} );
 				// Now throw the exception
 				throw(
