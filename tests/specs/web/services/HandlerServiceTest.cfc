@@ -8,8 +8,6 @@ component extends="tests.resources.BaseIntegrationTest" {
 			beforeEach( function(){
 				setup();
 				handlerService = controller.getHandlerService();
-				// Cleanup for invalid event handlers
-				structDelete( request, "_lastInvalidEvent" );
 			} );
 
 			it( "can register handlers", function(){
@@ -38,7 +36,6 @@ component extends="tests.resources.BaseIntegrationTest" {
 					expect( results.getMethod() ).toBe( "onInvalidEvent" );
 					expect( handlerService.getHandlerBeanCacheDictionary() ).notToHaveKey( "invalid" );
 				} );
-
 
 				it( "with a valid handler event", function(){
 					var results = handlerService.getHandlerBean( "main.index" );

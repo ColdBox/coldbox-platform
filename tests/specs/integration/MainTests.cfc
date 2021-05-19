@@ -12,8 +12,6 @@
 			beforeEach( function( currentSpec ){
 				// Setup as a new ColdBox request, VERY IMPORTANT. ELSE EVERYTHING LOOKS LIKE THE SAME REQUEST.
 				setup();
-				// Cleanup for invalid event handlers
-				structDelete( request, "_lastInvalidEvent" );
 			} );
 
 			it( "can handle autowire annotations for tests", function(){
