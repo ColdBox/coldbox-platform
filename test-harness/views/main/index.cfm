@@ -20,6 +20,11 @@
 				Registered Event Handlers: #sayHello()# #sayViewHello()#
 			</h2>
 		</div>
+
+		<div style="border:1px dotted gray; padding: 10px; margin: 10px 0px">
+			#view( view = "viewWithArgs", args = { data = "Hi I am Data!" } )#
+		</div>
+
 		<p>
 			You can click on the following event handlers to execute their default action
 			<span class="label label-important">index()</span>

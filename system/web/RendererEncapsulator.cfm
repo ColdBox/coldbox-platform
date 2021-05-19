@@ -11,7 +11,7 @@
 	variables.isViewsHelperIncluded = false;
 	variables.renderedHelpers 		= {};
 
-	// Merge variables from renderer
+	// Merge variables scope from renderer
 	// Moved to simple for/loop to avoid closure memory issues and slowdowns
 	for( myVar in attributes.rendererVariables ) {
 		if( !listFindNoCase( "local,attributes,arguments", myVar ) ) {
@@ -23,8 +23,9 @@
 	variables.event = attributes.event;
 	variables.rc 	= attributes.rc;
 	variables.prc 	= attributes.prc;
+	variables.args  = attributes.args;
 
-	// Spoof the arguments scope for backwards compat.  i.e. arguments.args
+	// Spoof the arguments scope for backwards compat.  i.e. arguments.args, arguments.view
 	variables.arguments = {
 		view 			= attributes.view,
     	viewPath 		= attributes.viewPath,
@@ -32,16 +33,13 @@
     	args 			= attributes.args
 	};
 
- 	// Also add these to variables as well for scope-less lookups
-	structAppend( variables, variables.arguments, true );
-
-	// global views helper
+	// Include global views helper
 	if( len( variables.viewsHelper ) AND ! variables.isViewsHelperIncluded  ){
 		include "#variables.viewsHelper#";
 		variables.isViewsHelperIncluded = true;
 	}
 
-	// view helpers ( directory + view + whatever )
+	// Incldude the view helpers ( directory + view + whatever )
 	if(
 		arguments.viewHelperPath.len() AND
 		NOT variables.renderedHelpers.keyExists( hash( arguments.viewHelperPath.toString() ) )
@@ -52,6 +50,6 @@
 		variables.renderedHelpers[ hash( arguments.viewHelperPath.toString() ) ] = true;
 	}
 
-	// The actual view requested
+	// Include the actual view requested
 	include "#arguments.viewPath#.cfm";
 </cfscript>
