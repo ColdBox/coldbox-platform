@@ -414,19 +414,19 @@ component accessors="true" {
 
 			// After Interceptor
 			if ( isClosure( variables.afterTask ) || isCustomFunction( variables.afterTask ) ) {
-				variables.afterTask( this, (!isNull(variables.stats.lastResult)) ?:"" );
+				variables.afterTask( this, variables.stats?.lastResult );
 			}
 			if ( hasScheduler() ) {
-				getScheduler().afterAnyTask( this, (!isNull(variables.stats.lastResult)) ?:"" );
+				getScheduler().afterAnyTask( this, variables.stats?.lastResult );
 			}
 
 			// store successes and call success interceptor
 			variables.stats.totalSuccess = variables.stats.totalSuccess + 1;
 			if ( isClosure( variables.onTaskSuccess ) || isCustomFunction( variables.onTaskSuccess ) ) {
-				variables.onTaskSuccess( this, (!isNull(variables.stats.lastResult)) ?:"" );
+				variables.onTaskSuccess( this, variables.stats?.lastResult );
 			}
 			if ( hasScheduler() ) {
-				getScheduler().onAnyTaskSuccess( this, (!isNull(variables.stats.lastResult)) ?:"" );
+				getScheduler().onAnyTaskSuccess( this, variables.stats?.lastResult );
 			}
 		} catch ( any e ) {
 			// store failures
