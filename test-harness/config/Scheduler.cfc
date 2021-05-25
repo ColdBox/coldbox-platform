@@ -9,7 +9,7 @@ component {
 				}
 				writeDump( var='====> I am in a test harness test schedule!', output="console" );
 			}  )
-				.every( "5", "seconds" )
+				.every( 15, "seconds" )
 				.before( function( task ) {
 					writeDump( var='====> Running before the task!', output="console" );
 				} )

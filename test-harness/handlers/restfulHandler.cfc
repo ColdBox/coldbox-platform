@@ -7,6 +7,24 @@ component extends="coldbox.system.RestHandler" {
 		} );
 	}
 
+	function showCache( event, rc, prc ){
+		writeDump( var=getcache( "template" ).getKeys() );
+
+		getcache( "template" ).clearEvent( "ful" );
+
+		writeDump( var=getcache( "template" ).getKeys() );
+		return "";
+	}
+
+	function showCacheWithRC( event, rc, prc ){
+		writeDump( var=getcache( "template" ).getKeys() );
+
+		getcache( "template" ).clearEvent( "dex", "key=1&name=luis" );
+
+		writeDump( var=getcache( "template" ).getKeys() );
+		return "";
+	}
+
 	function returnData( event, rc, prc ){
 		return "hola";
 	}

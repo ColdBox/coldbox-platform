@@ -18,6 +18,7 @@ component accessors="true"{
 	 */
 	function init( required cacheProvider ){
 		variables.cacheProvider = arguments.cacheProvider;
+		variables.jTreeMap = createObject( "java", "java.util.TreeMap" );
 		return this;
 	}
 
@@ -37,24 +38,26 @@ component accessors="true"{
 	 * @event A request context object
 	 */
 	string function getUniqueHash( required event ){
-		var incomingHash = hash(
-			arguments.event.getCollection().filter( function( key, value ){
-				// Remove event, not needed for hashing purposes
-				return ( key != "event" );
-			} ).toString()
-		);
+		var rcTarget = arguments.event.getCollection().filter( function( key, value ){
+			// Remove event, not needed for hashing purposes
+			return ( key != "event" );
+		} );
+
+ 		//systemOutput( "=====> uniquehash-rcTarget: #variables.jTreeMap.init( rcTarget ).toString()#", true );
+		//systemOutput( "=====> uniquehash-rcTargetHash: #hash( variables.jTreeMap.init( rcTarget ).toString() )#", true );
+
 		var targetMixer	= {
 			// Get the original incoming context hash
-			"incomingHash" = incomingHash,
+			"incomingHash" = hash( variables.jTreeMap.init( rcTarget ).toString() ),
 			// Multi-Host support
-			"cgihost"      = arguments.event.getSesBaseUrl()
+			"cgihost"      = buildAppLink()
 		};
 
 		// Incorporate Routed Structs
 		structAppend( targetMixer, arguments.event.getRoutedStruct(), true );
 
 		// Return unique identifier
-		return hash( targetMixer.toString() );
+		return hash( targetmixer.toString() );
 	}
 
 	/**
@@ -71,13 +74,18 @@ component accessors="true"{
 				virtualRC[ item.getToken( 1, "=" ).trim() ] = urlDecode( item.getToken( 2, "=" ).trim() );
 			} );
 
-		//writeDump( var = "==> Hash Args Struct: #virtualRC.toString()#", output="console" );
+		//systemOutput( "=====> buildHash-virtualRC: #variables.jTreeMap.init( virtualRC ).toString()#", true );
+		//systemOutput( "=====> buildHash-virtualRCHash: #hash( variables.jTreeMap.init( virtualRC ).toString() )#", true );
+
 		var myStruct = {
 			// Get the original incoming context hash according to incoming arguments
-			"incomingHash" = hash( virtualRC.toString() ),
+			"incomingHash" = hash( variables.jTreeMap.init( virtualRC ).toString() ),
 			// Multi-Host support
 			"cgihost"      = buildAppLink()
 		};
+
+		//systemOutput( "=====> buildHash-mixer: #myStruct.toString()#", true );
+		//systemOutput( "=====> buildHash-mixerhash: #hash( myStruct.toString() )#", true );
 
 		// return hash from cache key struct
 		return hash( myStruct.toString() );

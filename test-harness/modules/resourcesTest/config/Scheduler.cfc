@@ -10,7 +10,7 @@ component {
 				writeDump( var="xxxxxxx> Photo numbers: #random#", output="console" );
 				return random;
 			} )
-			.every( 5, "seconds" )
+			.every( 15, "seconds" )
 			.onEnvironment( "development" );
 
 	}
