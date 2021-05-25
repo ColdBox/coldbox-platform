@@ -514,7 +514,7 @@ component accessors="true" {
 			}
 
 			// Get the metadata first, so we can start processing.
-			if ( structKeyExists( arguments, "metadata" ) ) {
+			if ( !isNull( arguments.metadata ) ) {
 				md = arguments.metadata;
 			} else {
 				var produceMetadataUDF = function(){

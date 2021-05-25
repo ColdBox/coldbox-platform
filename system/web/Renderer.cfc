@@ -286,7 +286,7 @@ component
 			// Try to get from cache
 			iData.renderedView = viewCacheProvider.get( viewCacheKey );
 			// Verify it existed
-			if ( structKeyExists( iData, "renderedView" ) ) {
+			if ( !isNull( iData.renderedView ) ) {
 				// Post View Render Interception
 				if ( NOT arguments.prepostExempt ) {
 					announce( "postViewRender", iData );
@@ -305,7 +305,7 @@ component
 		);
 
 		// Render collection views
-		if ( structKeyExists( arguments, "collection" ) ) {
+		if ( !isNull( arguments.collection ) ) {
 			// render collection in next context
 			iData.renderedView = getRenderer().renderViewCollection(
 				arguments.view,
@@ -404,6 +404,7 @@ component
 
 		// Query Rendering
 		variables._items = arguments.collection.recordCount;
+
 		// Max Rows
 		if ( arguments.collectionMaxRows NEQ 0 AND arguments.collectionMaxRows LTE arguments.collection.recordCount ) {
 			variables._items = arguments.collectionMaxRows;
@@ -604,7 +605,7 @@ component
 		}
 
 		// If no passed layout, then get it from implicit values
-		if ( not structKeyExists( arguments, "layout" ) ) {
+		if ( isNull( arguments.layout ) ) {
 			// Strip off the .cfm extension if it is set
 			if ( len( cbox_implicitLayout ) GT 4 AND right( cbox_implicitLayout, 4 ) eq ".cfm" ) {
 				cbox_implicitLayout = left( cbox_implicitLayout, len( cbox_implicitLayout ) - 4 );
@@ -625,7 +626,7 @@ component
 		}
 
 		// Check explicit layout rendering
-		if ( structKeyExists( arguments, "layout" ) ) {
+		if ( !isNull( arguments.layout ) ) {
 			// Check if any length on incoming layout
 			if ( len( arguments.layout ) ) {
 				// Cleanup leading / in views, just in case
