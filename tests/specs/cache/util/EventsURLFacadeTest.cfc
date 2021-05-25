@@ -22,13 +22,12 @@
 		// all your suites go here.
 		describe( "Event URL Facade", function(){
 			beforeEach(function( currentSpec ){
-				variables.jTreeMap = createObject( "java", "java.util.TreeMap" )
+				variables.jTreeMap = createObject( "java", "java.util.TreeMap" );
 				variables.cm = createEmptyMock( "coldbox.system.cache.providers.MockProvider" );
 				variables.cm.$( "getEventCacheKeyPrefix", "mock" );
 				variables.facade = prepareMock( new coldbox.system.cache.util.EventURLFacade( cm ) )
 					.$( "buildAppLink", "http://localhost/test-harness" );
 			});
-
 
 			it( "can build a unique hash from a request context", function(){
 				var routedStruct = { name : "luis" };
