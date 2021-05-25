@@ -239,10 +239,6 @@ component serializable="false" accessors="true" {
 				// Caching Header Identifier
 				getPageContextResponse().setHeader( "x-coldbox-cache-response", "true" );
 
-				// Stop Gap for upgrades, remove by 4.2
-				if ( isNull( refResults.eventCaching.responseHeaders ) ) {
-					refResults.eventCaching.responseHeaders = {};
-				}
 				// Response Headers that were cached
 				refResults.eventCaching.responseHeaders.each( function( key, value ){
 					event.setHTTPHeader( name = key, value = value );

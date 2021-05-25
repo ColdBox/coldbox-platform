@@ -157,10 +157,6 @@ component extends="EventHandler" {
 			.addHeader(
 				"x-response-time",
 				arguments.prc.response.getResponseTime()
-			)
-			.addHeader(
-				"x-cached-response",
-				arguments.prc.response.getCachedResponse()
 			);
 
 		// Output the response headers

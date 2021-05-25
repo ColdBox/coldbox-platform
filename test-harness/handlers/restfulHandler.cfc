@@ -1,7 +1,10 @@
 component extends="coldbox.system.RestHandler" {
 
-	function index( event, rc, prc ){
-		event.getResponse().setData( "hello" );
+	function index( event, rc, prc ) cache=true{
+		event.getResponse().setData( {
+			"timestamp" : now(),
+			"message" : "hello"
+		} );
 	}
 
 	function returnData( event, rc, prc ){
