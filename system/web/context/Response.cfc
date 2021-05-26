@@ -74,11 +74,6 @@ component accessors="true" {
 	property name="responsetime" type="numeric" default="0";
 
 	/**
-	 * A boolean indicator if the response is cached or not
-	 */
-	property name="cachedResponse" type="boolean" default="false";
-
-	/**
 	 * The headers to send with the response
 	 */
 	property name="headers" type="array";
@@ -169,7 +164,6 @@ component accessors="true" {
 		variables.statusCode      = 200;
 		variables.statusText      = "OK";
 		variables.responsetime    = 0;
-		variables.cachedResponse  = false;
 		variables.headers         = [];
 
 		setPagination();

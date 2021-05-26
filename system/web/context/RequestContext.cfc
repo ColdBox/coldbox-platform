@@ -1307,7 +1307,7 @@ component serializable="false" accessors="true" {
 		// SES Mode
 		if ( variables.SESEnabled ) {
 			// SSL ON OR TURN IT ON
-			if ( isSSL() OR ( structKeyExists( arguments, "ssl" ) and arguments.ssl ) ) {
+			if ( isSSL() OR ( !isNull( arguments.ssl ) and arguments.ssl ) ) {
 				variables.SESBaseURL = replaceNoCase(
 					variables.SESBaseURL,
 					"http:",
@@ -1316,7 +1316,7 @@ component serializable="false" accessors="true" {
 			}
 
 			// SSL Turn Off
-			if ( structKeyExists( arguments, "ssl" ) and arguments.ssl eq false ) {
+			if ( !isNull( arguments.ssl ) and arguments.ssl eq false ) {
 				variables.SESBaseURL = replaceNoCase(
 					variables.SESBaseURL,
 					"https:",

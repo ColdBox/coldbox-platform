@@ -490,7 +490,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		var oInterceptorState = "";
 
 		// Init md if not passed
-		if ( not structKeyExists( arguments, "interceptorMD" ) ) {
+		if ( isNull( arguments.interceptorMD ) ) {
 			arguments.interceptorMD = newPointRecord();
 		}
 

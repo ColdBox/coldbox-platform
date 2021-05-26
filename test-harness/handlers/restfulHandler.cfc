@@ -1,7 +1,28 @@
 component extends="coldbox.system.RestHandler" {
 
-	function index( event, rc, prc ){
-		event.getResponse().setData( "hello" );
+	function index( event, rc, prc ) cache=true{
+		event.getResponse().setData( {
+			"timestamp" : now(),
+			"message" : "hello"
+		} );
+	}
+
+	function showCache( event, rc, prc ){
+		writeDump( var=getcache( "template" ).getKeys() );
+
+		getcache( "template" ).clearEvent( "ful" );
+
+		writeDump( var=getcache( "template" ).getKeys() );
+		return "";
+	}
+
+	function showCacheWithRC( event, rc, prc ){
+		writeDump( var=getcache( "template" ).getKeys() );
+
+		getcache( "template" ).clearEvent( "dex", "key=1&name=luis" );
+
+		writeDump( var=getcache( "template" ).getKeys() );
+		return "";
 	}
 
 	function returnData( event, rc, prc ){
