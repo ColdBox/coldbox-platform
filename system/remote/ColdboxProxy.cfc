@@ -13,7 +13,12 @@ component serializable="false" accessors="true" {
 	property name="COLDBOX_APP_KEY";
 
 	// Setup Default Namespace Key for controller locations
-	variables.COLDBOX_APP_KEY = application.cbBootstrap.getCOLDBOX_APP_KEY();
+	if(isDefined("application.cbBootstrap")) {
+		variables.COLDBOX_APP_KEY = application.cbBootstrap.getCOLDBOX_APP_KEY();
+	}
+	else {
+		variables.COLDBOX_APP_KEY = "cbController";
+	}
 
 	// Remote proxies are created by the CFML engine without calling init(),
 	// so autowire in here in the pseduo constructor
