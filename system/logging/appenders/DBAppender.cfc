@@ -26,6 +26,9 @@
 **/
 component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 
+	// Default column names
+	variables.columns = ["id", "severity", "category", "logdate", "appendername", "message", "extrainfo"];
+
     /**
 	 * Constructor
 	 *
@@ -45,8 +48,6 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
        	// Init supertype
 		super.init( argumentCollection=arguments );
 
-		// valid columns
-		variables.columns = ["id", "severity", "category", "logdate", "appendername", "message", "extrainfo"];
 		// UUID generator
 		variables.uuid = createobject( "java", "java.util.UUID" );
 
