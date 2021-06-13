@@ -22,7 +22,7 @@
  * - message : string
  * - extrainfo : string
  *
- * If you are building a mapper, the map must have the above keys in it.
+ * If you are building a mapper, a column that is not in the map will use the default column name.
 **/
 component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 
@@ -46,7 +46,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 		super.init( argumentCollection=arguments );
 
 		// valid columns
-		variables.columns = "id,severity,category,logdate,appendername,message,extrainfo";
+		variables.columns = ["id", "severity", "category", "logdate", "appendername", "message", "extrainfo"];
 		// UUID generator
 		variables.uuid = createobject( "java", "java.util.UUID" );
 
@@ -143,7 +143,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 	 */
 	function doRotation(){
 		var qLogs 		= "";
-		var cols 		= variables.columns;
+		var cols 		= getColumnNames();
 		var targetDate 	= dateAdd( "d", "-#getProperty( "rotationDays" )#", now() );
 
 		queryExecute(
@@ -190,12 +190,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 	 */
 	function processQueueElement( required data, required queueContext ){
 		// Column Maps
-		if( propertyExists( 'columnMap' ) ){
-			var cmap = getProperty( 'columnMap' );
-			var cols = "#cmap.id#,#cmap.severity#,#cmap.category#,#cmap.logdate#,#cmap.appendername#,#cmap.message#,#cmap.extrainfo#";
-		} else {
-			var cols = variables.columns;
-		}
+		var cols = getColumnNames();
 
 		// Insert into table
 		queryExecute(
@@ -247,6 +242,20 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 	}
 
 	/**
+	 * Return a list of the column names for the database, this is affected by the `columnMap` property.
+	 */
+	private string function getColumnNames(){
+		var columnNames = variables.columns;
+		if( propertyExists( "columnMap" ) ){
+			var cmap = getProperty( "columnMap" );
+			local.columnNames = variables.columns.map( function( col ){
+				return cmap.keyExists( col ) ? cmap[col] : col;
+			} );
+		}
+		return arrayToList( local.columnNames );
+	}
+
+	/**
 	 * Verify or create the logging table
 	 */
 	private function ensureTable(){
@@ -254,7 +263,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 		var qTables 		= 0;
 		var tableFound 		= false;
 		var qCreate 		= "";
-		var cols 			= variables.columns;
+		var cols 			= getColumnNames();
 
 		if( getProperty( "autoCreate" ) ){
 			// Get Tables on this DSN
@@ -277,7 +286,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 						#listgetAt( cols, 5 )# VARCHAR(100) NOT NULL,
 						#listgetAt( cols, 6 )# #getTextColumnType()#,
 						#listgetAt( cols, 7 )# #getTextColumnType()#,
-						PRIMARY KEY (id)
+						PRIMARY KEY (#listgetAt( cols, 1 )#)
 					)",
 					{},
 					{
@@ -297,10 +306,10 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 		var map = getProperty( 'columnMap' );
 
 		for( var key in map ){
-			if( NOT listFindNoCase( variables.columns, key ) ){
+			if( NOT arrayFindNoCase( variables.columns, key ) ){
 				throw(
 					message = "Invalid column map key: #key#",
-					detail 	= "The available keys are #variables.columns#",
+					detail 	= "The available keys are #arrayToList( variables.columns )#",
 					type 	= "DBAppender.InvalidColumnMapException"
 				);
 			}
