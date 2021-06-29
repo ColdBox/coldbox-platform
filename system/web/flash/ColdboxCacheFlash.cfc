@@ -59,10 +59,7 @@ component extends="coldbox.system.web.flash.AbstractFlashScope" accessors="true"
 		else if ( isSessionDefined and structKeyExists( session, "URLToken" ) ) {
 			return prefix & session.URLToken;
 		} else {
-			throw(
-				message = "Cannot find a jsessionid, URLToken or cfid/cftoken in the cookie scope. Please verify",
-				type    = "ColdboxCacheFlash.CFIDException"
-			);
+			return false;
 		}
 	}
 
@@ -79,6 +76,9 @@ component extends="coldbox.system.web.flash.AbstractFlashScope" accessors="true"
 	 * Checks if the flash storage exists and IT HAS DATA to inflate.
 	 */
 	boolean function flashExists(){
+		if(!getFlashKey()) {
+			return false;
+		}
 		return variables.cache.lookup( getFlashKey() );
 	}
 
