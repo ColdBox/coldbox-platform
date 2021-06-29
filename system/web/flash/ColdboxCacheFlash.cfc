@@ -76,7 +76,8 @@ component extends="coldbox.system.web.flash.AbstractFlashScope" accessors="true"
 	 * Checks if the flash storage exists and IT HAS DATA to inflate.
 	 */
 	boolean function flashExists(){
-		if(!getFlashKey()) {
+		var flashKey = getFlashKey();
+		if(isBoolean(flashKey) && !flashKey) {
 			return false;
 		}
 		return variables.cache.lookup( getFlashKey() );
