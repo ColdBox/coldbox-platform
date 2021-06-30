@@ -58,9 +58,13 @@ component extends="coldbox.system.web.flash.AbstractFlashScope" accessors="true"
 		// check session URL Token
 		else if ( isSessionDefined and structKeyExists( session, "URLToken" ) ) {
 			return prefix & session.URLToken;
-		} else {
-			return false;
 		}
+		// fallback for no cookie, session or url basically sessionless requests
+		else if ( isNull( request.cbFlashId ) ) {
+			request.cbFlashId = createUUID();
+		}
+
+		return request.cbFlashId;
 	}
 
 	/**
@@ -76,10 +80,6 @@ component extends="coldbox.system.web.flash.AbstractFlashScope" accessors="true"
 	 * Checks if the flash storage exists and IT HAS DATA to inflate.
 	 */
 	boolean function flashExists(){
-		var flashKey = getFlashKey();
-		if(isBoolean(flashKey) && !flashKey) {
-			return false;
-		}
 		return variables.cache.lookup( getFlashKey() );
 	}
 
