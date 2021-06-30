@@ -258,7 +258,19 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 				} );
 
 				it( "can have a last business day of the month constraint", function(){
-					var t = scheduler.task( "test" ).setLastBusinessDay( true );
+					var nowDate = new coldbox.system.async.time.ChronoUnit()
+						.toLocalDateTime( now(), "UTC" );
+
+					var t = prepareMock( scheduler.task( "test" ) ).setLastBusinessDay( true );
+
+					makePublic( t, "getLastDayOfTheMonth" );
+
+					// If we are at the last day, increase it
+					if( nowDate.getDayOfMonth() == t.getLastDayOfTheMonth().getDayOfMonth() ){
+						nowDate = nowDate.plusDays( javacast( "int", -1 ) );
+					}
+
+					t.$( "getJavaNow", nowDate );
 					expect( t.isConstrained() ).toBeTrue();
 
 					var mockNow = t.getJavaNow();
