@@ -58,12 +58,13 @@ component extends="coldbox.system.web.flash.AbstractFlashScope" accessors="true"
 		// check session URL Token
 		else if ( isSessionDefined and structKeyExists( session, "URLToken" ) ) {
 			return prefix & session.URLToken;
-		} else {
-			throw(
-				message = "Cannot find a jsessionid, URLToken or cfid/cftoken in the cookie scope. Please verify",
-				type    = "ColdboxCacheFlash.CFIDException"
-			);
 		}
+		// fallback for no cookie, session or url basically sessionless requests
+		else if ( isNull( request.cbFlashId ) ) {
+			request.cbFlashId = createUUID();
+		}
+
+		return request.cbFlashId;
 	}
 
 	/**
