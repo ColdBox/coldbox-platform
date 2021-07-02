@@ -362,11 +362,15 @@ component {
 						}
 
 						var getEntityMap = function(){
-							if( listFind( "2018,2021", server.coldfusion.productVersion.listFirst() ) ){
+							try {
+								// older, deprecated syntax for pre-Hibernate5
+								return structKeyArray( ormGetSessionFactory().getAllClassMetadata() );
+							} catch( any e ){
+								if ( ! listContains( e.message, "getAllClassMetadata is no longer supported" ) ){
+									rethrow;
+								}
 								// Double array functions to convert from native java to cf java
 								return arrayToList( ormGetSessionFactory().getMetaModel().getAllEntityNames() ).listToArray();
-							} else {
-								return structKeyArray( ormGetSessionFactory().getAllClassMetadata() );
 							}
 						};
 
