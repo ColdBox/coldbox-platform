@@ -363,14 +363,15 @@ component {
 
 						var getEntityMap = function(){
 							try {
-								// older, deprecated syntax for pre-Hibernate5
-								return structKeyArray( ormGetSessionFactory().getAllClassMetadata() );
+								// Double array functions to convert from native java to cf java
+								// Hibernate v5+
+								return arrayToList( ormGetSessionFactory().getMetaModel().getAllEntityNames() ).listToArray();
 							} catch( any e ){
-								if ( ! listContains( e.message, "getAllClassMetadata is no longer supported" ) ){
+								if ( ! listContains( e.message, "getMetaModel" ) ){
 									rethrow;
 								}
-								// Double array functions to convert from native java to cf java
-								return arrayToList( ormGetSessionFactory().getMetaModel().getAllEntityNames() ).listToArray();
+								// Pre-Hibernate 5 syntax
+								return structKeyArray( ormGetSessionFactory().getAllClassMetadata() );
 							}
 						};
 
