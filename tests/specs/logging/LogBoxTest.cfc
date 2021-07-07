@@ -85,7 +85,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 
 			logBox.getLogger('postInitLogger').info( "My Test" ); // Fails if appender was not added to internal registry
 
-		})
+		});
 	}
 
 }
