@@ -3,6 +3,8 @@
  */
 component extends="tests.specs.async.BaseAsyncSpec" {
 
+	engineUtil = new coldbox.system.core.util.CFMLEngine();
+
 	/*********************************** BDD SUITES ***********************************/
 
 	function run( testResults, testBox ){
@@ -86,7 +88,9 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 
 			it( "can convert to other time units", function(){
 				expect( duration.ofMinutes( 60 ).toHours() ).toBe( 1 );
-				expect( duration.ofMinutes( 60 ).toSeconds() ).toBe( 60 * 60 );
+				if( listFirst( engineUtil.JDK_VERSION, "." ) >= 11 ){
+					expect( duration.ofMinutes( 60 ).toSeconds() ).toBe( 60 * 60 );
+				}
 				expect( duration.ofMinutes( 60 ).toMillis() ).toBe( 60 * 60 * 1000 );
 			} );
 
