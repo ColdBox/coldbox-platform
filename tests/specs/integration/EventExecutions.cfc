@@ -12,10 +12,7 @@ component extends="tests.resources.BaseIntegrationTest"{
 			story( "I want to execute private event actions", function(){
 				given( "a private event string: main.testPrivateActions", function(){
 					then( "it should execute it privately", function(){
-						var e = execute(
-							event         = "main.testPrivateActions",
-							renderResults = true
-						);
+						var e = this.get( "main/testPrivateActions" );
 						expect( e.getRenderedContent() ).toInclude( "Private actions rule" );
 					} );
 				} );
@@ -25,7 +22,7 @@ component extends="tests.resources.BaseIntegrationTest"{
 				given( "an invalid HTTP method", function(){
 					then( "it should fire the localized onInvalidHTTPMethod", function(){
 						// Execute
-						var e = this.GET( "rendering.testHTTPMethod" );
+						var e = this.GET( "rendering/testHTTPMethod" );
 						expect( e.getRenderedContent() ).toInclude(
 							"Yep, onInvalidHTTPMethod works!"
 						);
@@ -36,13 +33,8 @@ component extends="tests.resources.BaseIntegrationTest"{
 			story( "I want to execute a global invalid http method", function(){
 				given( "an invalid HTTP Method with no localized onInvalidHTTPMethod action", function(){
 					then( "it should fire the global invalid http handler", function(){
-						// Mock to invalid HTTP method
-						prepareMock( getRequestContext() ).$( "getHTTPMethod", "DELETE" );
 						// Execute
-						var e = execute(
-							event         = "main.index",
-							renderResults = true
-						);
+						var e = this.delete( "main/index" );
 						expect( e.getRenderedContent() ).toInclude( "invalid http: main.index" );
 						expect( e.getStatusCode() ).toBe( 405 );
 					} );
@@ -52,10 +44,7 @@ component extends="tests.resources.BaseIntegrationTest"{
 			story( "I want to execute a global invalid event handler", function(){
 				given( "an invalid event", function(){
 					then( "it should fire the global invalid event handler", function(){
-						var e = execute(
-							event         = "does.not.exist",
-							renderResults = true
-						);
+						var e = this.get( "does.not.exist" );
 						expect( e.getStatusCode() ).toBe( 404 );
 					} );
 				} );

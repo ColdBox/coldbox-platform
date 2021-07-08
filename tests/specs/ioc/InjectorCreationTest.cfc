@@ -138,7 +138,7 @@
 		assertTrue( len( prop ) );
 	}
 
-	function testWebService(){
+	function testWebService() skip="isAdobe"{
 		ws = injector.getInstance( "coldboxWS" );
 
 		//

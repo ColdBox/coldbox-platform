@@ -620,19 +620,19 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 		boolean renderResults         = true,
 		boolean withExceptionHandling = false
 	){
-		var mockedEvent = prepareMock( getRequestContext() ).$( "getHTTPMethod", uCase( method ) );
-		params
+		var mockedEvent = prepareMock( getRequestContext() ).$( "getHTTPMethod", uCase( arguments.method ) );
+		arguments.params
 			.keyArray()
 			.each( function( name ){
-				mockedEvent.setValue( name, params[ name ] );
+				mockedEvent.setValue( arguments.name, params[ arguments.name ] );
 			} );
-		headers
+		arguments.headers
 			.keyArray()
 			.each( function( name ){
 				mockedEvent
 					.$( "getHTTPHeader" )
-					.$args( name )
-					.$results( headers[ name ] );
+					.$args( arguments.name )
+					.$results( headers[ arguments.name ] );
 			} );
 		return execute( argumentCollection = arguments );
 	}
