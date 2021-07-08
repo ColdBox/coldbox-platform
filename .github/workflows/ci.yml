@@ -168,9 +168,13 @@ jobs:
             echo "BRANCH=development" >> $GITHUB_ENV
           fi
 
-      - name: Build ColdBox Variants for ${{ env.BRANCH }} v${{ env.VERSION }}
+      - name: Install Dependencies
         run: |
-          box server start serverConfigFile="server-lucee@5.json"
+          cd apidocs && box install
+
+      - name: Build ColdBox Variants for ${{ env.BRANCH }} v${{ env.COLDBOX_VERSION }}
+        run: |
+          box server start serverConfigFile="server-lucee@5.json" --debug
           ant -DisPreRelease=${{ env.COLDBOX_PRERELEASE }} -Dcoldbox.version=${{ env.COLDBOX_VERSION }} -Dbuild.branch=${{ env.BRANCH }} -Dbuild.number=${{ github.run_number }} -f build/build.xml
 
       - name: Upload Build Artifacts
