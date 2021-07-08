@@ -72,7 +72,7 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors=true{
 	 * @return array
      */
     function getKeys(){
-        return;
+        return [];
     }
 
 	/**
@@ -121,7 +121,7 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors=true{
 	 * @return boolean
 	 */
 	function isExpired( required objectKey ){
-		return;
+		return false;
 	}
 
 	/**
