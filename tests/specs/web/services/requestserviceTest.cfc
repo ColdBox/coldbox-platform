@@ -6,7 +6,12 @@
 
 			beforeEach(function( currentSpec ){
 				setup();
+				getController().getRoutingService().getRouter().setEnabled( false );
 				requestService = getController().getRequestService();
+			});
+
+			afterEach(function( currentSpec ){
+				getController().getRoutingService().getRouter().setEnabled( true );
 			});
 
 			it( "can capture requests", function(){
@@ -59,7 +64,6 @@
 				expect( context.getValue( "type" ) ).toBe( "JSON" );
 			});
 
-
 			it( "can test the default event setup", function(){
 				/* Setup test variables */
 				form.event = url.event = "photos.index";
@@ -72,7 +76,6 @@
 				expect( context ).toBeComponent();
 				expect( url.event ).toBe( context.getCurrentEvent() );
 			});
-
 
 			it( "can create and check for context in the request scope", function(){
 				var context = requestService.getContext();
