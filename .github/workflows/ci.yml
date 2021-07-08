@@ -79,19 +79,9 @@ jobs:
           # Test the harness
           curl http://127.0.0.1:8599/test-harness
 
-      - name: Setup Environment Variables For Build Process
-        id: current_version
-        run: |
-          # master or snapshot
-          echo "BRANCH=master" >> $GITHUB_ENV
-          if [ $GITHUB_REF == 'refs/heads/development' ]
-          then
-            echo "BRANCH=development" >> $GITHUB_ENV
-          fi
-
       - name: Run Tests
         run: |
-          ant -DisPreRelease=${{ env.COLDBOX_PRERELEASE }} -Dcoldbox.version=${{ env.COLDBOX_VERSION }} -Dbuild.branch=${{ env.BRANCH }} -Dbuild.number=${{ github.run_number }} -f build/build.xml run-tests
+          ant -f build/build.xml run-tests
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v1
@@ -99,6 +89,7 @@ jobs:
         with:
           files: tests/results/**/*.xml
           check_name: "${{ matrix.cfengine }}/${{ matrix.javaVersion }} Test Results"
+          summary: true
 
       - name: Upload Test Results Artifacts
         if: always()
