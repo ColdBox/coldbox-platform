@@ -253,7 +253,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			routeResults.route.redirect.len()
 		) {
 			// Debugging
-			writeDump( var=[ routeResults, rc ], output="console" );
+			writeDump( var=[ cgi , prc ], output="console" );
 			return processRedirect( routeResults, event );
 		}
 
