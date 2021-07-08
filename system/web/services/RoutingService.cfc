@@ -194,9 +194,6 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			domain = cleanedPaths[ "domain" ]
 		);
 
-		// Debugging
-		writeDump( var=[ cleanedPaths, routeResults ], output="console" );
-
 		// Process the route
 		var discoveredEvent = processRoute( routeResults, event, rc, prc );
 
@@ -255,6 +252,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			isCustomFunction( routeResults.route.redirect ) ||
 			routeResults.route.redirect.len()
 		) {
+			// Debugging
+			writeDump( var=[ routeResults, rc ], output="console" );
 			return processRedirect( routeResults, event );
 		}
 

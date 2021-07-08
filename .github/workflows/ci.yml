@@ -122,8 +122,8 @@ jobs:
         with:
           name: Failure Debugging Info - ${{ matrix.cfengine }} - ${{ matrix.javaVersion }}
           path: |
-            .engines/**/logs/*
-            .engines/**/WEB-INF/cfusion/logs/*
+            .engine/**/logs/*
+            .engine/**/WEB-INF/cfusion/logs/*
 
   #############################################
   # Build ColdBox Now
