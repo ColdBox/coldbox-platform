@@ -444,12 +444,13 @@ component
 				}
 			} )
 			.each( function( item ){
+				var cachedObjectMD = getCachedObjectMetadata( arguments.item );
 				if(
-					variables.objectStore.lookup( item )
+					variables.objectStore.lookup( arguments.item )
 					AND
-					getCachedObjectMetadata( item ).timeout GT 0
+					cachedObjectMD.keyExists( "timeout" ) and cachedObjectMD.timeout GT 0
 				){
-					expireObject( item );
+					expireObject( arguments.item );
 				}
 			} );
 
