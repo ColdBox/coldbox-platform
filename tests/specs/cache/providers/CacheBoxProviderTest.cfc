@@ -74,6 +74,7 @@
 	}
 
 	function testLookupMulti(){
+		cache.clearAll();
 		cache.getObjectStore().set( "test", now(), 20 );
 		cache.getObjectStore().set( "test2", now(), 20 );
 		cache.clearStatistics();
@@ -85,7 +86,7 @@
 
 		assertEquals( true, results.test );
 		assertEquals( true, results.test2 );
-		assertEquals( false, results.test3 );
+		assertEquals(  , results.test3 );
 	}
 
 	function testLookup(){
