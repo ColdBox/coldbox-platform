@@ -21,9 +21,6 @@
 	function testLogMessage(){
 		loge.setSeverity( 3 );
 		loge.setCategory( "coldbox.system.EmailAppenderTest" );
-
-		if ( !directoryExists( expandPath( "/home/travis/" ) ) ) {
-			email.logMessage( loge );
-		}
+		email.logMessage( loge );
 	}
 }
