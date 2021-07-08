@@ -86,7 +86,7 @@
 
 		assertEquals( true, results.test );
 		assertEquals( true, results.test2 );
-		assertEquals(  , results.test3 );
+		assertEquals( false, results.test3 );
 	}
 
 	function testLookup(){
