@@ -194,6 +194,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			domain = cleanedPaths[ "domain" ]
 		);
 
+		// Debugging
+		writeDump( var=[ cleanedPaths, routeResults ], output="console" );
+
 		// Process the route
 		var discoveredEvent = processRoute( routeResults, event, rc, prc );
 

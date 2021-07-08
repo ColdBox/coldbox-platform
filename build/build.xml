@@ -88,25 +88,25 @@
     	<!-- Run for Core -->
 		<mkdir dir="tests/results/core" />
 		<exec executable="box" dir="${basedir}" failonerror="true">
-			<arg line="testbox run runner='http://localhost:${server.port}/tests/runner.cfm' verbose=true outputFile='tests/results/core/test-results' outputFormats='json,antjunit'" />
+			<arg line="testbox run runner='http://localhost:${server.port}/tests/runner.cfm' verbose=false outputFile='tests/results/core/test-results' outputFormats='json,antjunit'" />
 		</exec>
 
     	<!-- Run for CacheBox -->
 		<mkdir dir="tests/results/cachebox" />
     	<exec executable="box" dir="${basedir}" failonerror="true">
-			<arg line="testbox run runner='http://localhost:${server.port}/tests/runner-cachebox.cfm' verbose=true outputFile='tests/results/cachebox/test-results' outputFormats='json,antjunit'" />
+			<arg line="testbox run runner='http://localhost:${server.port}/tests/runner-cachebox.cfm' verbose=false outputFile='tests/results/cachebox/test-results' outputFormats='json,antjunit'" />
 		</exec>
 
     	<!-- Run for LogBox -->
 		<mkdir dir="tests/results/logbox" />
     	<exec executable="box" dir="${basedir}" failonerror="true">
-			<arg line="testbox run runner='http://localhost:${server.port}/tests/runner-logbox.cfm' verbose=true outputFile='tests/results/logbox/test-results' outputFormats='json,antjunit'" />
+			<arg line="testbox run runner='http://localhost:${server.port}/tests/runner-logbox.cfm' verbose=false outputFile='tests/results/logbox/test-results' outputFormats='json,antjunit'" />
 		</exec>
 
     	<!-- Run for WireBox -->
 		<mkdir dir="tests/results/wirebox" />
     	<exec executable="box" dir="${basedir}" failonerror="true">
-			<arg line="testbox run runner='http://localhost:${server.port}/tests/runner-wirebox.cfm' verbose=true outputFile='tests/results/wirebox/test-results' outputFormats='json,antjunit'" />
+			<arg line="testbox run runner='http://localhost:${server.port}/tests/runner-wirebox.cfm' verbose=false outputFile='tests/results/wirebox/test-results' outputFormats='json,antjunit'" />
 		</exec>
 
 		<!-- Run for Async -->
