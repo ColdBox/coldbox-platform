@@ -1,0 +1,122 @@
+name: Cron
+
+on:
+  schedule:
+    # Run Every Monday Midnight
+    - cron:  0 0 * * 1
+
+jobs:
+  tests:
+    name: Tests
+    runs-on: ubuntu-20.04
+    env:
+      DB_USER: root
+      DB_PASSWORD: root
+    strategy:
+      fail-fast: false
+      matrix:
+        cfengine: ["lucee@5", "lucee@be", "adobe@2016", "adobe@2018" ]
+        javaVersion: [ "openjdk8", "openjdk11" ]
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Setup Database and Fixtures
+        run: |
+          sudo /etc/init.d/mysql start
+          mysql -u${{ env.DB_USER }} -p${{ env.DB_PASSWORD }} -e 'CREATE DATABASE contentbox;'
+          mysql -u${{ env.DB_USER }} -p${{ env.DB_PASSWORD }} < tests/resources/sql/mysql/contentbox.sql
+
+      - name: Setup Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: "adopt"
+          java-version: "11"
+
+      - name: Set Up CommandBox
+        uses: elpete/setup-commandbox@v1.0.0
+
+      - name: Setup .env For Runner
+        run: |
+          touch .env
+          printf "DB_HOST=127.0.0.1\n" >> .env
+          printf "DB_DATABASE=contentbox\n" >> .env
+          printf "DB_DRIVER=MySQL\n" >> .env
+          printf "DB_USER=${{ env.DB_USER }}\n" >> .env
+          printf "DB_PASSWORD=${{ env.DB_PASSWORD }}\n" >> .env
+          printf "DB_CLASS=com.mysql.cj.jdbc.Driver\n" >> .env
+          printf "DB_BUNDLEVERSION=8.0.19\n" >> .env
+          printf "DB_BUNDLENAME=com.mysql.cj\n" >> .env
+
+      - name: Add Hibernate Logging
+        if: "${{ matrix.cfengine != 'lucee@5' }}"
+        run: |
+          # Log4j Hibernate Debug
+          mkdir -p .engines/acf2016/WEB-INF/cfusion/lib/
+          mkdir -p .engines/acf2018/WEB-INF/cfusion/lib/
+          mkdir -p .engines/acf2021/WEB-INF/cfusion/lib/
+          cp build/resources/log4j.properties .engines/acf2016/WEB-INF/cfusion/lib/
+          cp build/resources/log4j.properties .engines/acf2018/WEB-INF/cfusion/lib/
+          cp build/resources/log4j.properties .engines/acf2021/WEB-INF/cfusion/lib/
+
+      - name: Install Dependencies
+        run: |
+          # Site dependencies
+          box install
+          # ContentBox dependencies
+          cd modules/contentbox && box install
+
+      - name: Start ${{ matrix.cfengine }} Server On ${{ matrix.javaVersion }}
+        run: box server start serverConfigFile="server-${{ matrix.cfengine }}.json" javaVersion=${{ matrix.javaVersion }} --noSaveSettings --debug
+
+      - name: Run Web App Tests
+        run: |
+          mkdir tests/results/web
+          box package set testbox.runner="http://127.0.0.1:8589/tests/runner.cfm"
+          box testbox run --verbose outputFile=tests/results/web/test-results outputFormats=json,antjunit
+
+      - name: Run API Tests
+        run: |
+          mkdir tests/results/api
+          box package set testbox.runner="http://127.0.0.1:8589/tests/runner-api.cfm"
+          box testbox run --verbose outputFile=tests/results/api/test-results outputFormats=json,antjunit
+
+      - name: Run Swagger Tests
+        run: |
+          curl http://127.0.0.1:8589/index.cfm/cbswagger?debugmode=false&debugpassword=cb > tests/results/contentbox-swagger.json
+
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        if: always()
+        with:
+          files: tests/results/**/*.xml
+          check_name: "${{ matrix.cfengine }} Test Results"
+
+      - name: Upload Test Results Artifacts
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: contentbox-test-results-${{ matrix.cfengine }}
+          path: |
+            tests/results/**/*
+
+      - name: Slack Notification
+        if: always()
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_CHANNEL: contentbox
+          SLACK_COLOR: ${{ job.status }} # or a specific color like 'green' or '#ff00ff'
+          SLACK_ICON_EMOJI: ":bell:"
+          SLACK_MESSAGE: 'ContentBox Weekly Cron ${{ job.status }}'
+          SLACK_TITLE: ContentBox Tests For ${{ matrix.cfengine }}/${{ matrix.javaVersion }} ${{ job.status }}
+          SLACK_USERNAME: CI
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Upload Debugging Info To Artifacts
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: Failure Debugging Info - ${{ matrix.cfengine }}
+          path: |
+            .engines/**/logs/*
+            .engines/**/WEB-INF/cfusion/logs/*

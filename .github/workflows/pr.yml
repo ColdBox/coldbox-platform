@@ -1,0 +1,123 @@
+name: Pull Requests
+
+on:
+  push:
+    branches-ignore:
+      - "main"
+      - "master"
+      - "development"
+  pull_request:
+    branches:
+      - development
+
+jobs:
+  tests:
+    name: Tests
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: true
+      matrix:
+        cfengine: ["lucee@5", "adobe@2016", "adobe@2018"]
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Setup Database and Fixtures
+        run: |
+          sudo /etc/init.d/mysql start
+          mysql -u${{ env.DB_USER }} -p${{ env.DB_PASSWORD }} -e 'CREATE DATABASE contentbox;'
+          mysql -u${{ env.DB_USER }} -p${{ env.DB_PASSWORD }} < tests/resources/sql/mysql/contentbox.sql
+
+      - name: Setup Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: "adopt"
+          java-version: "11"
+
+      - name: Setup CommandBox
+        uses: elpete/setup-commandbox@v1.0.0
+
+      - name: Setup .env For Runner
+        run: |
+          touch .env
+          printf "DB_HOST=127.0.0.1\n" >> .env
+          printf "DB_DATABASE=contentbox\n" >> .env
+          printf "DB_DRIVER=MySQL\n" >> .env
+          printf "DB_USER=${{ env.DB_USER }}\n" >> .env
+          printf "DB_PASSWORD=${{ env.DB_PASSWORD }}\n" >> .env
+          printf "DB_CLASS=com.mysql.cj.jdbc.Driver\n" >> .env
+          printf "DB_BUNDLEVERSION=8.0.19\n" >> .env
+          printf "DB_BUNDLENAME=com.mysql.cj\n" >> .env
+
+      - name: Add Hibernate Logging
+        if: "${{ matrix.cfengine != 'lucee@5' }}"
+        run: |
+          # Log4j Hibernate Debug
+          mkdir -p .engines/acf2016/WEB-INF/cfusion/lib/
+          mkdir -p .engines/acf2018/WEB-INF/cfusion/lib/
+          cp build/resources/log4j.properties .engines/acf2016/WEB-INF/cfusion/lib/
+          cp build/resources/log4j.properties .engines/acf2018/WEB-INF/cfusion/lib/
+
+      - name: Install Dependencies
+        run: |
+          # Site dependencies
+          box install
+          # ContentBox dependencies
+          cd modules/contentbox && box install
+
+      - name: Start Server
+        run: |
+          box server start serverConfigFile="server-${{ matrix.cfengine }}.json" --debug
+          curl http://127.0.0.1:8589
+
+      - name: Run Web App Tests
+        run: |
+          mkdir tests/results/web
+          box package set testbox.runner="http://127.0.0.1:8589/tests/runner.cfm"
+          box testbox run --verbose outputFile=tests/results/test-results outputFormats=json,antjunit
+
+      - name: Run API Tests
+        run: |
+          mkdir tests/results/api
+          box package set testbox.runner="http://127.0.0.1:8589/tests/runner-api.cfm"
+          box testbox run --verbose outputFile=tests/results/test-results outputFormats=json,antjunit
+
+      - name: Publish PR Test Reports
+        uses: mikepenz/action-junit-report@v2
+        with:
+          report_paths: 'tests/results/**/*.xml'
+          summary: true
+
+      - name: Failure debugging
+        if: ${{ failure() }}
+        run: |
+          cat .engines/acf2016/WEB-INF/cfusion/logs/hibernatesql.log
+          cat .engines/acf2018/WEB-INF/cfusion/logs/hibernatesql.log
+          box server log serverConfigFile="server-${{ matrix.cfengine }}.json"
+
+  format:
+    name: Format
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Setup Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: "adopt"
+          java-version: "11"
+
+      - name: Set Up CommandBox
+        uses: elpete/setup-commandbox@v1.0.0
+
+      - name: Install CFFormat
+        run: box install commandbox-cfformat
+
+      - name: Run CFFormat
+        run: box run-script format
+
+      - name: Commit Format Changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Apply cfformat changes
