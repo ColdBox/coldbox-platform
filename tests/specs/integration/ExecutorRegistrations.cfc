@@ -9,6 +9,7 @@ component
 			beforeEach( function( currentSpec ){
 				// Setup as a new ColdBox request, VERY IMPORTANT. ELSE EVERYTHING LOOKS LIKE THE SAME REQUEST.
 				setup();
+				structDelete( request, "_lastInvalidEvent" );
 			} );
 
 			story( "I want to register executors in my app config", function(){
