@@ -75,6 +75,17 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				expect( logger.getAppenders().count(), 2 );
 			} );
 		} );
+
+		it( 'can add new appenders after config has been registered', function (){
+			
+			var config = logBox.getConfig();
+
+			config.getConfig().appender( name: 'postInitAppender', class = "coldbox.system.logging.appenders.ConsoleAppender" );
+			config.category( name: 'postInitLogger', appenders: 'postInitAppender');
+
+			logBox.getLogger('postInitLogger').info( "My Test" ); // Fails if appender was not added to internal registry
+
+		});
 	}
 
 }
