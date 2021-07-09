@@ -40,13 +40,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// Check if application has loaded logbox settings so we can reconfigure, else using defaults.
 		if ( NOT structIsEmpty( variables.controller.getSetting( "LogBoxConfig" ) ) ) {
 			// reconfigure LogBox with user configurations
-			variables.controller
-				.getLogBox()
-				.configure( variables.controller.getLogBox().getConfig() );
+			variables.controller.getLogBox().configure( variables.controller.getLogBox().getConfig() );
 			// Reset the controller main logger
-			variables.controller.setLog(
-				variables.controller.getLogBox().getLogger( variables.controller )
-			);
+			variables.controller.setLog( variables.controller.getLogBox().getLogger( variables.controller ) );
 		}
 
 		// Seed a local logger
@@ -87,19 +83,18 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		variables.controller.getModuleService().activateAllModules();
 
 		// Execute afterConfigurationLoad
-		variables.controller
-			.getInterceptorService()
-			.announce( "afterConfigurationLoad" );
+		variables.controller.getInterceptorService().announce( "afterConfigurationLoad" );
 
 		// Rescan interceptors in case modules had interception poitns to register
 		variables.controller.getInterceptorService().rescanInterceptors();
 		// Rebuild flash here just in case modules or afterConfigurationLoad changes settings.
 		variables.controller.getRequestService().rebuildFlashScope();
 
+		// Internal event for interceptors to load global UDF Helpers
+		variables.controller.getInterceptorService().announce( "loadInterceptorHelpers" );
+
 		// Execute afterAspectsLoad: all module interceptions are registered and flash rebuilt if needed
-		variables.controller
-			.getInterceptorService()
-			.announce( "afterAspectsLoad" );
+		variables.controller.getInterceptorService().announce( "afterAspectsLoad" );
 
 		// Flag the initiation, Framework is ready to serve requests. Praise be to GOD.
 		variables.controller.setColdboxInitiated( true );
@@ -117,9 +112,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			.getSetting( "executors" )
 			.each( function( key, config ){
 				arguments.config.name = arguments.key;
-				variables.controller
-					.getAsyncManager()
-					.newExecutor( argumentCollection = arguments.config );
+				variables.controller.getAsyncManager().newExecutor( argumentCollection = arguments.config );
 				variables.log.info( "+ Registered App Executor: #arguments.key#" );
 			} );
 		return this;
@@ -239,9 +232,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		variables.log.info( "† Shutting down ColdBox..." );
 
 		// Announce shutdown
-		variables.controller
-			.getInterceptorService()
-			.announce( "onColdBoxShutdown" );
+		variables.controller.getInterceptorService().announce( "onColdBoxShutdown" );
 
 		// Start shutting things down
 		var wireBox      = variables.controller.getWireBox();

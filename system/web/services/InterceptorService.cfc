@@ -35,6 +35,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			// Application startup points
 			"afterConfigurationLoad",
 			"afterAspectsLoad",
+			"loadInterceptorHelpers",
 			"preReinit",
 			// On Actions
 			"onException",
@@ -386,11 +387,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		struct interceptorProperties = {}
 	){
 		// Check if interceptor mapped?
-		if (
-			NOT variables.wirebox
-				.getBinder()
-				.mappingExists( "interceptor-" & arguments.interceptorName )
-		) {
+		if ( NOT variables.wirebox.getBinder().mappingExists( "interceptor-" & arguments.interceptorName ) ) {
 			// wirebox lazy load checks
 			wireboxSetup();
 			// feed this interceptor to wirebox with virtual inheritance just in case, use registerNewInstance so its thread safe
@@ -538,11 +535,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 */
 	private InterceptorService function wireboxSetup(){
 		// Check if handler mapped?
-		if (
-			NOT variables.wirebox
-				.getBinder()
-				.mappingExists( variables.INTERCEPTOR_BASE_CLASS )
-		) {
+		if ( NOT variables.wirebox.getBinder().mappingExists( variables.INTERCEPTOR_BASE_CLASS ) ) {
 			// feed the base class
 			variables.wirebox
 				.registerNewInstance(

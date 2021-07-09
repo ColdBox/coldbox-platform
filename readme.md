@@ -7,10 +7,12 @@
 </p>
 
 <p align="center">
-	<a href="https://travis-ci.org/ColdBox/coldbox-platform"><img src="https://travis-ci.org/ColdBox/coldbox-platform.svg?branch=development" alt="Build Status"></a>
-	<a href="https://forgebox.io/view/coldbox"><img src="https://forgebox.io/api/v1/entry/coldbox/badges/downloads" alt="Total Downloads" /></a>
-	<a href="https://forgebox.io/view/coldbox"><img src="https://forgebox.io/api/v1/entry/coldbox/badges/version" alt="Latest Stable Version" /></a>
-	<a href="https://forgebox.io/view/coldbox"><img src="https://img.shields.io/badge/License-Apache2-brightgreen" alt="Apache2 License" /></a>
+<a href="https://github.com/ColdBox/coldbox-platform/actions/workflows/ci.yml">
+	<img src="https://github.com/ColdBox/coldbox-platform/actions/workflows/ci.yml/badge.svg">
+</a>
+<a href="https://forgebox.io/view/coldbox"><img src="https://forgebox.io/api/v1/entry/coldbox/badges/downloads" alt="Total Downloads" /></a>
+<a href="https://forgebox.io/view/coldbox"><img src="https://forgebox.io/api/v1/entry/coldbox/badges/version" alt="Latest Stable Version" /></a>
+<a href="https://forgebox.io/view/coldbox"><img src="https://img.shields.io/badge/License-Apache2-brightgreen" alt="Apache2 License" /></a>
 </p>
 
 <p align="center">
