@@ -91,6 +91,12 @@
 			<arg line="testbox run runner='http://localhost:${server.port}/tests/runner.cfm' verbose=false outputFile='tests/results/core/test-results' outputFormats='json,antjunit'" />
 		</exec>
 
+		<!-- Run for Integration -->
+		<mkdir dir="tests/results/integration" />
+		<exec executable="box" dir="${basedir}" failonerror="true">
+			<arg line="testbox run runner='http://localhost:${server.port}/tests/runner-integration.cfm' verbose=false outputFile='tests/results/integration/test-results' outputFormats='json,antjunit'" />
+		</exec>
+
     	<!-- Run for CacheBox -->
 		<mkdir dir="tests/results/cachebox" />
     	<exec executable="box" dir="${basedir}" failonerror="true">
