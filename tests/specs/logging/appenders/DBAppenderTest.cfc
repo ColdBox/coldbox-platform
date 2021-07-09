@@ -1,13 +1,10 @@
-﻿component extends = "coldbox.system.testing.BaseModelTest"{
+﻿component extends="coldbox.system.testing.BaseModelTest" {
+
 	this.loadColdBox = false;
 
 	function setup(){
 		logBox = new coldbox.system.logging.LogBox();
-		props  = {
-			dsn        : "coolblog",
-			table      : "logs",
-			autocreate : "true"
-		};
+		props  = { dsn : "coolblog", table : "logs", autocreate : "true" };
 
 		db = createMock( "coldbox.system.logging.appenders.DBAppender" )
 			.init( "DBAppender", props )
@@ -47,7 +44,7 @@
 	}
 
 	function testLogMessageWithColumnMap(){
-		// invalid map
+		// Test with invalid map, where defaults should be used
 		props.columnmap = {
 			id           : "id",
 			severity     : "severity",
@@ -58,13 +55,7 @@
 			extrainfo    : "extrainfo"
 		};
 
-		try {
-			db.init( "UnitTest", props );
-			fail( "map should have failed" );
-		} catch ( "DBAppender.InvalidColumnMapException" e ) {
-		} catch ( any e ) {
-			fail( e.message & e.detail );
-		}
+		db.init( "UnitTest", props );
 
 		// valid map
 		props.columnmap = {
@@ -81,4 +72,5 @@
 
 		db.logMessage( loge );
 	}
+
 }
