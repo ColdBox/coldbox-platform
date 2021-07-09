@@ -152,12 +152,17 @@ component serializable="false" accessors="true" {
 						}
 						// Reload ColdBox
 						loadColdBox();
-						// Remove any context stragglers
+						// Remove any context stragglers and reloading bit
 						structDelete( request, "cb_requestContext" );
-					} catch ( any e ) {
-						rethrow;
-					} finally {
 						application.fwReinit = false;
+					} catch ( any e ) {
+						// Added here as ACF does not execute the finally block on some ocassions. Impossible to reproduce.
+						application.fwReinit = false;
+						// Something went really wrong, clear everything out
+						structDelete( application, appKey );
+						structDelete( application, "wirebox" );
+						structDelete( request, "cb_requestContext" );
+						rethrow;
 					}
 				}
 			}
