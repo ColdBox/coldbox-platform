@@ -251,16 +251,12 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 				it( "can have a day of the month constraint", function(){
 					var t = scheduler.task( "test" );
 					var target = t.getJavaNow().plusDays( javacast( "int", 3 ) ).getDayOfMonth();
-					t.setDayOfTheMonth(
-						target
-					);
-					expect( t.isConstrained() ).toBeTrue( "Day is : #target#");
+					t.setDayOfTheMonth( target );
+					expect( t.isConstrained() ).toBeTrue( "Day is : #target#" );
 
-					var target = t.getJavaNow().getDayOfMonth()
-					t.setDayOfTheMonth(
-						t.getJavaNow().getDayOfMonth()
-					);
-					expect( t.isConstrained() ).toBeFalse( "!Day is #target#");
+					var target = t.getJavaNow().getDayOfMonth();
+					t.setDayOfTheMonth( t.getJavaNow().getDayOfMonth() );
+					expect( t.isConstrained() ).toBeFalse( "!Day is #target#" );
 				} );
 
 				it( "can have a last business day of the month constraint", function(){
