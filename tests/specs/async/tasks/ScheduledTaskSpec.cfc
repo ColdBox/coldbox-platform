@@ -250,7 +250,7 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 
 				it( "can have a day of the month constraint", function(){
 					var t = scheduler.task( "test" );
-					t.setDayOfTheMonth( day( dateAdd( "d", 1, now() ) ) );
+					t.setDayOfTheMonth( day( dateAdd( "d", 3, now() ) ) );
 					expect( t.isConstrained() ).toBeTrue();
 
 					t.setDayOfTheMonth( day( now() ) );
