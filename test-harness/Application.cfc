@@ -7,10 +7,11 @@ www.ortussolutions.com
 component {
 
 	// Application properties
-	this.name              = "ColdBox Test Harness";
-	this.sessionManagement = true;
-	this.sessionTimeout    = createTimespan( 0, 0, 30, 0 );
-	this.setClientCookies  = true;
+	this.name               = "ColdBox Test Harness";
+	this.sessionManagement  = true;
+	this.sessionTimeout     = createTimespan( 0, 0, 30, 0 );
+	this.setClientCookies   = true;
+	this.timezone 			= "UTC";
 
 	// COLDBOX STATIC PROPERTY, DO NOT CHANGE UNLESS THIS IS NOT THE ROOT OF YOUR COLDBOX APP
 	COLDBOX_APP_ROOT_PATH = getDirectoryFromPath( getCurrentTemplatePath() );
