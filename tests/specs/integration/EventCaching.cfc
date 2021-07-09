@@ -1,6 +1,4 @@
-﻿component
-	extends="tests.resources.BaseIntegrationTest"
-{
+﻿component extends="tests.resources.BaseIntegrationTest" {
 
 	/*********************************** BDD SUITES ***********************************/
 
@@ -9,7 +7,6 @@
 			beforeEach( function( currentSpec ){
 				// Setup as a new ColdBox request, VERY IMPORTANT. ELSE EVERYTHING LOOKS LIKE THE SAME REQUEST.
 				setup();
-				structDelete( request, "_lastInvalidEvent" );
 			} );
 
 			afterEach( function( currentSpec ){

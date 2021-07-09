@@ -1,10 +1,17 @@
-component extends="tests.resources.BaseIntegrationTest"{
+component extends="tests.resources.BaseIntegrationTest" {
 
 	function run(){
 		describe( "subdomain routing", function(){
 			beforeEach( function(){
 				setup();
-				variables.routingService = prepareMock( getController().getRoutingService() );
+				variables.routingService                = prepareMock( getController().getRoutingService() );
+				// Hide away mocks
+				variables.routingService._getCGIElement = variables.routingService.getCGIElement;
+			} );
+
+			afterEach( function( currentSpec ){
+				// Restore Mocks
+				variables.routingService.getCGIElement = variables.routingService._getCGIElement;
 			} );
 
 			it( "can match on a specific domain", function(){
@@ -14,7 +21,7 @@ component extends="tests.resources.BaseIntegrationTest"{
 					.$results( "subdomain-routing.dev" );
 
 				var event = execute( route = "/" );
-				var rc = event.getCollection();
+				var rc    = event.getCollection();
 
 				expect( rc ).toHaveKey( "event" );
 				expect( rc.event ).toBe( "subdomain.index" );

@@ -105,7 +105,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			case "modern": {
 				// Log it
 				variables.log.info( "Loading Modern Router at: #modernRouter#" );
-				var modernRouterPath = ( variables.appMapping.len() ? "#variables.appMapping#.#modernRouter#" : modernRouter );
+				var modernRouterPath = (
+					variables.appMapping.len() ? "#variables.appMapping#.#modernRouter#" : modernRouter
+				);
 				// Process as a Router.cfc with virtual inheritance
 				wirebox
 					.registerNewInstance( name = "router@coldbox", instancePath = modernRouterPath )
@@ -116,7 +118,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				// Create the Router
 				variables.router = wirebox.getInstance( "router@coldbox" );
 				// Register the Router as an Interceptor as well.
-				variables.controller.getInterceptorService().registerInterceptor( interceptorObject = variables.router );
+				variables.controller
+					.getInterceptorService()
+					.registerInterceptor( interceptorObject = variables.router );
 				// Process it
 				variables.router.configure();
 				break;
@@ -125,7 +129,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				// Log it
 				variables.log.info( "Loading Legacy Router at: #legacyRouter#" );
 				// Register basic router
-				wirebox.registerNewInstance( name = "router@coldbox", instancePath = baseRouter ).setScope( wirebox.getBinder().SCOPES.SINGLETON );
+				wirebox
+					.registerNewInstance( name = "router@coldbox", instancePath = baseRouter )
+					.setScope( wirebox.getBinder().SCOPES.SINGLETON );
 				// Process legacy Routes.cfm. Create a basic Router
 				variables.router = wirebox
 					.getInstance( "router@coldbox" )
@@ -137,8 +143,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				// Log it
 				variables.log.info( "Loading Base ColdBox Router" );
 				// Register basic router with default routing
-				wirebox.registerNewInstance( name = "router@coldbox", instancePath = baseRouter ).setScope( wirebox.getBinder().SCOPES.SINGLETON );
-				variables.router = wirebox.getInstance( "router@coldbox" ).addRoute( pattern = "/:handler/:action?" );
+				wirebox
+					.registerNewInstance( name = "router@coldbox", instancePath = baseRouter )
+					.setScope( wirebox.getBinder().SCOPES.SINGLETON );
+				variables.router = wirebox
+					.getInstance( "router@coldbox" )
+					.addRoute( pattern = "/:handler/:action?" );
 			}
 		}
 
@@ -253,7 +263,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			routeResults.route.redirect.len()
 		) {
 			// Debugging
-			//writeDump( var=[ cgi , prc ], output="console" );
+			// writeDump( var=[ cgi , prc ], output="console" );
 			return processRedirect( routeResults, event );
 		}
 
@@ -323,7 +333,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 					discoveredEvent &= ".#routeResults.route.action[ httpMethod ]#";
 					// Send for logging in debug mode
 					if ( variables.log.canDebug() ) {
-						variables.log.debug( "Matched HTTP Method (#HTTPMethod#) to routed action: #routeResults.route.action[ httpMethod ]#" );
+						variables.log.debug(
+							"Matched HTTP Method (#HTTPMethod#) to routed action: #routeResults.route.action[ httpMethod ]#"
+						);
 					}
 				} else {
 					// Mark as invalid HTTP Exception
@@ -354,7 +366,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 			// Layout?
 			if ( routeResults.route.layout.len() ) {
-				arguments.event.setLayout( name = routeResults.route.layout, module = routeResults.route.layoutModule );
+				arguments.event.setLayout(
+					name   = routeResults.route.layout,
+					module = routeResults.route.layoutModule
+				);
 			}
 		}
 
@@ -364,7 +379,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		} );
 
 		// See if Response is dispatched
-		if ( isClosure( routeResults.route.response ) || isCustomFunction( routeResults.route.response ) || routeResults.route.response.len() ) {
+		if (
+			isClosure( routeResults.route.response ) || isCustomFunction( routeResults.route.response ) || routeResults.route.response.len()
+		) {
 			renderResponse( routeResults.route, arguments.event );
 		}
 
@@ -478,7 +495,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 				// Debug logging
 				if ( variables.log.canDebug() ) {
-					variables.log.debug( "Route matched: #results.route.toString()# on routed string: #requestString#" );
+					variables.log.debug(
+						"Route matched: #results.route.toString()# on routed string: #requestString#"
+					);
 				}
 
 				break;
@@ -598,9 +617,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	}
 
 	/**
-	 * The cgi element facade method
+	 * The cgi element facade method, created so we can do useful mocking
+	 *
 	 * @cgiElement The element to take from CGI
-	 * @event The event object
+	 * @event The request context object
+	 *
+	 * @return The cgi element value
 	 */
 	function getCgiElement( required cgiElement, required event ){
 		// Allow a UDF to manipulate the CGI.PATH_INFO value
@@ -623,7 +645,11 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		var redirectTo = "";
 
 		// Determine closure or string relocation string
-		if ( isClosure( arguments.routeResults.route.redirect ) || isCustomFunction( arguments.routeResults.route.redirect ) ) {
+		if (
+			isClosure( arguments.routeResults.route.redirect ) || isCustomFunction(
+				arguments.routeResults.route.redirect
+			)
+		) {
 			redirectTo = routeResults.route.redirect(
 				arguments.routeResults.route,
 				arguments.routeResults.params,
@@ -637,12 +663,16 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		if ( redirectTo.findNoCase( "http" ) ) {
 			variables.controller.relocate(
 				URL       : redirectTo,
-				statusCode: ( arguments.routeResults.route.keyExists( "statusCode" ) ? arguments.routeResults.route.statusCode : 301 )
+				statusCode: (
+					arguments.routeResults.route.keyExists( "statusCode" ) ? arguments.routeResults.route.statusCode : 301
+				)
 			);
 		} else {
 			variables.controller.relocate(
 				event     : redirectTo,
-				statusCode: ( arguments.routeResults.route.keyExists( "statusCode" ) ? arguments.routeResults.route.statusCode : 301 )
+				statusCode: (
+					arguments.routeResults.route.keyExists( "statusCode" ) ? arguments.routeResults.route.statusCode : 301
+				)
 			);
 		}
 
@@ -674,7 +704,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				// remove it from the string and return string for continued parsing.
 				return left( requestString, len( arguments.requestString ) - extensionLen - 1 );
 			} else if ( variables.router.getThrowOnInvalidExtension() ) {
-				event.setHTTPHeader( statusText = "Invalid Requested Format Extension: #extension#", statusCode = 406 );
+				event.setHTTPHeader(
+					statusText = "Invalid Requested Format Extension: #extension#",
+					statusCode = 406
+				);
 				throw(
 					message = "Invalid requested format extendion: #extension#",
 					detail  = "Invalid Request Format Extension Detected: #extension#. Valid extensions are: #variables.router.getValidExtensions()#",
@@ -885,10 +918,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		required script_name,
 		required event
 	){
-		var handler         = "";
-		var action          = "";
-		var newpath         = "";
-		var rc              = event.getCollection();
+		var handler = "";
+		var action  = "";
+		var newpath = "";
+		var rc      = event.getCollection();
 
 		/**
 		Verify we have uniqueURLs ON, the event var exists, route is empty or index.cfm
@@ -925,12 +958,14 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 			// Debugging
 			if ( variables.log.canDebug() ) {
-				variables.log.debug( "SES Invalid URL detected. Route: #arguments.route#, script_name: #arguments.script_name#" );
+				variables.log.debug(
+					"SES Invalid URL detected. Route: #arguments.route#, script_name: #arguments.script_name#"
+				);
 			}
 
 			// Setup Relocation
 			var httpRequestData = getHTTPRequestData();
-			var relocationUrl = "#arguments.event.getSESbaseURL()##newpath##serializeURL( httpRequestData.content, arguments.event )#";
+			var relocationUrl   = "#arguments.event.getSESbaseURL()##newpath##serializeURL( httpRequestData.content, arguments.event )#";
 
 			if ( httpRequestData.method eq "GET" ) {
 				cflocation( url = relocationUrl, statusCode = 301 );

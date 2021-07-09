@@ -9,7 +9,6 @@ component extends="tests.resources.BaseIntegrationTest" {
 		describe( "WireBox custom DSL", function(){
 			beforeEach( function( currentSpec ){
 				setup();
-				structDelete( request, "_lastInvalidEvent" );
 			} );
 
 			it( "can handle box setting namespace", function(){

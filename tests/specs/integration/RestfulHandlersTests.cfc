@@ -5,7 +5,6 @@ component extends="tests.resources.BaseIntegrationTest" {
 			beforeEach( function( currentSpec ){
 				// Setup as a new ColdBox request, VERY IMPORTANT. ELSE EVERYTHING LOOKS LIKE THE SAME REQUEST.
 				setup();
-				structDelete( request, "_lastInvalidEvent" );
 			} );
 
 			it( "can handle vanilla restful execution with custom matchers", function(){

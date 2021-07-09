@@ -11,6 +11,7 @@ component {
 				return random;
 			} )
 			.every( 15, "seconds" )
+			.delay( 60, "seconds" )
 			.onEnvironment( "development" );
 
 	}

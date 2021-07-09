@@ -1,13 +1,10 @@
-component
-	extends="tests.resources.BaseIntegrationTest"
-{
+component extends="tests.resources.BaseIntegrationTest" {
 
 	function run(){
 		describe( "ColdBox REST", function(){
 			beforeEach( function( currentSpec ){
 				// Setup as a new ColdBox request, VERY IMPORTANT. ELSE EVERYTHING LOOKS LIKE THE SAME REQUEST.
 				setup();
-				structDelete( request, "_lastInvalidEvent" );
 			} );
 
 			it( "can handle allowed HTTP methods in action annotations", function(){

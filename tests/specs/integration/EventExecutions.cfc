@@ -1,4 +1,4 @@
-component extends="tests.resources.BaseIntegrationTest"{
+component extends="tests.resources.BaseIntegrationTest" {
 
 	/*********************************** BDD SUITES ***********************************/
 
@@ -7,7 +7,6 @@ component extends="tests.resources.BaseIntegrationTest"{
 			beforeEach( function( currentSpec ){
 				// Setup as a new ColdBox request, VERY IMPORTANT. ELSE EVERYTHING LOOKS LIKE THE SAME REQUEST.
 				setup();
-				structDelete( request, "_lastInvalidEvent" );
 			} );
 
 			story( "I want to execute private event actions", function(){
@@ -24,9 +23,7 @@ component extends="tests.resources.BaseIntegrationTest"{
 					then( "it should fire the localized onInvalidHTTPMethod", function(){
 						// Execute
 						var e = this.GET( "rendering/testHTTPMethod" );
-						expect( e.getRenderedContent() ).toInclude(
-							"Yep, onInvalidHTTPMethod works!"
-						);
+						expect( e.getRenderedContent() ).toInclude( "Yep, onInvalidHTTPMethod works!" );
 					} );
 				} );
 			} );
@@ -69,10 +66,7 @@ component extends="tests.resources.BaseIntegrationTest"{
 			story( "I want to run named routes via runRoute()", function(){
 				given( "a valid route and params with no caching", function(){
 					then( "it should execute the route event", function(){
-						var event = execute(
-							event         = "main.routeRunner",
-							renderResults = true
-						);
+						var event = execute( event = "main.routeRunner", renderResults = true );
 						expect( event.getRenderedContent() ).toInclude( "unit test!" );
 					} );
 				} );
@@ -80,10 +74,7 @@ component extends="tests.resources.BaseIntegrationTest"{
 					then( "it should execute the route event", function(){
 						var cache = getCache( "template" );
 						cache.clearAll();
-						var event = execute(
-							event         = "main.routeRunnerWithCaching",
-							renderResults = true
-						);
+						var event = execute( event = "main.routeRunnerWithCaching", renderResults = true );
 						expect( event.getRenderedContent() ).toInclude( "unit test!" );
 						expect( cache.getSize() ).toBeGTE( 1 );
 					} );
