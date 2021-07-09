@@ -362,15 +362,11 @@ component {
 						}
 
 						var getEntityMap = function(){
-							try {
+							if( listFirst( variables.util.getHibernateVersion(), "." ) >= 5 ){
 								// Double array functions to convert from native java to cf java
-								// Hibernate v5+
 								return arrayToList( ormGetSessionFactory().getMetaModel().getAllEntityNames() ).listToArray();
-							} catch( any e ){
-								if ( ! listContains( e.message, "getMetaModel" ) ){
-									rethrow;
-								}
-								// Pre-Hibernate 5 syntax
+							} else {
+								// Hibernate v4 and older
 								return structKeyArray( ormGetSessionFactory().getAllClassMetadata() );
 							}
 						};
