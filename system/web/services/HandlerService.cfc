@@ -442,7 +442,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 		// If the override was changed by the interceptors then they updated the ehBean of execution
 		if ( iData.override ) {
-			return ehBean.getFullEvent();
+			return arguments.ehBean.getFullEvent();
 		}
 
 		// Param our last invalid event just incase
@@ -454,16 +454,18 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			if (
 				compareNoCase( arguments.event, request._lastInvalidEvent ) eq 0
 				&&
-				!structKeyExists( controller, "mockController" ) // Verify this is a real and not a mock controller.
+				!structKeyExists( vaariables.controller, "mockController" ) // Verify this is a real and not a mock controller.
 			) {
 				var exceptionMessage = "The invalidEventHandler event (#variables.invalidEventHandler#) is also invalid: #arguments.event#";
 				// Extra Debugging for illusive CI/Tests exceptions: Remove at one point if discovered.
 				variables.log.error( exceptionMessage, {
-					event              : arguments.event,
-					requestEvent : request._lastInvalidEvent ?: "NONE",
-					registeredHandlers : variables.registeredHandlers,
-					fullEvent          : ehBean.getFullEvent(),
-					callStack : callStackGet()
+					event              	: arguments.event,
+					requestEvent 		: request._lastInvalidEvent ?: "NONE",
+					registeredHandlers 	: variables.registeredHandlers,
+					fullEvent          	: ehBean.getFullEvent(),
+					callStack 			: callStackGet(),
+					routedURL 			: variables.controller.getRequestService().getContext().getCurrentRoutedURL(),
+					route 				: variables.controller.getRequestService().getContext().getCurrentRoute()
 				} );
 				// Now throw the exception
 				throw(

@@ -634,7 +634,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 					.$args( arguments.name )
 					.$results( headers[ arguments.name ] );
 			} );
-		return execute( argumentCollection = arguments );
+		return this.execute( argumentCollection = arguments );
 	}
 
 	/**
