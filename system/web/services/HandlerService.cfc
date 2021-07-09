@@ -454,7 +454,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			if (
 				compareNoCase( arguments.event, request._lastInvalidEvent ) eq 0
 				&&
-				!structKeyExists( vaariables.controller, "mockController" ) // Verify this is a real and not a mock controller.
+				!structKeyExists( variables.controller, "mockController" ) // Verify this is a real and not a mock controller.
 			) {
 				var exceptionMessage = "The invalidEventHandler event (#variables.invalidEventHandler#) is also invalid: #arguments.event#";
 				// Extra Debugging for illusive CI/Tests exceptions: Remove at one point if discovered.
