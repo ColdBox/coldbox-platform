@@ -507,11 +507,16 @@ component {
 	public string function getHibernateVersion(){
 		var version = createObject( "java", "org.hibernate.Version" );
 
-		if ( version.getVersionString() != "[WORKING]" ){
+		if ( version.getVersionString() != "[WORKING]" ) {
 			return version.getVersionString();
 		} else {
 			// Due to the insanity of a broken `MANIFEST.MF` in the Lucee Hibernate bundle, we need to pull the `Bundle-Version` instead
-			return version.getClass().getClassLoader().getBundle().getVersion().toString();
+			return version
+				.getClass()
+				.getClassLoader()
+				.getBundle()
+				.getVersion()
+				.toString();
 		}
 	}
 
