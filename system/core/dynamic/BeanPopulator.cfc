@@ -362,10 +362,11 @@ component {
 						}
 
 						var getEntityMap = function(){
-							if( listFind( "2018,2021", server.coldfusion.productVersion.listFirst() ) ){
+							if( listFirst( variables.util.getHibernateVersion(), "." ) >= 5 ){
 								// Double array functions to convert from native java to cf java
 								return arrayToList( ormGetSessionFactory().getMetaModel().getAllEntityNames() ).listToArray();
 							} else {
+								// Hibernate v4 and older
 								return structKeyArray( ormGetSessionFactory().getAllClassMetadata() );
 							}
 						};
