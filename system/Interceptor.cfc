@@ -60,7 +60,7 @@ component
 	 * Internal ColdBox event so all interceptors can load their UDF helpers
 	 * DO NOT OVERRIDE or funky things will happen!
 	 */
-	function loadInterceptorHelpers( event, interceptData ){
+	function cbLoadInterceptorHelpers( event, interceptData ){
 		// Load global UDF Libraries into target
 		loadApplicationHelpers();
 	}

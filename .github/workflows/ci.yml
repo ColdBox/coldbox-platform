@@ -8,7 +8,7 @@ on:
       - master
 
 env:
-  COLDBOX_VERSION: 6.6.0
+  COLDBOX_VERSION: 6.5.1
   COLDBOX_PRERELEASE: false
 
 jobs:

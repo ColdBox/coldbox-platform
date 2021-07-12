@@ -7,6 +7,8 @@ component extends="coldbox.system.Interceptor" {
 	}
 
 	function preProcess( event, data, rc, prc ){
+		// Test Delayed loading of interceptor helpers
+		appHelper();
 		// Placed here for testing purposes
 		flash.put( "name", "luis" );
 	}

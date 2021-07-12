@@ -35,7 +35,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			// Application startup points
 			"afterConfigurationLoad",
 			"afterAspectsLoad",
-			"loadInterceptorHelpers",
+			"cbLoadInterceptorHelpers",
 			"preReinit",
 			// On Actions
 			"onException",
@@ -603,11 +603,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		if (
 			structKeyExists( arguments.metadata, "extends" )
 			&&
-			(
-				arguments.metadata.extends.name neq "coldbox.system.Interceptor"
-				&&
-				arguments.metadata.extends.name neq "coldbox.system.EventHandler"
-			)
+			arguments.metadata.extends.name neq "coldbox.system.EventHandler"
 		) {
 			// Recursive lookup
 			parseMetadata( arguments.metadata.extends, pointsFound );

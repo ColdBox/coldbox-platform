@@ -81,21 +81,16 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 		// Activate All Modules
 		variables.controller.getModuleService().activateAllModules();
-
 		// Execute afterConfigurationLoad
 		variables.controller.getInterceptorService().announce( "afterConfigurationLoad" );
-
 		// Rescan interceptors in case modules had interception poitns to register
 		variables.controller.getInterceptorService().rescanInterceptors();
 		// Rebuild flash here just in case modules or afterConfigurationLoad changes settings.
 		variables.controller.getRequestService().rebuildFlashScope();
-
 		// Internal event for interceptors to load global UDF Helpers
-		variables.controller.getInterceptorService().announce( "loadInterceptorHelpers" );
-
+		variables.controller.getInterceptorService().announce( "cbLoadInterceptorHelpers" );
 		// Execute afterAspectsLoad: all module interceptions are registered and flash rebuilt if needed
 		variables.controller.getInterceptorService().announce( "afterAspectsLoad" );
-
 		// Flag the initiation, Framework is ready to serve requests. Praise be to GOD.
 		variables.controller.setColdboxInitiated( true );
 		variables.log.info( "+++ ColdBox is ready to serve requests" );
