@@ -163,6 +163,9 @@ component serializable="false" accessors="true" {
 						structDelete( application, "wirebox" );
 						structDelete( request, "cb_requestContext" );
 						rethrow;
+					} finally {
+						application.fwReinit = false;
+						structDelete( request, "cb_requestContext" );
 					}
 				}
 			}
