@@ -16,7 +16,6 @@ jobs:
       fail-fast: false
       matrix:
         cfengine: ["lucee@5", "lucee@be", "adobe@2016", "adobe@2018" ]
-        javaVersion: [ "openjdk8", "openjdk11" ]
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
@@ -52,9 +51,9 @@ jobs:
         run: |
           box install
 
-      - name: Start ${{ matrix.cfengine }}/${{ matrix.javaVersion }} Server
+      - name: Start ${{ matrix.cfengine }} Server
         run: |
-          box server start serverConfigFile="server-${{ matrix.cfengine }}.json" javaVersion=${{ matrix.javaVersion }} --noSaveSettings --debug
+          box server start serverConfigFile="server-${{ matrix.cfengine }}.json" --noSaveSettings --debug
           # Test the harness
           curl http://127.0.0.1:8599/test-harness
 
@@ -67,7 +66,7 @@ jobs:
         if: always()
         with:
           files: tests/results/**/*.xml
-          check_name: "${{ matrix.cfengine }}/${{ matrix.javaVersion }} Test Results"
+          check_name: "${{ matrix.cfengine }} Test Results"
           summary: true
 
       - name: Upload Test Results Artifacts
@@ -85,8 +84,8 @@ jobs:
           SLACK_CHANNEL: coldbox
           SLACK_COLOR: ${{ job.status }} # or a specific color like 'green' or '#ff00ff'
           SLACK_ICON_EMOJI: ":bell:"
-          SLACK_MESSAGE: 'ColdBox tests failed :cry:, check them out here: https://github.com/coldbox/coldbox-platform/actions'
-          SLACK_TITLE: ColdBox Tests For ${{ matrix.cfengine }}/${{ matrix.javaVersion }} failed
+          SLACK_MESSAGE: 'ColdBox tests ${{ job.status }} check them out here: https://github.com/coldbox/coldbox-platform/actions'
+          SLACK_TITLE: ColdBox Tests For ${{ matrix.cfengine }} ${{ job.status }}
           SLACK_USERNAME: CI
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
 
@@ -94,7 +93,7 @@ jobs:
         if: ${{ failure() }}
         uses: actions/upload-artifact@v2
         with:
-          name: Failure Debugging Info - ${{ matrix.cfengine }} - ${{ matrix.javaVersion }}
+          name: Failure Debugging Info - ${{ matrix.cfengine }}
           path: |
             .engine/**/logs/*
             .engine/**/WEB-INF/cfusion/logs/*

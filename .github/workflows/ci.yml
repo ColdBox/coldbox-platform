@@ -99,7 +99,7 @@ jobs:
             tests/results/**/*
 
       - name: Slack Notification
-        if: ${{ false && failure() }}
+        if: ${{ failure() }}
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_CHANNEL: coldbox
