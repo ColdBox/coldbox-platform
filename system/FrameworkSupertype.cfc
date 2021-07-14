@@ -1,11 +1,11 @@
 /**
-* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-* www.ortussolutions.com
-* ---
-* Base class for all things Box
-* @author Luis Majano <lmajano@ortussolutions.com>
-*/
-component serializable="false" accessors="true"{
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * Base class for all things Box
+ * @author Luis Majano <lmajano@ortussolutions.com>
+ */
+component serializable="false" accessors="true" {
 
 	/**
 	 * App Controller
@@ -17,8 +17,8 @@ component serializable="false" accessors="true"{
 	 */
 	function getModel(){
 		throw(
-			message="getModel() is now fully deprecated in favor of getInstance().",
-			type = "DeprecationException"
+			message = "getModel() is now fully deprecated in favor of getInstance().",
+			type    = "DeprecationException"
 		);
 	}
 
@@ -31,8 +31,8 @@ component serializable="false" accessors="true"{
 	 *
 	 * @return The requested instance
 	 */
-	function getInstance( name, initArguments={}, dsl ){
-		return variables.controller.getWirebox().getInstance( argumentCollection=arguments );
+	function getInstance( name, initArguments = {}, dsl ){
+		return variables.controller.getWirebox().getInstance( argumentCollection = arguments );
 	}
 
 	/**
@@ -57,42 +57,42 @@ component serializable="false" accessors="true"{
 	 */
 	function populateModel(
 		required model,
-		scope="",
-		boolean trustedSetter=false,
-		include="",
-		exclude="",
-		boolean ignoreEmpty=false,
-		nullEmptyInclude="",
-		nullEmptyExclude="",
-		boolean composeRelationships=false,
-		struct memento=getRequestCollection(),
+		scope                        = "",
+		boolean trustedSetter        = false,
+		include                      = "",
+		exclude                      = "",
+		boolean ignoreEmpty          = false,
+		nullEmptyInclude             = "",
+		nullEmptyExclude             = "",
+		boolean composeRelationships = false,
+		struct memento               = getRequestCollection(),
 		string jsonstring,
 		string xml,
 		query qry
 	){
 		// Do we have a model or name
-		if( isSimpleValue( arguments.model ) ){
+		if ( isSimpleValue( arguments.model ) ) {
 			arguments.target = getInstance( model );
 		} else {
 			arguments.target = arguments.model;
 		}
 
 		// json?
-		if( structKeyExists( arguments, "jsonstring" ) ){
-			return wirebox.getObjectPopulator().populateFromJSON( argumentCollection=arguments );
+		if ( structKeyExists( arguments, "jsonstring" ) ) {
+			return wirebox.getObjectPopulator().populateFromJSON( argumentCollection = arguments );
 		}
 		// XML
-		else if( structKeyExists( arguments, "xml" ) ){
-			return wirebox.getObjectPopulator().populateFromXML( argumentCollection=arguments );
+		else if ( structKeyExists( arguments, "xml" ) ) {
+			return wirebox.getObjectPopulator().populateFromXML( argumentCollection = arguments );
 		}
 		// Query
-		else if( structKeyExists( arguments, "qry" ) ){
-			return wirebox.getObjectPopulator().populateFromQuery( argumentCollection=arguments );
+		else if ( structKeyExists( arguments, "qry" ) ) {
+			return wirebox.getObjectPopulator().populateFromQuery( argumentCollection = arguments );
 		}
 		// Mementos
 		else {
 			// populate
-			return wirebox.getObjectPopulator().populateFromStruct( argumentCollection=arguments );
+			return wirebox.getObjectPopulator().populateFromStruct( argumentCollection = arguments );
 		}
 	}
 
@@ -121,8 +121,8 @@ component serializable="false" accessors="true"{
 	 *
 	 * @return The requeted collection
 	 */
-	struct function getRequestCollection( boolean private=false ){
-		return getRequestContext().getCollection( private=arguments.private );
+	struct function getRequestCollection( boolean private = false ){
+		return getRequestContext().getCollection( private = arguments.private );
 	}
 
 	/**
@@ -149,23 +149,23 @@ component serializable="false" accessors="true"{
 	 * @return The rendered view
 	 */
 	function renderView(
-		view="",
-		struct args={},
-		module="",
-		boolean cache=false,
-		cacheTimeout="",
-		cacheLastAccessTimeout="",
-		cacheSuffix="",
-		cacheProvider="template",
+		view                   = "",
+		struct args            = {},
+		module                 = "",
+		boolean cache          = false,
+		cacheTimeout           = "",
+		cacheLastAccessTimeout = "",
+		cacheSuffix            = "",
+		cacheProvider          = "template",
 		collection,
-		collectionAs="",
-		numeric collectionStartRow="1",
-		numeric collectionMaxRows=0,
-		collectionDelim="",
-		boolean prePostExempt=false,
+		collectionAs               = "",
+		numeric collectionStartRow = "1",
+		numeric collectionMaxRows  = 0,
+		collectionDelim            = "",
+		boolean prePostExempt      = false,
 		name
 	){
-		return variables.controller.getRenderer().renderView( argumentCollection=arguments );
+		return variables.controller.getRenderer().renderView( argumentCollection = arguments );
 	}
 
 	/**
@@ -190,31 +190,31 @@ component serializable="false" accessors="true"{
 	 * @return The rendered view
 	 */
 	function view(
-		view="",
-		struct args={},
-		module="",
-		boolean cache=false,
-		cacheTimeout="",
-		cacheLastAccessTimeout="",
-		cacheSuffix="",
-		cacheProvider="template",
+		view                   = "",
+		struct args            = {},
+		module                 = "",
+		boolean cache          = false,
+		cacheTimeout           = "",
+		cacheLastAccessTimeout = "",
+		cacheSuffix            = "",
+		cacheProvider          = "template",
 		collection,
-		collectionAs="",
-		numeric collectionStartRow="1",
-		numeric collectionMaxRows=0,
-		collectionDelim="",
-		boolean prePostExempt=false,
+		collectionAs               = "",
+		numeric collectionStartRow = "1",
+		numeric collectionMaxRows  = 0,
+		collectionDelim            = "",
+		boolean prePostExempt      = false,
 		name
 	){
-		return variables.controller.getRenderer().renderView( argumentCollection=arguments );
+		return variables.controller.getRenderer().renderView( argumentCollection = arguments );
 	}
 
 	/**
-     * Renders an external view anywhere that cfinclude works.
+	 * Renders an external view anywhere that cfinclude works.
 	 *
 	 * @deprecated Use `externalView()` instead
 	 *
-     * @view The the view to render
+	 * @view The the view to render
 	 * @args A struct of arguments to pass into the view for rendering, will be available as 'args' in the view.
 	 * @cache Cached the view output or not, defaults to false
 	 * @cacheTimeout The time in minutes to cache the view
@@ -224,22 +224,22 @@ component serializable="false" accessors="true"{
 	 *
 	 * @return The rendered view
 	 */
-    function renderExternalView(
-    	required view,
-    	struct args={},
-    	boolean cache=false,
-    	cacheTimeout="",
-    	cacheLastAccessTimeout="",
-    	cacheSuffix="",
-    	cacheProvider="template"
-    ){
-		return variables.controller.getRenderer().renderExternalView( argumentCollection=arguments );
+	function renderExternalView(
+		required view,
+		struct args            = {},
+		boolean cache          = false,
+		cacheTimeout           = "",
+		cacheLastAccessTimeout = "",
+		cacheSuffix            = "",
+		cacheProvider          = "template"
+	){
+		return variables.controller.getRenderer().renderExternalView( argumentCollection = arguments );
 	}
 
 	/**
-     * Renders an external view anywhere that cfinclude works.
+	 * Renders an external view anywhere that cfinclude works.
 	 *
-     * @view The the view to render
+	 * @view The the view to render
 	 * @args A struct of arguments to pass into the view for rendering, will be available as 'args' in the view.
 	 * @cache Cached the view output or not, defaults to false
 	 * @cacheTimeout The time in minutes to cache the view
@@ -249,16 +249,16 @@ component serializable="false" accessors="true"{
 	 *
 	 * @return The rendered view
 	 */
-    function externalView(
-    	required view,
-    	struct args={},
-    	boolean cache=false,
-    	cacheTimeout="",
-    	cacheLastAccessTimeout="",
-    	cacheSuffix="",
-    	cacheProvider="template"
-    ){
-		return variables.controller.getRenderer().renderExternalView( argumentCollection=arguments );
+	function externalView(
+		required view,
+		struct args            = {},
+		boolean cache          = false,
+		cacheTimeout           = "",
+		cacheLastAccessTimeout = "",
+		cacheSuffix            = "",
+		cacheProvider          = "template"
+	){
+		return variables.controller.getRenderer().renderExternalView( argumentCollection = arguments );
 	}
 
 	/**
@@ -277,13 +277,13 @@ component serializable="false" accessors="true"{
 	 */
 	function renderLayout(
 		layout,
-		module="",
-		view="",
-		struct args={},
-		viewModule="",
-		boolean prePostExempt=false
+		module                = "",
+		view                  = "",
+		struct args           = {},
+		viewModule            = "",
+		boolean prePostExempt = false
 	){
-		return variables.controller.getRenderer().renderLayout( argumentCollection=arguments );
+		return variables.controller.getRenderer().renderLayout( argumentCollection = arguments );
 	}
 
 	/**
@@ -300,13 +300,13 @@ component serializable="false" accessors="true"{
 	 */
 	function layout(
 		layout,
-		module="",
-		view="",
-		struct args={},
-		viewModule="",
-		boolean prePostExempt=false
+		module                = "",
+		view                  = "",
+		struct args           = {},
+		viewModule            = "",
+		boolean prePostExempt = false
 	){
-		return variables.controller.getRenderer().renderLayout( argumentCollection=arguments );
+		return variables.controller.getRenderer().renderLayout( argumentCollection = arguments );
 	}
 
 	/**
@@ -317,7 +317,7 @@ component serializable="false" accessors="true"{
 	 * @return Interceptor
 	 */
 	function getInterceptor( required interceptorName ){
-		return variables.controller.getInterceptorService().getInterceptor( argumentCollection=arguments );
+		return variables.controller.getInterceptorService().getInterceptor( argumentCollection = arguments );
 	}
 
 	/**
@@ -345,18 +345,18 @@ component serializable="false" accessors="true"{
 	 */
 	any function announce(
 		required state,
-		struct data={},
-		boolean async=false,
-		boolean asyncAll=false,
-		boolean asyncAllJoin=true,
-		asyncPriority="NORMAL",
-		numeric asyncJoinTimeout=0
+		struct data              = {},
+		boolean async            = false,
+		boolean asyncAll         = false,
+		boolean asyncAllJoin     = true,
+		asyncPriority            = "NORMAL",
+		numeric asyncJoinTimeout = 0
 	){
 		// Backwards Compat: Remove by ColdBox 7
-		if( !isNull( arguments.interceptData ) ){
+		if ( !isNull( arguments.interceptData ) ) {
 			arguments.data = arguments.interceptData;
 		}
-		return variables.controller.getInterceptorService().announce( argumentCollection=arguments );
+		return variables.controller.getInterceptorService().announce( argumentCollection = arguments );
 	}
 
 	/**
@@ -364,15 +364,15 @@ component serializable="false" accessors="true"{
 	 */
 	function announceInterception(
 		required state,
-		struct interceptData={},
-		boolean async=false,
-		boolean asyncAll=false,
-		boolean asyncAllJoin=true,
-		asyncPriority="NORMAL",
-		numeric asyncJoinTimeout=0
+		struct interceptData     = {},
+		boolean async            = false,
+		boolean asyncAll         = false,
+		boolean asyncAllJoin     = true,
+		asyncPriority            = "NORMAL",
+		numeric asyncJoinTimeout = 0
 	){
-		arguments.data 	= arguments.interceptData;
-		return announce( argumentCollection=arguments );
+		arguments.data = arguments.interceptData;
+		return announce( argumentCollection = arguments );
 	}
 
 	/**
@@ -397,7 +397,7 @@ component serializable="false" accessors="true"{
 	 * @return The requested setting
 	 */
 	function getSetting( required name, defaultValue ){
-		return variables.controller.getSetting( argumentCollection=arguments );
+		return variables.controller.getSetting( argumentCollection = arguments );
 	}
 
 	/**
@@ -411,7 +411,7 @@ component serializable="false" accessors="true"{
 	 * @return The framework setting value
 	 */
 	function getColdBoxSetting( required name, defaultValue ){
-		return variables.controller.getColdBoxSetting( argumentCollection=arguments );
+		return variables.controller.getColdBoxSetting( argumentCollection = arguments );
 	}
 
 	/**
@@ -420,7 +420,7 @@ component serializable="false" accessors="true"{
 	 * @name The key of the setting
 	 */
 	boolean function settingExists( required name ){
-		return variables.controller.settingExists( argumentCollection=arguments );
+		return variables.controller.settingExists( argumentCollection = arguments );
 	}
 
 	/**
@@ -432,7 +432,7 @@ component serializable="false" accessors="true"{
 	 * @return FrameworkSuperType
 	 */
 	any function setSetting( required name, required value ){
-		controller.setSetting( argumentCollection=arguments );
+		controller.setSetting( argumentCollection = arguments );
 		return this;
 	}
 
@@ -448,8 +448,10 @@ component serializable="false" accessors="true"{
 	any function getModuleSettings( required module, setting, defaultValue ){
 		var moduleSettings = getModuleConfig( arguments.module ).settings;
 		// return specific setting?
-		if( structKeyExists( arguments, "setting" ) ){
-			return ( structKeyExists( moduleSettings, arguments.setting ) ? moduleSettings[ arguments.setting ] : arguments.defaultValue );
+		if ( structKeyExists( arguments, "setting" ) ) {
+			return (
+				structKeyExists( moduleSettings, arguments.setting ) ? moduleSettings[ arguments.setting ] : arguments.defaultValue
+			);
 		}
 		return moduleSettings;
 	}
@@ -465,13 +467,13 @@ component serializable="false" accessors="true"{
 	 */
 	struct function getModuleConfig( required module ){
 		var mConfig = variables.controller.getSetting( "modules" );
-		if( structKeyExists( mConfig, arguments.module ) ){
+		if ( structKeyExists( mConfig, arguments.module ) ) {
 			return mConfig[ arguments.module ];
 		}
 		throw(
 			message = "The module you passed #arguments.module# is invalid.",
-			detail 	= "The loaded modules are #structKeyList( mConfig )#",
-			type 	= "InvalidModuleException"
+			detail  = "The loaded modules are #structKeyList( mConfig )#",
+			type    = "InvalidModuleException"
 		);
 	}
 
@@ -503,7 +505,7 @@ component serializable="false" accessors="true"{
 		boolean postProcessExempt,
 		numeric statusCode
 	){
-		controller.relocate( argumentCollection=arguments );
+		controller.relocate( argumentCollection = arguments );
 	}
 
 	/**
@@ -526,15 +528,15 @@ component serializable="false" accessors="true"{
 	 */
 	any function runRoute(
 		required name,
-		struct params={},
-		boolean cache=false,
-		cacheTimeout="",
-		cacheLastAccessTimeout="",
-		cacheSuffix="",
-		cacheProvider="template",
-		boolean prePostExempt=false
+		struct params          = {},
+		boolean cache          = false,
+		cacheTimeout           = "",
+		cacheLastAccessTimeout = "",
+		cacheSuffix            = "",
+		cacheProvider          = "template",
+		boolean prePostExempt  = false
 	){
-		return variables.controller.runRoute( argumentCollection=arguments );
+		return variables.controller.runRoute( argumentCollection = arguments );
 	}
 
 	/**
@@ -554,18 +556,18 @@ component serializable="false" accessors="true"{
 	 * @return null or anything produced from the event
 	 */
 	function runEvent(
-		event="",
-		boolean prePostExempt=false,
-		boolean private=false,
-		boolean defaultEvent=false,
-		struct eventArguments={},
-		boolean cache=false,
-		cacheTimeout="",
-		cacheLastAccessTimeout="",
-		cacheSuffix="",
-		cacheProvider="template"
+		event                  = "",
+		boolean prePostExempt  = false,
+		boolean private        = false,
+		boolean defaultEvent   = false,
+		struct eventArguments  = {},
+		boolean cache          = false,
+		cacheTimeout           = "",
+		cacheLastAccessTimeout = "",
+		cacheSuffix            = "",
+		cacheProvider          = "template"
 	){
-		return variables.controller.runEvent( argumentCollection=arguments );
+		return variables.controller.runEvent( argumentCollection = arguments );
 	}
 
 	/**
@@ -576,8 +578,8 @@ component serializable="false" accessors="true"{
 	 *
 	 * @return FrameworkSuperType
 	 */
-	function persistVariables( persist="", struct persistStruct={} ){
-		controller.persistVariables( argumentCollection=arguments );
+	function persistVariables( persist = "", struct persistStruct = {} ){
+		controller.persistVariables( argumentCollection = arguments );
 		return this;
 	}
 
@@ -590,7 +592,7 @@ component serializable="false" accessors="true"{
 	 * @defaultValue The default value to use if the key does not exist in the system properties or the env
 	 */
 	function getSystemSetting( required key, defaultValue ){
-		return variables.controller.getUtil().getSystemSetting( argumentCollection=arguments );
+		return variables.controller.getUtil().getSystemSetting( argumentCollection = arguments );
 	}
 
 	/**
@@ -600,7 +602,7 @@ component serializable="false" accessors="true"{
 	 * @defaultValue The default value to use if the key does not exist in the system properties or the env
 	 */
 	function getSystemProperty( required key, defaultValue ){
-		return variables.controller.getUtil().getSystemProperty( argumentCollection=arguments );
+		return variables.controller.getUtil().getSystemProperty( argumentCollection = arguments );
 	}
 
 	/**
@@ -610,7 +612,7 @@ component serializable="false" accessors="true"{
 	 * @defaultValue The default value to use if the key does not exist in the system properties or the env
 	 */
 	function getEnv( required key, defaultValue ){
-		return variables.controller.getUtil().getEnv( argumentCollection=arguments );
+		return variables.controller.getUtil().getEnv( argumentCollection = arguments );
 	}
 
 	/**
@@ -619,7 +621,7 @@ component serializable="false" accessors="true"{
 	 * @pathToCheck The file path to check
 	 */
 	string function locateFilePath( required pathToCheck ){
-		return variables.controller.locateFilePath( argumentCollection=arguments );
+		return variables.controller.locateFilePath( argumentCollection = arguments );
 	}
 
 	/**
@@ -628,7 +630,7 @@ component serializable="false" accessors="true"{
 	 * @pathToCheck The file path to check
 	 */
 	string function locateDirectoryPath( required pathToCheck ){
-		return variables.controller.locateDirectoryPath( argumentCollection=arguments );
+		return variables.controller.locateDirectoryPath( argumentCollection = arguments );
 	}
 
 	/**
@@ -638,7 +640,7 @@ component serializable="false" accessors="true"{
 	 * @asset The asset(s) to load, only js or css files. This can also be a comma delimited list.
 	 */
 	string function addAsset( required asset ){
-		return getInstance( "@HTMLHelper" ).addAsset( argumentCollection=arguments );
+		return getInstance( "@HTMLHelper" ).addAsset( argumentCollection = arguments );
 	}
 
 	/**
@@ -652,42 +654,42 @@ component serializable="false" accessors="true"{
 	 */
 	any function includeUDF( required udflibrary ){
 		// Init the mixin location and caches reference
-		var defaultCache   		= getCache( "default" );
-		var mixinLocationKey 	= hash( variables.controller.getAppHash() & arguments.udfLibrary );
+		var defaultCache     = getCache( "default" );
+		var mixinLocationKey = hash( variables.controller.getAppHash() & arguments.udfLibrary );
 
 		var targetLocation = defaultCache.getOrSet(
 			// Key
-            "includeUDFLocation-#mixinLocationKey#",
+			"includeUDFLocation-#mixinLocationKey#",
 			// Producer
-            function(){
-				var appMapping		= variables.controller.getSetting( "AppMapping" );
-				var UDFFullPath 	= expandPath( udflibrary );
+			function(){
+				var appMapping      = variables.controller.getSetting( "AppMapping" );
+				var UDFFullPath     = expandPath( udflibrary );
 				var UDFRelativePath = expandPath( "/" & appMapping & "/" & udflibrary );
 
 				// Relative Checks First
-				if( fileExists( UDFRelativePath ) ){
+				if ( fileExists( UDFRelativePath ) ) {
 					targetLocation = "/" & appMapping & "/" & udflibrary;
 				}
 				// checks if no .cfc or .cfm where sent
-				else if ( fileExists(UDFRelativePath & ".cfc") ){
+				else if ( fileExists( UDFRelativePath & ".cfc" ) ) {
 					targetLocation = "/" & appMapping & "/" & udflibrary & ".cfc";
-				} else if ( fileExists(UDFRelativePath & ".cfm") ){
+				} else if ( fileExists( UDFRelativePath & ".cfm" ) ) {
 					targetLocation = "/" & appMapping & "/" & udflibrary & ".cfm";
-				} else if ( fileExists( UDFFullPath ) ){
+				} else if ( fileExists( UDFFullPath ) ) {
 					targetLocation = "#udflibrary#";
-				} else if ( fileExists( UDFFullPath & ".cfc" ) ){
+				} else if ( fileExists( UDFFullPath & ".cfc" ) ) {
 					targetLocation = "#udflibrary#.cfc";
-				} else if ( fileExists( UDFFullPath & ".cfm" ) ){
+				} else if ( fileExists( UDFFullPath & ".cfm" ) ) {
 					targetLocation = "#udflibrary#.cfm";
 				} else {
 					throw(
 						message = "Error loading UDF library: #udflibrary#",
-						detail 	= "The UDF library was not found.  Please make sure you verify the file location.",
-						type 	= "UDFLibraryNotFoundException"
+						detail  = "The UDF library was not found.  Please make sure you verify the file location.",
+						type    = "UDFLibraryNotFoundException"
 					);
 				}
 				return targetLocation;
-            },
+			},
 			// Timeout: 1 week
 			10080
 		);
@@ -702,18 +704,19 @@ component serializable="false" accessors="true"{
 	 * Load the global application helper libraries defined in the applicationHelper Setting of your application.
 	 * This is called by the framework ONLY! Use at your own risk
 	 *
+	 * @force Used when called by a known virtual inheritance family tree.
+	 *
 	 * @return FrameworkSuperType
 	 */
-	any function loadApplicationHelpers(){
-		// Skip if we've already mixed in a super class
-		if( structKeyExists( this, '$super' ) ) {
+	any function loadApplicationHelpers( boolean force = false ){
+		if ( structKeyExists( this, "$super" ) && !arguments.force ) {
 			return this;
 		}
 
 		// Inject global helpers
-		var helpers	= variables.controller.getSetting( "applicationHelper" );
+		var helpers = variables.controller.getSetting( "applicationHelper" );
 
-		for( var thisHelper in helpers ){
+		for ( var thisHelper in helpers ) {
 			includeUDF( thisHelper );
 		}
 
@@ -738,10 +741,14 @@ component serializable="false" accessors="true"{
 	 *
 	 * @return Returns the SuperType object for chaining
 	 */
-	function when( required boolean target, required success, failure ){
-		if( arguments.target ){
+	function when(
+		required boolean target,
+		required success,
+		failure
+	){
+		if ( arguments.target ) {
 			arguments.success();
-		} else if( !isNull( arguments.failure ) ) {
+		} else if ( !isNull( arguments.failure ) ) {
 			arguments.failure();
 		}
 		return this;

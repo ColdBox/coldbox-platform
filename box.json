@@ -1,6 +1,6 @@
 {
     "name":"ColdBox Platform",
-    "version":"@build.version@+@build.number@",
+    "version":"6.5.2",
     "location":"https://downloads.ortussolutions.com/ortussolutions/coldbox/@build.version@/coldbox-@build.version@.zip",
     "author":"Ortus Solutions <info@ortussolutions.com>",
     "slug":"coldbox",
@@ -48,6 +48,7 @@
         "testbox":"testbox/"
     },
     "scripts":{
+		"release":"recipe build/release.boxr",
         "format":"cfformat run system/**/*.cfc,tests/specs/**/*.cfc --overwrite",
         "format:watch":"cfformat watch system/**/*.cfc,tests/specs/**/*.cfc ./.cfformat.json",
         "format:check":"cfformat check system/**/*.cfc,tests/specs/**/*.cfc",

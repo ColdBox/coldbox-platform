@@ -62,7 +62,7 @@ component
 	 */
 	function cbLoadInterceptorHelpers( event, interceptData ){
 		// Load global UDF Libraries into target
-		loadApplicationHelpers();
+		loadApplicationHelpers( force: true );
 	}
 
 	/**

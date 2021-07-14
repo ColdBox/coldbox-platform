@@ -357,15 +357,26 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				// Register the point
 				registerInterceptionPoint(
 					interceptorKey = objectName,
-					state          = stateKey,
+					state          = arguments.stateKey,
 					oInterceptor   = oInterceptor,
-					interceptorMD  = stateValue
+					interceptorMD  = arguments.stateValue
 				);
 				// Debug log
 				if ( variables.log.canDebug() ) {
-					variables.log.debug( "Registering #objectName# on '#stateKey#' interception point" );
+					variables.log.debug( "Registering #objectName# on '#arguments.stateKey#' interception point" );
 				}
 			} );
+
+			// Register Core Internal ColdBox Points
+			// We do this manually as CFML Engines do not add mixins to metadata when using virtual inheritance
+			if( structKeyExists( oInterceptor, "cbLoadInterceptorHelpers"  ) ){
+				// Register the point
+				registerInterceptionPoint(
+					interceptorKey = objectName,
+					state          = "cbLoadInterceptorHelpers",
+					oInterceptor   = oInterceptor
+				);
+			}
 		}
 		// end lock
 
