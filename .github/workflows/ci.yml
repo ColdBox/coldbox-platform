@@ -8,7 +8,6 @@ on:
       - master
 
 env:
-  COLDBOX_VERSION: 6.6.0
   COLDBOX_PRERELEASE: false
 
 jobs:
@@ -160,6 +159,8 @@ jobs:
       - name: Setup Environment Variables For Build Process
         id: current_version
         run: |
+          echo "COLDBOX_VERSION=`cat box.json | jq '.version' -r`" >> $GITHUB_ENV
+          box package set version=@build.version@+@build.number@
           # master or snapshot
           echo "BRANCH=master" >> $GITHUB_ENV
           if [ $GITHUB_REF == 'refs/heads/development' ]
