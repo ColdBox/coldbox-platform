@@ -848,16 +848,21 @@ component
 			var actions         = {};
 			var matchingActions = isStruct( matchingRoute.action ) ? matchingRoute.action : {};
 			structAppend( actions, matchingActions, true );
-			for ( var verb in matchingRoute.verbs ) {
-				structInsert( actions, verb, matchingRoute.event );
-			}
+            if ( matchingRoute.event != "" ) {
+                for ( var verb in matchingRoute.verbs ) {
+                    structInsert( actions, verb, matchingRoute.event );
+                }
+            }
 			var thisRouteActions = isStruct( thisRoute.action ) ? thisRoute.action : {};
 			structAppend( actions, thisRouteActions, true );
-			for ( var verb in thisRoute.verbs ) {
-				structInsert( actions, verb, thisRoute.event );
-			}
+            if ( thisRoute.event != "" ) {
+                for ( var verb in thisRoute.verbs ) {
+                    structInsert( actions, verb, thisRoute.event );
+                }
+            }
 			matchingRoute.action = actions;
-			matchingRoute.verbs  = "";
+			matchingRoute.verbs  = structKeyList( actions );
+            matchingRoute.event = "";
 			return this;
 		}
 
