@@ -1,6 +1,6 @@
 {
     "name":"ColdBox Platform",
-    "version":"6.5.2",
+    "version":"6.6.0",
     "location":"https://downloads.ortussolutions.com/ortussolutions/coldbox/@build.version@/coldbox-@build.version@.zip",
     "author":"Ortus Solutions <info@ortussolutions.com>",
     "slug":"coldbox",
@@ -48,7 +48,7 @@
         "testbox":"testbox/"
     },
     "scripts":{
-		"release":"recipe build/release.boxr",
+        "release":"recipe build/release.boxr",
         "format":"cfformat run system/**/*.cfc,tests/specs/**/*.cfc --overwrite",
         "format:watch":"cfformat watch system/**/*.cfc,tests/specs/**/*.cfc ./.cfformat.json",
         "format:check":"cfformat check system/**/*.cfc,tests/specs/**/*.cfc",
@@ -62,6 +62,6 @@
         "log:2021":"server log coldbox-adobe@2021 --follow",
         "cfpm":"echo '\".engine/acf2021/WEB-INF/cfusion/bin/cfpm.sh\"' | run",
         "cfpm:install":"echo '\".engine/acf2021/WEB-INF/cfusion/bin/cfpm.sh\" install ${1}' | run",
-		"install:2021":"run-script cfpm:install zip,orm,mysql,postgresql,sqlserver,document,feed"
+        "install:2021":"run-script cfpm:install zip,orm,mysql,postgresql,sqlserver,document,feed"
     }
 }
