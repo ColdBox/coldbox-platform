@@ -1,7 +1,7 @@
 /**
  * I am a new interceptor
  */
-component extends="coldbox.system.Interceptor" {
+component{
 
 	void function configure(){
 	}
