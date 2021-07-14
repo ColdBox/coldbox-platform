@@ -307,50 +307,50 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			if ( routeResults.route.module.len() ) {
 				discoveredEvent = routeResults.route.module & ":" & discoveredEvent;
 			}
-        }
+		}
 
-        // Process HTTP Verbs
-        if (
-            routeResults.route.verbs.len()
-            and
-            !routeResults.route.verbs.listFindNoCase( httpMethod )
-        ) {
-            // Mark as invalid HTTP Exception
-            arguments.event.setIsInvalidHTTPMethod( true );
-            if ( variables.log.canDebug() ) {
-                variables.log.debug( "Invalid HTTP Method detected: #httpMethod#", routeResults.route );
-            }
-        }
+		// Process HTTP Verbs
+		if (
+			routeResults.route.verbs.len()
+			and
+			!routeResults.route.verbs.listFindNoCase( httpMethod )
+		) {
+			// Mark as invalid HTTP Exception
+			arguments.event.setIsInvalidHTTPMethod( true );
+			if ( variables.log.canDebug() ) {
+				variables.log.debug( "Invalid HTTP Method detected: #httpMethod#", routeResults.route );
+			}
+		}
 
-        // If the struct is empty, reset it to an empty string so it goes down the correct code path later on.
-        if ( isStruct( routeResults.route.action ) && structIsEmpty( routeResults.route.action ) ) {
-            routeResults.route.action = "";
-        }
+		// If the struct is empty, reset it to an empty string so it goes down the correct code path later on.
+		if ( isStruct( routeResults.route.action ) && structIsEmpty( routeResults.route.action ) ) {
+			routeResults.route.action = "";
+		}
 
-        // Check if using HTTP method actions via struct
-        if ( isStruct( routeResults.route.action ) ) {
-            // Verify HTTP method used is valid
-            if ( structKeyExists( routeResults.route.action, httpMethod ) ) {
-                discoveredEvent &= ( discoveredEvent == "" ? "" : "." ) & "#routeResults.route.action[ httpMethod ]#";
-                // Send for logging in debug mode
-                if ( variables.log.canDebug() ) {
-                    variables.log.debug(
-                        "Matched HTTP Method (#HTTPMethod#) to routed action: #routeResults.route.action[ httpMethod ]#"
-                    );
-                }
-            } else {
-                // Mark as invalid HTTP Exception
-                discoveredEvent &= ".onInvalidHTTPMethod";
-                arguments.event.setIsInvalidHTTPMethod( true );
-                if ( variables.log.canDebug() ) {
-                    variables.log.debug( "Invalid HTTP Method detected: #httpMethod#", routeResults.route );
-                }
-            }
-        }
-        // Simple value action
-        else if ( !isStruct( routeREsults.route.action ) && routeResults.route.action.len() ) {
-            discoveredEvent &= ( discoveredEvent == "" ? "" : "." ) & "#routeResults.route.action#";
-        }
+		// Check if using HTTP method actions via struct
+		if ( isStruct( routeResults.route.action ) ) {
+			// Verify HTTP method used is valid
+			if ( structKeyExists( routeResults.route.action, httpMethod ) ) {
+				discoveredEvent &= ( discoveredEvent == "" ? "" : "." ) & "#routeResults.route.action[ httpMethod ]#";
+				// Send for logging in debug mode
+				if ( variables.log.canDebug() ) {
+					variables.log.debug(
+						"Matched HTTP Method (#HTTPMethod#) to routed action: #routeResults.route.action[ httpMethod ]#"
+					);
+				}
+			} else {
+				// Mark as invalid HTTP Exception
+				discoveredEvent &= ".onInvalidHTTPMethod";
+				arguments.event.setIsInvalidHTTPMethod( true );
+				if ( variables.log.canDebug() ) {
+					variables.log.debug( "Invalid HTTP Method detected: #httpMethod#", routeResults.route );
+				}
+			}
+		}
+		// Simple value action
+		else if ( !isStruct( routeREsults.route.action ) && routeResults.route.action.len() ) {
+			discoveredEvent &= ( discoveredEvent == "" ? "" : "." ) & "#routeResults.route.action#";
+		}
 		// end if action exists
 
 		// See if View is Dispatched

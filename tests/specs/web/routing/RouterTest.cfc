@@ -191,11 +191,18 @@ component extends="coldbox.system.testing.BaseModelTest" {
 							3,
 							"The registered route should have two actions"
 						);
-                        expect( routes[ 1 ].event ).toBe( "", "The event must be empty for multiple HTTP verbs" );
-                        expect( routes[ 1 ].handler ).toBe( "", "No handler should be defined so the actions can define one" );
-						expect( routes[ 1 ].action ).toBe( { "GET" : "Photos.index", "POST" : "Photos.create", "DELETE": "BulkPhotos.delete" } );
-                        var verbs = routes[ 1 ].verbs;
-                        listSort( verbs, "textnocase", "asc" );
+						expect( routes[ 1 ].event ).toBe( "", "The event must be empty for multiple HTTP verbs" );
+						expect( routes[ 1 ].handler ).toBe(
+							"",
+							"No handler should be defined so the actions can define one"
+						);
+						expect( routes[ 1 ].action ).toBe( {
+							"GET"    : "Photos.index",
+							"POST"   : "Photos.create",
+							"DELETE" : "BulkPhotos.delete"
+						} );
+						var verbs = routes[ 1 ].verbs;
+						listSort( verbs, "textnocase", "asc" );
 						expect( verbs ).toBe( "DELETE,GET,POST" );
 					} );
 				} );
