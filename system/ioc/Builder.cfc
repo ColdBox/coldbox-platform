@@ -644,7 +644,11 @@ component serializable="false" accessors="true" {
 	 * @definition The dependency definition structure: name, dsl as keys
 	 * @targetObject The target object we are building the DSL dependency for
 	 */
-	private any function getWireBoxDSL( required definition, targetObject ){
+	private any function getWireBoxDSL(
+		required definition,
+		required targetID,
+		targetObject = ""
+	){
 		var thisType         = arguments.definition.dsl;
 		var thisTypeLen      = listLen( thisType, ":" );
 		var thisLocationType = "";
@@ -678,6 +682,9 @@ component serializable="false" accessors="true" {
 					}
 					case "properties": {
 						return variables.injector.getBinder().getProperties();
+					}
+					case "targetID": {
+						return arguments.targetID;
 					}
 				}
 				break;
