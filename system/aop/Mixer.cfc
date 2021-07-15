@@ -320,46 +320,48 @@ component accessors="true" {
 
 		// MD proxy Defaults
 		fncMD.name = arguments.jointPointMD.name;
-		if( structKeyExists( arguments.jointPointMD, "access" ) ){
+		if ( structKeyExists( arguments.jointPointMD, "access" ) ) {
 			fncMD.access = arguments.jointPointMD.access;
 		}
-		if( structKeyExists( arguments.jointPointMD, "output" ) ){
+		if ( structKeyExists( arguments.jointPointMD, "output" ) ) {
 			fncMD.output = arguments.jointPointMD.output;
 		}
-		if( structKeyExists( arguments.jointPointMD, "returntype" ) ){
+		if ( structKeyExists( arguments.jointPointMD, "returntype" ) ) {
 			fncMD.returntype = arguments.jointPointMD.returnType;
 		}
 		// Create Original Method Proxy Signature
-		if( fncMD.access eq "public" ){
-			udfOut.append( '<cfset this[ "#arguments.jointpoint#" ] = variables["aop_#hash( arguments.jointpoint )#" ]>#lb#' );
+		if ( fncMD.access eq "public" ) {
+			udfOut.append(
+				"<cfset this[ ""#arguments.jointpoint#"" ] = variables[""aop_#hash( arguments.jointpoint )#"" ]>#lb#"
+			);
 		}
 
-		var thisFNC = '
-		<:cffunction name="aop_#hash( arguments.jointpoint )#"
-					access="#fncMD.access#"
-					output="#fncMD.output#"
-					returntype="#fncMD.returntype#"
-					hint="WireBox AOP just rulez!"
+		var thisFNC = "
+		<:cffunction name=""aop_#hash( arguments.jointpoint )#""
+					access=""#fncMD.access#""
+					output=""#fncMD.output#""
+					returntype=""#fncMD.returntype#""
+					hint=""WireBox AOP just rulez!""
 		>
 			<cfscript>
 				// create new method invocation for this execution
-				var invocation = createObject( "component", "coldbox.system.aop.MethodInvocation" ).init(
-					method 			= "#arguments.jointPoint#",
+				var invocation = createObject( ""component"", ""coldbox.system.aop.MethodInvocation"" ).init(
+					method 			= ""#arguments.jointPoint#"",
 					args 			= arguments,
-					methodMetadata 	= "#mdJSON#",
+					methodMetadata 	= ""#mdJSON#"",
 					target 			= this,
-					targetName 		= "#mappingName#",
+					targetName 		= ""#mappingName#"",
 					targetMapping 	= this.$wbAOPTargetMapping,
-					interceptors 	= this.$wbAOPTargets[ "#arguments.jointPoint#" ].interceptors
+					interceptors 	= this.$wbAOPTargets[ ""#arguments.jointPoint#"" ].interceptors
 				);
 				// execute and return
 				return invocation.proceed();
 			</cfscript>
 		<:/cffunction>
 
-		<cfset variables[ "#arguments.jointpoint#" ] = variables[ "aop_#hash( arguments.jointpoint )#" ]>
-		<cfset structDelete( variables, "aop_#hash( jointpoint )#" ) >
-		';
+		<cfset variables[ ""#arguments.jointpoint#"" ] = variables[ ""aop_#hash( arguments.jointpoint )#"" ]>
+		<cfset structDelete( variables, ""aop_#hash( jointpoint )#"" ) >
+		";
 
 		// Do : replacement, due to inline compilation avoidances
 		thisFNC = replace( thisFNC, "<:", "<", "all" );

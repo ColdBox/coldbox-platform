@@ -319,10 +319,7 @@
 		assertEquals( "luis", p );
 
 		// wirebox:targetID
-		data = {
-            name : "luis",
-            dsl : "wirebox:targetID"
-        };
+		data = { name : "luis", dsl : "wirebox:targetID" };
 		p    = builder.getWireBoxDSL( data, targetID );
 		assertEquals( targetID, p );
 	}
