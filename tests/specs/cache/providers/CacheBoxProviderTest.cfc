@@ -164,15 +164,16 @@
 	}
 
 	function testGetMulti(){
-		testVal = { name : "luis", age : 32 };
-		cache.getObjectStore().set( "test", testVal, 20 );
+		var testVal = { name : "luis", age : 32 };
+		cache.clearAll();
 		cache.clearStatistics();
+		cache.getObjectStore().set( "test", testVal, 20 );
 
-		results = cache.getMulti( "test,test2" );
+		var results = cache.getMulti( "test,test2" );
 		// debug(results);
 
-		assertEquals( testVal, results.test );
-		assertFalse( structKeyExists( results, "test2" ) );
+		expect(	isNull( results.test ) ).toBeFalse();
+		expect(	isNull( results.test2 ) ).toBeTrue();
 	}
 
 	function testgetCachedObjectMetadata(){
