@@ -201,9 +201,11 @@ component extends="coldbox.system.testing.BaseModelTest" {
 							"POST"   : "Photos.create",
 							"DELETE" : "BulkPhotos.delete"
 						} );
-						var verbs = routes[ 1 ].verbs;
-						listSort( verbs, "textnocase", "asc" );
-						expect( verbs ).toBe( "DELETE,GET,POST" );
+						var verbs = listToArray( routes[ 1 ].verbs );
+						expect( verbs ).toHaveLength( 3 );
+                        expect( verbs ).toInclude( "GET" );
+                        expect( verbs ).toInclude( "POST" );
+                        expect( verbs ).toInclude( "DELETE" );
 					} );
 				} );
 			} );
