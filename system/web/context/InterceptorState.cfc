@@ -242,34 +242,39 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 			threadNames.append( thisThreadName );
 
 			thread
-				name               ="#thisThreadName#"
-				action             ="run"
-				priority           ="#arguments.asyncPriority#"
-				data               ="#arguments.data#"
-				threadName         ="#thisThreadName#"
-				buffer             ="#arguments.buffer#"
-				key                ="#key#" {
-				// Retrieve interceptor to fire and local context
-				var thisInterceptor= this.getInterceptors().get( attributes.key );
-				var event          = variables.controller.getRequestService().getContext();
+				name      ="#thisThreadName#"
+				action    ="run"
+				priority  ="#arguments.asyncPriority#"
+				data      ="#arguments.data#"
+				threadName="#thisThreadName#"
+				buffer    ="#arguments.buffer#"
+				key       ="#key#" {
+				try {
+					// Retrieve interceptor to fire and local context
+					var thisInterceptor = this.getInterceptors().get( attributes.key );
+					var event           = variables.controller.getRequestService().getContext();
 
-				// Check if we can execute this Interceptor
-				if ( variables.isExecutable( thisInterceptor, event, attributes.key ) ) {
-					// Invoke the execution point
-					variables.invoker(
-						interceptor    = thisInterceptor,
-						event          = event,
-						data           = attributes.data,
-						interceptorKey = attributes.key,
-						buffer         = attributes.buffer
-					);
-
-					// Debug interceptions
-					if ( variables.log.canDebug() ) {
-						variables.log.debug(
-							"Interceptor '#getMetadata( thisInterceptor ).name#' fired in asyncAll chain: '#this.getState()#'"
+					// Check if we can execute this Interceptor
+					if ( variables.isExecutable( thisInterceptor, event, attributes.key ) ) {
+						// Invoke the execution point
+						variables.invoker(
+							interceptor    = thisInterceptor,
+							event          = event,
+							data           = attributes.data,
+							interceptorKey = attributes.key,
+							buffer         = attributes.buffer
 						);
+
+						// Debug interceptions
+						if ( variables.log.canDebug() ) {
+							variables.log.debug(
+								"Interceptor '#getMetadata( thisInterceptor ).name#' fired in asyncAll chain: '#this.getState()#'"
+							);
+						}
 					}
+				} catch ( any e ) {
+					variables.controller.getInterceptorService().announce( "onException", { exception : e } );
+					rethrow;
 				}
 			}
 			// end thread
@@ -429,26 +434,31 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 			threadName="#thisThreadName#"
 			key       ="#arguments.interceptorKey#"
 			buffer    ="#arguments.buffer#" {
-			var event = variables.controller.getRequestService().getContext();
+			try {
+				var event = variables.controller.getRequestService().getContext();
 
-			var args = {
-				"event"  : event,
-				"data"   : attributes.data,
-				"buffer" : attributes.buffer,
-				"rc"     : event.getCollection(),
-				"prc"    : event.getPrivateCollection()
-			};
+				var args = {
+					"event"  : event,
+					"data"   : attributes.data,
+					"buffer" : attributes.buffer,
+					"rc"     : event.getCollection(),
+					"prc"    : event.getPrivateCollection()
+				};
 
-			invoke(
-				this.getInterceptors().get( attributes.key ),
-				this.getState(),
-				args
-			);
-
-			if ( variables.log.canDebug() ) {
-				variables.log.debug(
-					"Async interception ended for: '#this.getState()#', interceptor: #attributes.key#, threadName: #attributes.threadName#"
+				invoke(
+					this.getInterceptors().get( attributes.key ),
+					this.getState(),
+					args
 				);
+
+				if ( variables.log.canDebug() ) {
+					variables.log.debug(
+						"Async interception ended for: '#this.getState()#', interceptor: #attributes.key#, threadName: #attributes.threadName#"
+					);
+				}
+			} catch ( any e ) {
+				variables.controller.getInterceptorService().announce( "onException", { exception : e } );
+				rethrow;
 			}
 		}
 	}
@@ -489,8 +499,6 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 		} else {
 			var results = invoke( arguments.interceptor, getState(), args );
 		}
-
-
 
 		if ( variables.log.canDebug() ) {
 			variables.log.debug( "Interception ended for: '#getState()#', key: #arguments.interceptorKey#" );
