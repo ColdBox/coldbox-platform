@@ -37,15 +37,15 @@ component accessors="true" {
 	 */
 	function init(
 		required target,
-		boolean debug            = false,
-		boolean loadAppContext   = true
+		boolean debug          = false,
+		boolean loadAppContext = true
 	){
-		variables.System           = createObject( "java", "java.lang.System" );
-		variables.Thread           = createObject( "java", "java.lang.Thread" );
-		variables.debug            = arguments.debug;
-		variables.target           = arguments.target;
-		variables.UUID             = createUUID();
-		variables.loadAppContext   = arguments.loadAppContext;
+		variables.System         = createObject( "java", "java.lang.System" );
+		variables.Thread         = createObject( "java", "java.lang.Thread" );
+		variables.debug          = arguments.debug;
+		variables.target         = arguments.target;
+		variables.UUID           = createUUID();
+		variables.loadAppContext = arguments.loadAppContext;
 
 		// If loading App context or not
 		if ( arguments.loadAppContext ) {
@@ -111,7 +111,9 @@ component accessors="true" {
 			} else {
 				// Set the current thread's class loader from the CF space to avoid
 				// No class defined issues in thread land.
-				getCurrentThread().setContextClassLoader( variables.originalFusionContext.getClass().getClassLoader() );
+				getCurrentThread().setContextClassLoader(
+					variables.originalFusionContext.getClass().getClassLoader()
+				);
 
 				// Prepare a new context in ACF for the thread
 				var fusionContext = variables.originalFusionContext.clone();

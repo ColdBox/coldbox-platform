@@ -1,4 +1,5 @@
-﻿component extends = "coldbox.system.testing.BaseModelTest" model = "coldbox.system.web.services.InterceptorService"{
+﻿component extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.web.services.InterceptorService" {
+
 	function setup(){
 		super.setup();
 
@@ -56,12 +57,7 @@
 				}
 			]
 		};
-		iService.$property(
-				"interceptorConfig",
-				"variables",
-				mockConfig
-			)
-			.$( "registerInterceptor", iService );
+		iService.$property( "interceptorConfig", "variables", mockConfig ).$( "registerInterceptor", iService );
 		mockLogger.$( "info" );
 
 		iService.registerInterceptors();
@@ -203,4 +199,5 @@
 
 		assertTrue( isObject( iService.getStateContainer( "unittest" ) ) );
 	}
+
 }

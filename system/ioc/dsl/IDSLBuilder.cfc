@@ -1,10 +1,10 @@
 ﻿/**
-* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-* www.ortussolutions.com
-* ---
-* The main interface to produce WireBox namespace DSL Builders
-**/
-interface{
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * The main interface to produce WireBox namespace DSL Builders
+ **/
+interface {
 
 	/**
 	 * Configure the DSL Builder for operation and returns itself

@@ -1,10 +1,10 @@
 ﻿/**
-* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-* www.ortussolutions.com
-* ---
-* This is a logging object that allows for all kinds of logging to occur within its appender
-**/
-component accessors="true"{
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * This is a logging object that allows for all kinds of logging to occur within its appender
+ **/
+component accessors="true" {
 
 	/**
 	 * Root Logger reference
@@ -32,7 +32,7 @@ component accessors="true"{
 	property name="levelMax";
 
 	// The log levels enum as a public property
-	this.logLevels  = new coldbox.system.logging.LogLevels();
+	this.logLevels = new coldbox.system.logging.LogLevels();
 
 	/**
 	 * Constructor
@@ -44,27 +44,27 @@ component accessors="true"{
 	 */
 	function init(
 		required category,
-		numeric levelMin=0,
-		numeric levelMax=4,
-		struct appenders={}
+		numeric levelMin = 0,
+		numeric levelMax = 4,
+		struct appenders = {}
 	){
 		// Save Properties
-		variables.rootLogger 	= "";
-		variables.category 		= arguments.category;
-		variables.appenders 	= arguments.appenders;
+		variables.rootLogger = "";
+		variables.category   = arguments.category;
+		variables.appenders  = arguments.appenders;
 
 		// Logger Logging Level defaults, which is wideeeee open!
-		variables.levelMin 		= arguments.levelMin;
-		variables.levelMax 		= arguments.levelMax;
+		variables.levelMin = arguments.levelMin;
+		variables.levelMax = arguments.levelMax;
 
 		// Utilities
-		variables._hash 		= createObject( 'java','java.lang.System').identityHashCode( this );
-		variables.util 			= new coldbox.system.core.util.Util();
+		variables._hash = createObject( "java", "java.lang.System" ).identityHashCode( this );
+		variables.util  = new coldbox.system.core.util.Util();
 
 
 		// Local Locking
-		variables.lockName 		= variables._hash & "LoggerOperation";
-		variables.lockTimeout 	= 20;
+		variables.lockName    = variables._hash & "LoggerOperation";
+		variables.lockTimeout = 20;
 
 		return this;
 	}
@@ -91,7 +91,7 @@ component accessors="true"{
 	 * @throws Logger.AppenderNotFound
 	 */
 	function getAppender( required name ){
-		if( structKeyExists( variables.appenders, arguments.name ) ){
+		if ( structKeyExists( variables.appenders, arguments.name ) ) {
 			return variables.appenders[ arguments.name ];
 		}
 
@@ -119,8 +119,8 @@ component accessors="true"{
 	 * @throws Logger.InvalidAppenderNameException
 	 */
 	Logger function addAppender( required newAppender ){
-		//Verify Appender's name
-		if( NOT len( arguments.newAppender.getName() ) ){
+		// Verify Appender's name
+		if ( NOT len( arguments.newAppender.getName() ) ) {
 			throw(
 				message = "Appender does not have a name, please instantiate the appender with a unique name.",
 				type    = "Logger.InvalidAppenderNameException"
@@ -129,11 +129,15 @@ component accessors="true"{
 
 		// Get name
 		var name = arguments.newAppender.getName();
-		if( ! appenderExists( name ) ){
-			lock name="#variables._hash#.registerappender.#name#" type="exclusive" timeout="15" throwOnTimeout="true"{
-				if( ! appenderExists( name ) ){
+		if ( !appenderExists( name ) ) {
+			lock
+				name          ="#variables._hash#.registerappender.#name#"
+				type          ="exclusive"
+				timeout       ="15"
+				throwOnTimeout="true" {
+				if ( !appenderExists( name ) ) {
 					// run registration event if not Initialized
-					if( NOT arguments.newAppender.isInitialized() ){
+					if ( NOT arguments.newAppender.isInitialized() ) {
 						arguments.newAppender.onRegistration();
 						arguments.newAppender.setInitialized( true );
 					}
@@ -152,11 +156,15 @@ component accessors="true"{
 	boolean function removeAppender( required name ){
 		var isRemoved = false;
 
-		if( appenderExists( arguments.name ) ){
-			lock name="#variables._hash#.registerappender.#arguments.name#" type="exclusive" timeout="15" throwOnTimeout="true"{
-				if( appenderExists( name ) ){
+		if ( appenderExists( arguments.name ) ) {
+			lock
+				name          ="#variables._hash#.registerappender.#arguments.name#"
+				type          ="exclusive"
+				timeout       ="15"
+				throwOnTimeout="true" {
+				if ( appenderExists( name ) ) {
 					// Get Appender
-					var oAppender = variables.appenders [arguments.name ];
+					var oAppender = variables.appenders[ arguments.name ];
 					// Run un-registration event
 					oAppender.onUnRegistration();
 					// Now Delete it
@@ -192,13 +200,14 @@ component accessors="true"{
 	 */
 	Logger function setLevelMin( required levelMin ){
 		// convert to numeric, if passed in string like "INFO"
-		if ( ! isNumeric( arguments.levelMin ) ) {
+		if ( !isNumeric( arguments.levelMin ) ) {
 			arguments.levelMin = this.logLevels.lookupAsInt( arguments.levelMin );
 		}
 		// Verify level
-		if( this.logLevels.isLevelValid( arguments.levelMin ) AND
+		if (
+			this.logLevels.isLevelValid( arguments.levelMin ) AND
 			arguments.levelMin lte getLevelMax()
-		){
+		) {
 			variables.levelMin = arguments.levelMin;
 		} else {
 			throw(
@@ -220,13 +229,14 @@ component accessors="true"{
 	 */
 	Logger function setLevelMax( required levelMax ){
 		// convert to numeric, if passed in string like "INFO"
-		if ( ! isNumeric( arguments.levelMax ) ) {
+		if ( !isNumeric( arguments.levelMax ) ) {
 			arguments.levelMax = this.logLevels.lookupAsInt( arguments.levelMax );
 		}
 		// Verify level
-		if( this.logLevels.isLevelValid( arguments.levelMax ) AND
+		if (
+			this.logLevels.isLevelValid( arguments.levelMax ) AND
 			arguments.levelMax gte getLevelMin()
-		){
+		) {
 			variables.levelMax = arguments.levelMax;
 		} else {
 			throw(
@@ -247,9 +257,9 @@ component accessors="true"{
 	 *
 	 * @return Logger
 	 */
-	function debug( required message, extraInfo="" ){
+	function debug( required message, extraInfo = "" ){
 		arguments.severity = this.logLevels.DEBUG;
-		return logMessage( argumentCollection=arguments );
+		return logMessage( argumentCollection = arguments );
 	}
 
 	/**
@@ -260,9 +270,9 @@ component accessors="true"{
 	 *
 	 * @return Logger
 	 */
-	function info( required message, extraInfo="" ){
+	function info( required message, extraInfo = "" ){
 		arguments.severity = this.logLevels.INFO;
-		return logMessage( argumentCollection=arguments );
+		return logMessage( argumentCollection = arguments );
 	}
 
 	/**
@@ -273,9 +283,9 @@ component accessors="true"{
 	 *
 	 * @return Logger
 	 */
-	function warn( required message, extraInfo="" ){
+	function warn( required message, extraInfo = "" ){
 		arguments.severity = this.logLevels.WARN;
-		return logMessage( argumentCollection=arguments );
+		return logMessage( argumentCollection = arguments );
 	}
 
 	/**
@@ -286,9 +296,9 @@ component accessors="true"{
 	 *
 	 * @return Logger
 	 */
-	function error( required message, extraInfo="" ){
+	function error( required message, extraInfo = "" ){
 		arguments.severity = this.logLevels.ERROR;
-		return logMessage( argumentCollection=arguments );
+		return logMessage( argumentCollection = arguments );
 	}
 
 	/**
@@ -299,9 +309,9 @@ component accessors="true"{
 	 *
 	 * @return Logger
 	 */
-	function fatal( required message, extraInfo="" ){
+	function fatal( required message, extraInfo = "" ){
 		arguments.severity = this.logLevels.FATAL;
-		return logMessage( argumentCollection=arguments );
+		return logMessage( argumentCollection = arguments );
 	}
 
 	/**
@@ -311,71 +321,80 @@ component accessors="true"{
 	 * @severity The severity level to log, if invalid, it will default to **Info**
 	 * @extraInfo Extra information to send to appenders
 	 */
-	Logger function logMessage( required message, required severity, extraInfo="" ){
+	Logger function logMessage(
+		required message,
+		required severity,
+		extraInfo = ""
+	){
 		var target = this;
 
 		// Verify severity, if invalid, default to INFO
-		if( NOT this.logLevels.isLevelValid( arguments.severity ) ){
+		if ( NOT this.logLevels.isLevelValid( arguments.severity ) ) {
 			arguments.severity = this.logLevels.INFO;
 		}
 
 		// If message empty, just exit
 		arguments.message = trim( arguments.message );
-		if( NOT len( arguments.message ) ){
+		if ( NOT len( arguments.message ) ) {
 			return this;
 		}
 
-		//Is Logging Enabled?
-		if( getLevelMin() eq this.logLevels.OFF ){
+		// Is Logging Enabled?
+		if ( getLevelMin() eq this.logLevels.OFF ) {
 			return this;
 		}
 
 		// Can we log on target
-		if( canLog( arguments.severity ) ){
+		if ( canLog( arguments.severity ) ) {
 			// Create Logging Event
 			arguments.category = target.getCategory();
 
 			// Do we have appenders locally? or go to root Logger
-			if( NOT hasAppenders() ){
+			if ( NOT hasAppenders() ) {
 				target = getRootLogger();
 			}
 
 
 			// Process all appenders
-			var targetAppenders = target.getAppenders()
+			var targetAppenders = target
+				.getAppenders()
 				// Only go through appenders that can log
 				.filter( function( key, thisAppender ){
 					return thisAppender.canLog( severity );
 				} );
 
-			for( var key in targetAppenders ){
+			for ( var key in targetAppenders ) {
 				var thisAppender = targetAppenders[ key ];
 				// check to see if the async property was passed during definition and not in a thread already
-				if(
-					thisAppender.getProperty( 'async', false ) &&
+				if (
+					thisAppender.getProperty( "async", false ) &&
 					!variables.util.inThread()
-				){
+				) {
 					// Thread this puppy
-					thread action       = "run"
-						name         = "logMessage_#replace( createUUID(), "-", "", "all" )#"
-						appenderName = "#key#"
-						message="#arguments.message#"
-						severity="#arguments.severity#"
-						extraInfo="#arguments.extraInfo#"
-                        category="#arguments.category#"
-					{
-						var target = this;
-						if( !hasAppenders() ){
+					thread
+						action      ="run"
+						name        ="logMessage_#replace( createUUID(), "-", "", "all" )#"
+						appenderName="#key#"
+						message     ="#arguments.message#"
+						severity    ="#arguments.severity#"
+						extraInfo   ="#arguments.extraInfo#"
+						category    ="#arguments.category#" {
+						var target  = this;
+						if ( !hasAppenders() ) {
 							target = getRootLogger();
 						}
 						var thisAppender = target.getAppender( attributes.appenderName );
-						thread.logEvent = new coldbox.system.logging.LogEvent( message=attributes.message, severity=attributes.severity, extraInfo=attributes.extraInfo, category=attributes.category );
+						thread.logEvent  = new coldbox.system.logging.LogEvent(
+							message   = attributes.message,
+							severity  = attributes.severity,
+							extraInfo = attributes.extraInfo,
+							category  = attributes.category
+						);
 						thisAppender.logMessage( thread.logEvent );
 					}
-
 				} else {
-					if( isNull( logEvent ) ) {
-						var logEvent = new coldbox.system.logging.LogEvent( argumentCollection=arguments );
+					if ( isNull( logEvent ) ) {
+						var logEvent = new coldbox.system.logging.LogEvent( argumentCollection = arguments );
 					}
 					thisAppender.logMessage( logEvent );
 				}
@@ -392,7 +411,7 @@ component accessors="true"{
 	 */
 	boolean function canLog( required level ){
 		// If numeric, do a comparison immediately.
-		if( isNumeric( arguments.level ) ){
+		if ( isNumeric( arguments.level ) ) {
 			return ( arguments.level GTE getLevelMin() AND arguments.level LTE getLevelMax() );
 		}
 		// Else it is a string

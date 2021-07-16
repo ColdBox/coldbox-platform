@@ -1,4 +1,5 @@
-﻿component extends = "AbstractPolicyTest"{
+﻿component extends="AbstractPolicyTest" {
+
 	function setup(){
 		super.setup();
 
@@ -30,12 +31,7 @@
 
 		mockCM.$( "getConfiguration", config );
 		mockIndexer.$( "getPoolMetadata", pool ).$( "objectExists", true );
-		keys = structSort(
-			pool,
-			"numeric",
-			"asc",
-			"lastAccessed"
-		);
+		keys = structSort( pool, "numeric", "asc", "lastAccessed" );
 		mockIndexer.$( "getSortedKeys", keys );
 		mockIndexer.$( "getObjectMetadata" ).$results( pool.obj2, pool.obj3, pool.obj1 );
 
@@ -47,4 +43,5 @@
 		assertEquals( 2, arrayLen( mockCM.$callLog().clear ) );
 		assertEquals( "obj2", mockCM.$callLog().clear[ 1 ][ 1 ] );
 	}
+
 }

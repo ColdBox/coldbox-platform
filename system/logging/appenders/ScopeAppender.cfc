@@ -7,10 +7,10 @@
  * - scope : the scope to persist to, defaults to request (optional)
  * - key   : the key to use in the scope, it defaults to the name of the Appender (optional)
  * - limit : a limit to the amount of logs to rotate. Defaults to 0, unlimited (optional)
-**/
-component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
+ **/
+component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 
-    /**
+	/**
 	 * Constructor
 	 *
 	 * @name The unique name for this appender.
@@ -21,22 +21,22 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 	 */
 	function init(
 		required name,
-		struct properties={},
-		layout="",
-		levelMin=0,
-		levelMax=4
+		struct properties = {},
+		layout            = "",
+		levelMin          = 0,
+		levelMax          = 4
 	){
-        // Init supertype
-		super.init( argumentCollection=arguments );
+		// Init supertype
+		super.init( argumentCollection = arguments );
 
 		// Verify properties
-		if( NOT propertyExists( "scope" ) ){
+		if ( NOT propertyExists( "scope" ) ) {
 			setProperty( "scope", "request" );
 		}
-		if( NOT propertyExists( "key" ) ){
+		if ( NOT propertyExists( "key" ) ) {
 			setProperty( "key", getName() );
 		}
-		if( NOT propertyExists( "limit" ) OR NOT isNumeric( getProperty( "limit" ) ) ){
+		if ( NOT propertyExists( "limit" ) OR NOT isNumeric( getProperty( "limit" ) ) ) {
 			setProperty( "limit", 0 );
 		}
 
@@ -45,20 +45,20 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 		// Scope Checks
 		variables.scopeStorage.scopeCheck( getproperty( "scope" ) );
 		// UUID generator
-		variables.uuid = createobject( "java", "java.util.UUID" );
+		variables.uuid = createObject( "java", "java.util.UUID" );
 
 		return this;
-    }
+	}
 
-    /**
+	/**
 	 * Write an entry into the appender. You must implement this method yourself.
 	 *
 	 * @logEvent The logging event to log
 	 */
 	function logMessage( required coldbox.system.logging.LogEvent logEvent ){
-		var entry    = structnew();
-		var limit    = getProperty( "limit" );
-		var loge     = arguments.logEvent;
+		var entry = structNew();
+		var limit = getProperty( "limit" );
+		var loge  = arguments.logEvent;
 
 		// Verify storage
 		ensureStorage();
@@ -66,7 +66,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 		// Check Limits
 		var logStack = getStorage();
 
-		if( limit GT 0 and arrayLen( logStack ) GTE limit ){
+		if ( limit GT 0 and arrayLen( logStack ) GTE limit ) {
 			// pop one out, the oldest
 			arrayDeleteAt( logStack, 1 );
 		}
@@ -93,7 +93,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 	 * Get the storage
 	 */
 	private any function getStorage(){
-		lock name="#getname()#.scopeoperation" type="exclusive" timeout="20" throwOnTimeout="true"{
+		lock name="#getname()#.scopeoperation" type="exclusive" timeout="20" throwOnTimeout="true" {
 			return variables.scopeStorage.get( getProperty( "key" ), getProperty( "scope" ) );
 		}
 	}
@@ -104,8 +104,12 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 	 * @data The data to store
 	 */
 	private function saveStorage( required data ){
-		lock name="#getname()#.scopeoperation" type="exclusive" timeout="20" throwOnTimeout="true"{
-			variables.scopeStorage.put( getProperty( "key" ), arguments.data, getProperty( "scope" ) );
+		lock name="#getname()#.scopeoperation" type="exclusive" timeout="20" throwOnTimeout="true" {
+			variables.scopeStorage.put(
+				getProperty( "key" ),
+				arguments.data,
+				getProperty( "scope" )
+			);
 		}
 		return this;
 	}
@@ -114,8 +118,12 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 	 * Ensure the first storage in the scope
 	 */
 	private function ensureStorage(){
-		if( NOT variables.scopeStorage.exists( getProperty( "key" ), getproperty( "scope" ) ) ){
-			variables.scopeStorage.put( getProperty( "key" ), [], getProperty( "scope" ) );
+		if ( NOT variables.scopeStorage.exists( getProperty( "key" ), getproperty( "scope" ) ) ) {
+			variables.scopeStorage.put(
+				getProperty( "key" ),
+				[],
+				getProperty( "scope" )
+			);
 		}
 		return this;
 	}

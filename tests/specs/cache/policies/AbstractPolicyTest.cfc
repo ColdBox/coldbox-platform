@@ -1,4 +1,5 @@
-﻿component extends = "coldbox.system.testing.BaseModelTest"{
+﻿component extends="coldbox.system.testing.BaseModelTest" {
+
 	function setup(){
 		mockCM      = createMock( "coldbox.system.cache.providers.MockProvider" );
 		mockFactory = createMock( "coldbox.system.cache.CacheFactory" );
@@ -31,4 +32,5 @@
 			preserveReturnType = false
 		);
 	}
+
 }

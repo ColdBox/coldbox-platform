@@ -1,4 +1,5 @@
-﻿component extends = "coldbox.system.testing.BaseModelTest"{
+﻿component extends="coldbox.system.testing.BaseModelTest" {
+
 	function setup(){
 		logBox = new coldbox.system.logging.LogBox();
 		prop   = { limit : 2 };
@@ -6,12 +7,7 @@
 		scope.init( "MyScopeLogger", prop ).setLogBox( logBox );
 
 		loge = createMock( className = "coldbox.system.logging.LogEvent" );
-		loge.init(
-			"Unit Test Sample",
-			0,
-			structNew(),
-			"UnitTest"
-		);
+		loge.init( "Unit Test Sample", 0, structNew(), "UnitTest" );
 	}
 
 	function testLogMessage(){
@@ -22,4 +18,5 @@
 		// debug(request);
 		assertEquals( arrayLen( request[ "MyScopeLogger" ] ), 2 );
 	}
+
 }

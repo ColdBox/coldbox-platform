@@ -6,11 +6,11 @@
  *
  * A mock cache provider that keeps cache data in a simple map for testing and assertions
  **/
- component
-	 accessors=true
-	 serializable=false
-	 implements="coldbox.system.cache.providers.IColdBoxProvider"
-	 extends="coldbox.system.cache.AbstractCacheBoxProvider"
+component
+	accessors   =true
+	serializable=false
+	implements  ="coldbox.system.cache.providers.IColdBoxProvider"
+	extends     ="coldbox.system.cache.AbstractCacheBoxProvider"
 {
 
 	/**
@@ -20,17 +20,17 @@
 
 	// CacheBox Provider Property Defaults
 	variables.DEFAULTS = {
-		objectDefaultTimeout           	= 60,
-		objectDefaultLastAccessTimeout 	= 30,
-		useLastAccessTimeouts          	= true,
-		reapFrequency                  	= 2,
-		freeMemoryPercentageThreshold  	= 0,
-		evictionPolicy                 	= "LRU",
-		evictCount                     	= 1,
-		maxObjects                     	= 200,
-		objectStore                    	= "ConcurrentStore",
-		coldboxEnabled                 	= false,
-		resetTimeoutOnAccess 			= false
+		objectDefaultTimeout           : 60,
+		objectDefaultLastAccessTimeout : 30,
+		useLastAccessTimeouts          : true,
+		reapFrequency                  : 2,
+		freeMemoryPercentageThreshold  : 0,
+		evictionPolicy                 : "LRU",
+		evictCount                     : 1,
+		maxObjects                     : 200,
+		objectStore                    : "ConcurrentStore",
+		coldboxEnabled                 : false,
+		resetTimeoutOnAccess           : false
 	};
 
 	/**
@@ -51,9 +51,9 @@
 	 * @return MockProvider
 	 */
 	function configure(){
-		variables.cache 	 		= {};
-		variables.enabled 			= true;
-		variables.reportingEnabled 	= true;
+		variables.cache            = {};
+		variables.enabled          = true;
+		variables.reportingEnabled = true;
 
 		validateConfiguration();
 
@@ -90,12 +90,12 @@
 	 */
 	struct function getStoreMetadataKeyMap(){
 		return {
-			timeout           = "timeout",
-			hits              = "hits",
-			lastAccessTimeout = "lastAccessTimeout",
-			created           = "created",
-			lastAccessed      = "lastAccessed",
-			isExpire          = "isExpired"
+			timeout           : "timeout",
+			hits              : "hits",
+			lastAccessTimeout : "lastAccessTimeout",
+			created           : "created",
+			lastAccessed      : "lastAccessed",
+			isExpire          : "isExpired"
 		};
 	}
 
@@ -330,7 +330,7 @@
 	 *
 	 * @return MockProvider
 	 */
-	function clearAllEvents( boolean async=false ){
+	function clearAllEvents( boolean async = false ){
 		return this;
 	}
 
@@ -342,7 +342,7 @@
 	 *
 	 * @return MockProvider
 	 */
-	function clearEvent( required eventSnippet, queryString="" ){
+	function clearEvent( required eventSnippet, queryString = "" ){
 		return this;
 	}
 
@@ -354,7 +354,7 @@
 	 *
 	 * @return MockProvider
 	 */
-	function clearEventMulti( required eventsnippets, queryString="" ){
+	function clearEventMulti( required eventsnippets, queryString = "" ){
 		return this;
 	}
 
@@ -385,7 +385,7 @@
 	 *
 	 * @return MockProvider
 	 */
-	function clearAllViews( boolean async=false ){
+	function clearAllViews( boolean async = false ){
 		return this;
 	}
 

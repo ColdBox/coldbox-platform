@@ -6,21 +6,17 @@ The logging configuration object for CacheBox Standalone version.
 You can make changes here to determine how CacheBox logs information.  For more
 information about logBox visit: http://wiki.coldbox.org/wiki/LogBox.cfm
 **/
-component{
+component {
 
 	/**
-	*  Configure logBox
-	*/
+	 *  Configure logBox
+	 */
 	function configure(){
 		variables.logBox = {
 			// Define Appenders
-			appenders = {
-				console = {
-					class="ConsoleAppender"
-				}
-			},
+			appenders : { console : { class : "ConsoleAppender" } },
 			// Root Logger
-			root = { levelmax="INFO", appenders="*" }
+			root      : { levelmax : "INFO", appenders : "*" }
 		};
 	}
 

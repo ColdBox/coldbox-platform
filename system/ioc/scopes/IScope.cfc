@@ -1,10 +1,10 @@
 ﻿/**
-* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-* www.ortussolutions.com
-* ---
-* The main interface to produce WireBox storage scopes
-**/
-interface{
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * The main interface to produce WireBox storage scopes
+ **/
+interface {
 
 	/**
 	 * Configure the scope for operation and returns itself

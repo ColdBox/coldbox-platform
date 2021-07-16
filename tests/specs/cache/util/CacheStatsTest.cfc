@@ -120,11 +120,7 @@
 
 	<cffunction name="testsetGarbageCollections" access="public" returnType="void">
 		<cfscript>
-		stats.$property(
-			"garbageCollections",
-			"variables",
-			40
-		);
+		stats.$property( "garbageCollections", "variables", 40 );
 		assertEquals( stats.getGarbageCollections(), 40 );
 		</cfscript>
 	</cffunction>

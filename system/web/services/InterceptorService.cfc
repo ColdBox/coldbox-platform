@@ -369,7 +369,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 			// Register Core Internal ColdBox Points
 			// We do this manually as CFML Engines do not add mixins to metadata when using virtual inheritance
-			if( structKeyExists( oInterceptor, "cbLoadInterceptorHelpers"  ) ){
+			if ( structKeyExists( oInterceptor, "cbLoadInterceptorHelpers" ) ) {
 				// Register the point
 				registerInterceptionPoint(
 					interceptorKey = objectName,

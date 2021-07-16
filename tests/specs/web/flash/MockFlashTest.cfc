@@ -1,4 +1,4 @@
-component extends="tests.resources.BaseIntegrationTest"{
+component extends="tests.resources.BaseIntegrationTest" {
 
 	this.loadColdBox = false;
 
@@ -9,16 +9,8 @@ component extends="tests.resources.BaseIntegrationTest"{
 
 		// test scope
 		testscope = {
-			test : {
-				content   : "luis",
-				autoPurge : true,
-				keep      : true
-			},
-			date : {
-				content   : now(),
-				autoPurge : true,
-				keep      : true
-			}
+			test : { content : "luis", autoPurge : true, keep : true },
+			date : { content : now(), autoPurge : true, keep : true }
 		};
 	}
 

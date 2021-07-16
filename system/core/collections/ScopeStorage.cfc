@@ -22,11 +22,7 @@ component {
 	 * @value The value
 	 * @scope The ColdFusion Scope
 	 */
-	function put(
-		required key,
-		required value,
-		required scope
-	){
+	function put( required key, required value, required scope ){
 		var scopePointer              = getScope( arguments.scope );
 		scopePointer[ arguments.key ] = arguments.value;
 		return this;
@@ -51,11 +47,7 @@ component {
 	 * @scope The CF Scope
 	 * @defaultValue The default value
 	 */
-	function get(
-		required key,
-		required scope,
-		defaultValue
-	){
+	function get( required key, required scope, defaultValue ){
 		// Do stupid ACF Hack due to choking on `default` argument.
 		if ( structKeyExists( arguments, "default" ) ) {
 			arguments.defaultValue = arguments.default;

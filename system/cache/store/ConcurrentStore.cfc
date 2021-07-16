@@ -6,7 +6,7 @@
  *
  * I am a concurrent object store. In other words, I am fancy! This store is case-sensitive
  */
-component implements="coldbox.system.cache.store.IObjectStore" accessors="true"{
+component implements="coldbox.system.cache.store.IObjectStore" accessors="true" {
 
 	/**
 	 * The cache provider reference
@@ -41,19 +41,19 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true"{
 		// Prepare instance
 		variables.cacheProvider = arguments.cacheProvider;
 		variables.storeID       = createObject( "java", "java.lang.System" ).identityHashCode( this );
-		variables.pool          = createObject( "java","java.util.concurrent.ConcurrentHashMap" ).init();
+		variables.pool          = createObject( "java", "java.util.concurrent.ConcurrentHashMap" ).init();
 		variables.indexer       = new coldbox.system.cache.store.indexers.MetadataIndexer( fields );
-		variables.collections 	= createObject( "java", "java.util.Collections" );
+		variables.collections   = createObject( "java", "java.util.Collections" );
 
 		return this;
 	}
 
 	/**
-     * Flush the store to a permanent storage
-     */
-    void function flush(){
-        return;
-    }
+	 * Flush the store to a permanent storage
+	 */
+	void function flush(){
+		return;
+	}
 
 	/**
 	 * Reap the storage
@@ -63,13 +63,13 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true"{
 	}
 
 	/**
-     * Get the store's pool metadata indexer structure
+	 * Get the store's pool metadata indexer structure
 	 *
 	 * @return coldbox.system.cache.store.indexers.MetadataIndexer
-     */
-    function getIndexer(){
-        return variables.indexer;
-    }
+	 */
+	function getIndexer(){
+		return variables.indexer;
+	}
 
 	/**
 	 * Clear all the elements in the store
@@ -80,13 +80,13 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true"{
 	}
 
 	/**
-     * Get all the store's object keys array
+	 * Get all the store's object keys array
 	 *
 	 * @return array
-     */
-    function getKeys(){
+	 */
+	function getKeys(){
 		return variables.collections.list( variables.pool.keys() );
-    }
+	}
 
 	/**
 	 * Check if an object is in the store
@@ -98,8 +98,10 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true"{
 	function lookup( required objectKey ){
 		return (
 			variables.pool.containsKey( arguments.objectKey ) AND
-			variables.indexer.objectExists( arguments.objectKey ) AND NOT
-			variables.indexer.getObjectMetadataProperty( arguments.objectKey, "isExpired" )
+			variables.indexer.objectExists( arguments.objectKey ) AND NOT variables.indexer.getObjectMetadataProperty(
+				arguments.objectKey,
+				"isExpired"
+			)
 		);
 	}
 
@@ -111,26 +113,17 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true"{
 	function get( required objectKey ){
 		// retrieve from map
 		var results = variables.pool.get( arguments.objectKey );
-		if( !isNull( local.results ) ){
-
+		if ( !isNull( local.results ) ) {
 			// Record Metadata Access
 			variables.indexer.setObjectMetadataProperty(
 				arguments.objectKey,
 				"hits",
 				variables.indexer.getObjectMetadataProperty( arguments.objectKey, "hits" ) + 1
 			);
-			variables.indexer.setObjectMetadataProperty(
-				arguments.objectKey,
-				"lastAccessed",
-				now()
-			);
+			variables.indexer.setObjectMetadataProperty( arguments.objectKey, "lastAccessed", now() );
 			// Is resetTimeoutOnAccess enabled? If so, jump up the creation time to increase the timeout
-			if( variables.cacheProvider.getConfiguration().resetTimeoutOnAccess ){
-				variables.indexer.setObjectMetadataProperty(
-					arguments.objectKey,
-					"created",
-					now()
-				);
+			if ( variables.cacheProvider.getConfiguration().resetTimeoutOnAccess ) {
+				variables.indexer.setObjectMetadataProperty( arguments.objectKey, "created", now() );
 			}
 
 			// return object
@@ -146,7 +139,7 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true"{
 	function getQuiet( required objectKey ){
 		// retrieve from map
 		var results = variables.pool.get( arguments.objectKey );
-		if( !isNull( local.results ) ){
+		if ( !isNull( local.results ) ) {
 			return results;
 		}
 	}
@@ -157,12 +150,8 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true"{
 	 * @objectKey The key to expire
 	 */
 	void function expireObject( required objectKey ){
-		variables.indexer.setObjectMetadataProperty(
-			arguments.objectKey,
-			"isExpired",
-			true
-		);
-    }
+		variables.indexer.setObjectMetadataProperty( arguments.objectKey, "isExpired", true );
+	}
 
 	/**
 	 * Expire check
@@ -187,21 +176,21 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true"{
 	void function set(
 		required objectKey,
 		required object,
-		timeout="",
-		lastAccessTimeout="",
-		extras={}
+		timeout           = "",
+		lastAccessTimeout = "",
+		extras            = {}
 	){
 		// Set new Object into cache pool
 		variables.pool.put( arguments.objectKey, arguments.object );
 
 		// Create object's metadata
 		var metaData = {
-			"hits"              = 1,
-			"timeout"           = arguments.timeout,
-			"lastAccessTimeout" = arguments.lastAccessTimeout,
-			"created"           = now(),
-			"lastAccessed"      = now(),
-			"isExpired"         = false
+			"hits"              : 1,
+			"timeout"           : arguments.timeout,
+			"lastAccessTimeout" : arguments.lastAccessTimeout,
+			"created"           : now(),
+			"lastAccessed"      : now(),
+			"isExpired"         : false
 		};
 
 		// Save the object's metadata
@@ -215,7 +204,7 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true"{
 	 */
 	function clear( required objectKey ){
 		// Check if it exists
-		if( !variables.pool.containsKey( arguments.objectKey ) ) {
+		if ( !variables.pool.containsKey( arguments.objectKey ) ) {
 			return false;
 		}
 
@@ -225,13 +214,13 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true"{
 
 		// Removed
 		return true;
-    }
+	}
 
-    /**
+	/**
 	 * Get the size of the store
 	 */
 	function getSize(){
-        return variables.pool.size();
+		return variables.pool.size();
 	}
 
 }

@@ -36,11 +36,9 @@ component extends="coldbox.system.testing.BaseTestCase" {
 		variables.mockRequestService = mockBox
 			.createEmptyMock( "coldbox.system.web.services.RequestService" )
 			.$( "getContext", variables.mockRequestContext );
-		variables.mockLogBox = mockBox.createEmptyMock( "coldbox.system.logging.LogBox" );
-		variables.mockLogger = mockBox.createEmptyMock( "coldbox.system.logging.Logger" );
-		variables.mockFlash  = mockBox
-			.createMock( "coldbox.system.web.flash.MockFlash" )
-			.init( mockController );
+		variables.mockLogBox   = mockBox.createEmptyMock( "coldbox.system.logging.LogBox" );
+		variables.mockLogger   = mockBox.createEmptyMock( "coldbox.system.logging.Logger" );
+		variables.mockFlash    = mockBox.createMock( "coldbox.system.web.flash.MockFlash" ).init( mockController );
 		variables.mockCacheBox = mockBox.createEmptyMock( "coldbox.system.cache.CacheFactory" );
 		variables.mockWireBox  = mockBox.createEmptyMock( "coldbox.system.ioc.Injector" );
 

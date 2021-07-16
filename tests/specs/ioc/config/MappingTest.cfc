@@ -1,4 +1,4 @@
-﻿component extends="tests.resources.BaseIntegrationTest"{
+﻿component extends="tests.resources.BaseIntegrationTest" {
 
 	this.loadColdBox = false;
 
@@ -13,13 +13,13 @@
 
 	function testProcessMemento(){
 		var data = {
-			alias             : [ "funky" ],
-			type              : "CFC",
-			path              : "my.models.Funky",
-			eagerInit         : true,
-			threadSafe        : true,
-			scope             : "singleton",
-			cache             : { key : "data", timeout : "30" },
+			alias                  : [ "funky" ],
+			type                   : "CFC",
+			path                   : "my.models.Funky",
+			eagerInit              : true,
+			threadSafe             : true,
+			scope                  : "singleton",
+			cache                  : { key : "data", timeout : "30" },
 			DIConstructorArguments : [
 				{ name : "val", value : "0" },
 				{ name : "transfer", ref : "transfer" }
@@ -90,13 +90,13 @@
 
 	function testProcessMementoWithExcludes(){
 		var data = {
-			name              : "abstractService",
-			alias             : [ "abstractService" ],
-			type              : "CFC",
-			path              : "path.to.abstractService",
-			eagerInit         : true,
-			scope             : "singleton",
-			cache             : { key : "data", timeout : "30" },
+			name                   : "abstractService",
+			alias                  : [ "abstractService" ],
+			type                   : "CFC",
+			path                   : "path.to.abstractService",
+			eagerInit              : true,
+			scope                  : "singleton",
+			cache                  : { key : "data", timeout : "30" },
 			DIConstructorArguments : [
 				{ name : "val", value : "0" },
 				{ name : "transfer", ref : "transfer" }

@@ -218,9 +218,9 @@ component accessors="true" {
 		// Package Scan Locations
 		variables.scanLocations       = structNew( "ordered" );
 		// Parent Injector Mapping
-		variables.oParentInjector      = "";
+		variables.oParentInjector     = "";
 		// Stop Recursion classes
-		variables.aStopRecursions      = [];
+		variables.aStopRecursions     = [];
 		// Listeners
 		variables.listeners           = [];
 		// Object Mappings
@@ -578,7 +578,7 @@ component accessors="true" {
 	 *
 	 * @alias A single alias or a list or an array of aliases for this mapping. Remember an object can be referred by many names
 	 */
-	Binder function forceMap( required alias ) {
+	Binder function forceMap( required alias ){
 		arguments.force = true;
 		return map( argumentCollection = arguments );
 	}

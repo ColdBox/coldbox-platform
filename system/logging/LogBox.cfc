@@ -394,7 +394,7 @@ component accessors="true" {
 
 				if ( !variables.appenderRegistry.keyExists( item ) )
 					// In the event that an appender was added after the initial config load
-					registerAppender( argumentCollection: variables.config.getAllAppenders()[ item ] );
+				registerAppender( argumentCollection: variables.config.getAllAppenders()[ item ] );
 
 				target[ item ] = variables.appenderRegistry[ item ];
 				return target;

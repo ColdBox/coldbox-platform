@@ -1,4 +1,5 @@
-﻿component extends = "coldbox.system.testing.BaseModelTest" skip = "isLucee"{
+﻿component extends="coldbox.system.testing.BaseModelTest" skip="isLucee" {
+
 	boolean function isLucee(){
 		return listFindNoCase( "Lucee", server.coldfusion.productname ) ? false : true;
 	}
@@ -64,4 +65,5 @@
 		assertEquals( testVal, cache.get( "test" ) );
 		cache.clearAll();
 	}
+
 }

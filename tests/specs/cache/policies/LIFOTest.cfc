@@ -1,4 +1,5 @@
-﻿component extends = "AbstractPolicyTest"{
+﻿component extends="AbstractPolicyTest" {
+
 	function setup(){
 		super.setup();
 
@@ -42,4 +43,5 @@
 		assertEquals( 2, arrayLen( mockCM.$callLog().clear ) );
 		assertEquals( "obj1", mockCM.$callLog().clear[ 1 ][ 1 ] );
 	}
+
 }

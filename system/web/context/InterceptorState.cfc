@@ -72,10 +72,7 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 		required interceptorMD
 	){
 		// Register interceptor object
-		super.register(
-			arguments.interceptorKey,
-			arguments.interceptor
-		);
+		super.register( arguments.interceptorKey, arguments.interceptor );
 		// Register interceptor metadata
 		variables.metadataMap[ arguments.interceptorKey ] = arguments.interceptorMD;
 
@@ -91,10 +88,7 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 		// unregister object
 		var results = super.unregister( arguments.interceptorKey );
 		// unregister metadata map
-		structDelete(
-			variables.metadataMap,
-			arguments.interceptorKey
-		);
+		structDelete( variables.metadataMap, arguments.interceptorKey );
 
 		return results;
 	}
@@ -256,17 +250,11 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 				buffer             ="#arguments.buffer#"
 				key                ="#key#" {
 				// Retrieve interceptor to fire and local context
-				var thisInterceptor = this.getInterceptors().get( attributes.key );
-				var event           = variables.controller.getRequestService().getContext();
+				var thisInterceptor= this.getInterceptors().get( attributes.key );
+				var event          = variables.controller.getRequestService().getContext();
 
 				// Check if we can execute this Interceptor
-				if (
-					variables.isExecutable(
-						thisInterceptor,
-						event,
-						attributes.key
-					)
-				) {
+				if ( variables.isExecutable( thisInterceptor, event, attributes.key ) ) {
 					// Invoke the execution point
 					variables.invoker(
 						interceptor    = thisInterceptor,
@@ -317,11 +305,7 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 	 * @data A data structure used to pass intercepted information.
 	 * @buffer  hint="The request buffer object that can be used to produce output from interceptor chains
 	 */
-	function processSync(
-		required event,
-		required data,
-		required buffer
-	){
+	function processSync( required event, required data, required buffer ){
 		var interceptors = getInterceptors();
 
 		// Debug interceptions
@@ -335,13 +319,7 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 			var thisInterceptor = interceptors.get( key );
 
 			// Check if we can execute this Interceptor
-			if (
-				isExecutable(
-					thisInterceptor,
-					arguments.event,
-					key
-				)
-			) {
+			if ( isExecutable( thisInterceptor, arguments.event, key ) ) {
 				// Async Execution only if not in a thread already, no buffer sent for async calls
 				if ( variables.metadataMap[ key ].async AND NOT variables.utility.inThread() ) {
 					invokerAsync(
@@ -392,10 +370,7 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 		if (
 			len( iData.eventPattern )
 			AND
-			NOT reFindNoCase(
-				iData.eventPattern,
-				arguments.event.getCurrentEvent()
-			)
+			NOT reFindNoCase( iData.eventPattern, arguments.event.getCurrentEvent() )
 		) {
 			// Log it
 			if ( variables.log.canDebug() ) {
@@ -454,7 +429,7 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 			threadName="#thisThreadName#"
 			key       ="#arguments.interceptorKey#"
 			buffer    ="#arguments.buffer#" {
-			var event  = variables.controller.getRequestService().getContext();
+			var event = variables.controller.getRequestService().getContext();
 
 			var args = {
 				"event"  : event,
@@ -509,14 +484,10 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 		};
 
 		// Closure or object?
-		if( isClosure( arguments.interceptor ) ){
-			arguments.interceptor( argumentCollection=args );
+		if ( isClosure( arguments.interceptor ) ) {
+			arguments.interceptor( argumentCollection = args );
 		} else {
-			var results = invoke(
-				arguments.interceptor,
-				getState(),
-				args
-			);
+			var results = invoke( arguments.interceptor, getState(), args );
 		}
 
 

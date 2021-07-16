@@ -138,11 +138,7 @@ component accessors="true" {
 		parseInterceptors( oConfig, configStruct );
 
 		/* ::::::::::::::::::::::::::::::::::::::::: LOGBOX Configuration :::::::::::::::::::::::::::::::::::::::::::: */
-		parseLogBox(
-			oConfig,
-			configStruct,
-			logBoxConfigHash
-		);
+		parseLogBox( oConfig, configStruct, logBoxConfigHash );
 
 		/* ::::::::::::::::::::::::::::::::::::::::: WIREBOX Configuration :::::::::::::::::::::::::::::::::::::::::::: */
 		parseWireBox( oConfig, configStruct );
@@ -179,11 +175,7 @@ component accessors="true" {
 		var pathLocation = findNoCase( webPath, localPath );
 
 		if ( pathLocation ) {
-			arguments.configStruct.appMapping = mid(
-				localPath,
-				pathLocation,
-				len( webPath )
-			);
+			arguments.configStruct.appMapping = mid( localPath, pathLocation, len( webPath ) );
 		} else {
 			arguments.configStruct.appMapping = webPath;
 		}
@@ -225,11 +217,7 @@ component accessors="true" {
 		var coldboxSettings  = arguments.oConfig.getPropertyMixin( "coldbox", "variables", {} );
 
 		// Incorporate fw defaults into the app settings
-		structAppend(
-			configStruct,
-			fwSettingsStruct,
-			false
-		);
+		structAppend( configStruct, fwSettingsStruct, false );
 		// Incorporate their config.cfc settings and override
 		structAppend( configStruct, coldboxSettings, true );
 
@@ -435,7 +423,11 @@ component accessors="true" {
 		var fwSettingsStruct = variables.coldboxSettings;
 
 		// ViewsExternalLocation Setup
-		if ( structKeyExists( configStruct, "ViewsExternalLocation" ) and len( configStruct[ "ViewsExternalLocation" ] ) ) {
+		if (
+			structKeyExists( configStruct, "ViewsExternalLocation" ) and len(
+				configStruct[ "ViewsExternalLocation" ]
+			)
+		) {
 			// Verify the locations, do relative to the app mapping first
 			if ( directoryExists( fwSettingsStruct.ApplicationPath & configStruct[ "ViewsExternalLocation" ] ) ) {
 				configStruct[ "ViewsExternalLocation" ] = "/" & configStruct[ "AppMapping" ] & "/" & configStruct[
@@ -591,12 +583,8 @@ component accessors="true" {
 	 */
 	function parseInterceptors( required oConfig, required config ){
 		var configStruct        = arguments.config;
-		var interceptorSettings = arguments.oConfig.getPropertyMixin(
-			"interceptorSettings",
-			"variables",
-			{}
-		);
-		var interceptors = arguments.oConfig.getPropertyMixin( "interceptors", "variables", [] );
+		var interceptorSettings = arguments.oConfig.getPropertyMixin( "interceptorSettings", "variables", {} );
+		var interceptors        = arguments.oConfig.getPropertyMixin( "interceptors", "variables", [] );
 
 		// defaults
 		configStruct.interceptorConfig                          = {};
@@ -721,11 +709,7 @@ component accessors="true" {
 
 		// check if empty or not, if not, then append and override
 		if ( NOT structIsEmpty( flashScopeDSL ) ) {
-			structAppend(
-				arguments.config.flash,
-				flashScopeDSL,
-				true
-			);
+			structAppend( arguments.config.flash, flashScopeDSL, true );
 		}
 	}
 
@@ -861,12 +845,7 @@ component accessors="true" {
 	 * Get the App Mapping as Dots
 	 */
 	private function getAppMappingAsDots( required appMapping ){
-		return reReplace(
-			arguments.appMapping,
-			"(/|\\)",
-			".",
-			"all"
-		);
+		return reReplace( arguments.appMapping, "(/|\\)", ".", "all" );
 	}
 
 }

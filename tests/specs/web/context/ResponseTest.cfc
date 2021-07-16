@@ -102,10 +102,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 			} );
 
 			it( "can set data with pagination and pagination data", function(){
-				response.setDataWithPagination( {
-					"results"    : "luis",
-					"pagination" : { "page" : 4 }
-				} );
+				response.setDataWithPagination( { "results" : "luis", "pagination" : { "page" : 4 } } );
 				expect( response.getData() ).toBe( "luis" );
 				expect( response.getPagination().page ).toBe( 4 );
 			} );

@@ -1,4 +1,5 @@
-﻿component extends = "coldbox.system.testing.BaseModelTest"{
+﻿component extends="coldbox.system.testing.BaseModelTest" {
+
 	function setup(){
 		logBox = new coldbox.system.logging.LogBox();
 		props  = {
@@ -23,4 +24,5 @@
 		loge.setCategory( "coldbox.system.EmailAppenderTest" );
 		email.logMessage( loge );
 	}
+
 }

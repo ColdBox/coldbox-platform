@@ -29,7 +29,8 @@ component extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.a
 		// all your suites go here.
 		describe( "Method Logger aspect", function(){
 			it( "can log execution calls", function(){
-				var mockInvocation = createMock( "coldbox.system.aop.MethodInvocation" ).init(
+				var mockInvocation = createMock( "coldbox.system.aop.MethodInvocation" )
+					.init(
 						method         = "execute",
 						args           = { name : "luis majano" },
 						methodMetadata = "{}",

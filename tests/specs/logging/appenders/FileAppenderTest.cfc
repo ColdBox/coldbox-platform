@@ -29,12 +29,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		fileappender.init( "MyFileAppender", props );
 
 		loge = createMock( "coldbox.system.logging.LogEvent" );
-		loge.init(
-			"Unit Test Sample",
-			0,
-			"",
-			"UnitTest"
-		);
+		loge.init( "Unit Test Sample", 0, "", "UnitTest" );
 	}
 
 	// executes after all suites+specs in the run() method

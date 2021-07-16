@@ -14,20 +14,12 @@
 				}
 			},
 			// Root Logger
-			root : {
-				levelmax  : "INFO",
-				levelMin  : 0,
-				appenders : "*"
-			},
+			root       : { levelmax : "INFO", levelMin : 0, appenders : "*" },
 			// Categories
 			categories : {
 				"coldbox.system"              : { levelMax : "INFO" },
-				"coldbox.system.interceptors" : {
-					levelMin  : 0,
-					levelMax  : "DEBUG",
-					appenders : "*"
-				},
-				"hello.model" : { levelMax : 4, appenders : "*" }
+				"coldbox.system.interceptors" : { levelMin : 0, levelMax : "DEBUG", appenders : "*" },
+				"hello.model"                 : { levelMax : 4, appenders : "*" }
 			},
 			debug : [ "coldbox.system", "models.system" ],
 			info  : [ "hello.model", "yes.wow.wow" ],

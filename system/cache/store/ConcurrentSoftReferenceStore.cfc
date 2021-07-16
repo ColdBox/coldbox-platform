@@ -7,7 +7,7 @@
  * I am a concurrent soft reference object store. In other words, I am fancy!
  * This store is case-sensitive
  */
-component extends="coldbox.system.cache.store.ConcurrentStore" accessors=true{
+component extends="coldbox.system.cache.store.ConcurrentStore" accessors=true {
 
 	/**
 	 * The reverse lookup map for soft references
@@ -33,8 +33,8 @@ component extends="coldbox.system.cache.store.ConcurrentStore" accessors=true{
 		variables.indexer.setFields( variables.indexer.getFields() & ",isSoftReference" );
 
 		// Prepare soft reference lookup maps
-		variables.softRefKeyMap	 	= createObject( "java", "java.util.concurrent.ConcurrentHashMap" ).init();
-		variables.referenceQueue  	= createObject( "java", "java.lang.ref.ReferenceQueue" ).init();
+		variables.softRefKeyMap  = createObject( "java", "java.util.concurrent.ConcurrentHashMap" ).init();
+		variables.referenceQueue = createObject( "java", "java.lang.ref.ReferenceQueue" ).init();
 
 		return this;
 	}
@@ -51,20 +51,14 @@ component extends="coldbox.system.cache.store.ConcurrentStore" accessors=true{
 	 * Reap the storage, clean it from old stuff
 	 */
 	void function reap(){
-		lock
-			name="ConcurrentSoftReferenceStore.reap.#variables.storeID#"
-			type="exclusive"
-			timeout="20"{
-
+		lock name="ConcurrentSoftReferenceStore.reap.#variables.storeID#" type="exclusive" timeout="20" {
 			// Init Ref Key Vars
 			var collected = variables.referenceQueue.poll();
 
 			// Let's reap the garbage collected soft references
-			while( !isNull( local.collected ) ){
-
+			while ( !isNull( local.collected ) ) {
 				// Clean if it still exists
-				if( softRefLookup( collected ) ){
-
+				if ( softRefLookup( collected ) ) {
 					// expire it
 					expireObject( getSoftRefKey( collected ) );
 
@@ -87,12 +81,12 @@ component extends="coldbox.system.cache.store.ConcurrentStore" accessors=true{
 	 */
 	function lookup( required objectKey ){
 		// check existence via super, if not found, check as it might be a soft reference
-		if( NOT super.lookup( arguments.objectKey ) ){
+		if ( NOT super.lookup( arguments.objectKey ) ) {
 			return false;
 		}
 
 		// get quiet to test it as it might be a soft reference
-		if( isNull( getQuiet( arguments.objectKey ) ) ){
+		if ( isNull( getQuiet( arguments.objectKey ) ) ) {
 			return false;
 		}
 
@@ -108,10 +102,9 @@ component extends="coldbox.system.cache.store.ConcurrentStore" accessors=true{
 	function get( required objectKey ){
 		// Get via concurrent store
 		var target = super.get( arguments.objectKey );
-		if( !isNull( local.target ) ){
-
+		if ( !isNull( local.target ) ) {
 			// Validate if SR or normal object
-			if( isInstanceOf( target, "java.lang.ref.SoftReference" ) ){
+			if ( isInstanceOf( target, "java.lang.ref.SoftReference" ) ) {
 				return target.get();
 			}
 
@@ -127,10 +120,9 @@ component extends="coldbox.system.cache.store.ConcurrentStore" accessors=true{
 	function getQuiet( required objectKey ){
 		// Get via concurrent store
 		var target = super.getQuiet( arguments.objectKey );
-		if( !isNull( local.target ) ){
-
+		if ( !isNull( local.target ) ) {
 			// Validate if SR or normal object
-			if( isInstanceOf( target, "java.lang.ref.SoftReference" ) ){
+			if ( isInstanceOf( target, "java.lang.ref.SoftReference" ) ) {
 				return target.get();
 			}
 
@@ -150,15 +142,15 @@ component extends="coldbox.system.cache.store.ConcurrentStore" accessors=true{
 	void function set(
 		required objectKey,
 		required object,
-		timeout="",
-		lastAccessTimeout="",
-		extras={}
+		timeout           = "",
+		lastAccessTimeout = "",
+		extras            = {}
 	){
-		var target 	= 0;
-		var isSR	= ( arguments.timeout GT 0 );
+		var target = 0;
+		var isSR   = ( arguments.timeout GT 0 );
 
 		// Check for eternal object
-		if( isSR ){
+		if ( isSR ) {
 			// Cache as soft reference not an eternal object
 			target = createSoftReference( arguments.objectKey, arguments.object );
 		} else {
@@ -185,7 +177,7 @@ component extends="coldbox.system.cache.store.ConcurrentStore" accessors=true{
 	 */
 	function clear( required objectKey ){
 		// Check if it exists
-		if( NOT variables.pool.containsKey( arguments.objectKey ) ){
+		if ( NOT variables.pool.containsKey( arguments.objectKey ) ) {
 			return false;
 		}
 
@@ -193,7 +185,12 @@ component extends="coldbox.system.cache.store.ConcurrentStore" accessors=true{
 		var softRef = variables.pool.get( arguments.objectKey );
 
 		// Removal of Soft Ref Lookup
-		if( !isNull( local.softRef ) && variables.indexer.getObjectMetadataProperty( arguments.objectKey, "isSoftReference" ) ){
+		if (
+			!isNull( local.softRef ) && variables.indexer.getObjectMetadataProperty(
+				arguments.objectKey,
+				"isSoftReference"
+			)
+		) {
 			variables.softRefKeyMap.remove( softRef.hashCode() );
 		}
 
@@ -234,8 +231,10 @@ component extends="coldbox.system.cache.store.ConcurrentStore" accessors=true{
 	 */
 	private function createSoftReference( required objectKey, required target ){
 		// Create Soft Reference Wrapper and register with Queue
-		var softRef = createObject( "java", "java.lang.ref.SoftReference" )
-			.init( arguments.target, variables.referenceQueue );
+		var softRef = createObject( "java", "java.lang.ref.SoftReference" ).init(
+			arguments.target,
+			variables.referenceQueue
+		);
 
 		// Create Reverse Mapping, using CF approach or ACF blows up.
 		variables.softRefKeyMap.put( "hc-#softRef.hashCode()#", arguments.objectKey );

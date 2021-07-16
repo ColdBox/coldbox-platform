@@ -6,7 +6,7 @@
  *
  * The main interface to produce a ColdBox Application cache.
  */
-interface extends="coldbox.system.cache.providers.ICacheProvider"{
+interface extends="coldbox.system.cache.providers.ICacheProvider" {
 
 	/**
 	 * Get the cached view key prefix which is necessary for view caching
@@ -59,7 +59,7 @@ interface extends="coldbox.system.cache.providers.ICacheProvider"{
 	 *
 	 * @return IColdboxApplicationCache
 	 */
-	function clearEvent( required eventSnippet, queryString="" );
+	function clearEvent( required eventSnippet, queryString = "" );
 
 	/**
 	 * Clears all the event permutations from the cache according to the list of snippets and querystrings. Be careful when using incomplete event name with query strings as partial event names are not guaranteed to match with query string permutations
@@ -69,7 +69,7 @@ interface extends="coldbox.system.cache.providers.ICacheProvider"{
 	 *
 	 * @return IColdboxApplicationCache
 	 */
-	function clearEventMulti( required eventsnippets, queryString="" );
+	function clearEventMulti( required eventsnippets, queryString = "" );
 
 	/**
 	 * Clears all view name permutations from the cache according to the view name

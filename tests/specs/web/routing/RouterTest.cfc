@@ -243,12 +243,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 						var routes = router
 							.getRoutes()
 							.filter( function( item ){
-								return (
-									reFindNoCase( "^api", item.pattern ) && reFindNoCase(
-										"luis",
-										item.handler
-									)
-								);
+								return ( reFindNoCase( "^api", item.pattern ) && reFindNoCase( "luis", item.handler ) );
 							} );
 						expect( routes ).notToBeEmpty();
 					} );
@@ -557,21 +552,24 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				} );
 			} );
 
-			story( "I can register a route with a condition", function() {
-				given( "I register a route with a condition", function() {
-					then( "I should have a route with a condition closure specified", function() {
-						router.route( "/about" )
-							.withCondition( function() {
+			story( "I can register a route with a condition", function(){
+				given( "I register a route with a condition", function(){
+					then( "I should have a route with a condition closure specified", function(){
+						router
+							.route( "/about" )
+							.withCondition( function(){
 								return url.keyExists( "firstName" );
 							} )
-							.withAction( { "GET": "getFirstName" } )
+							.withAction( { "GET" : "getFirstName" } )
 							.toHandler( "About" );
 
 						var routes = router.getRoutes();
 						expect( routes ).toBeArray();
 						expect( routes ).toHaveLength( 1 );
 						expect( routes[ 1 ] ).toHaveKey( "condition" );
-						expect( isClosure( routes[ 1 ].condition ) || isCustomFunction( routes[ 1 ].condition ) ).toBeTrue( "Condition should be callable." );
+						expect( isClosure( routes[ 1 ].condition ) || isCustomFunction( routes[ 1 ].condition ) ).toBeTrue(
+							"Condition should be callable."
+						);
 						expect( routes[ 1 ] ).toHaveKey( "handler" );
 						expect( routes[ 1 ].handler ).toBe( "About" );
 						expect( routes[ 1 ] ).toHaveKey( "action" );
@@ -581,43 +579,49 @@ component extends="coldbox.system.testing.BaseModelTest" {
 					} );
 				} );
 
-				given( "I register two routes with the same pattern and different conditions", function() {
-					then( "I should have two routes showing both conditions", function() {
-						router.route( "/about" )
-							.withCondition( function() {
+				given( "I register two routes with the same pattern and different conditions", function(){
+					then( "I should have two routes showing both conditions", function(){
+						router
+							.route( "/about" )
+							.withCondition( function(){
 								return url.keyExists( "firstName" );
 							} )
-							.withAction( { "GET": "getFirstName" } )
+							.withAction( { "GET" : "getFirstName" } )
 							.toHandler( "About" );
 
-						router.route( "/about" )
-							.withCondition( function() {
+						router
+							.route( "/about" )
+							.withCondition( function(){
 								return url.keyExists( "lastName" );
 							} )
-							.withAction( { "GET": "getLastName" } )
+							.withAction( { "GET" : "getLastName" } )
 							.toHandler( "About" );
 
-							var routes = router.getRoutes();
-							expect( routes ).toBeArray();
-							expect( routes ).toHaveLength( 2 );
+						var routes = router.getRoutes();
+						expect( routes ).toBeArray();
+						expect( routes ).toHaveLength( 2 );
 
-							expect( routes[ 1 ] ).toHaveKey( "condition" );
-							expect( isClosure( routes[ 1 ].condition ) || isCustomFunction( routes[ 1 ].condition ) ).toBeTrue( "Condition should be callable." );
-							expect( routes[ 1 ] ).toHaveKey( "handler" );
-							expect( routes[ 1 ].handler ).toBe( "About" );
-							expect( routes[ 1 ] ).toHaveKey( "action" );
-							expect( routes[ 1 ].action ).toBeStruct();
-							expect( routes[ 1 ].action ).toHaveKey( "GET" );
-							expect( routes[ 1 ].action.GET ).toBe( "getFirstName" );
+						expect( routes[ 1 ] ).toHaveKey( "condition" );
+						expect( isClosure( routes[ 1 ].condition ) || isCustomFunction( routes[ 1 ].condition ) ).toBeTrue(
+							"Condition should be callable."
+						);
+						expect( routes[ 1 ] ).toHaveKey( "handler" );
+						expect( routes[ 1 ].handler ).toBe( "About" );
+						expect( routes[ 1 ] ).toHaveKey( "action" );
+						expect( routes[ 1 ].action ).toBeStruct();
+						expect( routes[ 1 ].action ).toHaveKey( "GET" );
+						expect( routes[ 1 ].action.GET ).toBe( "getFirstName" );
 
-							expect( routes[ 2 ] ).toHaveKey( "condition" );
-							expect( isClosure( routes[ 2 ].condition ) || isCustomFunction( routes[ 2 ].condition ) ).toBeTrue( "Condition should be callable." );
-							expect( routes[ 1 ] ).toHaveKey( "handler" );
-							expect( routes[ 1 ].handler ).toBe( "About" );
-							expect( routes[ 2 ] ).toHaveKey( "action" );
-							expect( routes[ 2 ].action ).toBeStruct();
-							expect( routes[ 2 ].action ).toHaveKey( "GET" );
-							expect( routes[ 2 ].action.GET ).toBe( "getLastName" );
+						expect( routes[ 2 ] ).toHaveKey( "condition" );
+						expect( isClosure( routes[ 2 ].condition ) || isCustomFunction( routes[ 2 ].condition ) ).toBeTrue(
+							"Condition should be callable."
+						);
+						expect( routes[ 1 ] ).toHaveKey( "handler" );
+						expect( routes[ 1 ].handler ).toBe( "About" );
+						expect( routes[ 2 ] ).toHaveKey( "action" );
+						expect( routes[ 2 ].action ).toBeStruct();
+						expect( routes[ 2 ].action ).toHaveKey( "GET" );
+						expect( routes[ 2 ].action.GET ).toBe( "getLastName" );
 					} );
 				} );
 			} );

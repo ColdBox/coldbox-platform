@@ -1,6 +1,4 @@
-﻿component
-	extends = "coldbox.system.testing.BaseModelTest"
-	model   = "coldbox.system.web.routing.Router"{
+﻿component extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.web.routing.Router" {
 
 	function beforeAll(){
 		super.setup();
@@ -428,12 +426,12 @@
 				describe( "using both `only` and `except`", function(){
 					it( "can apply both the `only` and the `except` parameters", function(){
 						router.resources(
-							resource  = "photos",
-							only      = [ "index", "show" ],
-							except    = "show",
-							module    = "",
-							namespace = "",
-							meta      : {}
+							resource = "photos",
+							only     = [ "index", "show" ],
+							except   = "show",
+							module   = "",
+							namespace= "",
+							meta     : {}
 						);
 
 						var cl = router.$callLog().addRoute;
@@ -456,4 +454,5 @@
 			} );
 		} );
 	}
+
 }

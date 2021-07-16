@@ -1,4 +1,5 @@
-﻿component extends = "tests.resources.BaseIntegrationTest"{
+﻿component extends="tests.resources.BaseIntegrationTest" {
+
 	this.loadColdBox = false;
 
 	function setup(){
@@ -141,7 +142,7 @@
 	function testWebService() skip="isAdobe"{
 		ws = injector.getInstance( "coldboxWS" );
 
-		//
+		// 
 		if ( listFindNoCase( "Lucee", server.coldfusion.productname ) ) {
 			expect( getMetadata( ws ).name ).toMatch( "rpc" );
 		}
@@ -231,4 +232,5 @@
 		var c = injector.getInstance( "virtually-inherited-class" );
 		expect( c.getData() ).toBe( "Default Data" );
 	}
+
 }

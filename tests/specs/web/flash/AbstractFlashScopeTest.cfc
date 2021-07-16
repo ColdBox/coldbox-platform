@@ -1,4 +1,5 @@
-﻿component extends = "tests.resources.BaseIntegrationTest"{
+﻿component extends="tests.resources.BaseIntegrationTest" {
+
 	this.loadColdBox = false;
 
 	function setup(){
@@ -137,31 +138,11 @@
 	function testClearFlash(){
 		flash.$( "flashExists", true );
 		testScope = {
-			t1 : {
-				content   : createUUID(),
-				keep      : true,
-				autoPurge : true
-			},
-			t2 : {
-				content   : createUUID(),
-				keep      : true,
-				autoPurge : true
-			},
-			t3 : {
-				content   : createUUID(),
-				keep      : true,
-				autoPurge : false
-			},
-			t4 : {
-				content   : createUUID(),
-				keep      : true,
-				autoPurge : true
-			},
-			t5 : {
-				content   : createUUID(),
-				keep      : true,
-				autoPurge : false
-			}
+			t1 : { content : createUUID(), keep : true, autoPurge : true },
+			t2 : { content : createUUID(), keep : true, autoPurge : true },
+			t3 : { content : createUUID(), keep : true, autoPurge : false },
+			t4 : { content : createUUID(), keep : true, autoPurge : true },
+			t5 : { content : createUUID(), keep : true, autoPurge : false }
 		};
 		flash.$( "getFlash", testScope );
 
@@ -173,31 +154,11 @@
 
 	function testGetKeys(){
 		var testScope = {
-			t1 : {
-				content   : createUUID(),
-				keep      : true,
-				autoPurge : true
-			},
-			t2 : {
-				content   : createUUID(),
-				keep      : true,
-				autoPurge : true
-			},
-			t3 : {
-				content   : createUUID(),
-				keep      : true,
-				autoPurge : false
-			},
-			t4 : {
-				content   : createUUID(),
-				keep      : true,
-				autoPurge : true
-			},
-			t5 : {
-				content   : createUUID(),
-				keep      : true,
-				autoPurge : false
-			}
+			t1 : { content : createUUID(), keep : true, autoPurge : true },
+			t2 : { content : createUUID(), keep : true, autoPurge : true },
+			t3 : { content : createUUID(), keep : true, autoPurge : false },
+			t4 : { content : createUUID(), keep : true, autoPurge : true },
+			t5 : { content : createUUID(), keep : true, autoPurge : false }
 		};
 		flash.$( "getScope", testScope );
 
@@ -208,35 +169,16 @@
 
 	function testGetAll(){
 		var testScope = {
-			t1 : {
-				content   : createUUID(),
-				keep      : true,
-				autoPurge : true
-			},
-			t2 : {
-				content   : createUUID(),
-				keep      : true,
-				autoPurge : true
-			},
-			t3 : {
-				content   : createUUID(),
-				keep      : true,
-				autoPurge : false
-			},
-			t4 : {
-				content   : createUUID(),
-				keep      : true,
-				autoPurge : true
-			},
-			t5 : {
-				content   : createUUID(),
-				keep      : true,
-				autoPurge : false
-			}
+			t1 : { content : createUUID(), keep : true, autoPurge : true },
+			t2 : { content : createUUID(), keep : true, autoPurge : true },
+			t3 : { content : createUUID(), keep : true, autoPurge : false },
+			t4 : { content : createUUID(), keep : true, autoPurge : true },
+			t5 : { content : createUUID(), keep : true, autoPurge : false }
 		};
 		flash.$( "getScope", testScope );
 
 		var r = flash.getAll();
 		expect( r ).toBeStruct().toHaveLength( 5 );
 	}
+
 }

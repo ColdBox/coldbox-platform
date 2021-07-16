@@ -1,4 +1,5 @@
-﻿component extends = "coldbox.system.testing.BaseModelTest"{
+﻿component extends="coldbox.system.testing.BaseModelTest" {
+
 	function setup(){
 		logBox    = new coldbox.system.logging.LogBox();
 		localPort = getRandomPort();
@@ -21,7 +22,7 @@
 		);
 
 		// create socket server
-		request.socketServer = createObject( "java", "java.net.ServerSocket" ).init( javacast( "int", localPort ) );
+		request.socketServer= createObject( "java", "java.net.ServerSocket" ).init( javacast( "int", localPort ) );
 		thread name         ="start-socket-#createUUID()#" {
 			request.socketServer.accept();
 		}
@@ -58,4 +59,5 @@
 		nextAvail.close();
 		return portNumber;
 	}
+
 }

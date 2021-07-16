@@ -6,10 +6,7 @@
  *
  * A ColdBox utility to help clean cached objects for ColdBox Application Caches
  */
-component
-	accessors   ="true"
-	serializable="false"
-{
+component accessors="true" serializable="false" {
 
 	/**
 	 * Constructor
@@ -27,7 +24,7 @@ component
 	 *
 	 * @return coldbox.system.cache.providers.ICacheProvider
 	 */
-	function getAssociatedCache() {
+	function getAssociatedCache(){
 		return variables.cacheProvider;
 	}
 
@@ -44,19 +41,19 @@ component
 		// sort array
 		arraySort( cacheKeys, "textnocase" );
 
-		for( var x=1; x lte cacheKeysLength; x++ ){
+		for ( var x = 1; x lte cacheKeysLength; x++ ) {
 			// Get List Value
 			var thisKey = cacheKeys[ x ];
 
 			// Using Regex
-			if( arguments.regex ){
-				var tester = refindnocase( arguments.keySnippet, thisKey );
+			if ( arguments.regex ) {
+				var tester = reFindNoCase( arguments.keySnippet, thisKey );
 			} else {
-				var tester = findnocase( arguments.keySnippet, thisKey );
+				var tester = findNoCase( arguments.keySnippet, thisKey );
 			}
 
 			// Test Evaluation
-			if ( tester ){
+			if ( tester ) {
 				variables.cacheProvider.clear( thisKey );
 			}
 		}
@@ -71,19 +68,24 @@ component
 	 * @eventsnippet The event snippet to clear on. Can be partial or full
 	 * @queryString If passed in, it will create a unique hash out of it. For purging purposes
 	 */
-	ElementCleaner function clearEvent( required eventsnippet, queryString="" ){
-		//.*- = the cache suffix and appendages for regex to match
-		var cacheKey = variables.cacheProvider.getEventCacheKeyPrefix() & ".*" & replace( arguments.eventsnippet, ".", "\.", "all" ) & ".*-.*";
+	ElementCleaner function clearEvent( required eventsnippet, queryString = "" ){
+		// .*- = the cache suffix and appendages for regex to match
+		var cacheKey = variables.cacheProvider.getEventCacheKeyPrefix() & ".*" & replace(
+			arguments.eventsnippet,
+			".",
+			"\.",
+			"all"
+		) & ".*-.*";
 
 		// Check if we are purging with query string
-		if( len( arguments.queryString ) neq 0 ){
+		if ( len( arguments.queryString ) neq 0 ) {
 			cacheKey &= "-" & variables.cacheProvider.getEventURLFacade().buildHash( arguments.queryString );
 		}
 
-		//systemOutput( "cachekey: #cacheKey#, hash:#variables.cacheProvider.getEventURLFacade().buildHash( arguments.queryString )#" , true );
+		// systemOutput( "cachekey: #cacheKey#, hash:#variables.cacheProvider.getEventURLFacade().buildHash( arguments.queryString )#" , true );
 
 		// Clear All Events by Criteria
-		return clearByKeySnippet( keySnippet=cacheKey, regex=true );
+		return clearByKeySnippet( keySnippet = cacheKey, regex = true );
 	}
 
 	/**
@@ -93,36 +95,40 @@ component
 	 * @eventsnippets The comma-delimited list event snippet to clear on. Can be partial or full
 	 * @queryString The comma-delimited list of queryStrings passed in. If passed in, it will create a unique hash out of it. For purging purposes.  If passed in the list length must be equal to the list length of the event snippets passed in
 	 */
-	ElementCleaner function clearEventMulti( required eventsnippets, queryString="" ){
-		var regexCacheKey = "";
-		var keyPrefix     = variables.cacheProvider.getEventCacheKeyPrefix();
-		var eventURLFacade= variables.cacheProvider.getEventURLFacade();
+	ElementCleaner function clearEventMulti( required eventsnippets, queryString = "" ){
+		var regexCacheKey  = "";
+		var keyPrefix      = variables.cacheProvider.getEventCacheKeyPrefix();
+		var eventURLFacade = variables.cacheProvider.getEventURLFacade();
 
 		// normalize snippets
-		if( isArray( arguments.eventSnippets ) ){
+		if ( isArray( arguments.eventSnippets ) ) {
 			arguments.eventsnippets = arrayToList( arguments.eventsnippets );
 		}
 
 		// Loop on the incoming snippets
-		for( var x=1; x lte listLen( arguments.eventsnippets ); x++ ){
+		for ( var x = 1; x lte listLen( arguments.eventsnippets ); x++ ) {
+			// .*- = the cache suffix and appendages for regex to match
+			var cacheKey = keyPrefix & ".*" & replace(
+				listGetAt( arguments.eventsnippets, x ),
+				".",
+				"\.",
+				"all"
+			) & "-.*";
 
-				//.*- = the cache suffix and appendages for regex to match
-				var cacheKey = keyPrefix & ".*" & replace( listGetAt( arguments.eventsnippets, x ), ".", "\.", "all") & "-.*";
+			// Check if we are purging with query string
+			if ( len( arguments.queryString ) neq 0 ) {
+				cacheKey = cacheKey & "-" & eventURLFacade.buildHash( listGetAt( arguments.queryString, x ) );
+			}
+			regexCacheKey &= cacheKey;
 
-				// Check if we are purging with query string
-				if( len( arguments.queryString ) neq 0 ){
-					cacheKey = cacheKey & "-" & eventURLFacade.buildHash( listGetAt( arguments.queryString, x ) );
-				}
-				regexCacheKey &= cacheKey;
-
-				//check that we aren't at the end of the list, and the | char to the regex as the OR statement
-				if ( x NEQ listLen( arguments.eventsnippets ) ) {
-					regexCacheKey = regexCacheKey & "|";
-				}
+			// check that we aren't at the end of the list, and the | char to the regex as the OR statement
+			if ( x NEQ listLen( arguments.eventsnippets ) ) {
+				regexCacheKey = regexCacheKey & "|";
+			}
 		}
 
 		// Clear All Events by Criteria
-		return clearByKeySnippet( keySnippet=regexCacheKey, regex=true );
+		return clearByKeySnippet( keySnippet = regexCacheKey, regex = true );
 	}
 
 	/**
@@ -131,7 +137,7 @@ component
 	ElementCleaner function clearAllEvents(){
 		var cacheKey = variables.cacheProvider.getEventCacheKeyPrefix();
 		// Clear All Events
-		return clearByKeySnippet( keySnippet=cacheKey, regex=false );
+		return clearByKeySnippet( keySnippet = cacheKey, regex = false );
 	}
 
 	/**
@@ -143,7 +149,7 @@ component
 		var cacheKey = variables.cacheProvider.getViewCacheKeyPrefix() & arguments.viewSnippet;
 
 		// Clear All View snippets
-		return clearByKeySnippet( keySnippet=cacheKey, regex=false );
+		return clearByKeySnippet( keySnippet = cacheKey, regex = false );
 	}
 
 	/**
@@ -152,33 +158,37 @@ component
 	 * @viewSnippet The comma-delimited list or array of view snippet to clear on. Can be partial or full
 	 */
 	ElementCleaner function clearViewMulti( required viewSnippets ){
-		var regexCacheKey= "";
-		var x            = 1;
-		var cacheKey     = "";
-		var keyPrefix    = variables.cacheProvider.getViewCacheKeyPrefix();
+		var regexCacheKey = "";
+		var x             = 1;
+		var cacheKey      = "";
+		var keyPrefix     = variables.cacheProvider.getViewCacheKeyPrefix();
 
 		// normalize snippets
-		if( isArray( arguments.viewSnippets ) ){
+		if ( isArray( arguments.viewSnippets ) ) {
 			arguments.viewSnippets = arrayToList( arguments.viewSnippets );
 		}
 
 		// Loop on the incoming snippets
-		for(x=1;x lte listLen(arguments.viewSnippets);x=x+1){
+		for ( x = 1; x lte listLen( arguments.viewSnippets ); x = x + 1 ) {
+			// .*- = the cache suffix and appendages for regex to match
+			cacheKey = keyPrefix & replace(
+				listGetAt( arguments.viewSnippets, x ),
+				".",
+				"\.",
+				"all"
+			) & "-.*";
 
-				//.*- = the cache suffix and appendages for regex to match
-				cacheKey = keyPrefix & replace(listGetAt(arguments.viewSnippets,x),".","\.","all") & "-.*";
+			// Check if we are purging with query string
+			regexCacheKey = regexCacheKey & cacheKey;
 
-				//Check if we are purging with query string
-				regexCacheKey = regexCacheKey & cacheKey;
-
-				//check that we aren't at the end of the list, and the | char to the regex as the OR statement
-				if (x NEQ listLen(arguments.viewSnippets)) {
-					regexCacheKey = regexCacheKey & "|";
-				}
+			// check that we aren't at the end of the list, and the | char to the regex as the OR statement
+			if ( x NEQ listLen( arguments.viewSnippets ) ) {
+				regexCacheKey = regexCacheKey & "|";
+			}
 		}
 
 		// Clear All Events by Criteria
-		return clearByKeySnippet(keySnippet=regexCacheKey,regex=true);
+		return clearByKeySnippet( keySnippet = regexCacheKey, regex = true );
 	}
 
 	/**
@@ -187,7 +197,7 @@ component
 	ElementCleaner function clearAllViews(){
 		var cacheKey = variables.cacheProvider.getViewCacheKeyPrefix();
 		// Clear All the views
-		return clearByKeySnippet(keySnippet=cacheKey,regex=false);
+		return clearByKeySnippet( keySnippet = cacheKey, regex = false );
 	}
 
 }
