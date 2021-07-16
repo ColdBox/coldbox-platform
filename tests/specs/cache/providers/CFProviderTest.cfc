@@ -1,4 +1,5 @@
-﻿component extends = "tests.resources.BaseIntegrationTest" skip = "isAdobe"{
+﻿component extends="tests.resources.BaseIntegrationTest" skip="isAdobe" {
+
 	this.loadColdBox = false;
 
 	boolean function isAdobe(){
@@ -105,11 +106,7 @@
 	}
 
 	private function cacheProducer(){
-		return {
-			date : now(),
-			name : "luis majano",
-			id   : createUUID()
-		};
+		return { date : now(), name : "luis majano", id : createUUID() };
 	}
 
 	function testGetQuiet(){
@@ -202,4 +199,5 @@
 		cache.clearQuiet( "test" );
 		assertEquals( 0, cache.getSize() );
 	}
+
 }

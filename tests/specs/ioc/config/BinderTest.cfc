@@ -1,4 +1,4 @@
-﻿component extends="tests.resources.BaseIntegrationTest"{
+﻿component extends="tests.resources.BaseIntegrationTest" {
 
 	this.loadColdBox = false;
 
@@ -123,9 +123,9 @@
 	}
 
 	function testParent(){
-		//
+		// 
 		// create "dependency" beans to be injected
-		//
+		// 
 
 		// alpha and bravo are in the abstract service
 		config.map( "someAlphaDAO" ).to( "models.parent.SomeAlphaDAO" );
@@ -258,10 +258,7 @@
 
 	function testEagerInit(){
 		config.mapPath( "tests.resources.Test" );
-		mapping = config.getMapping( "Test" ).process(
-			config,
-			mockInjector
-		);
+		mapping = config.getMapping( "Test" ).process( config, mockInjector );
 		expect( mapping.isEagerInit() ).toBeFalse();
 
 		config.mapPath( "tests.resources.Test" ).asEagerInit();
@@ -454,11 +451,7 @@
 		// debug( config.getListeners() );
 		assertEquals( 1, arrayLen( config.getListeners() ) );
 
-		config.listener(
-			"models.listener",
-			{},
-			"configListner"
-		);
+		config.listener( "models.listener", {}, "configListner" );
 		assertEquals( 2, arrayLen( config.getListeners() ) );
 		listeners = config.getListeners();
 		assertEquals( "configListner", listeners[ 2 ].name );
@@ -472,20 +465,10 @@
 	function testActivateListener(){
 		mockInjector
 			.$( method = "registerListener", preserveReturnType = false )
-			.$args(
-				"models.listener",
-				{},
-				"configListner",
-				true
-			)
+			.$args( "models.listener", {}, "configListner", true )
 			.$results( mockInjector );
 
-		config.listener(
-			"models.listener",
-			{},
-			"configListener",
-			true
-		);
+		config.listener( "models.listener", {}, "configListener", true );
 		config.listener(
 			"models.listener",
 			{},
@@ -499,31 +482,17 @@
 		var mockInjector = createStub();
 		var raw          = {
 			logBoxConfig      : "test.logbox",
-			scopeRegistration : {
-				enabled : true,
-				scope   : "application"
-			},
-			cacheBox       : { enabled : true },
-			customDSL      : { myNamespace : "my.namespace" },
-			customScopes   : { AwesomeScope : "my.awesome.scope" },
-			parentInjector : mockInjector,
-			scanLocations  : [ "coldbox.system" ],
-			stopRecursions : [ "coldbox.system.EventHandler" ],
-			listeners      : [
-				{
-					class      : "my.listener",
-					properties : {}
-				}
-			],
-			mappings : {
-				obj1 : {
-					path      : "my.models.path",
-					eagerInit : true
-				},
-				groovyLib : {
-					path : "groovy.path.lib",
-					dsl  : "groovy"
-				}
+			scopeRegistration : { enabled : true, scope : "application" },
+			cacheBox          : { enabled : true },
+			customDSL         : { myNamespace : "my.namespace" },
+			customScopes      : { AwesomeScope : "my.awesome.scope" },
+			parentInjector    : mockInjector,
+			scanLocations     : [ "coldbox.system" ],
+			stopRecursions    : [ "coldbox.system.EventHandler" ],
+			listeners         : [ { class : "my.listener", properties : {} } ],
+			mappings          : {
+				obj1      : { path : "my.models.path", eagerInit : true },
+				groovyLib : { path : "groovy.path.lib", dsl : "groovy" }
 			}
 		};
 		config.loadDataDSL( raw );

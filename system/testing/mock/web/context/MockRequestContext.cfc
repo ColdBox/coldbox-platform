@@ -20,12 +20,7 @@ component
 	 *
 	 * return RequestContext
 	 */
-	function setHTTPHeader(
-		statusCode,
-		statusText = "",
-		name,
-		value = ""
-	){
+	function setHTTPHeader( statusCode, statusText = "", name, value = "" ){
 		// status code?
 		if ( structKeyExists( arguments, "statusCode" ) ) {
 			setValue( "cbox_statusCode", arguments.statusCode );

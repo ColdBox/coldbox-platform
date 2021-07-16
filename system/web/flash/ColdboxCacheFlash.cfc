@@ -40,7 +40,7 @@ component extends="coldbox.system.web.flash.AbstractFlashScope" accessors="true"
 	 * Build Flash Key according to standards
 	 */
 	function getFlashKey(){
-		var prefix = "cbFlash:#variables.appName#";
+		var prefix           = "cbFlash:#variables.appName#";
 		var isSessionDefined = getApplicationMetadata().sessionManagement;
 
 		// Check jsession id First

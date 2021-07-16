@@ -1,128 +1,129 @@
 ﻿/**
-* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-* www.ortussolutions.com
-* ---
-* This object is used when implementing AOP advices.  Each advice you create will implement
-* a `invokeMethod()` and receive this object as an argument.
-* You can then use any of the properties in this object to construct your advice.
-* Please see the property documentation below to understand each of the properties.
-* Just remember that in order to continue the execution of the Advised method you will need to call `proceed()`
-*/
-component accessors="true"{
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * This object is used when implementing AOP advices.  Each advice you create will implement
+ * a `invokeMethod()` and receive this object as an argument.
+ * You can then use any of the properties in this object to construct your advice.
+ * Please see the property documentation below to understand each of the properties.
+ * Just remember that in order to continue the execution of the Advised method you will need to call `proceed()`
+ */
+component accessors="true" {
 
 	/**
-	* The currently executing method
-	*/
+	 * The currently executing method
+	 */
 	property name="method";
 	/**
-	* The currently executing method arguments
-	*/
+	 * The currently executing method arguments
+	 */
 	property name="args";
 	/**
-	* The current method metadata
-	*/
+	 * The current method metadata
+	 */
 	property name="methodMetadata";
 	/**
-	* The target of execution
-	*/
+	 * The target of execution
+	 */
 	property name="target";
 	/**
-	* The target shortname
-	*/
+	 * The target shortname
+	 */
 	property name="targetName";
 	/**
-	* The target wirebox mapping
-	*/
+	 * The target wirebox mapping
+	 */
 	property name="targetMapping";
 	/**
-	* The AOP interceptors to execute
-	*/
+	 * The AOP interceptors to execute
+	 */
 	property name="interceptors";
 	/**
-	* The current index of execution
-	*/
+	 * The current index of execution
+	 */
 	property name="interceptorIndex";
 	/**
-	* The number of interceptors applied
-	*/
+	 * The number of interceptors applied
+	 */
 	property name="interceptorLen";
 
 
 	/**
-	* Constructor
-	* @method 			The method name that was intercepted
-	* @args 			The argument collection that was intercepted
-	* @methodMetadata 	The method metadata that was intercepted
-	* @target 			The target object reference that was intercepted
-	* @targetName		The name of the target wired up
-	* @targetMapping 	The target's mapping object reference
-	* @targetMapping.doc_generic coldbox.system.ioc.config.Mapping
-	* @interceptors 	The array of interceptors for this invocation
-	*/
-    function init(
-    	required method,
-    	required args,
-    	required methodMetadata,
-    	required target,
-    	required targetName,
-    	required targetMapping,
-    	required interceptors
-    ){
-
+	 * Constructor
+	 * @method 			The method name that was intercepted
+	 * @args 			The argument collection that was intercepted
+	 * @methodMetadata 	The method metadata that was intercepted
+	 * @target 			The target object reference that was intercepted
+	 * @targetName		The name of the target wired up
+	 * @targetMapping 	The target's mapping object reference
+	 * @targetMapping.doc_generic coldbox.system.ioc.config.Mapping
+	 * @interceptors 	The array of interceptors for this invocation
+	 */
+	function init(
+		required method,
+		required args,
+		required methodMetadata,
+		required target,
+		required targetName,
+		required targetMapping,
+		required interceptors
+	){
 		// Method intercepted
-		variables.method  			= arguments.method;
+		variables.method           = arguments.method;
 		// Arguments intercepted
-		variables.args				= arguments.args;
+		variables.args             = arguments.args;
 		// Method metadata
-		variables.methodMetadata	= deserializeJSON( URLDecode( arguments.methodMetadata ) );
+		variables.methodMetadata   = deserializeJSON( urlDecode( arguments.methodMetadata ) );
 		// Target intercepted
-		variables.target			= arguments.target;
+		variables.target           = arguments.target;
 		// Target name
-		variables.targetName		= arguments.targetName;
+		variables.targetName       = arguments.targetName;
 		// Target Mapping Reference
-		variables.targetMapping		= arguments.targetMapping;
+		variables.targetMapping    = arguments.targetMapping;
 		// Interceptor array chain
-		variables.interceptors		= arguments.interceptors;
+		variables.interceptors     = arguments.interceptors;
 		// Current index to start execution
-		variables.interceptorIndex 	= 1;
+		variables.interceptorIndex = 1;
 		// Length of interceptor
-		variables.interceptorLen	= arrayLen( arguments.interceptors );
+		variables.interceptorLen   = arrayLen( arguments.interceptors );
 
 		return this;
 	}
 
 	/**
-	* Increment the interceptor index pointer
-	* @return MethodInvocation
-	*/
+	 * Increment the interceptor index pointer
+	 * @return MethodInvocation
+	 */
 	function incrementInterceptorIndex(){
-    	variables.interceptorIndex++;
+		variables.interceptorIndex++;
 		return this;
 	}
 
 	/**
-	* Set args
-	* @return MethodInvocation
-	*/
+	 * Set args
+	 * @return MethodInvocation
+	 */
 	function setArgs( required args ){
 		variables.args = arguments.args;
 		return this;
 	}
 
-    /**
-    * Proceed execution of the method invocation
-    */
-   	function proceed(){
-   		// We will now proceed with our interceptor execution chain or regular method pointer call
+	/**
+	 * Proceed execution of the method invocation
+	 */
+	function proceed(){
+		// We will now proceed with our interceptor execution chain or regular method pointer call
 		// execute the next interceptor in the chain
 
 		// Check Current Index against interceptor length
-		if( variables.interceptorIndex <= variables.interceptorLen ){
-			return variables.interceptors[ variables.interceptorIndex ].invokeMethod( this.incrementInterceptorIndex() );
+		if ( variables.interceptorIndex <= variables.interceptorLen ) {
+			return variables.interceptors[ variables.interceptorIndex ].invokeMethod(
+				this.incrementInterceptorIndex()
+			);
 		}
 
 		// If we get here all interceptors have fired and we need to fire the original proxied method
-		return variables.target.$wbAOPInvokeProxy( method=variables.method, args=variables.args );
-   	}
+		return variables.target.$wbAOPInvokeProxy( method = variables.method, args = variables.args );
+	}
 
 }

@@ -37,14 +37,14 @@ component accessors="true" singleton {
 	function marshallData(
 		required type,
 		required data,
-		encoding                = "UTF-8",
-		jsonCallback            = "",
-		jsonQueryFormat 				= true,
-		xmlColumnList           = "",
-		boolean xmlUseCDATA     = false,
-		xmlListDelimiter        = ",",
-		xmlRootName             = "",
-		struct pdfArgs          = {}
+		encoding            = "UTF-8",
+		jsonCallback        = "",
+		jsonQueryFormat     = true,
+		xmlColumnList       = "",
+		boolean xmlUseCDATA = false,
+		xmlListDelimiter    = ",",
+		xmlRootName         = "",
+		struct pdfArgs      = {}
 	){
 		// Validation Types
 		if ( !reFindNoCase( "^(JSON|JSONP|JSONT|WDDX|XML|PLAIN|HTML|TEXT|PDF)$", arguments.type ) ) {

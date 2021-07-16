@@ -132,7 +132,11 @@ component accessors="true" {
 		var event = getController().getRequestService().getContext();
 
 		// Lock for race-conditions
-		lock name="inflate.flash.#getUtil().getSessionIdentifier()#" type="exclusive" throwontimeout="true" timeout="20" {
+		lock
+			name          ="inflate.flash.#getUtil().getSessionIdentifier()#"
+			type          ="exclusive"
+			throwontimeout="true"
+			timeout       ="20" {
 			// Process Inflations
 			getFlash()
 				// Process only keys that are marked as keep and content exists

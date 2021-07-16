@@ -28,7 +28,8 @@ component extends="coldbox.system.testing.BaseModelTest" {
 					},
 					mockController
 				);
-				mockRS = createEmptyMock( "coldbox.system.web.services.RequestService" ).$( "getFlashScope", flashScope )
+				mockRS = createEmptyMock( "coldbox.system.web.services.RequestService" )
+					.$( "getFlashScope", flashScope )
 					.$( "getContext", mockRequestContext );
 				mockLogger = createEmptyMock( "coldbox.system.logging.Logger" )
 					.$( "warn" )
@@ -94,7 +95,10 @@ component extends="coldbox.system.testing.BaseModelTest" {
 			} );
 
 			it( "can handle onAuthorizationFailure with cbsecurity results", function(){
-				mockrequestContext.setPrivateValue( "cbSecurity_validatorResults", { messages : "Invalid Access!" } );
+				mockrequestContext.setPrivateValue(
+					"cbSecurity_validatorResults",
+					{ messages : "Invalid Access!" }
+				);
 				handler.onAuthorizationFailure(
 					mockRequestContext,
 					mockRequestContext.getCollection(),
@@ -120,7 +124,10 @@ component extends="coldbox.system.testing.BaseModelTest" {
 			} );
 
 			it( "can handle onAuthenticationFailure with cbsecurity expiration results", function(){
-				mockrequestContext.setPrivateValue( "cbSecurity_validatorResults", { messages : "Expired Token!" } );
+				mockrequestContext.setPrivateValue(
+					"cbSecurity_validatorResults",
+					{ messages : "Expired Token!" }
+				);
 				handler.onAuthenticationFailure(
 					mockRequestContext,
 					mockRequestContext.getCollection(),

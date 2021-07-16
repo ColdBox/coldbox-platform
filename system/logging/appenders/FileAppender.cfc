@@ -9,15 +9,15 @@
  * - autoExpand   : Whether to expand the file path or not. Defaults to true.
  * - filename     : The name of the file, if not defined, then it will use the name of this appender. Do not append an extension to it. We will append a .log to it.
  * - fileEncoding : The file encoding to use, by default we use ISO-8859-1;
-**/
-component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
+ **/
+component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 
 	/**
 	 * The log file location
 	 */
 	property name="logFullpath";
 
-    /**
+	/**
 	 * Constructor
 	 *
 	 * @name The unique name for this appender.
@@ -30,41 +30,46 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 	 */
 	function init(
 		required name,
-		struct properties={},
-		layout="",
-		levelMin=0,
-		levelMax=4
+		struct properties = {},
+		layout            = "",
+		levelMin          = 0,
+		levelMax          = 4
 	){
-		super.init( argumentCollection=arguments );
+		super.init( argumentCollection = arguments );
 
 		// Setup Properties
-		if( NOT propertyExists( "filepath" ) ){
-			throw(
-				message = "Filepath property not defined",
-				type    = "FileAppender.PropertyNotFound"
-			);
+		if ( NOT propertyExists( "filepath" ) ) {
+			throw( message = "Filepath property not defined", type = "FileAppender.PropertyNotFound" );
 		}
-		if( NOT propertyExists( "autoExpand" ) ){
+		if ( NOT propertyExists( "autoExpand" ) ) {
 			setProperty( "autoExpand", true );
 		}
-		if( NOT propertyExists( "filename" ) ){
+		if ( NOT propertyExists( "filename" ) ) {
 			setProperty( "filename", getName() );
 		}
-		if( NOT propertyExists( "fileEncoding" ) ){
+		if ( NOT propertyExists( "fileEncoding" ) ) {
 			setProperty( "fileEncoding", "ISO-8859-1" );
 		}
 		// Cleanup File Names
-		setProperty( "filename", REreplacenocase( getProperty( "filename" ), "[^0-9a-z]", "", "ALL" ) );
+		setProperty(
+			"filename",
+			reReplaceNoCase(
+				getProperty( "filename" ),
+				"[^0-9a-z]",
+				"",
+				"ALL"
+			)
+		);
 
 		// Setup the log file full path
 		variables.logFullpath = getProperty( "filePath" );
 		// Clean ending slash
-		variables.logFullPath = reReplacenocase( variables.logFullPath, "[/\\]$", "" );
+		variables.logFullPath = reReplaceNoCase( variables.logFullPath, "[/\\]$", "" );
 		// Concatenate Full Log path
 		variables.logFullPath = variables.logFullpath & "/" & getProperty( "filename" ) & ".log";
 
 		// Do we expand the path?
-		if( getProperty( "autoExpand" ) ){
+		if ( getProperty( "autoExpand" ) ) {
 			variables.logFullPath = expandPath( variables.logFullpath );
 		}
 
@@ -81,7 +86,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 		return this;
 	}
 
-    /**
+	/**
 	 * Write an entry into the appender. You must implement this method yourself.
 	 *
 	 * @logEvent The logging event to log
@@ -93,19 +98,19 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 		var entry     = "";
 
 		// Message Layout
-		if( hasCustomLayout() ){
+		if ( hasCustomLayout() ) {
 			entry = getCustomLayout().format( loge );
 		} else {
 			// Cleanup main message
-			if( len( loge.getExtraInfoAsString() ) ){
+			if ( len( loge.getExtraInfoAsString() ) ) {
 				message = message & " " & loge.getExtraInfoAsString();
 			}
-			message = replace( message, '"', '""', "all" );
-			message = replace( message, "#chr(13)##chr(10)#", '  ', "all" );
-			message = replace( message, chr(13), '  ', "all" );
+			message = replace( message, """", """""", "all" );
+			message = replace( message, "#chr( 13 )##chr( 10 )#", "  ", "all" );
+			message = replace( message, chr( 13 ), "  ", "all" );
 
 			// Entry string
-			entry = '"#severityToString( logEvent.getSeverity() )#","#getname()#","#dateformat( timestamp, "mm/dd/yyyy" )#","#timeformat( timestamp, "HH:mm:ss" )#","#loge.getCategory()#","#message#"';
+			entry = """#severityToString( logEvent.getSeverity() )#"",""#getname()#"",""#dateFormat( timestamp, "mm/dd/yyyy" )#"",""#timeFormat( timestamp, "HH:mm:ss" )#"",""#loge.getCategory()#"",""#message#""";
 		}
 
 		// Queue it up
@@ -118,15 +123,17 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 	 * Remove the log file for this appender
 	 */
 	FileAppender function removeLogFile(){
-		if( fileExists( variables.logFullPath ) ){
-
-			variables.lock( body=function(){
-				if( fileExists( variables.logFullPath ) ){
-					fileDelete( variables.logFullPath );
-				} // end double lock race condition
-			} );
-
-		} // end if
+		if ( fileExists( variables.logFullPath ) ) {
+			variables.lock(
+				body = function(){
+					if ( fileExists( variables.logFullPath ) ) {
+						fileDelete( variables.logFullPath );
+					}
+					// end double lock race condition
+				}
+			);
+		}
+		// end if
 
 		return this;
 	}
@@ -135,21 +142,28 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 	 * Initialize the file log location if it does not exist. Please note that if exceptions are detected, then we log them in the CF facilities
 	 */
 	FileAppender function initLogLocation(){
-		if( !fileExists( variables.logFullPath ) ){
-
-			variables.lock( body=function(){
-				if( !fileExists( variables.logFullPath ) ){
-					try{
-						// Default Log Directory
-						ensureDefaultLogDirectory();
-						// Create log file
-						fileWrite( variables.logFullPath, '"Severity","Appender","Date","Time","Category","Message"#chr( 13 )##chr( 10 )#' );
-					} catch( Any e ) {
-						$log( "ERROR", "Cannot create appender's: #getName()# log file. File #variables.logFullpath#. #e.message# #e.detail#" );
+		if ( !fileExists( variables.logFullPath ) ) {
+			variables.lock(
+				body = function(){
+					if ( !fileExists( variables.logFullPath ) ) {
+						try {
+							// Default Log Directory
+							ensureDefaultLogDirectory();
+							// Create log file
+							fileWrite(
+								variables.logFullPath,
+								"""Severity"",""Appender"",""Date"",""Time"",""Category"",""Message""#chr( 13 )##chr( 10 )#"
+							);
+						} catch ( Any e ) {
+							$log(
+								"ERROR",
+								"Cannot create appender's: #getName()# log file. File #variables.logFullpath#. #e.message# #e.detail#"
+							);
+						}
 					}
-				} // end double lock race condition
-			} );
-
+					// end double lock race condition
+				}
+			);
 		}
 
 		return this;
@@ -177,14 +191,14 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 	 * @queueContext A struct of data attached to this processing queue thread
 	 */
 	function onLogListenerSleep( required struct queueContext ){
-		var isFlushNeeded =  ( arguments.queueContext.start + arguments.queueContext.flushInterval < getTickCount() ) || arguments.queueContext.force;
+		var isFlushNeeded = ( arguments.queueContext.start + arguments.queueContext.flushInterval < getTickCount() ) || arguments.queueContext.force;
 		// flush to disk every start + 1000ms
-		if(
+		if (
 			isFlushNeeded
 			&&
 			!isSimpleValue( arguments.queueContext.oFile )
-		){
-			//out( "LogFile for #getName()# flushed to disk at #now()# using interval: #arguments.queueContext.flushInterval#", true );
+		) {
+			// out( "LogFile for #getName()# flushed to disk at #now()# using interval: #arguments.queueContext.flushInterval#", true );
 			fileClose( arguments.queueContext.oFile );
 			arguments.queueContext.oFile = "";
 			arguments.queueContext.start = getTickCount();
@@ -202,7 +216,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 	 */
 	function processQueueElement( required data, required queueContext ){
 		// If simple value, open it
-		if( isSimpleValue( arguments.queueContext.oFile ) ){
+		if ( isSimpleValue( arguments.queueContext.oFile ) ) {
 			arguments.queueContext.oFile = fileOpen(
 				variables.logFullPath,
 				"append",
@@ -222,7 +236,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 	 * @queueContext A struct of data attached to this processing queue thread
 	 */
 	function onLogListenerEnd( required struct queueContext ){
-		if( !isNull( arguments.queueContext.oFile ) && !isSimpleValue( arguments.queueContext.oFile ) ){
+		if ( !isNull( arguments.queueContext.oFile ) && !isSimpleValue( arguments.queueContext.oFile ) ) {
 			fileClose( arguments.queueContext.oFile );
 			arguments.queueContext.oFile = "";
 		}
@@ -232,7 +246,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 	 * Process a shutdown!
 	 */
 	function shutdown(){
-		//runLogListener( force = true );
+		// runLogListener( force = true );
 	}
 
 	/************************************ PRIVATE ************************************/
@@ -241,9 +255,9 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 	 * Ensures the log directory.
 	 */
 	private function ensureDefaultLogDirectory(){
-		var dirPath = getDirectoryFrompath( variables.logFullpath );
+		var dirPath = getDirectoryFromPath( variables.logFullpath );
 
-		if( !directoryExists( dirPath ) ){
+		if ( !directoryExists( dirPath ) ) {
 			directoryCreate( dirPath );
 		}
 

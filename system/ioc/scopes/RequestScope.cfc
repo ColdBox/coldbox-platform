@@ -1,10 +1,10 @@
 ﻿/**
-* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-* www.ortussolutions.com
-* ---
-* A scope that leverages the request scope
-**/
-component implements="coldbox.system.ioc.scopes.IScope" accessors="true"{
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * A scope that leverages the request scope
+ **/
+component implements="coldbox.system.ioc.scopes.IScope" accessors="true" {
 
 	/**
 	 * Injector linkage
@@ -26,8 +26,8 @@ component implements="coldbox.system.ioc.scopes.IScope" accessors="true"{
 	 * @return coldbox.system.ioc.scopes.IScope
 	 */
 	function init( required injector ){
-		variables.injector 	= arguments.injector;
-		variables.log		= arguments.injector.getLogBox().getLogger( this );
+		variables.injector = arguments.injector;
+		variables.log      = arguments.injector.getLogBox().getLogger( this );
 		return this;
 	}
 
@@ -40,31 +40,35 @@ component implements="coldbox.system.ioc.scopes.IScope" accessors="true"{
 	 * @initArguments The constructor struct of arguments to passthrough to initialization
 	 */
 	function getFromScope( required mapping, struct initArguments ){
-		var cacheKey    = "wirebox:#arguments.mapping.getName()#";
+		var cacheKey = "wirebox:#arguments.mapping.getName()#";
 
-        // Check if already in request scope
-        if( NOT structKeyExists( request, cacheKey ) ){
-            // some nice debug info.
-            if( variables.log.canDebug() ){
-                variables.log.debug( "Object: (#arguments.mapping.getName()#) not found in request scope, beginning construction." );
-            }
+		// Check if already in request scope
+		if ( NOT structKeyExists( request, cacheKey ) ) {
+			// some nice debug info.
+			if ( variables.log.canDebug() ) {
+				variables.log.debug(
+					"Object: (#arguments.mapping.getName()#) not found in request scope, beginning construction."
+				);
+			}
 
-            // construct it and store it, to satisfy circular dependencies
-            var target = variables.injector.buildInstance( arguments.mapping, arguments.initArguments );
-            request[ cacheKey ] = target;
+			// construct it and store it, to satisfy circular dependencies
+			var target          = variables.injector.buildInstance( arguments.mapping, arguments.initArguments );
+			request[ cacheKey ] = target;
 
-            // wire it
-            variables.injector.autowire( target=target, mapping=arguments.mapping );
+			// wire it
+			variables.injector.autowire( target = target, mapping = arguments.mapping );
 
-            // log it
-            if( variables.log.canDebug() ){
-                variables.log.debug( "Object: (#arguments.mapping.getName()#) constructed and stored in Request scope." );
-            }
+			// log it
+			if ( variables.log.canDebug() ) {
+				variables.log.debug(
+					"Object: (#arguments.mapping.getName()#) constructed and stored in Request scope."
+				);
+			}
 
-            return target;
-        }
+			return target;
+		}
 
-        return request[ cacheKey ];
+		return request[ cacheKey ];
 	}
 
 

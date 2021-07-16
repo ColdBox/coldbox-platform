@@ -1,4 +1,5 @@
-﻿component extends = "coldbox.system.testing.BaseModelTest" model = "coldbox.system.web.flash.ColdboxCacheFlash"{
+﻿component extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.web.flash.ColdboxCacheFlash" {
+
 	function run( testResults, testBox ){
 		// all your suites go here.
 		describe( "ColdBox Cache Flash", function(){
@@ -21,21 +22,9 @@
 
 				// test scope
 				testscope = {
-					test : {
-						content   : "luis",
-						autoPurge : true,
-						keep      : true
-					},
-					date : {
-						content   : now(),
-						autoPurge : true,
-						keep      : true
-					},
-					obj : {
-						content   : obj,
-						autoPurge : true,
-						keep      : true
-					}
+					test : { content : "luis", autoPurge : true, keep : true },
+					date : { content : now(), autoPurge : true, keep : true },
+					obj  : { content : obj, autoPurge : true, keep : true }
 				};
 			} );
 
@@ -65,4 +54,5 @@
 			} );
 		} );
 	}
+
 }

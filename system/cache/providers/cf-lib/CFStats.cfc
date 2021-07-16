@@ -9,7 +9,7 @@ Description:
 A coldfusion statistics object that communicates with the CF ehCache stats
 
 */
-component implements="coldbox.system.cache.util.IStats" accessors="true"{
+component implements="coldbox.system.cache.util.IStats" accessors="true" {
 
 	property name="cacheStats" serializable="false";
 
@@ -27,14 +27,14 @@ component implements="coldbox.system.cache.util.IStats" accessors="true"{
 	 * Get the cache's performance ratio
 	 */
 	numeric function getCachePerformanceRatio(){
-		var hits 		= getHits();
-		var requests 	= hits + getMisses();
+		var hits     = getHits();
+		var requests = hits + getMisses();
 
-	 	if ( requests eq 0){
-	 		return 0;
+		if ( requests eq 0 ) {
+			return 0;
 		}
 
-		return (hits/requests) * 100;
+		return ( hits / requests ) * 100;
 	}
 
 	/**

@@ -17,10 +17,10 @@
  * - cacheID : The unique identity code of this CFC
  */
 component
-	accessors="true"
+	accessors   ="true"
 	serializable="false"
-	implements="coldbox.system.cache.providers.ICacheProvider"
-	extends="coldbox.system.cache.AbstractCacheBoxProvider"
+	implements  ="coldbox.system.cache.providers.ICacheProvider"
+	extends     ="coldbox.system.cache.AbstractCacheBoxProvider"
 {
 
 	/**
@@ -53,79 +53,91 @@ component
 
 	// CacheBox Provider Property Defaults
 	variables.DEFAULTS = {
-		objectDefaultTimeout           	= 60,
-		objectDefaultLastAccessTimeout 	= 30,
-		useLastAccessTimeouts          	= true,
-		reapFrequency                  	= 2,
-		freeMemoryPercentageThreshold  	= 0,
-		evictionPolicy                 	= "LRU",
-		evictCount                     	= 1,
-		maxObjects                     	= 200,
-		objectStore                    	= "ConcurrentStore",
-		coldboxEnabled                 	= false,
-		resetTimeoutOnAccess 			= false
+		objectDefaultTimeout           : 60,
+		objectDefaultLastAccessTimeout : 30,
+		useLastAccessTimeouts          : true,
+		reapFrequency                  : 2,
+		freeMemoryPercentageThreshold  : 0,
+		evictionPolicy                 : "LRU",
+		evictCount                     : 1,
+		maxObjects                     : 200,
+		objectStore                    : "ConcurrentStore",
+		coldboxEnabled                 : false,
+		resetTimeoutOnAccess           : false
 	};
 
 	/**
-     * Constructor
-     */
+	 * Constructor
+	 */
 	function init(){
 		// super size me
 		super.init();
 		// Element Cleaner Helper
 		variables.elementCleaner = new coldbox.system.cache.util.ElementCleaner( this );
 		// Runtime Java object
-		variables.javaRuntime = createObject( "java", "java.lang.Runtime" );
+		variables.javaRuntime    = createObject( "java", "java.lang.Runtime" );
 		// Logger object
-		variables.logger = "";
+		variables.logger         = "";
 		// Locking Timeout
-		variables.lockTimeout = "15";
+		variables.lockTimeout    = "15";
 		// Eviction Policy
 		variables.evictionPolicy = "";
 		// Stats
-		variables.stats = "";
+		variables.stats          = "";
 		// Object Store
-		variables.objectStore = "";
+		variables.objectStore    = "";
 
 		return this;
 	}
 
 	/**
-     * Configure the cache for operation
+	 * Configure the cache for operation
 	 *
 	 * @return CacheBoxProvider
-     */
-    function configure(){
-		var cacheConfig	= getConfiguration();
+	 */
+	function configure(){
+		var cacheConfig = getConfiguration();
 
-		lock name="CacheBoxProvider.configure.#variables.cacheId#" type="exclusive" timeout="30" throwontimeout="true"{
+		lock
+			name            ="CacheBoxProvider.configure.#variables.cacheId#"
+			type            ="exclusive"
+			timeout         ="30"
+			throwontimeout  ="true" {
 			// Prepare the logger
-			variables.logger = getCacheFactory().getLogBox().getLogger( this );
+			variables.logger= getCacheFactory().getLogBox().getLogger( this );
 
-			if( variables.logger.canDebug() ){
-				variables.logger.debug( "Starting up CacheBox Cache: #getName()# with configuration: #cacheConfig.toString()#" );
+			if ( variables.logger.canDebug() ) {
+				variables.logger.debug(
+					"Starting up CacheBox Cache: #getName()# with configuration: #cacheConfig.toString()#"
+				);
 			}
 
 			// Validate the configuration
 			validateConfiguration();
 
 			// Prepare Statistics
-			variables.stats = new coldbox.system.cache.util.CacheStats( this );
+			variables.stats          = new coldbox.system.cache.util.CacheStats( this );
 			// Setup the eviction Policy to use
-			variables.evictionPolicy = createObject( "component", locateEvictionPolicy( cacheConfig.evictionPolicy ) ).init( this );
+			variables.evictionPolicy = createObject(
+				"component",
+				locateEvictionPolicy( cacheConfig.evictionPolicy )
+			).init( this );
 			// Create the object store the configuration mandated
-			variables.objectStore 	= createObject("component",  locateObjectStore( cacheConfig.objectStore ) ).init( this );
+			variables.objectStore = createObject( "component", locateObjectStore( cacheConfig.objectStore ) ).init(
+				this
+			);
 			// Enable cache
-			variables.enabled = true;
+			variables.enabled          = true;
 			// Enable reporting
 			variables.reportingEnabled = true;
 			// Configure the reaping scheduled task
-			variables.cacheFactory.getTaskScheduler()
+			variables.cacheFactory
+				.getTaskScheduler()
 				.newSchedule( this, "reap" )
-					.delay( getConfiguration().reapFrequency ) // Don't start immediately, give it a breathing room
-					.spacedDelay( getConfiguration().reapFrequency ) // Runs again, after this spaced delay once each reap finalizes
-					.inMinutes()
-					.start();
+				.delay( getConfiguration().reapFrequency ) // Don't start immediately, give it a breathing room
+				.spacedDelay( getConfiguration().reapFrequency ) // Runs again, after this spaced delay once each reap finalizes
+				.inMinutes()
+				.start();
 			variables.logger.info( "Reaping scheduled task started for #getName()# cache." );
 
 			// startup message
@@ -145,13 +157,13 @@ component
 	}
 
 	/**
-     * Shutdown command issued when CacheBox is going through shutdown phase
+	 * Shutdown command issued when CacheBox is going through shutdown phase
 	 *
 	 * @return LuceeProvider
-     */
-    function shutdown(){
-		//nothing to shutdown
-		if( variables.logger.canDebug() ){
+	 */
+	function shutdown(){
+		// nothing to shutdown
+		if ( variables.logger.canDebug() ) {
 			variables.logger.debug( "CacheBox Cache: #getName()# has been shutdown." );
 		}
 		return this;
@@ -163,7 +175,7 @@ component
 	 * @objectKey The key to retrieve
 	 */
 	boolean function lookup( required objectKey ){
-		if( lookupQuiet( arguments.objectKey ) ){
+		if ( lookupQuiet( arguments.objectKey ) ) {
 			// record a hit
 			getStats().hit();
 			return true;
@@ -182,7 +194,7 @@ component
 	 */
 	boolean function lookupQuiet( required objectKey ){
 		// cleanup the key
-		arguments.objectKey = lcase( arguments.objectKey );
+		arguments.objectKey = lCase( arguments.objectKey );
 
 		return variables.objectStore.lookup( arguments.objectKey );
 	}
@@ -192,13 +204,13 @@ component
 	 *
 	 * @objectKey The key to retrieve
 	 */
-    function get( required objectKey ){
+	function get( required objectKey ){
 		// cleanup the key
-		arguments.objectKey = lcase( arguments.objectKey );
+		arguments.objectKey = lCase( arguments.objectKey );
 
 		// get quietly
 		var results = variables.objectStore.get( arguments.objectKey );
-		if( !isNull( local.results ) ){
+		if ( !isNull( local.results ) ) {
 			getStats().hit();
 			return results;
 		}
@@ -207,17 +219,17 @@ component
 	}
 
 	/**
-     * get an item silently from cache, no stats advised: Stats not available on lucee
+	 * get an item silently from cache, no stats advised: Stats not available on lucee
 	 *
 	 * @objectKey The key to retrieve
-     */
-    function getQuiet( required objectKey ){
+	 */
+	function getQuiet( required objectKey ){
 		// cleanup the key
-		arguments.objectKey = lcase( arguments.objectKey );
+		arguments.objectKey = lCase( arguments.objectKey );
 
 		// get object from store
 		var results = variables.objectStore.getQuiet( arguments.objectKey );
-		if( !isNull( local.results ) ){
+		if ( !isNull( local.results ) ) {
 			return results;
 		}
 		// don't return anything = null
@@ -228,12 +240,12 @@ component
 	 *
 	 * @objectKey The key to retrieve
 	 */
-    struct function getCachedObjectMetadata( required objectKey ){
+	struct function getCachedObjectMetadata( required objectKey ){
 		// Cleanup the key
-		arguments.objectKey = lcase( arguments.objectKey );
+		arguments.objectKey = lCase( arguments.objectKey );
 
 		// Check if in the pool first
-		if( variables.objectStore.getIndexer().objectExists( arguments.objectKey ) ){
+		if ( variables.objectStore.getIndexer().objectExists( arguments.objectKey ) ) {
 			return variables.objectStore.getIndexer().getObjectMetadata( arguments.objectKey );
 		}
 
@@ -254,9 +266,9 @@ component
 	function set(
 		required objectKey,
 		required object,
-		timeout="",
-		lastAccessTimeout="",
-		struct extra={}
+		timeout           = "",
+		lastAccessTimeout = "",
+		struct extra      = {}
 	){
 		// Check if updating or not
 		var oldObject = getQuiet( arguments.objectKey );
@@ -270,23 +282,29 @@ component
 			arguments.extra
 		);
 
-		if( !isNull( local.oldObject ) ){
+		if ( !isNull( local.oldObject ) ) {
 			// Announce update if it exists
-			getEventManager().announce( "afterCacheElementUpdated", {
-				cache          = this,
-				cacheObjectKey = arguments.objectKey,
-				cacheNewObject = arguments.object,
-				cacheOldObject = oldObject
-			} );
+			getEventManager().announce(
+				"afterCacheElementUpdated",
+				{
+					cache          : this,
+					cacheObjectKey : arguments.objectKey,
+					cacheNewObject : arguments.object,
+					cacheOldObject : oldObject
+				}
+			);
 		} else {
 			// announce a fresh insert
-			getEventManager().announce( "afterCacheElementInsert", {
-				cache                        = this,
-				cacheObject                  = arguments.object,
-				cacheObjectKey               = arguments.objectKey,
-				cacheObjectTimeout           = arguments.timeout,
-				cacheObjectLastAccessTimeout = arguments.lastAccessTimeout
-			} );
+			getEventManager().announce(
+				"afterCacheElementInsert",
+				{
+					cache                        : this,
+					cacheObject                  : arguments.object,
+					cacheObjectKey               : arguments.objectKey,
+					cacheObjectTimeout           : arguments.timeout,
+					cacheObjectLastAccessTimeout : arguments.lastAccessTimeout
+				}
+			);
 		}
 
 		return this;
@@ -306,38 +324,38 @@ component
 	function setQuiet(
 		required objectKey,
 		required object,
-		timeout="",
-		lastAccessTimeout="",
-		struct extra={}
+		timeout           = "",
+		lastAccessTimeout = "",
+		struct extra      = {}
 	){
-
-		var isJVMSafe 		= true;
-		var config 			= getConfiguration();
-		var iData 			= {};
+		var isJVMSafe = true;
+		var config    = getConfiguration();
+		var iData     = {};
 
 		// cleanup the key
-		arguments.objectKey = lcase( arguments.objectKey );
+		arguments.objectKey = lCase( arguments.objectKey );
 
 		// JVM Checks
-		if( config.freeMemoryPercentageThreshold NEQ 0
+		if (
+			config.freeMemoryPercentageThreshold NEQ 0
 			AND
 			thresholdChecks( config.freeMemoryPercentageThreshold ) EQ false
-		){
+		) {
 			// evict some stuff
 			variables.evictionPolicy.execute();
 		}
 
 		// Max objects check
-		if( config.maxObjects NEQ 0 AND getSize() GTE config.maxObjects ){
+		if ( config.maxObjects NEQ 0 AND getSize() GTE config.maxObjects ) {
 			// evict some stuff
 			variables.evictionPolicy.execute();
 		}
 
 		// Provider Default Timeout checks
-		if( NOT len( arguments.timeout ) OR NOT isNumeric( arguments.timeout ) ){
+		if ( NOT len( arguments.timeout ) OR NOT isNumeric( arguments.timeout ) ) {
 			arguments.timeout = config.objectDefaultTimeout;
 		}
-		if( NOT len( arguments.lastAccessTimeout ) OR NOT isNumeric( arguments.lastAccessTimeout ) ){
+		if ( NOT len( arguments.lastAccessTimeout ) OR NOT isNumeric( arguments.lastAccessTimeout ) ) {
 			arguments.lastAccessTimeout = config.objectDefaultLastAccessTimeout;
 		}
 
@@ -360,7 +378,7 @@ component
 	 */
 	boolean function clearQuiet( required objectKey ){
 		// clean key
-		arguments.objectKey = lcase( arguments.objectKey );
+		arguments.objectKey = lCase( arguments.objectKey );
 
 		// clear key
 		return variables.objectStore.clear( arguments.objectKey );
@@ -375,11 +393,11 @@ component
 		var clearCheck = clearQuiet( arguments.objectKey );
 
 		// If cleared notify listeners
-		if( clearCheck ){
-			getEventManager().announce( "afterCacheElementRemoved", {
-				cache = this,
-				cacheObjectKey 	= arguments.objectKey
-			} );
+		if ( clearCheck ) {
+			getEventManager().announce(
+				"afterCacheElementRemoved",
+				{ cache : this, cacheObjectKey : arguments.objectKey }
+			);
 		}
 
 		return clearCheck;
@@ -394,7 +412,7 @@ component
 		variables.objectStore.clearAll();
 
 		// notify listeners
-		getEventManager().announce( "afterCacheClearAll", { cache = this } );
+		getEventManager().announce( "afterCacheClearAll", { cache : this } );
 
 		return this;
 	}
@@ -412,7 +430,7 @@ component
 	 * @return ICacheProvider
 	 */
 	function expireAll(){
-		return expireByKeySnippet( keySnippet=".*",regex=true );
+		return expireByKeySnippet( keySnippet = ".*", regex = true );
 	}
 
 	/**
@@ -423,7 +441,7 @@ component
 	 * @return ICacheProvider
 	 */
 	function expireObject( required objectKey ){
-		variables.objectStore.expireObject( lcase( arguments.objectKey ) );
+		variables.objectStore.expireObject( lCase( arguments.objectKey ) );
 		return this;
 	}
 
@@ -434,25 +452,28 @@ component
 	 *
 	 * @return ICacheProvider
 	 */
-	function expireByKeySnippet( required keySnippet, boolean regex=false, boolean async=false ){
+	function expireByKeySnippet(
+		required keySnippet,
+		boolean regex = false,
+		boolean async = false
+	){
 		arrayFilter( getKeys(), function( item ){
-				// Using Regex?
-				if( regex ){
-					return reFindnocase( keySnippet, item );
-				} else {
-					return findNoCase( keySnippet, item );
-				}
-			} )
-			.each( function( item ){
-				var cachedObjectMD = getCachedObjectMetadata( arguments.item );
-				if(
-					variables.objectStore.lookup( arguments.item )
-					AND
-					cachedObjectMD.keyExists( "timeout" ) and cachedObjectMD.timeout GT 0
-				){
-					expireObject( arguments.item );
-				}
-			} );
+			// Using Regex?
+			if ( regex ) {
+				return reFindNoCase( keySnippet, item );
+			} else {
+				return findNoCase( keySnippet, item );
+			}
+		} ).each( function( item ){
+			var cachedObjectMD = getCachedObjectMetadata( arguments.item );
+			if (
+				variables.objectStore.lookup( arguments.item )
+				AND
+				cachedObjectMD.keyExists( "timeout" ) and cachedObjectMD.timeout GT 0
+			) {
+				expireObject( arguments.item );
+			}
+		} );
 
 		return this;
 	}
@@ -463,13 +484,13 @@ component
 	 * @objectKey The key to retrieve
 	 */
 	boolean function isExpired( required objectKey ){
-		return variables.objectStore.isExpired( lcase( arguments.objectKey ) );
+		return variables.objectStore.isExpired( lCase( arguments.objectKey ) );
 	}
 
 	/**
-     * Get a structure of all the keys in the cache with their appropriate metadata structures. This is used to build the reporting.[keyX->[metadataStructure]]
-     */
-    struct function getStoreMetadataReport(){
+	 * Get a structure of all the keys in the cache with their appropriate metadata structures. This is used to build the reporting.[keyX->[metadataStructure]]
+	 */
+	struct function getStoreMetadataReport(){
 		return variables.objectStore.getIndexer().getPoolMetadata();
 	}
 
@@ -478,12 +499,12 @@ component
 	 */
 	struct function getStoreMetadataKeyMap(){
 		return {
-			timeout           = "timeout",
-			hits              = "hits",
-			lastAccessTimeout = "lastAccessTimeout",
-			created           = "created",
-			lastAccessed      = "LastAccessed",
-			isExpired 		  = "isExpired"
+			timeout           : "timeout",
+			hits              : "hits",
+			lastAccessTimeout : "lastAccessTimeout",
+			created           : "created",
+			lastAccessed      : "LastAccessed",
+			isExpired         : "isExpired"
 		};
 	}
 
@@ -504,7 +525,7 @@ component
 	 * @return coldbox.system.cache.policies.IEvictionPolicy
 	 */
 	function locateEvictionPolicy( required policy ){
-		if( fileExists( expandPath( "/coldbox/system/cache/policies/#arguments.policy#.cfc" ) ) ){
+		if ( fileExists( expandPath( "/coldbox/system/cache/policies/#arguments.policy#.cfc" ) ) ) {
 			return "coldbox.system.cache.policies.#arguments.policy#";
 		}
 		return arguments.policy;
@@ -518,7 +539,7 @@ component
 	 * @return coldbox.system.cache.store.IObjectStore
 	 */
 	function locateObjectStore( required store ){
-		if( fileExists( expandPath( "/coldbox/system/cache/store/#arguments.store#.cfc" ) ) ){
+		if ( fileExists( expandPath( "/coldbox/system/cache/store/#arguments.store#.cfc" ) ) ) {
 			return "coldbox.system.cache.store.#arguments.store#";
 		}
 		return arguments.store;
@@ -528,15 +549,15 @@ component
 	 * Reap the cache, clear out everything that is dead in a synchronous manner
 	 */
 	any function reap(){
-		var keyIndex 		= 1;
-		var cacheKeys 		= "";
-		var cacheKeysLen 	= 0;
-		var thisKey 		= "";
-		var thisMD 			= "";
-		var config 			= getConfiguration();
-		var sTime			= getTickCount();
+		var keyIndex     = 1;
+		var cacheKeys    = "";
+		var cacheKeysLen = 0;
+		var thisKey      = "";
+		var thisMD       = "";
+		var config       = getConfiguration();
+		var sTime        = getTickCount();
 
-		lock type="exclusive" name="CacheBoxProvider.reap.#variables.cacheId#" timeout="#variables.lockTimeout#"{
+		lock type="exclusive" name="CacheBoxProvider.reap.#variables.cacheId#" timeout="#variables.lockTimeout#" {
 			// log it
 			variables.logger.info( "Starting to reap CacheBoxProvider: #getName()#, id: #variables.cacheId#" );
 
@@ -544,28 +565,28 @@ component
 			variables.objectStore.reap();
 
 			// Let's Get our reaping vars ready, get a duplicate of the pool metadata so we can work on a good copy
-			cacheKeys 		= getKeys();
-			cacheKeysLen 	= ArrayLen( cacheKeys );
+			cacheKeys    = getKeys();
+			cacheKeysLen = arrayLen( cacheKeys );
 
-			//Loop through keys
-			for ( keyIndex=1; keyIndex LTE cacheKeysLen; keyIndex++ ){
+			// Loop through keys
+			for ( keyIndex = 1; keyIndex LTE cacheKeysLen; keyIndex++ ) {
+				// The Key to check
+				thisKey = cacheKeys[ keyIndex ];
 
-				//The Key to check
-				thisKey = cacheKeys[keyIndex];
-
-				//Get the key's metadata thread safe.
-				thisMD = getCachedObjectMetadata(thisKey);
+				// Get the key's metadata thread safe.
+				thisMD = getCachedObjectMetadata( thisKey );
 
 				// Check if found, else continue, already reaped.
-				if( structIsEmpty(thisMD) ){ continue; }
+				if ( structIsEmpty( thisMD ) ) {
+					continue;
+				}
 
-				//Reap only non-eternal objects
-				if ( thisMD.timeout GT 0 ){
-
+				// Reap only non-eternal objects
+				if ( thisMD.timeout GT 0 ) {
 					// Check if expired already
-					if( thisMD.isExpired ){
+					if ( thisMD.isExpired ) {
 						// Clear the object from cache
-						if( clear( thisKey ) ){
+						if ( clear( thisKey ) ) {
 							// Announce Expiration only if removed, else maybe another thread cleaned it
 							announceExpiration( thisKey );
 						}
@@ -573,10 +594,9 @@ component
 					}
 
 					// Check for creation timeouts and clear
-					if ( dateDiff( "n", thisMD.created, now() ) GTE thisMD.timeout ){
-
+					if ( dateDiff( "n", thisMD.created, now() ) GTE thisMD.timeout ) {
 						// Clear the object from cache
-						if( clear( thisKey ) ){
+						if ( clear( thisKey ) ) {
 							// Announce Expiration only if removed, else maybe another thread cleaned it
 							announceExpiration( thisKey );
 						}
@@ -584,24 +604,29 @@ component
 					}
 
 					// Check for last accessed timeouts. If object has not been accessed in the default span
-					if ( config.useLastAccessTimeouts AND dateDiff( "n", thisMD.lastAccessed, now() ) gte thisMD.lastAccessTimeout ){
+					if (
+						config.useLastAccessTimeouts AND dateDiff( "n", thisMD.lastAccessed, now() ) gte thisMD.lastAccessTimeout
+					) {
 						// Clear the object from cache
-						if( clear( thisKey ) ){
+						if ( clear( thisKey ) ) {
 							// Announce Expiration only if removed, else maybe another thread cleaned it
 							announceExpiration( thisKey );
 						}
 						continue;
 					}
-				}//end timeout gt 0
+				}
+				// end timeout gt 0
+			}
+			// end looping over keys
 
-			}//end looping over keys
-
-			//Reaping about to end, set new reaping date.
+			// Reaping about to end, set new reaping date.
 			getStats().setLastReapDatetime( now() );
 		}
 
 		// log it
-		variables.logger.info( "Finished reap in #getTickCount()-sTime#ms for CacheBoxProvider: #getName()#, id: #variables.cacheId#" );
+		variables.logger.info(
+			"Finished reap in #getTickCount() - sTime#ms for CacheBoxProvider: #getName()#, id: #variables.cacheId#"
+		);
 
 		return this;
 	}
@@ -617,10 +642,10 @@ component
 	 */
 	private function announceExpiration( required objectKey ){
 		// Execute afterCacheElementExpired Interception
-		getEventManager().announce( "afterCacheElementExpired", {
-			cache = this,
-			cacheObjectKey = arguments.objectKey
-		} );
+		getEventManager().announce(
+			"afterCacheElementExpired",
+			{ cache : this, cacheObjectKey : arguments.objectKey }
+		);
 
 		return this;
 	}
@@ -631,10 +656,16 @@ component
 	 * @threshold The threshold to check
 	 */
 	private boolean function thresholdChecks( required threshold ){
-		try{
-			var jvmThreshold = ( ( variables.javaRuntime.getRuntime().freeMemory() / variables.javaRuntime.getRuntime().maxMemory() ) * 100 );
+		try {
+			var jvmThreshold = (
+				(
+					variables.javaRuntime.getRuntime().freeMemory() / variables.javaRuntime
+						.getRuntime()
+						.maxMemory()
+				) * 100
+			);
 			var check = ( arguments.threshold LT jvmThreshold );
-		} catch( any e ) {
+		} catch ( any e ) {
 			var check = true;
 		}
 

@@ -1,10 +1,10 @@
 ﻿/**
-* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-* www.ortussolutions.com
-* ---
-* This utility object takes care of file log rotation
-**/
-component accessors="true"{
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * This utility object takes care of file log rotation
+ **/
+component accessors="true" {
 
 	/**
 	 * Constructor
@@ -20,20 +20,26 @@ component accessors="true"{
 	 * @appender.docbox_generic coldbox.system.logging.AbstractAppender
 	 */
 	FileRotator function checkRotation( required appender ){
-		var oAppender       = arguments.appender;
-		var fileName        = oAppender.getProperty( "fileName" );
-		var logFullPath     = oAppender.getLogFullPath();
+		var oAppender   = arguments.appender;
+		var fileName    = oAppender.getProperty( "fileName" );
+		var logFullPath = oAppender.getLogFullPath();
 
 		//  Verify FileSize
 		if ( getFileSize( logFullPath ) > ( oAppender.getProperty( "fileMaxSize" ) * 1024 ) ) {
 			//  How Many Log Files Do we Have
-			var qArchivedLogs = directoryList( getDirectoryFromPath( logFullPath ), false, "query", "#filename#*.zip", "dateLastModified" );
+			var qArchivedLogs = directoryList(
+				getDirectoryFromPath( logFullPath ),
+				false,
+				"query",
+				"#filename#*.zip",
+				"dateLastModified"
+			);
 
-			lock 	name="#oAppender.getName()#-logrotation"
-					type="exclusive"
-					timeout="#oAppender.getlockTimeout()#"
-					throwontimeout="true"
-			{
+			lock
+				name          ="#oAppender.getName()#-logrotation"
+				type          ="exclusive"
+				timeout       ="#oAppender.getlockTimeout()#"
+				throwontimeout="true" {
 				//  Should I remove log Files
 				if ( qArchivedLogs.recordcount >= oAppender.getProperty( "fileMaxArchives" ) ) {
 					var archiveToDelete = qArchivedLogs.directory[ 1 ] & "/" & qArchivedLogs.name[ 1 ];
@@ -42,7 +48,10 @@ component accessors="true"{
 				}
 
 				//  Set the name of the archive
-				var zipFileName = getDirectoryFromPath( logFullPath ) & fileName & "." & dateformat( now(), "yyyymmdd" ) & "." & timeformat( now(), "HHmmss" ) & ".zip";
+				var zipFileName = getDirectoryFromPath( logFullPath ) & fileName & "." & dateFormat(
+					now(),
+					"yyyymmdd"
+				) & "." & timeFormat( now(), "HHmmss" ) & ".zip";
 
 				//  Zip it
 				cfzip(
@@ -53,7 +62,8 @@ component accessors="true"{
 					recurse   = "false",
 					source    = "#logFullPath#"
 				);
-			} // end lock
+			}
+			// end lock
 
 			//  Clean & reinit Log File
 			oAppender.removeLogFile();
@@ -71,18 +81,14 @@ component accessors="true"{
 	 * @fileName The target file
 	 * @sizeFormat Available formats: [bytes][kbytes][mbytes][gbytes]
 	 */
-	numeric function getFileSize( required fileName, sizeFormat="bytes" ){
+	numeric function getFileSize( required fileName, sizeFormat = "bytes" ){
 		// Get size in bytes
 		var size = getFileInfo( arguments.fileName ).size;
 
-		if ( arguments.sizeFormat eq "bytes" )
-			return size;
-		if ( arguments.sizeFormat eq "kbytes" )
-			return ( size / 1024 );
-		if ( arguments.sizeFormat eq "mbytes" )
-			return ( size / 1048576 );
-		if ( arguments.sizeFormat eq "gbytes" )
-			return ( size / 1073741824 );
+		if ( arguments.sizeFormat eq "bytes" ) return size;
+		if ( arguments.sizeFormat eq "kbytes" ) return ( size / 1024 );
+		if ( arguments.sizeFormat eq "mbytes" ) return ( size / 1048576 );
+		if ( arguments.sizeFormat eq "gbytes" ) return ( size / 1073741824 );
 	}
 
 }

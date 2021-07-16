@@ -10,9 +10,9 @@
 			.init( "UnitTest" )
 			.setPath( getMetadata( this ).name )
 			.$(
-				method             : "getObjectMetadata",
-				returns            : getMetadata( this ),
-				preserveReturnType : false
+				method            : "getObjectMetadata",
+				returns           : getMetadata( this ),
+				preserveReturnType: false
 			);
 
 		// any
@@ -49,9 +49,9 @@
 			.init( "UnitTest" )
 			.setPath( getMetadata( this ).name )
 			.$(
-				method             : "getObjectMetadata",
-				returns            : getMetadata( this ),
-				preserveReturnType : false
+				method            : "getObjectMetadata",
+				returns           : getMetadata( this ),
+				preserveReturnType: false
 			);
 
 		// New AND Matcher
@@ -105,9 +105,9 @@
 			.init( "UnitTest" )
 			.setPath( getMetadata( this ).name )
 			.$(
-				method             : "getObjectMetadata",
-				returns            : getMetadata( this ),
-				preserveReturnType : false
+				method            : "getObjectMetadata",
+				returns           : getMetadata( this ),
+				preserveReturnType: false
 			);
 		var fncmd = getMetadata( variables.testMatchMethod );
 

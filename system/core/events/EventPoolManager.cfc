@@ -54,9 +54,7 @@ component accessors="true" {
 	 */
 	function announce( required state, struct data = {} ){
 		if ( variables.eventPoolContainer.keyExists( arguments.state ) ) {
-			variables.eventPoolContainer
-				.find( arguments.state )
-				.process( arguments.data );
+			variables.eventPoolContainer.find( arguments.state ).process( arguments.data );
 		}
 
 		return this;
@@ -73,11 +71,7 @@ component accessors="true" {
 	 *
 	 * @return EventPoolManager
 	 */
-	function register(
-		required target,
-		name         = "",
-		customStates = ""
-	){
+	function register( required target, name = "", customStates = "" ){
 		var md = getMetadata( arguments.target );
 
 		// Check if name sent? If not, get the name from the last part of its name
@@ -111,11 +105,7 @@ component accessors="true" {
 	 *
 	 * @return EventPoolManager
 	 */
-	function registerInEventState(
-		required key,
-		required state,
-		required target
-	){
+	function registerInEventState( required key, required state, required target ){
 		var eventPool = "";
 
 		// Verify if the event state doesn't exist in the evnet pool, else create it

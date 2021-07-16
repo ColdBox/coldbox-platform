@@ -1,4 +1,4 @@
-﻿component extends = "tests.resources.BaseIntegrationTest"{
+﻿component extends="tests.resources.BaseIntegrationTest" {
 
 	function beforeAll(){
 		super.setup();
@@ -9,7 +9,7 @@
 		// Cleanup due to mods!
 
 		// Graceful shutdown
-		if( structKeyExists( application, getColdboxAppKey() ) ){
+		if ( structKeyExists( application, getColdboxAppKey() ) ) {
 			application[ getColdboxAppKey() ].getLoaderService().processShutdown();
 		}
 		// Wipe app scopes
@@ -146,4 +146,5 @@
 			} );
 		} );
 	}
+
 }

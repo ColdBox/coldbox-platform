@@ -4,7 +4,7 @@
  * ---
  * An interface that enables any CFC to act like a parent injector within WireBox.
  **/
- interface {
+interface {
 
 	/**
 	 * Link a parent Injector with this injector and return itself
@@ -31,7 +31,12 @@
 	 * @dsl The dsl string to use to retrieve the instance model object, mutually exclusive with 'name'
 	 * @targetObject The object requesting the dependency, usually only used by DSL lookups
 	 */
-	function getInstance( name, struct initArguments, dsl, targetObject="" );
+	function getInstance(
+		name,
+		struct initArguments,
+		dsl,
+		targetObject = ""
+	);
 
 	/**
 	 * Checks if this injector can locate a model instance or not
@@ -47,4 +52,4 @@
 	 */
 	function shutdown();
 
- }
+}

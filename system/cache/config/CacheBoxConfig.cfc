@@ -4,7 +4,7 @@
  * ----
  * This is a CacheBox configuration object.  You can use it to configure a CacheBox variables.
  **/
-component accessors="true"{
+component accessors="true" {
 
 	/**
 	 * Get the static default configuration struct
@@ -40,14 +40,10 @@ component accessors="true"{
 	variables.utility  = new coldbox.system.core.util.Util();
 	// CacheBox Provider Defaults STATIC
 	variables.DEFAULTS = {
-		logBoxConfig       = "coldbox.system.cache.config.LogBox",
-		cacheBoxProvider   = "coldbox.system.cache.providers.CacheBoxProvider",
-		coldboxAppProvider = "coldbox.system.cache.providers.CacheBoxColdBoxProvider",
-		scopeRegistration  = {
-			enabled = true,
-			scope   = "application",
-			key     = "cachebox"
-		}
+		logBoxConfig       : "coldbox.system.cache.config.LogBox",
+		cacheBoxProvider   : "coldbox.system.cache.providers.CacheBoxProvider",
+		coldboxAppProvider : "coldbox.system.cache.providers.CacheBoxColdBoxProvider",
+		scopeRegistration  : { enabled : true, scope : "application", key : "cachebox" }
 	};
 	// Startup the configuration
 	reset();
@@ -60,20 +56,18 @@ component accessors="true"{
 	 */
 	function init( CFCConfig, string CFCConfigPath ){
 		// Test and load via Data CFC Path
-		if( !isNull( arguments.CFCConfigPath ) ){
+		if ( !isNull( arguments.CFCConfigPath ) ) {
 			arguments.CFCConfig = createObject( "component", arguments.CFCConfigPath );
 		}
 
 		// Test and load via Data CFC
-		if( !isNull( arguments.CFCConfig ) and isObject( arguments.CFCConfig ) ){
+		if ( !isNull( arguments.CFCConfig ) and isObject( arguments.CFCConfig ) ) {
 			// Decorate our data CFC
 			arguments.CFCConfig.getPropertyMixin = utility.getMixerUtil().getPropertyMixin;
 			// Execute the configuration
 			arguments.CFCConfig.configure();
 			// Load the DSL
-			loadDataDSL(
-				arguments.CFCConfig.getPropertyMixin( "cacheBox", "variables", {} )
-			);
+			loadDataDSL( arguments.CFCConfig.getPropertyMixin( "cacheBox", "variables", {} ) );
 		}
 
 		// Just return, most likely programmatic config
@@ -93,10 +87,10 @@ component accessors="true"{
 	 * Load a data configuration CFC data DSL
 	 */
 	CacheBoxConfig function loadDataDSL( required struct rawDSL ){
-		var cacheBoxDSL  = arguments.rawDSL;
+		var cacheBoxDSL = arguments.rawDSL;
 
 		// Is default configuration defined
-		if( isNull( cacheBoxDSL.defaultCache ) ){
+		if ( isNull( cacheBoxDSL.defaultCache ) ) {
 			throw(
 				"No default cache defined",
 				"Please define the 'defaultCache'",
@@ -105,31 +99,31 @@ component accessors="true"{
 		}
 
 		// Register Default Cache
-		this.defaultCache( argumentCollection=cacheBoxDSL.defaultCache );
+		this.defaultCache( argumentCollection = cacheBoxDSL.defaultCache );
 
 		// Register LogBox Configuration
 		this.logBoxConfig( variables.DEFAULTS.logBoxConfig );
-		if( !isNull( cacheBoxDSL.logBoxConfig ) ){
+		if ( !isNull( cacheBoxDSL.logBoxConfig ) ) {
 			this.logBoxConfig( cacheBoxDSL.logBoxConfig );
 		}
 
 		// Register Server Scope Registration
-		if( !isNull( cacheBoxDSL.scopeRegistration ) ){
-			this.scopeRegistration( argumentCollection=cacheBoxDSL.scopeRegistration );
+		if ( !isNull( cacheBoxDSL.scopeRegistration ) ) {
+			this.scopeRegistration( argumentCollection = cacheBoxDSL.scopeRegistration );
 		}
 
 		// Register Caches
-		if( !isNull( cacheBoxDSL.caches ) ){
-			for( var key in cacheBoxDSL.caches ){
+		if ( !isNull( cacheBoxDSL.caches ) ) {
+			for ( var key in cacheBoxDSL.caches ) {
 				cacheBoxDSL.caches[ key ].name = key;
-				this.cache( argumentCollection=cacheBoxDSL.caches[ key ] );
+				this.cache( argumentCollection = cacheBoxDSL.caches[ key ] );
 			}
 		}
 
 		// Register listeners
-		if( !isNull( cacheBoxDSL.listeners ) ){
-			for( var key in cacheBoxDSL.listeners ){
-				this.listener( argumentCollection=key );
+		if ( !isNull( cacheBoxDSL.listeners ) ) {
+			for ( var key in cacheBoxDSL.listeners ) {
+				this.listener( argumentCollection = key );
 			}
 		}
 
@@ -141,19 +135,15 @@ component accessors="true"{
 	 */
 	CacheBoxConfig function reset(){
 		// default cache
-		variables.defaultCache = {};
+		variables.defaultCache      = {};
 		// logBox File
-		variables.logBoxConfig = "";
+		variables.logBoxConfig      = "";
 		// Named Caches
-		variables.caches = {};
+		variables.caches            = {};
 		// Listeners
-		variables.listeners = [];
+		variables.listeners         = [];
 		// Scope Registration
-		variables.scopeRegistration = {
-			enabled = false,
-			scope 	= "server",
-			key		= "cachebox"
-		};
+		variables.scopeRegistration = { enabled : false, scope : "server", key : "cachebox" };
 
 		return this;
 	}
@@ -198,10 +188,10 @@ component accessors="true"{
 	 */
 	CacheBoxConfig function validate(){
 		// Is the default cache defined
-		if( structIsEmpty( variables.defaultCache ) ){
+		if ( structIsEmpty( variables.defaultCache ) ) {
 			throw(
 				message = "Invalid Configuration. No default cache defined",
-				type 	= "CacheBoxConfig.NoDefaultCacheFound"
+				type    = "CacheBoxConfig.NoDefaultCacheFound"
 			);
 		}
 		return this;
@@ -215,13 +205,13 @@ component accessors="true"{
 
 	 */
 	function scopeRegistration(
-		boolean enabled=variables.DEFAULTS.scopeRegistration.enabled,
-		string scope=variables.DEFAULTS.scopeRegistration.scope,
-		string key=variables.DEFAULTS.scopeRegistration.key
+		boolean enabled = variables.DEFAULTS.scopeRegistration.enabled,
+		string scope    = variables.DEFAULTS.scopeRegistration.scope,
+		string key      = variables.DEFAULTS.scopeRegistration.key
 	){
-		variables.scopeRegistration.enabled 	= arguments.enabled;
-		variables.scopeRegistration.key 		= arguments.key;
-		variables.scopeRegistration.scope 		= arguments.scope;
+		variables.scopeRegistration.enabled = arguments.enabled;
+		variables.scopeRegistration.key     = arguments.key;
+		variables.scopeRegistration.scope   = arguments.scope;
 
 		return this;
 	}
@@ -242,22 +232,22 @@ component accessors="true"{
 	 */
 	CacheBoxConfig function defaultCache(
 		numeric objectDefaultTimeout,
-	    numeric objectDefaultLastAccessTimeout,
-	    numeric reapFrequency,
-	    numeric maxObjects,
-	    numeric freeMemoryPercentageThreshold,
-	    boolean useLastAccessTimeouts,
-	    string evictionPolicy,
-	    numeric evictCount,
-	    string objectStore,
-	    boolean coldboxEnabled
+		numeric objectDefaultLastAccessTimeout,
+		numeric reapFrequency,
+		numeric maxObjects,
+		numeric freeMemoryPercentageThreshold,
+		boolean useLastAccessTimeouts,
+		string evictionPolicy,
+		numeric evictCount,
+		string objectStore,
+		boolean coldboxEnabled
 	){
 		// Append all incoming arguments to configuration, just in case using non-default arguments, maybe for stores
 		var cacheConfig = getDefaultCache();
 		structAppend( cacheConfig, arguments );
 
 		// coldbox enabled context
-		if( !isNull( arguments.coldboxEnabled ) AND arguments.coldboxEnabled ){
+		if ( !isNull( arguments.coldboxEnabled ) AND arguments.coldboxEnabled ) {
 			cacheConfig.provider = variables.DEFAULTS.coldboxAppProvider;
 		} else {
 			cacheConfig.provider = variables.DEFAULTS.cacheboxProvider;
@@ -275,12 +265,12 @@ component accessors="true"{
 	 */
 	function cache(
 		required name,
-		string provider=variables.DEFAULTS.cacheBoxProvider,
-		struct properties={}
+		string provider   = variables.DEFAULTS.cacheBoxProvider,
+		struct properties = {}
 	){
 		variables.caches[ arguments.name ] = {
-			provider 	= arguments.provider,
-			properties 	= arguments.properties
+			provider   : arguments.provider,
+			properties : arguments.properties
 		};
 		return this;
 	}
@@ -310,9 +300,13 @@ component accessors="true"{
 	 * @properties The struct of properties for the listener
 	 * @name The unique name of the listener
 	 */
-	CacheBoxConfig function listener( required class, struct properties={}, name="" ){
+	CacheBoxConfig function listener(
+		required class,
+		struct properties = {},
+		name              = ""
+	){
 		// Name check?
-		if( NOT len( arguments.name ) ){
+		if ( NOT len( arguments.name ) ) {
 			arguments.name = listLast( arguments.class, "." );
 		}
 		// add listener

@@ -82,7 +82,7 @@ component extends="coldbox.system.web.services.BaseService" {
 		variables.routingService.requestCapture( context );
 
 		// Do we have an override
-		if( !isNull( arguments.event ) && len( arguments.event ) ){
+		if ( !isNull( arguments.event ) && len( arguments.event ) ) {
 			rc[ variables.eventName ] = arguments.event;
 		}
 
@@ -160,9 +160,7 @@ component extends="coldbox.system.web.services.BaseService" {
 			// Check for Event Cache Purge
 			if ( arguments.fwCache ) {
 				// Clear the key from the cache
-				variables.cacheBox
-					.getCache( eventDictionary.provider )
-					.clear( eventCache.cacheKey );
+				variables.cacheBox.getCache( eventDictionary.provider ).clear( eventCache.cacheKey );
 
 				// Return don't show cached version
 				return this;

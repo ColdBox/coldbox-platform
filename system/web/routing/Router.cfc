@@ -920,7 +920,10 @@ component
 						// Check Digits Repetions
 						if ( find( "{", thisPattern ) ) {
 							thisRegex = listFirst( thisRegex, "{" ) & "{#listLast( thisPattern, "{" )#)";
-							arrayAppend( thisRoute.patternParams, replace( listFirst( thisPattern, "{" ), ":", "" ) );
+							arrayAppend(
+								thisRoute.patternParams,
+								replace( listFirst( thisPattern, "{" ), ":", "" )
+							);
 						} else {
 							thisRegex = thisRegex & "+?)";
 							arrayAppend( thisRoute.patternParams, thisPatternParam );
@@ -1021,7 +1024,10 @@ component
 							// Check Digits Repetions
 							if ( find( "{", thisDomain ) ) {
 								thisRegex = listFirst( thisRegex, "{" ) & "{#listLast( thisDomain, "{" )#)";
-								arrayAppend( thisRoute.domainParams, replace( listFirst( thisDomain, "{" ), ":", "" ) );
+								arrayAppend(
+									thisRoute.domainParams,
+									replace( listFirst( thisDomain, "{" ), ":", "" )
+								);
 							} else {
 								thisRegex = thisRegex & "+?)";
 								arrayAppend( thisRoute.domainParams, thisDomainParam );
@@ -1877,7 +1883,10 @@ component
 	){
 		// Arg Check
 		if ( !isClosure( arguments.body ) && !isCustomFunction( arguments.body ) && !isSimpleValue( arguments.body ) ) {
-			throw( type: "InvalidArgumentException", message: "The 'body' argument is not of type closure or string" );
+			throw(
+				type   : "InvalidArgumentException",
+				message: "The 'body' argument is not of type closure or string"
+			);
 		}
 		// process a with closure if not empty
 		if ( !variables.withClosure.isEmpty() ) {
@@ -1998,7 +2007,11 @@ component
 			}
 		}
 
-		if ( structKeyExists( arguments, "except" ) && !isNull( arguments.except ) && !arrayIsEmpty( arguments.except ) ) {
+		if (
+			structKeyExists( arguments, "except" ) && !isNull( arguments.except ) && !arrayIsEmpty(
+				arguments.except
+			)
+		) {
 			for ( var HTTPVerb in arguments.initial ) {
 				var methodName = arguments.initial[ HTTPVerb ];
 				for ( var exceptAction in arguments.except ) {

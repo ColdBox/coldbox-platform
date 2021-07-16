@@ -56,7 +56,9 @@ component extends="tests.resources.BaseIntegrationTest" {
 					expect( results.getMethod() ).toBe( "index" );
 					expect( results.getHandler() ).toBe( "Home" );
 					expect( results.getModule() ).toBe( "resourcesTest" );
-					expect( handlerService.getHandlerBeanCacheDictionary() ).toHaveKey( "resourcesTest:Home.index" );
+					expect( handlerService.getHandlerBeanCacheDictionary() ).toHaveKey(
+						"resourcesTest:Home.index"
+					);
 				} );
 
 				it( "with a valid view dispatch", function(){

@@ -50,10 +50,7 @@ cache factory is created
 				},
 				sampleCache2 : {
 					provider   : "coldbox.system.cache.providers.CacheBoxProvider",
-					properties : {
-						maxObjects     : 100,
-						evictionPolicy : "FIFO"
-					}
+					properties : { maxObjects : 100, evictionPolicy : "FIFO" }
 				}
 			},
 			// Register all event listeners here, they are created in the specified order

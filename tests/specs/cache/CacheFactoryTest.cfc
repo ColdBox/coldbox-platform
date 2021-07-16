@@ -1,4 +1,5 @@
-﻿component extends = "coldbox.system.testing.BaseModelTest"{
+﻿component extends="coldbox.system.testing.BaseModelTest" {
+
 	function setup(){
 		// init with defaults
 		cacheFactory = createMock( "coldbox.system.cache.CacheFactory" );
@@ -37,7 +38,10 @@
 	}
 
 	function testgetDefaultCache(){
-		cacheFactory.$( "getCache", createMock( "coldbox.system.cache.providers.MockProvider" ).init().configure() );
+		cacheFactory.$(
+			"getCache",
+			createMock( "coldbox.system.cache.providers.MockProvider" ).init().configure()
+		);
 		cacheFactory.getDefaultCache();
 		assertEquals( 1, arrayLen( cacheFactory.$callLog().getCache ) );
 	}
@@ -254,4 +258,5 @@
 
 		assertEquals( "Mock", results.getName() );
 	}
+
 }

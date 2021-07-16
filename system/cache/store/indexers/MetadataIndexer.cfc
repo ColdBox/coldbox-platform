@@ -7,7 +7,7 @@
  * This is a utility object that helps object stores keep their elements indexed and stored nicely.
  * It is also a nice way to give back metadata results.
  */
-component accessors="true"{
+component accessors="true" {
 
 	/**
 	 * The metadata pool
@@ -32,11 +32,11 @@ component accessors="true"{
 	 */
 	function init( required fields ){
 		// Create metadata pool
-		variables.poolMetadata 	= createObject( "java","java.util.concurrent.ConcurrentHashMap" ).init();
+		variables.poolMetadata = createObject( "java", "java.util.concurrent.ConcurrentHashMap" ).init();
 		// Index ID
-		variables.indexID 		= createObject( "java", "java.lang.System").identityHashCode( this );
+		variables.indexID      = createObject( "java", "java.lang.System" ).identityHashCode( this );
 		// Collections (for static .list() method)
-		variables.collections 	= createObject( "java", "java.util.Collections" );
+		variables.collections  = createObject( "java", "java.util.Collections" );
 
 		setFields( arguments.fields );
 
@@ -49,7 +49,7 @@ component accessors="true"{
 	 * @fields The fields list or array
 	 */
 	MetadataIndexer function setFields( required fields ){
-		if( isArray( arguments.fields ) ){
+		if ( isArray( arguments.fields ) ) {
 			arguments.fields = arrayToList( arguments.fields );
 		}
 		variables.fields = arguments.fields;
@@ -76,11 +76,11 @@ component accessors="true"{
 	}
 
 	/**
-     * Get all the store's object keys array
+	 * Get all the store's object keys array
 	 *
 	 * @return array
-     */
-    array function getKeys(){
+	 */
+	array function getKeys(){
 		return variables.collections.list( variables.poolMetadata.keys() );
 	}
 
@@ -120,21 +120,25 @@ component accessors="true"{
 	 * @property The metadata property to get
 	 * @defaultValue The default value if property doesn't exist
 	 */
-	function getObjectMetadataProperty( required objectKey, required property, defaultValue ){
+	function getObjectMetadataProperty(
+		required objectKey,
+		required property,
+		defaultValue
+	){
 		var metadata = getObjectMetadata( arguments.objectKey );
 
-		if( metadata.keyExists( arguments.property ) ){
+		if ( metadata.keyExists( arguments.property ) ) {
 			return metadata[ arguments.property ];
 		}
 
-		if( !isNull( arguments.defaultValue ) ){
+		if ( !isNull( arguments.defaultValue ) ) {
 			return arguments.defaultValue;
 		}
 
 		throw(
-			type 		= "InvalidProperty",
-			message 	= "Invalid property requested: #arguments.property#",
-			detail 		= "Valid properties are: #structKeyList( metadata )#"
+			type    = "InvalidProperty",
+			message = "Invalid property requested: #arguments.property#",
+			detail  = "Valid properties are: #structKeyList( metadata )#"
 		);
 	}
 
@@ -145,9 +149,12 @@ component accessors="true"{
 	 * @property The metadata property to set
 	 * @value The value to set
 	 */
-	MetadataIndexer function setObjectMetadataProperty( required objectKey, required property, required value ){
-		getObjectMetadata( arguments.objectKey )
-			.insert( arguments.property, arguments.value, true );
+	MetadataIndexer function setObjectMetadataProperty(
+		required objectKey,
+		required property,
+		required value
+	){
+		getObjectMetadata( arguments.objectKey ).insert( arguments.property, arguments.value, true );
 		return this;
 	}
 
@@ -165,7 +172,11 @@ component accessors="true"{
 	 * @property
 	 * @value
 	 */
-	array function getSortedKeys( required property, sortType="text", sortOrder="asc" ){
+	array function getSortedKeys(
+		required property,
+		sortType  = "text",
+		sortOrder = "asc"
+	){
 		return structSort(
 			variables.poolMetadata,
 			arguments.sortType,

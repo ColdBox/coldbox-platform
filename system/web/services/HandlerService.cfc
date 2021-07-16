@@ -100,10 +100,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				)
 				.setCacheProperties( key = "handlers-#arguments.invocationPath#" )
 				// extra attributes added to mapping so they are relayed by events
-				.setExtraAttributes( {
-					handlerPath : arguments.invocationPath,
-					isHandler   : true
-				} );
+				.setExtraAttributes( { handlerPath : arguments.invocationPath, isHandler : true } );
 		}
 
 		// retrieve, build and wire from wirebox
@@ -170,8 +167,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			var targetInvalidEvent = invalidEvent( arguments.ehBean.getFullEvent(), arguments.ehBean );
 
 			// If we get here, then the invalid event kicked in and exists, else an exception is thrown above
-            // set the invalid event handler as the current event
-            oRequestContext.overrideEvent( targetInvalidEvent );
+			// set the invalid event handler as the current event
+			oRequestContext.overrideEvent( targetInvalidEvent );
 			// Go retrieve the handler that will handle the invalid event so it can execute.
 			return getHandler( getHandlerBean( targetInvalidEvent ), oRequestContext );
 		}
@@ -199,11 +196,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			if ( eventDictionaryEntry.cacheable ) {
 				// Create caching data structure according to MD, as the cache key can be dynamic by execution.
 				var eventCachingData = {};
-				structAppend(
-					eventCachingData,
-					eventDictionaryEntry,
-					true
-				);
+				structAppend( eventCachingData, eventDictionaryEntry, true );
 
 				// Create the Cache Key to save
 				eventCachingData.cacheKey = oEventURLFacade.buildEventKey(
@@ -260,7 +253,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 					// Prepare bean data
 					oHandlerBean
 						.setInvocationPath( moduleSettings[ moduleReceived ].handlerInvocationPath )
-						.setHandler( listGetAt( moduleSettings[ moduleReceived ].registeredHandlers, handlerIndex ) )
+						.setHandler(
+							listGetAt( moduleSettings[ moduleReceived ].registeredHandlers, handlerIndex )
+						)
 						.setMethod( methodReceived )
 						.setModule( moduleReceived );
 
@@ -287,9 +282,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			// Check for conventions location
 			if ( handlerIndex ) {
 				// Prepare bean data
-				oHandlerBean
-					.setHandler( listGetAt( handlersList, handlerIndex ) )
-					.setMethod( MethodReceived );
+				oHandlerBean.setHandler( listGetAt( handlersList, handlerIndex ) ).setMethod( MethodReceived );
 
 				// put bean in cache if enabled
 				if ( variables.handlerCaching ) {
@@ -458,20 +451,26 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			) {
 				var exceptionMessage = "The invalidEventHandler event (#variables.invalidEventHandler#) is also invalid: #arguments.event#";
 				// Extra Debugging for illusive CI/Tests exceptions: Remove at one point if discovered.
-				variables.log.error( exceptionMessage, {
-					event              	: arguments.event,
-					requestEvent 		: request._lastInvalidEvent ?: "NONE",
-					registeredHandlers 	: variables.registeredHandlers,
-					fullEvent          	: ehBean.getFullEvent(),
-					callStack 			: callStackGet(),
-					routedURL 			: variables.controller.getRequestService().getContext().getCurrentRoutedURL(),
-					route 				: variables.controller.getRequestService().getContext().getCurrentRoute()
-				} );
-				// Now throw the exception
-				throw(
-					message : exceptionMessage,
-					type    : "HandlerService.InvalidEventHandlerException"
+				variables.log.error(
+					exceptionMessage,
+					{
+						event              : arguments.event,
+						requestEvent       : request._lastInvalidEvent ?: "NONE",
+						registeredHandlers : variables.registeredHandlers,
+						fullEvent          : ehBean.getFullEvent(),
+						callStack          : callStackGet(),
+						routedURL          : variables.controller
+							.getRequestService()
+							.getContext()
+							.getCurrentRoutedURL(),
+						route : variables.controller
+							.getRequestService()
+							.getContext()
+							.getCurrentRoute()
+					}
 				);
+				// Now throw the exception
+				throw( message: exceptionMessage, type: "HandlerService.InvalidEventHandlerException" );
 			}
 
 			// we save off this event in case there is problem matching our invalidEventHandler.
@@ -486,7 +485,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 			// Override Event With On invalid handler event
 			return variables.invalidEventHandler;
-		} // end invalidEventHandler found
+		}
+		// end invalidEventHandler found
 
 		// If we got here, we have an invalid event and no override, throw a 404 ERROR
 		controller
@@ -501,8 +501,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 		// Throw Exception
 		throw(
-			message : "The event: #arguments.event# is not a valid registered event.",
-			type    : "EventHandlerNotRegisteredException"
+			message: "The event: #arguments.event# is not a valid registered event.",
+			type   : "EventHandlerNotRegisteredException"
 		);
 	}
 
@@ -581,21 +581,11 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// Convert windows \ to java /
 		arguments.directory = replace( arguments.directory, "\", "/", "all" );
 
-		return directoryList(
-			arguments.directory,
-			true,
-			"array",
-			"*.cfc"
-		).map( function( item ){
+		return directoryList( arguments.directory, true, "array", "*.cfc" ).map( function( item ){
 			var thisAbsolutePath = replace( item, "\", "/", "all" );
-			var cleanHandler     = replaceNoCase(
-				thisAbsolutePath,
-				directory,
-				"",
-				"all"
-			);
+			var cleanHandler     = replaceNoCase( thisAbsolutePath, directory, "", "all" );
 			// Clean OS separators to dot notation.
-			cleanHandler = removeChars(
+			cleanHandler         = removeChars(
 				replaceNoCase( cleanHandler, "/", ".", "all" ),
 				1,
 				1

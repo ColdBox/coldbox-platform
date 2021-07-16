@@ -14,7 +14,7 @@ component serializable="false" accessors="true" {
 
 	// Setup Default Namespace Key for controller locations
 	variables.COLDBOX_APP_KEY = "cbController";
-	if( !isNull( application.cbBootstrap ) ) {
+	if ( !isNull( application.cbBootstrap ) ) {
 		variables.COLDBOX_APP_KEY = application.cbBootstrap.getCOLDBOX_APP_KEY();
 	}
 

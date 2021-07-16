@@ -6,7 +6,7 @@
  *
  * This is a cache statistics object.  We do not use internal method calls but leverage the properties directly so it is faster.
  */
-component implements="coldbox.system.cache.util.IStats" accessors="true"{
+component implements="coldbox.system.cache.util.IStats" accessors="true" {
 
 	/**
 	 * The associated cache manager/provider of type: coldbox.system.cache.providers.ICacheProvider
@@ -20,19 +20,19 @@ component implements="coldbox.system.cache.util.IStats" accessors="true"{
 	/**
 	 * Cache hits
 	 */
-	property name="hits" 				default="0";
+	property name="hits" default="0";
 	/**
 	 * Cache misses
 	 */
-	property name="misses"				default="0";
+	property name="misses" default="0";
 	/**
 	 * Eviction counts
 	 */
-	property name="evictionCount"		default="0";
+	property name="evictionCount" default="0";
 	/**
 	 * Garbage collection counts
 	 */
-	property name="garbageCollections" 	default="0";
+	property name="garbageCollections" default="0";
 
 	/**
 	 * Constructor
@@ -41,7 +41,6 @@ component implements="coldbox.system.cache.util.IStats" accessors="true"{
 	 * @cacheProvider.doc_generic coldbox.system.cache.providers.ICacheProvider
 	 */
 	function init( required cacheProvider ){
-
 		variables.cacheProvider = arguments.cacheProvider;
 		// Clear the stats to start fresh.
 		clearStatistics();
@@ -64,7 +63,7 @@ component implements="coldbox.system.cache.util.IStats" accessors="true"{
 	numeric function getCachePerformanceRatio(){
 		var requests = variables.hits + variables.misses;
 
-		if ( requests eq 0 ){
+		if ( requests eq 0 ) {
 			return 0;
 		}
 

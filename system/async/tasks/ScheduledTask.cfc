@@ -330,7 +330,8 @@ component accessors="true" {
 		if (
 			( isClosure( variables.whenClosure ) || isCustomFunction( variables.whenClosure ) )
 			&&
-			!variables.whenClosure( this ) ) {
+			!variables.whenClosure( this )
+		) {
 			return true;
 		}
 
@@ -432,7 +433,7 @@ component accessors="true" {
 			// store failures
 			variables.stats.totalFailures = variables.stats.totalFailures + 1;
 			// Life Cycle
-			if ( isClosure( variables.onTaskFailure ) || isCustomFunction( variables.onTaskFailure )) {
+			if ( isClosure( variables.onTaskFailure ) || isCustomFunction( variables.onTaskFailure ) ) {
 				variables.onTaskFailure( this, e );
 			}
 			if ( hasScheduler() ) {

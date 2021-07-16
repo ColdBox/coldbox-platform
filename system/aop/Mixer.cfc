@@ -1,89 +1,91 @@
 ﻿/**
-* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-* www.ortussolutions.com
-* ---
-* I am a WireBox listener that provides you with AOP capabilities in your objects.
-*
-* Listener Properties:
-*	- generationPath:path	- The include path used for code generation
-*	- dictionaryReload:boolean(false) - The flag to always reload aspect dictionary discover information, great for development
-*/
-component accessors="true"{
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * I am a WireBox listener that provides you with AOP capabilities in your objects.
+ *
+ * Listener Properties:
+ *	- generationPath:path	- The include path used for code generation
+ *	- dictionaryReload:boolean(false) - The flag to always reload aspect dictionary discover information, great for development
+ */
+component accessors="true" {
 
 	/**
-	* WireBox
-	*/
+	 * WireBox
+	 */
 	property name="injector";
 	/**
-	* WireBox Binder
-	*/
+	 * WireBox Binder
+	 */
 	property name="binder";
 	/**
-	* Logging class
-	*/
+	 * Logging class
+	 */
 	property name="log";
 	/**
-	* Listener properties
-	*/
+	 * Listener properties
+	 */
 	property name="properties";
 	/**
-	* Class matching dictionary
-	*/
+	 * Class matching dictionary
+	 */
 	property name="classMatchDictionary";
 	/**
-	* Java System
-	*/
+	 * Java System
+	 */
 	property name="system";
 	/**
-	* Java UUID Helper
-	*/
+	 * Java UUID Helper
+	 */
 	property name="uuid";
 	/**
-	* Mixer utility object
-	*/
+	 * Mixer utility object
+	 */
 	property name="mixerUtil";
 	/**
-	* Class identity
-	*/
+	 * Class identity
+	 */
 	property name="classID";
 
 	/**
-	* Listener constructor
-	* @injector
-	* @properties
-	*/
+	 * Listener constructor
+	 * @injector
+	 * @properties
+	 */
 	function configure( required injector, required properties ){
 		// injector reference
-		variables.injector 				= arguments.injector;
+		variables.injector             = arguments.injector;
 		// Binder Reference
-		variables.binder				= arguments.injector.getBinder();
+		variables.binder               = arguments.injector.getBinder();
 		// local logger
-		variables.log 					= arguments.injector.getLogBox().getLogger( this );
+		variables.log                  = arguments.injector.getLogBox().getLogger( this );
 		// listener properties
-		variables.properties 			= arguments.properties;
+		variables.properties           = arguments.properties;
 		// class matcher dictionary
-		variables.classMatchDictionary 	= createObject( "java", "java.util.concurrent.ConcurrentHashMap" ).init();
+		variables.classMatchDictionary = createObject( "java", "java.util.concurrent.ConcurrentHashMap" ).init();
 		// system
-		variables.system 				= createObject( "java", "java.lang.System" );
+		variables.system               = createObject( "java", "java.lang.System" );
 		// uuid helper
-		variables.uuid 					= createobject( "java", "java.util.UUID" );
+		variables.uuid                 = createObject( "java", "java.util.UUID" );
 		// mixer util
-		variables.mixerUtil 			= new coldbox.system.aop.MixerUtil();
+		variables.mixerUtil            = new coldbox.system.aop.MixerUtil();
 		// class id code
-		variables.classID 				= variables.system.identityHashCode( this );
+		variables.classID              = variables.system.identityHashCode( this );
 
 		// Default Generation Path?
-		if( NOT structKeyExists( variables.properties, "generationPath" ) ){
+		if ( NOT structKeyExists( variables.properties, "generationPath" ) ) {
 			variables.properties.generationPath = "/coldbox/system/aop/tmp";
 		}
 
 		// Check if we can write to generation path
-		if( !getFileInfo( expandPath(variables.properties.generationPath) ).canWrite ){
-			throw( message="The AOP generation directory: '#variables.properties.generationPath#' is not writable, cannot continue." );
+		if ( !getFileInfo( expandPath( variables.properties.generationPath ) ).canWrite ) {
+			throw(
+				message = "The AOP generation directory: '#variables.properties.generationPath#' is not writable, cannot continue."
+			);
 		}
 
 		// Class Dictionary Reload
-		if( NOT structKeyExists( variables.properties, "classMatchReload" ) ){
+		if ( NOT structKeyExists( variables.properties, "classMatchReload" ) ) {
 			variables.properties.classMatchReload = false;
 		}
 
@@ -91,109 +93,126 @@ component accessors="true"{
 	}
 
 	/**
-	* Executes our AOP mixer after variables are created and autowired
-	*/
+	 * Executes our AOP mixer after variables are created and autowired
+	 */
 	function afterInstanceAutowire( required data ){
-		var mapping 	= arguments.data.mapping;
-		var target 		= arguments.data.target;
+		var mapping = arguments.data.mapping;
+		var target  = arguments.data.target;
 
 		// check if target already mixed, if so just return, nothing else to do or if the  mapping is an aspect
-		if( structKeyExists( target, "$wbAOPMixed" ) OR mapping.isAspect() ){ return; }
+		if ( structKeyExists( target, "$wbAOPMixed" ) OR mapping.isAspect() ) {
+			return;
+		}
 
 		// Setup variables
-		var mappingName = lcase( mapping.getName() );
-		var idCode		= variables.system.identityHashCode( target );
+		var mappingName = lCase( mapping.getName() );
+		var idCode      = variables.system.identityHashCode( target );
 
 		// Check if incoming mapping name is already class matched?
-		if( NOT variables.classMatchDictionary.containsKey( mappingName ) ){
+		if ( NOT variables.classMatchDictionary.containsKey( mappingName ) ) {
 			// Register this incoming mapping for class aspect matching
 			buildClassMatchDictionary( target, mapping, idCode );
 		}
 
 		// Now, we check if we have any aspects to apply to this class according to class matchers
-		if( arrayLen( variables.classMatchDictionary.get(mappingName) ) ){
+		if ( arrayLen( variables.classMatchDictionary.get( mappingName ) ) ) {
 			AOPBuilder(
-				target 		= target,
-				mapping 	= mapping,
-				dictionary 	= variables.classMatchDictionary.get(mappingName),
-				idCode 		= idCode
+				target     = target,
+				mapping    = mapping,
+				dictionary = variables.classMatchDictionary.get( mappingName ),
+				idCode     = idCode
 			);
 		}
 	}
 
 	/**
-	* Build an aspect dictionary for incoming target objects
-	* @target The incoming target
-	* @mapping The incoming target mapping
-	* @idCode The incoming target identifier
-	*
-	*/
-	private function buildClassMatchDictionary( required target, required mapping, required idCode ){
-		var aspectBindings 	= variables.binder.getAspectBindings();
-		var bindingsLen 	= arrayLen( aspectBindings );
-		var mappingName		= lcase( arguments.mapping.getName() );
-		var matchedAspects	= [];
+	 * Build an aspect dictionary for incoming target objects
+	 * @target The incoming target
+	 * @mapping The incoming target mapping
+	 * @idCode The incoming target identifier
+	 *
+	 */
+	private function buildClassMatchDictionary(
+		required target,
+		required mapping,
+		required idCode
+	){
+		var aspectBindings = variables.binder.getAspectBindings();
+		var bindingsLen    = arrayLen( aspectBindings );
+		var mappingName    = lCase( arguments.mapping.getName() );
+		var matchedAspects = [];
 
-    	lock name="aop.#variables.classID#.cmd.for.#arguments.idCode#" type="exclusive" timeout="30" throwontimeout="true"{
+		lock
+			name          ="aop.#variables.classID#.cmd.for.#arguments.idCode#"
+			type          ="exclusive"
+			timeout       ="30"
+			throwontimeout="true" {
 			// check again, double lock
-			if( NOT variables.classMatchDictionary.containsKey(mappingName) ){
-
+			if ( NOT variables.classMatchDictionary.containsKey( mappingName ) ) {
 				// Discover matching for the class via all aspect bindings
-				for( var x=1; x LTE bindingsLen; x++ ){
-
+				for ( var x = 1; x LTE bindingsLen; x++ ) {
 					// class match? If so, add to dictionary of matched aspects
-					if( aspectBindings[ x ].classes.matchClass( arguments.target, arguments.mapping ) ){
+					if ( aspectBindings[ x ].classes.matchClass( arguments.target, arguments.mapping ) ) {
 						arrayAppend( matchedAspects, aspectBindings[ x ] );
 					}
-
-				}// end for discovery
+				}
+				// end for discovery
 
 				// Log
-				if( matchedAspects.len() && variables.log.canDebug() ){
-					var matchingAspects = matchedAspects.reduce( function( aggregator, thisAspect ) {
+				if ( matchedAspects.len() && variables.log.canDebug() ) {
+					var matchingAspects = matchedAspects.reduce( function( aggregator, thisAspect ){
 						var aspectList = thisAspect.aspects;
-						if( isArray( aspectList ) ) {
+						if ( isArray( aspectList ) ) {
 							aspectList = aspectList.toList();
 						}
 						return aggregator.listAppend( aspectList );
-					}, '' );
-					variables.log.debug( "Aspect class matching dictionary built for mapping: [#mappingName#], aspects: [#matchingAspects#]" );
+					}, "" );
+					variables.log.debug(
+						"Aspect class matching dictionary built for mapping: [#mappingName#], aspects: [#matchingAspects#]"
+					);
 				}
 
 				// Store matched dictionary
-				variables.classMatchDictionary.put(mappingName, matchedAspects);
-
-			} // end if in dictionary
-		} // end lock
+				variables.classMatchDictionary.put( mappingName, matchedAspects );
+			}
+			// end if in dictionary
+		}
+		// end lock
 	}
 
 	/**
-	* Build and weave all necessary advices on an object via method matching
-	* @target The incoming target
-	* @mapping The incoming target mapping
-	* @dictionary The target aspect dictionary
-	* @idCode The incoming target identifier
-	*
-	*/
+	 * Build and weave all necessary advices on an object via method matching
+	 * @target The incoming target
+	 * @mapping The incoming target mapping
+	 * @dictionary The target aspect dictionary
+	 * @idCode The incoming target identifier
+	 *
+	 */
 	private function AOPBuilder(
 		required target,
 		required mapping,
 		required dictionary,
 		required idCode
 	){
-		lock name="aop.#variables.classID#.weaveAdvice.id.#arguments.idCode#" type="exclusive" timeout="30" throwOnTimeout="true"{
+		lock
+			name          ="aop.#variables.classID#.weaveAdvice.id.#arguments.idCode#"
+			type          ="exclusive"
+			timeout       ="30"
+			throwOnTimeout="true" {
 			// check if weaved already
-			if( structKeyExists( arguments.target, "$wbAOPMixed" ) ){ return; }
+			if ( structKeyExists( arguments.target, "$wbAOPMixed" ) ) {
+				return;
+			}
 
 			// decorate target with AOP capabilities
 			decorateAOPTarget( arguments.target, arguments.mapping );
 
 			// Process methods via metadata and apply aspects if they match
 			processTargetMethods(
-				target 		= arguments.target,
-				mapping 	= arguments.mapping,
-				metadata 	= arguments.mapping.getObjectMetadata(),
-				dictionary 	= arguments.dictionary
+				target     = arguments.target,
+				mapping    = arguments.mapping,
+				metadata   = arguments.mapping.getObjectMetadata(),
+				dictionary = arguments.dictionary
 			);
 
 			// finalize AOP
@@ -202,13 +221,13 @@ component accessors="true"{
 	}
 
 	/**
-	* Process target methods for AOP weaving
-	* @target The incoming target
-	* @mapping The incoming target mapping
-	* @metadata The incoming target metadata
-	* @dictionary The target aspect dictionary
-	*
-	*/
+	 * Process target methods for AOP weaving
+	 * @target The incoming target
+	 * @mapping The incoming target mapping
+	 * @metadata The incoming target metadata
+	 * @dictionary The target aspect dictionary
+	 *
+	 */
 	private function processTargetMethods(
 		required target,
 		required mapping,
@@ -216,67 +235,69 @@ component accessors="true"{
 		required dictionary
 	){
 		// check if there are functions, else exit
-		if( NOT structKeyExists( arguments.metadata, "functions" ) ){
+		if ( NOT structKeyExists( arguments.metadata, "functions" ) ) {
 			return;
 		}
 
 		// Get Function info
-		var functions	= arguments.metadata.functions;
-		var fncLen 		= arrayLen( functions );
+		var functions = arguments.metadata.functions;
+		var fncLen    = arrayLen( functions );
 
-		for( var x=1; x LTE fncLen; x++ ){
-
+		for ( var x = 1; x LTE fncLen; x++ ) {
 			// check if function already proxied, if so, skip it
-			if( structKeyExists( arguments.target.$wbAOPTargets, functions[ x ].name ) ){ continue; }
+			if ( structKeyExists( arguments.target.$wbAOPTargets, functions[ x ].name ) ) {
+				continue;
+			}
 
 			// init matched aspects to weave
 			var matchedMethodAspects = [];
 
 			// function not proxied yet, let's iterate over aspects and see if we can match
-			for( var y=1; y LTE arrayLen( arguments.dictionary ); y++){
+			for ( var y = 1; y LTE arrayLen( arguments.dictionary ); y++ ) {
 				// does the jointpoint match against aspect methods
-				if( arguments.dictionary[ y ].methods.matchMethod( functions[ x ] ) ){
+				if ( arguments.dictionary[ y ].methods.matchMethod( functions[ x ] ) ) {
 					matchedMethodAspects.addAll( arguments.dictionary[ y ].aspects );
 					// Debug Info
-					if ( variables.log.canDebug() ){
-						variables.log.debug( "Target: (#arguments.mapping.getName()#) Method:(#functions[ x ].name#) matches aspects #arguments.dictionary[ y ].aspects.toString()#" );
+					if ( variables.log.canDebug() ) {
+						variables.log.debug(
+							"Target: (#arguments.mapping.getName()#) Method:(#functions[ x ].name#) matches aspects #arguments.dictionary[ y ].aspects.toString()#"
+						);
 					}
 				}
 			}
 
 			// Build the the AOP advisor with the function pointcut and matched aspects?
-			if( arrayLen( matchedMethodAspects ) ){
+			if ( arrayLen( matchedMethodAspects ) ) {
 				weaveAdvice(
-					target 		= arguments.target,
-					mapping 	= arguments.mapping,
-					jointpoint 	= functions[ x ].name,
-					jointPointMD= functions[ x ],
-					aspects 	= matchedMethodAspects
+					target       = arguments.target,
+					mapping      = arguments.mapping,
+					jointpoint   = functions[ x ].name,
+					jointPointMD = functions[ x ],
+					aspects      = matchedMethodAspects
 				);
 			}
-
 		}
 
 		// Discover inheritance? Recursion
-		if( structKeyExists( arguments.metadata, "extends" ) ){
+		if ( structKeyExists( arguments.metadata, "extends" ) ) {
 			processTargetMethods(
-				target 		= arguments.target,
-				mapping 	= arguments.mapping,
-				metadata 	= arguments.metadata.extends,
-				dictionary 	= arguments.dictionary
+				target     = arguments.target,
+				mapping    = arguments.mapping,
+				metadata   = arguments.metadata.extends,
+				dictionary = arguments.dictionary
 			);
 		}
 	}
 
 	/**
-	* Weave an advise into a jointpoint
-	* @target The incoming target
-	* @mapping The incoming target mapping
-	* @jointPoint The jointpoint to proxy
-	* @jointPointMD The jointpoint metadata to proxy
-	* @aspects The aspects to weave into the jointpoint
-	*
-	*/
+	 * Weave an advise into a jointpoint
+	 * @target The incoming target
+	 * @mapping The incoming target mapping
+	 * @jointPoint The jointpoint to proxy
+	 * @jointPointMD The jointpoint metadata to proxy
+	 * @aspects The aspects to weave into the jointpoint
+	 *
+	 */
 	private function weaveAdvice(
 		required target,
 		required mapping,
@@ -284,16 +305,18 @@ component accessors="true"{
 		required jointPointMD,
 		required aspects
 	){
-		var udfOut 			= createObject( "java","java.lang.StringBuilder" ).init( '' );
-		var lb				= "#chr( 13 )##chr( 10 )#";
-		var fncMD			= {
-			name       = "",
-			access     = "public",
-			output     ="false",
-			returnType = "any"
+		var udfOut = createObject( "java", "java.lang.StringBuilder" ).init( "" );
+		var lb     = "#chr( 13 )##chr( 10 )#";
+		var fncMD  = {
+			name       : "",
+			access     : "public",
+			output     : "false",
+			returnType : "any"
 		};
-		var mappingName 	= arguments.mapping.getName();
-		var mdJSON			= urlEncodedFormat( serializeJSON( arguments.jointPointMD ) );
+		var mappingName = arguments.mapping.getName();
+		var mdJSON      = urlEncodedFormat( serializeJSON( arguments.jointPointMD ) );
+
+		// cfformat-ignore-start
 
 		// MD proxy Defaults
 		fncMD.name = arguments.jointPointMD.name;
@@ -342,57 +365,64 @@ component accessors="true"{
 		thisFNC = replace( thisFNC, "<:", "<", "all" );
 		udfOut.append( thisFNC );
 
-		// MD5 Content Checks
-		var codeSignature 	= hash( udfOUt.toString() );
-		var tmpFile 		= variables.properties.generationPath & "/" & codeSignature & ".cfm";
-		var expandedFile 	= expandPath( tmpFile );
+		// cfformat-ignore-end
 
-		try{
+		// MD5 Content Checks
+		var codeSignature = hash( udfOUt.toString() );
+		var tmpFile       = variables.properties.generationPath & "/" & codeSignature & ".cfm";
+		var expandedFile  = expandPath( tmpFile );
+
+		try {
 			// Write it out to the generation space if it does not exist
-			if( !fileExists( expandedFile ) ){
+			if ( !fileExists( expandedFile ) ) {
 				variables.mixerUtil.writeAspect( expandedFile, udfOUt.toString() );
 			}
 
 			// Save jointpoint in method targets alongside the interceptors
-			arguments.target.$wbAOPStoreJointPoint( arguments.jointpoint, buildInterceptors( arguments.aspects) );
+			arguments.target.$wbAOPStoreJointPoint( arguments.jointpoint, buildInterceptors( arguments.aspects ) );
 			// Remove the old method to proxy it
 			arguments.target.$wbAOPRemove( arguments.jointpoint );
 			// Mix In generated aspect
 			arguments.target.$wbAOPInclude( tmpFile );
 
 			// Remove Temp Aspect from disk
-			//variables.mixerUtil.removeAspect( expandedFile );
+			// variables.mixerUtil.removeAspect( expandedFile );
 
 			// debug info
-			if( variables.log.canDebug() ){
-				variables.log.debug( "Target (#mappingName#) weaved with new (#arguments.jointpoint#) method and with the following aspects: #arguments.aspects.toString()#" );
+			if ( variables.log.canDebug() ) {
+				variables.log.debug(
+					"Target (#mappingName#) weaved with new (#arguments.jointpoint#) method and with the following aspects: #arguments.aspects.toString()#"
+				);
 			}
-		} catch( Any e ){
+		} catch ( Any e ) {
 			// Remove Stub, just in case.
 			variables.mixerUtil.removeAspect( expandedFile );
 			// log it
-			if( variables.log.canError() ){
-				variables.log.error( "Exception mixing in AOP aspect for (#mappingName#): #e.message# #e.detail#", e );
+			if ( variables.log.canError() ) {
+				variables.log.error(
+					"Exception mixing in AOP aspect for (#mappingName#): #e.message# #e.detail#",
+					e
+				);
 			}
 			// throw the exception
 			throw(
 				message = "Exception mixing in AOP aspect for (#mappingName#)",
 				detail  = e.message & e.detail & e.stacktrace,
-				type 	= "WireBox.aop.Mixer.MixinException"
+				type    = "WireBox.aop.Mixer.MixinException"
 			);
 		}
 	}
 
-    /**
-	* Build out interceptors according to their aspect names
-	* @aspects The aspects to construct
-	*
-	*/
+	/**
+	 * Build out interceptors according to their aspect names
+	 * @aspects The aspects to construct
+	 *
+	 */
 	private array function buildInterceptors( required aspects ){
 		var interceptors = [];
 
 		// Get aspects from injector and add to our interceptor array
-		for( var x=1; x lte arrayLen( arguments.aspects ); x++){
+		for ( var x = 1; x lte arrayLen( arguments.aspects ); x++ ) {
 			arrayAppend( interceptors, variables.injector.getInstance( arguments.aspects[ x ] ) );
 		}
 
@@ -400,26 +430,26 @@ component accessors="true"{
 	}
 
 	/**
-	* Decorate a target with AOP capabilities
-	* @target The incoming target
-	* @mapping The incoming target mapping
-	*
-	*/
+	 * Decorate a target with AOP capabilities
+	 * @target The incoming target
+	 * @mapping The incoming target mapping
+	 *
+	 */
 	private function decorateAOPTarget( required target, required mapping ){
 		// Create targets struct for method proxing
-		arguments.target.$wbAOPTargets 			= {};
+		arguments.target.$wbAOPTargets         = {};
 		// Mix in the include command
-		arguments.target.$wbAOPInclude 			= variables.mixerUtil.$wbAOPInclude;
+		arguments.target.$wbAOPInclude         = variables.mixerUtil.$wbAOPInclude;
 		// Mix in the remove command
-		arguments.target.$wbAOPRemove 			= variables.mixerUtil.$wbAOPRemove;
+		arguments.target.$wbAOPRemove          = variables.mixerUtil.$wbAOPRemove;
 		// Mix in store point information
-		arguments.target.$wbAOPStoreJointPoint 	= variables.mixerUtil.$wbAOPStoreJointPoint;
+		arguments.target.$wbAOPStoreJointPoint = variables.mixerUtil.$wbAOPStoreJointPoint;
 		// Mix in method proxy execution
-		arguments.target.$wbAOPInvokeProxy 		= variables.mixerUtil.$wbAOPInvokeProxy;
+		arguments.target.$wbAOPInvokeProxy     = variables.mixerUtil.$wbAOPInvokeProxy;
 		// Mix in target mapping for quick references
-		arguments.target.$wbAOPTargetMapping 	= arguments.mapping;
+		arguments.target.$wbAOPTargetMapping   = arguments.mapping;
 		// Log it if possible
-		if( variables.log.canDebug() ){
+		if ( variables.log.canDebug() ) {
 			variables.log.debug( "AOP Decoration finalized for Mapping: #arguments.mapping.getName()#" );
 		}
 	}

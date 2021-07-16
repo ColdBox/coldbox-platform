@@ -25,8 +25,11 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	/**
 	 * If in integration mode, you can tag for your tests to be automatically autowired with dependencies
 	 * by WireBox
- 	 */
-	property name="autowire" type="boolean" default="false";
+	 */
+	property
+		name   ="autowire"
+		type   ="boolean"
+		default="false";
 	/**
 	 * The test case metadata
 	 */
@@ -42,8 +45,8 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	variables.configMapping = "";
 	variables.controller    = "";
 	variables.coldboxAppKey = "cbController";
-	variables.autowire 		= false;
-	variables.metadata 		= {};
+	variables.autowire      = false;
+	variables.metadata      = {};
 
 	/********************************************* LIFE-CYCLE METHODS *********************************************/
 
@@ -130,11 +133,8 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 			// Auto registration of test as interceptor
 			variables.controller.getInterceptorService().registerInterceptor( interceptorObject = this );
 			// Do we need to autowire this test?
-			if( variables.autowire ){
-				variables.controller.getWireBox().autowire(
-					target 		: this,
-					targetId 	: variables.metadata.path
-				);
+			if ( variables.autowire ) {
+				variables.controller.getWireBox().autowire( target: this, targetId: variables.metadata.path );
 			}
 		}
 
@@ -378,11 +378,11 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * @return BaseTestCase
 	 */
 	function setupRequest( required event ){
-		var controller 	= getController();
-		var eventName 	= controller.getSetting( "eventName" );
+		var controller    = getController();
+		var eventName     = controller.getSetting( "eventName" );
 		// Setup the incoming event
-		URL[ eventName ] 	= arguments.event;
-		FORM[ eventName ] 	= arguments.event;
+		URL[ eventName ]  = arguments.event;
+		FORM[ eventName ] = arguments.event;
 		// Capture the request
 		controller.getRequestService().requestCapture( arguments.event );
 		return this;
@@ -423,8 +423,8 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 		var requestContext  = getRequestContext();
 		var relocationTypes = "TestController.relocate";
 		var cbController    = getController();
-		var requestService 	= cbController.getRequestService();
-		var routingService 	= cbController.getRoutingService();
+		var requestService  = cbController.getRequestService();
+		var routingService  = cbController.getRoutingService();
 		var renderData      = "";
 		var renderedContent = "";
 		var iData           = {};
@@ -486,7 +486,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 
 			// Setup the request Context with setup FORM/URL variables set in the unit test.
 			requestService.setContext( requestContext );
-			//setupRequest( arguments.event );
+			// setupRequest( arguments.event );
 
 			// App Start Handler
 			if ( len( cbController.getSetting( "ApplicationStartHandler" ) ) ) {

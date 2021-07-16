@@ -4,7 +4,7 @@
  * ---
  * All the custom matchers ColdBox registers within TestBox for easier testing!
  */
-component{
+component {
 
 	/**
 	 * Checks if the ColdBox response obejct has a matched status code
@@ -77,10 +77,7 @@ component{
 		}
 		// We have a field to check and it has data
 		if (
-			!structKeyExists(
-				expectation.actual.getData(),
-				args.field
-			) || expectation.actual.getData()[ args.field ].isEmpty()
+			!structKeyExists( expectation.actual.getData(), args.field ) || expectation.actual.getData()[ args.field ].isEmpty()
 		) {
 			expectation.message = "#args.message#. The requested field [#args.field#] does not have any invalid data.";
 			request.testbox.debug( expectation.actual.getMemento() );
@@ -105,4 +102,5 @@ component{
 		// We checked and it's all good!
 		return true;
 	}
+
 }
