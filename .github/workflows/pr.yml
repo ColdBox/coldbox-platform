@@ -14,6 +14,9 @@ jobs:
   tests:
     name: Tests
     runs-on: ubuntu-20.04
+    env:
+      DB_USER: root
+      DB_PASSWORD: root
     strategy:
       fail-fast: true
       matrix:
