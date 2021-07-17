@@ -112,6 +112,11 @@ component
 	property name="taskScheduler";
 
 	/**
+	 * An injector can have children injectors referenced by a unique name
+	 */
+	property name="childInjectors" type="struct";
+
+	/**
 	 * Constructor. If called without a configuration binder, then WireBox will instantiate the default configuration binder found in: coldbox.system.ioc.config.DefaultBinder
 	 *
 	 * @binder The WireBox binder or data CFC instance or instantiation path to configure this injector with
@@ -173,6 +178,8 @@ component
 		variables.parent = "";
 		// LifeCycle Scopes
 		variables.scopes = {};
+		// Child Injectors
+		variables.childInjectors = {};
 
 		// Prepare instance ID
 		variables.injectorID = variables.javaSystem.identityHashCode( this );
@@ -197,6 +204,53 @@ component
 		configure( arguments.binder, arguments.properties );
 
 		return this;
+	}
+
+	/**
+	 * Verify if a child injector has been registered by name
+	 *
+	 * @name The name of the child injector to check
+	 */
+	boolean function hasChildInjector( required name ){
+		return variables.childInjectors.keyExists( arguments.name );
+	}
+
+	/**
+	 * Register a child injector instance with this injector and set this injector as a parent of the child.
+	 *
+	 * @name The unique name to register the child with
+	 * @child The child Injector instance to register
+	 */
+	Injector function registerChildInjector( required name, required child ){
+		variables.childInjectors[ arguments.name ] = arguments.child.setParent( this );
+		return this;
+	}
+
+	/**
+	 * Remove a child injector from this injector
+	 *
+	 * @name The unique name of the child injector to remove
+	 *
+	 * @return Boolean indicator if the injector was found and removed (true) or not found and not removed (false)
+	 */
+	boolean function removeChildInjector( required name ){
+		return structDelete( variables.childInjectors, arguments.name );
+	}
+
+	/**
+	 * Get a child injector from this injector
+	 *
+	 * @throws ChildNotFoundException - If the passed child name does not exist with this injector
+	 */
+	Injector function getChildInjector( required name ){
+		if( variables.childInjectors.keyExists( arguments.name ) ){
+			return variables.childInjectors[ arguments.name ];
+		}
+		throw(
+			type : "ChildNotFoundException",
+			message : "The child (#arguments.name#) has not been registered in this injector",
+			detail : "Registered children are (#structKeyList( variables.childInjectors )#)"
+		);
 	}
 
 	/**

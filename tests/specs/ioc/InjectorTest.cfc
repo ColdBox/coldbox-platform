@@ -227,4 +227,38 @@
 		assertTrue( util.$once( "getInheritedMetaData" ) );
 	}
 
+	function testChildInjectorsSetup(){
+		expect(	injector.getChildInjectors() ).toBeStruct();
+	}
+
+	function testChildInjectorRegistrationAndExistance(){
+		expect(	injector.hasChildInjector( "bogus" ) ).toBeFalse( "Bogus injector not registered" );
+
+		var child = new coldbox.system.ioc.Injector();
+		injector.registerChildInjector( "alexia", child );
+
+		expect( child.getParent() ).toBe( injector );
+		expect(	injector.hasChildInjector( "alexia" ) ).toBeTrue();
+	}
+
+	function testGetChildInjector(){
+		var child = new coldbox.system.ioc.Injector();
+		injector.registerChildInjector( "alexia", child );
+
+		expect(	injector.getChildInjector( "alexia" ) ).toBe( child );
+	}
+
+	function testGetInvalidChildInjector(){
+		expect(	function(){
+			injector.getChildInjector( "bogussss" );
+		} ).toThrow();
+	}
+
+	function testRemoveChildInjector(){
+		var child = new coldbox.system.ioc.Injector();
+		injector.registerChildInjector( "alexia", child );
+		expect(	injector.getChildInjector( "alexia" ) ).toBe( child );
+		expect( injector.removeChildInjector( "alexia" ) ).toBeTrue();
+	}
+
 }
