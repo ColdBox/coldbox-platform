@@ -24,6 +24,25 @@
 		structDelete( application, "wirebox" );
 	}
 
+	function testGetInstanceFromWSpecificChildInjector(){
+		var child = new coldbox.system.ioc.Injector( "coldbox.tests.specs.ioc.config.samples.NoScopeBinder" );
+		injector.registerChildInjector( "myChild", child );
+		var results = injector.getInstance(
+			name: "childValue",
+			injector: "myChild"
+		);
+
+		expect(	results ).toBe( "Luigi" );
+	}
+	function testGetInstanceFromInvalidChildInjector(){
+		expect(	function(){
+			injector.getInstance(
+				name: "childValue",
+				injector: "invalidBogus"
+			);
+		} ).toThrow();
+	}
+
 	function testMixins(){
 		var r = injector.getInstance( "MixinTest" );
 		assertEquals( "lui", r.myEcho( "lui" ) );
@@ -142,7 +161,7 @@
 	function testWebService() skip="isAdobe"{
 		ws = injector.getInstance( "coldboxWS" );
 
-		// 
+		//
 		if ( listFindNoCase( "Lucee", server.coldfusion.productname ) ) {
 			expect( getMetadata( ws ).name ).toMatch( "rpc" );
 		}

@@ -30,12 +30,14 @@ interface {
 	 * @initArguments The constructor structure of arguments to passthrough when initializing the instance
 	 * @dsl The dsl string to use to retrieve the instance model object, mutually exclusive with 'name'
 	 * @targetObject The object requesting the dependency, usually only used by DSL lookups
+	 * @injector The child injector name to use when retrieving the instance
 	 */
 	function getInstance(
 		name,
 		struct initArguments,
 		dsl,
-		targetObject = ""
+		targetObject = "",
+		injector
 	);
 
 	/**

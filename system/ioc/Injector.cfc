@@ -172,12 +172,12 @@ component
 			"afterInstanceAutowire" // X right after an instance is autowired
 		];
 		// LogBox and Class Logger
-		variables.logBox = "";
-		variables.log    = "";
+		variables.logBox         = "";
+		variables.log            = "";
 		// Parent Injector
-		variables.parent = "";
+		variables.parent         = "";
 		// LifeCycle Scopes
-		variables.scopes = {};
+		variables.scopes         = {};
 		// Child Injectors
 		variables.childInjectors = {};
 
@@ -243,12 +243,12 @@ component
 	 * @throws ChildNotFoundException - If the passed child name does not exist with this injector
 	 */
 	Injector function getChildInjector( required name ){
-		if( variables.childInjectors.keyExists( arguments.name ) ){
+		if ( variables.childInjectors.keyExists( arguments.name ) ) {
 			return variables.childInjectors[ arguments.name ];
 		}
 		throw(
-			type : "ChildNotFoundException",
-			message : "The child (#arguments.name#) has not been registered in this injector",
+			type   : "ChildNotFoundException",
+			message: "The child (#arguments.name#) has not been registered in this injector",
 			detail : "Registered children are (#structKeyList( variables.childInjectors )#)"
 		);
 	}
@@ -365,6 +365,13 @@ component
 			variables.parent.shutdown( this );
 		}
 
+		// Do we have children?
+		if ( structCount( variables.childInjectors ) ) {
+			variables.childInjectors.each( function( thisInjector ){
+				arguments.thisInjector.shutdown( this );
+			} );
+		}
+
 		// standalone cachebox? Yes, then shut it down baby!
 		if ( isCacheBoxLinked() ) {
 			variables.cacheBox.shutdown( this );
@@ -402,8 +409,10 @@ component
 	 * @initArguments The constructor structure of arguments to passthrough when initializing the instance
 	 * @dsl The dsl string to use to retrieve the instance model object, mutually exclusive with 'name
 	 * @targetObject The object requesting the dependency, usually only used by DSL lookups
+	 * @injector The child injector to use when retrieving the instance
 	 *
 	 * @throws InstanceNotFoundException - When the requested instance cannot be found
+	 * @throws InvalidChildInjector - When you request an instance from an invalid child injector name
 	 *
 	 * @return The requested instance
 	 **/
@@ -411,8 +420,23 @@ component
 		name,
 		struct initArguments = {},
 		dsl,
-		targetObject = ""
+		targetObject = "",
+		injector
 	){
+		// Child injector request?
+		if ( !isNull( arguments.injector ) ) {
+			if ( variables.childInjectors.keyExists( arguments.injector ) ) {
+				var childInjector = variables.childInjectors[ arguments.injector ];
+				structDelete( arguments, "injector" );
+				return childInjector.getInstance( argumentCollection = arguments );
+			}
+			throw(
+				type   : "InvalidChildInjector",
+				message: "The child injector you requested (#arguments.injector#) has not been registered",
+				detail : "The registered child injectors are [#structKeyList( variables.childInjectors )#]"
+			);
+		}
+
 		// Is the name a DSL?
 		if ( !isNull( arguments.name ) && variables.builder.isDSLString( arguments.name ) ) {
 			arguments.dsl = arguments.name;
