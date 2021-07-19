@@ -234,7 +234,11 @@ component
 	 * @return Boolean indicator if the injector was found and removed (true) or not found and not removed (false)
 	 */
 	boolean function removeChildInjector( required name ){
-		return structDelete( variables.childInjectors, arguments.name );
+		if ( variables.childInjectors.keyExists( arguments.name ) ) {
+			variables.childInjectors[ arguments.name ].shutdown( this );
+			return structDelete( variables.childInjectors, arguments.name );
+		}
+		return falase;
 	}
 
 	/**
@@ -367,8 +371,8 @@ component
 
 		// Do we have children?
 		if ( structCount( variables.childInjectors ) ) {
-			variables.childInjectors.each( function( thisInjector ){
-				arguments.thisInjector.shutdown( this );
+			variables.childInjectors.each( function( childName, childInstance ){
+				arguments.childInstance.shutdown( this );
 			} );
 		}
 
@@ -663,13 +667,22 @@ component
 		if ( variables.binder.mappingExists( arguments.name ) ) {
 			return true;
 		}
+
 		// check if we can locate it?
 		if ( locateInstance( arguments.name ).len() ) {
 			return true;
 		}
+
 		// Ask parent hierarchy if set
-		if ( isObject( variables.parent ) ) {
-			return variables.parent.containsInstance( arguments.name );
+		if ( isObject( variables.parent ) && variables.parent.containsInstance( arguments.name ) ) {
+			return true;
+		}
+
+		// Ask child hierarchy if set
+		if ( structCount( variables.childInjectors ) ) {
+			return variables.childInjectors.filter( function( childName, childInstance ){
+				return arguments.childInstance.containsInstance( name );
+			} ).count() > 0 ? true : false;
 		}
 
 		// Else NADA!
