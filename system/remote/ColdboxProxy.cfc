@@ -246,12 +246,24 @@ component serializable="false" accessors="true" {
 	/**
 	 * Locates, Creates, Injects and Configures an object model instance
 	 *
-	 * @name The mapping name or DSL
+	 * @name The mapping name or CFC instance path to try to build up
 	 * @initArguments The constructor structure of arguments to passthrough when initializing the instance
-	 * @dsl The dsl to use
+	 * @dsl The dsl string to use to retrieve the instance model object, mutually exclusive with 'name
+	 * @targetObject The object requesting the dependency, usually only used by DSL lookups
+	 * @injector The child injector to use when retrieving the instance
 	 *
-	 */
-	private any function getInstance( required name, initArguments, dsl ){
+	 * @throws InstanceNotFoundException - When the requested instance cannot be found
+	 * @throws InvalidChildInjector - When you request an instance from an invalid child injector name
+	 *
+	 * @return The requested instance
+	 **/
+	private function getInstance(
+		name,
+		struct initArguments = {},
+		dsl,
+		targetObject = "",
+		injector
+	){
 		return getWireBox().getInstance( argumentCollection = arguments );
 	}
 

@@ -179,7 +179,7 @@ component
 		// LifeCycle Scopes
 		variables.scopes         = {};
 		// Child Injectors
-		variables.childInjectors = {};
+		variables.childInjectors = structNew( "ordered" );
 
 		// Prepare instance ID
 		variables.injectorID = variables.javaSystem.identityHashCode( this );
@@ -255,6 +255,13 @@ component
 			message: "The child (#arguments.name#) has not been registered in this injector",
 			detail : "Registered children are (#structKeyList( variables.childInjectors )#)"
 		);
+	}
+
+	/**
+	 * Get an array of all the registered child injectors in this injector
+	 */
+	array function getChildInjectorNames(){
+		return variables.childInjectors.keyArray();
 	}
 
 	/**
@@ -427,7 +434,7 @@ component
 		targetObject = "",
 		injector
 	){
-		// Child injector request?
+		// Explicit Child injector request?
 		if ( !isNull( arguments.injector ) ) {
 			if ( variables.childInjectors.keyExists( arguments.injector ) ) {
 				var childInjector = variables.childInjectors[ arguments.injector ];
@@ -457,26 +464,34 @@ component
 
 		// Check if Mapping Exists?
 		if ( NOT variables.binder.mappingExists( arguments.name ) ) {
-			// No Mapping exists, let's try to locate it first. We are now dealing with request by conventions
+			// Find the instance locally from this injector
 			var instancePath = locateInstance( arguments.name );
 
-			// check if not found and if we have a parent factory
-			if ( NOT len( instancePath ) AND isObject( variables.parent ) ) {
-				// we do have a parent factory so just request it from there, let the hierarchy deal with it
-				return variables.parent.getInstance( argumentCollection = arguments );
-			}
-
-			// If Empty Throw Exception
+			// Try to discover it from the parent or child hierarchies if not found locally
 			if ( NOT len( instancePath ) ) {
+				// Verify parent first, parents know better :)
+				if ( isObject( variables.parent ) && variables.parent.containsInstance( arguments.name ) ) {
+					return variables.parent.getInstance( argumentCollection = arguments );
+				}
+
+				// Verify Children second in registration order
+				for ( var thisChild in variables.childInjectors ) {
+					if ( variables.childInjectors[ thisChild ].containsInstance( arguments.name ) ) {
+						return variables.childInjectors[ thisChild ].getInstance( argumentCollection = arguments );
+					}
+				}
+
+				// We could not find it
 				variables.log.error(
-					"Requested instance:#arguments.name# was not located in any declared scan location(s): #structKeyList( variables.binder.getScanLocations() )# or full CFC path"
+					"Requested instance:#arguments.name# was not located in any declared scan location(s): #structKeyList( variables.binder.getScanLocations() )#, or path, or parent or children"
 				);
 				throw(
 					message = "Requested instance not found: '#arguments.name#'",
-					detail  = "The instance could not be located in any declared scan location(s) (#structKeyList( variables.binder.getScanLocations() )#) or full path location",
+					detail  = "The instance could not be located in any declared scan location(s) (#structKeyList( variables.binder.getScanLocations() )#) or full path location or parent or children",
 					type    = "Injector.InstanceNotFoundException"
 				);
 			}
+
 			// Let's create a mapping for this requested convention name+path as it is the first time we see it
 			registerNewInstance( arguments.name, instancePath );
 		}
@@ -680,9 +695,11 @@ component
 
 		// Ask child hierarchy if set
 		if ( structCount( variables.childInjectors ) ) {
-			return variables.childInjectors.filter( function( childName, childInstance ){
-				return arguments.childInstance.containsInstance( name );
-			} ).count() > 0 ? true : false;
+			return variables.childInjectors
+				.filter( function( childName, childInstance ){
+					return arguments.childInstance.containsInstance( name );
+				} )
+				.count() > 0 ? true : false;
 		}
 
 		// Else NADA!

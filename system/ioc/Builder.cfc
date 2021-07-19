@@ -63,17 +63,17 @@ component serializable="false" accessors="true" {
 
 		// Internal DSL Registry
 		variables.internalDSL = [
-			"coldbox",
 			"box",
-			"executor",
+			"byType",
 			"cachebox",
+			"coldbox",
+			"executor",
+			"id",
+			"java",
 			"logbox",
 			"model",
-			"id",
 			"provider",
-			"wirebox",
-			"java",
-			"byType"
+			"wirebox"
 		];
 
 		// Do we need to build the coldbox DSL namespace
@@ -497,6 +497,20 @@ component serializable="false" accessors="true" {
 		// Determine Type of Injection according to type
 		// Some namespaces requires the ColdBox context, if not found, an exception is thrown.
 		switch ( DSLNamespace ) {
+			// CacheBox Context DSL
+			case "cacheBox": {
+				// check if linked
+				if ( !variables.injector.isCacheBoxLinked() AND !variables.injector.isColdBoxLinked() ) {
+					throw(
+						message = "The DSLNamespace: #DSLNamespace# cannot be used as it requires a ColdBox/CacheBox Context",
+						type    = "Builder.IllegalDSLException"
+					);
+				}
+				// retrieve it
+				refLocal.dependency = variables.cacheBoxDSL.process( argumentCollection = arguments );
+				break;
+			}
+
 			// ColdBox Context DSL
 			case "coldbox":
 			case "box": {
@@ -510,6 +524,12 @@ component serializable="false" accessors="true" {
 				break;
 			}
 
+			// coldfusion type annotation
+			case "bytype": {
+				refLocal.dependency = getByTypeDSL( argumentCollection = arguments );
+				break;
+			}
+
 			// Executor
 			case "executor": {
 				// retrieve it
@@ -517,17 +537,9 @@ component serializable="false" accessors="true" {
 				break;
 			}
 
-			// CacheBox Context DSL
-			case "cacheBox": {
-				// check if linked
-				if ( !variables.injector.isCacheBoxLinked() AND !variables.injector.isColdBoxLinked() ) {
-					throw(
-						message = "The DSLNamespace: #DSLNamespace# cannot be used as it requires a ColdBox/CacheBox Context",
-						type    = "Builder.IllegalDSLException"
-					);
-				}
-				// retrieve it
-				refLocal.dependency = variables.cacheBoxDSL.process( argumentCollection = arguments );
+			// java class
+			case "java": {
+				refLocal.dependency = getJavaDSL( argumentCollection = arguments );
 				break;
 			}
 
@@ -553,18 +565,6 @@ component serializable="false" accessors="true" {
 			// wirebox injection DSL always available
 			case "wirebox": {
 				refLocal.dependency = getWireBoxDSL( argumentCollection = arguments );
-				break;
-			}
-
-			// java class
-			case "java": {
-				refLocal.dependency = getJavaDSL( argumentCollection = arguments );
-				break;
-			}
-
-			// coldfusion type annotation
-			case "bytype": {
-				refLocal.dependency = getByTypeDSL( argumentCollection = arguments );
 				break;
 			}
 
@@ -652,26 +652,26 @@ component serializable="false" accessors="true" {
 
 		// DSL stages
 		switch ( thisTypeLen ) {
-			// WireBox injector
+			// WireBox injector, ex: wirebox
 			case 1: {
 				return variables.injector;
 			}
 
-			// Level 2 DSL
+			// Level 2 DSL, ex: wirebox:asyncManager, wirebox:parent
 			case 2: {
 				thisLocationKey = getToken( thisType, 2, ":" );
 				switch ( thisLocationKey ) {
-					case "parent": {
-						return variables.injector.getParent();
-					}
-					case "eventManager": {
-						return variables.injector.getEventManager();
-					}
 					case "asyncManager": {
 						return variables.injector.getAsyncManager();
 					}
 					case "binder": {
 						return variables.injector.getBinder();
+					}
+					case "eventManager": {
+						return variables.injector.getEventManager();
+					}
+					case "parent": {
+						return variables.injector.getParent();
 					}
 					case "populator": {
 						return variables.injector.getObjectPopulator();
@@ -683,17 +683,25 @@ component serializable="false" accessors="true" {
 				break;
 			}
 
-			// Level 3 DSL
+			// Level 3 DSL, ex: wirebox:scope:singleton, wirebox:property:{thisProperty}, wirebox:child:{injectorName}
 			case 3: {
 				thisLocationType = getToken( thisType, 2, ":" );
 				thisLocationKey  = getToken( thisType, 3, ":" );
 				// DSL Level 2 Stage Types
 				switch ( thisLocationType ) {
+					// Child Injectors
+					case "child": {
+						// We take the name of the instance from the property name
+						return variables.injector
+							.getChildInjector( thisLocationKey )
+							.getInstance( arguments.definition.name );
+					}
 					// Scope DSL
 					case "scope": {
 						return variables.injector.getScope( thisLocationKey );
 						break;
 					}
+					// Registered properties
 					case "property": {
 						return variables.injector.getBinder().getProperty( thisLocationKey );
 						break;
@@ -702,6 +710,29 @@ component serializable="false" accessors="true" {
 				break;
 			}
 			// end level 3 main DSL
+
+			// Child Injector full DSL, ex: wirebox:child:myChild:{DSL}
+			case 4: {
+				thisLocationType = getToken( thisType, 2, ":" );
+				thisLocationKey  = getToken( thisType, 3, ":" );
+				// DSL Level 3 Stage Types
+				switch ( thisLocationType ) {
+					// Child Injectors
+					case "child": {
+						// We have 4 or more stages, so just get the dsl sent to the child by removing the first 3 stages
+						return variables.injector
+							.getChildInjector( thisLocationKey )
+							.getInstance(
+								replaceNoCase(
+									arguments.definition.dsl,
+									"wirebox:child:#thisLocationKey#:",
+									""
+								)
+							);
+					}
+				}
+				break;
+			}
 		}
 	}
 
