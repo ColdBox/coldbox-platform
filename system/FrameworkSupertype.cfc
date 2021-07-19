@@ -704,19 +704,18 @@ component serializable="false" accessors="true" {
 	 * Load the global application helper libraries defined in the applicationHelper Setting of your application.
 	 * This is called by the framework ONLY! Use at your own risk
 	 *
-	 * @force Used when called by a known virtual inheritance family tree.
-	 *
 	 * @return FrameworkSuperType
 	 */
-	any function loadApplicationHelpers( boolean force = false ){
-		if ( structKeyExists( this, "$super" ) && !arguments.force ) {
+	any function loadApplicationHelpers(){
+		// Skip if we've already mixed in a super class
+		if( structKeyExists( this, '$super' ) ) {
 			return this;
 		}
 
 		// Inject global helpers
-		var helpers = variables.controller.getSetting( "applicationHelper" );
+		var helpers	= variables.controller.getSetting( "applicationHelper" );
 
-		for ( var thisHelper in helpers ) {
+		for( var thisHelper in helpers ){
 			includeUDF( thisHelper );
 		}
 
