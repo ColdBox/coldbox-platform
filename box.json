@@ -39,7 +39,7 @@
         ]
     },
     "devDependencies":{
-        "testbox":"^4.2.1+400",
+        "testbox":"*",
         "commandbox-dotenv":"*",
         "commandbox-cfconfig":"*",
         "commandbox-cfformat":"*"

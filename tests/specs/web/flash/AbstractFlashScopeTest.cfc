@@ -4,7 +4,10 @@
 
 	function setup(){
 		flash          = createMock( "coldbox.system.web.flash.AbstractFlashScope" );
-		mockController = createMock( className = "coldbox.system.web.Controller", clearMethods = true );
+		mockController = createMock( "coldbox.system.web.Controller" ).init( expandPath( "/root" ) );
+		mockController.getConfigSettings().identifierProvider = function(){
+			return createUUID();
+		};
 		mockRService   = createMock( className = "coldbox.system.web.services.RequestService", clearMethods = true );
 		mockEvent      = createMock( className = "coldbox.system.web.context.RequestContext", clearMethods = true );
 
