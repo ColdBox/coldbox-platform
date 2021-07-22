@@ -10,58 +10,77 @@ component serializable="false" accessors="true" {
 	 * The CFML engine helper
 	 */
 	property name="CFMLEngine";
+
 	/**
 	 * The system utility object
 	 */
 	property name="util";
+
 	/**
 	 * ColdBox initiation flag
 	 */
 	property name="coldboxInitiated" type="boolean";
+
 	/**
-	 * ColdBox application key
+	 * ColdBox application key that tracks the controller in the `application` scope
 	 */
 	property name="appKey";
+
 	/**
 	 * ColdBox application root path
 	 */
 	property name="appRootPath";
+
 	/**
 	 * ColdBox application unique hash key
 	 */
 	property name="appHash";
+
 	/**
-	 * Container for all internal services (LinkedHashMap)
+	 * The ColdFusion application name as per the application scope
+	 */
+	property name="appName";
+
+	/**
+	 * Container for all internal services (ordered struct)
 	 */
 	property name="services";
+
 	/**
 	 * The application configuration settings structure
 	 */
 	property name="configSettings" type="struct";
+
 	/**
 	 * The internal ColdBox settings structure
 	 */
 	property name="coldboxSettings" type="struct";
+
 	/**
 	 * The reference to CacheBox
 	 */
 	property name="cachebox";
+
 	/**
 	 * The reference to WireBox
 	 */
 	property name="wirebox";
+
 	/**
 	 * The reference to LogBox
 	 */
 	property name="logbox";
+
 	/**
 	 * The controller logger object
 	 */
 	property name="log";
+
 	/**
-	 * The view/layout renderer
+	 * The view/layout renderer singleton
 	 */
 	property name="renderer";
+
 	/**
 	 * The Application's AsyncManager
 	 */
@@ -74,6 +93,8 @@ component serializable="false" accessors="true" {
 	 * @appKey The application registered application key, default is cbController
 	 */
 	function init( required appRootPath, appKey = "cbController" ){
+		// Get application name
+		variables.appName  = application.applicationName;
 		// These will be lazy loaded on first use since the framework isn't ready to create it yet
 		variables.renderer = "";
 		variables.wireBox  = "";
@@ -987,8 +1008,51 @@ component serializable="false" accessors="true" {
 	}
 
 	/****************************************************************
-	 * App Locator Methods *
+	 * App + User Locator Methods *
 	 ****************************************************************/
+
+	/**
+	 * This method will return the unique user's request tracking identifier according to our discovery algoritm:
+	 *
+	 * 1. If we have an identifierProvider closure/lambda/udf, then call it and use it
+	 * 2. If we have session enabled, use the jessionId or session URL Token
+	 * 3. If we have cookies enabled, use the cfid/cftoken
+	 * 4. If we have in the URL the cfid/cftoken
+	 * 5. Create a request based tracking identifier: cbUserTrackingId
+	 */
+	string function getUserSessionIdentifier(){
+		// Setup global storage prefix according to app name in case we have multiple apps with storages
+		var prefix           = "coldbox:#variables.appName#:";
+		var isSessionDefined = getApplicationMetadata().sessionManagement;
+
+		// Check settings identifier provider
+		if ( !isSimpleValue( variables.configSettings.identifierProvider ) ) {
+			return prefix & variables.configSettings.identifierProvider();
+		}
+		// Check jsession id First
+		var isSessionDefined = getApplicationMetadata().sessionManagement;
+		if ( isSessionDefined and structKeyExists( session, "sessionid" ) ) {
+			return prefix & session.sessionid;
+		}
+		// check session URL Token
+		else if ( isSessionDefined and structKeyExists( session, "URLToken" ) ) {
+			return prefix & session.URLToken;
+		}
+		// Check cfid and cftoken in cookie
+		else if ( structKeyExists( cookie, "CFID" ) AND structKeyExists( cookie, "CFTOKEN" ) ) {
+			return prefix & hash( cookie.cfid & cookie.cftoken );
+		}
+		// Check cfid and cftoken in URL
+		else if ( structKeyExists( URL, "CFID" ) AND structKeyExists( URL, "CFTOKEN" ) ) {
+			return prefix & hash( URL.cfid & URL.cftoken );
+		}
+		// fallback for no cookie, session or url basically sessionless requests, track the request only
+		else if ( isNull( request.cbStorageId ) ) {
+			request.cbUserTrackingId = prefix & createUUID();
+		}
+
+		return request.cbUserTrackingId;
+	}
 
 	/**
 	 * Locate the real path location of a file in a coldbox application. 3 checks: 1) inside of coldbox app, 2) expand the path, 3) Absolute location. If path not found, it returns an empty path

@@ -227,27 +227,22 @@ component accessors="true" {
 		if ( !len( configStruct[ "DefaultEvent" ] ) ) {
 			configStruct[ "DefaultEvent" ] = fwSettingsStruct.defaultEvent;
 		}
-
 		// Check for Implicit Views
 		if ( !isBoolean( configStruct.implicitViews ) ) {
 			configStruct[ "ImplicitViews" ] = fwSettingsStruct.implicitViews;
 		}
-
 		// Check for ReinitPassword and hash it if declared
 		if ( len( configStruct[ "ReinitPassword" ] ) ) {
 			configStruct[ "ReinitPassword" ] = hash( configStruct[ "ReinitPassword" ] );
 		}
-
 		// inflate if needed to array
 		if ( isSimpleValue( configStruct[ "applicationHelper" ] ) ) {
 			configStruct[ "applicationHelper" ] = listToArray( configStruct[ "applicationHelper" ] );
 		}
-
 		// Check for HandlersIndexAutoReload, default = false
 		if ( !isBoolean( configStruct.HandlersIndexAutoReload ) ) {
 			configStruct[ "HandlersIndexAutoReload" ] = fwSettingsStruct.handlersIndexAutoReload;
 		}
-
 		// type check Handler Caching
 		if ( !isBoolean( configStruct.HandlerCaching ) ) {
 			configStruct[ "HandlerCaching" ] = fwSettingsStruct.HandlerCaching;
@@ -268,7 +263,6 @@ component accessors="true" {
 		if ( isSimpleValue( configStruct.ModulesExternalLocation ) ) {
 			configStruct.ModulesExternalLocation = listToArray( configStruct.ModulesExternalLocation );
 		}
-
 		// Prepend Convention of modules_app according to location
 		if ( len( configStruct.appMapping ) ) {
 			arrayPrepend( configStruct.ModulesExternalLocation, "/#configStruct.appMapping#/modules_app" );

@@ -133,7 +133,7 @@ component accessors="true" {
 
 		// Lock for race-conditions
 		lock
-			name          ="inflate.flash.#getUtil().getSessionIdentifier()#"
+			name          ="inflate.flash.#getController().getUserSessionIdentifier()#"
 			type          ="exclusive"
 			throwontimeout="true"
 			timeout       ="20" {
