@@ -1047,7 +1047,7 @@ component serializable="false" accessors="true" {
 			return prefix & hash( URL.cfid & URL.cftoken );
 		}
 		// fallback for no cookie, session or url basically sessionless requests, track the request only
-		else if ( isNull( request.cbStorageId ) ) {
+		else if ( isNull( request.cbUserTrackingId ) ) {
 			request.cbUserTrackingId = prefix & createUUID();
 		}
 
