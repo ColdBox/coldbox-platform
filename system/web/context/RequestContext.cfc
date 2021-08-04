@@ -1664,7 +1664,7 @@ component serializable="false" accessors="true" {
 				.setStatus( javacast( "int", arguments.statusCode ), javacast( "string", arguments.statusText ) );
 		}
 		// Name Exists
-		else if ( structKeyExists( arguments, "name" ) && !isNull( arguments.statusCode ) ) {
+		else if ( structKeyExists( arguments, "name" ) && !isNull( arguments.name ) ) {
 			getPageContext()
 				.getResponse()
 				.addHeader( javacast( "string", arguments.name ), javacast( "string", arguments.value ) );
