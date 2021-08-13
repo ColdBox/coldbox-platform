@@ -1658,13 +1658,13 @@ component serializable="false" accessors="true" {
 	 */
 	function setHTTPHeader( statusCode, statusText = "", name, value = "" ){
 		// status code? We do not add to response headers as this is a separate marker identifier to the response
-		if ( structKeyExists( arguments, "statusCode" ) && !isNull( arguments.statusCode ) ) {
+		if ( !isNull( arguments.statusCode ) ) {
 			getPageContext()
 				.getResponse()
 				.setStatus( javacast( "int", arguments.statusCode ), javacast( "string", arguments.statusText ) );
 		}
 		// Name Exists
-		else if ( structKeyExists( arguments, "name" ) && !isNull( arguments.name ) ) {
+		else if ( !isNull( arguments.name ) ) {
 			getPageContext()
 				.getResponse()
 				.addHeader( javacast( "string", arguments.name ), javacast( "string", arguments.value ) );
