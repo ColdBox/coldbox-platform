@@ -1,6 +1,22 @@
 component {
 
+	variables.delay = 15;
+
 	function configure(){
+
+		task( "ProcessJobs" )
+			.call( function(){
+				runEvent( "main.process" );
+			})
+			.every( 5, 'seconds' )
+			.delay( variables.delay, "seconds" )
+			.withNoOverlaps()
+			.onFailure( function( task, exception ){
+				writeDump( var='====> process jobs just failed!! #exception.message#', output="console" );
+			} )
+			.onSuccess( function( task, results ){
+				writeDump( var="====> process jobs success : Stats: #task.getStats().toString()#", output="console" );
+			} );
 
 		task( "testharness-Heartbeat" )
 			.call( function() {
@@ -10,7 +26,7 @@ component {
 				writeDump( var='====> I am in a test harness test schedule!', output="console" );
 			}  )
 				.every( 15, "seconds" )
-				.delay( 60, "seconds" )
+				.delay( variables.delay, "seconds" )
 				.before( function( task ) {
 					writeDump( var='====> Running before the task!', output="console" );
 				} )
