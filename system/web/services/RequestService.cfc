@@ -86,9 +86,6 @@ component extends="coldbox.system.web.services.BaseService" {
 			rc[ variables.eventName ] = arguments.event;
 		}
 
-		// Execute onRequestCapture interceptionPoint
-		variables.interceptorService.announce( "onRequestCapture" );
-
 		// Remove FW reserved commands just in case before collection snapshot
 		var fwCache = structKeyExists( rc, "fwCache" );
 		structDelete( rc, "fwCache" );
@@ -116,6 +113,9 @@ component extends="coldbox.system.web.services.BaseService" {
 
 		// Default Event Action Checks
 		variables.handlerService.defaultActionCheck( context );
+
+		// Execute onRequestCapture interceptionPoint
+		variables.interceptorService.announce( "onRequestCapture" );
 
 		// Are we using event caching?
 		eventCachingTest( context, fwCache );
