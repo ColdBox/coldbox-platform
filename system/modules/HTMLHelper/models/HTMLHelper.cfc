@@ -2528,12 +2528,13 @@ component
 		numeric version       = 3,
 		manifestRoot          = ""
 	){
+		var argumentsHash = hash( serializeJSON( arguments ) );
 		// Incoming Cleanup
 		arguments.fileName = reReplace( arguments.fileName, "^//?", "" );
 
 		// In local discovery cache?
-		if ( variables.cachedPaths.keyExists( arguments.filename ) ) {
-			return variables.cachedPaths[ arguments.filename ];
+		if ( variables.cachedPaths.keyExists( argumentsHash ) ) {
+			return variables.cachedPaths[ argumentsHash ];
 		}
 
 		// Prepare state checks
@@ -2543,13 +2544,13 @@ component
 
 		// Get the manifest location
 		var manifestPath = discoverElixirManifest( argumentCollection = arguments );
-
+		
 		// Calculate mapping for the asset in question
 		var mapping = ( arguments.useModuleRoot && len( arguments.currentModule ) ) ? event.getModuleRoot() : controller.getSetting(
 			"appMapping"
 		);
 
-		// Calculat href for asset delivery via Browser
+		// Calculate href for asset delivery via Browser
 		if ( mapping.len() ) {
 			var href = "/#mapping#/#includesLocation#/#arguments.fileName#";
 		} else {
@@ -2578,10 +2579,10 @@ component
 		// Is the key in the manifest?
 		var manifestDirectory = variables.elixirManifests[ hash( manifestPath ) ];
 		if ( !structKeyExists( manifestDirectory, key ) ) {
-			variables.cachedPaths[ arguments.fileName ] = arguments.fileName;
+			variables.cachedPaths[ argumentsHash ] = arguments.fileName;
 			return href;
 		}
-		variables.cachedPaths[ arguments.fileName ] = manifestDirectory[ key ];
+		variables.cachedPaths[ argumentsHash ] = manifestDirectory[ key ];
 		return "#manifestDirectory[ key ]#";
 	}
 
