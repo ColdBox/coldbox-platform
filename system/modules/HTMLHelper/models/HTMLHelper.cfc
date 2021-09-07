@@ -2528,7 +2528,7 @@ component
 		numeric version       = 3,
 		manifestRoot          = ""
 	){
-		var argumentsHash = hash( serializeJSON( arguments ) );
+		var argumentsHash  = hash( serializeJSON( arguments ) );
 		// Incoming Cleanup
 		arguments.fileName = reReplace( arguments.fileName, "^//?", "" );
 
@@ -2544,7 +2544,7 @@ component
 
 		// Get the manifest location
 		var manifestPath = discoverElixirManifest( argumentCollection = arguments );
-		
+
 		// Calculate mapping for the asset in question
 		var mapping = ( arguments.useModuleRoot && len( arguments.currentModule ) ) ? event.getModuleRoot() : controller.getSetting(
 			"appMapping"
