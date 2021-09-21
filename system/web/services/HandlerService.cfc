@@ -189,7 +189,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			!arguments.ehBean.getIsPrivate() AND
 			arguments.ehBean.getFullEvent() EQ oRequestContext.getCurrentEvent()
 		) {
-            // Get event action caching metadata
+			// Get event action caching metadata
 			var eventDictionaryEntry = getEventCachingMetadata( arguments.ehBean, oEventHandler );
 
 			// Do we need to cache this event's output after it executes??
@@ -199,12 +199,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				structAppend( eventCachingData, eventDictionaryEntry, true );
 
 				// Create the Cache Key to save
-                eventCachingData.cacheKey = oEventURLFacade.buildEventKey(
-                    keySuffix           = eventDictionaryEntry.suffix,
-                    targetEvent         = arguments.ehBean.getFullEvent(),
-                    targetContext       = oRequestContext,
-                    cacheIncludeRcKeys  = eventDictionaryEntry.cacheIncludeRcKeys
-                );
+				eventCachingData.cacheKey = oEventURLFacade.buildEventKey(
+					keySuffix          = eventDictionaryEntry.suffix,
+					targetEvent        = arguments.ehBean.getFullEvent(),
+					targetContext      = oRequestContext,
+					cacheIncludeRcKeys = eventDictionaryEntry.cacheIncludeRcKeys
+				);
 
 				// Event is cacheable and we need to flag it so the Renderer caches it
 				oRequestContext.setEventCacheableEntry( eventCachingData );
@@ -630,13 +630,13 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 */
 	private struct function getNewMDEntry(){
 		return {
-			"cacheable"         : false,
-			"timeout"           : "",
-			"lastAccessTimeout" : "",
-			"cacheKey"          : "",
-			"suffix"            : "",
-			"provider"          : "template",
-            "cacheIncludeRcKeys": "*"
+			"cacheable"          : false,
+			"timeout"            : "",
+			"lastAccessTimeout"  : "",
+			"cacheKey"           : "",
+			"suffix"             : "",
+			"provider"           : "template",
+			"cacheIncludeRcKeys" : "*"
 		};
 	}
 
@@ -649,7 +649,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * @return strc
 	 */
 	private struct function getEventCachingMetadata( required ehBean, required oEventHandler ){
-        var cacheKey = arguments.ehBean.getFullEvent();
+		var cacheKey = arguments.ehBean.getFullEvent();
 
 		// Double lock for race conditions
 		if ( !structKeyExists( variables.eventCacheDictionary, cacheKey ) ) {
@@ -670,8 +670,11 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 							"cacheLastAccessTimeout",
 							""
 						);
-						mdEntry.provider = arguments.ehBean.getActionMetadata( "cacheProvider", "template" );
-                        mdEntry.cacheIncludeRcKeys = arguments.ehBean.getActionMetadata( "cacheIncludeRcKeys", "*" );
+						mdEntry.provider           = arguments.ehBean.getActionMetadata( "cacheProvider", "template" );
+						mdEntry.cacheIncludeRcKeys = arguments.ehBean.getActionMetadata(
+							"cacheIncludeRcKeys",
+							"*"
+						);
 
 						// Handler Event Cache Key Suffix, this is global to the event
 						if (

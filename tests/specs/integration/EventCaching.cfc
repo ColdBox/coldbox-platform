@@ -24,157 +24,144 @@
 
 
 			it( "can do cached events with custom provider annotations", function(){
-				var event = execute( 
-                    event = "eventcaching.withProvider", 
-                    renderResults = true 
-                );
+				var event = execute( event = "eventcaching.withProvider", renderResults = true );
 				var prc   = event.getPrivateCollection();
 
 				expect( prc.cbox_eventCacheableEntry ).toBeStruct().toHaveKey( "provider" );
 				expect( prc.cbox_eventCacheableEntry.provider ).toBe( "default" );
 			} );
 
-            it( "can handle different RC collections", function(){
-				
-                // execute an event and specify a queryString variable
-                var event1 = execute( 
-                    event = "eventcaching", 
-                    renderResults = true,
-                    queryString="id=1" 
-                );
+			it( "can handle different RC collections", function(){
+				// execute an event and specify a queryString variable
+				var event1 = execute(
+					event         = "eventcaching",
+					renderResults = true,
+					queryString   = "id=1"
+				);
 				var prc1 = event1.getPrivateCollection();
 
-                expect( prc1.cbox_eventCacheableEntry ).toBeStruct().toHaveKey( "cacheIncludeRcKeys" );
+				expect( prc1.cbox_eventCacheableEntry ).toBeStruct().toHaveKey( "cacheIncludeRcKeys" );
 				expect( prc1.cbox_eventCacheableEntry.cacheIncludeRcKeys ).toBe( "*" );
 
-                // reset to simulate another request with a different rc scope
-                setup();
+				// reset to simulate another request with a different rc scope
+				setup();
 
-                var event2 = execute( 
-                    event = "eventcaching", 
-                    renderResults = true,
-                    queryString="id=2" 
-                );
-				
-                var prc2 = event2.getPrivateCollection();
+				var event2 = execute(
+					event         = "eventcaching",
+					renderResults = true,
+					queryString   = "id=2"
+				);
 
-                expect( prc2.cbox_eventCacheableEntry ).toBeStruct().toHaveKey( "cacheIncludeRcKeys" );
+				var prc2 = event2.getPrivateCollection();
+
+				expect( prc2.cbox_eventCacheableEntry ).toBeStruct().toHaveKey( "cacheIncludeRcKeys" );
 				expect( prc2.cbox_eventCacheableEntry.cacheIncludeRcKeys ).toBe( "*" );
 
-                // because the default cache considers the rc scope, the cache keys should be different
-                expect( prc1.cbox_eventCacheableEntry.cacheKey ).notToBe( prc2.cbox_eventCacheableEntry.cacheKey );
-
+				// because the default cache considers the rc scope, the cache keys should be different
+				expect( prc1.cbox_eventCacheableEntry.cacheKey ).notToBe( prc2.cbox_eventCacheableEntry.cacheKey );
 			} );
 
-            it( "can handle the cacheIncludeRcKeys metadata", function(){
-				
-                // execute an event and specify a queryString variable
-                var event1 = execute( 
-                    event = "eventcaching.withIncludeAllRcKeys", 
-                    renderResults = true,
-                    queryString="id=1" 
-                );
+			it( "can handle the cacheIncludeRcKeys metadata", function(){
+				// execute an event and specify a queryString variable
+				var event1 = execute(
+					event         = "eventcaching.withIncludeAllRcKeys",
+					renderResults = true,
+					queryString   = "id=1"
+				);
 				var prc1 = event1.getPrivateCollection();
 
-                expect( prc1.cbox_eventCacheableEntry ).toBeStruct().toHaveKey( "cacheIncludeRcKeys" );
+				expect( prc1.cbox_eventCacheableEntry ).toBeStruct().toHaveKey( "cacheIncludeRcKeys" );
 				expect( prc1.cbox_eventCacheableEntry.cacheIncludeRcKeys ).toBe( "*" );
-
 			} );
 
-            it( "can ignore the rc scope", function(){
-				
-                // execute an event and specify a queryString variable
-                var event1 = execute( 
-                    event = "eventcaching.withIncludeNoRcKeys", 
-                    renderResults = true,
-                    queryString="id=1" 
-                );
+			it( "can ignore the rc scope", function(){
+				// execute an event and specify a queryString variable
+				var event1 = execute(
+					event         = "eventcaching.withIncludeNoRcKeys",
+					renderResults = true,
+					queryString   = "id=1"
+				);
 				var prc1 = event1.getPrivateCollection();
 
-                expect( prc1.cbox_eventCacheableEntry ).toBeStruct().toHaveKey( "cacheIncludeRcKeys" );
+				expect( prc1.cbox_eventCacheableEntry ).toBeStruct().toHaveKey( "cacheIncludeRcKeys" );
 				expect( prc1.cbox_eventCacheableEntry.cacheIncludeRcKeys ).toBe( "" );
 
-                // reset to simulate another request
-                setup();
+				// reset to simulate another request
+				setup();
 
-                var event2 = execute( 
-                    event = "eventcaching.withIncludeNoRcKeys", 
-                    renderResults = true,
-                    queryString="id=2" 
-                );
-				
-                var prc2 = event2.getPrivateCollection();
+				var event2 = execute(
+					event         = "eventcaching.withIncludeNoRcKeys",
+					renderResults = true,
+					queryString   = "id=2"
+				);
 
-                expect( prc2.cbox_eventCacheableEntry ).toBeStruct().toHaveKey( "cacheIncludeRcKeys" );
+				var prc2 = event2.getPrivateCollection();
+
+				expect( prc2.cbox_eventCacheableEntry ).toBeStruct().toHaveKey( "cacheIncludeRcKeys" );
 				expect( prc2.cbox_eventCacheableEntry.cacheIncludeRcKeys ).toBe( "" );
 
-                // because we ignore the RC, the cache key should match
-                expect( prc1.cbox_eventCacheableEntry.cacheKey ).toBe( prc2.cbox_eventCacheableEntry.cacheKey );
-
+				// because we ignore the RC, the cache key should match
+				expect( prc1.cbox_eventCacheableEntry.cacheKey ).toBe( prc2.cbox_eventCacheableEntry.cacheKey );
 			} );
 
-            it( "can isolate specific RC scope keys and ignore the rest", function(){
-				
-                // execute an event and specify a queryString variable
-                var event1 = execute( 
-                    event = "eventcaching.withIncludeOneRcKey", 
-                    renderResults = true,
-                    queryString="id=1&slug=foo" 
-                );
+			it( "can isolate specific RC scope keys and ignore the rest", function(){
+				// execute an event and specify a queryString variable
+				var event1 = execute(
+					event         = "eventcaching.withIncludeOneRcKey",
+					renderResults = true,
+					queryString   = "id=1&slug=foo"
+				);
 				var prc1 = event1.getPrivateCollection();
 
-                expect( prc1.cbox_eventCacheableEntry ).toBeStruct().toHaveKey( "cacheIncludeRcKeys" );
+				expect( prc1.cbox_eventCacheableEntry ).toBeStruct().toHaveKey( "cacheIncludeRcKeys" );
 				expect( prc1.cbox_eventCacheableEntry.cacheIncludeRcKeys ).toBe( "slug" );
 
-                // reset to simulate another request
-                setup();
+				// reset to simulate another request
+				setup();
 
-                var event2 = execute( 
-                    event = "eventcaching.withIncludeOneRcKey", 
-                    renderResults = true,
-                    queryString="id=2&slug=foo" 
-                );
-				
-                var prc2 = event2.getPrivateCollection();
+				var event2 = execute(
+					event         = "eventcaching.withIncludeOneRcKey",
+					renderResults = true,
+					queryString   = "id=2&slug=foo"
+				);
 
-                expect( prc2.cbox_eventCacheableEntry ).toBeStruct().toHaveKey( "cacheIncludeRcKeys" );
+				var prc2 = event2.getPrivateCollection();
+
+				expect( prc2.cbox_eventCacheableEntry ).toBeStruct().toHaveKey( "cacheIncludeRcKeys" );
 				expect( prc2.cbox_eventCacheableEntry.cacheIncludeRcKeys ).toBe( "slug" );
 
-                // because we ignore the RC, the cache key should match
-                expect( prc1.cbox_eventCacheableEntry.cacheKey ).toBe( prc2.cbox_eventCacheableEntry.cacheKey );
-
+				// because we ignore the RC, the cache key should match
+				expect( prc1.cbox_eventCacheableEntry.cacheKey ).toBe( prc2.cbox_eventCacheableEntry.cacheKey );
 			} );
 
-            it( "can handle a list of specific RC scope keys and ignore the rest", function(){
-				
-                // execute an event and specify a queryString variable
-                var event1 = execute( 
-                    event = "eventcaching.withIncludeRcKeyList", 
-                    renderResults = true,
-                    queryString="id=1&slug=foo&source=google" 
-                );
+			it( "can handle a list of specific RC scope keys and ignore the rest", function(){
+				// execute an event and specify a queryString variable
+				var event1 = execute(
+					event         = "eventcaching.withIncludeRcKeyList",
+					renderResults = true,
+					queryString   = "id=1&slug=foo&source=google"
+				);
 				var prc1 = event1.getPrivateCollection();
 
-                expect( prc1.cbox_eventCacheableEntry ).toBeStruct().toHaveKey( "cacheIncludeRcKeys" );
+				expect( prc1.cbox_eventCacheableEntry ).toBeStruct().toHaveKey( "cacheIncludeRcKeys" );
 				expect( prc1.cbox_eventCacheableEntry.cacheIncludeRcKeys ).toBe( "slug,id" );
 
-                // reset to simulate another request
-                setup();
+				// reset to simulate another request
+				setup();
 
-                var event2 = execute( 
-                    event = "eventcaching.withIncludeRcKeyList", 
-                    renderResults = true,
-                    queryString="id=1&slug=foo&source=bing" 
-                );
-				
-                var prc2 = event2.getPrivateCollection();
+				var event2 = execute(
+					event         = "eventcaching.withIncludeRcKeyList",
+					renderResults = true,
+					queryString   = "id=1&slug=foo&source=bing"
+				);
 
-                expect( prc2.cbox_eventCacheableEntry ).toBeStruct().toHaveKey( "cacheIncludeRcKeys" );
+				var prc2 = event2.getPrivateCollection();
+
+				expect( prc2.cbox_eventCacheableEntry ).toBeStruct().toHaveKey( "cacheIncludeRcKeys" );
 				expect( prc2.cbox_eventCacheableEntry.cacheIncludeRcKeys ).toBe( "slug,id" );
 
-                // because we ignore the RC, the cache key should match
-                expect( prc1.cbox_eventCacheableEntry.cacheKey ).toBe( prc2.cbox_eventCacheableEntry.cacheKey );
-
+				// because we ignore the RC, the cache key should match
+				expect( prc1.cbox_eventCacheableEntry.cacheKey ).toBe( prc2.cbox_eventCacheableEntry.cacheKey );
 			} );
 
 			var formats = [ "json", "xml", "pdf" ];

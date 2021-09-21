@@ -5,7 +5,7 @@
  * The default ColdBox WireBox Injector configuration object that is used when the
  * WireBox injector is created
  **/
- component extends="coldbox.system.ioc.config.Binder" {
+component extends="coldbox.system.ioc.config.Binder" {
 
 	/**
 	 * Configure WireBox, that's it!
