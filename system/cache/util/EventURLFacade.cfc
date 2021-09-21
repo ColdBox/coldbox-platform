@@ -35,16 +35,22 @@ component accessors="true" {
 
 	/**
 	 * Build a unique hash from an incoming request context
+     * Note: the 'event' key is always ignored from the request collection
 	 *
 	 * @event A request context object
+     * @cacheIncludeRcKeys A list of keys to include ( '*'=all keys )
 	 */
-	string function getUniqueHash( required event ){
-		var rcTarget = arguments.event
-			.getCollection()
-			.filter( function( key, value ){
-				// Remove event, not needed for hashing purposes
-				return ( key != "event" );
-			} );
+	string function getUniqueHash( required event, string cacheIncludeRcKeys="*" ){
+
+        var rcTarget = arguments.event.getCollection().filter( function( key, value ){
+			return (
+                key != "event" && // Remove event, not needed for hashing purposes
+                (
+                    cacheIncludeRcKeys == "*" || // include all keys if *
+                    listFindNoCase( cacheIncludeRcKeys, key ) // or if the key is specified
+                )
+            );
+		} );
 
 		// systemOutput( "=====> uniquehash-rcTarget: #variables.jTreeMap.init( rcTarget ).toString()#", true );
 		// systemOutput( "=====> uniquehash-rcTargetHash: #hash( variables.jTreeMap.init( rcTarget ).toString() )#", true );
@@ -105,12 +111,13 @@ component accessors="true" {
 	 * @targetEvent The targeted ColdBox event executed
 	 * @targetContext The targeted request context object
 	 */
-	string function buildEventKey(
-		required keySuffix,
-		required targetEvent,
-		required targetContext
-	){
-		return buildBasicCacheKey( argumentCollection = arguments ) & getUniqueHash( arguments.targetContext );
+	string function buildEventKey( 
+        required keySuffix, 
+        required targetEvent, 
+        required targetContext, 
+        string cacheIncludeRcKeys="*" 
+    ){
+		return buildBasicCacheKey( argumentCollection=arguments ) & getUniqueHash( arguments.targetContext, arguments.cacheIncludeRcKeys );
 	}
 
 	/**

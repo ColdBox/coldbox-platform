@@ -654,7 +654,7 @@ component serializable="false" accessors="true" {
 			var cacheKey        = oEventURLFacade.buildBasicCacheKey(
 				keySuffix   = arguments.cacheSuffix,
 				targetEvent = arguments.event
-			) & hash( arguments.eventArguments.toString() );
+            ) & hash( arguments.eventArguments.toString() );
 
 			// Test if entry found in cache, and return if found.
 			var data = oCache.get( cacheKey );

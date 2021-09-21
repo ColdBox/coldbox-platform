@@ -154,7 +154,8 @@ component extends="coldbox.system.web.services.BaseService" {
 			eventCache[ "cacheKey" ] = oEventURLFacade.buildEventKey(
 				keySuffix     = eventDictionary.suffix,
 				targetEvent   = currentEvent,
-				targetContext = arguments.context
+				targetContext = arguments.context,
+                cacheIncludeRcKeys = eventDictionary.cacheIncludeRcKeys
 			);
 
 			// Check for Event Cache Purge
