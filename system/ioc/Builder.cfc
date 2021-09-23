@@ -974,10 +974,10 @@ component serializable="false" accessors="true" {
 			.getVariablesMixin()
 			// filter out overrides
 			.filter( function( key, value ){
-			    if ( targetVariables.keyExists( arguments.key ) ) {
-				    return false;
+				if ( targetVariables.keyExists( arguments.key ) ) {
+					return false;
 				}
-				
+
 				// If it's a function and not excluded and not overriden, then inject it
 				if (
 					isCustomFunction( arguments.value ) AND
