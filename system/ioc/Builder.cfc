@@ -974,6 +974,7 @@ component serializable="false" accessors="true" {
 			.getVariablesMixin()
 			// filter out overrides
 			.filter( function( key, value ){
+				// If it's a property that already exists in the target, exclude it
 				if ( targetVariables.keyExists( arguments.key ) ) {
 					return false;
 				}
