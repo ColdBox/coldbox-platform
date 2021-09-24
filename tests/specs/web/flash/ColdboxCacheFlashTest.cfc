@@ -9,11 +9,11 @@
 
 				// mocks
 				session.sessionid = createUUID();
-				mockController = createMock( "coldbox.system.web.Controller" ).init( expandPath( "/root" ) );
+				mockController    = createMock( "coldbox.system.web.Controller" ).init( expandPath( "/root" ) );
 				mockController.getConfigSettings().identifierProvider = function(){
 					return createUUID();
 				};
-				mockCache         = createMock(
+				mockCache = createMock(
 					className    = "coldbox.system.cache.providers.CacheBoxProvider",
 					clearMethods = true
 				);

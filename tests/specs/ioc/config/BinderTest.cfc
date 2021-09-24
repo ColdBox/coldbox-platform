@@ -123,9 +123,9 @@
 	}
 
 	function testParent(){
-		// 
+		//
 		// create "dependency" beans to be injected
-		// 
+		//
 
 		// alpha and bravo are in the abstract service
 		config.map( "someAlphaDAO" ).to( "models.parent.SomeAlphaDAO" );
