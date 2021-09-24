@@ -8,8 +8,8 @@
 		mockController.getConfigSettings().identifierProvider = function(){
 			return createUUID();
 		};
-		mockRService   = createMock( className = "coldbox.system.web.services.RequestService", clearMethods = true );
-		mockEvent      = createMock( className = "coldbox.system.web.context.RequestContext", clearMethods = true );
+		mockRService = createMock( className = "coldbox.system.web.services.RequestService", clearMethods = true );
+		mockEvent    = createMock( className = "coldbox.system.web.context.RequestContext", clearMethods = true );
 
 		mockController
 			.$( "getRequestService", mockRService )

@@ -172,8 +172,8 @@
 		var results = cache.getMulti( "test,test2" );
 		// debug(results);
 
-		expect(	isNull( results.test ) ).toBeFalse();
-		expect(	isNull( results.test2 ) ).toBeTrue();
+		expect( isNull( results.test ) ).toBeFalse();
+		expect( isNull( results.test2 ) ).toBeTrue();
 	}
 
 	function testgetCachedObjectMetadata(){
