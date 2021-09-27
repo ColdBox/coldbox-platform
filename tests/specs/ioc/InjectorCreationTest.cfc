@@ -142,7 +142,7 @@
 	function testWebService() skip="isAdobe"{
 		ws = injector.getInstance( "coldboxWS" );
 
-		// 
+		//
 		if ( listFindNoCase( "Lucee", server.coldfusion.productname ) ) {
 			expect( getMetadata( ws ).name ).toMatch( "rpc" );
 		}
@@ -230,7 +230,7 @@
 
 	function testVirtualInheritanceCreation(){
 		var c = injector.getInstance( "virtually-inherited-class" );
-		expect( c.getData() ).toBe( "Default Data" );
+		expect( c.getData() ).toBe( "Child Data" );
 	}
 
 }
