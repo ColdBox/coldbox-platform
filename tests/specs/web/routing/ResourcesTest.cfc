@@ -68,6 +68,43 @@
 				);
 			} );
 
+			it( "can add API RESTful routes for a resource", function(){
+				router.apiResources( "photos" );
+
+				var cl = router.$callLog().addRoute;
+
+				debug( cl );
+
+				expect( cl ).toHaveLength( 2, "addRoute should have been called 2 times" );
+				expect( cl[ 1 ] ).toBe(
+					{
+						pattern   : "/photos/:id",
+						handler   : "photos",
+						action  : {
+							GET    : "show",
+							PUT    : "update",
+							PATCH  : "update",
+							DELETE : "delete"
+						},
+						module    : "",
+						namespace : "",
+						meta      : {}
+					},
+					"The route 1 did not match.  Remember that order matters.  Add the most specific routes first."
+				);
+				expect( cl[ 2 ] ).toBe(
+					{
+						pattern   : "/photos",
+						handler   : "photos",
+						action    : { GET : "index", POST : "create" },
+						module    : "",
+						namespace : "",
+						meta      : {}
+					},
+					"The route 2 did not match.  Remember that order matters.  Add the most specific routes first."
+				);
+			} );
+
 			it( "can add all the RESTful routes for a resource", function(){
 				router.resources( "photos" );
 
@@ -248,7 +285,6 @@
 
 				expect( result ).toBe( router );
 			} );
-
 
 			describe( "limiting the routes created by action", function(){
 				describe( "using the `only` parameter", function(){
