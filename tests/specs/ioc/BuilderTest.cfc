@@ -322,6 +322,23 @@
 		data = { name : "luis", dsl : "wirebox:targetID" };
 		p    = builder.getWireBoxDSL( data, targetID );
 		assertEquals( targetID, p );
+
+		// wirebox:objectMetadata
+		data            = { name : "luis", dsl : "wirebox:objectMetadata" };
+		var mockMapping = createMock( "coldbox.system.ioc.config.Mapping" );
+		mockMapping.$( "isDiscovered", true );
+		mockMapping.$(
+			method             = "getObjectMetadata",
+			returns            = sampleObjectMetadata(),
+			preserveReturnType = false
+		);
+		mockBinder = createMock( "coldbox.system.ioc.config.Binder" )
+			.$( "getMapping" )
+			.$args( targetID )
+			.$results( mockMapping );
+		mockInjector.setBinder( mockBinder );
+		p = builder.getWireBoxDSL( data, targetID );
+		assertEquals( sampleObjectMetadata(), p );
 	}
 
 	function testbuildProviderMixer(){
@@ -377,6 +394,53 @@
 		var def    = { name : "service", dsl : "id:MyCFC" };
 		var target = builder.buildDSLDependency( definition = def, targetID = "MyCFC" );
 		expect( target ).toBe( mockObject, "id with alias" );
+	}
+
+	private struct function sampleObjectMetadata(){
+		return {
+			"remoteAddress" : "http://127.0.0.1:8599/cbtestharness/models/Photos.cfc?wsdl",
+			"hint"          : "I model a photos",
+			"path"          : "/home/elpete/code/github/ColdBox/coldbox-platform/test-harness/models/Photos.cfc",
+			"fullname"      : "test-harness.models.Photos",
+			"synchronized"  : false,
+			"properties"    : [],
+			"extends"       : {
+				"remoteAddress" : "http://127.0.0.1:8599/lucee/Component.cfc?wsdl",
+				"hint"          : "This is the Base Component",
+				"path"          : "/home/elpete/.CommandBox/server/EFAB5F85DB5928A5BC49A57B104C1B0E-coldbox-lucee@5/lucee-5.3.8.206/WEB-INF/lucee-web/context/Component.cfc",
+				"displayname"   : "Component",
+				"fullname"      : "lucee.Component",
+				"synchronized"  : false,
+				"properties"    : [],
+				"name"          : "lucee.Component",
+				"type"          : "component",
+				"accessors"     : false,
+				"persistent"    : false,
+				"functions"     : [],
+				"hashCode"      : 1199271094
+			},
+			"name"       : "test-harness.models.Photos",
+			"type"       : "component",
+			"accessors"  : true,
+			"persistent" : false,
+			"functions"  : [
+				{
+					"access"       : "public",
+					"position"     : { "start" : 12, "end" : 14 },
+					"hint"         : "Constructor",
+					"returnFormat" : "wddx",
+					"returntype"   : "Photos",
+					"output"       : true,
+					"closure"      : false,
+					"parameters"   : [],
+					"modifier"     : "",
+					"name"         : "init",
+					"owner"        : "/home/elpete/code/github/ColdBox/coldbox-platform/test-harness/models/Photos.cfc",
+					"description"  : ""
+				}
+			],
+			"hashCode" : 546083746
+		};
 	}
 
 }
