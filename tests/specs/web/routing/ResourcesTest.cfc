@@ -68,28 +68,6 @@
 				);
 			} );
 
-			it( "can add RESTFul routes as a string list", function(){
-				router.resources( "photos,users" );
-
-				var cl = router.$callLog().addRoute;
-
-				expect( cl ).toHaveLength(
-					8,
-					"addRoute should have been called 8 times, but it was called: #arrayLen( cl )#"
-				);
-			} );
-
-			it( "can add RESTFul routes as an array list", function(){
-				router.resources( [ "photos", "users" ] );
-
-				var cl = router.$callLog().addRoute;
-
-				expect( cl ).toHaveLength(
-					8,
-					"addRoute should have been called 8 times, but it was called: #arrayLen( cl )#"
-				);
-			} );
-
 			it( "can add all the RESTful routes for a resource", function(){
 				router.resources( "photos" );
 

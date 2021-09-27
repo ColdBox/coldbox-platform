@@ -602,7 +602,12 @@ component
 
 	/**
 	 * Create all RESTful routes for a resource. It will provide automagic mappings between HTTP verbs and URLs to event handlers and actions.
-	 * By convention, the name of the resource maps to the name of the event handler.
+	 *
+	 * By convention the following rules apply
+	 * - The name of the resource maps to the name of the event handler
+	 * - The default paremeter name is called `:id`
+	 * - The available actions are: index, new, create, show, edit, update, delete
+	 *
 	 * Example: `resource = photos` Then we will create the following routes:
 	 * - `/photos` : `GET` -> `photos.index` Display a list of photos
 	 * - `/photos/new` : `GET` -> `photos.new` Returns an HTML form for creating a new photo
@@ -612,7 +617,7 @@ component
 	 * - `/photos/:id` : `PUT/PATCH` -> `photos.update` Update a specific photo
 	 * - `/photos/:id` : `DELETE` -> `photos.delete` Delete a specific photo
 	 *
-	 * @resource The name of a single resource or a list of resources or an array of resources
+	 * @resource The name of a single resource to map
 	 * @handler The handler for the route. Defaults to the resource name.
 	 * @parameterName The name of the id/parameter for the resource. Defaults to `id`.
 	 * @only Limit routes created with only this list or array of actions, e.g. "index,show"
@@ -640,89 +645,84 @@ component
 		if ( !isArray( arguments.except ) ) {
 			arguments.except = listToArray( arguments.except );
 		}
-		if ( isSimpleValue( arguments.resource ) ) {
-			arguments.resource = listToArray( arguments.resource );
+
+		// Init the action set
+		var actionSet = {};
+		// Default pattern or look at the incoming pattern sent?
+		var thisPattern = ( len( arguments.pattern ) ? arguments.pattern : "/#arguments.resource#" );
+
+		// Edit
+		actionSet = filterRouteActions(
+			{ GET : "edit" },
+			arguments.only,
+			arguments.except
+		);
+
+		if ( !structIsEmpty( actionSet ) ) {
+			addRoute(
+				pattern  : "#thisPattern#/:#arguments.parameterName#/edit",
+				handler  : isNull( arguments.handler ) ? arguments.resource : arguments.handler,
+				action   : actionSet,
+				module   : arguments.module,
+				namespace: arguments.namespace,
+				meta     : arguments.meta
+			);
 		}
 
-		var actionSet = {};
-
-		// Register all resources
-		for ( var thisResource in arguments.resource ) {
-			// Default pattern or look at the incoming pattern sent?
-			var thisPattern = ( len( arguments.pattern ) ? arguments.pattern : "/#thisResource#" );
-
-			// Edit Routes
-			actionSet = filterRouteActions(
-				{ GET : "edit" },
-				arguments.only,
-				arguments.except
+		// New
+		actionSet = filterRouteActions(
+			{ GET : "new" },
+			arguments.only,
+			arguments.except
+		);
+		if ( !structIsEmpty( actionSet ) ) {
+			addRoute(
+				pattern  : "#thisPattern#/new",
+				handler  : isNull( arguments.handler ) ? arguments.resource : arguments.handler,
+				action   : actionSet,
+				module   : arguments.module,
+				namespace: arguments.namespace,
+				meta     : arguments.meta
 			);
-			if ( !structIsEmpty( actionSet ) ) {
-				addRoute(
-					pattern  : "#thisPattern#/:#arguments.parameterName#/edit",
-					handler  : isNull( arguments.handler ) ? thisResource : arguments.handler,
-					action   : actionSet,
-					module   : arguments.module,
-					namespace: arguments.namespace,
-					meta     : arguments.meta
-				);
-			}
+		}
 
-			// New Routes
-			actionSet = filterRouteActions(
-				{ GET : "new" },
-				arguments.only,
-				arguments.except
+		// Update, Delete, Show
+		actionSet = filterRouteActions(
+			{
+				PUT    : "update",
+				PATCH  : "update",
+				DELETE : "delete",
+				GET    : "show"
+			},
+			arguments.only,
+			arguments.except
+		);
+		if ( !structIsEmpty( actionSet ) ) {
+			addRoute(
+				pattern  : "#thisPattern#/:#arguments.parameterName#",
+				handler  : isNull( arguments.handler ) ? arguments.resource : arguments.handler,
+				action   : actionSet,
+				module   : arguments.module,
+				namespace: arguments.namespace,
+				meta     : arguments.meta
 			);
-			if ( !structIsEmpty( actionSet ) ) {
-				addRoute(
-					pattern  : "#thisPattern#/new",
-					handler  : isNull( arguments.handler ) ? thisResource : arguments.handler,
-					action   : actionSet,
-					module   : arguments.module,
-					namespace: arguments.namespace,
-					meta     : arguments.meta
-				);
-			}
+		}
 
-			// update, delete and show routes
-			actionSet = filterRouteActions(
-				{
-					PUT    : "update",
-					PATCH  : "update",
-					DELETE : "delete",
-					GET    : "show"
-				},
-				arguments.only,
-				arguments.except
+		// Index + Create
+		actionSet = filterRouteActions(
+			{ GET : "index", POST : "create" },
+			arguments.only,
+			arguments.except
+		);
+		if ( !structIsEmpty( actionSet ) ) {
+			addRoute(
+				pattern  : "#thisPattern#",
+				handler  : isNull( arguments.handler ) ? arguments.resource : arguments.handler,
+				action   : actionSet,
+				module   : arguments.module,
+				namespace: arguments.namespace,
+				meta     : arguments.meta
 			);
-			if ( !structIsEmpty( actionSet ) ) {
-				addRoute(
-					pattern  : "#thisPattern#/:#arguments.parameterName#",
-					handler  : isNull( arguments.handler ) ? thisResource : arguments.handler,
-					action   : actionSet,
-					module   : arguments.module,
-					namespace: arguments.namespace,
-					meta     : arguments.meta
-				);
-			}
-
-			// Index + Creation
-			actionSet = filterRouteActions(
-				{ GET : "index", POST : "create" },
-				arguments.only,
-				arguments.except
-			);
-			if ( !structIsEmpty( actionSet ) ) {
-				addRoute(
-					pattern  : "#thisPattern#",
-					handler  : isNull( arguments.handler ) ? thisResource : arguments.handler,
-					action   : actionSet,
-					module   : arguments.module,
-					namespace: arguments.namespace,
-					meta     : arguments.meta
-				);
-			}
 		}
 
 		return this;
