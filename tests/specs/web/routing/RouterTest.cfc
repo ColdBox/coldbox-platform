@@ -178,8 +178,9 @@ component extends="coldbox.system.testing.BaseModelTest" {
 
 				given( "different HTTP verbs for the same route", function(){
 					then( "both verbs should be registered", function(){
-						router.post( "photos/", "photos.create" );
-						router.get( "photos/", "photos.index" );
+						router.post( "photos/", "Photos.create" );
+						router.get( "photos/", "Photos.index" );
+						router.delete( "photos/", "BulkPhotos.delete" );
 
 						var routes = router.getRoutes();
 						expect( routes ).toBeArray();
@@ -187,10 +188,24 @@ component extends="coldbox.system.testing.BaseModelTest" {
 						expect( routes[ 1 ].pattern ).toBe( "photos/" );
 						expect( routes[ 1 ].action ).toBeStruct();
 						expect( routes[ 1 ].action ).toHaveLength(
-							2,
+							3,
 							"The registered route should have two actions"
 						);
-						expect( routes[ 1 ].action ).toBe( { "GET" : "photos.index", "POST" : "photos.create" } );
+						expect( routes[ 1 ].event ).toBe( "", "The event must be empty for multiple HTTP verbs" );
+						expect( routes[ 1 ].handler ).toBe(
+							"",
+							"No handler should be defined so the actions can define one"
+						);
+						expect( routes[ 1 ].action ).toBe( {
+							"GET"    : "Photos.index",
+							"POST"   : "Photos.create",
+							"DELETE" : "BulkPhotos.delete"
+						} );
+						var verbs = listToArray( routes[ 1 ].verbs );
+						expect( verbs ).toHaveLength( 3 );
+						expect( verbs ).toInclude( "GET" );
+						expect( verbs ).toInclude( "POST" );
+						expect( verbs ).toInclude( "DELETE" );
 					} );
 				} );
 			} );
