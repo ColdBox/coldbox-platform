@@ -78,8 +78,8 @@
 				expect( cl ).toHaveLength( 2, "addRoute should have been called 2 times" );
 				expect( cl[ 1 ] ).toBe(
 					{
-						pattern   : "/photos/:id",
-						handler   : "photos",
+						pattern : "/photos/:id",
+						handler : "photos",
 						action  : {
 							GET    : "show",
 							PUT    : "update",

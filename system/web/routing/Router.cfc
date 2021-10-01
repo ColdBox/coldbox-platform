@@ -647,7 +647,7 @@ component
 		}
 
 		// Init the action set
-		var actionSet = {};
+		var actionSet   = {};
 		// Default pattern or look at the incoming pattern sent?
 		var thisPattern = ( len( arguments.pattern ) ? arguments.pattern : "/#arguments.resource#" );
 
@@ -758,7 +758,7 @@ component
 		handler,
 		parameterName    = "id",
 		only             = [],
-		except           = [ "new" , "edit" ],
+		except           = [ "new", "edit" ],
 		string module    = "",
 		string namespace = "",
 		string pattern   = "",
