@@ -147,8 +147,8 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true" 
 			{},
 			{
 				datasource : variables.dsn,
-				username  : variables.dsnUsername,
-				password  : variables.dsnPassword
+				username   : variables.dsnUsername,
+				password   : variables.dsnPassword
 			}
 		);
 	}
@@ -164,8 +164,8 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true" 
 			{},
 			{
 				datasource : variables.dsn,
-				username  : variables.dsnUsername,
-				password  : variables.dsnPassword
+				username   : variables.dsnUsername,
+				password   : variables.dsnPassword
 			}
 		);
 
@@ -206,8 +206,8 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true" 
 				[ normalizedID ],
 				{
 					datasource : variables.dsn,
-					username  : variables.dsnUsername,
-					password  : variables.dsnPassword
+					username   : variables.dsnUsername,
+					password   : variables.dsnPassword
 				}
 			);
 
@@ -237,8 +237,8 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true" 
 					},
 					{
 						datasource : variables.dsn,
-						username  : variables.dsnUsername,
-						password  : variables.dsnPassword
+						username   : variables.dsnUsername,
+						password   : variables.dsnPassword
 					}
 				);
 			}
@@ -268,8 +268,8 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true" 
 			[ getNormalizedID( arguments.objectKey ) ],
 			{
 				datasource : variables.dsn,
-				username  : variables.dsnUsername,
-				password  : variables.dsnPassword
+				username   : variables.dsnUsername,
+				password   : variables.dsnPassword
 			}
 		);
 
@@ -296,8 +296,8 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true" 
 			[ 1, getNormalizedID( arguments.objectKey ) ],
 			{
 				datasource : variables.dsn,
-				username  : variables.dsnUsername,
-				password  : variables.dsnPassword
+				username   : variables.dsnUsername,
+				password   : variables.dsnPassword
 			}
 		);
 	}
@@ -319,8 +319,8 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true" 
 			[ getNormalizedID( arguments.objectKey ) ],
 			{
 				datasource : variables.dsn,
-				username  : variables.dsnUsername,
-				password  : variables.dsnPassword
+				username   : variables.dsnUsername,
+				password   : variables.dsnPassword
 			}
 		);
 
@@ -386,8 +386,8 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true" 
 					},
 					{
 						datasource : variables.dsn,
-						username  : variables.dsnUsername,
-						password  : variables.dsnPassword
+						username   : variables.dsnUsername,
+						password   : variables.dsnPassword
 					}
 				);
 
@@ -424,8 +424,8 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true" 
 				},
 				{
 					datasource : variables.dsn,
-					username  : variables.dsnUsername,
-					password  : variables.dsnPassword
+					username   : variables.dsnUsername,
+					password   : variables.dsnPassword
 				}
 			);
 		}
@@ -445,9 +445,9 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true" 
 			[ getNormalizedID( arguments.objectKey ) ],
 			{
 				datasource : variables.dsn,
-				username  : variables.dsnUsername,
-				password  : variables.dsnPassword,
-				result    : "local.q"
+				username   : variables.dsnUsername,
+				password   : variables.dsnPassword,
+				result     : "local.q"
 			}
 		);
 
@@ -465,8 +465,8 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true" 
 			{},
 			{
 				datasource : variables.dsn,
-				username  : variables.dsnUsername,
-				password  : variables.dsnPassword
+				username   : variables.dsnUsername,
+				password   : variables.dsnPassword
 			}
 		);
 
@@ -498,8 +498,8 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true" 
 			[ getNormalizedID( arguments.objectKey ) ],
 			{
 				datasource : variables.dsn,
-				username  : variables.dsnUsername,
-				password  : variables.dsnPassword
+				username   : variables.dsnUsername,
+				password   : variables.dsnPassword
 			}
 		);
 	}
@@ -585,8 +585,8 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true" 
 				{},
 				{
 					datasource : variables.dsn,
-					username  : variables.dsnUsername,
-					password  : variables.dsnPassword
+					username   : variables.dsnUsername,
+					password   : variables.dsnPassword
 				}
 			);
 		}
