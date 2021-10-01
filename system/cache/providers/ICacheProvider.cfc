@@ -7,7 +7,7 @@
  * The main interface for a CacheBox cache provider.  You need to implement all the methods in order for CacheBox to work correctly for the implementing cache provider.
  * Many of the methods return itself, so they are documented in the <pre>@return</pre> annotation since interfaces are very janky in acf11 and 2016
  */
-interface{
+interface {
 
 	/**
 	 * Get the name of this cache
@@ -91,7 +91,7 @@ interface{
 	function setEventManager( required eventManager );
 
 	/**
-	 * This method makes the cache ready to accept elements and run.  Usualy a cache is first created (init), then wired and then the factory calls configure() on it
+	 * This method makes the cache ready to accept elements and run.  Usually a cache is first created (init), then wired and then the factory calls configure() on it
 	 *
 	 * @return ICacheProvider
 	 */
@@ -141,7 +141,7 @@ interface{
 	function get( required objectKey );
 
 	/**
-	 * Get an object from the cache without updating stats or listners
+	 * Get an object from the cache without updating stats or listeners
 	 *
 	 * @objectKey The key to retrieve
 	 */
@@ -179,7 +179,7 @@ interface{
 	 *
 	 * @return ICacheProvider
 	 */
- 	function set(
+	function set(
 		required objectKey,
 		required object,
 		timeout,
@@ -240,7 +240,7 @@ interface{
 	boolean function clearQuiet( required objectKey );
 
 	/**
-	 * Expire all the elments in the cache (if supported by the provider)
+	 * Expire all the elements in the cache (if supported by the provider)
 	 *
 	 * @return ICacheProvider
 	 */

@@ -12,11 +12,7 @@
  * use to monitor and get results from the tasks at hand, if any.
  *
  */
-component
-	extends  ="Executor"
-	accessors="true"
-	singleton
-{
+component extends="Executor" accessors="true" singleton {
 
 	/****************************************************************
 	 * Scheduling Methods *
@@ -49,10 +45,10 @@ component
 		// build out the java callable
 		var jCallable = createDynamicProxy(
 			new coldbox.system.async.proxies.Callable(
-				arguments.task,
-				arguments.method,
-				variables.debug,
-				variables.loadAppContext
+				supplier       = arguments.task,
+				method         = arguments.method,
+				debug          = variables.debug,
+				loadAppContext = variables.loadAppContext
 			),
 			[ "java.util.concurrent.Callable" ]
 		);
@@ -65,7 +61,7 @@ component
 		);
 
 		// Return the results
-		return new ScheduledFuture( jScheduledFuture );
+		return new coldbox.system.async.tasks.ScheduledFuture( jScheduledFuture );
 	}
 
 	/**
@@ -106,7 +102,7 @@ component
 		);
 
 		// Return the results
-		return new ScheduledFuture( jScheduledFuture );
+		return new coldbox.system.async.tasks.ScheduledFuture( jScheduledFuture );
 	}
 
 	/**
@@ -145,16 +141,39 @@ component
 		);
 
 		// Return the results
-		return new ScheduledFuture( jScheduledFuture );
+		return new coldbox.system.async.tasks.ScheduledFuture( jScheduledFuture );
 	}
 
 	/****************************************************************
 	 * Builder Methods *
 	 ****************************************************************/
 
+	/**
+	 * Build out a new scheduled task
+	 *
+	 * @deprecated DO NOT USE, use newTask() instead
+	 *
+	 * @task The closure or cfc that represents the task
+	 * @method The method on the cfc to call, defaults to "run" (optional)
+	 */
 	ScheduledTask function newSchedule( required task, method = "run" ){
+		return this.newTask( argumentCollection = arguments );
+	}
+
+	/**
+	 * Build out a new scheduled task representation. Calling this method does not mean that the task is executed.
+	 *
+	 * @name The name of the task
+	 * @task The closure or cfc that represents the task (optional)
+	 * @method The method on the cfc to call, defaults to "run" (optional)
+	 */
+	ScheduledTask function newTask(
+		name = "task-#getName()#-#createUUID()#",
+		task,
+		method = "run"
+	){
 		arguments.executor = this;
-		return new ScheduledTask( argumentCollection = arguments );
+		return new coldbox.system.async.tasks.ScheduledTask( argumentCollection = arguments );
 	}
 
 	/****************************************************************
@@ -162,7 +181,7 @@ component
 	 ****************************************************************/
 
 	/**
-	 * Build out a Java Runnable from the incoming cfc/closure/lambda/udf
+	 * Build out a Java Runnable from the incoming cfc/closure/lambda/udf that will be sent to the schedulers.
 	 *
 	 * @task The runnable task closure/lambda/cfc
 	 * @method The default method to execute if the runnable is a CFC, defaults to `run()`
@@ -172,10 +191,10 @@ component
 	function buildJavaRunnable( required task, required method ){
 		return createDynamicProxy(
 			new coldbox.system.async.proxies.Runnable(
-				arguments.task,
-				arguments.method,
-				variables.debug,
-				variables.loadAppContext
+				target         = arguments.task,
+				method         = arguments.method,
+				debug          = variables.debug,
+				loadAppContext = variables.loadAppContext
 			),
 			[ "java.lang.Runnable" ]
 		);

@@ -1,4 +1,10 @@
-﻿component name = "cacheTest" extends = "CFProviderTest" output = "false" skip = "isAdobe"{
+﻿component
+	name   ="cacheTest"
+	extends="CFProviderTest"
+	output ="false"
+	skip   ="isAdobe"
+{
+
 	function setup(){
 		super.setup();
 		// Mock Controller
@@ -47,4 +53,5 @@
 	function testclearView(){
 		cache.clearView( "test" );
 	}
+
 }

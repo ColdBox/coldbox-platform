@@ -19,7 +19,12 @@
 		</cfscript>
 	</cffunction>
 
-	<cffunction name="testPopulateFromStructWithComposeRelationships" access="public" returntype="void" output="false">
+	<cffunction
+		name      ="testPopulateFromStructWithComposeRelationships"
+		access    ="public"
+		returntype="void"
+		output    ="false"
+	>
 		<!--- Now test some events --->
 		<cfscript>
 		stime = getTickCount();
@@ -356,11 +361,7 @@
 		queryAddRow( myQuery, 1 );
 		querySetCell( myQuery, "fname", "Sana" );
 		querySetCell( myQuery, "lname", "Ullah" );
-		querySetCell(
-			myQuery,
-			"email",
-			"test13@test13.com"
-		);
+		querySetCell( myQuery, "email", "test13@test13.com" );
 		querySetCell( myQuery, "initDate", now() );
 
 		// Populate From Query

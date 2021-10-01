@@ -120,12 +120,7 @@ component accessors="true" {
 			return variables.actionMetadata;
 		}
 		// Filter by key
-		if (
-			structKeyExists(
-				variables.actionMetadata,
-				arguments.key
-			)
-		) {
+		if ( structKeyExists( variables.actionMetadata, arguments.key ) ) {
 			return variables.actionMetadata[ arguments.key ];
 		}
 		// Nothing found, just return the default value of empty string
@@ -146,12 +141,7 @@ component accessors="true" {
 			return variables.handlerMetadata;
 		}
 		// Filter by key
-		if (
-			structKeyExists(
-				variables.handlerMetadata,
-				arguments.key
-			)
-		) {
+		if ( structKeyExists( variables.handlerMetadata, arguments.key ) ) {
 			return variables.handlerMetadata[ arguments.key ];
 		}
 		// Nothing found, just return the default value of empty string

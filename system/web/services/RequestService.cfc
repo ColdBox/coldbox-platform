@@ -82,12 +82,9 @@ component extends="coldbox.system.web.services.BaseService" {
 		variables.routingService.requestCapture( context );
 
 		// Do we have an override
-		if( !isNull( arguments.event ) && len( arguments.event ) ){
+		if ( !isNull( arguments.event ) && len( arguments.event ) ) {
 			rc[ variables.eventName ] = arguments.event;
 		}
-
-		// Execute onRequestCapture interceptionPoint
-		variables.interceptorService.announce( "onRequestCapture" );
 
 		// Remove FW reserved commands just in case before collection snapshot
 		var fwCache = structKeyExists( rc, "fwCache" );
@@ -116,6 +113,9 @@ component extends="coldbox.system.web.services.BaseService" {
 
 		// Default Event Action Checks
 		variables.handlerService.defaultActionCheck( context );
+
+		// Execute onRequestCapture interceptionPoint
+		variables.interceptorService.announce( "onRequestCapture" );
 
 		// Are we using event caching?
 		eventCachingTest( context, fwCache );
@@ -160,9 +160,7 @@ component extends="coldbox.system.web.services.BaseService" {
 			// Check for Event Cache Purge
 			if ( arguments.fwCache ) {
 				// Clear the key from the cache
-				variables.cacheBox
-					.getCache( eventDictionary.provider )
-					.clear( eventCache.cacheKey );
+				variables.cacheBox.getCache( eventDictionary.provider ).clear( eventCache.cacheKey );
 
 				// Return don't show cached version
 				return this;

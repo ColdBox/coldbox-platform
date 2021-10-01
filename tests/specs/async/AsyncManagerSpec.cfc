@@ -14,6 +14,15 @@ component extends="BaseAsyncSpec" {
 				asyncManager = new coldbox.system.async.AsyncManager( debug = true );
 			} );
 
+			it( "can produce durations", function(){
+				expect(
+					asyncManager
+						.duration()
+						.of( 10 )
+						.get()
+				).toBe( 10 );
+			} );
+
 			it( "can run a cf closure with a then/get pipeline and custom executors", function(){
 				var singlePool = asyncManager.$executors.newFixedThreadPool( 1 );
 				var f          = asyncManager
@@ -173,7 +182,7 @@ component extends="BaseAsyncSpec" {
 
 				debug( "calculating BMI" );
 				var combinedFuture = weightFuture.thenCombine( heightFuture, function( weight, height ){
-					writeDump( var = arguments, output="console" );
+					writeDump( var = arguments, output = "console" );
 					var heightInMeters = arguments.height / 100;
 					return arguments.weight / ( heightInMeters * heightInMeters );
 				} );

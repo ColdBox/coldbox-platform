@@ -1,12 +1,12 @@
 ﻿```
-  _                 ____            
- | |               |  _ \           
+  _                 ____
+ | |               |  _ \
  | |     ___   __ _| |_) | _____  __
  | |    / _ \ / _` |  _ < / _ \ \/ /
- | |___| (_) | (_| | |_) | (_) >  < 
+ | |___| (_) | (_| | |_) | (_) >  <
  |______\___/ \__, |____/ \___/_/\_\
-               __/ |                
-              |___/ 
+               __/ |
+              |___/
 ```
 
 Copyright Since 2005 ColdBox Platform by Luis Majano and Ortus Solutions, Corp
@@ -20,7 +20,7 @@ Because of God's grace, this project exists. If you don't like this, then don't 
 By whom also we have access by faith into this grace wherein we stand, and rejoice in hope of the glory of God.
 And not only so, but we glory in tribulations also: knowing that tribulation worketh patience;
 And patience, experience; and experience, hope:
-And hope maketh not ashamed; because the love of God is shed abroad in our hearts by the 
+And hope maketh not ashamed; because the love of God is shed abroad in our hearts by the
 Holy Ghost which is given unto us. ." Romans 5:5
 
 ----
@@ -73,7 +73,7 @@ Official Site
 - ColdFusion 11+
 
 ## Quick Installation
-Please go to our [documentation](http://logbox.ortusbooks.com) for expanded instructions. 
+Please go to our [documentation](http://logbox.ortusbooks.com) for expanded instructions.
 
 **CommandBox (Recommended)**
 
@@ -95,6 +95,6 @@ Unzip the download into a folder called `logbox` in your webroot or place outsid
 You can always leverage our bleeding edge artifacts server to download LogBox: https://downloads.ortussolutions.com/#/ortussolutions/logbox/
 
 ---
- 
+
 ### THE DAILY BREAD
  > "I am the way, and the truth, and the life; no one comes to the Father, but by me (JESUS)" Jn 14:1-12

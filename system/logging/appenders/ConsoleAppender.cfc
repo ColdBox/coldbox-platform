@@ -61,19 +61,13 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 			case "0":
 			case "1": {
 				// log message
-				queueMessage( {
-					message : entry,
-					isError : true
-				} );
+				queueMessage( { message : entry, isError : true } );
 				break;
 			}
 			// Warning and above go to info stream
 			default: {
 				// log message
-				queueMessage( {
-					message : entry,
-					isError : false
-				} );
+				queueMessage( { message : entry, isError : false } );
 				break;
 			}
 		}

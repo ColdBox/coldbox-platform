@@ -1,4 +1,4 @@
-component extends="tests.resources.BaseIntegrationTest"{
+component extends="tests.resources.BaseIntegrationTest" {
 
 	/*********************************** BDD SUITES ***********************************/
 

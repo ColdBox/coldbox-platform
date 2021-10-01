@@ -1,11 +1,15 @@
-﻿component extends = "tests.resources.BaseIntegrationTest"{
+﻿component extends="tests.resources.BaseIntegrationTest" {
+
 	this.loadColdBox = false;
 
 	function setup(){
 		flash          = createMock( "coldbox.system.web.flash.AbstractFlashScope" );
-		mockController = createMock( className = "coldbox.system.web.Controller", clearMethods = true );
-		mockRService   = createMock( className = "coldbox.system.web.services.RequestService", clearMethods = true );
-		mockEvent      = createMock( className = "coldbox.system.web.context.RequestContext", clearMethods = true );
+		mockController = createMock( "coldbox.system.web.Controller" ).init( expandPath( "/root" ) );
+		mockController.getConfigSettings().identifierProvider = function(){
+			return createUUID();
+		};
+		mockRService = createMock( className = "coldbox.system.web.services.RequestService", clearMethods = true );
+		mockEvent    = createMock( className = "coldbox.system.web.context.RequestContext", clearMethods = true );
 
 		mockController
 			.$( "getRequestService", mockRService )
@@ -137,31 +141,11 @@
 	function testClearFlash(){
 		flash.$( "flashExists", true );
 		testScope = {
-			t1 : {
-				content   : createUUID(),
-				keep      : true,
-				autoPurge : true
-			},
-			t2 : {
-				content   : createUUID(),
-				keep      : true,
-				autoPurge : true
-			},
-			t3 : {
-				content   : createUUID(),
-				keep      : true,
-				autoPurge : false
-			},
-			t4 : {
-				content   : createUUID(),
-				keep      : true,
-				autoPurge : true
-			},
-			t5 : {
-				content   : createUUID(),
-				keep      : true,
-				autoPurge : false
-			}
+			t1 : { content : createUUID(), keep : true, autoPurge : true },
+			t2 : { content : createUUID(), keep : true, autoPurge : true },
+			t3 : { content : createUUID(), keep : true, autoPurge : false },
+			t4 : { content : createUUID(), keep : true, autoPurge : true },
+			t5 : { content : createUUID(), keep : true, autoPurge : false }
 		};
 		flash.$( "getFlash", testScope );
 
@@ -173,31 +157,11 @@
 
 	function testGetKeys(){
 		var testScope = {
-			t1 : {
-				content   : createUUID(),
-				keep      : true,
-				autoPurge : true
-			},
-			t2 : {
-				content   : createUUID(),
-				keep      : true,
-				autoPurge : true
-			},
-			t3 : {
-				content   : createUUID(),
-				keep      : true,
-				autoPurge : false
-			},
-			t4 : {
-				content   : createUUID(),
-				keep      : true,
-				autoPurge : true
-			},
-			t5 : {
-				content   : createUUID(),
-				keep      : true,
-				autoPurge : false
-			}
+			t1 : { content : createUUID(), keep : true, autoPurge : true },
+			t2 : { content : createUUID(), keep : true, autoPurge : true },
+			t3 : { content : createUUID(), keep : true, autoPurge : false },
+			t4 : { content : createUUID(), keep : true, autoPurge : true },
+			t5 : { content : createUUID(), keep : true, autoPurge : false }
 		};
 		flash.$( "getScope", testScope );
 
@@ -208,35 +172,16 @@
 
 	function testGetAll(){
 		var testScope = {
-			t1 : {
-				content   : createUUID(),
-				keep      : true,
-				autoPurge : true
-			},
-			t2 : {
-				content   : createUUID(),
-				keep      : true,
-				autoPurge : true
-			},
-			t3 : {
-				content   : createUUID(),
-				keep      : true,
-				autoPurge : false
-			},
-			t4 : {
-				content   : createUUID(),
-				keep      : true,
-				autoPurge : true
-			},
-			t5 : {
-				content   : createUUID(),
-				keep      : true,
-				autoPurge : false
-			}
+			t1 : { content : createUUID(), keep : true, autoPurge : true },
+			t2 : { content : createUUID(), keep : true, autoPurge : true },
+			t3 : { content : createUUID(), keep : true, autoPurge : false },
+			t4 : { content : createUUID(), keep : true, autoPurge : true },
+			t5 : { content : createUUID(), keep : true, autoPurge : false }
 		};
 		flash.$( "getScope", testScope );
 
 		var r = flash.getAll();
 		expect( r ).toBeStruct().toHaveLength( 5 );
 	}
+
 }

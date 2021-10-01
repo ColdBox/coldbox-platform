@@ -61,9 +61,7 @@ component extends="tests.resources.BaseIntegrationTest" {
 				expect( config ).toHaveKey( "test1" );
 				expect( config[ "test1" ] ).toHaveKey( "settings" );
 
-				expect( config[ "test1" ].settings ).toBe(
-					parentSettings.moduleSettings[ "test1" ]
-				);
+				expect( config[ "test1" ].settings ).toBe( parentSettings.moduleSettings[ "test1" ] );
 
 				expect( parentSettings ).toHaveKey( "test1" );
 				expect( parentSettings[ "test1" ] ).notToBe( config[ "test1" ].settings );
@@ -119,10 +117,7 @@ component extends="tests.resources.BaseIntegrationTest" {
 		story( "Modules can register application helpers", function(){
 			given( "application helpers directive", function(){
 				then( "the module service will load them by convention", function(){
-					var event = execute(
-						event         = "conventionsTest:test.index",
-						renderResults = true
-					);
+					var event = execute( event = "conventionsTest:test.index", renderResults = true );
 					expect( event.getRenderedContent() ).toInclude( "hello from module app helper" );
 				} );
 			} );

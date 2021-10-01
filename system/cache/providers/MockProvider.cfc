@@ -6,11 +6,11 @@
  *
  * A mock cache provider that keeps cache data in a simple map for testing and assertions
  **/
- component
-	 accessors=true
-	 serializable=false
-	 implements="coldbox.system.cache.providers.IColdBoxProvider"
-	 extends="coldbox.system.cache.AbstractCacheBoxProvider"
+component
+	accessors   =true
+	serializable=false
+	implements  ="coldbox.system.cache.providers.IColdBoxProvider"
+	extends     ="coldbox.system.cache.AbstractCacheBoxProvider"
 {
 
 	/**
@@ -20,17 +20,17 @@
 
 	// CacheBox Provider Property Defaults
 	variables.DEFAULTS = {
-		objectDefaultTimeout           	= 60,
-		objectDefaultLastAccessTimeout 	= 30,
-		useLastAccessTimeouts          	= true,
-		reapFrequency                  	= 2,
-		freeMemoryPercentageThreshold  	= 0,
-		evictionPolicy                 	= "LRU",
-		evictCount                     	= 1,
-		maxObjects                     	= 200,
-		objectStore                    	= "ConcurrentStore",
-		coldboxEnabled                 	= false,
-		resetTimeoutOnAccess 			= false
+		objectDefaultTimeout           : 60,
+		objectDefaultLastAccessTimeout : 30,
+		useLastAccessTimeouts          : true,
+		reapFrequency                  : 2,
+		freeMemoryPercentageThreshold  : 0,
+		evictionPolicy                 : "LRU",
+		evictCount                     : 1,
+		maxObjects                     : 200,
+		objectStore                    : "ConcurrentStore",
+		coldboxEnabled                 : false,
+		resetTimeoutOnAccess           : false
 	};
 
 	/**
@@ -46,14 +46,14 @@
 	}
 
 	/**
-	 * This method makes the cache ready to accept elements and run.  Usualy a cache is first created (init), then wired and then the factory calls configure() on it
+	 * This method makes the cache ready to accept elements and run.  Usually a cache is first created (init), then wired and then the factory calls configure() on it
 	 *
 	 * @return MockProvider
 	 */
 	function configure(){
-		variables.cache 	 		= {};
-		variables.enabled 			= true;
-		variables.reportingEnabled 	= true;
+		variables.cache            = {};
+		variables.enabled          = true;
+		variables.reportingEnabled = true;
 
 		validateConfiguration();
 
@@ -90,12 +90,12 @@
 	 */
 	struct function getStoreMetadataKeyMap(){
 		return {
-			timeout           = "timeout",
-			hits              = "hits",
-			lastAccessTimeout = "lastAccessTimeout",
-			created           = "created",
-			lastAccessed      = "lastAccessed",
-			isExpire          = "isExpired"
+			timeout           : "timeout",
+			hits              : "hits",
+			lastAccessTimeout : "lastAccessTimeout",
+			created           : "created",
+			lastAccessed      : "lastAccessed",
+			isExpire          : "isExpired"
 		};
 	}
 
@@ -125,7 +125,7 @@
 	}
 
 	/**
-	 * Get an object from the cache without updating stats or listners
+	 * Get an object from the cache without updating stats or listeners
 	 *
 	 * @objectKey The key to retrieve
 	 */
@@ -258,7 +258,7 @@
 	}
 
 	/**
-	 * Expire all the elments in the cache (if supported by the provider)
+	 * Expire all the elements in the cache (if supported by the provider)
 	 */
 	function expireAll(){
 		return this;
@@ -330,7 +330,7 @@
 	 *
 	 * @return MockProvider
 	 */
-	function clearAllEvents( boolean async=false ){
+	function clearAllEvents( boolean async = false ){
 		return this;
 	}
 
@@ -342,19 +342,19 @@
 	 *
 	 * @return MockProvider
 	 */
-	function clearEvent( required eventSnippet, queryString="" ){
+	function clearEvent( required eventSnippet, queryString = "" ){
 		return this;
 	}
 
 	/**
 	 * Clears all the event permutations from the cache according to the list of snippets and querystrings. Be careful when using incomplete event name with query strings as partial event names are not guaranteed to match with query string permutations
 	 *
-	 * @eventSnippet The comma-delimmitted list event snippet to clear on. Can be partial or full
-	 * @queryString The comma-delimmitted list of queryStrings passed in. If passed in, it will create a unique hash out of it. For purging purposes.  If passed in the list length must be equal to the list length of the event snippets passed in
+	 * @eventSnippet The comma-delimited list event snippet to clear on. Can be partial or full
+	 * @queryString The comma-delimited list of queryStrings passed in. If passed in, it will create a unique hash out of it. For purging purposes.  If passed in the list length must be equal to the list length of the event snippets passed in
 	 *
 	 * @return MockProvider
 	 */
-	function clearEventMulti( required eventsnippets, queryString="" ){
+	function clearEventMulti( required eventsnippets, queryString = "" ){
 		return this;
 	}
 
@@ -372,7 +372,7 @@
 	/**
 	 * Clears all view name permutations from the cache according to the view name.
 	 *
-	 * @viewSnippets The comma-delimmitted list or array of view snippet to clear on. Can be partial or full
+	 * @viewSnippets The comma-delimited list or array of view snippet to clear on. Can be partial or full
 	 */
 	function clearViewMulti( required viewSnippets ){
 		return this;
@@ -385,7 +385,7 @@
 	 *
 	 * @return MockProvider
 	 */
-	function clearAllViews( boolean async=false ){
+	function clearAllViews( boolean async = false ){
 		return this;
 	}
 

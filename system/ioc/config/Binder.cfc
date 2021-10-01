@@ -103,7 +103,7 @@ component accessors="true" {
 	property name="metadataCache";
 
 	/**
-	 * Boolean indicator if on startup all mappings will be processed for metdata inspections or
+	 * Boolean indicator if on startup all mappings will be processed for metadata inspections or
 	 * lazy loaded. We default to lazy load due to performance.
 	 */
 	property name="autoProcessMappings" type="boolean";
@@ -153,7 +153,7 @@ component accessors="true" {
 	 * Constructor
 	 *
 	 * @injector The injector this binder is bound to
-	 * @config The WireBox Injector Data Configuration CFC instance or instantiation path to it. Leave blank if using this configuration object programatically
+	 * @config The WireBox Injector Data Configuration CFC instance or instantiation path to it. Leave blank if using this configuration object programmatically
 	 * @properties A structure of binding properties to passthrough to the Binder Configuration CFC
 	 */
 	function init(
@@ -191,7 +191,7 @@ component accessors="true" {
 	}
 
 	/**
-	 * The main configuration method that must be overriden by a specific WireBox Binder configuration object
+	 * The main configuration method that must be overridden by a specific WireBox Binder configuration object
 	 */
 	function configure(){
 		// Implemented by concrete classes
@@ -218,9 +218,9 @@ component accessors="true" {
 		// Package Scan Locations
 		variables.scanLocations       = structNew( "ordered" );
 		// Parent Injector Mapping
-		variables.oParentInjector      = "";
+		variables.oParentInjector     = "";
 		// Stop Recursion classes
-		variables.aStopRecursions      = [];
+		variables.aStopRecursions     = [];
 		// Listeners
 		variables.listeners           = [];
 		// Object Mappings
@@ -229,7 +229,7 @@ component accessors="true" {
 		variables.aspectBindings      = [];
 		// Binding Properties
 		variables.properties          = {};
-		// Meatadata cache
+		// Metadata cache
 		variables.metadataCache       = "";
 		// Auto Process Mappings
 		variables.autoProcessMappings = variables.DEFAULTS.autoProcessMappings;
@@ -415,7 +415,7 @@ component accessors="true" {
 	 * @filter The filter closure or UDF that will receive the path of the CFC to process and returns TRUE to continue processing or FALSE to skip processing
 	 * @namespace Provide namespace to merge it in
 	 * @prepend Where to attach the namespace, at the beginning of the name or end of the name. Defaults to end of name
-	 * @process If true, all mappings discovered will be automatically processed for metdata and inspections.  Default is false, everything lazy loads
+	 * @process If true, all mappings discovered will be automatically processed for metadata and inspections.  Default is false, everything lazy loads
 	 *
 	 * @throws DirectoryNotFoundException - If the requested package path does not exist.
 	 */
@@ -507,7 +507,7 @@ component accessors="true" {
 
 				/**
 				 * Do this right away so aliases are picked up before this mapping potentially gets overwritten
-				 * This is neccessary for multuple CFCs with the same name in different folders, but with unique aliases
+				 * This is necessary for multiple CFCs with the same name in different folders, but with unique aliases
 				 * TODO: Move to async
 				 */
 				if ( process ) {
@@ -535,7 +535,7 @@ component accessors="true" {
 	/**
 	 * Create a mapping to an object
 	 *
-	 * @alias A single alias or a list or an array of aliases for this mapping. Remember an object can be refered by many names
+	 * @alias A single alias or a list or an array of aliases for this mapping. Remember an object can be referred by many names
 	 * @force Forces the registration of the mapping in case it already exists
 	 */
 	Binder function map( required alias, boolean force = false ){
@@ -576,9 +576,9 @@ component accessors="true" {
 	/**
 	 * Create a mapping to an object overwriting any existing registration.
 	 *
-	 * @alias A single alias or a list or an array of aliases for this mapping. Remember an object can be refered by many names
+	 * @alias A single alias or a list or an array of aliases for this mapping. Remember an object can be referred by many names
 	 */
-	Binder function forceMap( required alias ) {
+	Binder function forceMap( required alias ){
 		arguments.force = true;
 		return map( argumentCollection = arguments );
 	}
@@ -789,7 +789,7 @@ component accessors="true" {
 	}
 
 	/**
-	 * Used to set the current working mapping name in place for the maping DSL. An exception is thrown if the mapping does not exist yet.
+	 * Used to set the current working mapping name in place for the mapping DSL. An exception is thrown if the mapping does not exist yet.
 	 *
 	 * @alias The name of the mapping to set as the current working mapping
 	 *
@@ -1097,7 +1097,7 @@ component accessors="true" {
 	}
 
 	/**
-	 * Configurate CacheBox operations
+	 * Configure CacheBox operations
 	 *
 	 * @configFile The configuration file to use for loading CacheBox if creating it
 	 * @cacheFactory The CacheBox cache factory instance to link WireBox to
@@ -1127,8 +1127,8 @@ component accessors="true" {
 	 * Map an object into CacheBox
 	 *
 	 * @key You can override the key it will use for storing in cache. By default it uses the name of the mapping
-	 * @timeout Object Timeout, else defaults to whatever the default is in the choosen cache
-	 * @lastAccessTimeout Object Timeout, else defaults to whatever the default is in the choosen cache
+	 * @timeout Object Timeout, else defaults to whatever the default is in the chosen cache
+	 * @lastAccessTimeout Object Timeout, else defaults to whatever the default is in the chosen cache
 	 * @provider Uses the 'default' cache provider by default
 	 */
 	Binder function inCacheBox(
@@ -1336,7 +1336,7 @@ component accessors="true" {
 	 * Add a new listener configuration
 	 *
 	 * @class The class of the listener
-	 * @properties The structure of properties for the listner
+	 * @properties The structure of properties for the listener
 	 * @name The name of the listener
 	 * @register If true, registers the listener right away
 	 */

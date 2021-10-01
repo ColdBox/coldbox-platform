@@ -35,6 +35,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			// Application startup points
 			"afterConfigurationLoad",
 			"afterAspectsLoad",
+			"cbLoadInterceptorHelpers",
 			"preReinit",
 			// On Actions
 			"onException",
@@ -281,7 +282,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * @interceptorClass Mutex with interceptorObject, this is the qualified class of the interceptor to register
 	 * @interceptorObject Mutex with interceptor Class, this is used to register an already instantiated object as an interceptor
 	 * @interceptorProperties The structure of properties to register this interceptor with.
-	 * @customPoints A comma delimmited list or array of custom interception points, if the object or class sent in observes them.
+	 * @customPoints A comma delimited list or array of custom interception points, if the object or class sent in observes them.
 	 * @interceptorName The name to use for the interceptor when stored. If not used, we will use the name found in the object's class
 	 *
 	 * @return InterceptorService
@@ -356,15 +357,26 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				// Register the point
 				registerInterceptionPoint(
 					interceptorKey = objectName,
-					state          = stateKey,
+					state          = arguments.stateKey,
 					oInterceptor   = oInterceptor,
-					interceptorMD  = stateValue
+					interceptorMD  = arguments.stateValue
 				);
 				// Debug log
 				if ( variables.log.canDebug() ) {
-					variables.log.debug( "Registering #objectName# on '#stateKey#' interception point" );
+					variables.log.debug( "Registering #objectName# on '#arguments.stateKey#' interception point" );
 				}
 			} );
+
+			// Register Core Internal ColdBox Points
+			// We do this manually as CFML Engines do not add mixins to metadata when using virtual inheritance
+			if ( structKeyExists( oInterceptor, "cbLoadInterceptorHelpers" ) ) {
+				// Register the point
+				registerInterceptionPoint(
+					interceptorKey = objectName,
+					state          = "cbLoadInterceptorHelpers",
+					oInterceptor   = oInterceptor
+				);
+			}
 		}
 		// end lock
 
@@ -386,11 +398,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		struct interceptorProperties = {}
 	){
 		// Check if interceptor mapped?
-		if (
-			NOT variables.wirebox
-				.getBinder()
-				.mappingExists( "interceptor-" & arguments.interceptorName )
-		) {
+		if ( NOT variables.wirebox.getBinder().mappingExists( "interceptor-" & arguments.interceptorName ) ) {
 			// wirebox lazy load checks
 			wireboxSetup();
 			// feed this interceptor to wirebox with virtual inheritance just in case, use registerNewInstance so its thread safe
@@ -422,7 +430,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	/**
 	 * Append a list of custom interception points to the CORE interception points and returns itself
 	 *
-	 * @customPoints A comma delimmited list or array of custom interception points to append. If they already exists, then they will not be added again.
+	 * @customPoints A comma delimited list or array of custom interception points to append. If they already exists, then they will not be added again.
 	 *
 	 * @return  The current interception points
 	 */
@@ -490,7 +498,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		var oInterceptorState = "";
 
 		// Init md if not passed
-		if ( not structKeyExists( arguments, "interceptorMD" ) ) {
+		if ( isNull( arguments.interceptorMD ) ) {
 			arguments.interceptorMD = newPointRecord();
 		}
 
@@ -538,11 +546,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 */
 	private InterceptorService function wireboxSetup(){
 		// Check if handler mapped?
-		if (
-			NOT variables.wirebox
-				.getBinder()
-				.mappingExists( variables.INTERCEPTOR_BASE_CLASS )
-		) {
+		if ( NOT variables.wirebox.getBinder().mappingExists( variables.INTERCEPTOR_BASE_CLASS ) ) {
 			// feed the base class
 			variables.wirebox
 				.registerNewInstance(
@@ -610,11 +614,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		if (
 			structKeyExists( arguments.metadata, "extends" )
 			&&
-			(
-				arguments.metadata.extends.name neq "coldbox.system.Interceptor"
-				&&
-				arguments.metadata.extends.name neq "coldbox.system.EventHandler"
-			)
+			arguments.metadata.extends.name neq "coldbox.system.EventHandler"
 		) {
 			// Recursive lookup
 			parseMetadata( arguments.metadata.extends, pointsFound );

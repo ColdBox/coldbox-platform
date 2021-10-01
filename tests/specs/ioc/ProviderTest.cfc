@@ -1,15 +1,11 @@
-﻿component extends="tests.resources.BaseIntegrationTest"{
+﻿component extends="tests.resources.BaseIntegrationTest" {
 
 	this.loadColdBox = false;
 
 	function setup(){
 		super.setup();
 
-		scopeInfo = {
-			enabled : true,
-			scope   : "application",
-			key     : "wirebox"
-		};
+		scopeInfo        = { enabled : true, scope : "application", key : "wirebox" };
 		mockScopeStorage = createEmptyMock( "coldbox.system.core.collections.ScopeStorage" ).$( "exists", false );
 		provider         = createMock( "coldbox.system.ioc.Provider" ).init(
 			scopeRegistration = scopeInfo,

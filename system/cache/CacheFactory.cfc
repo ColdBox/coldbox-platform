@@ -7,7 +7,7 @@
  * The main CacheBox factory and configuration of caches. From this factory
  * is where you will get all the caches you need to work with or register more caches.
  **/
- component accessors=true serializable=false{
+component accessors=true serializable=false {
 
 	/**
 	 * The unique factory id
@@ -60,7 +60,7 @@
 
 	/**
 	 * The logBox task scheduler executor
-	 * @see coldbox.system.async.tasks.ScheduledExecutor
+	 * @see coldbox.system.async.executors.ScheduledExecutor
 	 */
 	property name="taskScheduler";
 
@@ -74,28 +74,23 @@
 	 * @factoryID A unique ID or name for this factory. If not passed I will make one up for you.
 	 * @wirebox A configured wirebox instance to get logbox, asyncManager, and EventManager from.  If not passed, I will create new ones.
 	 */
-	function init(
-		config,
-		coldbox,
-		factoryId="",
-		wirebox
-	){
+	function init( config, coldbox, factoryId = "", wirebox ){
 		var defaultConfigPath = "coldbox.system.cache.config.DefaultConfiguration";
 
 		// CacheBox Factory UniqueID
-		variables.factoryId = createObject( "java", "java.lang.System" ).identityHashCode( this );
+		variables.factoryId    = createObject( "java", "java.lang.System" ).identityHashCode( this );
 		// Version
-		variables.version = "@build.version@+@build.number@";
+		variables.version      = "@build.version@+@build.number@";
 		// Configuration object
-		variables.config  = "";
+		variables.config       = "";
 		// ColdBox Application Link
-		variables.coldbox = "";
+		variables.coldbox      = "";
 		// ColdBox Application Link
-		variables.wirebox = "";
+		variables.wirebox      = "";
 		// Event Manager Link
 		variables.eventManager = "";
 		// Configured Event States
-		variables.eventStates = [
+		variables.eventStates  = [
 			"afterCacheElementInsert",
 			"afterCacheElementRemoved",
 			"afterCacheElementExpired",
@@ -112,13 +107,13 @@
 			"afterCacheShutdown"
 		];
 		// LogBox Links
-		variables.logBox  	= "";
-		variables.log		= "";
+		variables.logBox = "";
+		variables.log    = "";
 		// Caches
-		variables.caches  = {};
+		variables.caches = {};
 
 		// Did we send a factoryID in?
-		if( len( arguments.factoryID ) ){
+		if ( len( arguments.factoryID ) ) {
 			variables.factoryID = arguments.factoryID;
 		}
 
@@ -126,51 +121,53 @@
 		variables.lockName = "CacheFactory.#variables.factoryID#";
 
 		// Passed in configuration?
-		if( isNull( arguments.config ) ){
+		if ( isNull( arguments.config ) ) {
 			// Create default configuration
-			arguments.config = new coldbox.system.cache.config.CacheBoxConfig( CFCConfigPath=defaultConfigPath );
-		} else if( isSimpleValue( arguments.config ) ){
-			arguments.config = new coldbox.system.cache.config.CacheBoxConfig( CFCConfigPath=arguments.config );
+			arguments.config = new coldbox.system.cache.config.CacheBoxConfig( CFCConfigPath = defaultConfigPath );
+		} else if ( isSimpleValue( arguments.config ) ) {
+			arguments.config = new coldbox.system.cache.config.CacheBoxConfig( CFCConfigPath = arguments.config );
 		}
 
 		// Check if linking ColdBox
-		if( !isNull( arguments.coldbox ) ){
+		if ( !isNull( arguments.coldbox ) ) {
 			// Link ColdBox
-			variables.coldbox = arguments.coldbox;
+			variables.coldbox      = arguments.coldbox;
 			// Link to WireBox
-			variables.wirebox = variables.coldbox.getWireBox();				
+			variables.wirebox      = variables.coldbox.getWireBox();
 			// link LogBox
-			variables.logBox  = variables.coldbox.getLogBox();
+			variables.logBox       = variables.coldbox.getLogBox();
 			// Link Event Manager
 			variables.eventManager = variables.coldbox.getInterceptorService();
 			// Link Interception States
 			variables.coldbox.getInterceptorService().appendInterceptionPoints( variables.eventStates );
 			// Link async manager and scheduler
-			variables.asyncManager = variables.coldbox.getAsyncManager();
+			variables.asyncManager  = variables.coldbox.getAsyncManager();
 			variables.taskScheduler = variables.asyncManager.getExecutor( "coldbox-tasks" );
 		} else {
-			if( !isNull( arguments.wirebox ) ) {
+			if ( !isNull( arguments.wirebox ) ) {
 				// Link to WireBox
-				variables.wirebox = arguments.wirebox;
+				variables.wirebox       = arguments.wirebox;
 				// If WireBox linked, get LogBox and EventManager, and asyncmanager from it
-				variables.asyncManager = variables.wirebox.getAsyncManager();
-				variables.taskScheduler = variables.wirebox.getTaskScheduler();				
-				variables.logBox = variables.wirebox.getLogBox();				
+				variables.asyncManager  = variables.wirebox.getAsyncManager();
+				variables.taskScheduler = variables.wirebox.getTaskScheduler();
+				variables.logBox        = variables.wirebox.getLogBox();
 				// link LogBox
-				variables.eventManager = variables.wirebox.getEventManager();
+				variables.eventManager  = variables.wirebox.getEventManager();
 				// register the points to listen to
 				variables.eventManager.appendInterceptionPoints( variables.eventStates );
 			} else {
-				
-			// Register an async manager and scheduler
-			variables.asyncManager = new coldbox.system.async.AsyncManager();
-			variables.taskScheduler = variables.asyncManager.newScheduledExecutor( name : "cachebox-tasks", threads : 20 );
-				
-			// Running standalone, so create our own logging first
-			configureLogBox( arguments.config.getLogBoxConfig() );
-			// Running standalone, so create our own event manager
-			configureEventManager();
-		}
+				// Register an async manager and scheduler
+				variables.asyncManager  = new coldbox.system.async.AsyncManager();
+				variables.taskScheduler = variables.asyncManager.newScheduledExecutor(
+					name   : "cachebox-tasks",
+					threads: 20
+				);
+
+				// Running standalone, so create our own logging first
+				configureLogBox( arguments.config.getLogBoxConfig() );
+				// Running standalone, so create our own event manager
+				configureEventManager();
+			}
 		}
 
 		// Configure Logging for the Cache Factory
@@ -188,15 +185,16 @@
 	 * @throws CacheBox.ListenerCreationException
 	 */
 	CacheFactory function registerListeners(){
-		variables.config.getListeners()
+		variables.config
+			.getListeners()
 			.each( function( item ){
 				// try to create it
-				try{
+				try {
 					// create it
 					var thisListener = createObject( "component", item.class );
 					// configure it
 					thisListener.configure( this, item.properties );
-				} catch( Any e ){
+				} catch ( Any e ) {
 					throw(
 						message = "Error creating listener: #item.toString()#",
 						detail  = "#e.message# #e.detail# #e.stackTrace#",
@@ -217,12 +215,7 @@
 	 * @config.doc_generic coldbox.system.cache.config.CacheBoxConfig
 	 */
 	function configure( required config ){
-		lock
-			name="#variables.lockName#"
-			type="exclusive"
-			timeout="30"
-			throwontimeout="true"
-		{
+		lock name="#variables.lockName#" type="exclusive" timeout="30" throwontimeout="true" {
 			// Store config object
 			variables.config = arguments.config;
 			// Validate configuration
@@ -231,7 +224,7 @@
 			variables.caches = {};
 
 			// Register Listeners if not using ColdBox
-			if( not isObject( variables.coldbox ) ){
+			if ( not isObject( variables.coldbox ) ) {
 				registerListeners();
 			}
 
@@ -244,22 +237,23 @@
 			);
 
 			// Register named caches
-			variables.config.getCaches()
+			variables.config
+				.getCaches()
 				.each( function( key, def ){
 					createCache(
 						name       = key,
 						provider   = def.provider,
 						properties = def.properties
 					);
-				});
+				} );
 
 			// Scope registrations
-			if( variables.config.getScopeRegistration().enabled ){
+			if ( variables.config.getScopeRegistration().enabled ) {
 				doScopeRegistration();
 			}
 
 			// Announce To Listeners
-			variables.eventManager.announce( "afterCacheFactoryConfiguration", { cacheFactory = this } );
+			variables.eventManager.announce( "afterCacheFactoryConfiguration", { cacheFactory : this } );
 		}
 	}
 
@@ -274,8 +268,8 @@
 	 * @return coldbox.system.cache.providers.ICacheProvider
 	 */
 	function getCache( required name ){
-		lock name="#variables.lockName#" type="readonly" timeout="20" throwontimeout="true"{
-			if( variables.caches.keyExists( arguments.name ) ){
+		lock name="#variables.lockName#" type="readonly" timeout="20" throwontimeout="true" {
+			if ( variables.caches.keyExists( arguments.name ) ) {
 				return variables.caches[ arguments.name ];
 			}
 			throw(
@@ -309,7 +303,7 @@
 		var defaultCacheConfig = variables.config.getDefaultCache();
 
 		// Check length
-		if( len( arguments.name ) eq 0 ){
+		if ( len( arguments.name ) eq 0 ) {
 			throw(
 				message = "Invalid Cache Name",
 				detail  = "The name you sent in is invalid as it was blank, please send in a name",
@@ -318,7 +312,7 @@
 		}
 
 		// Check it does not exist already
-		if( cacheExists( arguments.name ) ){
+		if ( cacheExists( arguments.name ) ) {
 			throw(
 				message = "Cache #arguments.name# already exists",
 				detail  = "Cannot register named cache as it already exists in the registry",
@@ -339,12 +333,12 @@
 	 */
 	CacheFactory function shutdown(){
 		// Log startup
-		if( variables.log.canDebug() ){
+		if ( variables.log.canDebug() ) {
 			variables.log.debug( "Shutdown of cache factory: #getFactoryID()# requested and started." );
 		}
 
 		// Notify Listeners
-		variables.eventManager.announce( "beforeCacheFactoryShutdown", { cacheFactory = this } );
+		variables.eventManager.announce( "beforeCacheFactoryShutdown", { cacheFactory : this } );
 
 		// safely iterate and shutdown caches
 		getCacheNames().each( function( item ){
@@ -352,21 +346,21 @@
 			var cache = getCache( item );
 
 			// Log it
-			if( variables.log.canDebug() ){
+			if ( variables.log.canDebug() ) {
 				variables.log.debug( "Shutting down cache: #item# on factoryID: #getFactoryID()#." );
 			}
 
-			//process listners
-			variables.eventManager.announce( "beforeCacheShutdown", { cache = cache } );
+			// process listeners
+			variables.eventManager.announce( "beforeCacheShutdown", { cache : cache } );
 
-			//Shutdown each cache
+			// Shutdown each cache
 			cache.shutdown();
 
-			//process listeners
-			variables.eventManager.announce( "afterCacheShutdown", { cache = cache } );
+			// process listeners
+			variables.eventManager.announce( "afterCacheShutdown", { cache : cache } );
 
 			// log
-			if( variables.log.canDebug() ){
+			if ( variables.log.canDebug() ) {
 				variables.log.debug( "Cache: #item# was shut down on factoryID: #getFactoryID()#." );
 			}
 		} );
@@ -378,18 +372,18 @@
 		removeFromScope();
 
 		// Shutdown LogBox and Executors if not in ColdBox Mode or WireBox mode
-		if( !isObject( variables.coldbox ) && !isObject( variables.wirebox ) ){
-			if( isObject( variables.logBox ) ) {
+		if ( !isObject( variables.coldbox ) && !isObject( variables.wirebox ) ) {
+			if ( isObject( variables.logBox ) ) {
 				variables.logBox.shutdown();
 			}
 			variables.asyncManager.shutdownAllExecutors( force = true );
 		}
-		
+
 		// Notify Listeners
-		variables.eventManager.announce( "afterCacheFactoryShutdown", { cacheFactory = this } );
+		variables.eventManager.announce( "afterCacheFactoryShutdown", { cacheFactory : this } );
 
 		// Log shutdown complete
-		if( variables.log.canDebug() ){
+		if ( variables.log.canDebug() ) {
 			variables.log.debug( "Shutdown of cache factory: #getFactoryID()# completed." );
 		}
 
@@ -402,14 +396,16 @@
 	 * @name The name of the cache to shutdown
 	 */
 	CacheFactory function shutdownCache( required name ){
-		var iData 		= {};
-		var cache 	   	= "";
-		var i 		   	= 1;
+		var iData = {};
+		var cache = "";
+		var i     = 1;
 
 		// Check if cache exists, else exit out
-		if( NOT cacheExists( arguments.name ) ){
-			if( variables.log.canWarn() ){
-				variables.log.warn( "Trying to shutdown #arguments.name#, but that cache does not exist, skipping." );
+		if ( NOT cacheExists( arguments.name ) ) {
+			if ( variables.log.canWarn() ) {
+				variables.log.warn(
+					"Trying to shutdown #arguments.name#, but that cache does not exist, skipping."
+				);
 			}
 			return this;
 		}
@@ -418,25 +414,29 @@
 		var cache = getCache( arguments.name );
 
 		// log it
-		if( variables.log.canDebug() ){
-			variables.log.debug( "Shutdown of cache: #arguments.name# requested and started on factoryID: #getFactoryID()#" );
+		if ( variables.log.canDebug() ) {
+			variables.log.debug(
+				"Shutdown of cache: #arguments.name# requested and started on factoryID: #getFactoryID()#"
+			);
 		}
 
 		// Notify Listeners
-		variables.eventManager.announce( "beforeCacheShutdown", { cache = cache } );
+		variables.eventManager.announce( "beforeCacheShutdown", { cache : cache } );
 
-		//Shutdown the cache
+		// Shutdown the cache
 		cache.shutdown();
 
-		//process listeners
-		variables.eventManager.announce( "afterCacheShutdown", { cache = cache } );
+		// process listeners
+		variables.eventManager.announce( "afterCacheShutdown", { cache : cache } );
 
 		// remove cache
 		removeCache( arguments.name );
 
 		// Log it
-		if( variables.log.canDebug() ){
-			variables.log.debug( "Cache: #arguments.name# was shut down and removed on factoryID: #getFactoryID()#." );
+		if ( variables.log.canDebug() ) {
+			variables.log.debug(
+				"Cache: #arguments.name# was shut down and removed on factoryID: #getFactoryID()#."
+			);
 		}
 
 		return this;
@@ -447,32 +447,33 @@
 	 */
 	CacheFactory function removeFromScope(){
 		var scopeInfo = variables.config.getScopeRegistration();
-		if( scopeInfo.enabled ){
-			new coldbox.system.core.collections.ScopeStorage()
-				.delete( scopeInfo.key, scopeInfo.scope );
+		if ( scopeInfo.enabled ) {
+			new coldbox.system.core.collections.ScopeStorage().delete( scopeInfo.key, scopeInfo.scope );
 		}
 		return this;
 	}
 
 	/**
-	 * Try to remove a named cache from this factory, returns Boolean if successfull or not
+	 * Try to remove a named cache from this factory, returns Boolean if successful or not
 	 *
 	 * @name The name of the cache to remove
 	 */
 	boolean function removeCache( required name ){
-		if( cacheExists( arguments.name ) ){
-			lock name="#variables.lockName#" type="exclusive" timeout="20" throwontimeout="true"{
-				if( cacheExists( arguments.name ) ){
-					//Log
-					if( variables.log.canDebug() ){
-						variables.log.debug( "Cache: #arguments.name# asked to be removed from factory: #getFactoryID()#" );
+		if ( cacheExists( arguments.name ) ) {
+			lock name="#variables.lockName#" type="exclusive" timeout="20" throwontimeout="true" {
+				if ( cacheExists( arguments.name ) ) {
+					// Log
+					if ( variables.log.canDebug() ) {
+						variables.log.debug(
+							"Cache: #arguments.name# asked to be removed from factory: #getFactoryID()#"
+						);
 					}
 
 					// Retrieve it
 					var cache = variables.caches[ arguments.name ];
 
 					// Notify listeners here
-					variables.eventManager.announce( "beforeCacheRemoval", { cache = cache } );
+					variables.eventManager.announce( "beforeCacheRemoval", { cache : cache } );
 
 					// process shutdown
 					cache.shutdown();
@@ -481,10 +482,10 @@
 					structDelete( variables.caches, arguments.name );
 
 					// Announce it
-					variables.eventManager.announce( "afterCacheRemoval", { cache = arguments.name } );
+					variables.eventManager.announce( "afterCacheRemoval", { cache : arguments.name } );
 
 					// Log it
-					if( variables.log.canDebug() ){
+					if ( variables.log.canDebug() ) {
 						variables.log.debug( "Cache: #arguments.name# removed from factory: #getFactoryID()#" );
 					}
 
@@ -493,8 +494,10 @@
 			}
 		}
 
-		if( variables.log.canDebug() ){
-			variables.log.debug( "Cache: #arguments.name# not removed because it does not exist in registered caches: #arrayToList( getCacheNames() )#. FactoryID: #getFactoryID()#" );
+		if ( variables.log.canDebug() ) {
+			variables.log.debug(
+				"Cache: #arguments.name# not removed because it does not exist in registered caches: #arrayToList( getCacheNames() )#. FactoryID: #getFactoryID()#"
+			);
 		}
 
 		return false;
@@ -504,7 +507,7 @@
 	 * Remove all the registered caches in this factory, this triggers individual cache shutdowns
 	 */
 	CacheFactory function removeAll(){
-		if( variables.log.canDebug() ){
+		if ( variables.log.canDebug() ) {
 			variables.log.debug( "Removal of all caches requested on factoryID: #getFactoryID()#" );
 		}
 
@@ -513,7 +516,7 @@
 		} );
 
 
-		if( variables.log.canDebug() ){
+		if ( variables.log.canDebug() ) {
 			variables.log.debug( "All caches removed." );
 		}
 
@@ -524,7 +527,7 @@
 	 * A nice way to call reap on all registered caches
 	 */
 	CacheFactory function reapAll(){
-		if( variables.log.canDebug() ){
+		if ( variables.log.canDebug() ) {
 			variables.log.debug( "Executing reap on factoryID: #getFactoryID()#" );
 		}
 
@@ -539,7 +542,7 @@
 	 * Check if the passed in named cache is already registered in this factory or not
 	 */
 	boolean function cacheExists( required name ){
-		lock name="#variables.lockName#" type="readonly" timeout="20" throwontimeout="true"{
+		lock name="#variables.lockName#" type="readonly" timeout="20" throwontimeout="true" {
 			return structKeyExists( variables.caches, arguments.name );
 		}
 	}
@@ -554,20 +557,20 @@
 	 */
 	CacheFactory function replaceCache( required cache, required decoratedCache ){
 		// determine cache name
-		if( isObject( arguments.cache ) ){
+		if ( isObject( arguments.cache ) ) {
 			var name = arguments.cache.getName();
 		} else {
 			var name = arguments.cache;
 		}
 
-		lock name="#variables.lockName#" type="exclusive" timeout="20" throwontimeout="true"{
+		lock name="#variables.lockName#" type="exclusive" timeout="20" throwontimeout="true" {
 			// Announce to listeners
 			var iData = {
-				oldCache = variables.caches[ name ],
-				newCache = arguments.decoratedCache
+				oldCache : variables.caches[ name ],
+				newCache : arguments.decoratedCache
 			};
 
-			variables.eventManager.announce( "beforeCacheReplacement", iData	);
+			variables.eventManager.announce( "beforeCacheReplacement", iData );
 
 			// remove old Cache
 			structDelete( variables.caches, name );
@@ -576,8 +579,10 @@
 			variables.caches[ name ] = arguments.decoratedCache;
 
 			// debugging
-			if( variables.log.canDebug() ){
-				variables.log.debug( "Cache #name# replaced with decorated cache: #getMetadata( arguments.decoratedCache ).name# on factoryID: #getFactoryID()#" );
+			if ( variables.log.canDebug() ) {
+				variables.log.debug(
+					"Cache #name# replaced with decorated cache: #getMetadata( arguments.decoratedCache ).name# on factoryID: #getFactoryID()#"
+				);
 			}
 		}
 
@@ -588,7 +593,7 @@
 	 * Clears all the elements in all the registered caches without de-registrations
 	 */
 	CacheFactory function clearAll(){
-		if( variables.log.canDebug() ){
+		if ( variables.log.canDebug() ) {
 			variables.log.debug( "Clearing all registered caches of their content on factoryID: #getFactoryID()#" );
 		}
 
@@ -603,7 +608,7 @@
 	 * Expires all the elements in all the registered caches without de-registrations
 	 */
 	CacheFactory function expireAll(){
-		if( variables.log.canDebug() ){
+		if ( variables.log.canDebug() ) {
 			variables.log.debug( "Expiring all registered caches of their content on factoryID: #getFactoryID()#" );
 		}
 
@@ -618,7 +623,7 @@
 	 * Get the array of caches registered with this factory
 	 */
 	array function getCacheNames(){
-		lock name="#variables.lockName#" type="readonly" timeout="20" throwontimeout="true"{
+		lock name="#variables.lockName#" type="readonly" timeout="20" throwontimeout="true" {
 			return structKeyArray( variables.caches );
 		}
 	}
@@ -655,7 +660,11 @@
 	 *
 	 * @return coldbox.system.cache.providers.ICacheProvider
 	 */
-	function createCache( required name, required provider, struct properties={} ){
+	function createCache(
+		required name,
+		required provider,
+		struct properties = {}
+	){
 		// Create Cache
 		var oCache = createObject( "component", arguments.provider ).init();
 		// Register Name
@@ -675,8 +684,7 @@
 	 */
 	private CacheFactory function doScopeRegistration(){
 		var scopeInfo = variables.config.getScopeRegistration();
-		new coldbox.system.core.collections.ScopeStorage()
-			.put( scopeInfo.key, this, scopeInfo.scope );
+		new coldbox.system.core.collections.ScopeStorage().put( scopeInfo.key, this, scopeInfo.scope );
 		return this;
 	}
 
@@ -689,28 +697,25 @@
 	 * @throws CacheFactory.CacheExistsException
 	 */
 	private CacheFactory function registerCache( required cache ){
-		var name	= arguments.cache.getName();
-    	var oCache 	= arguments.cache;
+		var name   = arguments.cache.getName();
+		var oCache = arguments.cache;
 
-		if( variables.caches.keyExists( name ) ){
-			throw(
-				message = "Cache #name# already exists!",
-				type 	= "CacheFactory.CacheExistsException"
-			);
+		if ( variables.caches.keyExists( name ) ) {
+			throw( message = "Cache #name# already exists!", type = "CacheFactory.CacheExistsException" );
 		}
 
 		// Verify Registration
-		if( !variables.caches.keyExists( name ) ){
-			lock name="#variables.lockName#" type="exclusive" timeout="20" throwontimeout="true"{
-				if( !variables.caches.keyExists( name ) ){
+		if ( !variables.caches.keyExists( name ) ) {
+			lock name="#variables.lockName#" type="exclusive" timeout="20" throwontimeout="true" {
+				if ( !variables.caches.keyExists( name ) ) {
 					// Link to this CacheFactory
 					oCache.setCacheFactory( this );
 					// Link ColdBox if using it
-					if( isObject( variables.coldbox ) AND structKeyExists( oCache, "setColdBox" ) ){
+					if ( isObject( variables.coldbox ) AND structKeyExists( oCache, "setColdBox" ) ) {
 						oCache.setColdBox( variables.coldbox );
 					}
 					// Link WireBox if using it
-					if( isObject( variables.wirebox ) AND structKeyExists( oCache, "setWireBox" ) ){
+					if ( isObject( variables.wirebox ) AND structKeyExists( oCache, "setWireBox" ) ) {
 						oCache.setWireBox( variables.wirebox );
 					}
 					// Link Event Manager
@@ -720,7 +725,7 @@
 					// Store it
 					variables.caches[ name ] = oCache;
 					// Announce new cache registration now
-					variables.eventManager.announce( "afterCacheRegistration", { cache = oCache } );
+					variables.eventManager.announce( "afterCacheRegistration", { cache : oCache } );
 				}
 			}
 		}
@@ -735,7 +740,7 @@
 	 */
 	private CacheFactory function configureLogBox( required configPath ){
 		// Create config object
-		var oConfig = new coldbox.system.logging.config.LogBoxConfig( CFCConfigPath = arguments.configPath );
+		var oConfig      = new coldbox.system.logging.config.LogBoxConfig( CFCConfigPath = arguments.configPath );
 		// Create LogBox standalone and store it
 		variables.logBox = new coldbox.system.logging.LogBox( oConfig );
 		return this;
@@ -759,4 +764,4 @@
 		return new coldbox.system.core.util.Util();
 	}
 
- }
+}

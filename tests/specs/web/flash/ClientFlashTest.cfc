@@ -1,4 +1,4 @@
-﻿component extends="tests.resources.BaseIntegrationTest"{
+﻿component extends="tests.resources.BaseIntegrationTest" {
 
 	this.loadColdBox = false;
 
@@ -15,21 +15,9 @@
 
 		// test scope
 		testscope = {
-			test : {
-				content   : "luis",
-				autoPurge : true,
-				keep      : true
-			},
-			date : {
-				content   : now(),
-				autoPurge : true,
-				keep      : true
-			},
-			obj : {
-				content   : obj,
-				autoPurge : true,
-				keep      : true
-			}
+			test : { content : "luis", autoPurge : true, keep : true },
+			date : { content : now(), autoPurge : true, keep : true },
+			obj  : { content : obj, autoPurge : true, keep : true }
 		};
 	}
 	function teardown(){

@@ -9,7 +9,7 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 		// all your suites go here.
 		describe( "TimeUnit", function(){
 			beforeEach( function( currentSpec ){
-				timeUnit = new coldbox.system.async.util.TimeUnit();
+				timeUnit = new coldbox.system.async.time.TimeUnit();
 			} );
 
 			it( "can be created", function(){

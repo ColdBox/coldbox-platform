@@ -6,7 +6,7 @@
  * will have to implement the IColdboxApplicationCache in order to retrieve the right
  * prefix keys.
  */
-component accessors="true"{
+component accessors="true" {
 
 	// Connected Provider
 	property name="cacheProvider";
@@ -18,6 +18,7 @@ component accessors="true"{
 	 */
 	function init( required cacheProvider ){
 		variables.cacheProvider = arguments.cacheProvider;
+		variables.jTreeMap      = createObject( "java", "java.util.TreeMap" );
 		return this;
 	}
 
@@ -25,7 +26,8 @@ component accessors="true"{
 	 * Build an app link via the request context object
 	 */
 	string function buildAppLink(){
-		return variables.cacheProvider.getColdBox()
+		return variables.cacheProvider
+			.getColdBox()
 			.getRequestService()
 			.getContext()
 			.getSesBaseUrl();
@@ -37,24 +39,32 @@ component accessors="true"{
 	 * @event A request context object
 	 */
 	string function getUniqueHash( required event ){
-		var incomingHash = hash(
-			arguments.event.getCollection().filter( function( key, value ){
+		var rcTarget = arguments.event
+			.getCollection()
+			.filter( function( key, value ){
 				// Remove event, not needed for hashing purposes
 				return ( key != "event" );
-			} ).toString()
-		);
-		var targetMixer	= {
+			} );
+
+		// systemOutput( "=====> uniquehash-rcTarget: #variables.jTreeMap.init( rcTarget ).toString()#", true );
+		// systemOutput( "=====> uniquehash-rcTargetHash: #hash( variables.jTreeMap.init( rcTarget ).toString() )#", true );
+
+		var targetMixer = {
 			// Get the original incoming context hash
-			"incomingHash" = incomingHash,
+			"incomingHash" : hash( variables.jTreeMap.init( rcTarget ).toString() ),
 			// Multi-Host support
-			"cgihost"      = arguments.event.getSesBaseUrl()
+			"cgihost"      : buildAppLink()
 		};
 
 		// Incorporate Routed Structs
-		structAppend( targetMixer, arguments.event.getRoutedStruct(), true );
+		structAppend(
+			targetMixer,
+			arguments.event.getRoutedStruct(),
+			true
+		);
 
 		// Return unique identifier
-		return hash( targetMixer.toString() );
+		return hash( targetmixer.toString() );
 	}
 
 	/**
@@ -71,13 +81,18 @@ component accessors="true"{
 				virtualRC[ item.getToken( 1, "=" ).trim() ] = urlDecode( item.getToken( 2, "=" ).trim() );
 			} );
 
-		//writeDump( var = "==> Hash Args Struct: #virtualRC.toString()#", output="console" );
+		// systemOutput( "=====> buildHash-virtualRC: #variables.jTreeMap.init( virtualRC ).toString()#", true );
+		// systemOutput( "=====> buildHash-virtualRCHash: #hash( variables.jTreeMap.init( virtualRC ).toString() )#", true );
+
 		var myStruct = {
 			// Get the original incoming context hash according to incoming arguments
-			"incomingHash" = hash( virtualRC.toString() ),
+			"incomingHash" : hash( variables.jTreeMap.init( virtualRC ).toString() ),
 			// Multi-Host support
-			"cgihost"      = buildAppLink()
+			"cgihost"      : buildAppLink()
 		};
+
+		// systemOutput( "=====> buildHash-mixer: #myStruct.toString()#", true );
+		// systemOutput( "=====> buildHash-mixerhash: #hash( myStruct.toString() )#", true );
 
 		// return hash from cache key struct
 		return hash( myStruct.toString() );
@@ -90,8 +105,12 @@ component accessors="true"{
 	 * @targetEvent The targeted ColdBox event executed
 	 * @targetContext The targeted request context object
 	 */
-	string function buildEventKey( required keySuffix, required targetEvent, required targetContext ){
-		return buildBasicCacheKey( argumentCollection=arguments ) & getUniqueHash( arguments.targetContext );
+	string function buildEventKey(
+		required keySuffix,
+		required targetEvent,
+		required targetContext
+	){
+		return buildBasicCacheKey( argumentCollection = arguments ) & getUniqueHash( arguments.targetContext );
 	}
 
 	/**
@@ -101,14 +120,18 @@ component accessors="true"{
 	 * @targetEvent The targeted ColdBox event executed
 	 * @targetArgs A query string based argument collection like a query string
 	 */
-	string function buildEventKeyNoContext( required keySuffix, required targetEvent, required targetArgs ){
-		return buildBasicCacheKey( argumentCollection=arguments ) & buildHash( arguments.targetArgs );
+	string function buildEventKeyNoContext(
+		required keySuffix,
+		required targetEvent,
+		required targetArgs
+	){
+		return buildBasicCacheKey( argumentCollection = arguments ) & buildHash( arguments.targetArgs );
 	}
 
 	/**
 	 * Builds a basic cache key without the hash component
 	 * @keySuffix The key suffix used
-	 * @targetEvent The targetged ColdBox event string
+	 * @targetEvent The targeted ColdBox event string
 	 */
 	string function buildBasicCacheKey( required keySuffix, required targetEvent ){
 		return variables.cacheProvider.getEventCacheKeyPrefix() & arguments.targetEvent & "-" & arguments.keySuffix & "-";

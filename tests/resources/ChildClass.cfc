@@ -1,6 +1,6 @@
 component {
 
-	variables.data = "";
+	variables.data = "Child Data";
 
 	function getData(){
 		// From virtually inherited parent

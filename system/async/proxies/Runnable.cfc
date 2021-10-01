@@ -29,7 +29,6 @@ component extends="BaseProxy" {
 
 	function run(){
 		loadContext();
-
 		try {
 			lock name="#getConcurrentEngineLockName()#" type="exclusive" timeout="60" {
 				if ( isClosure( variables.target ) || isCustomFunction( variables.target ) ) {

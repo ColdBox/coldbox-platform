@@ -1,15 +1,12 @@
-﻿component extends = "AbstractPolicyTest"{
+﻿component extends="AbstractPolicyTest" {
+
 	function setup(){
 		super.setup();
 
 		config = { evictCount : 2 };
 
 		pool = {
-			obj1 : {
-				created   : now(),
-				timeout   : 5,
-				isExpired : false
-			},
+			obj1 : { created : now(), timeout : 5, isExpired : false },
 			obj2 : {
 				created   : dateAdd( "n", -7, now() ),
 				timeout   : 10,
@@ -37,4 +34,5 @@
 		assertEquals( 2, arrayLen( mockCM.$callLog().clear ) );
 		assertEquals( "obj2", mockCM.$callLog().clear[ 1 ][ 1 ] );
 	}
+
 }

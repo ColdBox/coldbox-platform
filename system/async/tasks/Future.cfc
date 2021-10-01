@@ -39,7 +39,7 @@ component accessors="true" {
 	property name="futureTimeout" type="struct";
 
 	// Prepare the static time unit class
-	this.$timeUnit = new util.TimeUnit();
+	this.$timeUnit = new coldbox.system.async.time.TimeUnit();
 
 	/**
 	 * Construct a new ColdBox Future backed by a Java Completable Future
@@ -55,22 +55,19 @@ component accessors="true" {
 		boolean debug          = false,
 		boolean loadAppContext = true
 	){
-		// Preapre the completable future
+		// Prepare the completable future
 		variables.native         = createObject( "java", "java.util.concurrent.CompletableFuture" );
 		variables.debug          = arguments.debug;
 		variables.loadAppContext = arguments.loadAppContext;
 		variables.executor       = ( isNull( arguments.executor ) ? "" : arguments.executor );
 
 		// Are we using a Java or CFML executor?
-		if( isObject( variables.executor ) && structKeyExists( variables.executor, "getNative" ) ){
+		if ( isObject( variables.executor ) && structKeyExists( variables.executor, "getNative" ) ) {
 			variables.executor = variables.executor.getNative();
 		}
 
 		// Prepare initial timeouts
-		variables.futureTimeout  = {
-			"timeout"  : 0,
-			"timeUnit" : "milliseconds"
-		};
+		variables.futureTimeout = { "timeout" : 0, "timeUnit" : "milliseconds" };
 
 		// Default the future to be empty
 		variables.isEmptyFuture = true;
@@ -118,10 +115,14 @@ component accessors="true" {
 	 * @timeout how long to wait before completing normally with the given value, in units of unit
 	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is milliseconds
 	 */
-	Future function completeOnTimeout( required value, required timeout, timeUnit = "milliseconds" ){
+	Future function completeOnTimeout(
+		required value,
+		required timeout,
+		timeUnit = "milliseconds"
+	){
 		variables.native = variables.native.completeOnTimeout(
 			arguments.value,
-			javaCast( "long", arguments.timeout ),
+			javacast( "long", arguments.timeout ),
 			this.$timeUnit.get( arguments.timeUnit )
 		);
 		return this;
@@ -135,7 +136,7 @@ component accessors="true" {
 	 */
 	Future function orTimeout( required timeout, timeUnit = "milliseconds" ){
 		variables.native = variables.native.orTimeout(
-			javaCast( "long", arguments.timeout ),
+			javacast( "long", arguments.timeout ),
 			this.$timeUnit.get( arguments.timeUnit )
 		);
 		return this;
@@ -174,7 +175,7 @@ component accessors="true" {
 	 * @defaultValue
 	 */
 	Future function completeWithException(){
-		return completeExceptionally( argumentCollection=arguments );
+		return completeExceptionally( argumentCollection = arguments );
 	}
 
 	/**
@@ -192,11 +193,11 @@ component accessors="true" {
 	any function join( defaultValue ){
 		var results = variables.native.join();
 
-		if( !isNull( results ) ){
+		if ( !isNull( results ) ) {
 			return results;
 		}
 
-		if( isNull( results ) && !isNull( arguments.defaultValue ) ){
+		if ( isNull( results ) && !isNull( arguments.defaultValue ) ) {
 			return arguments.defaultValue;
 		}
 	}
@@ -219,12 +220,12 @@ component accessors="true" {
 	){
 		// Do we have a timeout?
 		if ( arguments.timeout != 0 ) {
-			try{
+			try {
 				var results = variables.native.get(
 					javacast( "long", arguments.timeout ),
 					this.$timeUnit.get( arguments.timeUnit )
 				);
-			} catch( "java.util.concurrent.TimeoutException" e ){
+			} catch ( "java.util.concurrent.TimeoutException" e ) {
 				// If we have a result, return it, else rethrow
 				if ( !isNull( arguments.defaultValue ) ) {
 					return arguments.defaultValue;
@@ -288,7 +289,7 @@ component accessors="true" {
 	 * in the future pipeline.  Whatever this function returns, will be used for the next
 	 * registered functions in the pipeline.
 	 *
-	 * The function takes in the exception that ocurred and can return a new value as well:
+	 * The function takes in the exception that occurred and can return a new value as well:
 	 *
 	 * <pre>
 	 * ( exception ) => newValue;
@@ -306,7 +307,7 @@ component accessors="true" {
 	Future function exceptionally( required target ){
 		variables.native = variables.native.exceptionally(
 			createDynamicProxy(
-				new proxies.Function(
+				new coldbox.system.async.proxies.Function(
 					arguments.target,
 					variables.debug,
 					variables.loadAppContext
@@ -342,7 +343,7 @@ component accessors="true" {
 		any executor = variables.executor
 	){
 		var jSupplier = createDynamicProxy(
-			new proxies.Supplier(
+			new coldbox.system.async.proxies.Supplier(
 				arguments.supplier,
 				arguments.method,
 				variables.debug,
@@ -410,7 +411,7 @@ component accessors="true" {
 	 */
 	Future function handle( required action ){
 		var biFunction = createDynamicProxy(
-			new proxies.BiFunction(
+			new coldbox.system.async.proxies.BiFunction(
 				arguments.action,
 				variables.debug,
 				variables.loadAppContext
@@ -448,7 +449,7 @@ component accessors="true" {
 	 */
 	Future function handleAsync( required action, executor ){
 		var biFunction = createDynamicProxy(
-			new proxies.BiFunction(
+			new coldbox.system.async.proxies.BiFunction(
 				arguments.action,
 				variables.debug,
 				variables.loadAppContext
@@ -456,7 +457,7 @@ component accessors="true" {
 			[ "java.util.function.BiFunction" ]
 		);
 
-		if( !isNull( arguments.executor ) ){
+		if ( !isNull( arguments.executor ) ) {
 			variables.native = variables.native.handleAsync( biFunction, arguments.executor );
 		} else {
 			variables.native = variables.native.handleAsync( biFunction );
@@ -485,7 +486,7 @@ component accessors="true" {
 	 */
 	Future function whenComplete( required action ){
 		var biConsumer = createDynamicProxy(
-			new proxies.BiConsumer(
+			new coldbox.system.async.proxies.BiConsumer(
 				arguments.action,
 				variables.debug,
 				variables.loadAppContext
@@ -522,7 +523,7 @@ component accessors="true" {
 	 */
 	Future function whenCompleteAsync( required action, executor ){
 		var biConsumer = createDynamicProxy(
-			new proxies.BiConsumer(
+			new coldbox.system.async.proxies.BiConsumer(
 				arguments.action,
 				variables.debug,
 				variables.loadAppContext
@@ -530,7 +531,7 @@ component accessors="true" {
 			[ "java.util.function.BiConsumer" ]
 		);
 
-		if( !isNull( arguments.executor ) ){
+		if ( !isNull( arguments.executor ) ) {
 			variables.native = variables.native.whenCompleteAsync( biConsumer, arguments.executor );
 		} else {
 			variables.native = variables.native.whenCompleteAsync( biConsumer );
@@ -559,7 +560,7 @@ component accessors="true" {
 	 */
 	Future function then( required target ){
 		var apply = createDynamicProxy(
-			new proxies.Function(
+			new coldbox.system.async.proxies.Function(
 				arguments.target,
 				variables.debug,
 				variables.loadAppContext
@@ -567,7 +568,7 @@ component accessors="true" {
 			[ "java.util.function.Function" ]
 		);
 
-		if( variables.isEmptyFuture ){
+		if ( variables.isEmptyFuture ) {
 			variables.native.thenApply( apply );
 		} else {
 			variables.native = variables.native.thenApply( apply );
@@ -606,7 +607,7 @@ component accessors="true" {
 	 */
 	Future function thenAsync( required target, executor ){
 		var apply = createDynamicProxy(
-			new proxies.Function(
+			new coldbox.system.async.proxies.Function(
 				arguments.target,
 				variables.debug,
 				variables.loadAppContext
@@ -649,7 +650,7 @@ component accessors="true" {
 	 */
 	Future function thenRun( required target ){
 		var fConsumer = createDynamicProxy(
-			new proxies.Consumer(
+			new coldbox.system.async.proxies.Consumer(
 				arguments.target,
 				variables.debug,
 				variables.loadAppContext
@@ -666,7 +667,7 @@ component accessors="true" {
 	 * Alias to thenRun()
 	 */
 	Future function thenAccept(){
-		return thenRun( argumentCollection=arguments );
+		return thenRun( argumentCollection = arguments );
 	}
 
 	/**
@@ -691,7 +692,7 @@ component accessors="true" {
 	 */
 	Future function thenRunAsync( required target, executor ){
 		var fConsumer = createDynamicProxy(
-			new proxies.Consumer(
+			new coldbox.system.async.proxies.Consumer(
 				arguments.target,
 				variables.debug,
 				variables.loadAppContext
@@ -699,7 +700,7 @@ component accessors="true" {
 			[ "java.util.function.Consumer" ]
 		);
 
-		if( !isNull( arguments.executor ) ){
+		if ( !isNull( arguments.executor ) ) {
 			variables.native.thenAcceptAsync( fConsumer, arguments.executor );
 		} else {
 			variables.native.thenAcceptAsync( fConsumer );
@@ -712,7 +713,7 @@ component accessors="true" {
 	 * Alias to thenRunAsync()
 	 */
 	Future function thenAcceptAsync(){
-		return thenRunAsync( argumentCollection=arguments );
+		return thenRunAsync( argumentCollection = arguments );
 	}
 
 	/**
@@ -729,7 +730,7 @@ component accessors="true" {
 	Future function thenCompose( required fn ){
 		variables.native = variables.native.thenCompose(
 			createDynamicProxy(
-				new proxies.FutureFunction(
+				new coldbox.system.async.proxies.FutureFunction(
 					arguments.fn,
 					variables.debug,
 					variables.loadAppContext
@@ -751,7 +752,7 @@ component accessors="true" {
 		variables.native = variables.native.thenCombine(
 			arguments.future.getNative(),
 			createDynamicProxy(
-				new proxies.BiFunction(
+				new coldbox.system.async.proxies.BiFunction(
 					arguments.fn,
 					variables.debug,
 					variables.loadAppContext
@@ -787,11 +788,10 @@ component accessors="true" {
 		return this.thenAsync( function(){
 			// return back the completed array results
 			return jFutures.map( function( jFuture ){
-				//writeDump( var=arguments.jFuture.get(), output="console" );
+				// writeDump( var=arguments.jFuture.get(), output="console" );
 				return arguments.jFuture.get();
 			} );
 		} );
-
 	}
 
 	/**
@@ -812,20 +812,20 @@ component accessors="true" {
 	 * @timeout The timeout to use when waiting for each item to be processed
 	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is milliseconds
 	 *
-	 * @throws UnsuportedCollectionException - When something other than an array or struct is passed as items
+	 * @throws UnsupportedCollectionException - When something other than an array or struct is passed as items
 	 * @return An array or struct with the items processed in parallel
 	 */
 	any function allApply( items, fn, executor, timeout, timeUnit ){
-		var incomingExecutor 	= arguments.executor ?: "";
+		var incomingExecutor = arguments.executor ?: "";
 		// Boolean indicator to avoid `isObject()` calls on iterations
-		var usingExecutor 		= isObject( incomingExecutor );
+		var usingExecutor    = isObject( incomingExecutor );
 		// Cast it here, so it only happens once
-		var currentTimeout 		= javacast( "long", arguments.timeout ?: variables.futureTimeout.timeout );
-		var currentTimeunit 	= arguments.timeUnit ?: variables.futureTimeout.timeUnit;
+		var currentTimeout   = javacast( "long", arguments.timeout ?: variables.futureTimeout.timeout );
+		var currentTimeunit  = arguments.timeUnit ?: variables.futureTimeout.timeUnit;
 
 		// Create the function proxy once instead of many times during iterations
 		var jApply = createDynamicProxy(
-			new proxies.Function(
+			new coldbox.system.async.proxies.Function(
 				arguments.fn,
 				variables.debug,
 				variables.loadAppContext
@@ -834,7 +834,7 @@ component accessors="true" {
 		);
 
 		// Array Processing
-		if( isArray( arguments.items ) ){
+		if ( isArray( arguments.items ) ) {
 			// Return the array as a collection of processed values
 			return arguments.items
 				// Startup the tasks
@@ -843,63 +843,45 @@ component accessors="true" {
 					var f = new Future( arguments.thisItem );
 
 					// Execute it on a custom executor or core
-					if( usingExecutor ){
-						return f.setNative(
-							f.getNative().thenApplyAsync( jApply, incomingExecutor )
-						);
+					if ( usingExecutor ) {
+						return f.setNative( f.getNative().thenApplyAsync( jApply, incomingExecutor ) );
 					}
 
 					// Core Executor
-					return f.setNative(
-						f.getNative().thenApplyAsync( jApply )
-					);
+					return f.setNative( f.getNative().thenApplyAsync( jApply ) );
 				} )
 				// Collect the tasks
 				.map( function( thisFuture ){
-					return arguments.thisFuture.get(
-						currentTimeout,
-						currentTimeunit
-					);
+					return arguments.thisFuture.get( currentTimeout, currentTimeunit );
 				} );
 		}
 		// Struct Processing
-		else if( isStruct( arguments.items ) ){
+		else if ( isStruct( arguments.items ) ) {
 			return arguments.items
 				// Startup the tasks
 				.map( function( key, value ){
 					// Create a new completed future
-					var f = new Future( {
-						"key" 	: arguments.key,
-						"value" : arguments.value
-					} );
+					var f = new Future( { "key" : arguments.key, "value" : arguments.value } );
 
 					// Execute it on a custom executor or core
-					if( usingExecutor ){
-						return f.setNative(
-							f.getNative().thenApplyAsync( jApply, incomingExecutor )
-						);
+					if ( usingExecutor ) {
+						return f.setNative( f.getNative().thenApplyAsync( jApply, incomingExecutor ) );
 					}
 
 					// Core Executor
-					return f.setNative(
-						f.getNative().thenApplyAsync( jApply )
-					);
+					return f.setNative( f.getNative().thenApplyAsync( jApply ) );
 				} )
 				// Collect the tasks
 				.map( function( key, thisFuture ){
-					return arguments.thisFuture.get(
-						currentTimeout,
-						currentTimeunit
-					);
+					return arguments.thisFuture.get( currentTimeout, currentTimeunit );
 				} );
-		} else{
+		} else {
 			throw(
-				message : "The collection type passed is not yet supported!",
-				type : "UnsuportedCollectionException",
+				message: "The collection type passed is not yet supported!",
+				type   : "UnsupportedCollectionException",
 				detail : getMetadata( arguments.items )
 			);
 		}
-
 	}
 
 	/**
@@ -948,23 +930,20 @@ component accessors="true" {
 		var target = arguments;
 
 		// Is the first element an array? Then use that as the builder for workloads
-		if( !isNull( arguments[ 1 ] ) && isArray( arguments[ 1 ] ) ){
+		if ( !isNull( arguments[ 1 ] ) && isArray( arguments[ 1 ] ) ) {
 			target = arguments[ 1 ];
 		}
 
 		// I have to use arrayMap() if not lucee does not use array notation
 		// but struct notation and order get's lost
-		return arrayMap(
-			target,
-			function( future ){
-				// Is this a closure/lambda/udf? Then inflate to a future
-				if ( isClosure( arguments.future ) || isCustomFunction( arguments.future ) ) {
-					return new Future().run( arguments.future );
-				}
-				// Return it
-				return arguments.future;
+		return arrayMap( target, function( future ){
+			// Is this a closure/lambda/udf? Then inflate to a future
+			if ( isClosure( arguments.future ) || isCustomFunction( arguments.future ) ) {
+				return new Future().run( arguments.future );
 			}
-		).reduce( function( results, future ){
+			// Return it
+			return arguments.future;
+		} ).reduce( function( results, future ){
 			// Now process it
 			results.append( arguments.future.getNative() );
 			return results;

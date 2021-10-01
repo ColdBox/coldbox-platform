@@ -7,7 +7,7 @@
  * This is a utility object that helps object stores keep their elements indexed
  * and stored nicely.  It is also a nice way to give back metadata results.
  */
-component extends="coldbox.system.cache.store.indexers.MetadataIndexer" accessors="true"{
+component extends="coldbox.system.cache.store.indexers.MetadataIndexer" accessors="true" {
 
 	/**
 	 * The SQL Type: Defaults to MySQL
@@ -31,13 +31,20 @@ component extends="coldbox.system.cache.store.indexers.MetadataIndexer" accessor
 	 * @config JDBC Configuration structure
 	 * @store The associated storage
 	 */
-	function init( required fields, required struct config, required store ){
-
+	function init(
+		required fields,
+		required struct config,
+		required store
+	){
 		// Super init
 		super.init( arguments.fields );
 
 		// Get db data
-		cfdbinfo( type="version", datasource="#arguments.config.dsn#", name="local.DBData" );
+		cfdbinfo(
+			type       = "version",
+			datasource = "#arguments.config.dsn#",
+			name       = "local.DBData"
+		);
 
 		// store db sql compatibility type: used mostly for pagination
 		variables.sqlType = ( findNoCase( "Microsoft SQL", DBData.database_productName ) ? "MSSQL" : "MySQL" );
@@ -65,9 +72,9 @@ component extends="coldbox.system.cache.store.indexers.MetadataIndexer" accessor
 			 WHERE id = ?",
 			[ variables.store.getNormalizedID( arguments.objectKey ) ],
 			{
-				datasource 	: variables.config.dsn,
-				username 	: variables.config.dsnUsername,
-				password 	: variables.config.dsnPassword
+				datasource : variables.config.dsn,
+				username   : variables.config.dsnUsername,
+				password   : variables.config.dsnPassword
 			}
 		).recordCount eq 1;
 	}
@@ -81,7 +88,7 @@ component extends="coldbox.system.cache.store.indexers.MetadataIndexer" accessor
 		// MySQL Default
 		var sql = "SELECT #variables.fields# FROM #variables.config.table# ORDER BY objectKey LIMIT ?";
 		// MSSQL
-		if( variables.sqlType == "MSSQL" ){
+		if ( variables.sqlType == "MSSQL" ) {
 			sql = "SELECT TOP ? #variables.fields# FROM #variables.config.table# ORDER BY objectKey";
 		}
 
@@ -89,19 +96,19 @@ component extends="coldbox.system.cache.store.indexers.MetadataIndexer" accessor
 			sql,
 			[ arguments.max ],
 			{
-				datasource 	: variables.config.dsn,
-				username 	: variables.config.dsnUsername,
-				password 	: variables.config.dsnPassword
+				datasource : variables.config.dsn,
+				username   : variables.config.dsnUsername,
+				password   : variables.config.dsnPassword
 			}
 		).each( function( row ){
 			results[ row.objectKey ] = {
-				hits              	= row.hits,
-				timeout           	= row.timeout,
-				lastAccessTimeout 	= row.lastAccessTimeout,
-				created           	= row.created,
-				LastAccessed      	= row.lastAccessed,
-				isExpired         	= row.isExpired,
-				isSimple         	= row.isSimple
+				hits              : row.hits,
+				timeout           : row.timeout,
+				lastAccessTimeout : row.lastAccessTimeout,
+				created           : row.created,
+				LastAccessed      : row.lastAccessed,
+				isExpired         : row.isExpired,
+				isSimple          : row.isSimple
 			};
 		} );
 
@@ -120,9 +127,9 @@ component extends="coldbox.system.cache.store.indexers.MetadataIndexer" accessor
 			 WHERE id = ?",
 			[ variables.store.getNormalizedID( arguments.objectKey ) ],
 			{
-				datasource 	: variables.config.dsn,
-				username 	: variables.config.dsnUsername,
-				password 	: variables.config.dsnPassword
+				datasource : variables.config.dsn,
+				username   : variables.config.dsnUsername,
+				password   : variables.config.dsnPassword
 			}
 		);
 
@@ -139,31 +146,35 @@ component extends="coldbox.system.cache.store.indexers.MetadataIndexer" accessor
 	 * @property The metadata property to get
 	 * @defaultValue The default value if property doesn't exist
 	 */
-	function getObjectMetadataProperty( required objectKey, required property, defaultValue ){
+	function getObjectMetadataProperty(
+		required objectKey,
+		required property,
+		defaultValue
+	){
 		var metadata = queryExecute(
 			"SELECT #variables.fields#
 			  FROM #variables.config.table#
 			 WHERE id = ?",
 			[ variables.store.getNormalizedID( arguments.objectKey ) ],
 			{
-				datasource 	: variables.config.dsn,
-				username 	: variables.config.dsnUsername,
-				password 	: variables.config.dsnPassword
+				datasource : variables.config.dsn,
+				username   : variables.config.dsnUsername,
+				password   : variables.config.dsnPassword
 			}
 		);
 
-		if( structKeyExists( metadata, arguments.property ) ){
+		if ( structKeyExists( metadata, arguments.property ) ) {
 			return metadata[ arguments.property ];
 		}
 
-		if( !isNull( arguments.defaultValue ) ){
+		if ( !isNull( arguments.defaultValue ) ) {
 			return arguments.defaultValue;
 		}
 
 		throw(
-			type 		= "InvalidProperty",
-			message 	= "Invalid property requested: #arguments.property#",
-			detail 		= "Valid properties are: #variables.fields#"
+			type    = "InvalidProperty",
+			message = "Invalid property requested: #arguments.property#",
+			detail  = "Valid properties are: #variables.fields#"
 		);
 	}
 
@@ -182,23 +193,27 @@ component extends="coldbox.system.cache.store.indexers.MetadataIndexer" accessor
 	 * @property
 	 * @value
 	 */
-	array function getSortedKeys( required property, sortType="text", sortOrder="asc" ){
+	array function getSortedKeys(
+		required property,
+		sortType  = "text",
+		sortOrder = "asc"
+	){
 		var qResults = queryExecute(
 			"SELECT id, objectKey
 			FROM #variables.config.table#
 		    ORDER BY #arguments.property# #arguments.sortOrder#",
 			[ variables.store.getNormalizedID( arguments.objectKey ) ],
 			{
-				datasource 	: variables.config.dsn,
-				username 	: variables.config.dsnUsername,
-				password 	: variables.config.dsnPassword
+				datasource : variables.config.dsn,
+				username   : variables.config.dsnUsername,
+				password   : variables.config.dsnPassword
 			}
 		);
 
 		return (
-			variables.isLucee ?
-			queryColumnData( qResults, "objectKey" ) :
-			listToArray( valueList( qResults.objectKey ) )
+			variables.isLucee ? queryColumnData( qResults, "objectKey" ) : listToArray(
+				valueList( qResults.objectKey )
+			)
 		);
 	}
 

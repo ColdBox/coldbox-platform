@@ -4,7 +4,7 @@
  * ---
  * All the custom matchers ColdBox registers within TestBox for easier testing!
  */
-component{
+component {
 
 	/**
 	 * Checks if the ColdBox response obejct has a matched status code
@@ -29,7 +29,7 @@ component{
 		var statusCode = expectation.actual.getStatusCode();
 		if ( statusCode != args.statusCode ) {
 			expectation.message = "#args.message#. Received incorrect status code. Expected [#args.statusCode#]. Received [#statusCode#].";
-			debug( expectation.actual.getMemento() );
+			request.testbox.debug( expectation.actual.getMemento() );
 			return false;
 		}
 		return true;
@@ -63,27 +63,24 @@ component{
 		// If !400 then there is no invalid data
 		if ( expectation.actual.getStatusCode() != 400 ) {
 			expectation.message = "#args.message#. Received incorrect status code. Expected [400]. Received [#expectation.actual.getStatusCode()#].";
-			debug( expectation.actual.getMemento() );
+			request.testbox.debug( expectation.actual.getMemento() );
 			return false;
 		}
 		// If no field passed, we just check that invalid data was found
 		if ( !len( args.field ) ) {
 			if ( expectation.actual.getData().isEmpty() ) {
 				expectation.message = "#args.message#. Received incorrect status code. Expected [400]. Received [#expectation.actual.getStatusCode()#].";
-				debug( expectation.actual.getMemento() );
+				request.testbox.debug( expectation.actual.getMemento() );
 				return false;
 			}
 			return true;
 		}
 		// We have a field to check and it has data
 		if (
-			!structKeyExists(
-				expectation.actual.getData(),
-				args.field
-			) || expectation.actual.getData()[ args.field ].isEmpty()
+			!structKeyExists( expectation.actual.getData(), args.field ) || expectation.actual.getData()[ args.field ].isEmpty()
 		) {
 			expectation.message = "#args.message#. The requested field [#args.field#] does not have any invalid data.";
-			debug( expectation.actual.getMemento() );
+			request.testbox.debug( expectation.actual.getMemento() );
 			return false;
 		}
 		// Do we have any error messages to check?
@@ -97,7 +94,7 @@ component{
 						.toList()
 				).toInclude( args.error );
 			} catch ( any e ) {
-				debug( expectation.actual.getMemento() );
+				request.testbox.debug( expectation.actual.getMemento() );
 				rethrow;
 			}
 		}
@@ -105,4 +102,5 @@ component{
 		// We checked and it's all good!
 		return true;
 	}
+
 }

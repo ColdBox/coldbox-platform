@@ -51,7 +51,18 @@ component extends="coldbox.system.web.ControllerDecorator" {
 		throw( message = "Relocating via relocate: #arguments.toString()#", type = "TestController.relocate" );
 	}
 
-	function runEvent( event="" ){
+	function runEvent(
+		event                  = "",
+		boolean prePostExempt  = false,
+		boolean private        = false,
+		boolean defaultEvent   = false,
+		struct eventArguments  = {},
+		boolean cache          = false,
+		cacheTimeout           = "",
+		cacheLastAccessTimeout = "",
+		cacheSuffix            = "",
+		cacheProvider          = "template"
+	 ){
 		// useful debugging to pinpoint execution exceptions
 		logger.info(
 			"=>Called decorator runEvent(#arguments.toString()#)",

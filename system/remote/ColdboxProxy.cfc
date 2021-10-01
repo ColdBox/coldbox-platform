@@ -14,6 +14,9 @@ component serializable="false" accessors="true" {
 
 	// Setup Default Namespace Key for controller locations
 	variables.COLDBOX_APP_KEY = "cbController";
+	if ( !isNull( application.cbBootstrap ) ) {
+		variables.COLDBOX_APP_KEY = application.cbBootstrap.getCOLDBOX_APP_KEY();
+	}
 
 	// Remote proxies are created by the CFML engine without calling init(),
 	// so autowire in here in the pseduo constructor
@@ -33,7 +36,7 @@ component serializable="false" accessors="true" {
 	private any function process(){
 		var refLocal = {};
 
-		cfsetting( showdebugoutput="false" );
+		cfsetting( showdebugoutput = "false" );
 
 		try {
 			// Locate ColdBox Controller
@@ -43,7 +46,7 @@ component serializable="false" accessors="true" {
 			// Create the request context
 			var event = cbController.getRequestService().requestCapture();
 
-			// Test event Name in the arguemnts.
+			// Test event Name in the arguments.
 			if ( not structKeyExists( arguments, event.getEventName() ) ) {
 				throw(
 					message = "Event not detected",
@@ -96,6 +99,9 @@ component serializable="false" accessors="true" {
 				.getDataMarshaller()
 				.marshallData( argumentCollection = refLocal.marshalData );
 
+			// Set output content header
+			event.setHTTPHeader( name: "content-type", value: refLocal.marshalData.type );
+
 			// Set Return Format according to Marshalling Type if not incoming
 			if ( not structKeyExists( arguments, "returnFormat" ) ) {
 				arguments.returnFormat = refLocal.marshalData.type;
@@ -105,9 +111,7 @@ component serializable="false" accessors="true" {
 		// Return results from handler only if found, else method will produce a null result
 		if ( !isNull( refLocal.results ) ) {
 			// preProxyResults interception call
-			cbController
-				.getInterceptorService()
-				.announce( "preProxyResults", { "proxyResults" : refLocal } );
+			cbController.getInterceptorService().announce( "preProxyResults", { "proxyResults" : refLocal } );
 
 			// Return The results
 			return refLocal.results;
@@ -123,12 +127,10 @@ component serializable="false" accessors="true" {
 	private boolean function announce( required state, struct data = {} ){
 		try {
 			// Backwards Compat: Remove by ColdBox 7
-			if( !isNull( arguments.interceptData ) ){
+			if ( !isNull( arguments.interceptData ) ) {
 				arguments.data = arguments.interceptData;
 			}
-			getController()
-				.getInterceptorService()
-				.announce( arguments.state, arguments.data );
+			getController().getInterceptorService().announce( arguments.state, arguments.data );
 		} catch ( any e ) {
 			handleException( e );
 			rethrow;
@@ -142,15 +144,15 @@ component serializable="false" accessors="true" {
 	 */
 	private function announceInterception(
 		required state,
-		struct interceptData={},
-		boolean async=false,
-		boolean asyncAll=false,
-		boolean asyncAllJoin=true,
-		asyncPriority="NORMAL",
-		numeric asyncJoinTimeout=0
+		struct interceptData     = {},
+		boolean async            = false,
+		boolean asyncAll         = false,
+		boolean asyncAllJoin     = true,
+		asyncPriority            = "NORMAL",
+		numeric asyncJoinTimeout = 0
 	){
-		arguments.data 	= arguments.interceptData;
-		return announce( argumentCollection=arguments );
+		arguments.data = arguments.interceptData;
+		return announce( argumentCollection = arguments );
 	}
 
 	/**
@@ -244,12 +246,24 @@ component serializable="false" accessors="true" {
 	/**
 	 * Locates, Creates, Injects and Configures an object model instance
 	 *
-	 * @name The mapping name or DSL
+	 * @name The mapping name or CFC instance path to try to build up
 	 * @initArguments The constructor structure of arguments to passthrough when initializing the instance
-	 * @dsl The dsl to use
+	 * @dsl The dsl string to use to retrieve the instance model object, mutually exclusive with 'name
+	 * @targetObject The object requesting the dependency, usually only used by DSL lookups
+	 * @injector The child injector to use when retrieving the instance
 	 *
-	 */
-	private any function getInstance( required name, initArguments, dsl ){
+	 * @throws InstanceNotFoundException - When the requested instance cannot be found
+	 * @throws InvalidChildInjector - When you request an instance from an invalid child injector name
+	 *
+	 * @return The requested instance
+	 **/
+	private function getInstance(
+		name,
+		struct initArguments = {},
+		dsl,
+		targetObject = "",
+		injector
+	){
 		return getWireBox().getInstance( argumentCollection = arguments );
 	}
 
@@ -258,8 +272,8 @@ component serializable="false" accessors="true" {
 	 */
 	private any function getModel( required name, dsl, initArguments ){
 		throw(
-			message="getModel() is now fully deprecated in favor of getInstance().",
-			type = "DeprecationException"
+			message = "getModel() is now fully deprecated in favor of getInstance().",
+			type    = "DeprecationException"
 		);
 	}
 
@@ -268,9 +282,7 @@ component serializable="false" accessors="true" {
 	 * Get an interceptor
 	 */
 	private any function getInterceptor( string interceptorName, boolean deepSearch = "false" ){
-		return getController()
-			.getInterceptorService()
-			.getInterceptor( argumentCollection = arguments );
+		return getController().getInterceptorService().getInterceptor( argumentCollection = arguments );
 	}
 
 

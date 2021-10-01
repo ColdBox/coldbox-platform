@@ -4,7 +4,7 @@
 <html lang="en">
 	<head>
 		<title>ColdBox</title>
-		<meta charset="utf-8">	
+		<meta charset="utf-8">
 	</head>
 	<body>
 		<h1>This is a module level layout (module-level)</h1>

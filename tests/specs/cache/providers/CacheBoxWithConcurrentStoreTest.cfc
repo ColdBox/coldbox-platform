@@ -1,4 +1,5 @@
-﻿component extends = "CacheBoxProviderTest"{
+﻿component extends="CacheBoxProviderTest" {
+
 	function setup(){
 		super.setup();
 
@@ -42,4 +43,5 @@
 
 		expect( newMD.created ).toBeGT( originalMD.created );
 	}
+
 }

@@ -89,10 +89,6 @@ component {
 			pattern = "/routeRunner/:id/:name",
 			name    = "routeRunner"
 		).to( "main.returnTest" );
-		route(
-			pattern = "/routeRunner/:id/:name",
-			name    = "routeRunner"
-		).to( "main.returnTest" );
 
 		// Should fire localized onInvalidHTTPMethod
 		route( pattern = "invalid-restful" ).withAction( { post : "index" } ).toHandler( "restful" );

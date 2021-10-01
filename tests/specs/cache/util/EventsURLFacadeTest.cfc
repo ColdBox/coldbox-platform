@@ -1,76 +1,82 @@
-﻿<!-----------------------------------------------------------------------
-********************************************************************************
-Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.coldbox.org | www.luismajano.com | www.ortussolutions.com
-********************************************************************************
-Author                         :	Luis Majano
-Date                                    :	9/3/2007
-Description :
-Request service Test
------------------------------------------------------------------------>
-<cfcomponent extends="coldbox.system.testing.BaseModelTest" output="false">
+﻿component extends="coldbox.system.testing.BaseModelTest" {
 
-	<cffunction name="setUp" returntype="void" access="public" output="false">
-		<cfparam name="FORM" default="#structNew()#">
-		<cfscript>
-		cm = createEmptyMock( "coldbox.system.cache.providers.MockProvider" );
-		cm.$( "getEventCacheKeyPrefix", "mock" );
-		facade = prepareMock( new coldbox.system.cache.util.EventURLFacade( cm ) )
-			.$( "buildAppLink", "http://localhost/test-harness" );
-		</cfscript>
-	</cffunction>
+	/*********************************** LIFE CYCLE Methods ***********************************/
 
-	<cffunction name="testgetUniqueHash" access="public" returntype="void" hint="" output="false">
-		<cfscript>
-		var routedStruct = { name : "luis" };
+	/**
+	 * executes before all suites+specs in the run() method
+	 */
+	function beforeAll(){
+	}
 
-		/* Mocks */
-		var context = createMock( "coldbox.system.web.context.RequestContext" )
-			.setRoutedStruct( routedStruct )
-			.setContext( { event : "main.index", id : "123" } );
+	/**
+	 * executes after all suites+specs in the run() method
+	 */
+	function afterAll(){
+	}
 
-		var testHash = facade.getUniqueHash( context );
+	/*********************************** BDD SUITES ***********************************/
 
-		assertTrue( len( testHash ) );
-		</cfscript>
-	</cffunction>
+	function run( testResults, testBox ){
+		// all your suites go here.
+		describe( "Event URL Facade", function(){
+			beforeEach( function( currentSpec ){
+				variables.jTreeMap = createObject( "java", "java.util.TreeMap" );
+				variables.cm       = createEmptyMock( "coldbox.system.cache.providers.MockProvider" );
+				variables.cm.$( "getEventCacheKeyPrefix", "mock" );
+				variables.facade = prepareMock( new coldbox.system.cache.util.EventURLFacade( cm ) ).$(
+					"buildAppLink",
+					"http://localhost/test-harness"
+				);
+			} );
 
-	<cffunction name="testbuildHash" access="public" returntype="void" hint="" output="false">
-		<cfscript>
-		var args     = "id=1&name=luis";
-		var testHash = facade.buildHash( args );
-		var testargs = { "id" : 1, "name" : "luis" };
-		var target   = {
-			"incomingHash" : hash( testargs.toString() ),
-			"cgihost"      : "http://localhost/test-harness"
-		};
+			it( "can build a unique hash from a request context", function(){
+				var routedStruct = { name : "luis" };
+				/* Mocks */
+				var context = createMock( "coldbox.system.web.context.RequestContext" )
+					.setRoutedStruct( routedStruct )
+					.setContext( { event : "main.index", id : "123" } );
+				var testHash = facade.getUniqueHash( context );
+				expect( testhash ).notToBeEmpty();
+			} );
 
-		expect( testHash ).toBe( hash( target.toString() ) );
-		</cfscript>
-	</cffunction>
+			it( "can build a hash from a querystring", function(){
+				var args     = "id=1&name=luis";
+				var testHash = facade.buildHash( args );
 
-	<cffunction name="testbuildEventKey" access="public" returntype="void" hint="" output="false">
-		<cfscript>
-		/* Mocks */
-		var context = createMock( "coldbox.system.web.context.RequestContext" );
-		context.setRoutedStruct( { "name" : "majano" } ).setContext( { event : "main.index", id : "123" } );
+				var virtualRC = {};
+				args.listToArray( "&" )
+					.each( function( item ){
+						virtualRC[ item.getToken( 1, "=" ).trim() ] = urlDecode( item.getToken( 2, "=" ).trim() );
+					} );
+				var myStruct = {
+					"incomingHash" : hash( variables.jTreeMap.init( virtualRC ).toString() ),
+					"cgihost"      : "http://localhost/test-harness"
+				};
 
-		var testCacheKey = facade.buildEventKey( "unittest", "main.index", context );
-		var uniqueHash   = facade.getUniqueHash( context );
-		var targetKey    = cm.getEventCacheKeyPrefix() & "main.index-unittest-" & uniqueHash;
+				expect( testHash ).toBe( hash( myStruct.toString() ) );
+			} );
 
-		expect( testCacheKey ).toBe( targetKey );
-		</cfscript>
-	</cffunction>
+			it( "can build an event key", function(){
+				/* Mocks */
+				var context = createMock( "coldbox.system.web.context.RequestContext" );
+				context.setRoutedStruct( { "name" : "majano" } ).setContext( { event : "main.index", id : "123" } );
 
-	<cffunction name="testbuildEventKeyNoContext" access="public" returntype="void" hint="" output="false">
-		<cfscript>
-		var args = "id=1";
+				var testCacheKey = facade.buildEventKey( "unittest", "main.index", context );
+				var uniqueHash   = facade.getUniqueHash( context );
+				var targetKey    = cm.getEventCacheKeyPrefix() & "main.index-unittest-" & uniqueHash;
 
-		var testCacheKey = facade.buildEventKeyNoContext( "unittest", "main.index", args );
-		var targetKey    = cm.getEventCacheKeyPrefix() & "main.index-unittest-" & facade.buildHash( args );
+				expect( testCacheKey ).toBe( targetKey );
+			} );
 
-		expect( testCacheKey ).toBe( targetKey );
-		</cfscript>
-	</cffunction>
-</cfcomponent>
+			it( "can build an event key with no context", function(){
+				var args = "id=1";
+
+				var testCacheKey = facade.buildEventKeyNoContext( "unittest", "main.index", args );
+				var targetKey    = cm.getEventCacheKeyPrefix() & "main.index-unittest-" & facade.buildHash( args );
+
+				expect( testCacheKey ).toBe( targetKey );
+			} );
+		} );
+	}
+
+}

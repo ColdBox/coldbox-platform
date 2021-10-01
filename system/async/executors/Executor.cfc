@@ -21,7 +21,7 @@ component accessors="true" singleton {
 	property name="native";
 
 	// Prepare the static time unit class
-	this.$timeUnit = new coldbox.system.async.util.TimeUnit();
+	this.$timeUnit = new coldbox.system.async.time.TimeUnit();
 
 	/**
 	 * Constructor
@@ -71,7 +71,7 @@ component accessors="true" singleton {
 		);
 
 		// Send for execution
-		return new FutureTask( variables.native.submit( jCallable ) );
+		return new coldbox.system.async.tasks.FutureTask( variables.native.submit( jCallable ) );
 	}
 
 	/****************************************************************

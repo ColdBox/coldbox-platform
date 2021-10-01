@@ -10,58 +10,77 @@ component serializable="false" accessors="true" {
 	 * The CFML engine helper
 	 */
 	property name="CFMLEngine";
+
 	/**
 	 * The system utility object
 	 */
 	property name="util";
+
 	/**
 	 * ColdBox initiation flag
 	 */
 	property name="coldboxInitiated" type="boolean";
+
 	/**
-	 * ColdBox application key
+	 * ColdBox application key that tracks the controller in the `application` scope
 	 */
 	property name="appKey";
+
 	/**
 	 * ColdBox application root path
 	 */
 	property name="appRootPath";
+
 	/**
 	 * ColdBox application unique hash key
 	 */
 	property name="appHash";
+
 	/**
-	 * Container for all internal services (LinkedHashMap)
+	 * The ColdFusion application name as per the application scope
+	 */
+	property name="appName";
+
+	/**
+	 * Container for all internal services (ordered struct)
 	 */
 	property name="services";
+
 	/**
 	 * The application configuration settings structure
 	 */
 	property name="configSettings" type="struct";
+
 	/**
 	 * The internal ColdBox settings structure
 	 */
 	property name="coldboxSettings" type="struct";
+
 	/**
 	 * The reference to CacheBox
 	 */
 	property name="cachebox";
+
 	/**
 	 * The reference to WireBox
 	 */
 	property name="wirebox";
+
 	/**
 	 * The reference to LogBox
 	 */
 	property name="logbox";
+
 	/**
 	 * The controller logger object
 	 */
 	property name="log";
+
 	/**
-	 * The view/layout renderer
+	 * The view/layout renderer singleton
 	 */
 	property name="renderer";
+
 	/**
 	 * The Application's AsyncManager
 	 */
@@ -74,9 +93,11 @@ component serializable="false" accessors="true" {
 	 * @appKey The application registered application key, default is cbController
 	 */
 	function init( required appRootPath, appKey = "cbController" ){
+		// Get application name
+		variables.appName  = application.applicationName;
 		// These will be lazy loaded on first use since the framework isn't ready to create it yet
 		variables.renderer = "";
-		variables.wireBox = "";
+		variables.wireBox  = "";
 
 		// Create Utility
 		variables.util         = new coldbox.system.core.util.Util();
@@ -112,7 +133,6 @@ component serializable="false" accessors="true" {
 		// LogBox Default Configuration & Creation
 		variables.logBox       = services.loaderService.createDefaultLogBox();
 		variables.log          = variables.logBox.getLogger( this );
-
 		variables.log.info( "+ LogBox created" );
 
 		// Setup the ColdBox Services
@@ -121,6 +141,7 @@ component serializable="false" accessors="true" {
 		services.handlerService     = new coldbox.system.web.services.HandlerService( this );
 		services.routingService     = new coldbox.system.web.services.RoutingService( this );
 		services.moduleService      = new coldbox.system.web.services.ModuleService( this );
+		services.schedulerService   = new coldbox.system.web.services.SchedulerService( this );
 
 		variables.log.info( "+ ColdBox services created" );
 
@@ -147,7 +168,7 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
-	 * Get the system web renderer, you can also retreive it from wirebox via renderer@coldbox
+	 * Get the system web renderer, you can also retrieve it from wirebox via renderer@coldbox
 	 *
 	 * @return coldbox.system.web.Renderer
 	 */
@@ -160,7 +181,7 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
-	 *  Get the system data marshaller, you can also retreive it from wirebox via dataMarshaller@coldbox
+	 *  Get the system data marshaller, you can also retrieve it from wirebox via dataMarshaller@coldbox
 	 *
 	 * @return coldbox.system.core.conversion.DataMarhsaller
 	 */
@@ -219,6 +240,13 @@ component serializable="false" accessors="true" {
 	 */
 	function getRoutingService(){
 		return services.routingService;
+	}
+
+	/**
+	 * Get the scheduling service
+	 */
+	function getSchedulerService(){
+		return services.schedulerService;
 	}
 
 	/****************************************************************
@@ -313,7 +341,7 @@ component serializable="false" accessors="true" {
 	 * Relocate user browser requests to other events, URLs, or URIs.
 	 *
 	 * @event The name of the event to relocate to, if not passed, then it will use the default event found in your configuration file.
-	 * @queryString The query string to append, if needed. If in SES mode it will be translated to convention name value pairs
+	 * @queryString The query string or a struct to append, if needed. If in SES mode it will be translated to convention name value pairs
 	 * @addToken Wether to add the tokens or not to the relocation. Default is false
 	 * @persist What request collection keys to persist in flash RAM automatically for you
 	 * @persistStruct A structure of key-value pairs to persist in flash RAM automatically for you
@@ -361,6 +389,15 @@ component serializable="false" accessors="true" {
 		// Cleanup event string to default if not sent in
 		if ( len( trim( arguments.event ) ) eq 0 ) {
 			arguments.event = getSetting( "DefaultEvent" );
+		}
+		// Query String Struct to String
+		if ( isStruct( arguments.queryString ) ) {
+			arguments.queryString = arguments.queryString
+				.reduce( function( result, key, value ){
+					arguments.result.append( "#encodeForURL( arguments.key )#=#encodeForURL( arguments.value )#" );
+					return arguments.result;
+				}, [] )
+				.toList( "&" );
 		}
 		// Overriding Front Controller via baseURL argument
 		if ( len( trim( arguments.baseURL ) ) ) {
@@ -413,19 +450,9 @@ component serializable="false" accessors="true" {
 					// If the routestring ends with '/' we do not want to
 					// double append '/'
 					if ( right( routeString, 1 ) NEQ "/" ) {
-						routeString = routeString & "/" & replace(
-							arguments.queryString,
-							"&",
-							"/",
-							"all"
-						);
+						routeString = routeString & "/" & replace( arguments.queryString, "&", "/", "all" );
 					} else {
-						routeString = routeString & replace(
-							arguments.queryString,
-							"&",
-							"/",
-							"all"
-						);
+						routeString = routeString & replace( arguments.queryString, "&", "/", "all" );
 					}
 					routeString = replace( routeString, "=", "/", "all" );
 				}
@@ -581,10 +608,7 @@ component serializable="false" accessors="true" {
 			);
 		}
 
-		throw(
-			type    = "InvalidArgumentException",
-			message = "The named route '#arguments.name#' does not exist"
-		);
+		throw( type = "InvalidArgumentException", message = "The named route '#arguments.name#' does not exist" );
 	}
 
 	/**
@@ -663,10 +687,7 @@ component serializable="false" accessors="true" {
 			// Do action Rendering
 			services.requestService
 				.getContext()
-				.renderdata(
-					type = results.ehBean.getActionMetadata( "renderdata" ),
-					data = results.data
-				);
+				.renderdata( type = results.ehBean.getActionMetadata( "renderdata" ), data = results.data );
 		}
 
 		// Are we caching
@@ -835,9 +856,9 @@ component serializable="false" accessors="true" {
 				// PREEVENT Interceptor
 				services.interceptorService.announce( "preEvent", iData );
 
-				// Verify if event was overriden
+				// Verify if event was overridden
 				if ( arguments.event NEQ iData.processedEvent ) {
-					// Validate the overriden event
+					// Validate the overridden event
 					results.ehBean = services.handlerService.getHandlerBean( iData.processedEvent );
 					// Get new handler to follow execution
 					oHandler       = services.handlerService.getHandler( results.ehBean, oRequestContext );
@@ -871,14 +892,12 @@ component serializable="false" accessors="true" {
 				}
 			}
 
-			// Verify if event was overriden
+			// Verify if event was overridden
 			if ( arguments.defaultEvent and arguments.event NEQ oRequestContext.getCurrentEvent() ) {
-				// Validate the overriden event
-				results.ehBean = services.handlerService.getHandlerBean(
-					oRequestContext.getCurrentEvent()
-				);
+				// Validate the overridden event
+				results.ehBean = services.handlerService.getHandlerBean( oRequestContext.getCurrentEvent() );
 				// Get new handler to follow execution
-				oHandler = services.handlerService.getHandler( results.ehBean, oRequestContext );
+				oHandler       = services.handlerService.getHandler( results.ehBean, oRequestContext );
 			}
 
 			// Invoke onMissingAction event
@@ -989,8 +1008,51 @@ component serializable="false" accessors="true" {
 	}
 
 	/****************************************************************
-	 * App Locator Methods *
+	 * App + User Locator Methods *
 	 ****************************************************************/
+
+	/**
+	 * This method will return the unique user's request tracking identifier according to our discovery algoritm:
+	 *
+	 * 1. If we have an identifierProvider closure/lambda/udf, then call it and use it
+	 * 2. If we have session enabled, use the jessionId or session URL Token
+	 * 3. If we have cookies enabled, use the cfid/cftoken
+	 * 4. If we have in the URL the cfid/cftoken
+	 * 5. Create a request based tracking identifier: cbUserTrackingId
+	 */
+	string function getUserSessionIdentifier(){
+		// Setup global storage prefix according to app name in case we have multiple apps with storages
+		var prefix           = "coldbox:#variables.appName#:";
+		var isSessionDefined = getApplicationMetadata().sessionManagement;
+
+		// Check settings identifier provider
+		if ( !isSimpleValue( variables.configSettings.identifierProvider ) ) {
+			return prefix & variables.configSettings.identifierProvider();
+		}
+		// Check jsession id First
+		var isSessionDefined = getApplicationMetadata().sessionManagement;
+		if ( isSessionDefined and structKeyExists( session, "sessionid" ) ) {
+			return prefix & session.sessionid;
+		}
+		// check session URL Token
+		else if ( isSessionDefined and structKeyExists( session, "URLToken" ) ) {
+			return prefix & session.URLToken;
+		}
+		// Check cfid and cftoken in cookie
+		else if ( structKeyExists( cookie, "CFID" ) AND structKeyExists( cookie, "CFTOKEN" ) ) {
+			return prefix & hash( cookie.cfid & cookie.cftoken );
+		}
+		// Check cfid and cftoken in URL
+		else if ( structKeyExists( URL, "CFID" ) AND structKeyExists( URL, "CFTOKEN" ) ) {
+			return prefix & hash( URL.cfid & URL.cftoken );
+		}
+		// fallback for no cookie, session or url basically sessionless requests, track the request only
+		else if ( isNull( request.cbUserTrackingId ) ) {
+			request.cbUserTrackingId = prefix & createUUID();
+		}
+
+		return request.cbUserTrackingId;
+	}
 
 	/**
 	 * Locate the real path location of a file in a coldbox application. 3 checks: 1) inside of coldbox app, 2) expand the path, 3) Absolute location. If path not found, it returns an empty path
@@ -1099,12 +1161,7 @@ component serializable="false" accessors="true" {
 	){
 		if (
 			(
-				(
-					len( arguments.inclusion ) AND listFindNoCase(
-						arguments.inclusion,
-						arguments.action
-					)
-				)
+				( len( arguments.inclusion ) AND listFindNoCase( arguments.inclusion, arguments.action ) )
 				OR
 				( NOT len( arguments.inclusion ) )
 			)

@@ -75,7 +75,7 @@ component
 	 *
 	 * This method tracks assets in the PRC via the key: <strong>cbox_assets</strong>
 	 *
-	 * @asset The asset(s) to load, only js or css files. This can also be a comma delimmited list.
+	 * @asset The asset(s) to load, only js or css files. This can also be a comma delimited list.
 	 * @sendToHeader Send to header or returned HTML content
 	 * @async HTML5 JavaScript argument: Specifies that the script is executed asynchronously (only for external scripts)
 	 * @defer HTML5 JavaScript argument: Specifies that the script is executed when the page has finished parsing (only for external scripts)
@@ -2528,12 +2528,13 @@ component
 		numeric version       = 3,
 		manifestRoot          = ""
 	){
+		var argumentsHash  = hash( serializeJSON( arguments ) );
 		// Incoming Cleanup
 		arguments.fileName = reReplace( arguments.fileName, "^//?", "" );
 
 		// In local discovery cache?
-		if ( variables.cachedPaths.keyExists( arguments.filename ) ) {
-			return variables.cachedPaths[ arguments.filename ];
+		if ( variables.cachedPaths.keyExists( argumentsHash ) ) {
+			return variables.cachedPaths[ argumentsHash ];
 		}
 
 		// Prepare state checks
@@ -2549,7 +2550,7 @@ component
 			"appMapping"
 		);
 
-		// Calculat href for asset delivery via Browser
+		// Calculate href for asset delivery via Browser
 		if ( mapping.len() ) {
 			var href = "/#mapping#/#includesLocation#/#arguments.fileName#";
 		} else {
@@ -2578,10 +2579,10 @@ component
 		// Is the key in the manifest?
 		var manifestDirectory = variables.elixirManifests[ hash( manifestPath ) ];
 		if ( !structKeyExists( manifestDirectory, key ) ) {
-			variables.cachedPaths[ arguments.fileName ] = arguments.fileName;
+			variables.cachedPaths[ argumentsHash ] = arguments.fileName;
 			return href;
 		}
-		variables.cachedPaths[ arguments.fileName ] = manifestDirectory[ key ];
+		variables.cachedPaths[ argumentsHash ] = manifestDirectory[ key ];
 		return "#manifestDirectory[ key ]#";
 	}
 

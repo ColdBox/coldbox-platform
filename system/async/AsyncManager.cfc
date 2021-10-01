@@ -18,16 +18,24 @@
 component accessors="true" singleton {
 
 	/**
+	 * --------------------------------------------------------------------------
+	 * Properties
+	 * --------------------------------------------------------------------------
+	 */
+
+	/**
 	 * A collection of executors you can register in the async manager
 	 * so you can run queues, tasks or even scheduled tasks
 	 */
 	property name="executors" type="struct";
 
-	// Static class to Executors: java.util.concurrent.Executors
-	this.$executors = new util.Executors();
+	/**
+	 * This scheduler can be linked to a ColdBox context
+	 */
+	property name="coldbox";
 
-	// Helpers
-	variables.IntStream = createObject( "java", "java.util.stream.IntStream" );
+	// Static class to Executors: java.util.concurrent.Executors
+	this.$executors = new coldbox.system.async.executors.ExecutorBuilder();
 
 	/**
 	 * Constructor
@@ -35,7 +43,10 @@ component accessors="true" singleton {
 	 * @debug Add debugging logs to System out, disabled by default
 	 */
 	AsyncManager function init( boolean debug = false ){
-		variables.debug     = arguments.debug;
+		variables.System = createObject( "java", "java.lang.System" );
+		variables.debug  = arguments.debug;
+
+		// Build out our executors map
 		variables.executors = {};
 
 		return this;
@@ -66,7 +77,7 @@ component accessors="true" singleton {
 	 * @debug Add output debugging
 	 * @loadAppContext Load the CFML App contexts or not, disable if not used
 	 *
-	 * @return The ColdBox Schedule class to work with the schedule: coldbox.system.async.tasks.Executor
+	 * @return The ColdBox Schedule class to work with the schedule: coldbox.system.async.executors.Executor
 	 */
 	Executor function newExecutor(
 		required name,
@@ -106,22 +117,21 @@ component accessors="true" singleton {
 		switch ( arguments.type ) {
 			case "fixed": {
 				arguments.executor = this.$executors.newFixedThreadPool( arguments.threads );
-				return new tasks.Executor( argumentCollection = arguments );
+				return new executors.Executor( argumentCollection = arguments );
 			}
 			case "cached": {
 				arguments.executor = this.$executors.newCachedThreadPool();
-				return new tasks.Executor( argumentCollection = arguments );
+				return new executors.Executor( argumentCollection = arguments );
 			}
 			case "single": {
 				arguments.executor = this.$executors.newFixedThreadPool( 1 );
-				return new tasks.Executor( argumentCollection = arguments );
+				return new executors.Executor( argumentCollection = arguments );
 			}
 			case "scheduled": {
 				arguments.executor = this.$executors.newScheduledThreadPool( arguments.threads );
-				return new tasks.ScheduledExecutor( argumentCollection = arguments );
+				return new executors.ScheduledExecutor( argumentCollection = arguments );
 			}
-			default : {
-
+			default: {
 			}
 		}
 		throw(
@@ -170,12 +180,12 @@ component accessors="true" singleton {
 	}
 
 	/**
-	 * Get a registered executor registerd in this async manager
+	 * Get a registered executor registered in this async manager
 	 *
 	 * @name The executor name
 	 *
 	 * @throws ExecutorNotFoundException
-	 * @return The executor object: coldbox.system.async.tasks.Executor
+	 * @return The executor object: coldbox.system.async.executors.Executor
 	 */
 	Executor function getExecutor( required name ){
 		if ( hasExecutor( arguments.name ) ) {
@@ -242,7 +252,7 @@ component accessors="true" singleton {
 	/**
 	 * Shutdown all registered executors in the system
 	 *
-	 * @force By default (false) it gracefullly shuts them down, else uses the shutdownNow() methods
+	 * @force By default (false) it gracefully shuts them down, else uses the shutdownNow() methods
 	 *
 	 * @return AsyncManager
 	 */
@@ -295,7 +305,7 @@ component accessors="true" singleton {
 		boolean debug          = false,
 		boolean loadAppContext = true
 	){
-		return new Future( argumentCollection = arguments );
+		return new tasks.Future( argumentCollection = arguments );
 	}
 
 	/**
@@ -312,7 +322,7 @@ component accessors="true" singleton {
 		boolean debug          = false,
 		boolean loadAppContext = true
 	){
-		return new Future( argumentCollection = arguments );
+		return new tasks.Future( argumentCollection = arguments );
 	}
 
 	/****************************************************************
@@ -345,6 +355,31 @@ component accessors="true" singleton {
 	 ****************************************************************/
 
 	/**
+	 * Build out a scheduler object for usage within this async manager context and return it to you.
+	 * You must manage it's persistence, we only wire it and create it for you so you can use it
+	 * to schedule tasks.
+	 *
+	 * @name The unique name for the scheduler
+	 */
+	Scheduler function newScheduler( required name ){
+		return new coldbox.system.async.tasks.Scheduler( arguments.name, this );
+	}
+
+	/**
+	 * Build out a new Duration class
+	 */
+	Duration function duration(){
+		return new time.Duration( argumentCollection = arguments );
+	}
+
+	/**
+	 * Build out a new Period class
+	 */
+	Period function period(){
+		return new time.Period( argumentCollection = arguments );
+	}
+
+	/**
 	 * Build an array out of a range of numbers or using our range syntax.
 	 * You can also build negative ranges
 	 *
@@ -357,22 +392,45 @@ component accessors="true" singleton {
 	 * @from The initial index, defaults to 1 or you can use the {start}..{end} notation
 	 * @to The last index item
 	 */
-	array function arrayRange( any from=1, numeric to ){
+	array function arrayRange( any from = 1, numeric to ){
 		// shortcut notation
-		if( find( "..", arguments.from ) ){
-			arguments.to 	= getToken( arguments.from, 2, ".." );
-			arguments.from 	= getToken( arguments.from, 1, ".." );
+		if ( find( "..", arguments.from ) ) {
+			arguments.to   = getToken( arguments.from, 2, ".." );
+			arguments.from = getToken( arguments.from, 1, ".." );
 		}
 
 		// cap to if larger than from
-		if( arguments.to < arguments.from ){
+		if ( arguments.to < arguments.from ) {
 			arguments.to = arguments.from;
 		}
 
 		// build it up
-		return IntStream
+		var javaArray = createObject( "java", "java.util.stream.IntStream" )
 			.rangeClosed( arguments.from, arguments.to )
 			.toArray();
+		var cfArray = [];
+		cfArray.append( javaArray, true );
+		return cfArray;
+	}
+
+	/**
+	 * Utility to send to output to the output stream
+	 *
+	 * @var Variable/Message to send
+	 */
+	AsyncManager function out( required var ){
+		variables.System.out.println( arguments.var.toString() );
+		return this;
+	}
+
+	/**
+	 * Utility to send to output to the error stream
+	 *
+	 * @var Variable/Message to send
+	 */
+	AsyncManager function err( required var ){
+		variables.System.err.println( arguments.var.toString() );
+		return this;
 	}
 
 }

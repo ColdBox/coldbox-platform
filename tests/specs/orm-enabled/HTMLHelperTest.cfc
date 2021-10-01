@@ -1,4 +1,5 @@
-﻿component extends = "coldbox.system.testing.BaseModelTest" model = "coldbox.system.modules.HTMLHelper.models.HTMLHelper"{
+﻿component extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.modules.HTMLHelper.models.HTMLHelper" {
+
 	function setup(){
 		super.setup();
 		mockRequestContext = getMockRequestContext();
@@ -6,17 +7,14 @@
 			"getContext",
 			mockRequestContext
 		);
-		mockController = createEmptyMock( "coldbox.system.testing.mock.web.MockController" ).$( "getRequestService", mockRequestService )
+		mockController = createEmptyMock( "coldbox.system.testing.mock.web.MockController" )
+			.$( "getRequestService", mockRequestService )
 			.$( "getSetting", "path" );
 
 		model
 			.$( "getModuleSettings" )
 			.$args( "HTMLHelper" )
-			.$results( {
-				js_path      : "",
-				css_path     : "",
-				encodeValues : false
-			} );
+			.$results( { js_path : "", css_path : "", encodeValues : false } );
 
 		model.init( mockController );
 	}
@@ -158,11 +156,7 @@
 	function testMeta(){
 		var data = [
 			{ name : "luis", content : "awesome" },
-			{
-				name    : "test",
-				content : "2",
-				type    : "equiv"
-			}
+			{ name : "test", content : "2", type : "equiv" }
 		];
 
 
@@ -238,11 +232,7 @@
 			xmlParse( str )
 		);
 
-		str = model.table(
-			data     = data,
-			includes = "name",
-			class    = "test"
-		);
+		str = model.table( data = data, includes = "name", class = "test" );
 		assertEquals(
 			xmlParse(
 				"<table class='test'><thead><tr><th>NAME</th></tr></thead><tbody><tr><td>luis</td></tr><tr><td>peter</td></tr></tbody></table>"
@@ -250,11 +240,7 @@
 			xmlParse( str )
 		);
 
-		str = model.table(
-			data     = data,
-			excludes = "id",
-			class    = "test"
-		);
+		str = model.table( data = data, excludes = "id", class = "test" );
 		assertEquals(
 			xmlParse(
 				"<table class='test'><thead><tr><th>NAME</th></tr></thead><tbody><tr><td>luis</td></tr><tr><td>peter</td></tr></tbody></table>"
@@ -283,18 +269,10 @@
 		str = model.table( data = data, class = "test" );
 		expect( str ).toInclude( "class=""test" );
 
-		str = model.table(
-			data     = data,
-			includes = "name",
-			class    = "test"
-		);
+		str = model.table( data = data, includes = "name", class = "test" );
 		expect( str ).NotToInclude( "<th>ID</th>" );
 
-		str = model.table(
-			data     = data,
-			excludes = "id",
-			class    = "test"
-		);
+		str = model.table( data = data, excludes = "id", class = "test" );
 		expect( str ).toInclude( "<th>NAME</th>" );
 	}
 
@@ -384,13 +362,17 @@
 		mockRequestService.$( "getContext", mockEvent );
 		str = model.startForm( action = "user.save" );
 		// debug(str);
-		assertTrue( findNoCase( "action=""#encodeForHTMLAttribute( "http://www.coldbox.org/user/save" )#""", str ) );
+		assertTrue(
+			findNoCase( "action=""#encodeForHTMLAttribute( "http://www.coldbox.org/user/save" )#""", str )
+		);
 
 		var mockEvent = getMockRequestContext().$( "buildLink", "https://www.coldbox.org/user/save" );
 		mockRequestService.$( "getContext", mockEvent );
 		str = model.startForm( action = "user.save", ssl = true );
 		// debug(str);
-		assertTrue( findNoCase( "action=""#encodeForHTMLAttribute( "https://www.coldbox.org/user/save" )#""", str ) );
+		assertTrue(
+			findNoCase( "action=""#encodeForHTMLAttribute( "https://www.coldbox.org/user/save" )#""", str )
+		);
 
 		str = model.startForm(
 			action = "user.save",
@@ -398,13 +380,17 @@
 			name   = "userForm"
 		);
 		// debug(str);
-		assertTrue( findNoCase( "action=""#encodeForHTMLAttribute( "https://www.coldbox.org/user/save" )#""", str ) );
+		assertTrue(
+			findNoCase( "action=""#encodeForHTMLAttribute( "https://www.coldbox.org/user/save" )#""", str )
+		);
 
 		// self-submitting
 		mockEvent.$( "getCurrentEvent", "user.home" ).$( "buildLink", "https://www.coldbox.org/user/home" );
 		str = model.startForm();
 		// debug(str);
-		assertTrue( findNoCase( "action=""#encodeForHTMLAttribute( "https://www.coldbox.org/user/home" )#""", str ) );
+		assertTrue(
+			findNoCase( "action=""#encodeForHTMLAttribute( "https://www.coldbox.org/user/home" )#""", str )
+		);
 	}
 
 	function testLabel(){
@@ -453,14 +439,13 @@
 		);
 
 		// entity binding
-		majano = entityLoad(
-			"User",
-			{ lastName : "Majano" },
-			true
-		);
-		str = model.textarea( name = "lastName", bind = majano );
+		majano = entityLoad( "User", { lastName : "Majano" }, true );
+		str    = model.textarea( name = "lastName", bind = majano );
 		// debug(str);
-		assertEquals( xmlParse( "<textarea name=""lastName"" id=""lastName"">Majano</textarea>" ), xmlParse( str ) );
+		assertEquals(
+			xmlParse( "<textarea name=""lastName"" id=""lastName"">Majano</textarea>" ),
+			xmlParse( str )
+		);
 	}
 
 	function testPasswordField(){
@@ -484,10 +469,7 @@
 			name         = "message",
 			value        = "test",
 			wrapper      = "div",
-			wrapperAttrs = {
-				"class" : "wrapper-class",
-				"id"    : "wrapper-id"
-			}
+			wrapperAttrs = { "class" : "wrapper-class", "id" : "wrapper-id" }
 		);
 		assertEquals(
 			xmlParse(
@@ -502,31 +484,19 @@
 		assertEquals( xmlParse( "<input name=""message"" id=""message"" type=""hidden""/>" ), xmlParse( str ) );
 
 		// entity binding
-		majano = entityLoad(
-			"User",
-			{ lastName : "Majano" },
-			true
-		);
-		str = model.hiddenField( name = "lastName", bind = majano );
+		majano = entityLoad( "User", { lastName : "Majano" }, true );
+		str    = model.hiddenField( name = "lastName", bind = majano );
 		// debug(str);
 		assertTrue( findNoCase( "value=""Majano""", str ) );
 	}
 
 	function testTextField(){
 		// entity binding
-		majano = entityLoad(
-			"User",
-			{ lastName : "Majano" },
-			true
-		);
-		str = model.textField(
+		majano = entityLoad( "User", { lastName : "Majano" }, true );
+		str    = model.textField(
 			name = "lastName",
 			bind = majano,
-			data = {
-				type    : "awesome",
-				tooltip : "true",
-				modal   : true
-			}
+			data = { type : "awesome", tooltip : "true", modal : true }
 		);
 
 		// writeDump(str);abort;
@@ -575,12 +545,8 @@
 		assertTrue( findNoCase( "value=""Test""", str ) );
 
 		// entity binding
-		majano = entityLoad(
-			"User",
-			{ lastName : "Majano" },
-			true
-		);
-		str = model.checkbox(
+		majano = entityLoad( "User", { lastName : "Majano" }, true );
+		str    = model.checkbox(
 			name  = "lastName",
 			bind  = majano,
 			value = "majano"
@@ -592,12 +558,8 @@
 
 	function testRadioButton(){
 		// entity binding
-		majano = entityLoad(
-			"User",
-			{ lastName : "Majano" },
-			true
-		);
-		str = model.radioButton(
+		majano = entityLoad( "User", { lastName : "Majano" }, true );
+		str    = model.radioButton(
 			name  = "lastName",
 			bind  = majano,
 			value = "majano"
@@ -620,11 +582,7 @@
 		assertEquals( "checked", xmlParse( str ).input.xmlAttributes.checked );
 
 
-		majano = entityLoad(
-			"User",
-			{ lastName : "Majano" },
-			true
-		);
+		majano = entityLoad( "User", { lastName : "Majano" }, true );
 		majano.setuserName( "yes" );
 		str = model.radioButton(
 			name  = "userName",
@@ -774,7 +732,9 @@
 
 	function testAnchor(){
 		var str = model.anchor( name = "lui" );
-		expect( xmlParse( "<root>#str#</root>" ) ).toBe( xmlParse( "<root><a id=""lui"" name=""lui""></a></root>" ) );
+		expect( xmlParse( "<root>#str#</root>" ) ).toBe(
+			xmlParse( "<root><a id=""lui"" name=""lui""></a></root>" )
+		);
 	}
 
 	function testhref(){
@@ -800,24 +760,16 @@
 
 	function testEmailField(){
 		// entity binding
-		majano = entityLoad(
-			"User",
-			{ lastName : "Majano" },
-			true
-		);
-		str = model.emailField( name = "lastName", bind = majano );
+		majano = entityLoad( "User", { lastName : "Majano" }, true );
+		str    = model.emailField( name = "lastName", bind = majano );
 		// debug(str);
 		assertTrue( findNoCase( "value=""Majano""", str ) );
 	}
 
 	function testURLField(){
 		// entity binding
-		majano = entityLoad(
-			"User",
-			{ lastName : "Majano" },
-			true
-		);
-		str = model.urlField( name = "lastName", bind = majano );
+		majano = entityLoad( "User", { lastName : "Majano" }, true );
+		str    = model.urlField( name = "lastName", bind = majano );
 		// debug(str);
 		assertTrue( findNoCase( "value=""Majano""", str ) );
 	}
@@ -838,9 +790,7 @@
 			wrapper      = "div class='form-control'",
 			groupWrapper = "div class='form-group'"
 		);
-		expect( str )
-			.toInclude( "<div class='form-group'><div class='form-control'>" )
-			.toInclude( "</div></div>" );
+		expect( str ).toInclude( "<div class='form-group'><div class='form-control'>" ).toInclude( "</div></div>" );
 	}
 
 	function testLabelAttrs(){
@@ -871,4 +821,5 @@
 			)
 		);
 	}
+
 }

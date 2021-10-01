@@ -169,79 +169,23 @@
 
 		assertEquals( arrayLen( md.functions ), 4 );
 		assertTrue( itemExists( md.functions, "funcClass1Only" ) );
-		assertEquals(
-			getItemKey(
-				md.functions,
-				"funcClass1Only",
-				"hint"
-			),
-			"Function defined in Class1"
-		);
+		assertEquals( getItemKey( md.functions, "funcClass1Only", "hint" ), "Function defined in Class1" );
 		assertTrue( itemExists( md.functions, "funcClass2Only" ) );
-		assertEquals(
-			getItemKey(
-				md.functions,
-				"funcClass2Only",
-				"hint"
-			),
-			"Function defined in Class2"
-		);
+		assertEquals( getItemKey( md.functions, "funcClass2Only", "hint" ), "Function defined in Class2" );
 		assertTrue( itemExists( md.functions, "funcClass3Only" ) );
-		assertEquals(
-			getItemKey(
-				md.functions,
-				"funcClass3Only",
-				"hint"
-			),
-			"Function defined in Class3"
-		);
+		assertEquals( getItemKey( md.functions, "funcClass3Only", "hint" ), "Function defined in Class3" );
 		assertTrue( itemExists( md.functions, "funcClass1and2and3" ) );
-		assertEquals(
-			getItemKey(
-				md.functions,
-				"funcClass1and2and3",
-				"hint"
-			),
-			"Function defined in Class1"
-		);
+		assertEquals( getItemKey( md.functions, "funcClass1and2and3", "hint" ), "Function defined in Class1" );
 
 		assertEquals( arrayLen( md.properties ), 4 );
 		assertTrue( itemExists( md.properties, "propClass1Only" ) );
-		assertEquals(
-			getItemKey(
-				md.properties,
-				"propClass1Only",
-				"default"
-			),
-			"class1Value"
-		);
+		assertEquals( getItemKey( md.properties, "propClass1Only", "default" ), "class1Value" );
 		assertTrue( itemExists( md.properties, "propClass2Only" ) );
-		assertEquals(
-			getItemKey(
-				md.properties,
-				"propClass2Only",
-				"default"
-			),
-			"class2Value"
-		);
+		assertEquals( getItemKey( md.properties, "propClass2Only", "default" ), "class2Value" );
 		assertTrue( itemExists( md.properties, "propClass3Only" ) );
-		assertEquals(
-			getItemKey(
-				md.properties,
-				"propClass3Only",
-				"default"
-			),
-			"class3Value"
-		);
+		assertEquals( getItemKey( md.properties, "propClass3Only", "default" ), "class3Value" );
 		assertTrue( itemExists( md.properties, "propClass1and2and3" ) );
-		assertEquals(
-			getItemKey(
-				md.properties,
-				"propClass1and2and3",
-				"default"
-			),
-			"class1Value"
-		);
+		assertEquals( getItemKey( md.properties, "propClass1and2and3", "default" ), "class1Value" );
 	}
 
 	private function testGetInheritedMetaDataStopRecursionHelper( md ){
@@ -261,47 +205,19 @@
 
 		assertEquals( arrayLen( md.functions ), 2 );
 		assertTrue( itemExists( md.functions, "funcClass1Only" ) );
-		assertEquals(
-			getItemKey(
-				md.functions,
-				"funcClass1Only",
-				"hint"
-			),
-			"Function defined in Class1"
-		);
+		assertEquals( getItemKey( md.functions, "funcClass1Only", "hint" ), "Function defined in Class1" );
 		assertFalse( itemExists( md.functions, "funcClass2Only" ) );
 		assertFalse( itemExists( md.functions, "funcClass3Only" ) );
 		assertTrue( itemExists( md.functions, "funcClass1and2and3" ) );
-		assertEquals(
-			getItemKey(
-				md.functions,
-				"funcClass1and2and3",
-				"hint"
-			),
-			"Function defined in Class1"
-		);
+		assertEquals( getItemKey( md.functions, "funcClass1and2and3", "hint" ), "Function defined in Class1" );
 
 		assertEquals( arrayLen( md.properties ), 2 );
 		assertTrue( itemExists( md.properties, "propClass1Only" ) );
-		assertEquals(
-			getItemKey(
-				md.properties,
-				"propClass1Only",
-				"default"
-			),
-			"class1Value"
-		);
+		assertEquals( getItemKey( md.properties, "propClass1Only", "default" ), "class1Value" );
 		assertFalse( itemExists( md.properties, "propClass2Only" ) );
 		assertFalse( itemExists( md.properties, "propClass3Only" ) );
 		assertTrue( itemExists( md.properties, "propClass1and2and3" ) );
-		assertEquals(
-			getItemKey(
-				md.properties,
-				"propClass1and2and3",
-				"default"
-			),
-			"class1Value"
-		);
+		assertEquals( getItemKey( md.properties, "propClass1and2and3", "default" ), "class1Value" );
 	}
 
 

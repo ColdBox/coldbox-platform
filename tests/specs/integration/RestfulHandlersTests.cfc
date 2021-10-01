@@ -12,7 +12,7 @@ component extends="tests.resources.BaseIntegrationTest" {
 				var response = e.getResponse();
 
 				expect( response.getError() ).toBeFalse( response.getMessagesString() );
-				expect( response.getData() ).toBe( "hello" );
+				expect( response.getData().message ).toBe( "hello" );
 				expect( response ).toHaveStatus( 200 );
 			} );
 

@@ -2,7 +2,7 @@
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * This flash scope is smart enough to not create unecessary session variables
+ * This flash scope is smart enough to not create unnecessary session variables
  * unless data is put in it.  Else, it does not abuse session.
  * @author Luis Majano <lmajano@ortussolutions.com>
  */

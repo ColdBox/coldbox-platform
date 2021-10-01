@@ -1,10 +1,10 @@
 ﻿/**
-* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-* www.ortussolutions.com
-* ---
-* Tracking of single instance objects: Singletons
-**/
-component implements="coldbox.system.ioc.scopes.IScope" accessors="true"{
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * Tracking of single instance objects: Singletons
+ **/
+component implements="coldbox.system.ioc.scopes.IScope" accessors="true" {
 
 	/**
 	 * Injector linkage
@@ -31,9 +31,9 @@ component implements="coldbox.system.ioc.scopes.IScope" accessors="true"{
 	 * @return coldbox.system.ioc.scopes.IScope
 	 */
 	function init( required injector ){
-		variables.injector 		= arguments.injector;
-		variables.singletons 	= createObject( "java", "java.util.concurrent.ConcurrentHashMap" ).init();
-		variables.log			= arguments.injector.getLogBox().getLogger( this );
+		variables.injector   = arguments.injector;
+		variables.singletons = createObject( "java", "java.util.concurrent.ConcurrentHashMap" ).init();
+		variables.log        = arguments.injector.getLogBox().getLogger( this );
 		return this;
 	}
 
@@ -46,55 +46,60 @@ component implements="coldbox.system.ioc.scopes.IScope" accessors="true"{
 	 * @initArguments The constructor struct of arguments to passthrough to initialization
 	 */
 	function getFromScope( required mapping, struct initArguments ){
-		var cacheKey = lcase( arguments.mapping.getName() );
+		var cacheKey = lCase( arguments.mapping.getName() );
 
 		// Verify in Singleton Cache
-		if( NOT variables.singletons.containsKey(cacheKey) ){
-
+		if ( NOT variables.singletons.containsKey( cacheKey ) ) {
 			// Lock it
-			lock 	name="WireBox.#variables.injector.getInjectorID()#.Singleton.#cacheKey#"
-					type="exclusive"
-					timeout="30"
-					throwontimeout="true"{
-
-						// double lock it
-				if( NOT variables.singletons.containsKey(cacheKey) ){
-
+			lock
+				name          ="WireBox.#variables.injector.getInjectorID()#.Singleton.#cacheKey#"
+				type          ="exclusive"
+				timeout       ="30"
+				throwontimeout="true" {
+				// double lock it
+				if ( NOT variables.singletons.containsKey( cacheKey ) ) {
 					// some nice debug info.
-					if( variables.log.canDebug() ){
-						variables.log.debug("Object: (#cacheKey#) not found in singleton cache, beginning construction.");
+					if ( variables.log.canDebug() ) {
+						variables.log.debug(
+							"Object: (#cacheKey#) not found in singleton cache, beginning construction."
+						);
 					}
 
 					// construct the singleton object
-					var tmpSingleton = variables.injector.buildInstance( arguments.mapping, arguments.initArguments);
+					var tmpSingleton = variables.injector.buildInstance(
+						arguments.mapping,
+						arguments.initArguments
+					);
 
 					// If not in wiring thread safety, store in singleton cache to satisfy circular dependencies
-					if( NOT arguments.mapping.getThreadSafe() ){
-						variables.singletons.put(cacheKey, tmpSingleton);
+					if ( NOT arguments.mapping.getThreadSafe() ) {
+						variables.singletons.put( cacheKey, tmpSingleton );
 					}
 
 					// wire up dependencies on the singleton object
-					variables.injector.autowire( target=tmpSingleton, mapping=arguments.mapping );
+					variables.injector.autowire( target = tmpSingleton, mapping = arguments.mapping );
 
 					// If thread safe, then now store it in the singleton cache, as all dependencies are now safely wired
-					if( arguments.mapping.getThreadSafe() ){
-						variables.singletons.put(cacheKey, tmpSingleton);
+					if ( arguments.mapping.getThreadSafe() ) {
+						variables.singletons.put( cacheKey, tmpSingleton );
 					}
 
 					// log it
-					if( variables.log.canDebug() ){
-						variables.log.debug( "Object: (#cacheKey#) constructed and stored in singleton cache. ThreadSafe=#arguments.mapping.getThreadSafe()#" );
+					if ( variables.log.canDebug() ) {
+						variables.log.debug(
+							"Object: (#cacheKey#) constructed and stored in singleton cache. ThreadSafe=#arguments.mapping.getThreadSafe()#"
+						);
 					}
 
 					// return it
-					return variables.singletons.get(cacheKey);
+					return variables.singletons.get( cacheKey );
 				}
-
-			} // end lock
+			}
+			// end lock
 		}
 
 		// return singleton
-		return variables.singletons.get(cacheKey);
+		return variables.singletons.get( cacheKey );
 	}
 
 	/**
@@ -106,7 +111,7 @@ component implements="coldbox.system.ioc.scopes.IScope" accessors="true"{
 	 * @return coldbox.system.ioc.scopes.IScope
 	 */
 	boolean function exists( required mapping ){
-		return variables.singletons.containsKey(lcase( arguments.mapping.getName() ));
+		return variables.singletons.containsKey( lCase( arguments.mapping.getName() ) );
 	}
 
 	/**

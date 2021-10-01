@@ -344,15 +344,29 @@ component {
 							nullValue = false;
 						}
 						// Is property in empty-to-null include list?
-						if ( ( len( arguments.nullEmptyInclude ) && listFindNoCase( arguments.nullEmptyInclude, key ) ) ) {
+						if (
+							(
+								len( arguments.nullEmptyInclude ) && listFindNoCase(
+									arguments.nullEmptyInclude,
+									key
+								)
+							)
+						) {
 							nullValue = true;
 						}
 						// Is property in empty-to-null exclude list, or is exclude list "*"?
-						if ( ( len( arguments.nullEmptyExclude ) AND listFindNoCase( arguments.nullEmptyExclude, key ) ) ) {
+						if (
+							(
+								len( arguments.nullEmptyExclude ) AND listFindNoCase(
+									arguments.nullEmptyExclude,
+									key
+								)
+							)
+						) {
 							nullValue = false;
 						}
 						// Is value nullable (e.g., simple, empty string)? If so, set null...
-						// short circuit evealuaton of IsNull added, so it won't break IsSimpleValue with Real null values. Real nulls are already set.
+						// short circuit evaluation of IsNull added, so it won't break IsSimpleValue with Real null values. Real nulls are already set.
 						if (
 							!isNull( local.propertyValue ) && isSimpleValue( propertyValue ) && !len(
 								trim( propertyValue )
@@ -362,9 +376,11 @@ component {
 						}
 
 						var getEntityMap = function(){
-							if ( find( "2018", server.coldfusion.productVersion ) ) {
+							if ( listFirst( variables.util.getHibernateVersion(), "." ) >= 5 ) {
+								// Double array functions to convert from native java to cf java
 								return arrayToList( ormGetSessionFactory().getMetaModel().getAllEntityNames() ).listToArray();
 							} else {
+								// Hibernate v4 and older
 								return structKeyArray( ormGetSessionFactory().getAllClassMetadata() );
 							}
 						};
@@ -411,14 +427,19 @@ component {
 							// if targetEntityName was successfully found
 							if ( len( targetEntityName ) ) {
 								// array or struct type (one-to-many, many-to-many)
-								if ( listContainsNoCase( "one-to-many,many-to-many", relationalMeta[ key ].fieldtype ) ) {
+								if (
+									listContainsNoCase(
+										"one-to-many,many-to-many",
+										relationalMeta[ key ].fieldtype
+									)
+								) {
 									// Support straight-up lists and convert to array
 									if ( isSimpleValue( propertyValue ) ) {
 										propertyValue = listToArray( propertyValue );
 									}
-									var relType = structKeyExists( relationalMeta[ key ], "type" ) && relationalMeta[ key ].type != "any" ? relationalMeta[
+									var relType = structKeyExists( relationalMeta[ key ], "type" ) && relationalMeta[
 										key
-									].type : "array";
+									].type != "any" ? relationalMeta[ key ].type : "array";
 									var manyMap = reltype == "struct" ? {} : [];
 									// loop over array
 									for ( var relValue in propertyValue ) {
@@ -477,11 +498,7 @@ component {
 						}
 						// Populate the property as the value obtained whether simple or related
 						else {
-							invoke(
-								beanInstance,
-								"set#key#",
-								[ propertyValue ]
-							);
+							invoke( beanInstance, "set#key#", [ propertyValue ] );
 						}
 					}
 					// end if setter or scope injection
@@ -514,10 +531,7 @@ component {
 	private struct function getRelationshipMetaData( required target ){
 		var meta           = {};
 		// get array of properties
-		var stopRecursions = [
-			"lucee.Component",
-			"WEB-INF.cftags.component"
-		];
+		var stopRecursions = [ "lucee.Component", "WEB-INF.cftags.component" ];
 		// Collect property metadata
 		variables.util
 			.getInheritedMetaData( arguments.target, stopRecursions )

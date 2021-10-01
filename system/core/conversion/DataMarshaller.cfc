@@ -4,10 +4,11 @@
  * ---
  * Ability to serialize content to the output stream
  */
-component accessors="true" singleton{
+component accessors="true" singleton {
 
 	// DI
-	property name="xmlConverter" inject="XMLConverter@coldbox";
+	property name="xmlConverter"   inject="XMLConverter@coldbox";
+	property name="requestService" inject="coldbox:requestService";
 
 	/**
 	 * Constructor
@@ -36,33 +37,34 @@ component accessors="true" singleton{
 	function marshallData(
 		required type,
 		required data,
-		encoding="UTF-8",
-		jsonCallback="",
-		boolean jsonQueryFormat=true,
-		xmlColumnList="",
-		boolean xmlUseCDATA=false,
-		xmlListDelimiter=",",
-		xmlRootName="",
-		struct pdfArgs={}
+		encoding            = "UTF-8",
+		jsonCallback        = "",
+		jsonQueryFormat     = true,
+		xmlColumnList       = "",
+		boolean xmlUseCDATA = false,
+		xmlListDelimiter    = ",",
+		xmlRootName         = "",
+		struct pdfArgs      = {}
 	){
 		// Validation Types
-		if( !reFindNoCase( "^(JSON|JSONP|JSONT|WDDX|XML|PLAIN|HTML|TEXT|PDF)$", arguments.type ) ){
+		if ( !reFindNoCase( "^(JSON|JSONP|JSONT|WDDX|XML|PLAIN|HTML|TEXT|PDF)$", arguments.type ) ) {
 			throw(
-				message : "Invalid type",
-				detail  : "The type you sent: #arguments.type# is invalid. Valid types are JSON, JSONP, WDDX, XML, TEXT, PDF and PLAIN",
-				type    : "InvalidMarshallingType"
+				message: "Invalid type",
+				detail : "The type you sent: #arguments.type# is invalid. Valid types are JSON, JSONP, WDDX, XML, TEXT, PDF and PLAIN",
+				type   : "InvalidMarshallingType"
 			);
 		}
 
 		// Verify $renderdata Convention
-		if( isObject( arguments.data ) && structKeyExists( arguments.data, "$renderdata" ) ){
+		if ( isObject( arguments.data ) && structKeyExists( arguments.data, "$renderdata" ) ) {
 			return arguments.data.$renderdata( argumentCollection = arguments );
 		}
 
 		// Render according to type
 		var results = "";
-		switch( arguments.type ){
-			case "JSON" : case "JSONP" : {
+		switch ( arguments.type ) {
+			case "JSON":
+			case "JSONP": {
 				// marshall to JSON
 				results = serializeJSON( arguments.data, arguments.jsonQueryFormat );
 				// wrap results in callback function for JSONP
@@ -73,12 +75,16 @@ component accessors="true" singleton{
 				break;
 			}
 
-			case "WDDX" : {
-				cfwddx( action="cfml2wddx", input="#arguments.data#", output="results" );
+			case "WDDX": {
+				cfwddx(
+					action = "cfml2wddx",
+					input  = "#arguments.data#",
+					output = "results"
+				);
 				break;
 			}
 
-			case "XML" : {
+			case "XML": {
 				args.data      = arguments.data;
 				args.encoding  = arguments.encoding;
 				args.useCDATA  = arguments.xmlUseCDATA;
@@ -92,19 +98,19 @@ component accessors="true" singleton{
 				break;
 			}
 
-			case "PDF" : {
+			case "PDF": {
 				results = arguments.data;
 				// We only process NON binary PDF data
-				if( !isBinary( arguments.data ) ){
+				if ( !isBinary( arguments.data ) ) {
 					pdfArgs.format = "PDF";
-					pdfArgs.name = "results";
+					pdfArgs.name   = "results";
 					// Convert to PDF
 					include "CFDocument.cfm";
 				}
 			}
 
 			// Plaint TEXT, HTML, CUSTOM Data
-			default : {
+			default: {
 				results = arguments.data;
 				break;
 			}
@@ -124,28 +130,27 @@ component accessors="true" singleton{
 	function renderContent(
 		required type,
 		variable,
-		encoding="UTF-8",
-		boolean reset=false
+		encoding      = "UTF-8",
+		boolean reset = false
 	){
 		// Verify incoming encoding or append it
-		if( !findNoCase( ";", arguments.type ) ){
+		if ( !findNoCase( ";", arguments.type ) ) {
 			arguments.type &= "; charset=#arguments.encoding#";
 		}
+		// Setup the output header
+		variables.requestService.getContext().setHTTPHeader( name: "content-type", value: arguments.type );
 		// Do we have an incoming variable to render?
-		if( !isNull( arguments.variable ) ){
+		if ( !isNull( arguments.variable ) ) {
 			cfcontent(
-				type="#arguments.type#",
-				variable="#arguments.variable#",
-				reset="#arguments.reset#"
+				type     = "#arguments.type#",
+				variable = "#arguments.variable#",
+				reset    = "#arguments.reset#"
 			);
 		} else {
-			cfcontent(
-				type="#arguments.type#",
-				reset="#arguments.reset#"
-			);
+			cfcontent( type = "#arguments.type#", reset = "#arguments.reset#" );
 		}
 		// Make sure no debugging output is enabled
-		cfsetting( showdebugoutput="false" );
+		cfsetting( showdebugoutput = "false" );
 	}
 
 	/**

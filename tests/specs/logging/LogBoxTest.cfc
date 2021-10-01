@@ -26,6 +26,18 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				config.category( name = "coldbox.system.web", appenders = "*" );
 			} );
 
+			it( "can add new appenders after config has been registered", function(){
+				var config = logBox.getConfig();
+
+				config.appender(
+					name : "postInitAppender",
+					class= "coldbox.system.logging.appenders.ConsoleAppender"
+				);
+				config.category( name: "postInitLogger", appenders: "postInitAppender" );
+
+				logBox.getLogger( "postInitLogger" ).info( "My Test" ); // Fails if appender was not added to internal registry
+			} );
+
 			describe( "can retrieve loggers with different category names", function(){
 				given( "A valid category inheritance trail that is turned off", function(){
 					then( "it will retrieve the inherited category", function(){

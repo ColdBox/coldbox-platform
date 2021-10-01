@@ -1,6 +1,4 @@
-component
-	extends="tests.resources.BaseIntegrationTest"
-{
+component extends="tests.resources.BaseIntegrationTest" {
 
 	function run(){
 		describe( "ColdBox REST", function(){

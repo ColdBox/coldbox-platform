@@ -1,16 +1,12 @@
-﻿component extends = "coldbox.system.testing.BaseModelTest"{
+﻿component extends="coldbox.system.testing.BaseModelTest" {
+
 	function setup(){
 		logBox  = new coldbox.system.logging.LogBox();
 		console = createMock( "coldbox.system.logging.appenders.ConsoleAppender" );
 		console.init( "MyConsoleAppender" ).setLogBox( logBox );
 
 		loge = createMock( "coldbox.system.logging.LogEvent" );
-		loge.init(
-			"Unit Test Sample",
-			0,
-			structNew(),
-			"UnitTest"
-		);
+		loge.init( "Unit Test Sample", 0, structNew(), "UnitTest" );
 	}
 	function testLogMessage(){
 		for ( x = 0; x lte 1000; x++ ) {
@@ -33,4 +29,5 @@
 			console.logMessage( loge );
 		}
 	}
+
 }

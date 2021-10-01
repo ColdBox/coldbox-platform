@@ -28,11 +28,8 @@
 		assertEquals( mockRoot, r );
 
 		// logbox:logger with name
-		def = {
-			dsl  : "logbox:logger",
-			name : "myHello"
-		};
-		r = builder.process( def );
+		def = { dsl : "logbox:logger", name : "myHello" };
+		r   = builder.process( def );
 		assertEquals( mockLogger, r );
 		// debug(mockLogBox.$callLog().getLogger);
 		callArgs = mockLogBox.$callLog().getLogger[ 2 ];

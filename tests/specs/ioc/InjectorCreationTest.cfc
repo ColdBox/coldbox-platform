@@ -1,4 +1,5 @@
-﻿component extends = "tests.resources.BaseIntegrationTest"{
+﻿component extends="tests.resources.BaseIntegrationTest" {
+
 	this.loadColdBox = false;
 
 	function setup(){
@@ -138,7 +139,7 @@
 		assertTrue( len( prop ) );
 	}
 
-	function testWebService(){
+	function testWebService() skip="isAdobe"{
 		ws = injector.getInstance( "coldboxWS" );
 
 		//
@@ -229,6 +230,7 @@
 
 	function testVirtualInheritanceCreation(){
 		var c = injector.getInstance( "virtually-inherited-class" );
-		expect( c.getData() ).toBe( "My Data" );
+		expect( c.getData() ).toBe( "Child Data" );
 	}
+
 }

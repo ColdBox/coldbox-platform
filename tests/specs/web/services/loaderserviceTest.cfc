@@ -1,12 +1,11 @@
-﻿component extends="tests.resources.BaseIntegrationTest"{
+﻿component extends="tests.resources.BaseIntegrationTest" {
 
 	function run( testResults, testBox ){
-
 		describe( "Loader services", function(){
-			beforeEach(function( currentSpec ){
+			beforeEach( function( currentSpec ){
 				setup();
 				ls = getController().getLoaderService();
-			});
+			} );
 
 
 			it( "can register handlers", function(){
@@ -16,14 +15,13 @@
 				createFile( dummyFile );
 				getController().getHandlerService().registerHandlers();
 
-				try{
+				try {
 					assertTrue( listFindNoCase( getController().getSetting( "RegisteredHandlers" ), "dummy" ) );
-				} finally{
+				} finally {
 					removeFile( dummyFile );
 				}
-			});
-
-		});
+			} );
+		} );
 	}
 
 	private function createFile( required filename ){

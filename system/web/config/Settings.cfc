@@ -26,6 +26,7 @@ component {
 		"jsonPayloadToRC"          : true,
 		"autoMapModels"            : true,
 		"environment"              : "production",
+		"identifierProvider"       : "",
 		// Caching
 		"handlersIndexAutoReload"  : false,
 		"handlerCaching"           : true,

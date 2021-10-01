@@ -25,8 +25,11 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	/**
 	 * If in integration mode, you can tag for your tests to be automatically autowired with dependencies
 	 * by WireBox
- 	 */
-	property name="autowire" type="boolean" default="false";
+	 */
+	property
+		name   ="autowire"
+		type   ="boolean"
+		default="false";
 	/**
 	 * The test case metadata
 	 */
@@ -42,8 +45,8 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	variables.configMapping = "";
 	variables.controller    = "";
 	variables.coldboxAppKey = "cbController";
-	variables.autowire 		= false;
-	variables.metadata 		= {};
+	variables.autowire      = false;
+	variables.metadata      = {};
 
 	/********************************************* LIFE-CYCLE METHODS *********************************************/
 
@@ -130,11 +133,8 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 			// Auto registration of test as interceptor
 			variables.controller.getInterceptorService().registerInterceptor( interceptorObject = this );
 			// Do we need to autowire this test?
-			if( variables.autowire ){
-				variables.controller.getWireBox().autowire(
-					target 		: this,
-					targetId 	: variables.metadata.path
-				);
+			if ( variables.autowire ) {
+				variables.controller.getWireBox().autowire( target: this, targetId: variables.metadata.path );
 			}
 		}
 
@@ -378,11 +378,11 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * @return BaseTestCase
 	 */
 	function setupRequest( required event ){
-		var controller 	= getController();
-		var eventName 	= controller.getSetting( "eventName" );
+		var controller    = getController();
+		var eventName     = controller.getSetting( "eventName" );
 		// Setup the incoming event
-		URL[ eventName ] 	= arguments.event;
-		FORM[ eventName ] 	= arguments.event;
+		URL[ eventName ]  = arguments.event;
+		FORM[ eventName ] = arguments.event;
 		// Capture the request
 		controller.getRequestService().requestCapture( arguments.event );
 		return this;
@@ -423,8 +423,8 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 		var requestContext  = getRequestContext();
 		var relocationTypes = "TestController.relocate";
 		var cbController    = getController();
-		var requestService 	= cbController.getRequestService();
-		var routingService 	= cbController.getRoutingService();
+		var requestService  = cbController.getRequestService();
+		var routingService  = cbController.getRoutingService();
 		var renderData      = "";
 		var renderedContent = "";
 		var iData           = {};
@@ -486,7 +486,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 
 			// Setup the request Context with setup FORM/URL variables set in the unit test.
 			requestService.setContext( requestContext );
-			//setupRequest( arguments.event );
+			// setupRequest( arguments.event );
 
 			// App Start Handler
 			if ( len( cbController.getSetting( "ApplicationStartHandler" ) ) ) {
@@ -620,21 +620,21 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 		boolean renderResults         = true,
 		boolean withExceptionHandling = false
 	){
-		var mockedEvent = prepareMock( getRequestContext() ).$( "getHTTPMethod", uCase( method ) );
-		params
+		var mockedEvent = prepareMock( getRequestContext() ).$( "getHTTPMethod", uCase( arguments.method ) );
+		arguments.params
 			.keyArray()
 			.each( function( name ){
-				mockedEvent.setValue( name, params[ name ] );
+				mockedEvent.setValue( arguments.name, params[ arguments.name ] );
 			} );
-		headers
+		arguments.headers
 			.keyArray()
 			.each( function( name ){
 				mockedEvent
 					.$( "getHTTPHeader" )
-					.$args( name )
-					.$results( headers[ name ] );
+					.$args( arguments.name )
+					.$results( headers[ arguments.name ] );
 			} );
-		return execute( argumentCollection = arguments );
+		return this.execute( argumentCollection = arguments );
 	}
 
 	/**
@@ -849,13 +849,26 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	}
 
 	/**
-	 * Get a instance object from WireBox
+	 * Locates, Creates, Injects and Configures an object model instance
 	 *
-	 * @name The mapping name or CFC path to retrieve
+	 * @name The mapping name or CFC instance path to try to build up
 	 * @initArguments The constructor structure of arguments to passthrough when initializing the instance
-	 * @dsl The DSL string to use to retrieve an instance
-	 */
-	function getInstance( name, struct initArguments = {}, dsl ){
+	 * @dsl The dsl string to use to retrieve the instance model object, mutually exclusive with 'name
+	 * @targetObject The object requesting the dependency, usually only used by DSL lookups
+	 * @injector The child injector to use when retrieving the instance
+	 *
+	 * @throws InstanceNotFoundException - When the requested instance cannot be found
+	 * @throws InvalidChildInjector - When you request an instance from an invalid child injector name
+	 *
+	 * @return The requested instance
+	 **/
+	function getInstance(
+		name,
+		struct initArguments = {},
+		dsl,
+		targetObject = "",
+		injector
+	){
 		return getController().getWireBox().getInstance( argumentCollection = arguments );
 	}
 

@@ -31,14 +31,8 @@
 	function testInvalidDSL(){
 		makePublic( builder, "getColdboxDSL" );
 		try {
-			c = builder.getColdBoxDSL( {
-				name : "coldbox",
-				dsl  : "coldbox:foobar"
-			} );
-			c = builder.getColdBoxDSL( {
-				name : "coldbox",
-				dsl  : "coldbox:foobar:testss"
-			} );
+			c = builder.getColdBoxDSL( { name : "coldbox", dsl : "coldbox:foobar" } );
+			c = builder.getColdBoxDSL( { name : "coldbox", dsl : "coldbox:foobar:testss" } );
 			c = builder.getColdBoxDSL( {
 				name : "coldbox",
 				dsl  : "coldbox:foobar:testss:invalid:invliad"
@@ -62,79 +56,52 @@
 
 		// stage 2
 		mockColdbox.$( "getLoaderService", this );
-		def = {
-			name : "configBean",
-			dsl  : "coldbox:loaderService"
-		};
-		c = builder.getColdBoxDSL( def );
+		def = { name : "configBean", dsl : "coldbox:loaderService" };
+		c   = builder.getColdBoxDSL( def );
 		assertEquals( this, c );
 
 		mockColdbox.$( "getRequestService", this );
-		def = {
-			name : "configBean",
-			dsl  : "coldbox:requestService"
-		};
-		c = builder.getColdBoxDSL( def );
+		def = { name : "configBean", dsl : "coldbox:requestService" };
+		c   = builder.getColdBoxDSL( def );
 		assertEquals( this, c );
 
 		mockFlash = createEmptyMock( "coldbox.system.web.flash.SessionFlash" );
 		mockColdbox.$( "getRequestService", createStub().$( "getFlashScope", mockFlash ) );
-		def = {
-			name : "flash",
-			dsl  : "coldbox:flash"
-		};
-		c = builder.getColdBoxDSL( def );
+		def = { name : "flash", dsl : "coldbox:flash" };
+		c   = builder.getColdBoxDSL( def );
 		assertEquals( mockFlash, c );
 
 		mockEvent = createEmptyMock( "coldbox.system.web.context.RequestContext" );
 		mockColdbox.$( "getRequestService", createStub().$( "getContext", mockEvent ) );
-		def = {
-			name : "event",
-			dsl  : "coldbox:requestContext"
-		};
-		c = builder.getColdBoxDSL( def );
+		def = { name : "event", dsl : "coldbox:requestContext" };
+		c   = builder.getColdBoxDSL( def );
 		assertEquals( mockEvent, c );
 
 		mockColdbox.$( "getHandlerService", this );
-		def = {
-			name : "configBean",
-			dsl  : "coldbox:handlerService"
-		};
-		c = builder.getColdBoxDSL( def );
+		def = { name : "configBean", dsl : "coldbox:handlerService" };
+		c   = builder.getColdBoxDSL( def );
 		assertEquals( this, c );
 
 		mockColdbox.$( "getInterceptorService", this );
-		def = {
-			name : "configBean",
-			dsl  : "coldbox:interceptorService"
-		};
-		c = builder.getColdBoxDSL( def );
+		def = { name : "configBean", dsl : "coldbox:interceptorService" };
+		c   = builder.getColdBoxDSL( def );
 		assertEquals( this, c );
 
 		mockColdbox.$( "getModuleService", this );
-		def = {
-			name : "configBean",
-			dsl  : "coldbox:moduleService"
-		};
-		c = builder.getColdBoxDSL( def );
+		def = { name : "configBean", dsl : "coldbox:moduleService" };
+		c   = builder.getColdBoxDSL( def );
 		assertEquals( this, c );
 
 		mockRenderer = createEmptyMock( "coldbox.system.web.Renderer" );
 		mockColdbox.$( "getRenderer", mockrenderer );
-		def = {
-			name : "renderer",
-			dsl  : "coldbox:renderer"
-		};
-		c = builder.getColdBoxDSL( def );
+		def = { name : "renderer", dsl : "coldbox:renderer" };
+		c   = builder.getColdBoxDSL( def );
 		assertEquals( mockrenderer, c );
 
 		mockMarshaller = createEmptyMock( "coldbox.system.core.conversion.DataMarshaller" );
 		mockColdbox.$( "getDataMarshaller", mockMarshaller );
-		def = {
-			name : "marshaller",
-			dsl  : "coldbox:dataMarshaller"
-		};
-		c = builder.getColdBoxDSL( def );
+		def = { name : "marshaller", dsl : "coldbox:dataMarshaller" };
+		c   = builder.getColdBoxDSL( def );
 		assertEquals( mockMarshaller, c );
 	}
 
@@ -142,10 +109,7 @@
 		makePublic( builder, "getColdboxDSL" );
 
 		// setting
-		def = {
-			name : "mySetting",
-			dsl  : "coldbox:setting"
-		};
+		def = { name : "mySetting", dsl : "coldbox:setting" };
 		mockColdBox
 			.$( "getSetting" )
 			.$args( "mySetting" )
@@ -202,10 +166,7 @@
 		assertEquals( modSettings.myModule, c );
 
 		// fwsetting
-		def = {
-			name : "mySetting",
-			dsl  : "coldbox:fwSetting"
-		};
+		def = { name : "mySetting", dsl : "coldbox:fwSetting" };
 		mockColdBox
 			.$( "getColdBoxSetting" )
 			.$args( "mySetting" )
@@ -214,10 +175,7 @@
 		assertEquals( "unitTest", c );
 
 		// interceptor
-		def = {
-			name : "ds",
-			dsl  : "coldbox:interceptor:coolAlias"
-		};
+		def    = { name : "ds", dsl : "coldbox:interceptor:coolAlias" };
 		mockIS = createStub()
 			.$( "getInterceptor" )
 			.$args( "coolAlias", true )

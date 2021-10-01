@@ -8,48 +8,47 @@
  *
  * By default, LogBox will log any warnings pertaining to itself in the CF logs
  * according to its name.
-*/
-component accessors="true"{
-
+ */
+component accessors="true" {
 
 	/**
-	* The LogBox unique ID
-	*/
+	 * The LogBox unique ID
+	 */
 	property name="logBoxID";
 
 	/**
-	* The LogBox operating version
-	*/
+	 * The LogBox operating version
+	 */
 	property name="version";
 
 	/**
-	* The appender registration map
-	*/
+	 * The appender registration map
+	 */
 	property name="appenderRegistry" type="struct";
 
 	/**
-	* The Logger registration map
-	*/
+	 * The Logger registration map
+	 */
 	property name="loggerRegistry" type="struct";
 
 	/**
-	* Category based appenders
-	*/
+	 * Category based appenders
+	 */
 	property name="categoryAppenders";
 
 	/**
-	* Configuration object
-	*/
+	 * Configuration object
+	 */
 	property name="config";
 
 	/**
-	* ColdBox linkage class
-	*/
+	 * ColdBox linkage class
+	 */
 	property name="coldbox";
 
 	/**
-	* WireBox linkage class
-	*/
+	 * WireBox linkage class
+	 */
 	property name="wirebox";
 
 	/**
@@ -60,7 +59,7 @@ component accessors="true"{
 
 	/**
 	 * The logBox task scheduler executor
-	 * @see coldbox.system.async.tasks.ScheduledExecutor
+	 * @see coldbox.system.async.executors.ScheduledExecutor
 	 */
 	property name="taskScheduler";
 
@@ -77,16 +76,16 @@ component accessors="true"{
 	 * @return A configured and loaded LogBox instance
 	 */
 	function init(
-		config="coldbox.system.logging.config.DefaultConfig",
-		coldbox="",
-		wirebox=""
+		config  = "coldbox.system.logging.config.DefaultConfig",
+		coldbox = "",
+		wirebox = ""
 	){
 		// LogBox Unique ID
-		variables.logboxID          = createObject( 'java', 'java.lang.System' ).identityHashCode( this );
+		variables.logboxID          = createObject( "java", "java.lang.System" ).identityHashCode( this );
 		// Appenders
-		variables.appenderRegistry  = structnew();
+		variables.appenderRegistry  = structNew();
 		// Loggers
-		variables.loggerRegistry    = structnew();
+		variables.loggerRegistry    = structNew();
 		// Category Appenders
 		variables.categoryAppenders = "";
 		// Version
@@ -96,7 +95,7 @@ component accessors="true"{
 		variables.coldbox = arguments.coldbox;
 		// Link incoming WireBox instance
 		variables.wirebox = arguments.wirebox;
-		
+
 
 		// Registered system appenders
 		variables.systemAppenders = directoryList(
@@ -109,16 +108,19 @@ component accessors="true"{
 		} );
 
 		// Register the task scheduler according to operating mode
-		if( isObject( variables.coldbox ) ){
-			variables.wirebox = variables.coldbox.getWireBox();
-			variables.asyncManager = variables.coldbox.getAsyncManager();
+		if ( isObject( variables.coldbox ) ) {
+			variables.wirebox       = variables.coldbox.getWireBox();
+			variables.asyncManager  = variables.coldbox.getAsyncManager();
 			variables.taskScheduler = variables.asyncManager.getExecutor( "coldbox-tasks" );
-		} else if( isObject( arguments.wirebox ) ){
-			variables.asyncManager = variables.wirebox.getAsyncManager();
+		} else if ( isObject( arguments.wirebox ) ) {
+			variables.asyncManager  = variables.wirebox.getAsyncManager();
 			variables.taskScheduler = variables.wirebox.getTaskScheduler();
 		} else {
-			variables.asyncManager = new coldbox.system.async.AsyncManager();
-			variables.taskScheduler = variables.asyncManager.newScheduledExecutor( name : "logbox-tasks", threads : 20 );
+			variables.asyncManager  = new coldbox.system.async.AsyncManager();
+			variables.taskScheduler = variables.asyncManager.newScheduledExecutor(
+				name   : "logbox-tasks",
+				threads: 20
+			);
 		}
 
 		// Configure LogBox
@@ -134,12 +136,11 @@ component accessors="true"{
 	 * @config.doc_generic coldbox.system.logging.config.LogBoxConfig
 	 */
 	function configure( required config ){
-		lock name="#variables.logBoxID#.logbox.config" type="exclusive" timeout="30" throwOnTimeout=true{
-
+		lock name="#variables.logBoxID#.logbox.config" type="exclusive" timeout="30" throwOnTimeout=true {
 			// Do we need to build the config object?
-			if( isSimpleValue( arguments.config ) ){
+			if ( isSimpleValue( arguments.config ) ) {
 				arguments.config = new coldbox.system.logging.config.LogBoxConfig(
-					CFCConfigPath : arguments.config
+					CFCConfigPath: arguments.config
 				);
 			}
 
@@ -147,31 +148,29 @@ component accessors="true"{
 			variables.config = arguments.config.validate();
 
 			// Reset Registries
-			variables.appenderRegistry 	= structnew();
-			variables.loggerRegistry 	= structnew();
+			variables.appenderRegistry = structNew();
+			variables.loggerRegistry   = structNew();
 
-			//Get appender definitions
+			// Get appender definitions
 			var appenders = variables.config.getAllAppenders();
 
 			// Register All Appenders configured
-			for( var key in appenders ){
-				registerAppender( argumentCollection=appenders[ key ] );
+			for ( var key in appenders ) {
+				registerAppender( argumentCollection = appenders[ key ] );
 			}
 
 			// Get Root def
 			var rootConfig = variables.config.getRoot();
 			// Create Root Logger
-			var args = {
-				category = "ROOT",
-				levelMin = rootConfig.levelMin,
-				levelMax = rootConfig.levelMax,
-				appenders = getAppendersMap( rootConfig.appenders )
+			var args       = {
+				category  : "ROOT",
+				levelMin  : rootConfig.levelMin,
+				levelMax  : rootConfig.levelMax,
+				appenders : getAppendersMap( rootConfig.appenders )
 			};
 
-			//Save in Registry
-			variables.loggerRegistry = {
-				"ROOT" = new coldbox.system.logging.Logger( argumentCollection=args )
-			};
+			// Save in Registry
+			variables.loggerRegistry = { "ROOT" : new coldbox.system.logging.Logger( argumentCollection = args ) };
 		}
 	}
 
@@ -179,14 +178,13 @@ component accessors="true"{
 	 * Shutdown the injector gracefully by calling the shutdown events internally.
 	 **/
 	function shutdown(){
-
 		// Check if config has onShutdown convention
-		if( structKeyExists( variables.config, "onShutdown" ) ){
+		if ( structKeyExists( variables.config, "onShutdown" ) ) {
 			variables.config.onShutdown( this );
 		}
 
 		// Shutdown Executors if not in ColdBox Mode or WireBox mode
-		if( !isObject( variables.coldbox ) && !isObject( variables.wirebox ) ){
+		if ( !isObject( variables.coldbox ) && !isObject( variables.wirebox ) ) {
 			variables.asyncManager.shutdownAllExecutors( force = true );
 		}
 
@@ -216,7 +214,7 @@ component accessors="true"{
 		var root = getRootLogger();
 
 		// is category object?
-		if( isObject( arguments.category ) ){
+		if ( isObject( arguments.category ) ) {
 			arguments.category = getMetadata( arguments.category ).name;
 		}
 
@@ -224,37 +222,41 @@ component accessors="true"{
 		arguments.category = trim( arguments.category );
 
 		// Is logger by category name created already?
-		if( structKeyExists( variables.loggerRegistry, arguments.category ) ){
+		if ( structKeyExists( variables.loggerRegistry, arguments.category ) ) {
 			return variables.loggerRegistry[ arguments.category ];
 		}
 
 		// Do we have a category definition, so we can build it?
 		var args = {};
-		if( variables.config.categoryExists( arguments.category ) ){
+		if ( variables.config.categoryExists( arguments.category ) ) {
 			var categoryConfig = variables.config.getCategory( arguments.category );
 			// Setup creation arguments
-			args = {
-				category 	= categoryConfig.name,
-				levelMin 	= categoryConfig.levelMin,
-				levelMax 	= categoryConfig.levelMax,
-				appenders 	= getAppendersMap( categoryConfig.appenders )
+			args               = {
+				category  : categoryConfig.name,
+				levelMin  : categoryConfig.levelMin,
+				levelMax  : categoryConfig.levelMax,
+				appenders : getAppendersMap( categoryConfig.appenders )
 			};
 		} else {
 			// Do Category Inheritance? or else just return the root logger.
 			root = locateCategoryParentLogger( arguments.category );
 			// Build it out as per Root logger
 			args = {
-				category = arguments.category,
-				levelMin = root.getLevelMin(),
-				levelMax = root.getLevelMax()
+				category : arguments.category,
+				levelMin : root.getLevelMin(),
+				levelMax : root.getLevelMax()
 			};
 		}
 
 		// Create it
-		lock name="#variables.logboxID#.logBox.logger.#arguments.category#" type="exclusive" throwontimeout="true" timeout="30"{
-			if( NOT structKeyExists( variables.loggerRegistry, arguments.category ) ){
+		lock
+			name          ="#variables.logboxID#.logBox.logger.#arguments.category#"
+			type          ="exclusive"
+			throwontimeout="true"
+			timeout       ="30" {
+			if ( NOT structKeyExists( variables.loggerRegistry, arguments.category ) ) {
 				// Create logger
-				var oLogger = new coldbox.system.logging.Logger( argumentCollection=args );
+				var oLogger = new coldbox.system.logging.Logger( argumentCollection = args );
 				// Inject Root Logger
 				oLogger.setRootLogger( root );
 				// Store it
@@ -292,30 +294,29 @@ component accessors="true"{
 	LogBox function registerAppender(
 		required name,
 		required class,
-		struct properties={},
-		layout="",
-		numeric levelMin=0,
-		numeric levelMax=4
+		struct properties = {},
+		layout            = "",
+		numeric levelMin  = 0,
+		numeric levelMax  = 4
 	){
-
-		if( !structKeyExists( variables.appenderRegistry, arguments.name ) ){
-
-			lock name="#variables.logboxID#.registerappender.#name#" type="exclusive" timeout="15" throwOnTimeout="true"{
-
-				if( !structKeyExists( variables.appenderRegistry, arguments.name ) ){
-
+		if ( !structKeyExists( variables.appenderRegistry, arguments.name ) ) {
+			lock
+				name          ="#variables.logboxID#.registerappender.#name#"
+				type          ="exclusive"
+				timeout       ="15"
+				throwOnTimeout="true" {
+				if ( !structKeyExists( variables.appenderRegistry, arguments.name ) ) {
 					// Create it and store it
-					variables.appenderRegistry[ arguments.name ] = new "#getLoggerClass( arguments.class )#"( argumentCollection=arguments )
-						.setLogBox( this )
+					variables.appenderRegistry[ arguments.name ] = new "#getLoggerClass( arguments.class )#"(
+						argumentCollection = arguments
+					).setLogBox( this )
 						.setColdBox( variables.coldbox )
 						.setWireBox( variables.wirebox )
 						.onRegistration()
 						.setInitialized( true );
-
 				}
-
-			} // end lock
-
+			}
+			// end lock
 		}
 
 		return this;
@@ -335,7 +336,7 @@ component accessors="true"{
 	 */
 	private function getLoggerClass( required class ){
 		// is this a local class?
-		if( arrayFindNoCase( variables.systemAppenders, arguments.class ) ){
+		if ( arrayFindNoCase( variables.systemAppenders, arguments.class ) ) {
 			return "coldbox.system.logging.appenders.#arguments.class#";
 		}
 
@@ -352,21 +353,25 @@ component accessors="true"{
 		var parentCategory = "";
 
 		// category len check
-		if( len( arguments.category ) ){
-			parentCategory = listDeleteAt( arguments.category, listLen( arguments.category, "." ), "." );
+		if ( len( arguments.category ) ) {
+			parentCategory = listDeleteAt(
+				arguments.category,
+				listLen( arguments.category, "." ),
+				"."
+			);
 		}
 
 		// Check if parent Category is empty
-		if( len( parentCategory ) EQ 0 ){
+		if ( len( parentCategory ) EQ 0 ) {
 			// Just return the root logger, nothing found.
 			return getRootLogger();
 		}
 		// Does it exist already in the instantiated loggers?
-		if( structKeyExists( variables.loggerRegistry, parentCategory ) ){
+		if ( structKeyExists( variables.loggerRegistry, parentCategory ) ) {
 			return variables.loggerRegistry[ parentCategory ];
 		}
 		// Do we need to create it, lazy loading?
-		if( variables.config.categoryExists( parentCategory ) ){
+		if ( variables.config.categoryExists( parentCategory ) ) {
 			return getLogger( parentCategory );
 		}
 		// Else, it was not located, recurse
@@ -383,9 +388,14 @@ component accessors="true"{
 			.listToArray()
 			.reduce( function( result, item, index ){
 				var target = {};
-				if( !isNull( arguments.result ) ){
+				if ( !isNull( arguments.result ) ) {
 					target = result;
 				}
+
+				if ( !variables.appenderRegistry.keyExists( item ) )
+					// In the event that an appender was added after the initial config load
+				registerAppender( argumentCollection: variables.config.getAllAppenders()[ item ] );
+
 				target[ item ] = variables.appenderRegistry[ item ];
 				return target;
 			} );

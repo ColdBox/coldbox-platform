@@ -62,4 +62,12 @@ component
 		structDelete( request, "_lastInvalidEvent" );
 	}
 
+	function isAdobe(){
+		return !server.keyExists( "lucee" );
+	}
+
+	function isLucee(){
+		return server.keyExists( "lucee" );
+	}
+
 }

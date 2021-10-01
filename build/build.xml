@@ -47,9 +47,6 @@
 		<loadproperties srcFile="build/build.properties"/>
 
 		<!-- Build Conditions -->
-		<condition property="isTravis" else="false">
-			<isset property="isTravis"/>
-		</condition>
 		<condition property="build.branch" else="development">
 			<isset property="build.branch"/>
 		</condition>
@@ -88,45 +85,48 @@
 
 	<!-- Run Tests For Platform -->
     <target name="run-tests" description="Runs the tests for entire suite" depends="init" if="tests.execute">
-        <!-- Determine Test target: Are we jenkins or local or travis -->
-        <if>
-			<not><equals arg1="${environment}" arg2="auto" /></not>
-			<then>
-				<property name="test.target" value="run" />
-			</then>
-			<else>
-				<property name="test.target" value="run-junit" />
-			</else>
-		</if>
-
     	<!-- Run for Core -->
+		<mkdir dir="tests/results/core" />
 		<exec executable="box" dir="${basedir}" failonerror="true">
-			<arg line="testbox run runner='http://localhost:${server.port}/tests/runner.cfm' verbose=false" />
+			<arg line="testbox run runner='http://localhost:${server.port}/tests/runner.cfm' verbose=false outputFile='tests/results/core/test-results' outputFormats='json,antjunit'" />
+		</exec>
+
+		<!-- Run for Integration -->
+		<mkdir dir="tests/results/integration" />
+		<exec executable="box" dir="${basedir}" failonerror="true">
+			<arg line="testbox run runner='http://localhost:${server.port}/tests/runner-integration.cfm' verbose=false outputFile='tests/results/integration/test-results' outputFormats='json,antjunit'" />
 		</exec>
 
     	<!-- Run for CacheBox -->
+		<mkdir dir="tests/results/cachebox" />
     	<exec executable="box" dir="${basedir}" failonerror="true">
-			<arg line="testbox run runner='http://localhost:${server.port}/tests/runner-cachebox.cfm' verbose=false" />
+			<arg line="testbox run runner='http://localhost:${server.port}/tests/runner-cachebox.cfm' verbose=false outputFile='tests/results/cachebox/test-results' outputFormats='json,antjunit'" />
 		</exec>
 
     	<!-- Run for LogBox -->
+		<mkdir dir="tests/results/logbox" />
     	<exec executable="box" dir="${basedir}" failonerror="true">
-			<arg line="testbox run runner='http://localhost:${server.port}/tests/runner-logbox.cfm' verbose=false" />
+			<arg line="testbox run runner='http://localhost:${server.port}/tests/runner-logbox.cfm' verbose=false outputFile='tests/results/logbox/test-results' outputFormats='json,antjunit'" />
 		</exec>
 
     	<!-- Run for WireBox -->
+		<mkdir dir="tests/results/wirebox" />
     	<exec executable="box" dir="${basedir}" failonerror="true">
-			<arg line="testbox run runner='http://localhost:${server.port}/tests/runner-wirebox.cfm' verbose=false" />
+			<arg line="testbox run runner='http://localhost:${server.port}/tests/runner-wirebox.cfm' verbose=false outputFile='tests/results/wirebox/test-results' outputFormats='json,antjunit'" />
 		</exec>
 
 		<!-- Run for Async -->
+		<mkdir dir="tests/results/async" />
 		<exec executable="box" dir="${basedir}" failonerror="true">
-			<arg line="testbox run runner='http://localhost:${server.port}/tests/runner-async.cfm' verbose=false" />
+			<arg line="testbox run runner='http://localhost:${server.port}/tests/runner-async.cfm' verbose=true outputFile='tests/results/async/test-results' outputFormats='json,antjunit'" />
 		</exec>
     </target>
 
 	<!-- Build All Releases -->
-	<target name="build.all" description="Builds ColdBox + Standalone Libraries" depends="run-tests,build.coldbox,build.cachebox,build.wirebox,build.logbox">
+	<target
+		name="build.all"
+		description="Builds ColdBox + Standalone Libraries"
+		depends="build.coldbox,build.cachebox,build.wirebox,build.logbox">
 	</target>
 
 	<!-- Build ColdBox Distribution -->

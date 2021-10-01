@@ -73,11 +73,18 @@
 				fileAppender : {
 					class      : "RollingFileAppender",
 					properties : {
-						async       : true,
 						filePath    : "/cbTestHarness/logs",
 						fileName    : coldbox.appName,
 						autoExpand  : true,
 						fileMaxSize : "100"
+					}
+				},
+				db : {
+					class : "DBAppender",
+					properties : {
+						dsn : "coolblog",
+						table : "logs",
+						autoCreate : true
 					}
 				}
 			},

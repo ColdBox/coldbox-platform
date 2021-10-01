@@ -485,9 +485,9 @@ component
 	 * @handler The handler to execute if pattern matched.
 	 * @action The action in a handler to execute if a pattern is matched.  This can also be a structure based on the HTTP method(GET,POST,PUT,DELETE). ex: {GET:'show', PUT:'update', DELETE:'delete', POST:'save'}
 	 * @packageResolverExempt If this is set to true, then the interceptor will not try to do handler package resolving. Else a package will always be resolved. Only works if :handler is in a pattern
-	 * @matchVariables A string of name-value pair variables to add to the request collection when this pattern matches. This is a comma delimmitted list. Ex: spaceFound=true,missingAction=onTest
+	 * @matchVariables A string of name-value pair variables to add to the request collection when this pattern matches. This is a comma delimited list. Ex: spaceFound=true,missingAction=onTest
 	 * @view The view to dispatch if pattern matches.  No event will be fired, so handler,action will be ignored.
-	 * @viewNoLayout If view is choosen, then you can choose to override and not display a layout with the view. Else the view renders in the assigned layout.
+	 * @viewNoLayout If view is chosen, then you can choose to override and not display a layout with the view. Else the view renders in the assigned layout.
 	 * @valuePairTranslation Activate convention name value pair translations or not. Turned on by default
 	 * @constraints A structure of regex constraint overrides for variable placeholders. The key is the name of the variable, the value is the regex to try to match.
 	 * @module The module to add this route to
@@ -571,7 +571,7 @@ component
 	/**
 	 * This is the new approach to the <code>with</code> closure approach which has been marked as deprecated.
 	 * You can pass any route option via the <code>options</code> structure and those values will be prefixed against
-	 * any routing values done withing the <code>body</code> closure.
+	 * any routing values done within the <code>body</code> closure.
 	 *
 	 * <pre>
 	 * group( { pattern="/api", target="api", handler="api" }, function( options ){
@@ -602,7 +602,12 @@ component
 
 	/**
 	 * Create all RESTful routes for a resource. It will provide automagic mappings between HTTP verbs and URLs to event handlers and actions.
-	 * By convention, the name of the resource maps to the name of the event handler.
+	 *
+	 * By convention the following rules apply
+	 * - The name of the resource maps to the name of the event handler
+	 * - The default paremeter name is called `:id`
+	 * - The available actions are: index, new, create, show, edit, update, delete
+	 *
 	 * Example: `resource = photos` Then we will create the following routes:
 	 * - `/photos` : `GET` -> `photos.index` Display a list of photos
 	 * - `/photos/new` : `GET` -> `photos.new` Returns an HTML form for creating a new photo
@@ -612,7 +617,7 @@ component
 	 * - `/photos/:id` : `PUT/PATCH` -> `photos.update` Update a specific photo
 	 * - `/photos/:id` : `DELETE` -> `photos.delete` Delete a specific photo
 	 *
-	 * @resource The name of a single resource or a list of resources or an array of resources
+	 * @resource The name of a single resource to map
 	 * @handler The handler for the route. Defaults to the resource name.
 	 * @parameterName The name of the id/parameter for the resource. Defaults to `id`.
 	 * @only Limit routes created with only this list or array of actions, e.g. "index,show"
@@ -624,7 +629,7 @@ component
 	 */
 	function resources(
 		required resource,
-		handler          = arguments.resource,
+		handler,
 		parameterName    = "id",
 		only             = [],
 		except           = [],
@@ -640,92 +645,126 @@ component
 		if ( !isArray( arguments.except ) ) {
 			arguments.except = listToArray( arguments.except );
 		}
-		if ( isSimpleValue( arguments.resource ) ) {
-			arguments.resource = listToArray( arguments.resource );
+
+		// Init the action set
+		var actionSet = {};
+		// Default pattern or look at the incoming pattern sent?
+		var thisPattern = ( len( arguments.pattern ) ? arguments.pattern : "/#arguments.resource#" );
+
+		// Edit
+		actionSet = filterRouteActions(
+			{ GET : "edit" },
+			arguments.only,
+			arguments.except
+		);
+
+		if ( !structIsEmpty( actionSet ) ) {
+			addRoute(
+				pattern  : "#thisPattern#/:#arguments.parameterName#/edit",
+				handler  : isNull( arguments.handler ) ? arguments.resource : arguments.handler,
+				action   : actionSet,
+				module   : arguments.module,
+				namespace: arguments.namespace,
+				meta     : arguments.meta
+			);
 		}
 
-		var actionSet = {};
-
-		// Register all resources
-		for ( var thisResource in arguments.resource ) {
-			// Default pattern or look at the incoming pattern sent?
-			var thisPattern = ( len( arguments.pattern ) ? arguments.pattern : "/#thisResource#" );
-
-			// Edit Routes
-			actionSet = filterRouteActions(
-				{ GET : "edit" },
-				arguments.only,
-				arguments.except
+		// New
+		actionSet = filterRouteActions(
+			{ GET : "new" },
+			arguments.only,
+			arguments.except
+		);
+		if ( !structIsEmpty( actionSet ) ) {
+			addRoute(
+				pattern  : "#thisPattern#/new",
+				handler  : isNull( arguments.handler ) ? arguments.resource : arguments.handler,
+				action   : actionSet,
+				module   : arguments.module,
+				namespace: arguments.namespace,
+				meta     : arguments.meta
 			);
-			if ( !structIsEmpty( actionSet ) ) {
-				addRoute(
-					pattern  : "#thisPattern#/:#arguments.parameterName#/edit",
-					handler  : arguments.handler,
-					action   : actionSet,
-					module   : arguments.module,
-					namespace: arguments.namespace,
-					meta     : arguments.meta
-				);
-			}
+		}
 
-			// New Routes
-			actionSet = filterRouteActions(
-				{ GET : "new" },
-				arguments.only,
-				arguments.except
+		// Update, Delete, Show
+		actionSet = filterRouteActions(
+			{
+				PUT    : "update",
+				PATCH  : "update",
+				DELETE : "delete",
+				GET    : "show"
+			},
+			arguments.only,
+			arguments.except
+		);
+		if ( !structIsEmpty( actionSet ) ) {
+			addRoute(
+				pattern  : "#thisPattern#/:#arguments.parameterName#",
+				handler  : isNull( arguments.handler ) ? arguments.resource : arguments.handler,
+				action   : actionSet,
+				module   : arguments.module,
+				namespace: arguments.namespace,
+				meta     : arguments.meta
 			);
-			if ( !structIsEmpty( actionSet ) ) {
-				addRoute(
-					pattern  : "#thisPattern#/new",
-					handler  : arguments.handler,
-					action   : actionSet,
-					module   : arguments.module,
-					namespace: arguments.namespace,
-					meta     : arguments.meta
-				);
-			}
+		}
 
-			// update, delete and show routes
-			actionSet = filterRouteActions(
-				{
-					PUT    : "update",
-					PATCH  : "update",
-					DELETE : "delete",
-					GET    : "show"
-				},
-				arguments.only,
-				arguments.except
+		// Index + Create
+		actionSet = filterRouteActions(
+			{ GET : "index", POST : "create" },
+			arguments.only,
+			arguments.except
+		);
+		if ( !structIsEmpty( actionSet ) ) {
+			addRoute(
+				pattern  : "#thisPattern#",
+				handler  : isNull( arguments.handler ) ? arguments.resource : arguments.handler,
+				action   : actionSet,
+				module   : arguments.module,
+				namespace: arguments.namespace,
+				meta     : arguments.meta
 			);
-			if ( !structIsEmpty( actionSet ) ) {
-				addRoute(
-					pattern  : "#thisPattern#/:#arguments.parameterName#",
-					handler  : arguments.handler,
-					action   : actionSet,
-					module   : arguments.module,
-					namespace: arguments.namespace,
-					meta     : arguments.meta
-				);
-			}
-
-			// Index + Creation
-			actionSet = filterRouteActions(
-				{ GET : "index", POST : "create" },
-				arguments.only,
-				arguments.except
-			);
-			if ( !structIsEmpty( actionSet ) ) {
-				addRoute(
-					pattern  : "#thisPattern#",
-					handler  : arguments.handler,
-					action   : actionSet,
-					module   : arguments.module,
-					namespace: arguments.namespace,
-					meta     : arguments.meta
-				);
-			}
 		}
 
 		return this;
+	}
+
+	/**
+	 * Create all API RESTful routes for a resource. It will provide automagic mappings between HTTP verbs and URLs to event handlers and actions.
+	 *
+	 * By convention the following rules apply
+	 * - The name of the resource maps to the name of the event handler
+	 * - The default paremeter name is called `:id`
+	 * - The available actions are: index, create, show, update, delete
+	 *
+	 * Example: `resource = photos` Then we will create the following routes:
+	 * - `/photos` : `GET` -> `photos.index` Get a list of photos from the API
+	 * - `/photos` : `POST` -> `photos.create` Create a new photo
+	 * - `/photos/:id` : `GET` -> `photos.show` Get a specific photo from the API
+	 * - `/photos/:id` : `PUT/PATCH` -> `photos.update` Update a specific photo
+	 * - `/photos/:id` : `DELETE` -> `photos.delete` Delete a specific photo
+	 *
+	 * @resource The name of a single resource to map
+	 * @handler The handler for the route. Defaults to the resource name.
+	 * @parameterName The name of the id/parameter for the resource. Defaults to `id`.
+	 * @only Limit routes created with only this list or array of actions, e.g. "index,show"
+	 * @except Exclude routes with an except list or array of actions, e.g. "show"
+	 * @module If passed, the module these resources will be attached to.
+	 * @namespace If passed, the namespace these resources will be attached to.
+	 * @pattern If passed, the actual URL pattern to use, else it defaults to `/#arguments.resource#` the name of the resource.
+	 * @meta A struct of metadata to store with ALL the routes created from this resource
+	 */
+	function apiResources(
+		required resource,
+		handler,
+		parameterName    = "id",
+		only             = [],
+		except           = [ "new" , "edit" ],
+		string module    = "",
+		string namespace = "",
+		string pattern   = "",
+		struct meta      = {}
+	){
+		return this.resources( argumentCollection = arguments );
 	}
 
 	/**
@@ -735,9 +774,9 @@ component
 	 * @handler The handler to execute if pattern matched.
 	 * @action The action in a handler to execute if a pattern is matched.  This can also be a structure based on the HTTP method(GET,POST,PUT,DELETE). ex: {GET:'show', PUT:'update', DELETE:'delete', POST:'save'}
 	 * @packageResolverExempt If this is set to true, then the interceptor will not try to do handler package resolving. Else a package will always be resolved. Only works if :handler is in a pattern
-	 * @matchVariables DEPRECATED: Use RC or PRC structs instead. A string of name-value pair variables to add to the request collection when this pattern matches. This is a comma delimmitted list. Ex: spaceFound=true,missingAction=onTest
+	 * @matchVariables DEPRECATED: Use RC or PRC structs instead. A string of name-value pair variables to add to the request collection when this pattern matches. This is a comma delimited list. Ex: spaceFound=true,missingAction=onTest
 	 * @view The view to dispatch if pattern matches.  No event will be fired, so handler,action will be ignored.
-	 * @viewNoLayout If view is choosen, then you can choose to override and not display a layout with the view. Else the view renders in the assigned layout.
+	 * @viewNoLayout If view is chosen, then you can choose to override and not display a layout with the view. Else the view renders in the assigned layout.
 	 * @valuePairTranslation  Activate convention name value pair translations or not. Turned on by default
 	 * @constraints A structure of regex constraint overrides for variable placeholders. The key is the name of the variable, the value is the regex to try to match.
 	 * @module The module to add this route to
@@ -757,8 +796,8 @@ component
 	 * @verbs The allowed HTTP Verbs for the route
 	 * @layout The view layout to use
 	 * @headers The HTTP headers to attach to the response if route matches
-	 * @rc The RC name value pairs to attach if the reponse matches
-	 * @prc The PRC name value pairs to attach if the reponse matches
+	 * @rc The RC name value pairs to attach if the response matches
+	 * @prc The PRC name value pairs to attach if the response matches
 	 * @viewModule The module the view belongs to
 	 * @layoutModule The module the layout belongs to
 	 * @meta Additional metadata to add to the incoming route
@@ -848,16 +887,21 @@ component
 			var actions         = {};
 			var matchingActions = isStruct( matchingRoute.action ) ? matchingRoute.action : {};
 			structAppend( actions, matchingActions, true );
-			for ( var verb in matchingRoute.verbs ) {
-				structInsert( actions, verb, matchingRoute.event );
+			if ( matchingRoute.event != "" ) {
+				for ( var verb in matchingRoute.verbs ) {
+					structInsert( actions, verb, matchingRoute.event );
+				}
 			}
 			var thisRouteActions = isStruct( thisRoute.action ) ? thisRoute.action : {};
 			structAppend( actions, thisRouteActions, true );
-			for ( var verb in thisRoute.verbs ) {
-				structInsert( actions, verb, thisRoute.event );
+			if ( thisRoute.event != "" ) {
+				for ( var verb in thisRoute.verbs ) {
+					structInsert( actions, verb, thisRoute.event );
+				}
 			}
 			matchingRoute.action = actions;
-			matchingRoute.verbs  = "";
+			matchingRoute.verbs  = structKeyList( actions );
+			matchingRoute.event  = "";
 			return this;
 		}
 
@@ -920,7 +964,10 @@ component
 						// Check Digits Repetions
 						if ( find( "{", thisPattern ) ) {
 							thisRegex = listFirst( thisRegex, "{" ) & "{#listLast( thisPattern, "{" )#)";
-							arrayAppend( thisRoute.patternParams, replace( listFirst( thisPattern, "{" ), ":", "" ) );
+							arrayAppend(
+								thisRoute.patternParams,
+								replace( listFirst( thisPattern, "{" ), ":", "" )
+							);
 						} else {
 							thisRegex = thisRegex & "+?)";
 							arrayAppend( thisRoute.patternParams, thisPatternParam );
@@ -1021,7 +1068,10 @@ component
 							// Check Digits Repetions
 							if ( find( "{", thisDomain ) ) {
 								thisRegex = listFirst( thisRegex, "{" ) & "{#listLast( thisDomain, "{" )#)";
-								arrayAppend( thisRoute.domainParams, replace( listFirst( thisDomain, "{" ), ":", "" ) );
+								arrayAppend(
+									thisRoute.domainParams,
+									replace( listFirst( thisDomain, "{" ), ":", "" )
+								);
 							} else {
 								thisRegex = thisRegex & "+?)";
 								arrayAppend( thisRoute.domainParams, thisDomainParam );
@@ -1157,7 +1207,7 @@ component
 
 	/**
 	 * Initiate a new route registration.  Please note that you must finalize the registration by calling a terminator
-	 * fluently.  Unless, you pass in a target which can be a reponse closure/lambda or an event string.
+	 * fluently.  Unless, you pass in a target which can be a response closure/lambda or an event string.
 	 *
 	 * <pre>
 	 * // with terminator
@@ -1638,7 +1688,7 @@ component
 	}
 
 	/**
-	 * Turns on/off the value pair translator from extra metdata in a URL
+	 * Turns on/off the value pair translator from extra metadata in a URL
 	 * <pre>
 	 * route( "hello", "main.index" ).valuePairTranslation( false );
 	 * </pre>
@@ -1877,7 +1927,10 @@ component
 	){
 		// Arg Check
 		if ( !isClosure( arguments.body ) && !isCustomFunction( arguments.body ) && !isSimpleValue( arguments.body ) ) {
-			throw( type: "InvalidArgumentException", message: "The 'body' argument is not of type closure or string" );
+			throw(
+				type   : "InvalidArgumentException",
+				message: "The 'body' argument is not of type closure or string"
+			);
 		}
 		// process a with closure if not empty
 		if ( !variables.withClosure.isEmpty() ) {
@@ -1998,7 +2051,11 @@ component
 			}
 		}
 
-		if ( structKeyExists( arguments, "except" ) && !isNull( arguments.except ) && !arrayIsEmpty( arguments.except ) ) {
+		if (
+			structKeyExists( arguments, "except" ) && !isNull( arguments.except ) && !arrayIsEmpty(
+				arguments.except
+			)
+		) {
 			for ( var HTTPVerb in arguments.initial ) {
 				var methodName = arguments.initial[ HTTPVerb ];
 				for ( var exceptAction in arguments.except ) {

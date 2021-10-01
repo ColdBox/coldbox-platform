@@ -6,7 +6,7 @@
  *
  * The main interface to produce a ColdBox Application cache.
  */
-interface extends="coldbox.system.cache.providers.ICacheProvider"{
+interface extends="coldbox.system.cache.providers.ICacheProvider" {
 
 	/**
 	 * Get the cached view key prefix which is necessary for view caching
@@ -59,17 +59,17 @@ interface extends="coldbox.system.cache.providers.ICacheProvider"{
 	 *
 	 * @return IColdboxApplicationCache
 	 */
-	function clearEvent( required eventSnippet, queryString="" );
+	function clearEvent( required eventSnippet, queryString = "" );
 
 	/**
 	 * Clears all the event permutations from the cache according to the list of snippets and querystrings. Be careful when using incomplete event name with query strings as partial event names are not guaranteed to match with query string permutations
 	 *
-	 * @eventSnippet The comma-delimmitted list event snippet to clear on. Can be partial or full
-	 * @queryString The comma-delimmitted list of queryStrings passed in. If passed in, it will create a unique hash out of it. For purging purposes.  If passed in the list length must be equal to the list length of the event snippets passed in
+	 * @eventSnippet The comma-delimited list event snippet to clear on. Can be partial or full
+	 * @queryString The comma-delimited list of queryStrings passed in. If passed in, it will create a unique hash out of it. For purging purposes.  If passed in the list length must be equal to the list length of the event snippets passed in
 	 *
 	 * @return IColdboxApplicationCache
 	 */
-	function clearEventMulti( required eventsnippets, queryString="" );
+	function clearEventMulti( required eventsnippets, queryString = "" );
 
 	/**
 	 * Clears all view name permutations from the cache according to the view name
@@ -83,7 +83,7 @@ interface extends="coldbox.system.cache.providers.ICacheProvider"{
 	/**
 	 * Clears all view name permutations from the cache according to the view name.
 	 *
-	 * @viewSnippets The comma-delimmitted list or array of view snippet to clear on. Can be partial or full
+	 * @viewSnippets The comma-delimited list or array of view snippet to clear on. Can be partial or full
 	 *
 	 * @return IColdboxApplicationCache
 	 */

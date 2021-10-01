@@ -1,11 +1,10 @@
-component extends="tests.resources.BaseIntegrationTest"{
+component extends="tests.resources.BaseIntegrationTest" {
 
 	/*********************************** BDD SUITES ***********************************/
 
 	function run(){
 		describe( "Event Execution System", function(){
 			beforeEach( function( currentSpec ){
-				structDelete( request, "_lastInvalidEvent" );
 				// Setup as a new ColdBox request, VERY IMPORTANT. ELSE EVERYTHING LOOKS LIKE THE SAME REQUEST.
 				setup();
 			} );
@@ -13,10 +12,7 @@ component extends="tests.resources.BaseIntegrationTest"{
 			story( "I want to execute private event actions", function(){
 				given( "a private event string: main.testPrivateActions", function(){
 					then( "it should execute it privately", function(){
-						var e = execute(
-							event         = "main.testPrivateActions",
-							renderResults = true
-						);
+						var e = this.get( "main/testPrivateActions" );
 						expect( e.getRenderedContent() ).toInclude( "Private actions rule" );
 					} );
 				} );
@@ -26,10 +22,8 @@ component extends="tests.resources.BaseIntegrationTest"{
 				given( "an invalid HTTP method", function(){
 					then( "it should fire the localized onInvalidHTTPMethod", function(){
 						// Execute
-						var e = this.GET( "rendering.testHTTPMethod" );
-						expect( e.getRenderedContent() ).toInclude(
-							"Yep, onInvalidHTTPMethod works!"
-						);
+						var e = this.GET( "rendering/testHTTPMethod" );
+						expect( e.getRenderedContent() ).toInclude( "Yep, onInvalidHTTPMethod works!" );
 					} );
 				} );
 			} );
@@ -37,13 +31,8 @@ component extends="tests.resources.BaseIntegrationTest"{
 			story( "I want to execute a global invalid http method", function(){
 				given( "an invalid HTTP Method with no localized onInvalidHTTPMethod action", function(){
 					then( "it should fire the global invalid http handler", function(){
-						// Mock to invalid HTTP method
-						prepareMock( getRequestContext() ).$( "getHTTPMethod", "DELETE" );
 						// Execute
-						var e = execute(
-							event         = "main.index",
-							renderResults = true
-						);
+						var e = this.delete( "main/index" );
 						expect( e.getRenderedContent() ).toInclude( "invalid http: main.index" );
 						expect( e.getStatusCode() ).toBe( 405 );
 					} );
@@ -53,10 +42,7 @@ component extends="tests.resources.BaseIntegrationTest"{
 			story( "I want to execute a global invalid event handler", function(){
 				given( "an invalid event", function(){
 					then( "it should fire the global invalid event handler", function(){
-						var e = execute(
-							event         = "does.not.exist",
-							renderResults = true
-						);
+						var e = this.get( "does.not.exist" );
 						expect( e.getStatusCode() ).toBe( 404 );
 					} );
 				} );
@@ -80,10 +66,7 @@ component extends="tests.resources.BaseIntegrationTest"{
 			story( "I want to run named routes via runRoute()", function(){
 				given( "a valid route and params with no caching", function(){
 					then( "it should execute the route event", function(){
-						var event = execute(
-							event         = "main.routeRunner",
-							renderResults = true
-						);
+						var event = execute( event = "main.routeRunner", renderResults = true );
 						expect( event.getRenderedContent() ).toInclude( "unit test!" );
 					} );
 				} );
@@ -91,10 +74,7 @@ component extends="tests.resources.BaseIntegrationTest"{
 					then( "it should execute the route event", function(){
 						var cache = getCache( "template" );
 						cache.clearAll();
-						var event = execute(
-							event         = "main.routeRunnerWithCaching",
-							renderResults = true
-						);
+						var event = execute( event = "main.routeRunnerWithCaching", renderResults = true );
 						expect( event.getRenderedContent() ).toInclude( "unit test!" );
 						expect( cache.getSize() ).toBeGTE( 1 );
 					} );

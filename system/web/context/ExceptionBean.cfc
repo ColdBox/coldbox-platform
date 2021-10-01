@@ -100,12 +100,7 @@ component accessors="true" {
 	 * Get error stackTrace
 	 */
 	function getStackTrace(){
-		if (
-			structKeyExists(
-				variables.exceptionStruct,
-				"StackTrace"
-			)
-		) {
+		if ( structKeyExists( variables.exceptionStruct, "StackTrace" ) ) {
 			return variables.exceptionStruct.StackTrace;
 		}
 		return variables.STRINGNULL;
@@ -115,12 +110,7 @@ component accessors="true" {
 	 * Get error tag context
 	 */
 	array function getTagContext(){
-		if (
-			structKeyExists(
-				variables.exceptionStruct,
-				"TagContext"
-			)
-		) {
+		if ( structKeyExists( variables.exceptionStruct, "TagContext" ) ) {
 			return variables.exceptionStruct.TagContext;
 		}
 		return variables.ARRAYNULL;
@@ -157,12 +147,7 @@ component accessors="true" {
 	 * Get native error code
 	 */
 	function getNativeErrorCode(){
-		if (
-			structKeyExists(
-				variables.exceptionStruct,
-				"nativeErrorCode"
-			)
-		) {
+		if ( structKeyExists( variables.exceptionStruct, "nativeErrorCode" ) ) {
 			return variables.exceptionStruct.nativeErrorCode;
 		}
 		return variables.STRINGNULL;
@@ -172,12 +157,7 @@ component accessors="true" {
 	 * Get SQL State
 	 */
 	function getSqlState(){
-		if (
-			structKeyExists(
-				variables.exceptionStruct,
-				"sqlState"
-			)
-		) {
+		if ( structKeyExists( variables.exceptionStruct, "sqlState" ) ) {
 			return variables.exceptionStruct.sqlState;
 		}
 		return variables.STRINGNULL;
@@ -197,12 +177,7 @@ component accessors="true" {
 	 * Get queryError
 	 */
 	function getQueryError(){
-		if (
-			structKeyExists(
-				variables.exceptionStruct,
-				"queryError"
-			)
-		) {
+		if ( structKeyExists( variables.exceptionStruct, "queryError" ) ) {
 			return variables.exceptionStruct.queryError;
 		}
 		return variables.STRINGNULL;
@@ -222,12 +197,7 @@ component accessors="true" {
 	 * Get err number
 	 */
 	function getErrNumber(){
-		if (
-			structKeyExists(
-				variables.exceptionStruct,
-				"errNumber"
-			)
-		) {
+		if ( structKeyExists( variables.exceptionStruct, "errNumber" ) ) {
 			return variables.exceptionStruct.errNumber;
 		}
 		return variables.STRINGNULL;
@@ -237,12 +207,7 @@ component accessors="true" {
 	 * Get missing file name
 	 */
 	function getMissingFileName(){
-		if (
-			structKeyExists(
-				variables.exceptionStruct,
-				"missingFileName"
-			)
-		) {
+		if ( structKeyExists( variables.exceptionStruct, "missingFileName" ) ) {
 			return variables.exceptionStruct.missingFileName;
 		}
 		return variables.STRINGNULL;
@@ -252,12 +217,7 @@ component accessors="true" {
 	 * Get lock name
 	 */
 	function getLockName(){
-		if (
-			structKeyExists(
-				variables.exceptionStruct,
-				"lockName"
-			)
-		) {
+		if ( structKeyExists( variables.exceptionStruct, "lockName" ) ) {
 			return variables.exceptionStruct.lockName;
 		}
 		return variables.STRINGNULL;
@@ -267,12 +227,7 @@ component accessors="true" {
 	 * Get lock operation
 	 */
 	function getLockOperation(){
-		if (
-			structKeyExists(
-				variables.exceptionStruct,
-				"lockOperation"
-			)
-		) {
+		if ( structKeyExists( variables.exceptionStruct, "lockOperation" ) ) {
 			return variables.exceptionStruct.lockOperation;
 		}
 		return variables.STRINGNULL;
@@ -282,12 +237,7 @@ component accessors="true" {
 	 * Get error code
 	 */
 	function getErrorCode(){
-		if (
-			structKeyExists(
-				variables.exceptionStruct,
-				"errorCode"
-			)
-		) {
+		if ( structKeyExists( variables.exceptionStruct, "errorCode" ) ) {
 			return variables.exceptionStruct.errorCode;
 		}
 		return variables.STRINGNULL;
@@ -297,12 +247,7 @@ component accessors="true" {
 	 * Get error extended info
 	 */
 	function getExtendedInfo(){
-		if (
-			structKeyExists(
-				variables.exceptionStruct,
-				"extendedInfo"
-			)
-		) {
+		if ( structKeyExists( variables.exceptionStruct, "extendedInfo" ) ) {
 			return variables.exceptionStruct.extendedInfo;
 		}
 		return variables.STRINGNULL;
@@ -408,9 +353,11 @@ component accessors="true" {
 	 * @return The HTML of the scope data
 	 */
 	function displayScope( required scope ){
-		var list = createObject( "java", "java.lang.StringBuilder" ).init( "<table class="" data-table "">
+		var list = createObject( "java", "java.lang.StringBuilder" ).init(
+			"<table class="" data-table "">
 	<tbody>
-		" );
+		"
+		);
 		var orderedArr = arguments.scope;
 
 		if ( structKeyExists( arguments.scope, "itemorder" ) ) {
@@ -418,11 +365,13 @@ component accessors="true" {
 		}
 
 		for ( var i in orderedArr ) {
-			list.append( "<tr>
-			" );
+			list.append(
+				"<tr>
+			"
+			);
 
 			// Null Checks
-			if ( !structKeyExists( arguments.scope , i ) || isNull( arguments.scope[ i ] ) ) {
+			if ( !structKeyExists( arguments.scope, i ) || isNull( arguments.scope[ i ] ) ) {
 				arguments.scope[ i ] = "<span style='color: red'>
 				<strong>Java Null</strong>
 			</span>
@@ -430,35 +379,49 @@ component accessors="true" {
 			}
 
 			if ( isDate( arguments.scope[ i ] ) ) {
-				list.append( "<td width="" 250 "">" & i & "</td>
-			" );
-				list.append( "<td class="" overflow-scroll "">" &
+				list.append(
+					"<td width="" 250 "">" & i & "</td>
+			"
+				);
+				list.append(
+					"<td class="" overflow-scroll "">" &
 					dateFormat( arguments.scope[ i ], "mm/dd/yyyy" ) & " " &
 					timeFormat( arguments.scope[ i ], "HH:mm:ss" ) & "</td>
-			" );
+			"
+				);
 			} else if ( isSimpleValue( arguments.scope[ i ] ) ) {
-				list.append( "<td width="" 250 "">" & i & "</td>
-			" );
-				list.append( "<td class="" overflow-scroll "">
-				" & ( len( arguments.scope[ i ] ) ? arguments.scope[ i ] : "<em>---</em>
-				" ) & "
+				list.append(
+					"<td width="" 250 "">" & i & "</td>
+			"
+				);
+				list.append(
+					"<td class="" overflow-scroll "">
+				" & (
+						len( arguments.scope[ i ] ) ? arguments.scope[ i ] : "<em>---</em>
+				"
+					) & "
 			</td>
-			" );
-			} else if( isObject( arguments.scope[ i ] ) ) {
-				list.append( "<td width="" 250 "">" & i & "</td>
-			" );
-				list.append( "<td class="" overflow-scroll "">[" & getMetaData( arguments.scope[ i ] ).name & "] Instance</td>
-			" );
+			"
+				);
+			} else if ( isObject( arguments.scope[ i ] ) ) {
+				list.append(
+					"<td width="" 250 "">" & i & "</td>
+			"
+				);
+				list.append(
+					"<td class="" overflow-scroll "">[" & getMetadata( arguments.scope[ i ] ).name & "] Instance</td>
+			"
+				);
 			} else {
 				savecontent variable="local.myContent" {
-					try{
+					try {
 						writeDump(
 							var    = arguments.scope[ i ],
 							format = "html",
 							top    = 2,
 							expand = false
 						)
-					} catch( any e ){
+					} catch ( any e ) {
 						writeDump(
 							var    = arguments.scope[ i ].toString(),
 							format = "html",
@@ -467,29 +430,39 @@ component accessors="true" {
 						)
 					}
 				}
-				list.append( "<td width="" 250 "">" & i & "</td>
-			" );
-				list.append( "<td class="" overflow-scroll "">" & local.myContent & "</td>
-			" );
+				list.append(
+					"<td width="" 250 "">" & i & "</td>
+			"
+				);
+				list.append(
+					"<td class="" overflow-scroll "">" & local.myContent & "</td>
+			"
+				);
 			}
-			list.append( "
+			list.append(
+				"
 		</tr>
-		" );
+		"
+			);
 		}
 
 		if ( !structCount( arguments.scope ) ) {
-			list.append( "<tr>
+			list.append(
+				"<tr>
 			<td>
 				<em>No details found!</em>
 			</td>
 		</tr>
-		" );
+		"
+			);
 		}
 
-		list.append( "
+		list.append(
+			"
 	</tbody>
 </table>
-" );
+"
+		);
 
 		return list.toString();
 	}
@@ -502,16 +475,8 @@ component accessors="true" {
 	 *
 	 * @return The string for the IDE
 	 */
-	function openInEditorURL(
-		required event,
-		required struct instance
-	){
-		var editor = arguments.event
-			.getController()
-			.getSetting(
-				name        : "exceptionEditor",
-				defaultValue: "vscode"
-			);
+	function openInEditorURL( required event, required struct instance ){
+		var editor = arguments.event.getController().getSetting( name: "exceptionEditor", defaultValue: "vscode" );
 		switch ( editor ) {
 			case "vscode":
 				return "vscode://file/#arguments.instance.template#:#arguments.instance.line#";

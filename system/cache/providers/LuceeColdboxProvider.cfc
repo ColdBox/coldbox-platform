@@ -7,15 +7,15 @@
  * This CacheBox provider communicates with the built in caches in the Lucee Engine for ColdBox Apps
  */
 component
-	accessors="true"
+	accessors   ="true"
 	serializable="false"
-	implements="coldbox.system.cache.providers.IColdBoxProvider"
-	extends="coldbox.system.cache.providers.LuceeProvider"
+	implements  ="coldbox.system.cache.providers.IColdBoxProvider"
+	extends     ="coldbox.system.cache.providers.LuceeProvider"
 {
 
 	// Cache Prefixes
-	this.VIEW_CACHEKEY_PREFIX 	= "lucee_view-";
-	this.EVENT_CACHEKEY_PREFIX 	= "lucee_event-";
+	this.VIEW_CACHEKEY_PREFIX  = "lucee_view-";
+	this.EVENT_CACHEKEY_PREFIX = "lucee_event-";
 
 	/**
 	 * Constructor
@@ -81,16 +81,20 @@ component
 	 *
 	 * @return IColdboxApplicationCache
 	 */
-	function clearAllEvents( boolean async=false ){
-		var threadName = "clearAllEvents_#replace(variables.uuidHelper.randomUUID(),"-","","all")#";
+	function clearAllEvents( boolean async = false ){
+		var threadName = "clearAllEvents_#replace(
+			variables.uuidHelper.randomUUID(),
+			"-",
+			"",
+			"all"
+		)#";
 
 		// Async? IF so, do checks
-		if( arguments.async AND NOT variables.utility.inThread() ){
-			thread name="#threadName#"{
+		if ( arguments.async AND NOT variables.utility.inThread() ) {
+			thread name="#threadName#" {
 				variables.elementCleaner.clearAllEvents();
 			}
-		}
-		else{
+		} else {
 			variables.elementCleaner.clearAllEvents();
 		}
 		return this;
@@ -104,7 +108,7 @@ component
 	 *
 	 * @return IColdboxApplicationCache
 	 */
-	function clearEvent( required eventSnippet, queryString="" ){
+	function clearEvent( required eventSnippet, queryString = "" ){
 		variables.elementCleaner.clearEvent( arguments.eventsnippet, arguments.queryString );
 		return this;
 	}
@@ -116,16 +120,20 @@ component
 	 *
 	 * @return IColdboxApplicationCache
 	 */
-	function clearAllViews( boolean async=false ){
-		var threadName = "clearAllViews_#replace(variables.uuidHelper.randomUUID(),"-","","all")#";
+	function clearAllViews( boolean async = false ){
+		var threadName = "clearAllViews_#replace(
+			variables.uuidHelper.randomUUID(),
+			"-",
+			"",
+			"all"
+		)#";
 
 		// Async? IF so, do checks
-		if( arguments.async AND NOT variables.utility.inThread() ){
-			thread name="#threadName#"{
+		if ( arguments.async AND NOT variables.utility.inThread() ) {
+			thread name="#threadName#" {
 				variables.elementCleaner.clearAllViews();
 			}
-		}
-		else{
+		} else {
 			variables.elementCleaner.clearAllViews();
 		}
 		return this;
@@ -134,13 +142,13 @@ component
 	/**
 	 * Clears all the event permutations from the cache according to the list of snippets and querystrings. Be careful when using incomplete event name with query strings as partial event names are not guaranteed to match with query string permutations
 	 *
-	 * @eventSnippet The comma-delimmitted list event snippet to clear on. Can be partial or full
-	 * @queryString The comma-delimmitted list of queryStrings passed in. If passed in, it will create a unique hash out of it. For purging purposes.  If passed in the list length must be equal to the list length of the event snippets passed in
+	 * @eventSnippet The comma-delimited list event snippet to clear on. Can be partial or full
+	 * @queryString The comma-delimited list of queryStrings passed in. If passed in, it will create a unique hash out of it. For purging purposes.  If passed in the list length must be equal to the list length of the event snippets passed in
 	 *
 	 * @return IColdboxApplicationCache
 	 */
-	function clearEventMulti( required eventsnippets, queryString="" ){
-		variables.elementCleaner.clearEventMulti(arguments.eventsnippets,arguments.queryString);
+	function clearEventMulti( required eventsnippets, queryString = "" ){
+		variables.elementCleaner.clearEventMulti( arguments.eventsnippets, arguments.queryString );
 		return this;
 	}
 
@@ -152,19 +160,19 @@ component
 	 * @return IColdboxApplicationCache
 	 */
 	function clearView( required viewSnippet ){
-		variables.elementCleaner.clearView(arguments.viewSnippet);
+		variables.elementCleaner.clearView( arguments.viewSnippet );
 		return this;
 	}
 
 	/**
 	 * Clears all view name permutations from the cache according to the view name.
 	 *
-	 * @viewSnippets The comma-delimmitted list or array of view snippet to clear on. Can be partial or full
+	 * @viewSnippets The comma-delimited list or array of view snippet to clear on. Can be partial or full
 	 *
 	 * @return IColdboxApplicationCache
 	 */
 	function clearViewMulti( required viewSnippets ){
-		variables.elementCleaner.clearView(arguments.viewsnippets);
+		variables.elementCleaner.clearView( arguments.viewsnippets );
 		return this;
 	}
 

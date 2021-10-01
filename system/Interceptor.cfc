@@ -4,7 +4,11 @@
  * ---
  * Base class for all interceptors
  */
-component extends="coldbox.system.FrameworkSupertype" serializable="false" accessors="true"{
+component
+	extends     ="coldbox.system.FrameworkSupertype"
+	serializable="false"
+	accessors   ="true"
+{
 
 	// Controller Reference
 	property name="controller";
@@ -31,21 +35,19 @@ component extends="coldbox.system.FrameworkSupertype" serializable="false" acces
 	 *
 	 * @return Interceptor
 	 */
-	function init( required controller, struct properties={} ){
+	function init( required controller, struct properties = {} ){
 		// Register Controller
-		variables.controller = arguments.controller;
+		variables.controller         = arguments.controller;
 		// Register LogBox
-		variables.logBox     = arguments.controller.getLogBox();
+		variables.logBox             = arguments.controller.getLogBox();
 		// Register Log object
-		variables.log        = variables.logBox.getLogger( this );
+		variables.log                = variables.logBox.getLogger( this );
 		// Register Flash RAM
-		variables.flash      = arguments.controller.getRequestService().getFlashScope();
+		variables.flash              = arguments.controller.getRequestService().getFlashScope();
 		// Register CacheBox
-		variables.cacheBox   = arguments.controller.getCacheBox();
+		variables.cacheBox           = arguments.controller.getCacheBox();
 		// Register WireBox
-		variables.wireBox    = arguments.controller.getWireBox();
-		// Load global UDF Libraries into target
-		loadApplicationHelpers();
+		variables.wireBox            = arguments.controller.getWireBox();
 		// store properties
 		variables.properties         = arguments.properties;
 		// setup interceptor service
@@ -55,9 +57,19 @@ component extends="coldbox.system.FrameworkSupertype" serializable="false" acces
 	}
 
 	/**
+	 * Internal ColdBox event so all interceptors can load their UDF helpers
+	 * DO NOT OVERRIDE or funky things will happen!
+	 */
+	function cbLoadInterceptorHelpers( event, interceptData ){
+		// Load global UDF Libraries into target
+		loadApplicationHelpers( force: true );
+	}
+
+	/**
 	 * Configuration method for the interceptor
 	 */
-	void function configure(){}
+	void function configure(){
+	}
 
 	/**
 	 * Get an interceptor property
@@ -69,17 +81,17 @@ component extends="coldbox.system.FrameworkSupertype" serializable="false" acces
 	 * @return The property value requested or the default value if not found
 	 */
 	any function getProperty( required property, defaultValue ){
-		if( structKeyExists( variables.properties, arguments.property ) ){
+		if ( structKeyExists( variables.properties, arguments.property ) ) {
 			return variables.properties[ arguments.property ];
 		}
 
-		if( !isNull( arguments.defaultValue ) ){
+		if ( !isNull( arguments.defaultValue ) ) {
 			return arguments.defaultValue;
 		}
 
 		throw(
 			message = "The requested property #arguments.property# does not exist.",
-			type 	= "InvalidPropertyException"
+			type    = "InvalidPropertyException"
 		);
 	}
 
@@ -121,9 +133,7 @@ component extends="coldbox.system.FrameworkSupertype" serializable="false" acces
 	 */
 	function unregister( required state ){
 		var interceptorClass = listLast( getMetadata( this ).name, "." );
-		variables.controller
-			.getInterceptorService()
-			.unregister( interceptorClass, arguments.state );
+		variables.controller.getInterceptorService().unregister( interceptorClass, arguments.state );
 		return this;
 	}
 

@@ -25,7 +25,7 @@ NOTE: The interceptor will create a new setting called: sesBaseURL with this val
 <!---
 	This determines if non-ses urls should be routed back to ses.
 	In other words, if someone goes to http://localhost/index.cfm?event=home.main
-	should we redirect (301, permanantly moved) to the ses url:
+	should we redirect (301, permanently moved) to the ses url:
 	http://localhost/index.cfm/home/main ?
 
 	This will also make sure that any trailing index pages get redirected as well, so
@@ -102,7 +102,7 @@ NOTE: The interceptor will create a new setting called: sesBaseURL with this val
 	For instance if you have a course for /:handler/:action/:username, and another course later for
 	/:handler/:action/:id, then the second course will NEVER be run. If instead you change your first
 	course to something more generic such as /user/:action/:username, and specify (handler="user") as
-	a second paramter, then only URLs that start with /user will qualify for having the thrid argument of
+	a second parameter, then only URLs that start with /user will qualify for having the third argument of
 	username, while everywhere else will use a third argument of ID.
 
 	By the way, what's with the : syntax?  In the Ruby programming language, any variable

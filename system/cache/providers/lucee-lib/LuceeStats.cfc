@@ -9,7 +9,7 @@ Description:
 A coldfusion statistics object that communicates with the lucee cache stats
 
 */
-component implements="coldbox.system.cache.util.IStats" accessors="true"{
+component implements="coldbox.system.cache.util.IStats" accessors="true" {
 
 	property name="cacheProvider" serializable="false";
 
@@ -28,14 +28,14 @@ component implements="coldbox.system.cache.util.IStats" accessors="true"{
 	 * Get the cache's performance ratio
 	 */
 	numeric function getCachePerformanceRatio(){
-		var hits 		= getHits();
-		var requests 	= hits + getMisses();
+		var hits     = getHits();
+		var requests = hits + getMisses();
 
-	 	if ( requests eq 0){
-	 		return 0;
+		if ( requests eq 0 ) {
+			return 0;
 		}
 
-		return (hits/requests) * 100;
+		return ( hits / requests ) * 100;
 	}
 
 	/**
@@ -71,9 +71,9 @@ component implements="coldbox.system.cache.util.IStats" accessors="true"{
 	/**
 	 * Get the total cache's hits
 	 */
-	numeric function getHits() {
+	numeric function getHits(){
 		var props = cacheGetProperties( getCacheProvider().getConfiguration().cacheName );
-		if( arrayLen( props ) and structKeyExists( props[ 1 ], "hit_count" ) ){
+		if ( arrayLen( props ) and structKeyExists( props[ 1 ], "hit_count" ) ) {
 			return props[ 1 ].hit_count;
 		}
 		return 0;
@@ -84,7 +84,7 @@ component implements="coldbox.system.cache.util.IStats" accessors="true"{
 	 */
 	numeric function getMisses(){
 		var props = cacheGetProperties( getCacheProvider().getConfiguration().cacheName );
-		if( arrayLen( props ) and structKeyExists( props[ 1 ], "miss_count" ) ){
+		if ( arrayLen( props ) and structKeyExists( props[ 1 ], "miss_count" ) ) {
 			return props[ 1 ].miss_count;
 		}
 		return 0;

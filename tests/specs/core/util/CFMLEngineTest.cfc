@@ -1,4 +1,5 @@
-﻿component extends = "coldbox.system.testing.BaseModelTest"{
+﻿component extends="coldbox.system.testing.BaseModelTest" {
+
 	function setup(){
 		cfmlengine = new coldbox.system.core.util.CFMLEngine();
 	}
@@ -17,4 +18,5 @@
 
 		assertTrue( isNumeric( cfmlengine.getVersion() ), "Version Test" );
 	}
+
 }
