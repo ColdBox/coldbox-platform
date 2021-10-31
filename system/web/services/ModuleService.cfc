@@ -913,7 +913,7 @@ component extends="coldbox.system.web.services.BaseService" {
 	 */
 	ModuleService function unloadAll(){
 		// If the registeredModules key exists, and isn't the default empty string
-		if( structKeyExists( variables, "registeredModules" ) && isStruct( variables.registeredModules ) ){
+		if ( structKeyExists( variables, "registeredModules" ) && isStruct( variables.registeredModules ) ) {
 			// Unload all modules
 			variables.registeredModules.each( function( key, module ){
 				unload( arguments.key );
