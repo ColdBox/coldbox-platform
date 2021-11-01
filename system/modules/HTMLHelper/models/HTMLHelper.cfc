@@ -2552,7 +2552,7 @@ component
 
 		// Calculate href for asset delivery via Browser
 		var href = "/#includesLocation#/#arguments.fileName#";
-		var key = reReplace( href, "^//?", "" );
+		var key  = reReplace( href, "^//?", "" );
 		if ( mapping.len() ) {
 			var href = "/#mapping#/#includesLocation#/#arguments.fileName#";
 		}
