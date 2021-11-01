@@ -2581,8 +2581,12 @@ component
 			variables.cachedPaths[ argumentsHash ] = arguments.fileName;
 			return href;
 		}
-		variables.cachedPaths[ argumentsHash ] = manifestDirectory[ key ];
-		return "#manifestDirectory[ key ]#";
+		if ( mapping.len() ) {
+			variables.cachedPaths[ argumentsHash ] = "/#mapping#" & manifestDirectory[ key ];
+		} else { 
+			variables.cachedPaths[ argumentsHash ] = manifestDirectory[ key ];
+		}
+		return variables.cachedPaths[ argumentsHash ]
 	}
 
 	/**
