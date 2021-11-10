@@ -44,7 +44,7 @@ component {
 						evictionPolicy                 : "LRU",
 						evictCount                     : 2,
 						maxObjects                     : 300,
-						objectStore                    : "ConcurrentSoftReferenceStore" // memory sensitive
+						objectStore                    : "ConcurrentStore" // memory sensitive
 					}
 				}
 			}
