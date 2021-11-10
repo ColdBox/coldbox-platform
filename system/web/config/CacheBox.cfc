@@ -22,7 +22,7 @@ component {
 				objectDefaultTimeout           : 120, // two hours default
 				objectDefaultLastAccessTimeout : 30, // 30 minutes idle time
 				useLastAccessTimeouts          : true,
-				reapFrequency                  : 5,
+				reapFrequency                  : 1,
 				freeMemoryPercentageThreshold  : 0,
 				evictionPolicy                 : "LRU",
 				evictCount                     : 1,
@@ -39,7 +39,7 @@ component {
 						objectDefaultTimeout           : 120,
 						objectDefaultLastAccessTimeout : 30,
 						useLastAccessTimeouts          : true,
-						reapFrequency                  : 5,
+						reapFrequency                  : 1,
 						freeMemoryPercentageThreshold  : 0,
 						evictionPolicy                 : "LRU",
 						evictCount                     : 2,

@@ -549,13 +549,8 @@ component
 	 * Reap the cache, clear out everything that is dead in a synchronous manner
 	 */
 	any function reap(){
-		var keyIndex     = 1;
-		var cacheKeys    = "";
-		var cacheKeysLen = 0;
-		var thisKey      = "";
-		var thisMD       = "";
-		var config       = getConfiguration();
-		var sTime        = getTickCount();
+		var config = getConfiguration();
+		var sTime  = getTickCount();
 
 		lock type="exclusive" name="CacheBoxProvider.reap.#variables.cacheId#" timeout="#variables.lockTimeout#" {
 			// log it
@@ -565,16 +560,16 @@ component
 			variables.objectStore.reap();
 
 			// Let's Get our reaping vars ready, get a duplicate of the pool metadata so we can work on a good copy
-			cacheKeys    = getKeys();
-			cacheKeysLen = arrayLen( cacheKeys );
+			var cacheKeys    = getKeys();
+			var cacheKeysLen = arrayLen( cacheKeys );
 
 			// Loop through keys
-			for ( keyIndex = 1; keyIndex LTE cacheKeysLen; keyIndex++ ) {
+			for ( var keyIndex = 1; keyIndex LTE cacheKeysLen; keyIndex++ ) {
 				// The Key to check
-				thisKey = cacheKeys[ keyIndex ];
+				var thisKey = cacheKeys[ keyIndex ];
 
 				// Get the key's metadata thread safe.
-				thisMD = getCachedObjectMetadata( thisKey );
+				var thisMD = getCachedObjectMetadata( thisKey );
 
 				// Check if found, else continue, already reaped.
 				if ( structIsEmpty( thisMD ) ) {
@@ -605,7 +600,9 @@ component
 
 					// Check for last accessed timeouts. If object has not been accessed in the default span
 					if (
-						config.useLastAccessTimeouts AND dateDiff( "n", thisMD.lastAccessed, now() ) gte thisMD.lastAccessTimeout
+						config.useLastAccessTimeouts AND
+						thisMD.lastAccessTimeout > 0 AND
+						dateDiff( "n", thisMD.lastAccessed, now() ) gte thisMD.lastAccessTimeout
 					) {
 						// Clear the object from cache
 						if ( clear( thisKey ) ) {
