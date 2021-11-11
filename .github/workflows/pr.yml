@@ -20,7 +20,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        cfengine: [ "lucee@5", "adobe@2016", "adobe@2018" ]
+        cfengine: [ "lucee@5", "adobe@2016", "adobe@2018", "adobe@2021" ]
         javaVersion: [ "openjdk8", "openjdk11" ]
     steps:
       - name: Checkout Repository
@@ -60,6 +60,10 @@ jobs:
       - name: Start ${{ matrix.cfengine }}/${{ matrix.javaVersion }} Server
         run: |
           box server start serverConfigFile="server-${{ matrix.cfengine }}.json" javaVersion=${{ matrix.javaVersion }} --noSaveSettings --debug
+          # Install Adobe 2021 cfpm modules
+          if [[ "${{ matrix.cfengine }}" == "adobe@2021" ]] ; then
+            box run-script install:2021
+          fi
           # Test the harness
           curl http://127.0.0.1:8599/test-harness
 
