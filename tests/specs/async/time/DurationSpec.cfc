@@ -103,7 +103,7 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 			it( "can subtract durations to date/time objects", function(){
 				var now = now();
 				var t   = duration.ofDays( 10 ).subtractFrom( now );
-				expect( dateDiff( "d", now, t ) ).toBe( -10 );
+				expect( dateDiff( "d", now, dateFormat( t, "medium" ) ) ).toBe( -10 );
 			} );
 		} );
 	}
