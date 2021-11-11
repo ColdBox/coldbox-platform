@@ -61,7 +61,7 @@
         "log:2018":"server log coldbox-adobe@2018 --follow",
         "log:2021":"server log coldbox-adobe@2021 --follow",
         "cfpm":"echo '\".engine/acf2021/WEB-INF/cfusion/bin/cfpm.sh\"' | run",
-        "cfpm:install":"echo '\".engine/acf2021/WEB-INF/cfusion/bin/cfpm.sh\" install ${1}' | run",
+        "cfpm:install":"echo '\".engine/adobe2021/WEB-INF/cfusion/bin/cfpm.sh\" install ${1}' | run",
         "install:2021":"run-script cfpm:install zip,orm,mysql,postgresql,sqlserver,document,feed"
     }
 }
