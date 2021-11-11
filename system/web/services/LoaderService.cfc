@@ -93,6 +93,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		variables.controller.getInterceptorService().announce( "afterAspectsLoad" );
 		// Flag the initiation, Framework is ready to serve requests. Praise be to GOD.
 		variables.controller.setColdboxInitiated( true );
+		// Startup the schedulers now that the entire application has been loaded and runnning
+		variables.controller.getSchedulerService().startupSchedulers()
+		// Log it
 		variables.log.info( "+++ ColdBox is ready to serve requests" );
 
 		// We are now done, rock and roll!!
