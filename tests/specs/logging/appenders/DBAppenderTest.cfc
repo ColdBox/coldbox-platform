@@ -33,7 +33,7 @@
 	function testEnsureTable(){
 		// drop table
 		try{
-			new Query( datasource = "coolblog", sql = "drop table logs" ).execute();
+			queryExecute( "drop table logs" );
 		}catch( any e ){
 			// Ignore, maybe it doesn't exist
 		}
@@ -41,8 +41,7 @@
 		makePublic( db, "ensureTable" );
 		db.ensureTable();
 
-
-		var r = new Query( datasource = "coolblog", sql = "check table logs" ).execute().getResult();
+		var r = queryExecute( "check table logs" );
 
 		assertEquals( r.msg_text, "ok" );
 	}
