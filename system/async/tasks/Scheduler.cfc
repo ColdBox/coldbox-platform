@@ -209,6 +209,8 @@ component accessors="true" singleton {
 		this.onShutdown();
 		// shutdown executor
 		variables.executor.shutdownNow();
+		// Remove executor
+		variables.asyncManager.deleteExecutor( variables.name & "-scheduler" );
 		// Mark it
 		variables.started = false;
 		// Log it
