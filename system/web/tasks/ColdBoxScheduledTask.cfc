@@ -141,21 +141,38 @@ component extends="coldbox.system.async.tasks.ScheduledTask" accessors="true" {
 	}
 
 	/**
+	 * Get the server fixation cache key according to name and scheduler (if any)
+	 */
+	private function getFixationCacheKey(){
+		var key = return"cbtasks-server-fixation-#replace( getName(), " ", "-", "all" )#";
+		return ( hasScheduler() ? "#key#-#replace( getScheduler().getName(), " ", "-", "all" )#" : key );
+	}
+
+	/**
 	 * This method is called ALWAYS after a task runs, wether in failure or success but used internally for
 	 * any type of cleanups
 	 */
 	function cleanupTaskRun(){
-		// Cleanup server fixation locks after task execution, wether failure or success
-		// This way, the tasks can run on a round-robin approach on a clustered environment
-		// and not fixated on a specific server
-		getCache().clear( "cbtasks-server-fixation-#replace( getName(), " ", "-", "all" )#" );
+		var cacheKey     = getFixationCacheKey();
+		// Only cleanup if your are the fixated server
+		var fixationData = getCache().get( cacheKey );
+		if (
+			!isNull( fixationData ) && isStruct( fixationData ) && fixationData.serverhost eq getStats().inetHost && fixationData.serverIp eq getStats().localIp
+		) {
+			// Cleanup server fixation locks after task execution, wether failure or success
+			// This way, the tasks can run on a round-robin approach on a clustered environment
+			// and not fixated on a specific server
+			getCache().clear( cacheKey );
+			// Debugging
+			variables.log.debug( "Fixation cache key (#cacheKey#) removed by fixated server, task ran!" );
+		}
 	}
 
 	/**
 	 * Verifies if a task can run on the executed server by using our distributed cache lock strategy
 	 */
 	boolean function canRunOnThisServer(){
-		var keyName = "cbtasks-server-fixation-#replace( getName(), " ", "-", "all" )#";
+		var keyName = getFixationCacheKey();
 		// Get or set the lock, first one wins!
 		getCache().getOrSet(
 			// key
