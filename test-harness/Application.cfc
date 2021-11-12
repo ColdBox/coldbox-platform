@@ -45,6 +45,8 @@ component {
 
 	// application start
 	public boolean function onApplicationStart(){
+		writeDump( var="**** Started App Start ****", output="console" );
+
 		var start = getTickCount();
 
 		application.cbBootstrap = new coldbox.system.Bootstrap(
@@ -56,7 +58,8 @@ component {
 		application.cbBootstrap.loadColdbox();
 
 		request.fwloadTime = getTickCount() - start;
-		writeDump( var = "FWLoadTime: #request.fwLoadTime# ms", output = "console" );
+
+		writeDump( var = "> ColdBox On AppStart Loaded in #request.fwLoadTime# ms", output = "console" );
 
 		return true;
 	}
