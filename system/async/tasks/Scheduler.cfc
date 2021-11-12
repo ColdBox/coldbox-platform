@@ -344,4 +344,18 @@ component accessors="true" singleton {
 		return this;
 	}
 
+	/**
+	 * Get the current thread name
+	 */
+	private function getThreadName(){
+		return getCurrentThread().getName();
+	}
+
+	/**
+	 * Get the current thread java object
+	 */
+	private function getCurrentThread(){
+		return createObject( "java", "java.lang.Thread" ).currentThread();
+	}
+
 }

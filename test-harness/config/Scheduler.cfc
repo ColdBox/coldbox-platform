@@ -4,6 +4,19 @@ component {
 
 	function configure(){
 
+		task( "Scope Test" )
+			.call( function(){
+
+				writeDump( var="Scope Test (#getThreadName()#) -> #application.cbController.getAppName()#", output="console" );
+			} )
+			.every( 5, "seconds" )
+			//.when( function(){
+			//	return !isNull( application.applicationName );
+			//})
+			.onFailure( function( task, exception ){
+				writeDump( var='====> Scope test failed (#getThreadName()#)!! #exception.message#', output="console" );
+			} );
+
 		task( "ProcessJobs" )
 			.call( function(){
 				runEvent( "main.process" );
