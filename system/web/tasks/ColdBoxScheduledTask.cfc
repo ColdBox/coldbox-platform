@@ -143,8 +143,8 @@ component extends="coldbox.system.async.tasks.ScheduledTask" accessors="true" {
 	/**
 	 * Get the server fixation cache key according to name and scheduler (if any)
 	 */
-	private function getFixationCacheKey(){
-		var key = return"cbtasks-server-fixation-#replace( getName(), " ", "-", "all" )#";
+	string function getFixationCacheKey(){
+		var key = "cbtasks-server-fixation-#replace( getName(), " ", "-", "all" )#";
 		return ( hasScheduler() ? "#key#-#replace( getScheduler().getName(), " ", "-", "all" )#" : key );
 	}
 
