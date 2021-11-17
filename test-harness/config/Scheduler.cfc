@@ -6,15 +6,19 @@ component {
 
 		task( "Scope Test" )
 			.call( function(){
-
-				writeDump( var="Scope Test (#getThreadName()#) -> #application.cbController.getAppName()#", output="console" );
+				writeDump( var="****************************************************************************", output="console" );
+				writeDump( var="Scope Test (application) -> #getThreadName()# #application.keyList()#", output="console" );
+				writeDump( var="Scope Test (server) -> #getThreadName()# #server.keyList()#", output="console" );
+				writeDump( var="Scope Test (cgi) -> #getThreadName()# #cgi.keyList()#", output="console" );
+				writeDump( var="Scope Test (url) -> #getThreadName()# #url.keyList()#", output="console" );
+				writeDump( var="Scope Test (form) -> #getThreadName()# #form.keyList()#", output="console" );
+				writeDump( var="Scope Test (request) -> #getThreadName()# #request.keyList()#", output="console" );
+				writeDump( var="Scope Test (variables) -> #getThreadName()# #variables.keyList()#", output="console" );
+				writeDump( var="****************************************************************************", output="console" );
 			} )
-			.every( 5, "seconds" )
-			//.when( function(){
-			//	return !isNull( application.applicationName );
-			//})
+			.every( 60, "seconds" )
 			.onFailure( function( task, exception ){
-				writeDump( var='====> Scope test failed (#getThreadName()#)!! #exception.message#', output="console" );
+				writeDump( var='====> Scope test failed (#getThreadName()#)!! #exception.message# #exception.stacktrace.left( 500 )#', output="console" );
 			} );
 
 		task( "ProcessJobs" )

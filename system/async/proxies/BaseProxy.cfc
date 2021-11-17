@@ -117,8 +117,9 @@ component accessors="true" {
 
 				// Prepare a new context in ACF for the thread
 				var fusionContext = variables.originalFusionContext.clone();
+				variables.fusionContextStatic.setCurrent( fusionContext );
 				// Create a new page context for the thread
-				var pageContext   = variables.originalPageContext.clone();
+				var pageContext = variables.originalPageContext.clone();
 				// Reset it's scopes, else bad things happen
 				pageContext.resetLocalScopes();
 				// Set the cf context into it
@@ -132,7 +133,6 @@ component accessors="true" {
 				fusionContext.parent = page;
 
 				// Set the current context of execution now
-				variables.fusionContextStatic.setCurrent( fusionContext );
 				pageContext.initializeWith(
 					page,
 					pageContext,
