@@ -102,19 +102,24 @@ component implements="coldbox.system.ioc.dsl.IDSLBuilder" accessors="true" {
 			case 2: {
 				thisLocationKey = getToken( thisType, 2, ":" );
 				switch ( thisLocationKey ) {
-					// Config Struct
+					case "asyncManager": {
+						return variables.coldbox.getAsyncManager();
+					}
+					case "appScheduler": {
+						return variables.injector.getInstance( "appScheduler@coldbox" );
+					}
 					case "configSettings": {
 						return variables.coldbox.getConfigSettings();
+					}
+					case "fwSettings":
+					case "coldboxSettings": {
+						return variables.coldbox.getColdboxSettings();
 					}
 					case "dataMarshaller": {
 						return variables.coldbox.getDataMarshaller();
 					}
 					case "flash": {
 						return variables.coldbox.getRequestService().getFlashScope();
-					}
-					case "fwSettings":
-					case "coldboxSettings": {
-						return variables.coldbox.getColdboxSettings();
 					}
 					case "handlerService": {
 						return variables.coldbox.getHandlerService();
@@ -125,8 +130,14 @@ component implements="coldbox.system.ioc.dsl.IDSLBuilder" accessors="true" {
 					case "loaderService": {
 						return variables.coldbox.getLoaderService();
 					}
+					case "moduleconfig": {
+						return variables.coldbox.getSetting( "modules" );
+					}
 					case "moduleService": {
 						return variables.coldbox.getModuleService();
+					}
+					case "renderer": {
+						return variables.coldbox.getRenderer();
 					}
 					case "requestContext": {
 						return variables.coldbox.getRequestService().getContext();
@@ -140,17 +151,8 @@ component implements="coldbox.system.ioc.dsl.IDSLBuilder" accessors="true" {
 					case "routingService": {
 						return variables.coldbox.getRoutingService();
 					}
-					case "renderer": {
-						return variables.coldbox.getRenderer();
-					}
-					case "moduleconfig": {
-						return variables.coldbox.getSetting( "modules" );
-					}
-					case "asyncManager": {
-						return variables.coldbox.getAsyncManager();
-					}
-					case "appScheduler": {
-						return variables.injector.getInstance( "appScheduler@coldbox" );
+					case "schedulerService": {
+						return variables.coldbox.getSchedulerService();
 					}
 				}
 				// end of services
