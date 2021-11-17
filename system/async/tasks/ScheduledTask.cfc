@@ -1286,4 +1286,13 @@ component accessors="true" {
 		return variables.chronoUnitHelper.toLocalDateTime( now(), this.getTimezone() );
 	}
 
+	/**
+	 * Get the state representation of the scheduler task
+	 */
+	function getMemento(){
+		return variables.filter( function( key, value ){
+			return isCustomFunction( value ) || listFindNoCase( "this", key ) ? false : true;
+		} );
+	}
+
 }
