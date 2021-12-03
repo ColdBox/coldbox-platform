@@ -2551,12 +2551,11 @@ component
 		);
 
 		// Calculate href for asset delivery via Browser
+		var href = "/#includesLocation#/#arguments.fileName#";
+		var key  = reReplace( href, "^//?", "" );
 		if ( mapping.len() ) {
 			var href = "/#mapping#/#includesLocation#/#arguments.fileName#";
-		} else {
-			var href = "/#includesLocation#/#arguments.fileName#";
 		}
-		var key = reReplace( href, "^//?", "" );
 
 		// Only read, parse and store once the manifest
 		if ( !variables.elixirManifests.keyExists( "elixirManifest-#hash( manifestPath )#" ) ) {
@@ -2582,8 +2581,12 @@ component
 			variables.cachedPaths[ argumentsHash ] = arguments.fileName;
 			return href;
 		}
-		variables.cachedPaths[ argumentsHash ] = manifestDirectory[ key ];
-		return "#manifestDirectory[ key ]#";
+		if ( mapping.len() ) {
+			variables.cachedPaths[ argumentsHash ] = "/#mapping#" & manifestDirectory[ key ];
+		} else {
+			variables.cachedPaths[ argumentsHash ] = manifestDirectory[ key ];
+		}
+		return variables.cachedPaths[ argumentsHash ]
 	}
 
 	/**
