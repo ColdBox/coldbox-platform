@@ -48,10 +48,11 @@ component implements="coldbox.system.ioc.dsl.IDSLBuilder" accessors="true" {
 	 *
 	 * @definition The injection dsl definition structure to process. Keys: name, dsl
 	 * @targetObject The target object we are building the DSL dependency for. If empty, means we are just requesting building
+	 * @targetID The target ID we are building this dependency for
 	 *
 	 * @return coldbox.system.ioc.dsl.IDSLBuilder
 	 */
-	function process( required definition, targetObject ){
+	function process( required definition, targetObject, targetID ){
 		var DSLNamespace = listFirst( arguments.definition.dsl, ":" );
 
 		switch ( DSLNamespace ) {

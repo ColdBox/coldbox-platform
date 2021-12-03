@@ -631,8 +631,9 @@ component serializable="false" accessors="true" {
 	 *
 	 * @definition The dependency definition structure: name, dsl as keys
 	 * @targetObject The target object we are building the DSL dependency for
+	 * @targetID The target ID we are building this dependency for
 	 */
-	private any function getJavaDSL( required definition, targetObject ){
+	private any function getJavaDSL( required definition, targetObject, targetID ){
 		var javaClass = getToken( arguments.definition.dsl, 2, ":" );
 
 		return createObject( "java", javaClass );
@@ -643,8 +644,9 @@ component serializable="false" accessors="true" {
 	 *
 	 * @definition The dependency definition structure: name, dsl as keys
 	 * @targetObject The target object we are building the DSL dependency for
+	 * @targetID The target ID we are building this dependency for
 	 */
-	private any function getWireBoxDSL( required definition, targetObject ){
+	private any function getWireBoxDSL( required definition, targetObject, targetID ){
 		var thisType         = arguments.definition.dsl;
 		var thisTypeLen      = listLen( thisType, ":" );
 		var thisLocationType = "";
@@ -678,6 +680,9 @@ component serializable="false" accessors="true" {
 					}
 					case "properties": {
 						return variables.injector.getBinder().getProperties();
+					}
+					case "targetID": {
+						return arguments.targetID;
 					}
 				}
 				break;
@@ -741,8 +746,9 @@ component serializable="false" accessors="true" {
 	 *
 	 * @definition The dependency definition structure: name, dsl as keys
 	 * @targetObject The target object we are building the DSL dependency for
+	 * @targetID The target ID we are building this dependency for
 	 */
-	private any function getExecutorDSl( required definition, targetObject ){
+	private any function getExecutorDSl( required definition, targetObject, targetID ){
 		var asyncManager = variables.injector.getAsyncManager();
 		var thisType     = arguments.definition.dsl;
 		var thisTypeLen  = listLen( thisType, ":" );
@@ -777,8 +783,9 @@ component serializable="false" accessors="true" {
 	 *
 	 * @definition The dependency definition structure: name, dsl as keys
 	 * @targetObject The target object we are building the DSL dependency for
+	 * @targetID The target ID we are building this dependency for
 	 */
-	private any function getModelDSL( required definition, targetObject ){
+	private any function getModelDSL( required definition, targetObject, targetID ){
 		var thisType    = arguments.definition.dsl;
 		var thisTypeLen = listLen( thisType, ":" );
 		var methodCall  = "";
@@ -841,8 +848,13 @@ component serializable="false" accessors="true" {
 	 *
 	 * @definition The dependency definition structure
 	 * @targetObject The target object we are building the DSL dependency for. If empty, means we are just requesting building
+	 * @targetID The target ID we are building this dependency for
 	 */
-	private any function getProviderDSL( required definition, targetObject = "" ){
+	private any function getProviderDSL(
+		required definition,
+		targetObject = "",
+		targetID
+	){
 		var thisType     = arguments.definition.dsl;
 		var thisTypeLen  = listLen( thisType, ":" );
 		var providerName = "";
@@ -890,8 +902,9 @@ component serializable="false" accessors="true" {
 	 *
 	 * @definition The dependency definition structure
 	 * @targetObject The target object we are building the DSL dependency for. If empty, means we are just requesting building
+	 * @targetID The target ID we are building this dependency for
 	 */
-	private any function getByTypeDSL( required definition, targetObject ){
+	private any function getByTypeDSL( required definition, targetObject, targetID ){
 		var injectType = arguments.definition.type;
 
 		if ( variables.injector.containsInstance( injectType ) ) {

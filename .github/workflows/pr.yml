@@ -22,7 +22,7 @@ jobs:
       matrix:
         cfengine: [ "lucee@5", "adobe@2016", "adobe@2018", "adobe@2021" ]
         javaVersion: [ "openjdk8", "openjdk11" ]
-        fullNull: ["true", "false"]
+        fullNull: [ "true", "false" ]
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2

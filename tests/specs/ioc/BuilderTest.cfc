@@ -261,44 +261,46 @@
 
 	function testgetWireBoxDSL(){
 		makePublic( builder, "getWireBoxDSL" );
-		var data = { name : "luis", dsl : "wirebox" };
+
+		var targetID = "testWireBoxDSL";
+		var data     = { name : "luis", dsl : "wirebox" };
 
 		// wirebox
-		var p = builder.getWireBoxDSL( data );
+		var p = builder.getWireBoxDSL( definition: data, targetID: targetID );
 		expect( getMetadata( p ).name ).toMatch( "Injector" );
 
 		// wirebox:parent
 		data = { name : "luis", dsl : "wirebox:parent" };
 		mockInjector.$( "getParent", "" );
-		p = builder.getWireBoxDSL( data );
+		p = builder.getWireBoxDSL( definition: data, targetID: targetID );
 		assertEquals( "", p );
 
 		// wirebox:eventmanager
 		data             = { name : "luis", dsl : "wirebox:eventManager" };
 		mockEventManager = createEmptyMock( "coldbox.system.core.events.EventPoolManager" );
 		mockInjector.setEventManager( mockEventManager );
-		p = builder.getWireBoxDSL( data );
+		p = builder.getWireBoxDSL( definition: data, targetID: targetID );
 		assertEquals( mockEventManager, p );
 
 		// wirebox:binder
 		data       = { name : "luis", dsl : "wirebox:binder" };
 		mockBinder = createMock( "coldbox.system.ioc.config.Binder" );
 		mockInjector.setBinder( mockBinder );
-		p = builder.getWireBoxDSL( data );
+		p = builder.getWireBoxDSL( definition: data, targetID: targetID );
 		assertEquals( mockBinder, p );
 
 		// wirebox:populator
 		data      = { name : "luis", dsl : "wirebox:populator" };
 		populator = createEmptyMock( "coldbox.system.core.dynamic.BeanPopulator" );
 		mockInjector.$( "getObjectPopulator", populator );
-		p = builder.getWireBoxDSL( data );
+		p = builder.getWireBoxDSL( definition: data, targetID: targetID );
 		assertEquals( populator, p );
 
 		// wirebox:scope
 		data      = { name : "luis", dsl : "wirebox:scope:singleton" };
 		mockScope = createEmptyMock( "coldbox.system.ioc.scopes.Singleton" );
 		mockInjector.$( "getScope", mockScope );
-		p = builder.getWireBoxDSL( data );
+		p = builder.getWireBoxDSL( definition: data, targetID: targetID );
 		assertEquals( mockScope, p );
 
 		// wirebox:properties
@@ -306,7 +308,7 @@
 		props      = { prop1 : "hello", name : "luis" };
 		mockBinder = createMock( "coldbox.system.ioc.config.Binder" ).setProperties( props );
 		mockInjector.setBinder( mockBinder );
-		p = builder.getWireBoxDSL( data );
+		p = builder.getWireBoxDSL( definition: data, targetID: targetID );
 		assertEquals( props, p );
 
 		// wirebox:property:{}
@@ -314,8 +316,13 @@
 		props      = { prop1 : "hello", name : "luis" };
 		mockBinder = createMock( "coldbox.system.ioc.config.Binder" ).setProperties( props );
 		mockInjector.setBinder( mockBinder );
-		p = builder.getWireBoxDSL( data );
+		p = builder.getWireBoxDSL( definition: data, targetID: targetID );
 		assertEquals( "luis", p );
+
+		// wirebox:targetID
+		data = { name : "luis", dsl : "wirebox:targetID" };
+		p    = builder.getWireBoxDSL( definition: data, targetID: targetID );
+		expect( p ).toBe( targetID );
 	}
 
 	function testbuildProviderMixer(){

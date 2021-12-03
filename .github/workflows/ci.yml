@@ -24,7 +24,7 @@ jobs:
       fail-fast: false
       matrix:
         cfengine: [ "lucee@5", "adobe@2016", "adobe@2018", "adobe@2021" ]
-        fullNull: ["true", "false"]
+        fullNull: [ "true", "false" ]
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
@@ -82,7 +82,7 @@ jobs:
           # Test the harness
           curl http://127.0.0.1:8599/test-harness
 
-      - name: Run Tests
+      - name: Run Tests Full Null (${{ matrix.fullNull }})
         env:
           FULL_NULL: ${{ matrix.fullNull }}
         run: |
