@@ -684,6 +684,14 @@ component serializable="false" accessors="true" {
 					case "targetID": {
 						return arguments.targetID;
 					}
+					case "objectMetadata": {
+						var binder  = variables.injector.getBinder();
+						var mapping = binder.getMapping( arguments.targetID );
+						if ( !mapping.isDiscovered() ) {
+							mapping.process( binder, variables.injector );
+						}
+						return mapping.getObjectMetadata();
+					}
 				}
 				break;
 			}
