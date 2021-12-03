@@ -85,4 +85,10 @@ component {
 	// Async Configs
 	this.async = { "schedulerThreads" : 20 };
 
+	/**
+	 * Configuration for non-config apps
+	 */
+	function configure(){
+	}
+
 }
