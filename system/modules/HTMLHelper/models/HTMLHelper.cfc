@@ -2586,7 +2586,7 @@ component
 		} else {
 			variables.cachedPaths[ argumentsHash ] = manifestDirectory[ key ];
 		}
-		return variables.cachedPaths[ argumentsHash ]
+		return variables.cachedPaths[ argumentsHash ];
 	}
 
 	/**
