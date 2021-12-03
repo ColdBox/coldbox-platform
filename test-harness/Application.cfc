@@ -12,6 +12,7 @@ component {
 	this.sessionTimeout     = createTimespan( 0, 0, 30, 0 );
 	this.setClientCookies   = true;
 	this.timezone 			= "UTC";
+	this.enableNullSupport = shouldEnableFullNullSupport();
 
 	// COLDBOX STATIC PROPERTY, DO NOT CHANGE UNLESS THIS IS NOT THE ROOT OF YOUR COLDBOX APP
 	COLDBOX_APP_ROOT_PATH = getDirectoryFromPath( getCurrentTemplatePath() );
@@ -99,4 +100,9 @@ component {
 		return application.cbBootstrap.onMissingTemplate( argumentCollection = arguments );
 	}
 
+	private boolean function shouldEnableFullNullSupport() {
+        var system = createObject( "java", "java.lang.System" );
+        var value = system.getEnv( "FULL_NULL" );
+        return isNull( value ) ? false : !!value;
+    }
 }

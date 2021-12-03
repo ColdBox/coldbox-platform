@@ -22,6 +22,7 @@ jobs:
       matrix:
         cfengine: [ "lucee@5", "adobe@2016", "adobe@2018", "adobe@2021" ]
         javaVersion: [ "openjdk8", "openjdk11" ]
+        fullNull: ["true", "false"]
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
@@ -68,6 +69,8 @@ jobs:
           curl http://127.0.0.1:8599/test-harness
 
       - name: Run Tests
+        env:
+          FULL_NULL: ${{ matrix.fullNull }}
         run: |
           ant -f build/build.xml run-tests
 
