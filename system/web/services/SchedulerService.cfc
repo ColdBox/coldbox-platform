@@ -97,10 +97,11 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			.registerNewInstance( name = arguments.name, instancePath = arguments.path )
 			.setVirtualInheritance( variables.baseScheduler )
 			.setThreadSafe( true )
-			.setScope( variables.wirebox.getBinder().SCOPES.SINGLETON );
+			.setScope( variables.wirebox.getBinder().SCOPES.SINGLETON )
+			.addDIConstructorArgument( name = "name", value = arguments.name );
 		// Create, register, configure it and start it up baby!
 		var oScheduler = registerScheduler(
-			variables.wirebox.getInstance( arguments.name ).setName( arguments.name )
+			variables.wirebox.getInstance( arguments.name, { name : arguments.name } ).setName( arguments.name )
 		);
 		// Register the Scheduler as an Interceptor as well.
 		variables.controller.getInterceptorService().registerInterceptor( interceptorObject = oScheduler );
