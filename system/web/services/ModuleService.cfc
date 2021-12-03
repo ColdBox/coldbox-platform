@@ -912,10 +912,13 @@ component extends="coldbox.system.web.services.BaseService" {
 	 * Unload all registered modules
 	 */
 	ModuleService function unloadAll(){
-		// Unload all modules
-		variables.registeredModules.each( function( key, module ){
-			unload( arguments.key );
-		} );
+		// Verify registered modules
+		if ( !isNull( variables.registeredModules ) && isStruct( variables.registeredModules ) ) {
+			// Unload all modules
+			variables.registeredModules.each( function( key, module ){
+				unload( arguments.key );
+			} );
+		}
 		return this;
 	}
 
