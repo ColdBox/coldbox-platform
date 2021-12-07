@@ -750,7 +750,7 @@ component extends="coldbox.system.web.services.BaseService" {
 
 			// Log it
 			variables.logger.info(
-				"+ Module (#arguments.moduleName#) Activated (#mConfig.activationTime#ms) => { version: #mConfig.version#, from: #mConfig.path# }"
+				"+ Module (#arguments.moduleName#@#mConfig.version#) activated in (#mConfig.activationTime#ms)"
 			);
 		}
 		// end lock
