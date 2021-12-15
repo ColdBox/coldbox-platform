@@ -1099,8 +1099,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			results[ "scriptName" ] = replaceNoCase( results[ "scriptName" ], getContextRoot(), "" );
 		}
 
-		// Clean up the from script name path_info 
-		results[ "pathInfo" ] = reReplaceNoCase( results[ "pathInfo" ], getCGIElement( "script_name", arguments.event ), "" );
+		// Clean up the from script name path_info
+		results[ "pathInfo" ] = reReplaceNoCase(
+			results[ "pathInfo" ],
+			getCGIElement( "script_name", arguments.event ),
+			""
+		);
 
 		// clean 1 or > / in front of route in some cases, scope = one by default
 		results[ "pathInfo" ] = reReplaceNoCase( results[ "pathInfo" ], "^/+", "/" );
