@@ -125,7 +125,9 @@ component accessors="true" {
 				// Set the cf context into it
 				pageContext.setFusionContext( fusionContext );
 				fusionContext.pageContext = pageContext;
-				fusionContext.SymTab_setApplicationScope( variables.originalAppScope );
+				if( !isNull( variables.originalAppScope ) ) {
+					fusionContext.SymTab_setApplicationScope( variables.originalAppScope );
+				}
 
 				// Create a fake page to run this thread in and link it to the fake page context and fusion context
 				var page             = variables.originalPage._clone();
