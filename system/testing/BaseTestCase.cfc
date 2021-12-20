@@ -390,22 +390,16 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 
 	/**
 	 * Executes a framework lifecycle by executing an event.
-	 * This method returns a request context object that
-	 * is decorated and can be used for assertions.
+	 * This method returns a request context object that is decorated and can be used for assertions.
 	 *
-	 * @event          The event to execute (e.g. 'main.index')
-	 * @route          The route to execute (e.g. '/login' which may route to 'sessions.new')
-	 * @private        Call a private event or not.
-	 * @prePostExempt  If true, pre/post handlers will not be fired.
-	 * @eventArguments A collection of arguments to passthrough to the
-	 *                        calling event handler method.
-	 * @renderResults         If true, then it will try to do the normal
-	 *                        rendering procedures and store the rendered content
-	 *                        in the RC as cbox_rendered_content.
-	 * @withExceptionHandling If true, then ColdBox will process any errors
-	 *                        through the exception handling framework instead
-	 *                        of just throwing the error. Default: false.
-	 * @domain Override the domain of execution of the request. Default is to use the cgi.server_name variable.
+	 * @event                 The event to execute (e.g. 'main.index')
+	 * @route                 The route to execute (e.g. '/login' which may route to 'sessions.new')
+	 * @private               Call a private event or not.
+	 * @prePostExempt         If true, pre/post handlers will not be fired.
+	 * @eventArguments        A collection of arguments to passthrough to the calling event handler method.
+	 * @renderResults         If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content.
+	 * @withExceptionHandling If true, then ColdBox will process any errors through the exception handling framework instead of just throwing the error. Default: false.
+	 * @domain                Override the domain of execution of the request. Default is to use the cgi.server_name variable.
 	 *
 	 * @return                coldbox.system.context.RequestContext
 	 */
@@ -437,6 +431,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 		try {
 			// If the route is for the home page, use the default event in the config/ColdBox.cfc
 			if ( arguments.route == "/" ) {
+				// Set the default app event
 				arguments.event = getController().getSetting( "defaultEvent" );
 				requestContext.setValue( requestContext.getEventName(), arguments.event );
 				// Prepare all mocking data for simulating routing request
@@ -448,8 +443,9 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 					.$args( "script_name", requestContext )
 					.$results( "" )
 					.$( "getCGIElement" )
-					.$args( "domain", requestContext )
-					.$results( CGI.SERVER_NAME );
+					.$args( "server_name", requestContext )
+					.$results( arguments.domain );
+				// No route, it's the route
 				arguments.route = "";
 				// Capture the route request
 				controller.getRequestService().requestCapture();
@@ -472,7 +468,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 					.$results( "" )
 					.$( "getCGIElement" )
 					.$args( "server_name", requestContext )
-					.$results( CGI.SERVER_NAME );
+					.$results( arguments.domain );
 				// Capture the route request
 				controller.getRequestService().requestCapture();
 			} else {
@@ -612,6 +608,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * @method                The method type to execute.  Defaults to GET.
 	 * @renderResults         If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
 	 * @withExceptionHandling If true, then ColdBox will process any errors through the exception handling framework instead of just throwing the error. Default: false.
+	 * @domain                Override the domain of execution of the request. Default is to use the cgi.server_name variable.
 	 */
 	function request(
 		string route                  = "",
@@ -619,7 +616,8 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 		struct headers                = {},
 		string method                 = "GET",
 		boolean renderResults         = true,
-		boolean withExceptionHandling = false
+		boolean withExceptionHandling = false,
+		domain                        = cgi.SERVER_NAME
 	){
 		var mockedEvent = prepareMock( getRequestContext() ).$( "getHTTPMethod", uCase( arguments.method ) );
 		arguments.params
@@ -646,13 +644,15 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * @headers               Custom headers to pass as from the request
 	 * @renderResults         If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
 	 * @withExceptionHandling If true, then ColdBox will process any errors through the exception handling framework instead of just throwing the error. Default: false.
+	 * @domain                Override the domain of execution of the request. Default is to use the cgi.server_name variable.
 	 */
 	function get(
 		string route                  = "",
 		struct params                 = {},
 		struct headers                = {},
 		boolean renderResults         = true,
-		boolean withExceptionHandling = false
+		boolean withExceptionHandling = false,
+		domain                        = cgi.SERVER_NAME
 	){
 		arguments.method = "GET";
 		return variables.request( argumentCollection = arguments );
@@ -666,13 +666,15 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * @headers               Custom headers to pass as from the request
 	 * @renderResults         If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
 	 * @withExceptionHandling If true, then ColdBox will process any errors through the exception handling framework instead of just throwing the error. Default: false.
+	 * @domain                Override the domain of execution of the request. Default is to use the cgi.server_name variable.
 	 */
 	function post(
 		string route                  = "",
 		struct params                 = {},
 		struct headers                = {},
 		boolean renderResults         = true,
-		boolean withExceptionHandling = false
+		boolean withExceptionHandling = false,
+		domain                        = cgi.SERVER_NAME
 	){
 		arguments.method = "POST";
 		return variables.request( argumentCollection = arguments );
@@ -686,13 +688,15 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * @headers               Custom headers to pass as from the request
 	 * @renderResults         If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
 	 * @withExceptionHandling If true, then ColdBox will process any errors through the exception handling framework instead of just throwing the error. Default: false.
+	 * @domain                Override the domain of execution of the request. Default is to use the cgi.server_name variable.
 	 */
 	function put(
 		string route                  = "",
 		struct params                 = {},
 		struct headers                = {},
 		boolean renderResults         = true,
-		boolean withExceptionHandling = false
+		boolean withExceptionHandling = false,
+		domain                        = cgi.SERVER_NAME
 	){
 		arguments.method = "PUT";
 		return variables.request( argumentCollection = arguments );
@@ -706,13 +710,15 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * @headers               Custom headers to pass as from the request
 	 * @renderResults         If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
 	 * @withExceptionHandling If true, then ColdBox will process any errors through the exception handling framework instead of just throwing the error. Default: false.
+	 * @domain                Override the domain of execution of the request. Default is to use the cgi.server_name variable.
 	 */
 	function patch(
 		string route                  = "",
 		struct params                 = {},
 		struct headers                = {},
 		boolean renderResults         = true,
-		boolean withExceptionHandling = false
+		boolean withExceptionHandling = false,
+		domain                        = cgi.SERVER_NAME
 	){
 		arguments.method = "PATCH";
 		return variables.request( argumentCollection = arguments );
@@ -726,13 +732,15 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * @headers               Custom headers to pass as from the request
 	 * @renderResults         If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
 	 * @withExceptionHandling If true, then ColdBox will process any errors through the exception handling framework instead of just throwing the error. Default: false.
+	 * @domain                Override the domain of execution of the request. Default is to use the cgi.server_name variable.
 	 */
 	function delete(
 		string route                  = "",
 		struct params                 = {},
 		struct headers                = {},
 		boolean renderResults         = true,
-		boolean withExceptionHandling = false
+		boolean withExceptionHandling = false,
+		domain                        = cgi.SERVER_NAME
 	){
 		arguments.method = "DELETE";
 		return variables.request( argumentCollection = arguments );
