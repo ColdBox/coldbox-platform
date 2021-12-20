@@ -1,5 +1,12 @@
 component extends="tests.resources.BaseIntegrationTest" {
 
+	function beforeAll(){
+		// We need to make sure we start fresh on this test.
+		shutdownColdBox();
+		// Super size me!
+		super.beforeAll();
+	}
+
 	function run(){
 		describe( "subdomain routing", function(){
 			beforeEach( function(){

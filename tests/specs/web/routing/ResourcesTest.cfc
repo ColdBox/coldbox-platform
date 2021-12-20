@@ -13,7 +13,6 @@
 				router.$( "addRoute" );
 			} );
 
-
 			it( "can register nested resources", function(){
 				router.resources( resource = "agents", pattern = "/sites/:siteId/agents" );
 				var cl = router.$callLog().addRoute;

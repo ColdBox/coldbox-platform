@@ -70,4 +70,14 @@ component
 		return server.keyExists( "lucee" );
 	}
 
+	function shutdownColdBox(){
+		// Graceful shutdown
+		if ( structKeyExists( application, "cbController" ) ) {
+			application[ "cbController" ].getLoaderService().processShutdown();
+		}
+		// Wipe app scopes
+		structDelete( application, "cbController" );
+		structDelete( application, "wirebox" );
+	}
+
 }
