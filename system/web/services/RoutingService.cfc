@@ -170,6 +170,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// Clean incoming paths
 		var cleanedPaths = getCleanedPaths( rc, arguments.event );
 
+		writeDump( var = "******> Cleaned Paths: #cleanedPaths.toString()#", output = "console" );
+
 		// Check if disabled or in proxy mode, if it is, then exit out.
 		if ( !variables.router.getEnabled() OR arguments.event.isProxyRequest() ) {
 			return;
@@ -203,6 +205,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			event  = arguments.event,
 			domain = cleanedPaths[ "domain" ]
 		);
+
+		writeDump( var = "******> Found route: #routeResults.toString()#", output = "console" );
 
 		// Process the route
 		var discoveredEvent = processRoute( routeResults, event, rc, prc );
