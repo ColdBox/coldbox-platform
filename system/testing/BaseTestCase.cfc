@@ -470,7 +470,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 					.$args( "script_name", requestContext )
 					.$results( "" )
 					.$( "getCGIElement" )
-					.$args( "domain", requestContext )
+					.$args( "server_name", requestContext )
 					.$results( CGI.SERVER_NAME );
 				// Capture the route request
 				controller.getRequestService().requestCapture();
