@@ -210,6 +210,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 		// Process the route
 		var discoveredEvent = processRoute( routeResults, event, rc, prc );
+		writeDump( var = "******> Discovered Event: #discoveredEvent ?: "N/A"#", output = "console" );
 
 		// Do we use the discovered event?
 		if ( !isNull( local.discoveredEvent ) and discoveredEvent.len() ) {

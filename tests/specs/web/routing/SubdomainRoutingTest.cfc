@@ -19,6 +19,8 @@ component extends="tests.resources.BaseIntegrationTest" {
 			} );
 
 			it( "can match on a specific domain", function(){
+				writeDump( var = "*****> Testing: subdomain-routing.dev", output = "console" );
+
 				var event = execute( route: "/", domain: "subdomain-routing.dev" );
 				var rc    = event.getCollection();
 				expect( rc ).toHaveKey( "event" );
