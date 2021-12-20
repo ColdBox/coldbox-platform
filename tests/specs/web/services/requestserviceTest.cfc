@@ -35,10 +35,15 @@
 				// debug(context.getCollection());
 
 				/* Tests */
-				expect( context ).toBeComponent();
-				expect( url.today ).toBe( context.getValue( "today" ) );
-				expect( url.name ).toBe( context.getValue( "name" ) );
-				expect( context.valueExists( "event" ) ).toBeTrue();
+				try {
+					expect( context ).toBeComponent();
+					expect( url.today ).toBe( context.getValue( "today" ) );
+					expect( url.name ).toBe( context.getValue( "name" ) );
+					expect( context.valueExists( "event" ) ).toBeTrue();
+				} finally {
+					structDelete( form, "event" );
+					structDelete( url, "event" );
+				}
 			} );
 
 			it( "can capture a json body", function(){
@@ -75,8 +80,13 @@
 				var context = requestService.requestCapture();
 
 				/* Tests */
-				expect( context ).toBeComponent();
-				expect( url.event ).toBe( context.getCurrentEvent() );
+				try {
+					expect( context ).toBeComponent();
+					expect( url.event ).toBe( context.getCurrentEvent() );
+				} finally {
+					structDelete( form, "event" );
+					structDelete( url, "event" );
+				}
 			} );
 
 			it( "can create and check for context in the request scope", function(){
