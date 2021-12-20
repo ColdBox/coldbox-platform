@@ -74,7 +74,7 @@ component
 	/**
 	 * Get an interceptor property
 	 *
-	 * @property The property to retrieve
+	 * @property     The property to retrieve
 	 * @defaultValue The default value to return if property does not exist
 	 *
 	 * @throws InvalidPropertyException
@@ -106,7 +106,7 @@ component
 	 * Store an interceptor property
 	 *
 	 * @property The property to store
-	 * @value The value to store
+	 * @value    The value to store
 	 *
 	 * @return Interceptor instance
 	 */

@@ -22,7 +22,7 @@ component extends="coldbox.system.cache.store.ConcurrentStore" accessors=true {
 	/**
 	 * Constructor
 	 *
-	 * @cacheProvider The associated cache provider as coldbox.system.cache.providers.ICacheProvider
+	 * @cacheProvider             The associated cache provider as coldbox.system.cache.providers.ICacheProvider
 	 * @cacheprovider.doc_generic coldbox.system.cache.providers.ICacheProvider
 	 */
 	function init( required cacheProvider ){
@@ -133,11 +133,11 @@ component extends="coldbox.system.cache.store.ConcurrentStore" accessors=true {
 	/**
 	 * Sets an object in the storage
 	 *
-	 * @objectKey The object key"
-	 * @object The object to save"
-	 * @timeout Timeout in minutes"
+	 * @objectKey         The object key"
+	 * @object            The object to save"
+	 * @timeout           Timeout in minutes"
 	 * @lastAccessTimeout Idle Timeout in minutes"
-	 * @extras A map of extra name-value pairs"
+	 * @extras            A map of extra name-value pairs"
 	 */
 	void function set(
 		required objectKey,
@@ -225,7 +225,7 @@ component extends="coldbox.system.cache.store.ConcurrentStore" accessors=true {
 	 * Create SR, register cached object and reference
 	 *
 	 * @objectKey The value of the key to store
-	 * @target The target to wrap
+	 * @target    The target to wrap
 	 *
 	 * @return A java soft reference `java.lang.ref.SoftReference`
 	 */

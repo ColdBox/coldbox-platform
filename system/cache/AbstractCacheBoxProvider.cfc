@@ -174,7 +174,7 @@ component accessors=true serializable=false {
 	/**
 	 * Set the cache factory reference for this cache
 	 *
-	 * @cacheFactory The cache factory
+	 * @cacheFactory             The cache factory
 	 * @cacheFactory.doc_generic coldbox.system.cache.CacheFactory
 	 *
 	 * @return ICacheProvider
@@ -207,10 +207,10 @@ component accessors=true serializable=false {
 	/**
 	 * Sets Multiple Objects in the cache. Sets might be expensive. If the JVM threshold is used and it has been reached, the object won't be cached. If the pool is at maximum it will expire using its eviction policy and still cache the object. Cleanup will be done later.
 	 *
-	 * @mapping The structure of name value pairs to cache
-	 * @timeout The timeout to use on the object (if any, provider specific)
+	 * @mapping           The structure of name value pairs to cache
+	 * @timeout           The timeout to use on the object (if any, provider specific)
 	 * @lastAccessTimeout The idle timeout to use on the object (if any, provider specific)
-	 * @prefix A prefix to prepend to the keys
+	 * @prefix            A prefix to prepend to the keys
 	 */
 	function setMulti(
 		required struct mapping,
@@ -232,7 +232,7 @@ component accessors=true serializable=false {
 	/**
 	 * Clears objects from the cache by using its cache key. The returned value is a structure of name-value pairs of all the keys that where removed from the operation.
 	 *
-	 * @keys The comma delimited list or array of keys to retrieve from the cache
+	 * @keys   The comma delimited list or array of keys to retrieve from the cache
 	 * @prefix A prefix to prepend to the keys
 	 */
 	struct function clearMulti( required keys, prefix = "" ){
@@ -255,7 +255,7 @@ component accessors=true serializable=false {
 	/**
 	 * The returned value is a structure of name-value pairs of all the keys that where found or not
 	 *
-	 * @keys The comma delimited list or an array of keys to lookup in the cache
+	 * @keys   The comma delimited list or an array of keys to lookup in the cache
 	 * @prefix A prefix to prepend to the keys with, if any
 	 *
 	 * @struct {key:boolean}
@@ -280,7 +280,7 @@ component accessors=true serializable=false {
 	/**
 	 * The returned value is a structure of name-value pairs of all the keys that where found. Not found values will be in the mapping as null
 	 *
-	 * @keys The comma delimited list or an array of keys to lookup in the cache
+	 * @keys   The comma delimited list or an array of keys to lookup in the cache
 	 * @prefix A prefix to prepend to the keys with, if any
 	 *
 	 * @struct {key:boolean}
@@ -305,7 +305,7 @@ component accessors=true serializable=false {
 	/**
 	 * Get the cached object's metadata structure. If the object does not exist, it returns an empty structure.
 	 *
-	 * @keys The comma delimited list or array of keys to retrieve from the cache
+	 * @keys   The comma delimited list or array of keys to retrieve from the cache
 	 * @prefix A prefix to prepend to the keys
 	 */
 	struct function getCachedObjectMetadataMulti( required keys, prefix = "" ){
@@ -329,8 +329,8 @@ component accessors=true serializable=false {
 	 * Clear by key snippet
 	 *
 	 * @keySnippet The key snippet partial to clear out
-	 * @regex Whether to use regex matching or not, defaults to false
-	 * @async To do this in async mode or sync mode, defaults to false
+	 * @regex      Whether to use regex matching or not, defaults to false
+	 * @async      To do this in async mode or sync mode, defaults to false
 	 *
 	 * @return LuceeProvider
 	 */
@@ -356,11 +356,11 @@ component accessors=true serializable=false {
 	/**
 	 * Tries to get an object from the cache, if not found, it calls the 'produce' closure to produce the data and cache it
 	 *
-	 * @objectKey The object cache key
-	 * @produce The producer closure/lambda
-	 * @timeout The timeout to use on the object (if any, provider specific)
+	 * @objectKey         The object cache key
+	 * @produce           The producer closure/lambda
+	 * @timeout           The timeout to use on the object (if any, provider specific)
 	 * @lastAccessTimeout The idle timeout to use on the object (if any, provider specific)
-	 * @extra A map of name-value pairs to use as extra arguments to pass to a providers set operation
+	 * @extra             A map of name-value pairs to use as extra arguments to pass to a providers set operation
 	 *
 	 * @return The cached or produced data/object
 	 */

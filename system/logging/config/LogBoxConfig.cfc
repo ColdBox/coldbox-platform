@@ -18,7 +18,7 @@ component accessors="true" {
 	/**
 	 * Constructor
 	 *
-	 * @CFCConfig The logBox Data Configuration CFC
+	 * @CFCConfig     The logBox Data Configuration CFC
 	 * @CFCConfigPath The logBox Data Configuration CFC path to use
 	 */
 	function init( any CFCConfig, string CFCConfigPath ){
@@ -190,12 +190,12 @@ component accessors="true" {
 	/**
 	 * Add an appender configuration
 	 *
-	 * @name A unique name for the appender to register. Only unique names can be registered per instance
-	 * @class The appender's class to register. We will create, init it and register it for you
+	 * @name       A unique name for the appender to register. Only unique names can be registered per instance
+	 * @class      The appender's class to register. We will create, init it and register it for you
 	 * @properties The structure of properties to configure this appender with.
-	 * @layout The layout class path to use in this appender for custom message rendering.
-	 * @levelMin The default log level for the root logger, by default it is 0 (FATAL). Optional. ex: config.logLevels.WARN
-	 * @levelMax The default log level for the root logger, by default it is 4 (DEBUG). Optional. ex: config.logLevels.WARN
+	 * @layout     The layout class path to use in this appender for custom message rendering.
+	 * @levelMin   The default log level for the root logger, by default it is 0 (FATAL). Optional. ex: config.logLevels.WARN
+	 * @levelMax   The default log level for the root logger, by default it is 4 (DEBUG). Optional. ex: config.logLevels.WARN
 	 */
 	LogBoxConfig function appender(
 		required name,
@@ -221,8 +221,8 @@ component accessors="true" {
 	 * Add an appender configuration
 	 *
 	 * @appenders A list of appenders to configure the root logger with. Send a * to add all appenders
-	 * @levelMin The default log level for the root logger, by default it is 0 (FATAL). Optional. ex: config.logLevels.WARN
-	 * @levelMax The default log level for the root logger, by default it is 4 (DEBUG). Optional. ex: config.logLevels.WARN
+	 * @levelMin  The default log level for the root logger, by default it is 0 (FATAL). Optional. ex: config.logLevels.WARN
+	 * @levelMax  The default log level for the root logger, by default it is 4 (DEBUG). Optional. ex: config.logLevels.WARN
 	 *
 	 * @throws InvalidAppenders
 	 */
@@ -258,9 +258,9 @@ component accessors="true" {
 	/**
 	 * Add a new category configuration with appender(s).  Appenders MUST be defined first, else this method will throw an exception
 	 *
-	 * @name A unique name for the appender to register. Only unique names can be registered per instance
-	 * @levelMin The default log level for the root logger, by default it is 0 (FATAL). Optional. ex: config.logLevels.WARN
-	 * @levelMax The default log level for the root logger, by default it is 4 (DEBUG). Optional. ex: config.logLevels.WARN
+	 * @name      A unique name for the appender to register. Only unique names can be registered per instance
+	 * @levelMin  The default log level for the root logger, by default it is 0 (FATAL). Optional. ex: config.logLevels.WARN
+	 * @levelMax  The default log level for the root logger, by default it is 4 (DEBUG). Optional. ex: config.logLevels.WARN
 	 * @appenders A list of appender names to configure this category with. By default it uses all the registered appenders
 	 */
 	LogBoxConfig function category(

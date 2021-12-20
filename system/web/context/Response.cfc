@@ -236,7 +236,7 @@ component accessors="true" {
 	/**
 	 * Add a header into the response
 	 *
-	 * @name The header name ( e.g. "Content-Type" )
+	 * @name  The header name ( e.g. "Content-Type" )
 	 * @value The header value ( e.g. "application/json" )
 	 */
 	Response function addHeader( required string name, required string value ){
@@ -247,11 +247,11 @@ component accessors="true" {
 	/**
 	 * Set the pagination data
 	 *
-	 * @offset The offset
-	 * @maxRows The max rows returned
-	 * @page The page number
+	 * @offset       The offset
+	 * @maxRows      The max rows returned
+	 * @page         The page number
 	 * @totalRecords The total records found
-	 * @totalPages The total pages found
+	 * @totalPages   The total pages found
 	 */
 	Response function setPagination(
 		numeric offset       = 0,
@@ -306,9 +306,9 @@ component accessors="true" {
 	/**
 	 * Sets the data and pagination from a struct with `results` and `pagination`.
 	 *
-	 * @data           The struct containing both results and pagination.
-	 * @resultsKey     The name of the key with the results.
-	 * @paginationKey  The name of the key with the pagination.
+	 * @data          The struct containing both results and pagination.
+	 * @resultsKey    The name of the key with the results.
+	 * @paginationKey The name of the key with the pagination.
 	 *
 	 * @return Returns the Response object for chaining
 	 */
@@ -325,8 +325,8 @@ component accessors="true" {
 	 * Sets the error message with a code for the API response
 	 *
 	 * @errorMessage The error message to set
-	 * @statusCode The status code to set, if any
-	 * @statusText The status text to set, if any
+	 * @statusCode   The status code to set, if any
+	 * @statusText   The status text to set, if any
 	 *
 	 * @return Returns the Response object for chaining
 	 */

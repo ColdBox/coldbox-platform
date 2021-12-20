@@ -8,6 +8,7 @@
 	"alignment.consecutive.assignments": true,
 	"alignment.consecutive.properties": true,
 	"alignment.consecutive.params": true,
+	"alignment.doc_comments" : true,
 	"brackets.padding": true,
 	"comment.asterisks": "align",
 	"binary_operators.padding": true,

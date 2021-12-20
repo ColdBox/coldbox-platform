@@ -37,9 +37,9 @@ component accessors="true" {
 	/**
 	 * Constructor
 	 *
-	 * @category The category name to use this logger with
-	 * @levelMin The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARN
-	 * @levelMax The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARN
+	 * @category  The category name to use this logger with
+	 * @levelMin  The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARN
+	 * @levelMax  The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARN
 	 * @appenders A struct of already created appenders for this category, or blank to use the root logger.
 	 */
 	function init(
@@ -252,7 +252,7 @@ component accessors="true" {
 	/**
 	 * Log a debug message
 	 *
-	 * @message The message to log
+	 * @message   The message to log
 	 * @extraInfo Extra information to send to appenders
 	 *
 	 * @return Logger
@@ -265,7 +265,7 @@ component accessors="true" {
 	/**
 	 * Log a info message
 	 *
-	 * @message The message to log
+	 * @message   The message to log
 	 * @extraInfo Extra information to send to appenders
 	 *
 	 * @return Logger
@@ -278,7 +278,7 @@ component accessors="true" {
 	/**
 	 * Log a warn message
 	 *
-	 * @message The message to log
+	 * @message   The message to log
 	 * @extraInfo Extra information to send to appenders
 	 *
 	 * @return Logger
@@ -291,7 +291,7 @@ component accessors="true" {
 	/**
 	 * Log an error message
 	 *
-	 * @message The message to log
+	 * @message   The message to log
 	 * @extraInfo Extra information to send to appenders
 	 *
 	 * @return Logger
@@ -304,7 +304,7 @@ component accessors="true" {
 	/**
 	 * Log a fatal message
 	 *
-	 * @message The message to log
+	 * @message   The message to log
 	 * @extraInfo Extra information to send to appenders
 	 *
 	 * @return Logger
@@ -317,8 +317,8 @@ component accessors="true" {
 	/**
 	 * Write an entry into the loggers registered with this LogBox variables
 	 *
-	 * @message The message to log
-	 * @severity The severity level to log, if invalid, it will default to **Info**
+	 * @message   The message to log
+	 * @severity  The severity level to log, if invalid, it will default to **Info**
 	 * @extraInfo Extra information to send to appenders
 	 */
 	Logger function logMessage(

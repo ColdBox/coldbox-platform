@@ -121,7 +121,7 @@ component
 	/**
 	 * Constructor
 	 *
-	 * @controller The ColdBox controller linkage
+	 * @controller        The ColdBox controller linkage
 	 * @controller.inject coldbox
 	 */
 	function init( required controller ){
@@ -315,8 +315,8 @@ component
 	/**
 	 * Register modules routes in the specified position in the main routing table, and returns itself
 	 * @pattern The pattern to match against the URL
-	 * @module The module to load routes for
-	 * @append Whether the module entry point route should be appended or pre-pended to the main routes array. By default we append to the end of the array
+	 * @module  The module to load routes for
+	 * @append  Whether the module entry point route should be appended or pre-pended to the main routes array. By default we append to the end of the array
 	 *
 	 * @return Router
 	 */
@@ -412,9 +412,9 @@ component
 
 	/**
 	 * Register a namespace in the specified position in the main routing table, and returns itself
-	 * @pattern The pattern to match against the URL.
+	 * @pattern   The pattern to match against the URL.
 	 * @namespace The name of the namespace to register
-	 * @append Whether the route should be appended or pre-pended to the array. By default we append to the end of the array
+	 * @append    Whether the route should be appended or pre-pended to the array. By default we append to the end of the array
 	 *
 	 * @return Router
 	 */
@@ -481,22 +481,22 @@ component
 	 *
 	 * Starts a with closure, where all arguments will be prefixed for the next concatenated addRoute() methods until an endWith() is called
 	 *
-	 * @pattern The pattern to match against the URL.
-	 * @handler The handler to execute if pattern matched.
-	 * @action The action in a handler to execute if a pattern is matched.  This can also be a structure based on the HTTP method(GET,POST,PUT,DELETE). ex: {GET:'show', PUT:'update', DELETE:'delete', POST:'save'}
+	 * @pattern               The pattern to match against the URL.
+	 * @handler               The handler to execute if pattern matched.
+	 * @action                The action in a handler to execute if a pattern is matched.  This can also be a structure based on the HTTP method(GET,POST,PUT,DELETE). ex: {GET:'show', PUT:'update', DELETE:'delete', POST:'save'}
 	 * @packageResolverExempt If this is set to true, then the interceptor will not try to do handler package resolving. Else a package will always be resolved. Only works if :handler is in a pattern
-	 * @matchVariables A string of name-value pair variables to add to the request collection when this pattern matches. This is a comma delimited list. Ex: spaceFound=true,missingAction=onTest
-	 * @view The view to dispatch if pattern matches.  No event will be fired, so handler,action will be ignored.
-	 * @viewNoLayout If view is chosen, then you can choose to override and not display a layout with the view. Else the view renders in the assigned layout.
-	 * @valuePairTranslation Activate convention name value pair translations or not. Turned on by default
-	 * @constraints A structure of regex constraint overrides for variable placeholders. The key is the name of the variable, the value is the regex to try to match.
-	 * @module The module to add this route to
-	 * @moduleRouting Called internally by addModuleRoutes to add a module routing route.
-	 * @namespace The namespace to add this route to
-	 * @namespaceRouting Called internally by addNamespaceRoutes to add a namespaced routing route.
-	 * @ssl Makes the route an SSL only route if true, else it can be anything. If an ssl only route is hit without ssl, the interceptor will redirect to it via ssl
-	 * @append Whether the route should be appended or pre-pended to the array. By default we append to the end of the array
-	 * @domain The domain to match, including wildcards
+	 * @matchVariables        A string of name-value pair variables to add to the request collection when this pattern matches. This is a comma delimited list. Ex: spaceFound=true,missingAction=onTest
+	 * @view                  The view to dispatch if pattern matches.  No event will be fired, so handler,action will be ignored.
+	 * @viewNoLayout          If view is chosen, then you can choose to override and not display a layout with the view. Else the view renders in the assigned layout.
+	 * @valuePairTranslation  Activate convention name value pair translations or not. Turned on by default
+	 * @constraints           A structure of regex constraint overrides for variable placeholders. The key is the name of the variable, the value is the regex to try to match.
+	 * @module                The module to add this route to
+	 * @moduleRouting         Called internally by addModuleRoutes to add a module routing route.
+	 * @namespace             The namespace to add this route to
+	 * @namespaceRouting      Called internally by addNamespaceRoutes to add a namespaced routing route.
+	 * @ssl                   Makes the route an SSL only route if true, else it can be anything. If an ssl only route is hit without ssl, the interceptor will redirect to it via ssl
+	 * @append                Whether the route should be appended or pre-pended to the array. By default we append to the end of the array
+	 * @domain                The domain to match, including wildcards
 	 *
 	 * @return Router
 	 */
@@ -582,7 +582,7 @@ component
 	 * </pre>
 	 *
 	 * @options The route options that match routing, look at the <code>addRoute()</code> method
-	 * @body The closure or lambda to contain all the routing methods to be grouped with the options data.
+	 * @body    The closure or lambda to contain all the routing methods to be grouped with the options data.
 	 */
 	function group( struct options = {}, body ){
 		// Mark the group
@@ -617,15 +617,15 @@ component
 	 * - `/photos/:id` : `PUT/PATCH` -> `photos.update` Update a specific photo
 	 * - `/photos/:id` : `DELETE` -> `photos.delete` Delete a specific photo
 	 *
-	 * @resource The name of a single resource to map
-	 * @handler The handler for the route. Defaults to the resource name.
+	 * @resource      The name of a single resource to map
+	 * @handler       The handler for the route. Defaults to the resource name.
 	 * @parameterName The name of the id/parameter for the resource. Defaults to `id`.
-	 * @only Limit routes created with only this list or array of actions, e.g. "index,show"
-	 * @except Exclude routes with an except list or array of actions, e.g. "show"
-	 * @module If passed, the module these resources will be attached to.
-	 * @namespace If passed, the namespace these resources will be attached to.
-	 * @pattern If passed, the actual URL pattern to use, else it defaults to `/#arguments.resource#` the name of the resource.
-	 * @meta A struct of metadata to store with ALL the routes created from this resource
+	 * @only          Limit routes created with only this list or array of actions, e.g. "index,show"
+	 * @except        Exclude routes with an except list or array of actions, e.g. "show"
+	 * @module        If passed, the module these resources will be attached to.
+	 * @namespace     If passed, the namespace these resources will be attached to.
+	 * @pattern       If passed, the actual URL pattern to use, else it defaults to `/#arguments.resource#` the name of the resource.
+	 * @meta          A struct of metadata to store with ALL the routes created from this resource
 	 */
 	function resources(
 		required resource,
@@ -743,15 +743,15 @@ component
 	 * - `/photos/:id` : `PUT/PATCH` -> `photos.update` Update a specific photo
 	 * - `/photos/:id` : `DELETE` -> `photos.delete` Delete a specific photo
 	 *
-	 * @resource The name of a single resource to map
-	 * @handler The handler for the route. Defaults to the resource name.
+	 * @resource      The name of a single resource to map
+	 * @handler       The handler for the route. Defaults to the resource name.
 	 * @parameterName The name of the id/parameter for the resource. Defaults to `id`.
-	 * @only Limit routes created with only this list or array of actions, e.g. "index,show"
-	 * @except Exclude routes with an except list or array of actions, e.g. "show"
-	 * @module If passed, the module these resources will be attached to.
-	 * @namespace If passed, the namespace these resources will be attached to.
-	 * @pattern If passed, the actual URL pattern to use, else it defaults to `/#arguments.resource#` the name of the resource.
-	 * @meta A struct of metadata to store with ALL the routes created from this resource
+	 * @only          Limit routes created with only this list or array of actions, e.g. "index,show"
+	 * @except        Exclude routes with an except list or array of actions, e.g. "show"
+	 * @module        If passed, the module these resources will be attached to.
+	 * @namespace     If passed, the namespace these resources will be attached to.
+	 * @pattern       If passed, the actual URL pattern to use, else it defaults to `/#arguments.resource#` the name of the resource.
+	 * @meta          A struct of metadata to store with ALL the routes created from this resource
 	 */
 	function apiResources(
 		required resource,
@@ -770,37 +770,37 @@ component
 	/**
 	 * Adds a route to dispatch and returns itself.
 	 *
-	 * @pattern  The pattern to match against the URL.
-	 * @handler The handler to execute if pattern matched.
-	 * @action The action in a handler to execute if a pattern is matched.  This can also be a structure based on the HTTP method(GET,POST,PUT,DELETE). ex: {GET:'show', PUT:'update', DELETE:'delete', POST:'save'}
+	 * @pattern               The pattern to match against the URL.
+	 * @handler               The handler to execute if pattern matched.
+	 * @action                The action in a handler to execute if a pattern is matched.  This can also be a structure based on the HTTP method(GET,POST,PUT,DELETE). ex: {GET:'show', PUT:'update', DELETE:'delete', POST:'save'}
 	 * @packageResolverExempt If this is set to true, then the interceptor will not try to do handler package resolving. Else a package will always be resolved. Only works if :handler is in a pattern
-	 * @matchVariables DEPRECATED: Use RC or PRC structs instead. A string of name-value pair variables to add to the request collection when this pattern matches. This is a comma delimited list. Ex: spaceFound=true,missingAction=onTest
-	 * @view The view to dispatch if pattern matches.  No event will be fired, so handler,action will be ignored.
-	 * @viewNoLayout If view is chosen, then you can choose to override and not display a layout with the view. Else the view renders in the assigned layout.
+	 * @matchVariables        DEPRECATED: Use RC or PRC structs instead. A string of name-value pair variables to add to the request collection when this pattern matches. This is a comma delimited list. Ex: spaceFound=true,missingAction=onTest
+	 * @view                  The view to dispatch if pattern matches.  No event will be fired, so handler,action will be ignored.
+	 * @viewNoLayout          If view is chosen, then you can choose to override and not display a layout with the view. Else the view renders in the assigned layout.
 	 * @valuePairTranslation  Activate convention name value pair translations or not. Turned on by default
-	 * @constraints A structure of regex constraint overrides for variable placeholders. The key is the name of the variable, the value is the regex to try to match.
-	 * @module The module to add this route to
-	 * @moduleRouting Called internally by addModuleRoutes to add a module routing route.
-	 * @namespace The namespace to add this route to
-	 * @namespaceRouting Called internally by addNamespaceRoutes to add a namespaced routing route.
-	 * @ssl Makes the route an SSL only route if true, else it can be anything. If an ssl only route is hit without ssl, the interceptor will redirect to it via ssl
-	 * @append Whether the route should be appended or pre-pended to the array. By default we append to the end of the array
-	 * @response An HTML response string to send back or a closure to be executed that should return the response. The closure takes in a 'params' struct of all matched params and the string will be parsed with the named value pairs as ${param}
-	 * @statusCode The HTTP status code to send to the browser response.
-	 * @statusText Explains the HTTP status code sent to the browser response.
-	 * @condition A closure or UDF to execute that MUST return true to use route if matched or false and continue.
-	 * @name The name of the route
-	 * @domain The domain to match, including wildcards
-	 * @redirect If used, then the route will dispatch a relocation to this value as the new route using the `statuCode` default of 301 (Permanent) or if you define a `statusCode` we will use that.
-	 * @event The event to execute if route matches
-	 * @verbs The allowed HTTP Verbs for the route
-	 * @layout The view layout to use
-	 * @headers The HTTP headers to attach to the response if route matches
-	 * @rc The RC name value pairs to attach if the response matches
-	 * @prc The PRC name value pairs to attach if the response matches
-	 * @viewModule The module the view belongs to
-	 * @layoutModule The module the layout belongs to
-	 * @meta Additional metadata to add to the incoming route
+	 * @constraints           A structure of regex constraint overrides for variable placeholders. The key is the name of the variable, the value is the regex to try to match.
+	 * @module                The module to add this route to
+	 * @moduleRouting         Called internally by addModuleRoutes to add a module routing route.
+	 * @namespace             The namespace to add this route to
+	 * @namespaceRouting      Called internally by addNamespaceRoutes to add a namespaced routing route.
+	 * @ssl                   Makes the route an SSL only route if true, else it can be anything. If an ssl only route is hit without ssl, the interceptor will redirect to it via ssl
+	 * @append                Whether the route should be appended or pre-pended to the array. By default we append to the end of the array
+	 * @response              An HTML response string to send back or a closure to be executed that should return the response. The closure takes in a 'params' struct of all matched params and the string will be parsed with the named value pairs as ${param}
+	 * @statusCode            The HTTP status code to send to the browser response.
+	 * @statusText            Explains the HTTP status code sent to the browser response.
+	 * @condition             A closure or UDF to execute that MUST return true to use route if matched or false and continue.
+	 * @name                  The name of the route
+	 * @domain                The domain to match, including wildcards
+	 * @redirect              If used, then the route will dispatch a relocation to this value as the new route using the `statuCode` default of 301 (Permanent) or if you define a `statusCode` we will use that.
+	 * @event                 The event to execute if route matches
+	 * @verbs                 The allowed HTTP Verbs for the route
+	 * @layout                The view layout to use
+	 * @headers               The HTTP headers to attach to the response if route matches
+	 * @rc                    The RC name value pairs to attach if the response matches
+	 * @prc                   The PRC name value pairs to attach if the response matches
+	 * @viewModule            The module the view belongs to
+	 * @layoutModule          The module the layout belongs to
+	 * @meta                  Additional metadata to add to the incoming route
 	 *
 	 * @return SES
 	 */
@@ -1221,8 +1221,8 @@ component
 	 * </pre>
 	 *
 	 * @pattern The pattern to register
-	 * @target A response closure/lambda or an event string to execute
-	 * @name The name of the route
+	 * @target  A response closure/lambda or an event string to execute
+	 * @name    The name of the route
 	 */
 	function route( required pattern, target, name = "" ){
 		// inline termination
@@ -1280,7 +1280,7 @@ component
 	 * </pre>
 	 *
 	 * @pattern The pattern to register
-	 * @target A response closure/lambda or an event string to execute
+	 * @target  A response closure/lambda or an event string to execute
 	 */
 	function get( required pattern, target ){
 		variables.thisRoute.verbs = "GET";
@@ -1294,7 +1294,7 @@ component
 	 * </pre>
 	 *
 	 * @pattern The pattern to register
-	 * @target A response closure/lambda or an event string to execute
+	 * @target  A response closure/lambda or an event string to execute
 	 */
 	function post( required pattern, target ){
 		variables.thisRoute.verbs = "POST";
@@ -1308,7 +1308,7 @@ component
 	 * </pre>
 	 *
 	 * @pattern The pattern to register
-	 * @target A response closure/lambda or an event string to execute
+	 * @target  A response closure/lambda or an event string to execute
 	 */
 	function put( required pattern, target ){
 		variables.thisRoute.verbs = "PUT";
@@ -1322,7 +1322,7 @@ component
 	 * </pre>
 	 *
 	 * @pattern The pattern to register
-	 * @target A response closure/lambda or an event string to execute
+	 * @target  A response closure/lambda or an event string to execute
 	 */
 	function delete( required pattern, target ){
 		variables.thisRoute.verbs = "DELETE";
@@ -1336,7 +1336,7 @@ component
 	 * </pre>
 	 *
 	 * @pattern The pattern to register
-	 * @target A response closure/lambda or an event string to execute
+	 * @target  A response closure/lambda or an event string to execute
 	 */
 	function patch( required pattern, target ){
 		variables.thisRoute.verbs = "PATCH";
@@ -1350,7 +1350,7 @@ component
 	 * </pre>
 	 *
 	 * @pattern The pattern to register
-	 * @target A response closure/lambda or an event string to execute
+	 * @target  A response closure/lambda or an event string to execute
 	 */
 	function options( required pattern, target ){
 		variables.thisRoute.verbs = "OPTIONS";
@@ -1367,8 +1367,8 @@ component
 	 * route( "hello", "main.index" ).header( "name", "hello" )
 	 * </pre>
 	 *
-	 * @name The header name
-	 * @value The header value
+	 * @name      The header name
+	 * @value     The header value
 	 * @overwrite Overwrite if already defined
 	 */
 	function header(
@@ -1395,7 +1395,7 @@ component
 	 * route( "hello" ).headers( { ... } ).to( "main.index" )
 	 * </pre>
 	 *
-	 * @map The structure of headers to issue
+	 * @map       The structure of headers to issue
 	 * @overwrite Overwrite the elements
 	 */
 	function headers( required map, boolean overwrite = true ){
@@ -1413,7 +1413,7 @@ component
 	 * route( "hello" ).meta( { secure : true, perms : [] } ).to( "main.index" )
 	 * </pre>
 	 *
-	 * @map The structure of metadata to store within the route
+	 * @map       The structure of metadata to store within the route
 	 * @overwrite Overwrite the elements
 	 */
 	function meta( required map, boolean overwrite = true ){
@@ -1448,8 +1448,8 @@ component
 	 * route( "hello", "main.index" ).rc( "private", true )
 	 * </pre>
 	 *
-	 * @name The key name
-	 * @value The value
+	 * @name      The key name
+	 * @value     The value
 	 * @overwrite Overwrite the value
 	 */
 	function rc(
@@ -1475,7 +1475,7 @@ component
 	 * route( "hello", "main.index" ).rcAppend( { ... } )
 	 * </pre>
 	 *
-	 * @map The structure to append
+	 * @map       The structure to append
 	 * @overwrite Overwrite elements, default behavior
 	 */
 	function rcAppend( required map, boolean overwrite = true ){
@@ -1493,8 +1493,8 @@ component
 	 * route( "hello", "main.index" ).prc( "private", true )
 	 * </pre>
 	 *
-	 * @name The key name
-	 * @value The value
+	 * @name      The key name
+	 * @value     The value
 	 * @overwrite Overwrite the value
 	 */
 	function prc(
@@ -1520,7 +1520,7 @@ component
 	 * route( "hello", "main.index" ).prcAppend( { ... } )
 	 * </pre>
 	 *
-	 * @map The structure to append
+	 * @map       The structure to append
 	 * @overwrite Overwrite elements, default behavior
 	 */
 	function prcAppend( required map, boolean overwrite = true ){
@@ -1765,10 +1765,10 @@ component
 	 * route( "hello", "main.index" ).toView( view="hello", noLayout=true );
 	 * </pre>
 	 *
-	 * @view The view to render
-	 * @layout The layout to use or default one
-	 * @noLayout Use only the view or attach the layout
-	 * @viewModule The module the view comes from
+	 * @view         The view to render
+	 * @layout       The layout to use or default one
+	 * @noLayout     Use only the view or attach the layout
+	 * @viewModule   The module the view comes from
 	 * @layoutModule The module the layout comes from
 	 */
 	function toView(
@@ -1811,7 +1811,7 @@ component
 	 * })
 	 * </pre>
 	 *
-	 * @target The target URI
+	 * @target     The target URI
 	 * @statusCode The statusCode to use, defaults to 301
 	 */
 	function toRedirect( required target, statusCode = 301 ){
@@ -1914,7 +1914,7 @@ component
 	 * } );
 	 * </pre>
 	 *
-	 * @body The body of the response a lambda or closure
+	 * @body       The body of the response a lambda or closure
 	 * @statusCode The status code to use, defaults to 200
 	 * @statusText The status text to use, defaults to 'OK'
 	 *
@@ -2029,8 +2029,8 @@ component
 	/**
 	 * Get the correct route actions based on only and except lists
 	 * @initial The initial set of route actions
-	 * @only 	Limit actions with only
-	 * @except 	Exclude actions with except
+	 * @only    Limit actions with only
+	 * @except  Exclude actions with except
 	 */
 	private struct function filterRouteActions(
 		required struct initial,

@@ -10,8 +10,8 @@ component {
 	/**
 	 * Add a CFML Mapping to the running engine
 	 *
-	 * @name The name of the mapping
-	 * @path The path of the mapping
+	 * @name     The name of the mapping
+	 * @path     The path of the mapping
 	 * @mappings A struct of mappings to incorporate instead of one-offs
 	 */
 	Util function addMapping( string name, string path, struct mappings ){
@@ -148,7 +148,7 @@ component {
 	/**
 	 * PlaceHolder Replacer for strings containing <code>${}</code> patterns
 	 *
-	 * @str The string target
+	 * @str      The string target
 	 * @settings The structure of settings to use in the replacements
 	 *
 	 * @return The string with the replacements
@@ -197,7 +197,7 @@ component {
 	/**
 	 * Retrieve a Java System property or env value by name. It looks at properties first then environment variables
 	 *
-	 * @key The name of the setting to look up.
+	 * @key          The name of the setting to look up.
 	 * @defaultValue The default value to use if the key does not exist in the system properties or the env
 	 *
 	 * @throws SystemSettingNotFound When the java system property or env is not found
@@ -226,7 +226,7 @@ component {
 	/**
 	 * Retrieve a Java System property value by key
 	 *
-	 * @key The name of the setting to look up.
+	 * @key          The name of the setting to look up.
 	 * @defaultValue The default value to use if the key does not exist in the system properties or the env
 	 *
 	 * @throws SystemSettingNotFound When the java system property is not found
@@ -250,7 +250,7 @@ component {
 	/**
 	 * Retrieve a Java System environment value by name
 	 *
-	 * @key The name of the setting to look up.
+	 * @key          The name of the setting to look up.
 	 * @defaultValue The default value to use if the key does not exist in the system properties or the env
 	 *
 	 * @throws SystemSettingNotFound When the java system property is not found
@@ -377,7 +377,7 @@ component {
 	/**
 	 * Should we stop recursion or not due to class name found: Boolean
 	 *
-	 * @className The class name to check
+	 * @className      The class name to check
 	 * @stopRecursions An array of classes to stop processing for during inheritance trails
 	 */
 	private boolean function stopClassRecursion( required classname, required stopRecursions ){
@@ -393,9 +393,9 @@ component {
 	/**
 	 * Returns a single-level metadata struct that includes all items inhereited from extending classes.
 	 *
-	 * @component The component instance or path to get the metadata from
+	 * @component      The component instance or path to get the metadata from
 	 * @stopRecursions An array of classes to stop processing for during inheritance trails
-	 * @md A structure containing a copy of the metadata for this level of recursion.
+	 * @md             A structure containing a copy of the metadata for this level of recursion.
 	 *
 	 * @return struct of metadata
 	 */

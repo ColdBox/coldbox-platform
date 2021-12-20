@@ -11,11 +11,11 @@ component accessors="true" serializable="false" {
 	/**
 	 * Constructor
 	 *
-	 * @cacheBox The cache factory binded to
-	 * @baseUrl The baseURL used for reporting
-	 * @skin The skin to use for reporting
+	 * @cacheBox   The cache factory binded to
+	 * @baseUrl    The baseURL used for reporting
+	 * @skin       The skin to use for reporting
 	 * @attributes The incoming attributes
-	 * @caller Access to the caller tag
+	 * @caller     Access to the caller tag
 	 */
 	function init(
 		required coldbox.system.cache.CacheFactory cacheBox,
@@ -40,8 +40,8 @@ component accessors="true" serializable="false" {
 	/**
 	 * Process CacheBox Commands
 	 *
-	 * @command The command to process
-	 * @cacheName The cache name, defaults to `default`
+	 * @command    The command to process
+	 * @cacheName  The cache name, defaults to `default`
 	 * @cacheEntry The cache entry to act upon
 	 */
 	boolean function processCommands(
@@ -179,7 +179,7 @@ component accessors="true" serializable="false" {
 	/**
 	 * Renders the caching key value dumper.
 	 *
-	 * @cacheName The cache name
+	 * @cacheName  The cache name
 	 * @cacheEntry The cache entry to dump
 	 */
 	function renderCacheDumper( cacheName = "default", required cacheEntry ){

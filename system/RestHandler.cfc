@@ -31,10 +31,10 @@ component extends="EventHandler" {
 	 * Our Rest handler adds a nice around handler that will be active for all handlers
 	 * that leverage it.  So it can add uniformity, exception handling, tracking and more.
 	 *
-	 * @event The request context
-	 * @rc The rc reference
-	 * @prc The prc reference
-	 * @targetAction The action UDF to execute
+	 * @event          The request context
+	 * @rc             The rc reference
+	 * @prc            The prc reference
+	 * @targetAction   The action UDF to execute
 	 * @eventArguments The original event arguments
 	 */
 	function aroundHandler( event, rc, prc, targetAction, eventArguments ){
@@ -151,11 +151,11 @@ component extends="EventHandler" {
 	/**
 	 * Implicit action that detects exceptions on your handlers and processes them
 	 *
-	 * @event The request context
-	 * @rc The rc reference
-	 * @prc The prc reference
-	 * @faultAction The action that blew up
-	 * @exception The thrown exception
+	 * @event          The request context
+	 * @rc             The rc reference
+	 * @prc            The prc reference
+	 * @faultAction    The action that blew up
+	 * @exception      The thrown exception
 	 * @eventArguments The original event arguments
 	 */
 	function onError(
@@ -220,11 +220,11 @@ component extends="EventHandler" {
 	 * Action that can be used when validation exceptions ocur.  Can be called manually or automatically
 	 * via thrown exceptions in the around handler
 	 *
-	 * @event The request context
-	 * @rc The rc reference
-	 * @prc The prc reference
+	 * @event          The request context
+	 * @rc             The rc reference
+	 * @prc            The prc reference
 	 * @eventArguments The original event arguments
-	 * @exception The thrown exception
+	 * @exception      The thrown exception
 	 */
 	function onValidationException( event, rc, prc, eventArguments, exception ){
 		// Log Locally
@@ -262,11 +262,11 @@ component extends="EventHandler" {
 	 * Action that can be used when an entity or record is not found. Can be called manually or automatically
 	 * via thrown exceptions in the around handler
 	 *
-	 * @event The request context
-	 * @rc The rc reference
-	 * @prc The prc reference
+	 * @event          The request context
+	 * @rc             The rc reference
+	 * @prc            The prc reference
 	 * @eventArguments The original event arguments
-	 * @exception The thrown exception
+	 * @exception      The thrown exception
 	 */
 	function onEntityNotFoundException( event, rc, prc, eventArguments, exception ){
 		// Log Locally
@@ -301,10 +301,10 @@ component extends="EventHandler" {
 	/**
 	 * Action used when the framework detects and Invalid HTTP method for the action
 	 *
-	 * @event The request context
-	 * @rc The rc reference
-	 * @prc The prc reference
-	 * @faultAction The action that was secured
+	 * @event          The request context
+	 * @rc             The rc reference
+	 * @prc            The prc reference
+	 * @faultAction    The action that was secured
 	 * @eventArguments The original event arguments
 	 */
 	function onInvalidHTTPMethod( event, rc, prc, faultAction, eventArguments ){
@@ -339,10 +339,10 @@ component extends="EventHandler" {
 	/**
 	 * Action used when the original action does not exist in a handler.
 	 *
-	 * @event The request context
-	 * @rc The rc reference
-	 * @prc The prc reference
-	 * @missingAction The missing action
+	 * @event          The request context
+	 * @rc             The rc reference
+	 * @prc            The prc reference
+	 * @missingAction  The missing action
 	 * @eventArguments The original event arguments
 	 */
 	function onMissingAction( event, rc, prc, missingAction, eventArguments ){
@@ -373,8 +373,8 @@ component extends="EventHandler" {
 	 * It also monitors cbsecurity convention of validator results for setting error messages into the data packet
 	 *
 	 * @event The request context
-	 * @rc The rc reference
-	 * @prc The prc reference
+	 * @rc    The rc reference
+	 * @prc   The prc reference
 	 *
 	 * @return 403
 	 */
@@ -413,8 +413,8 @@ component extends="EventHandler" {
 	 * It will check for cbsecurity validation results and set the appropriate error messages
 	 *
 	 * @event The request context
-	 * @rc The rc reference
-	 * @prc The prc reference
+	 * @rc    The rc reference
+	 * @prc   The prc reference
 	 * @abort Hard abort the request if passed, defaults to false
 	 */
 	function onAuthorizationFailure(
@@ -462,8 +462,8 @@ component extends="EventHandler" {
 	 * </pre>
 	 *
 	 * @event The request context
-	 * @rc The rc reference
-	 * @prc The prc reference
+	 * @rc    The rc reference
+	 * @prc   The prc reference
 	 *
 	 * @returns 404:Not Found
 	 */
@@ -479,11 +479,11 @@ component extends="EventHandler" {
 	/**
 	 * Action for 'any' exceptions, ie when not caught by previous catch statements
 	 *
-	 * @event The request context
-	 * @rc The rc reference
-	 * @prc The prc reference
+	 * @event          The request context
+	 * @rc             The rc reference
+	 * @prc            The prc reference
 	 * @eventArguments The original event arguments
-	 * @exception The thrown exception
+	 * @exception      The thrown exception
 	 */
 	function onAnyOtherException( event, rc, prc, eventArguments, exception ){
 		// Log Exception
@@ -509,9 +509,9 @@ component extends="EventHandler" {
 	 * - Add the error flag
 	 * - Add an failure message to the data packet which you can customize
 	 *
-	 * @event The request context
-	 * @rc The rc reference
-	 * @prc The prc reference
+	 * @event   The request context
+	 * @rc      The rc reference
+	 * @prc     The prc reference
 	 * @message The failure message sent in the request package
 	 *
 	 * @returns 417:Expectation Failed

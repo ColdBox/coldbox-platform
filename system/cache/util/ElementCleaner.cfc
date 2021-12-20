@@ -11,7 +11,7 @@ component accessors="true" serializable="false" {
 	/**
 	 * Constructor
 	 *
-	 * @cacheProvider The associated cache manager/provider of type: coldbox.system.cache.providers.ICacheProvider
+	 * @cacheProvider             The associated cache manager/provider of type: coldbox.system.cache.providers.ICacheProvider
 	 * @cacheProvider.doc_generic coldbox.system.cache.providers.ICacheProvider
 	 */
 	ElementCleaner function init( required cacheProvider ){
@@ -32,7 +32,7 @@ component accessors="true" serializable="false" {
 	 * Clears keys using the passed in object key snippet
 	 *
 	 * @keySnippet The cache key snippet to use
-	 * @regex Use regex or not, defaults to false
+	 * @regex      Use regex or not, defaults to false
 	 */
 	ElementCleaner function clearByKeySnippet( required keySnippet, boolean regex ){
 		var cacheKeys       = variables.cacheProvider.getKeys();
@@ -66,7 +66,7 @@ component accessors="true" serializable="false" {
 	 * Be careful when using incomplete event name with query strings as partial event names are not guaranteed to match with query string permutations
 	 *
 	 * @eventsnippet The event snippet to clear on. Can be partial or full
-	 * @queryString If passed in, it will create a unique hash out of it. For purging purposes
+	 * @queryString  If passed in, it will create a unique hash out of it. For purging purposes
 	 */
 	ElementCleaner function clearEvent( required eventsnippet, queryString = "" ){
 		// .*- = the cache suffix and appendages for regex to match
@@ -93,7 +93,7 @@ component accessors="true" serializable="false" {
 	 * Be careful when using incomplete event name with query strings as partial event names are not guaranteed to match with query string permutations
 	 *
 	 * @eventsnippets The comma-delimited list event snippet to clear on. Can be partial or full
-	 * @queryString The comma-delimited list of queryStrings passed in. If passed in, it will create a unique hash out of it. For purging purposes.  If passed in the list length must be equal to the list length of the event snippets passed in
+	 * @queryString   The comma-delimited list of queryStrings passed in. If passed in, it will create a unique hash out of it. For purging purposes.  If passed in the list length must be equal to the list length of the event snippets passed in
 	 */
 	ElementCleaner function clearEventMulti( required eventsnippets, queryString = "" ){
 		var regexCacheKey  = "";

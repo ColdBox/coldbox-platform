@@ -51,7 +51,7 @@ component accessors="true" {
 	/**
 	 * Constructor
 	 *
-	 * @CFCConfig The cacheBox Data Configuration CFC instance
+	 * @CFCConfig     The cacheBox Data Configuration CFC instance
 	 * @CFCConfigPath The cacheBox Data Configuration CFC path to use
 	 */
 	function init( CFCConfig, string CFCConfigPath ){
@@ -200,8 +200,8 @@ component accessors="true" {
 	/**
 	 * Define the cachebox factory scope registration
 	 * @enabled Enable registration
-	 * @scope The scope to register on, defaults to application scope
-	 * @key The key to use in the scope, defaults to cachebox
+	 * @scope   The scope to register on, defaults to application scope
+	 * @key     The key to use in the scope, defaults to cachebox
 
 	 */
 	function scopeRegistration(
@@ -219,16 +219,16 @@ component accessors="true" {
 	/**
 	 * Setup the default cache
 	 *
-	 * @objectDefaultTimeout The default object timeout in minutes
+	 * @objectDefaultTimeout           The default object timeout in minutes
 	 * @objectDefaultLastAccessTimeout The last access or idle timeout in minutes
-	 * @reapFrequency The reaping frequency in minutes
-	 * @maxObjects The max objects to store
-	 * @freeMemoryPercentageThreshold Activate free ram thresholds
-	 * @useLastAccessTimeouts use idle timeouts
-	 * @evictionPolicy The eviction policy to use
-	 * @evictCount How many objects to evict
-	 * @objectStore The storage provider
-	 * @coldboxEnabled Is this ColdBox enabled or standalone
+	 * @reapFrequency                  The reaping frequency in minutes
+	 * @maxObjects                     The max objects to store
+	 * @freeMemoryPercentageThreshold  Activate free ram thresholds
+	 * @useLastAccessTimeouts          use idle timeouts
+	 * @evictionPolicy                 The eviction policy to use
+	 * @evictCount                     How many objects to evict
+	 * @objectStore                    The storage provider
+	 * @coldboxEnabled                 Is this ColdBox enabled or standalone
 	 */
 	CacheBoxConfig function defaultCache(
 		numeric objectDefaultTimeout,
@@ -259,8 +259,8 @@ component accessors="true" {
 	/**
 	 * Add a new cache config
 	 *
-	 * @name The cache name
-	 * @provider The cache provider class, defaults to: coldbox.system.cache.providers.CacheBoxProvider
+	 * @name       The cache name
+	 * @provider   The cache provider class, defaults to: coldbox.system.cache.providers.CacheBoxProvider
 	 * @properties The structure of properties for the cache
 	 */
 	function cache(
@@ -296,9 +296,9 @@ component accessors="true" {
 	/**
 	 * Add a new listener configuration
 	 *
-	 * @class The class of the listener
+	 * @class      The class of the listener
 	 * @properties The struct of properties for the listener
-	 * @name The unique name of the listener
+	 * @name       The unique name of the listener
 	 */
 	CacheBoxConfig function listener(
 		required class,

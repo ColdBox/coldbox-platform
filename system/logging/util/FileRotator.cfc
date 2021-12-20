@@ -16,7 +16,7 @@ component accessors="true" {
 	/**
 	 * Checks the log file size. If greater than framework's settings, then zip and rotate.
 	 *
-	 * @appender The appender to rotate with
+	 * @appender                The appender to rotate with
 	 * @appender.docbox_generic coldbox.system.logging.AbstractAppender
 	 */
 	FileRotator function checkRotation( required appender ){
@@ -78,7 +78,7 @@ component accessors="true" {
 	/**
 	 * Get the filesize of a file.
 	 *
-	 * @fileName The target file
+	 * @fileName   The target file
 	 * @sizeFormat Available formats: [bytes][kbytes][mbytes][gbytes]
 	 */
 	numeric function getFileSize( required fileName, sizeFormat = "bytes" ){

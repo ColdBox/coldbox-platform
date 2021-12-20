@@ -31,8 +31,8 @@ component accessors="true" {
 	/**
 	 * Constructor
 	 *
-	 * @target The target function to be applied via dynamic proxy to the required Java interface(s)
-	 * @debug Add debugging messages for monitoring
+	 * @target         The target function to be applied via dynamic proxy to the required Java interface(s)
+	 * @debug          Add debugging messages for monitoring
 	 * @loadAppContext By default, we load the Application context into the running thread. If you don't need it, then don't load it.
 	 */
 	function init(
@@ -125,7 +125,7 @@ component accessors="true" {
 				// Set the cf context into it
 				pageContext.setFusionContext( fusionContext );
 				fusionContext.pageContext = pageContext;
-				if( !isNull( variables.originalAppScope ) ) {
+				if ( !isNull( variables.originalAppScope ) ) {
 					fusionContext.SymTab_setApplicationScope( variables.originalAppScope );
 				}
 

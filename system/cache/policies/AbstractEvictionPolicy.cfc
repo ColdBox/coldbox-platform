@@ -24,7 +24,7 @@ component
 
 	/**
 	 * Constructor
-	 * @cacheProvider The associated cache provider
+	 * @cacheProvider             The associated cache provider
 	 * @cacheProvider.doc_generic coldbox.system.cache.providers.ICacheProvider
 	 */
 	function init( required cacheProvider ){

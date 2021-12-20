@@ -71,10 +71,10 @@ component accessors="true" singleton {
 	 *
 	 * @see https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ExecutorService.html
 	 *
-	 * @name The name of the executor used for registration
-	 * @type The type of executor to build fixed, cached, single, scheduled
-	 * @threads How many threads to assign to the thread scheduler, default is 20
-	 * @debug Add output debugging
+	 * @name           The name of the executor used for registration
+	 * @type           The type of executor to build fixed, cached, single, scheduled
+	 * @threads        How many threads to assign to the thread scheduler, default is 20
+	 * @debug          Add output debugging
 	 * @loadAppContext Load the CFML App contexts or not, disable if not used
 	 *
 	 * @return The ColdBox Schedule class to work with the schedule: coldbox.system.async.executors.Executor
@@ -100,9 +100,9 @@ component accessors="true" singleton {
 	 * Build a Java executor according to passed type and threads
 	 * @see https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executors.html
 	 *
-	 * @type Available types are: fixed, cached, single, scheduled, {WireBoxID}
-	 * @threads The number of threads to seed the executor with, if it allows it
-	 * @debug Add output debugging
+	 * @type           Available types are: fixed, cached, single, scheduled, {WireBoxID}
+	 * @threads        The number of threads to seed the executor with, if it allows it
+	 * @debug          Add output debugging
 	 * @loadAppContext Load the CFML App contexts or not, disable if not used
 	 *
 	 * @return A Java ExecutorService: https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ExecutorService.html
@@ -292,9 +292,9 @@ component accessors="true" singleton {
 	/**
 	 * Create a new ColdBox future backed by a Java completable future
 	 *
-	 * @value The actual closure/lambda/udf to run with or a completed value to seed the future with
-	 * @executor A custom executor to use with the future, else use the default
-	 * @debug Add debugging to system out or not, defaults is false
+	 * @value          The actual closure/lambda/udf to run with or a completed value to seed the future with
+	 * @executor       A custom executor to use with the future, else use the default
+	 * @debug          Add debugging to system out or not, defaults is false
 	 * @loadAppContext Load the CFML engine context into the async threads or not, default is yes.
 	 *
 	 * @return ColdBox Future completed or new
@@ -311,8 +311,8 @@ component accessors="true" singleton {
 	/**
 	 * Create a completed ColdBox future backed by a Java Completable Future
 	 *
-	 * @value The value to complete the future with
-	 * @debug Add debugging to system out or not, defaults is false
+	 * @value          The value to complete the future with
+	 * @debug          Add debugging to system out or not, defaults is false
 	 * @loadAppContext Load the CFML engine context into the async threads or not, default is yes.
 	 *
 	 * @return ColdBox Future completed
@@ -390,7 +390,7 @@ component accessors="true" singleton {
 	 * </pre>
 	 *
 	 * @from The initial index, defaults to 1 or you can use the {start}..{end} notation
-	 * @to The last index item
+	 * @to   The last index item
 	 */
 	array function arrayRange( any from = 1, numeric to ){
 		// shortcut notation

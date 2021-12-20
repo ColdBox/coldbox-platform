@@ -50,14 +50,14 @@ component accessors="true" {
 
 	/**
 	 * Constructor
-	 * @method 			The method name that was intercepted
-	 * @args 			The argument collection that was intercepted
-	 * @methodMetadata 	The method metadata that was intercepted
-	 * @target 			The target object reference that was intercepted
-	 * @targetName		The name of the target wired up
-	 * @targetMapping 	The target's mapping object reference
+	 * @method                    The method name that was intercepted
+	 * @args                      The argument collection that was intercepted
+	 * @methodMetadata            The method metadata that was intercepted
+	 * @target                    The target object reference that was intercepted
+	 * @targetName                The name of the target wired up
+	 * @targetMapping             The target's mapping object reference
 	 * @targetMapping.doc_generic coldbox.system.ioc.config.Mapping
-	 * @interceptors 	The array of interceptors for this invocation
+	 * @interceptors              The array of interceptors for this invocation
 	 */
 	function init(
 		required method,

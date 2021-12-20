@@ -17,7 +17,7 @@ component {
 
 	/**
 	 * Store JointPoint information
-	 * @jointpoint The jointpoint to proxy
+	 * @jointpoint   The jointpoint to proxy
 	 * @interceptors The jointpoint interceptors
 	 *
 	 * @return instance
@@ -33,7 +33,7 @@ component {
 	/**
 	 * Invoke a mixed in proxy method
 	 * @method The method to proxy execute
-	 * @args The method args to proxy execute
+	 * @args   The method args to proxy execute
 	 */
 	function $wbAOPInvokeProxy( required method, required args ){
 		return this.$wbAOPTargets[ arguments.method ].udfPointer( argumentCollection = arguments.args );
@@ -68,7 +68,7 @@ component {
 	/**
 	 * Write an aspect to disk
 	 * @genPath The location path
-	 * @code The code to write
+	 * @code    The code to write
 	 *
 	 * @return Instance
 	 */

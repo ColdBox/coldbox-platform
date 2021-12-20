@@ -28,7 +28,7 @@ interface extends="coldbox.system.cache.providers.ICacheProvider" {
 	/**
 	 * Set the ColdBox linkage into the provider
 	 *
-	 * @coldbox The ColdBox controller
+	 * @coldbox             The ColdBox controller
 	 * @coldbox.doc_generic coldbox.system.web.Controller
 	 *
 	 * @return IColdboxApplicationCache
@@ -55,7 +55,7 @@ interface extends="coldbox.system.cache.providers.ICacheProvider" {
 	 * Clears all the event permutations from the cache according to snippet and querystring. Be careful when using incomplete event name with query strings as partial event names are not guaranteed to match with query string permutations
 	 *
 	 * @eventSnippet The event snippet to clear on. Can be partial or full
-	 * @queryString If passed in, it will create a unique hash out of it. For purging purposes
+	 * @queryString  If passed in, it will create a unique hash out of it. For purging purposes
 	 *
 	 * @return IColdboxApplicationCache
 	 */
@@ -65,7 +65,7 @@ interface extends="coldbox.system.cache.providers.ICacheProvider" {
 	 * Clears all the event permutations from the cache according to the list of snippets and querystrings. Be careful when using incomplete event name with query strings as partial event names are not guaranteed to match with query string permutations
 	 *
 	 * @eventSnippet The comma-delimited list event snippet to clear on. Can be partial or full
-	 * @queryString The comma-delimited list of queryStrings passed in. If passed in, it will create a unique hash out of it. For purging purposes.  If passed in the list length must be equal to the list length of the event snippets passed in
+	 * @queryString  The comma-delimited list of queryStrings passed in. If passed in, it will create a unique hash out of it. For purging purposes.  If passed in the list length must be equal to the list length of the event snippets passed in
 	 *
 	 * @return IColdboxApplicationCache
 	 */

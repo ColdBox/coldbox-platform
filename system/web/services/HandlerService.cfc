@@ -131,7 +131,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * once event execution is in progress.
 	 * Before returning this method verifies method of execution, event caching, invalid events and stores metadata
 	 *
-	 * @ehBean The event handler bean representation
+	 * @ehBean         The event handler bean representation
 	 * @requestContext The request context object
 	 *
 	 * @return The event handler object represented by the ehBean
@@ -377,7 +377,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * Check if the incoming event has a matching implicit view to dispatch. This is usually called
 	 * when there is no existing handler found.
 	 *
-	 * @event The event string
+	 * @event  The event string
 	 * @ehBean The event handler bean
 	 */
 	boolean function isViewDispatch( required string event, required ehBean ){
@@ -417,7 +417,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * listening to `onInvalidEvent` modifies the handler bean.  Then this method will
 	 * either return the invalid event handler event, or set an exception to be captured.
 	 *
-	 * @event The event that was found to be invalid
+	 * @event  The event that was found to be invalid
 	 * @ehBean The event handler bean representing the invalid event
 	 *
 	 * @throws EventHandlerNotRegisteredException,InvalidEventHandlerException
@@ -641,7 +641,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	/**
 	 * Return the event caching metadata for an action execution context.
 	 *
-	 * @ehBean The event handler bean
+	 * @ehBean        The event handler bean
 	 * @oEventHandler The event handler to execute
 	 *
 	 * @return strc

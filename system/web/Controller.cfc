@@ -90,7 +90,7 @@ component serializable="false" accessors="true" {
 	 * Constructor
 	 *
 	 * @appRootPath The application root path
-	 * @appKey The application registered application key, default is cbController
+	 * @appKey      The application registered application key, default is cbController
 	 */
 	function init( required appRootPath, appKey = "cbController" ){
 		// Get application name
@@ -256,7 +256,7 @@ component serializable="false" accessors="true" {
 	/**
 	 * Get a setting from the application
 	 *
-	 * @name The name of the setting
+	 * @name         The name of the setting
 	 * @defaultValue The default value to use if setting does not exist
 	 *
 	 * @throws SettingNotFoundException
@@ -283,7 +283,7 @@ component serializable="false" accessors="true" {
 	/**
 	 * Get a ColdBox setting
 	 *
-	 * @name The key to get
+	 * @name         The key to get
 	 * @defaultValue The default value if it doesn't exist
 	 *
 	 * @throws SettingNotFoundException
@@ -319,7 +319,7 @@ component serializable="false" accessors="true" {
 	/**
 	 * Set a value in the application configuration settings
 	 *
-	 * @name The name of the setting
+	 * @name  The name of the setting
 	 * @value The value to set
 	 *
 	 * @return Controller instance
@@ -340,17 +340,17 @@ component serializable="false" accessors="true" {
 	/**
 	 * Relocate user browser requests to other events, URLs, or URIs.
 	 *
-	 * @event The name of the event to relocate to, if not passed, then it will use the default event found in your configuration file.
-	 * @queryString The query string or a struct to append, if needed. If in SES mode it will be translated to convention name value pairs
-	 * @addToken Wether to add the tokens or not to the relocation. Default is false
-	 * @persist What request collection keys to persist in flash RAM automatically for you
-	 * @persistStruct A structure of key-value pairs to persist in flash RAM automatically for you
-	 * @ssl Whether to relocate in SSL or not. You need to explicitly say TRUE or FALSE if going out from SSL. If none passed, we look at the even's SES base URL (if in SES mode)
-	 * @baseURL Use this baseURL instead of the index.cfm that is used by default. You can use this for SSL or any full base url you would like to use. Ex: https://mysite.com/index.cfm
+	 * @event             The name of the event to relocate to, if not passed, then it will use the default event found in your configuration file.
+	 * @queryString       The query string or a struct to append, if needed. If in SES mode it will be translated to convention name value pairs
+	 * @addToken          Wether to add the tokens or not to the relocation. Default is false
+	 * @persist           What request collection keys to persist in flash RAM automatically for you
+	 * @persistStruct     A structure of key-value pairs to persist in flash RAM automatically for you
+	 * @ssl               Whether to relocate in SSL or not. You need to explicitly say TRUE or FALSE if going out from SSL. If none passed, we look at the even's SES base URL (if in SES mode)
+	 * @baseURL           Use this baseURL instead of the index.cfm that is used by default. You can use this for SSL or any full base url you would like to use. Ex: https://mysite.com/index.cfm
 	 * @postProcessExempt Do not fire the postProcess interceptors, by default it does
-	 * @URL The full URL you would like to relocate to instead of an event: ex: URL='http://www.google.com'
-	 * @URI The relative URI you would like to relocate to instead of an event: ex: URI='/mypath/awesome/here'
-	 * @statusCode The status code to use in the relocation
+	 * @URL               The full URL you would like to relocate to instead of an event: ex: URL='http://www.google.com'
+	 * @URI               The relative URI you would like to relocate to instead of an event: ex: URI='/mypath/awesome/here'
+	 * @statusCode        The status code to use in the relocation
 	 *
 	 * @return Controller
 	 */
@@ -523,14 +523,14 @@ component serializable="false" accessors="true" {
 	 * If you need a route from a module then append the module address: `@moduleName` or prefix it like in run event calls `moduleName:routeName` in order to find the right route.
 	 * The route params will be passed to events as action arguments much how eventArguments work.
 	 *
-	 * @name The name of the route
-	 * @params The parameters of the route to replace
-	 * @cache Cached the output of the runnable execution, defaults to false. A unique key will be created according to event string + arguments.
-	 * @cacheTimeout The time in minutes to cache the results
+	 * @name                   The name of the route
+	 * @params                 The parameters of the route to replace
+	 * @cache                  Cached the output of the runnable execution, defaults to false. A unique key will be created according to event string + arguments.
+	 * @cacheTimeout           The time in minutes to cache the results
 	 * @cacheLastAccessTimeout The time in minutes the results will be removed from cache if idle or requested
-	 * @cacheSuffix The suffix to add into the cache entry for this event rendering
-	 * @cacheProvider The provider to cache this event rendering in, defaults to 'template'
-	 * @prePostExempt If true, pre/post handlers will not be fired. Defaults to false
+	 * @cacheSuffix            The suffix to add into the cache entry for this event rendering
+	 * @cacheProvider          The provider to cache this event rendering in, defaults to 'template'
+	 * @prePostExempt          If true, pre/post handlers will not be fired. Defaults to false
 	 *
 	 * @throws InvalidArgumentException
 	 */
@@ -614,16 +614,16 @@ component serializable="false" accessors="true" {
 	/**
 	 * Executes events with full life-cycle methods and returns the event results if any were returned.
 	 *
-	 * @event The event string to execute, if nothing is passed we will execute the application's default event.
-	 * @prePostExempt If true, pre/post handlers will not be fired. Defaults to false
-	 * @private Execute a private event if set, else defaults to public events
-	 * @defaultEvent The flag that let's this service now if it is the default event running or not. USED BY THE FRAMEWORK ONLY
-	 * @eventArguments A collection of arguments to passthrough to the calling event handler method
-	 * @cache Cached the output of the runnable execution, defaults to false. A unique key will be created according to event string + arguments.
-	 * @cacheTimeout The time in minutes to cache the results
+	 * @event                  The event string to execute, if nothing is passed we will execute the application's default event.
+	 * @prePostExempt          If true, pre/post handlers will not be fired. Defaults to false
+	 * @private                Execute a private event if set, else defaults to public events
+	 * @defaultEvent           The flag that let's this service now if it is the default event running or not. USED BY THE FRAMEWORK ONLY
+	 * @eventArguments         A collection of arguments to passthrough to the calling event handler method
+	 * @cache                  Cached the output of the runnable execution, defaults to false. A unique key will be created according to event string + arguments.
+	 * @cacheTimeout           The time in minutes to cache the results
 	 * @cacheLastAccessTimeout The time in minutes the results will be removed from cache if idle or requested
-	 * @cacheSuffix The suffix to add into the cache entry for this event rendering
-	 * @cacheProvider The provider to cache this event rendering in, defaults to 'template'
+	 * @cacheSuffix            The suffix to add into the cache entry for this event rendering
+	 * @cacheProvider          The provider to cache this event rendering in, defaults to 'template'
 	 *
 	 * @return null or any
 	 */
@@ -709,10 +709,10 @@ component serializable="false" accessors="true" {
 	/**
 	 * Executes events with full life-cycle methods and returns the event results if any were returned
 	 *
-	 * @event The event string to execute, if nothing is passed we will execute the application's default event.
-	 * @prePostExempt If true, pre/post handlers will not be fired. Defaults to false
-	 * @private Execute a private event if set, else defaults to public events
-	 * @defaultEvent The flag that let's this service now if it is the default event running or not. USED BY THE FRAMEWORK ONLY
+	 * @event          The event string to execute, if nothing is passed we will execute the application's default event.
+	 * @prePostExempt  If true, pre/post handlers will not be fired. Defaults to false
+	 * @private        Execute a private event if set, else defaults to public events
+	 * @defaultEvent   The flag that let's this service now if it is the default event running or not. USED BY THE FRAMEWORK ONLY
 	 * @eventArguments A collection of arguments to passthrough to the calling event handler method
 	 *
 	 * @throws InvalidHTTPMethod
@@ -1150,7 +1150,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Checks if an action can be executed according to inclusion/exclusion lists
-	 * @action The action to validate
+	 * @action    The action to validate
 	 * @inclusion The list of inclusions
 	 * @exclusion The list of exclusions
 	 */

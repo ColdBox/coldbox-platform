@@ -217,11 +217,11 @@ component
 	/**
 	 * Tries to get an object from the cache, if not found, it calls the 'produce' closure to produce the data and cache it
 	 *
-	 * @objectKey The object cache key
-	 * @produce The producer closure/lambda
-	 * @timeout The timeout to use on the object (if any, provider specific)
+	 * @objectKey         The object cache key
+	 * @produce           The producer closure/lambda
+	 * @timeout           The timeout to use on the object (if any, provider specific)
 	 * @lastAccessTimeout The idle timeout to use on the object (if any, provider specific)
-	 * @extra A map of name-value pairs to use as extra arguments to pass to a providers set operation
+	 * @extra             A map of name-value pairs to use as extra arguments to pass to a providers set operation
 	 *
 	 * @return The cached or produced data/object
 	 */
@@ -238,11 +238,11 @@ component
 	/**
 	 * Sets an object in the cache and returns an instance of itself
 	 *
-	 * @objectKey The object cache key
-	 * @object The object to cache
-	 * @timeout The timeout to use on the object (if any, provider specific)
+	 * @objectKey         The object cache key
+	 * @object            The object to cache
+	 * @timeout           The timeout to use on the object (if any, provider specific)
 	 * @lastAccessTimeout The idle timeout to use on the object (if any, provider specific)
-	 * @extra A map of name-value pairs to use as extra arguments to pass to a providers set operation
+	 * @extra             A map of name-value pairs to use as extra arguments to pass to a providers set operation
 	 *
 	 * @return ICacheProvider
 	 */
@@ -271,11 +271,11 @@ component
 	/**
 	 * Sets an object in the cache with no event calls and returns an instance of itself
 	 *
-	 * @objectKey The object cache key
-	 * @object The object to cache
-	 * @timeout The timeout to use on the object (if any, provider specific)
+	 * @objectKey         The object cache key
+	 * @object            The object to cache
+	 * @timeout           The timeout to use on the object (if any, provider specific)
 	 * @lastAccessTimeout The idle timeout to use on the object (if any, provider specific)
-	 * @extra A map of name-value pairs to use as extra arguments to pass to a providers set operation
+	 * @extra             A map of name-value pairs to use as extra arguments to pass to a providers set operation
 	 *
 	 * @return ICacheProvider
 	 */

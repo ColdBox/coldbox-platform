@@ -7,18 +7,16 @@ component extends="tests.resources.BaseIntegrationTest" {
 		super.beforeAll();
 	}
 
+	function afterAll(){
+		super.afterAll();
+		shutdownColdBox();
+	}
+
 	function run(){
 		describe( "subdomain routing", function(){
 			beforeEach( function(){
 				setup();
-				variables.routingService                = prepareMock( getController().getRoutingService() );
-				// Hide away mocks
-				variables.routingService._getCGIElement = variables.routingService.getCGIElement;
-			} );
-
-			afterEach( function( currentSpec ){
-				// Restore Mocks
-				variables.routingService.getCGIElement = variables.routingService._getCGIElement;
+				variables.routingService = prepareMock( getController().getRoutingService() );
 			} );
 
 			it( "can match on a specific domain", function(){

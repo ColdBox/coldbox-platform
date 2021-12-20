@@ -18,15 +18,15 @@ component {
 	/**
 	 * Populate a named or instantiated instance from a Json string
 	 *
-	 * @target The target to populate
-	 * @JSONString The JSON string to populate the object with. It has to be valid JSON and also a structure with name-key value pairs.
-	 * @scope Use scope injection instead of setters population. Ex: scope=variables.instance.
-	 * @trustedSetter If set to true, the setter method will be called even if it does not exist in the bean
-	 * @include A list of keys to include in the population
-	 * @exclude A list of keys to exclude in the population
-	 * @ignoreEmpty Ignore empty values on populations, great for ORM population
-	 * @nullEmptyInclude A list of keys to NULL when empty
-	 * @nullEmptyExclude A list of keys to NOT NULL when empty
+	 * @target               The target to populate
+	 * @JSONString           The JSON string to populate the object with. It has to be valid JSON and also a structure with name-key value pairs.
+	 * @scope                Use scope injection instead of setters population. Ex: scope=variables.instance.
+	 * @trustedSetter        If set to true, the setter method will be called even if it does not exist in the bean
+	 * @include              A list of keys to include in the population
+	 * @exclude              A list of keys to exclude in the population
+	 * @ignoreEmpty          Ignore empty values on populations, great for ORM population
+	 * @nullEmptyInclude     A list of keys to NULL when empty
+	 * @nullEmptyExclude     A list of keys to NOT NULL when empty
 	 * @composeRelationships Automatically attempt to compose relationships from memento
 	 *
 	 * @return The target populated with the packet
@@ -53,16 +53,16 @@ component {
 	/**
 	 * Populate a named or instantiated instance from an XML Packet
 	 *
-	 * @target The target to populate
-	 * @xml The XML string or packet to populate the target with
-	 * @root The XML root element to start from, else defaults to XMLRoot
-	 * @scope Use scope injection instead of setters population. Ex: scope=variables.instance.
-	 * @trustedSetter If set to true, the setter method will be called even if it does not exist in the bean
-	 * @include A list of keys to include in the population
-	 * @exclude A list of keys to exclude in the population
-	 * @ignoreEmpty Ignore empty values on populations, great for ORM population
-	 * @nullEmptyInclude A list of keys to NULL when empty
-	 * @nullEmptyExclude A list of keys to NOT NULL when empty
+	 * @target               The target to populate
+	 * @xml                  The XML string or packet to populate the target with
+	 * @root                 The XML root element to start from, else defaults to XMLRoot
+	 * @scope                Use scope injection instead of setters population. Ex: scope=variables.instance.
+	 * @trustedSetter        If set to true, the setter method will be called even if it does not exist in the bean
+	 * @include              A list of keys to include in the population
+	 * @exclude              A list of keys to exclude in the population
+	 * @ignoreEmpty          Ignore empty values on populations, great for ORM population
+	 * @nullEmptyInclude     A list of keys to NULL when empty
+	 * @nullEmptyExclude     A list of keys to NOT NULL when empty
 	 * @composeRelationships Automatically attempt to compose relationships from memento
 	 *
 	 * @return The target populated with the packet
@@ -109,16 +109,16 @@ component {
 	/**
 	 * Populate a named or instantiated instance from a Query object
 	 *
-	 * @target The target to populate
-	 * @qry The query to populate the object with
-	 * @rowNumber The row number to use for population, defaults to 1
-	 * @scope Use scope injection instead of setters population. Ex: scope=variables.instance.
-	 * @trustedSetter If set to true, the setter method will be called even if it does not exist in the bean
-	 * @include A list of keys to include in the population
-	 * @exclude A list of keys to exclude in the population
-	 * @ignoreEmpty Ignore empty values on populations, great for ORM population
-	 * @nullEmptyInclude A list of keys to NULL when empty
-	 * @nullEmptyExclude A list of keys to NOT NULL when empty
+	 * @target               The target to populate
+	 * @qry                  The query to populate the object with
+	 * @rowNumber            The row number to use for population, defaults to 1
+	 * @scope                Use scope injection instead of setters population. Ex: scope=variables.instance.
+	 * @trustedSetter        If set to true, the setter method will be called even if it does not exist in the bean
+	 * @include              A list of keys to include in the population
+	 * @exclude              A list of keys to exclude in the population
+	 * @ignoreEmpty          Ignore empty values on populations, great for ORM population
+	 * @nullEmptyInclude     A list of keys to NULL when empty
+	 * @nullEmptyExclude     A list of keys to NOT NULL when empty
 	 * @composeRelationships Automatically attempt to compose relationships from memento
 	 *
 	 * @return The target populated with the packet
@@ -152,17 +152,17 @@ component {
 	/**
 	 * Populate a named or instantiated instance from a Query object using a column prefix
 	 *
-	 * @target The target to populate
-	 * @qry The query to populate the object with
-	 * @prefix The prefix used to filter, Example: 'user_' would apply to the following columns: 'user_id' and 'user_name' but not 'address_id'.
-	 * @rowNumber The row number to use for population, defaults to 1
-	 * @scope Use scope injection instead of setters population. Ex: scope=variables.instance.
-	 * @trustedSetter If set to true, the setter method will be called even if it does not exist in the bean
-	 * @include A list of keys to include in the population
-	 * @exclude A list of keys to exclude in the population
-	 * @ignoreEmpty Ignore empty values on populations, great for ORM population
-	 * @nullEmptyInclude A list of keys to NULL when empty
-	 * @nullEmptyExclude A list of keys to NOT NULL when empty
+	 * @target               The target to populate
+	 * @qry                  The query to populate the object with
+	 * @prefix               The prefix used to filter, Example: 'user_' would apply to the following columns: 'user_id' and 'user_name' but not 'address_id'.
+	 * @rowNumber            The row number to use for population, defaults to 1
+	 * @scope                Use scope injection instead of setters population. Ex: scope=variables.instance.
+	 * @trustedSetter        If set to true, the setter method will be called even if it does not exist in the bean
+	 * @include              A list of keys to include in the population
+	 * @exclude              A list of keys to exclude in the population
+	 * @ignoreEmpty          Ignore empty values on populations, great for ORM population
+	 * @nullEmptyInclude     A list of keys to NULL when empty
+	 * @nullEmptyExclude     A list of keys to NOT NULL when empty
 	 * @composeRelationships Automatically attempt to compose relationships from memento
 	 *
 	 * @return The target populated with the packet
@@ -200,16 +200,16 @@ component {
 	/**
 	 * Populate a named or instantiated instance from a struct object using a key prefix
 	 *
-	 * @target The target to populate
-	 * @memento The structure to populate the target with
-	 * @prefix The prefix used to filter, Example: 'user_' would apply to the following columns: 'user_id' and 'user_name' but not 'address_id'.
-	 * @scope Use scope injection instead of setters population. Ex: scope=variables.instance.
-	 * @trustedSetter If set to true, the setter method will be called even if it does not exist in the bean
-	 * @include A list of keys to include in the population
-	 * @exclude A list of keys to exclude in the population
-	 * @ignoreEmpty Ignore empty values on populations, great for ORM population
-	 * @nullEmptyInclude A list of keys to NULL when empty
-	 * @nullEmptyExclude A list of keys to NOT NULL when empty
+	 * @target               The target to populate
+	 * @memento              The structure to populate the target with
+	 * @prefix               The prefix used to filter, Example: 'user_' would apply to the following columns: 'user_id' and 'user_name' but not 'address_id'.
+	 * @scope                Use scope injection instead of setters population. Ex: scope=variables.instance.
+	 * @trustedSetter        If set to true, the setter method will be called even if it does not exist in the bean
+	 * @include              A list of keys to include in the population
+	 * @exclude              A list of keys to exclude in the population
+	 * @ignoreEmpty          Ignore empty values on populations, great for ORM population
+	 * @nullEmptyInclude     A list of keys to NULL when empty
+	 * @nullEmptyExclude     A list of keys to NOT NULL when empty
 	 * @composeRelationships Automatically attempt to compose relationships from memento
 	 *
 	 * @return The target populated with the packet
@@ -246,15 +246,15 @@ component {
 	/**
 	 * Populate a named or instantiated instance from a struct object using a key prefix
 	 *
-	 * @target The target to populate
-	 * @memento The structure to populate the target with
-	 * @scope Use scope injection instead of setters population. Ex: scope=variables.instance.
-	 * @trustedSetter If set to true, the setter method will be called even if it does not exist in the bean
-	 * @include A list of keys to include in the population
-	 * @exclude A list of keys to exclude in the population
-	 * @ignoreEmpty Ignore empty values on populations, great for ORM population
-	 * @nullEmptyInclude A list of keys to NULL when empty
-	 * @nullEmptyExclude A list of keys to NOT NULL when empty
+	 * @target               The target to populate
+	 * @memento              The structure to populate the target with
+	 * @scope                Use scope injection instead of setters population. Ex: scope=variables.instance.
+	 * @trustedSetter        If set to true, the setter method will be called even if it does not exist in the bean
+	 * @include              A list of keys to include in the population
+	 * @exclude              A list of keys to exclude in the population
+	 * @ignoreEmpty          Ignore empty values on populations, great for ORM population
+	 * @nullEmptyInclude     A list of keys to NULL when empty
+	 * @nullEmptyExclude     A list of keys to NOT NULL when empty
 	 * @composeRelationships Automatically attempt to compose relationships from memento
 	 *
 	 * @return The target populated with the packet

@@ -97,7 +97,7 @@ component accessors="true" {
 	 * Set the metadata entry for a specific entry
 	 *
 	 * @objectKey The key to get
-	 * @metadata The metadata struct to store
+	 * @metadata  The metadata struct to store
 	 */
 	MetadataIndexer function setObjectMetadata( required objectKey, required struct metadata ){
 		variables.poolMetadata.put( arguments.objectKey, arguments.metadata );
@@ -116,8 +116,8 @@ component accessors="true" {
 	/**
 	 * Get a metadata entry for a specific entry. Exception if key not found
 	 *
-	 * @objectKey The key to get
-	 * @property The metadata property to get
+	 * @objectKey    The key to get
+	 * @property     The metadata property to get
 	 * @defaultValue The default value if property doesn't exist
 	 */
 	function getObjectMetadataProperty(
@@ -146,8 +146,8 @@ component accessors="true" {
 	 * Set a metadata property for a specific entry
 	 *
 	 * @objectKey The key to set
-	 * @property The metadata property to set
-	 * @value The value to set
+	 * @property  The metadata property to set
+	 * @value     The value to set
 	 */
 	MetadataIndexer function setObjectMetadataProperty(
 		required objectKey,

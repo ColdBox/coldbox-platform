@@ -66,10 +66,10 @@ component singleton {
 	/**
 	 * Convert any ColdFUsion date/time or string date/time object to the new Java.time.LocalDateTime class so we can use them as Temporal objects
 	 *
-	 * @target The cf date/time or string object representing the date/time
+	 * @target   The cf date/time or string object representing the date/time
 	 * @timezone If passed, we will use this timezone to build the temporal object. Else we default to UTC
 	 *
-	 * @throws DateTimeException - if the zone ID has an invalid format
+	 * @throws DateTimeException  - if the zone ID has an invalid format
 	 * @throws ZoneRulesException - if the zone ID is a region ID that cannot be found
 	 *
 	 * @return A Java temporal object as java.time.LocalDateTime
@@ -88,10 +88,10 @@ component singleton {
 	/**
 	 * Convert any ColdFUsion date/time or string date/time object to the new Java.time.LocalDate class so we can use them as Temporal objects
 	 *
-	 * @target The cf date/time or string object representing the date/time
+	 * @target   The cf date/time or string object representing the date/time
 	 * @timezone If passed, we will use this timezone to build the temporal object. Else we default to UTC
 	 *
-	 * @throws DateTimeException - if the zone ID has an invalid format
+	 * @throws DateTimeException  - if the zone ID has an invalid format
 	 * @throws ZoneRulesException - if the zone ID is a region ID that cannot be found
 	 *
 	 * @return A Java temporal object as java.time.LocalDate
@@ -114,7 +114,7 @@ component singleton {
 	 *
 	 * @timezone The String timezone identifier
 	 *
-	 * @throws DateTimeException - if the zone ID has an invalid format
+	 * @throws DateTimeException  - if the zone ID has an invalid format
 	 * @throws ZoneRulesException - if the zone ID is a region ID that cannot be found
 	 *
 	 * @return Java Timezone java.time.ZoneId

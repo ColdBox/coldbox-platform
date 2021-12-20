@@ -39,7 +39,7 @@ component accessors="true" singleton {
 	/**
 	 * Constructor
 	 *
-	 * @name The name of this scheduler
+	 * @name         The name of this scheduler
 	 * @asyncManager The async manager we are linked to
 	 */
 	function init( required name, required asyncManager ){
@@ -239,7 +239,7 @@ component accessors="true" singleton {
 	/**
 	 * Called whenever ANY task fails
 	 *
-	 * @task The task that got executed
+	 * @task      The task that got executed
 	 * @exception The ColdFusion exception object
 	 *
 	 */
@@ -249,7 +249,7 @@ component accessors="true" singleton {
 	/**
 	 * Called whenever ANY task succeeds
 	 *
-	 * @task The task that got executed
+	 * @task   The task that got executed
 	 * @result The result (if any) that the task produced
 	 *
 	 */
@@ -268,7 +268,7 @@ component accessors="true" singleton {
 	/**
 	 * Called after ANY task runs
 	 *
-	 * @task The task that got executed
+	 * @task   The task that got executed
 	 * @result The result (if any) that the task produced
 	 *
 	 */

@@ -34,7 +34,7 @@ component accessors="true" {
 	/**
 	 * Constructor
 	 * @controller ColdBox Controller
-	 * @defaults Default flash data packet for the flash RAM object=[scope,properties,inflateToRC,inflateToPRC,autoPurge,autoSave]
+	 * @defaults   Default flash data packet for the flash RAM object=[scope,properties,inflateToRC,inflateToPRC,autoPurge,autoSave]
 	 */
 	function init( required controller, required struct defaults = {} ){
 		variables.controller = arguments.controller;
@@ -226,13 +226,13 @@ component accessors="true" {
 	/**
 	 * Keep all or a single flash temp variable alive for another relocation
 	 *
-	 * @name The name of the value
-	 * @value The value to store
-	 * @saveNow Whether to send the contents for saving to flash ram or not. Default is to wait for a relocation
-	 * @keep Whether to mark the entry to be kept after saving to the flash storage.
-	 * @inflateToRC Whether this flash variable is inflated to the Request Collection or not
+	 * @name         The name of the value
+	 * @value        The value to store
+	 * @saveNow      Whether to send the contents for saving to flash ram or not. Default is to wait for a relocation
+	 * @keep         Whether to mark the entry to be kept after saving to the flash storage.
+	 * @inflateToRC  Whether this flash variable is inflated to the Request Collection or not
 	 * @inflateToPRC Whether this flash variable is inflated to the Private Request Collection or not
-	 * @autoPurge Flash memory auto purges variables for you. You can control this purging by saying false to autoPurge
+	 * @autoPurge    Flash memory auto purges variables for you. You can control this purging by saying false to autoPurge
 	 *
 	 * @return AbstractFlashScope
 	 */
@@ -269,12 +269,12 @@ component accessors="true" {
 	/**
 	 * Put a map of name-value pairs into the flash scope
 	 *
-	 * @map The map of data to flash
-	 * @saveNow Whether to send the contents for saving to flash ram or not. Default is to wait for a relocation
-	 * @keep Whether to mark the entry to be kept after saving to the flash storage.
-	 * @inflateToRC Whether this flash variable is inflated to the Request Collection or not
+	 * @map          The map of data to flash
+	 * @saveNow      Whether to send the contents for saving to flash ram or not. Default is to wait for a relocation
+	 * @keep         Whether to mark the entry to be kept after saving to the flash storage.
+	 * @inflateToRC  Whether this flash variable is inflated to the Request Collection or not
 	 * @inflateToPRC Whether this flash variable is inflated to the Private Request Collection or not
-	 * @autoPurge Flash memory auto purges variables for you. You can control this purging by saying false to autoPurge
+	 * @autoPurge    Flash memory auto purges variables for you. You can control this purging by saying false to autoPurge
 	 *
 	 * @return AbstractFlashScope
 	 */
@@ -306,7 +306,7 @@ component accessors="true" {
 	/**
 	 * Remove an object from flash scope
 	 *
-	 * @name Whether to send the contents for saving to flash ram or not. Default is to wait for a relocation
+	 * @name    Whether to send the contents for saving to flash ram or not. Default is to wait for a relocation
 	 * @saveNow
 	 *
 	 * @return AbstractFlashScope
@@ -354,7 +354,7 @@ component accessors="true" {
 	/**
 	 * Get an object from flash scope
 	 *
-	 * @name The name of the value
+	 * @name         The name of the value
 	 * @defaultValue The default value if the scope does not have the object"
 	 */
 	function get( required name, defaultValue ){
@@ -443,7 +443,7 @@ component accessors="true" {
 	 * Set a named property
 	 *
 	 * @property The property name
-	 * @value The value
+	 * @value    The value
 	 *
 	 * @return AbstractFlashScope
 	 */

@@ -56,7 +56,7 @@ component {
 	 * Feature Active Check
 	 *
 	 * @feature The feature to check
-	 * @engine The engine we are checking
+	 * @engine  The engine we are checking
 	 */
 	boolean function featureCheck( required feature, required engine ){
 		return variables.features[ arguments.engine ][ arguments.feature ];

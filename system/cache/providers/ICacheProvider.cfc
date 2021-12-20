@@ -69,7 +69,7 @@ interface {
 	/**
 	 * Set the cache factory reference for this cache
 	 *
-	 * @cacheFactory The cache factory
+	 * @cacheFactory             The cache factory
 	 * @cacheFactory.doc_generic coldbox.system.cache.CacheFactory
 	 *
 	 * @return ICacheProvider
@@ -171,11 +171,11 @@ interface {
 	/**
 	 * Sets an object in the cache and returns an instance of itself
 	 *
-	 * @objectKey The object cache key
-	 * @object The object to cache
-	 * @timeout The timeout to use on the object (if any, provider specific)
+	 * @objectKey         The object cache key
+	 * @object            The object to cache
+	 * @timeout           The timeout to use on the object (if any, provider specific)
 	 * @lastAccessTimeout The idle timeout to use on the object (if any, provider specific)
-	 * @extra A map of name-value pairs to use as extra arguments to pass to a providers set operation
+	 * @extra             A map of name-value pairs to use as extra arguments to pass to a providers set operation
 	 *
 	 * @return ICacheProvider
 	 */
@@ -190,11 +190,11 @@ interface {
 	/**
 	 * Sets an object in the cache with no event calls and returns an instance of itself
 	 *
-	 * @objectKey The object cache key
-	 * @object The object to cache
-	 * @timeout The timeout to use on the object (if any, provider specific)
+	 * @objectKey         The object cache key
+	 * @object            The object to cache
+	 * @timeout           The timeout to use on the object (if any, provider specific)
 	 * @lastAccessTimeout The idle timeout to use on the object (if any, provider specific)
-	 * @extra A map of name-value pairs to use as extra arguments to pass to a providers set operation
+	 * @extra             A map of name-value pairs to use as extra arguments to pass to a providers set operation
 	 *
 	 * @return ICacheProvider
 	 */

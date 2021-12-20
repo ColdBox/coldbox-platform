@@ -47,7 +47,7 @@ component
 	/**
 	 * Constructor
 	 *
-	 * @controller The ColdBox main controller
+	 * @controller        The ColdBox main controller
 	 * @controller.inject coldbox
 	 */
 	function init( required controller ){
@@ -110,9 +110,9 @@ component
 	/**
 	 * set the explicit view bit, used mostly internally
 	 *
-	 * @view The name of the view to render
+	 * @view   The name of the view to render
 	 * @module The name of the module this view comes from
-	 * @args The view/layout passthrough arguments
+	 * @args   The view/layout passthrough arguments
 	 *
 	 * @return Renderer
 	 */
@@ -151,21 +151,21 @@ component
 	/**
 	 * Render out a view
 	 *
-	 * @view The the view to render, if not passed, then we look in the request context for the current set view.
-	 * @args A struct of arguments to pass into the view for rendering, will be available as 'args' in the view.
-	 * @module The module to render the view from explicitly
-	 * @cache Cached the view output or not, defaults to false
-	 * @cacheTimeout The time in minutes to cache the view
+	 * @view                   The the view to render, if not passed, then we look in the request context for the current set view.
+	 * @args                   A struct of arguments to pass into the view for rendering, will be available as 'args' in the view.
+	 * @module                 The module to render the view from explicitly
+	 * @cache                  Cached the view output or not, defaults to false
+	 * @cacheTimeout           The time in minutes to cache the view
 	 * @cacheLastAccessTimeout The time in minutes the view will be removed from cache if idle or requested
-	 * @cacheSuffix The suffix to add into the cache entry for this view rendering
-	 * @cacheProvider The provider to cache this view in, defaults to 'template'
-	 * @collection A collection to use by this Renderer to render the view as many times as the items in the collection (Array or Query)
-	 * @collectionAs The name of the collection variable in the partial rendering.  If not passed, we will use the name of the view by convention
-	 * @collectionStartRow The start row to limit the collection rendering with
-	 * @collectionMaxRows The max rows to iterate over the collection rendering with
-	 * @collectionDelim  A string to delimit the collection renderings by
-	 * @prePostExempt If true, pre/post view interceptors will not be fired. By default they do fire
-	 * @name The name of the rendering region to render out, Usually all arguments are coming from the stored region but you override them using this function's arguments.
+	 * @cacheSuffix            The suffix to add into the cache entry for this view rendering
+	 * @cacheProvider          The provider to cache this view in, defaults to 'template'
+	 * @collection             A collection to use by this Renderer to render the view as many times as the items in the collection (Array or Query)
+	 * @collectionAs           The name of the collection variable in the partial rendering.  If not passed, we will use the name of the view by convention
+	 * @collectionStartRow     The start row to limit the collection rendering with
+	 * @collectionMaxRows      The max rows to iterate over the collection rendering with
+	 * @collectionDelim        A string to delimit the collection renderings by
+	 * @prePostExempt          If true, pre/post view interceptors will not be fired. By default they do fire
+	 * @name                   The name of the rendering region to render out, Usually all arguments are coming from the stored region but you override them using this function's arguments.
 	 */
 	function view(
 		view                   = "",
@@ -446,10 +446,10 @@ component
 	/**
 	 * Render a view alongside its helpers, used mostly internally, use at your own risk.
 	 *
-	 * @view The view to render
-	 * @viewPath The path of the view to render
+	 * @view           The view to render
+	 * @viewPath       The path of the view to render
 	 * @viewHelperPath The helpers for the view to load before it
-	 * @args The view arguments
+	 * @args           The view arguments
 	 */
 	private function renderViewComposite( view, viewPath, viewHelperPath, args ){
 		var cbox_renderedView = "";
@@ -483,13 +483,13 @@ component
 
 	/**
 	 * Renders an external view anywhere that cfinclude works.
-	 * @view The the view to render
-	 * @args A struct of arguments to pass into the view for rendering, will be available as 'args' in the view.
-	 * @cache Cached the view output or not, defaults to false
-	 * @cacheTimeout The time in minutes to cache the view
+	 * @view                   The the view to render
+	 * @args                   A struct of arguments to pass into the view for rendering, will be available as 'args' in the view.
+	 * @cache                  Cached the view output or not, defaults to false
+	 * @cacheTimeout           The time in minutes to cache the view
 	 * @cacheLastAccessTimeout The time in minutes the view will be removed from cache if idle or requested
-	 * @cacheSuffix The suffix to add into the cache entry for this view rendering
-	 * @cacheProvider The provider to cache this view in, defaults to 'template'
+	 * @cacheSuffix            The suffix to add into the cache entry for this view rendering
+	 * @cacheProvider          The provider to cache this view in, defaults to 'template'
 	 */
 	function externalView(
 		required view,
@@ -559,11 +559,11 @@ component
 	/**
 	 * Render a layout or a layout + view combo
 	 *
-	 * @layout The layout to render out
-	 * @module The module to explicitly render this layout from
-	 * @view The view to render within this layout
-	 * @args An optional set of arguments that will be available to this layouts/view rendering ONLY
-	 * @viewModule The module to explicitly render the view from
+	 * @layout        The layout to render out
+	 * @module        The module to explicitly render this layout from
+	 * @view          The view to render within this layout
+	 * @args          An optional set of arguments that will be available to this layouts/view rendering ONLY
+	 * @viewModule    The module to explicitly render the view from
 	 * @prePostExempt If true, pre/post layout interceptors will not be fired. By default they do fire
 	 */
 	function layout(
@@ -727,8 +727,8 @@ component
 
 	/**
 	 * Locate a layout in the conventions system
-	 * @layout The layout name
-	 * @module The name of the module we are searching for
+	 * @layout         The layout name
+	 * @module         The name of the module we are searching for
 	 * @explicitModule Are we locating explicitly or implicitly for a module layout
 	 */
 	function locateModuleLayout(
@@ -806,8 +806,8 @@ component
 
 	/**
 	 * Locate a view in the conventions system
-	 * @view The view name
-	 * @module The name of the module we are searching for
+	 * @view           The view name
+	 * @module         The name of the module we are searching for
 	 * @explicitModule Are we locating explicitly or implicitly for a module layout
 	 */
 	function locateModuleView(
@@ -869,8 +869,8 @@ component
 	/**
 	 * Discover view+helper path locations
 	 *
-	 * @view The view to discover
-	 * @module The module address
+	 * @view           The view to discover
+	 * @module         The module address
 	 * @explicitModule Is the module explicit or discoverable.
 	 *
 	 * @return struct  = { viewPath:string, viewHelperPath:string }

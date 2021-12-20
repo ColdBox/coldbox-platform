@@ -31,7 +31,7 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true" 
 	/**
 	 * Constructor
 	 *
-	 * @cacheProvider The associated cache provider as coldbox.system.cache.providers.ICacheProvider
+	 * @cacheProvider             The associated cache provider as coldbox.system.cache.providers.ICacheProvider
 	 * @cacheprovider.doc_generic coldbox.system.cache.providers.ICacheProvider
 	 */
 	function init( required cacheProvider ){
@@ -167,11 +167,11 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true" 
 	/**
 	 * Sets an object in the storage
 	 *
-	 * @objectKey The object key
-	 * @object The object to save
-	 * @timeout Timeout in minutes
+	 * @objectKey         The object key
+	 * @object            The object to save
+	 * @timeout           Timeout in minutes
 	 * @lastAccessTimeout Idle Timeout in minutes
-	 * @extras A map of extra name-value pairs to store alongside the object
+	 * @extras            A map of extra name-value pairs to store alongside the object
 	 */
 	void function set(
 		required objectKey,

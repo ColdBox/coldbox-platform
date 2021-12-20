@@ -93,8 +93,8 @@ component accessors="true" {
 
 	/**
 	 * Matches a class to this matcher according to its criteria
-	 * @target	The target to match against to
-	 * @mapping	The target mapping to match against
+	 * @target              The target to match against to
+	 * @mapping             The target mapping to match against
 	 * @mapping.doc_generic coldbox.system.ioc.config.Mapping
 	 */
 	boolean function matchClass( required target, required mapping ){
@@ -180,8 +180,8 @@ component accessors="true" {
 
 	/**
 	 * Go through all the rules in this matcher and match
-	 * @target	The target to match against to
-	 * @mapping	The target mapping to match against
+	 * @target              The target to match against to
+	 * @mapping             The target mapping to match against
 	 * @mapping.doc_generic coldbox.system.ioc.config.Mapping
 	 */
 	private boolean function matchClassRules( required target, required mapping ){
@@ -242,7 +242,7 @@ component accessors="true" {
 	/**
 	 * Matches annotations on components or methods with or without a value
 	 * @annotation The annotation to discover
-	 * @value The value of the annotation that must match. OPTIONAL
+	 * @value      The value of the annotation that must match. OPTIONAL
 	 */
 	function annotatedWith( required annotation, value ){
 		variables.annotation = arguments.annotation;
@@ -297,7 +297,7 @@ component accessors="true" {
 
 	/**
 	 * AND this matcher with another matcher
-	 * @matcher The matcher to AND this matcher with
+	 * @matcher             The matcher to AND this matcher with
 	 * @matcher.doc_generic coldbox.system.aop.Matcher
 	 */
 	function andMatch( required matcher ){
@@ -307,7 +307,7 @@ component accessors="true" {
 
 	/**
 	 * OR this matcher with another matcher
-	 * @matcher The matcher to AND this matcher with
+	 * @matcher             The matcher to AND this matcher with
 	 * @matcher.doc_generic coldbox.system.aop.Matcher
 	 */
 	function orMatch( required matcher ){

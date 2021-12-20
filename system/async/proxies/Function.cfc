@@ -7,8 +7,8 @@ component extends="BaseProxy" {
 	/**
 	 * Constructor
 	 *
-	 * @f The lambda or closure to be used in the <code>apply()</code> method
-	 * @debug Add debugging or not
+	 * @f              The lambda or closure to be used in the <code>apply()</code> method
+	 * @debug          Add debugging or not
 	 * @loadAppContext By default, we load the Application context into the running thread. If you don't need it, then don't load it.
 	 */
 	function init(

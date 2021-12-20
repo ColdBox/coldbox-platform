@@ -101,8 +101,8 @@ component accessors="true" {
 	/**
 	 * Build an event key according to passed in params
 	 *
-	 * @keySuffix The key suffix used in the cache key
-	 * @targetEvent The targeted ColdBox event executed
+	 * @keySuffix     The key suffix used in the cache key
+	 * @targetEvent   The targeted ColdBox event executed
 	 * @targetContext The targeted request context object
 	 */
 	string function buildEventKey(
@@ -116,9 +116,9 @@ component accessors="true" {
 	/**
 	 * Build an event key according to passed in params
 	 *
-	 * @keySuffix The key suffix used in the cache key
+	 * @keySuffix   The key suffix used in the cache key
 	 * @targetEvent The targeted ColdBox event executed
-	 * @targetArgs A query string based argument collection like a query string
+	 * @targetArgs  A query string based argument collection like a query string
 	 */
 	string function buildEventKeyNoContext(
 		required keySuffix,
@@ -130,7 +130,7 @@ component accessors="true" {
 
 	/**
 	 * Builds a basic cache key without the hash component
-	 * @keySuffix The key suffix used
+	 * @keySuffix   The key suffix used
 	 * @targetEvent The targeted ColdBox event string
 	 */
 	string function buildBasicCacheKey( required keySuffix, required targetEvent ){

@@ -32,9 +32,9 @@
 
 	function testEnsureTable(){
 		// drop table
-		try{
+		try {
 			queryExecute( "drop table logs" );
-		}catch( any e ){
+		} catch ( any e ) {
 			// Ignore, maybe it doesn't exist
 		}
 

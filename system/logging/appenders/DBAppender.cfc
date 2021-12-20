@@ -40,11 +40,11 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 	/**
 	 * Constructor
 	 *
-	 * @name The unique name for this appender.
+	 * @name       The unique name for this appender.
 	 * @properties A map of configuration properties for the appender"
-	 * @layout The layout class to use in this appender for custom message rendering.
-	 * @levelMin The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARN
-	 * @levelMax The default log level for this appender, by default it is 5. Optional. ex: LogBox.logLevels.WARN
+	 * @layout     The layout class to use in this appender for custom message rendering.
+	 * @levelMin   The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARN
+	 * @levelMax   The default log level for this appender, by default it is 5. Optional. ex: LogBox.logLevels.WARN
 	 */
 	function init(
 		required name,
@@ -196,7 +196,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 	 * Processes a queue element to a destination
 	 * This method is called by the log listeners asynchronously.
 	 *
-	 * @data The data element the queue needs processing
+	 * @data         The data element the queue needs processing
 	 * @queueContext The queue context in process
 	 *
 	 * @return ConsoleAppender

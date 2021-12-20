@@ -119,11 +119,11 @@ component
 	/**
 	 * Constructor. If called without a configuration binder, then WireBox will instantiate the default configuration binder found in: coldbox.system.ioc.config.DefaultBinder
 	 *
-	 * @binder The WireBox binder or data CFC instance or instantiation path to configure this injector with
-	 * @properties A structure of binding properties to passthrough to the Binder Configuration CFC
+	 * @binder                 The WireBox binder or data CFC instance or instantiation path to configure this injector with
+	 * @properties             A structure of binding properties to passthrough to the Binder Configuration CFC
 	 * @properties.doc_generic struct
-	 * @coldbox A coldbox application context that this instance of WireBox can be linked to, if not using it, we just ignore it.
-	 * @coldbox.doc_generic coldbox.system.web.Controller
+	 * @coldbox                A coldbox application context that this instance of WireBox can be linked to, if not using it, we just ignore it.
+	 * @coldbox.doc_generic    coldbox.system.web.Controller
 	 **/
 	Injector function init(
 		binder            = "coldbox.system.ioc.config.DefaultBinder",
@@ -218,7 +218,7 @@ component
 	/**
 	 * Register a child injector instance with this injector and set this injector as a parent of the child.
 	 *
-	 * @name The unique name to register the child with
+	 * @name  The unique name to register the child with
 	 * @child The child Injector instance to register
 	 */
 	Injector function registerChildInjector( required name, required child ){
@@ -267,9 +267,9 @@ component
 	/**
 	 * Configure this injector for operation, called by the init(). You can also re-configure this injector programmatically, but it is not recommended.
 	 *
-	 * @binder The configuration binder object or path to configure this Injector instance with
-	 * @binder.doc_generic coldbox.system.ioc.config.Binder
-	 * @properties A structure of binding properties to passthrough to the Configuration CFC
+	 * @binder                 The configuration binder object or path to configure this Injector instance with
+	 * @binder.doc_generic     coldbox.system.ioc.config.Binder
+	 * @properties             A structure of binding properties to passthrough to the Configuration CFC
 	 * @properties.doc_generic struct
 	 **/
 	Injector function configure( required binder, required struct properties ){
@@ -416,14 +416,14 @@ component
 	/**
 	 * Locates, Creates, Injects and Configures an object model instance
 	 *
-	 * @name The mapping name or CFC instance path to try to build up
+	 * @name          The mapping name or CFC instance path to try to build up
 	 * @initArguments The constructor structure of arguments to passthrough when initializing the instance
-	 * @dsl The dsl string to use to retrieve the instance model object, mutually exclusive with 'name
-	 * @targetObject The object requesting the dependency, usually only used by DSL lookups
-	 * @injector The child injector to use when retrieving the instance
+	 * @dsl           The dsl string to use to retrieve the instance model object, mutually exclusive with 'name
+	 * @targetObject  The object requesting the dependency, usually only used by DSL lookups
+	 * @injector      The child injector to use when retrieving the instance
 	 *
 	 * @throws InstanceNotFoundException - When the requested instance cannot be found
-	 * @throws InvalidChildInjector - When you request an instance from an invalid child injector name
+	 * @throws InvalidChildInjector      - When you request an instance from an invalid child injector name
 	 *
 	 * @return The requested instance
 	 **/
@@ -540,9 +540,9 @@ component
 	/**
 	 * Build an instance, this is called from registered scopes only as they provide locking and transactions
 	 *
-	 * @mapping The mapping to construct
+	 * @mapping             The mapping to construct
 	 * @mapping.doc_generic coldbox.system.ioc.config.Mapping
-	 * @initArguments The constructor structure of arguments to passthrough when initializing the instance
+	 * @initArguments       The constructor structure of arguments to passthrough when initializing the instance
 	 **/
 	function buildInstance( required mapping, struct initArguments = {} ){
 		var thisMap = arguments.mapping;
@@ -636,7 +636,7 @@ component
 	/**
 	 * Register a new requested mapping object instance thread safely and returns the mapping configured for this instance
 	 *
-	 * @name The name of the mapping to register
+	 * @name         The name of the mapping to register
 	 * @instancePath The path of the mapping to register
 	 **/
 	function registerNewInstance( required name, required instancePath ){
@@ -665,7 +665,7 @@ component
 	 * A direct way of registering custom DSL namespaces
 	 *
 	 * @namespace The namespace you would like to register
-	 * @path The instantiation path to the CFC that implements this scope, it must have an init() method and implement: coldbox.system.ioc.dsl.IDSLBuilder
+	 * @path      The instantiation path to the CFC that implements this scope, it must have an init() method and implement: coldbox.system.ioc.dsl.IDSLBuilder
 	 */
 	Injector function registerDSL( required namespace, required path ){
 		variables.builder.registerDSL( argumentCollection = arguments );
@@ -750,11 +750,11 @@ component
 	/**
 	 * I wire up target objects with dependencies either by mappings or a-la-carte autowires
 	 *
-	 * @target The target object to wire up
-	 * @mapping The object mapping with all the necessary wiring metadata. Usually passed by scopes and not a-la-carte autowires
-	 * @mapping.doc_generic coldbox.system.ioc.config.Mapping
-	 * @targetID A unique identifier for this target to wire up. Usually a class path or file path should do. If none is passed we will get the id from the passed target via introspection but it will slow down the wiring
-	 * @annotationCheck This value determines if we check if the target contains an autowire annotation in the cfcomponent tag: autowire=true|false, it will only autowire if that metadata attribute is set to true. The default is false, which will autowire anything automatically.
+	 * @target                      The target object to wire up
+	 * @mapping                     The object mapping with all the necessary wiring metadata. Usually passed by scopes and not a-la-carte autowires
+	 * @mapping.doc_generic         coldbox.system.ioc.config.Mapping
+	 * @targetID                    A unique identifier for this target to wire up. Usually a class path or file path should do. If none is passed we will get the id from the passed target via introspection but it will slow down the wiring
+	 * @annotationCheck             This value determines if we check if the target contains an autowire annotation in the cfcomponent tag: autowire=true|false, it will only autowire if that metadata attribute is set to true. The default is false, which will autowire anything automatically.
 	 * @annotationCheck.doc_generic Boolean
 	 */
 	function autowire(
@@ -874,7 +874,7 @@ component
 	/**
 	 * Link a parent Injector with this injector
 	 *
-	 * @injector A WireBox Injector to assign as a parent to this Injector
+	 * @injector             A WireBox Injector to assign as a parent to this Injector
 	 * @injector.doc_generic coldbox.system.ioc.Injector
 	 *
 	 * @return Injector
@@ -995,7 +995,7 @@ component
 	 * Process mixins on the selected target
 	 *
 	 * @targetObject The target object to do some goodness on
-	 * @mapping The target mapping
+	 * @mapping      The target mapping
 	 */
 	private Injector function processMixins( required targetObject, required mapping ){
 		// If no length, kick out
@@ -1021,7 +1021,7 @@ component
 	 * Process provider methods on the selected target
 	 *
 	 * @targetObject The target object to do some goodness on
-	 * @mapping The target mapping
+	 * @mapping      The target mapping
 	 */
 	private Injector function processProviderMethods( required targetObject, required mapping ){
 		var providerMethods = arguments.mapping.getProviderMethods();
@@ -1048,7 +1048,7 @@ component
 
 	/**
 	 * Process after DI completion routines
-	 * @targetObject The target object to do some goodness on
+	 * @targetObject      The target object to do some goodness on
 	 * @DICompleteMethods The array of DI completion methods to call
 	 */
 	private Injector function processAfterCompleteDI( required targetObject, required DICompleteMethods ){
@@ -1075,8 +1075,8 @@ component
 	 * Process property and setter injection
 	 *
 	 * @targetObject The target object to do some goodness on
-	 * @DIData The DI data to use
-	 * @targetID The target ID to process injections
+	 * @DIData       The DI data to use
+	 * @targetID     The target ID to process injections
 	 */
 	private Injector function processInjection(
 		required targetObject,
@@ -1143,11 +1143,11 @@ component
 	/**
 	 * Inject a model object with dependencies via setters or property injections
 	 *
-	 * @target The target that will be injected with dependencies
-	 * @propertyName The name of the property to inject
+	 * @target         The target that will be injected with dependencies
+	 * @propertyName   The name of the property to inject
 	 * @propertyObject The object to inject
-	 * @scope The scope to inject a property into, if any else empty means it is a setter call
-	 * @argName The name of the argument to send if setter injection
+	 * @scope          The scope to inject a property into, if any else empty means it is a setter call
+	 * @argName        The name of the argument to send if setter injection
 	 */
 	private Injector function injectTarget(
 		required target,
@@ -1285,7 +1285,7 @@ component
 	/**
 	 * Configure a standalone version of cacheBox for persistence
 	 *
-	 * @config The cacheBox configuration data structure
+	 * @config             The cacheBox configuration data structure
 	 * @config.doc_generic struct
 	 */
 	private Injector function configureCacheBox( required struct config ){
@@ -1391,8 +1391,8 @@ component
 	/**
 	 * Load a configuration binder object according to passed in type
 	 *
-	 * @binder  The data CFC configuration instance, instantiation path or programmatic binder object to configure this injector with
-	 * @properties  A map of binding properties to passthrough to the Configuration CFC
+	 * @binder     The data CFC configuration instance, instantiation path or programmatic binder object to configure this injector with
+	 * @properties A map of binding properties to passthrough to the Configuration CFC
 	 */
 	private any function buildBinder( required binder, required properties ){
 		// Check if just a plain CFC path and build it

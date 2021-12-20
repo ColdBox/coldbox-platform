@@ -80,11 +80,11 @@ interface {
 	/**
 	 * Sets an object in the storage
 	 *
-	 * @objectKey The object key
-	 * @object The object to save
-	 * @timeout Timeout in minutes
+	 * @objectKey         The object key
+	 * @object            The object to save
+	 * @timeout           Timeout in minutes
 	 * @lastAccessTimeout Idle Timeout in minutes
-	 * @extras A map of extra name-value pairs to store alongside the object
+	 * @extras            A map of extra name-value pairs to store alongside the object
 	 */
 	void function set(
 		required objectKey,

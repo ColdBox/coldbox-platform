@@ -217,9 +217,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * Process a route result to be used by the request
 	 *
 	 * @routeResults The route results a <code>findRoute()</code> method returns
-	 * @event The ColdBox Request context
-	 * @rc The requset collection
-	 * @prc The private request collection
+	 * @event        The ColdBox Request context
+	 * @rc           The requset collection
+	 * @prc          The private request collection
 	 *
 	 * @return An event string that can be used for execution. Empty if using something else
 	 */
@@ -400,11 +400,11 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * the `route` it discovered or an empty structure and the `params` structure which represents
 	 * URL placeholders, convention name value pairs, matching variables, etc.
 	 *
-	 * @action The action evaluated by path_info
-	 * @event The event object
-	 * @module Incoming module
+	 * @action    The action evaluated by path_info
+	 * @event     The event object
+	 * @module    Incoming module
 	 * @namespace Incoming namespace
-	 * @domain Incoming domain
+	 * @domain    Incoming domain
 	 *
 	 * @result Struct: { route: found route or empty struct, params: translated params }
 	 */
@@ -620,7 +620,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * The cgi element facade method, created so we can do useful mocking
 	 *
 	 * @cgiElement The element to take from CGI
-	 * @event The request context object
+	 * @event      The request context object
 	 *
 	 * @return The cgi element value
 	 */
@@ -639,7 +639,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * Process a route redirection
 	 *
 	 * @routeResults The { params, route } that matched
-	 * @event The request context
+	 * @event        The request context
 	 */
 	private function processRedirect( required routeResults, required event ){
 		var redirectTo = "";
@@ -682,7 +682,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	/**
 	 * Detect extensions from the incoming request
 	 * @requestString The incoming request string
-	 * @event The event object
+	 * @event         The event object
 	 */
 	private function detectExtension( required requestString, required event ){
 		var extension    = listLast( arguments.requestString, "." );
@@ -805,8 +805,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * Resolve handler/module packages
 	 *
 	 * @routingString The incoming routing string
-	 * @routeParams The incoming route parameters
-	 * @module Module route or not
+	 * @routeParams   The incoming route parameters
+	 * @module        Module route or not
 	 */
 	private function packageResolver(
 		required routingString,
@@ -909,9 +909,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 	/**
 	 * Check for invalid URL's
-	 * @route The incoming route
+	 * @route       The incoming route
 	 * @script_name The cgi script name
-	 * @event The event object
+	 * @event       The event object
 	 */
 	private function checkForInvalidURL(
 		required route,
@@ -978,7 +978,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	/**
 	 * Serialize a URL when invalid
 	 * @formVars The incoming form variables
-	 * @event The event object
+	 * @event    The event object
 	 */
 	private function serializeURL( formVars = "", required event ){
 		var vars = arguments.formVars;
@@ -1001,7 +1001,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * Clean up some IIS funkyness where query string is found in the path info. We basically clean it up and add the query string into the RC scope
 	 *
 	 * @requestString the incoming request string
-	 * @rc The request collection struct
+	 * @rc            The request collection struct
 	 */
 	private function fixIISURLVars( required requestString, required rc ){
 		// Find a Matching position of IIS ?
@@ -1022,8 +1022,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * Find the convention name value pairs in the incoming request string, if found, we will incorporate them into the incoming `params` arguments
 	 *
 	 * @requestString the incoming request string
-	 * @match The regex matcher object
-	 * @params The incoming parameter struct
+	 * @match         The regex matcher object
+	 * @params        The incoming parameter struct
 	 */
 	private function findConventionNameValuePairs(
 		required string requestString,
@@ -1060,7 +1060,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	/**
 	 * Get and Clean the path_info and script names structure
 	 *
-	 * @rc The incoming request collection
+	 * @rc    The incoming request collection
 	 * @event The event object
 	 *
 	 * @return struct { pathInfo, scriptName, domain }

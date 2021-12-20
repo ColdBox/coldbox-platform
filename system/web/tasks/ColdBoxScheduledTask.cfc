@@ -49,10 +49,10 @@ component extends="coldbox.system.async.tasks.ScheduledTask" accessors="true" {
 	/**
 	 * Constructor
 	 *
-	 * @name The name of this task
+	 * @name     The name of this task
 	 * @executor The executor this task will run under and be linked to
-	 * @task The closure or cfc that represents the task (optional)
-	 * @method The method on the cfc to call, defaults to "run" (optional)
+	 * @task     The closure or cfc that represents the task (optional)
+	 * @method   The method on the cfc to call, defaults to "run" (optional)
 	 */
 	ColdBoxScheduledTask function init(
 		required name,

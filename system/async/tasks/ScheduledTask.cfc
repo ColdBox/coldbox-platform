@@ -128,10 +128,10 @@ component accessors="true" {
 	/**
 	 * Constructor
 	 *
-	 * @name The name of this task
+	 * @name     The name of this task
 	 * @executor The executor this task will run under and be linked to
-	 * @task The closure or cfc that represents the task (optional)
-	 * @method The method on the cfc to call, defaults to "run" (optional)
+	 * @task     The closure or cfc that represents the task (optional)
+	 * @method   The method on the cfc to call, defaults to "run" (optional)
 	 */
 	ScheduledTask function init(
 		required name,
@@ -253,7 +253,7 @@ component accessors="true" {
 	/**
 	 * This method is used to register the callable closure or cfc on this scheduled task.
 	 *
-	 * @task The closure or cfc that represents the task
+	 * @task   The closure or cfc that represents the task
 	 * @method The method on the cfc to call, defaults to "run" (optional)
 	 *
 	 * @return The schedule with the task/method registered on it
@@ -555,7 +555,7 @@ component accessors="true" {
 	/**
 	 * Set a delay in the running of the task that will be registered with this schedule
 	 *
-	 * @delay The delay that will be used before executing the task
+	 * @delay    The delay that will be used before executing the task
 	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is milliseconds
 	 */
 	ScheduledTask function delay( numeric delay, timeUnit = "milliseconds" ){
@@ -567,7 +567,7 @@ component accessors="true" {
 	/**
 	 * Run the task every custom spaced delay of execution, meaning no overlaps
 	 *
-	 * @delay The delay that will be used before executing the task
+	 * @delay    The delay that will be used before executing the task
 	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is milliseconds
 	 */
 	ScheduledTask function spacedDelay( numeric spacedDelay, timeUnit = "milliseconds" ){
@@ -591,7 +591,7 @@ component accessors="true" {
 	/**
 	 * Run the task every custom period of execution
 	 *
-	 * @period The period of execution
+	 * @period   The period of execution
 	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is milliseconds
 	 */
 	ScheduledTask function every( numeric period, timeUnit = "milliseconds" ){
@@ -752,7 +752,7 @@ component accessors="true" {
 	 * Run the task weekly on the given day of the week and time
 	 *
 	 * @dayOfWeek The day of the week from 1 (Monday) -> 7 (Sunday)
-	 * @time The specific time using 24 hour format => HH:mm, defaults to midnight
+	 * @time      The specific time using 24 hour format => HH:mm, defaults to midnight
 	 */
 	ScheduledTask function everyWeekOn( required numeric dayOfWeek, string time = "00:00" ){
 		var now = getJavaNow();
@@ -826,7 +826,7 @@ component accessors="true" {
 	/**
 	 * Run the task every month on a specific day and time
 	 *
-	 * @day Which day of the month
+	 * @day  Which day of the month
 	 * @time The specific time using 24 hour format => HH:mm, defaults to midnight
 	 */
 	ScheduledTask function everyMonthOn( required numeric day, string time = "00:00" ){
@@ -1013,8 +1013,8 @@ component accessors="true" {
 	 * Set the period to be weekly at a specific time at a specific day of the week
 	 *
 	 * @month The month in numeric format 1-12
-	 * @day Which day of the month
-	 * @time The specific time using 24 hour format => HH:mm, defaults to 00:00
+	 * @day   Which day of the month
+	 * @time  The specific time using 24 hour format => HH:mm, defaults to 00:00
 	 */
 	ScheduledTask function everyYearOn(
 		required numeric month,

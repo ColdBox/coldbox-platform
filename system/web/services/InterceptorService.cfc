@@ -168,12 +168,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * This is needed so interceptors can write to the page output buffer
 	 * @output true
 	 *
-	 * @state An interception state to process
-	 * @data A data structure used to pass intercepted information.
-	 * @async If true, the entire interception chain will be ran in a separate thread.
-	 * @asyncAll If true, each interceptor in the interception chain will be ran in a separate thread and then joined together at the end.
-	 * @asyncAllJoin If true, each interceptor in the interception chain will be ran in a separate thread and joined together at the end by default.  If you set this flag to false then there will be no joining and waiting for the threads to finalize.
-	 * @asyncPriority The thread priority to be used. Either LOW, NORMAL or HIGH. The default value is NORMAL
+	 * @state            An interception state to process
+	 * @data             A data structure used to pass intercepted information.
+	 * @async            If true, the entire interception chain will be ran in a separate thread.
+	 * @asyncAll         If true, each interceptor in the interception chain will be ran in a separate thread and then joined together at the end.
+	 * @asyncAllJoin     If true, each interceptor in the interception chain will be ran in a separate thread and joined together at the end by default.  If you set this flag to false then there will be no joining and waiting for the threads to finalize.
+	 * @asyncPriority    The thread priority to be used. Either LOW, NORMAL or HIGH. The default value is NORMAL
 	 * @asyncJoinTimeout The timeout in milliseconds for the join thread to wait for interceptor threads to finish.  By default there is no timeout
 	 */
 	public any function announce(
@@ -263,7 +263,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * Register a closure listener as an interceptor on a specific point
 	 *
 	 * @target The closure/lambda to register
-	 * @point The interception point to register the listener to
+	 * @point  The interception point to register the listener to
 	 */
 	void function listen( required target, required point ){
 		// Append Custom Points
@@ -279,11 +279,11 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	/**
 	 * Register a new interceptor in ColdBox
 	 *
-	 * @interceptorClass Mutex with interceptorObject, this is the qualified class of the interceptor to register
-	 * @interceptorObject Mutex with interceptor Class, this is used to register an already instantiated object as an interceptor
+	 * @interceptorClass      Mutex with interceptorObject, this is the qualified class of the interceptor to register
+	 * @interceptorObject     Mutex with interceptor Class, this is used to register an already instantiated object as an interceptor
 	 * @interceptorProperties The structure of properties to register this interceptor with.
-	 * @customPoints A comma delimited list or array of custom interception points, if the object or class sent in observes them.
-	 * @interceptorName The name to use for the interceptor when stored. If not used, we will use the name found in the object's class
+	 * @customPoints          A comma delimited list or array of custom interception points, if the object or class sent in observes them.
+	 * @interceptorName       The name to use for the interceptor when stored. If not used, we will use the name found in the object's class
 	 *
 	 * @return InterceptorService
 	 */
@@ -386,8 +386,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	/**
 	 * Create a new interceptor object with ColdBox pizzaz
 	 *
-	 * @interceptorClass The class path to instantiate
-	 * @interceptorName The unique name of the object
+	 * @interceptorClass      The class path to instantiate
+	 * @interceptorName       The unique name of the object
 	 * @interceptorProperties Construction properties
 	 *
 	 * @return The newly created interceptor
@@ -465,7 +465,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	/**
 	 * Unregister an interceptor from an interception state or all states. If the state does not exists, it returns false
 	 * @interceptorName The interceptor to unregister
-	 * @state The state to unregister from, if not, passed, then from all states
+	 * @state           The state to unregister from, if not, passed, then from all states
 	 */
 	boolean function unregister( required interceptorName, state = "" ){
 		var unregistered = false;
@@ -485,9 +485,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * Register an Interception point into a new or created interception state
 	 *
 	 * @interceptorKey The interceptor key to use for lookups in the state
-	 * @state The state to create
-	 * @oInterceptor The interceptor to register
-	 * @interceptorMD The metadata about the interception point: {async, asyncPriority, eventPattern}
+	 * @state          The state to create
+	 * @oInterceptor   The interceptor to register
+	 * @interceptorMD  The metadata about the interception point: {async, asyncPriority, eventPattern}
 	 */
 	function registerInterceptionPoint(
 		required interceptorKey,

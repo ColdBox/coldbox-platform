@@ -126,9 +126,9 @@ component extends="coldbox.system.web.services.BaseService" {
 	/**
 	 * Tests if the incoming context is an event cache
 	 *
-	 * @context The request context to test for event caching
+	 * @context                The request context to test for event caching
 	 * @context.docbox_generic coldbox.system.web.context.RequestContext
-	 * @fwCache Flag to hard purge the cache if needed
+	 * @fwCache                Flag to hard purge the cache if needed
 	 */
 	RequestService function eventCachingTest( required context, boolean fwCache = false ){
 		var eventCache      = {};

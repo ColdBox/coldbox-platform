@@ -35,11 +35,11 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Constructor, called by your Application CFC
-	 * @COLDBOX_CONFIG_FILE The override location of the config file
+	 * @COLDBOX_CONFIG_FILE   The override location of the config file
 	 * @COLDBOX_APP_ROOT_PATH The location of the app on disk
-	 * @COLDBOX_APP_KEY The key used in application scope for this application
-	 * @COLDBOX_APP_MAPPING The application mapping override, only used for Flex/SOAP apps, this is auto-calculated
-	 * @COLDBOX_FAIL_FAST By default if an app is reiniting and a request hits it, we will fail fast with a message. This can be a boolean indicator or a closure.
+	 * @COLDBOX_APP_KEY       The key used in application scope for this application
+	 * @COLDBOX_APP_MAPPING   The application mapping override, only used for Flex/SOAP apps, this is auto-calculated
+	 * @COLDBOX_FAIL_FAST     By default if an app is reiniting and a request hits it, we will fail fast with a message. This can be a boolean indicator or a closure.
 	 */
 	Bootstrap function init(
 		required string COLDBOX_CONFIG_FILE,
@@ -625,7 +625,7 @@ component serializable="false" accessors="true" {
 	/**
 	 * Process an exception and returns a rendered bug report
 	 * @controller The ColdBox Controller
-	 * @exception The ColdFusion exception
+	 * @exception  The ColdFusion exception
 	 */
 	private string function processException( required controller, required exception ){
 		// prepare exception facade object + app logger
@@ -702,11 +702,11 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Process render data setup
-	 * @controller The ColdBox controller
-	 * @statusCode The status code to send
-	 * @statusText The status text to send
+	 * @controller  The ColdBox controller
+	 * @statusCode  The status code to send
+	 * @statusText  The status text to send
 	 * @contentType The content type to send
-	 * @encoding The content encoding
+	 * @encoding    The content encoding
 	 */
 	private Bootstrap function renderDataSetup(
 		required controller,

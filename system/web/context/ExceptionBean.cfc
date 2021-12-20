@@ -25,9 +25,9 @@ component accessors="true" {
 
 	/**
 	 * Constructor
-	 * @errorStruct The CFML error structure
+	 * @errorStruct  The CFML error structure
 	 * @extraMessage Custom error messages
-	 * @extraInfo Extra info to store in the error
+	 * @extraInfo    Extra info to store in the error
 	 */
 	ExceptionBean function init(
 		any errorStruct  = {},
@@ -334,8 +334,8 @@ component accessors="true" {
 	/**
 	 * String limiting utility
 	 *
-	 * @str The target
-	 * @limit The limiting number
+	 * @str    The target
+	 * @limit  The limiting number
 	 * @ending The postfix
 	 */
 	function stringLimit( str, limit, ending = "..." ){
@@ -470,7 +470,7 @@ component accessors="true" {
 	/**
 	 * Compose a screen for a file to open in an editor
 	 *
-	 * @event The request context
+	 * @event    The request context
 	 * @instance An instance of a tag context array
 	 *
 	 * @return The string for the IDE

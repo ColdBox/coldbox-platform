@@ -203,8 +203,8 @@ component accessors="true" {
 	/**
 	 * Parse ColdBox Settings
 	 *
-	 * @oConfig The config cfc
-	 * @config The config struct
+	 * @oConfig            The config cfc
+	 * @config             The config struct
 	 * @overrideAppMapping The override mapping string
 	 */
 	function parseColdboxSettings(
@@ -275,7 +275,7 @@ component accessors="true" {
 	 * Parse Your Settings
 	 *
 	 * @oConfig The config cfc
-	 * @config The config struct
+	 * @config  The config struct
 	 */
 	function parseYourSettings( required oConfig, required config ){
 		// append it
@@ -290,7 +290,7 @@ component accessors="true" {
 	 * Parse Your Conventions
 	 *
 	 * @oConfig The config cfc
-	 * @config The config struct
+	 * @config  The config struct
 	 */
 	function parseConventions( required oConfig, required config ){
 		var configStruct     = arguments.config;

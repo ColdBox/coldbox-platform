@@ -34,8 +34,8 @@ component accessors="true" {
 	/**
 	 * Constructor
 	 *
-	 * @message The message to log.
-	 * @severity The severity level to log.
+	 * @message   The message to log.
+	 * @severity  The severity level to log.
 	 * @extraInfo Extra information to send to the loggers.
 	 * @category  The category to log this message under.  By default it is blank.
 	 */

@@ -16,7 +16,7 @@ component accessors="true" {
 	/**
 	 * Serialize an object and optionally save it into a file.
 	 *
-	 * @target The complex object, such as a query or CFC, that will be serialized.
+	 * @target   The complex object, such as a query or CFC, that will be serialized.
 	 * @filePath The path of the file in which to save the serialized data.
 	 *
 	 * @return Binary data
@@ -36,7 +36,7 @@ component accessors="true" {
 	/**
 	 * Deserialize an object using a binary object or a filepath
 	 *
-	 * @target The binary object to inflate
+	 * @target   The binary object to inflate
 	 * @filePath The location of the file that has the binary object to inflate
 	 *
 	 * @return Loaded Object

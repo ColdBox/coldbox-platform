@@ -10,7 +10,7 @@ interface {
 	 * Configure the scope for operation and returns itself
 	 *
 	 *
-	 * @injector The linked WireBox injector
+	 * @injector             The linked WireBox injector
 	 * @injector.doc_generic coldbox.system.ioc.Injector
 	 *
 	 * @return coldbox.system.ioc.scopes.IScope
@@ -21,9 +21,9 @@ interface {
 	 * Retrieve an object from scope or create it if not found in scope
 	 *
 	 *
-	 * @mapping The linked WireBox injector
+	 * @mapping             The linked WireBox injector
 	 * @mapping.doc_generic coldbox.system.ioc.config.Mapping
-	 * @initArguments The constructor struct of arguments to passthrough to initialization
+	 * @initArguments       The constructor struct of arguments to passthrough to initialization
 	 */
 	function getFromScope( required mapping, struct initArguments );
 
@@ -31,7 +31,7 @@ interface {
 	/**
 	 * Indicates whether an object exists in scope
 	 *
-	 * @mapping The linked WireBox injector
+	 * @mapping             The linked WireBox injector
 	 * @mapping.doc_generic coldbox.system.ioc.config.Mapping
 	 *
 	 * @return coldbox.system.ioc.scopes.IScope

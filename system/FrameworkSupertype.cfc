@@ -25,14 +25,14 @@ component serializable="false" accessors="true" {
 	/**
 	 * Locates, Creates, Injects and Configures an object model instance
 	 *
-	 * @name The mapping name or CFC instance path to try to build up
+	 * @name          The mapping name or CFC instance path to try to build up
 	 * @initArguments The constructor structure of arguments to passthrough when initializing the instance
-	 * @dsl The dsl string to use to retrieve the instance model object, mutually exclusive with 'name
-	 * @targetObject The object requesting the dependency, usually only used by DSL lookups
-	 * @injector The child injector to use when retrieving the instance
+	 * @dsl           The dsl string to use to retrieve the instance model object, mutually exclusive with 'name
+	 * @targetObject  The object requesting the dependency, usually only used by DSL lookups
+	 * @injector      The child injector to use when retrieving the instance
 	 *
 	 * @throws InstanceNotFoundException - When the requested instance cannot be found
-	 * @throws InvalidChildInjector - When you request an instance from an invalid child injector name
+	 * @throws InvalidChildInjector      - When you request an instance from an invalid child injector name
 	 *
 	 * @return The requested instance
 	 **/
@@ -49,20 +49,20 @@ component serializable="false" accessors="true" {
 	/**
 	 * Populate a model object from the request Collection or a passed in memento structure
 	 *
-	 * @model The name of the model to get and populate or the acutal model object. If you already have an instance of a model, then use the populateBean() method
-	 * @scope Use scope injection instead of setters population. Ex: scope=variables.instance.
-	 * @trustedSetter If set to true, the setter method will be called even if it does not exist in the object
-	 * @include A list of keys to include in the population
-	 * @exclude A list of keys to exclude in the population
-	 * @ignoreEmpty Ignore empty values on populations, great for ORM population
-	 * @nullEmptyInclude A list of keys to NULL when empty
-	 * @nullEmptyExclude A list of keys to NOT NULL when empty
+	 * @model                The name of the model to get and populate or the acutal model object. If you already have an instance of a model, then use the populateBean() method
+	 * @scope                Use scope injection instead of setters population. Ex: scope=variables.instance.
+	 * @trustedSetter        If set to true, the setter method will be called even if it does not exist in the object
+	 * @include              A list of keys to include in the population
+	 * @exclude              A list of keys to exclude in the population
+	 * @ignoreEmpty          Ignore empty values on populations, great for ORM population
+	 * @nullEmptyInclude     A list of keys to NULL when empty
+	 * @nullEmptyExclude     A list of keys to NOT NULL when empty
 	 * @composeRelationships Automatically attempt to compose relationships from memento
-	 * @memento A structure to populate the model, if not passed it defaults to the request collection
-	 * @jsonstring If you pass a json string, we will populate your model with it
-	 * @xml If you pass an xml string, we will populate your model with it
-	 * @qry If you pass a query, we will populate your model with it
-	 * @rowNumber The row of the qry parameter to populate your model with
+	 * @memento              A structure to populate the model, if not passed it defaults to the request collection
+	 * @jsonstring           If you pass a json string, we will populate your model with it
+	 * @xml                  If you pass an xml string, we will populate your model with it
+	 * @qry                  If you pass a query, we will populate your model with it
+	 * @rowNumber            The row of the qry parameter to populate your model with
 	 *
 	 * @return The instance populated
 	 */
@@ -141,21 +141,21 @@ component serializable="false" accessors="true" {
 	 *
 	 * @deprecated Use view() instead
 	 *
-	 * @view The the view to render, if not passed, then we look in the request context for the current set view.
-	 * @args A struct of arguments to pass into the view for rendering, will be available as 'args' in the view.
-	 * @module The module to render the view from explicitly
-	 * @cache Cached the view output or not, defaults to false
-	 * @cacheTimeout The time in minutes to cache the view
+	 * @view                   The the view to render, if not passed, then we look in the request context for the current set view.
+	 * @args                   A struct of arguments to pass into the view for rendering, will be available as 'args' in the view.
+	 * @module                 The module to render the view from explicitly
+	 * @cache                  Cached the view output or not, defaults to false
+	 * @cacheTimeout           The time in minutes to cache the view
 	 * @cacheLastAccessTimeout The time in minutes the view will be removed from cache if idle or requested
-	 * @cacheSuffix The suffix to add into the cache entry for this view rendering
-	 * @cacheProvider The provider to cache this view in, defaults to 'template'
-	 * @collection A collection to use by this Renderer to render the view as many times as the items in the collection (Array or Query)
-	 * @collectionAs The name of the collection variable in the partial rendering.  If not passed, we will use the name of the view by convention
-	 * @collectionStartRow The start row to limit the collection rendering with
-	 * @collectionMaxRows The max rows to iterate over the collection rendering with
-	 * @collectionDelim  A string to delimit the collection renderings by
-	 * @prePostExempt If true, pre/post view interceptors will not be fired. By default they do fire
-	 * @name The name of the rendering region to render out, Usually all arguments are coming from the stored region but you override them using this function's arguments.
+	 * @cacheSuffix            The suffix to add into the cache entry for this view rendering
+	 * @cacheProvider          The provider to cache this view in, defaults to 'template'
+	 * @collection             A collection to use by this Renderer to render the view as many times as the items in the collection (Array or Query)
+	 * @collectionAs           The name of the collection variable in the partial rendering.  If not passed, we will use the name of the view by convention
+	 * @collectionStartRow     The start row to limit the collection rendering with
+	 * @collectionMaxRows      The max rows to iterate over the collection rendering with
+	 * @collectionDelim        A string to delimit the collection renderings by
+	 * @prePostExempt          If true, pre/post view interceptors will not be fired. By default they do fire
+	 * @name                   The name of the rendering region to render out, Usually all arguments are coming from the stored region but you override them using this function's arguments.
 	 *
 	 * @return The rendered view
 	 */
@@ -182,21 +182,21 @@ component serializable="false" accessors="true" {
 	/**
 	 * Render out a view
 	 *
-	 * @view The the view to render, if not passed, then we look in the request context for the current set view.
-	 * @args A struct of arguments to pass into the view for rendering, will be available as 'args' in the view.
-	 * @module The module to render the view from explicitly
-	 * @cache Cached the view output or not, defaults to false
-	 * @cacheTimeout The time in minutes to cache the view
+	 * @view                   The the view to render, if not passed, then we look in the request context for the current set view.
+	 * @args                   A struct of arguments to pass into the view for rendering, will be available as 'args' in the view.
+	 * @module                 The module to render the view from explicitly
+	 * @cache                  Cached the view output or not, defaults to false
+	 * @cacheTimeout           The time in minutes to cache the view
 	 * @cacheLastAccessTimeout The time in minutes the view will be removed from cache if idle or requested
-	 * @cacheSuffix The suffix to add into the cache entry for this view rendering
-	 * @cacheProvider The provider to cache this view in, defaults to 'template'
-	 * @collection A collection to use by this Renderer to render the view as many times as the items in the collection (Array or Query)
-	 * @collectionAs The name of the collection variable in the partial rendering.  If not passed, we will use the name of the view by convention
-	 * @collectionStartRow The start row to limit the collection rendering with
-	 * @collectionMaxRows The max rows to iterate over the collection rendering with
-	 * @collectionDelim  A string to delimit the collection renderings by
-	 * @prePostExempt If true, pre/post view interceptors will not be fired. By default they do fire
-	 * @name The name of the rendering region to render out, Usually all arguments are coming from the stored region but you override them using this function's arguments.
+	 * @cacheSuffix            The suffix to add into the cache entry for this view rendering
+	 * @cacheProvider          The provider to cache this view in, defaults to 'template'
+	 * @collection             A collection to use by this Renderer to render the view as many times as the items in the collection (Array or Query)
+	 * @collectionAs           The name of the collection variable in the partial rendering.  If not passed, we will use the name of the view by convention
+	 * @collectionStartRow     The start row to limit the collection rendering with
+	 * @collectionMaxRows      The max rows to iterate over the collection rendering with
+	 * @collectionDelim        A string to delimit the collection renderings by
+	 * @prePostExempt          If true, pre/post view interceptors will not be fired. By default they do fire
+	 * @name                   The name of the rendering region to render out, Usually all arguments are coming from the stored region but you override them using this function's arguments.
 	 *
 	 * @return The rendered view
 	 */
@@ -225,13 +225,13 @@ component serializable="false" accessors="true" {
 	 *
 	 * @deprecated Use `externalView()` instead
 	 *
-	 * @view The the view to render
-	 * @args A struct of arguments to pass into the view for rendering, will be available as 'args' in the view.
-	 * @cache Cached the view output or not, defaults to false
-	 * @cacheTimeout The time in minutes to cache the view
+	 * @view                   The the view to render
+	 * @args                   A struct of arguments to pass into the view for rendering, will be available as 'args' in the view.
+	 * @cache                  Cached the view output or not, defaults to false
+	 * @cacheTimeout           The time in minutes to cache the view
 	 * @cacheLastAccessTimeout The time in minutes the view will be removed from cache if idle or requested
-	 * @cacheSuffix The suffix to add into the cache entry for this view rendering
-	 * @cacheProvider The provider to cache this view in, defaults to 'template'
+	 * @cacheSuffix            The suffix to add into the cache entry for this view rendering
+	 * @cacheProvider          The provider to cache this view in, defaults to 'template'
 	 *
 	 * @return The rendered view
 	 */
@@ -250,13 +250,13 @@ component serializable="false" accessors="true" {
 	/**
 	 * Renders an external view anywhere that cfinclude works.
 	 *
-	 * @view The the view to render
-	 * @args A struct of arguments to pass into the view for rendering, will be available as 'args' in the view.
-	 * @cache Cached the view output or not, defaults to false
-	 * @cacheTimeout The time in minutes to cache the view
+	 * @view                   The the view to render
+	 * @args                   A struct of arguments to pass into the view for rendering, will be available as 'args' in the view.
+	 * @cache                  Cached the view output or not, defaults to false
+	 * @cacheTimeout           The time in minutes to cache the view
 	 * @cacheLastAccessTimeout The time in minutes the view will be removed from cache if idle or requested
-	 * @cacheSuffix The suffix to add into the cache entry for this view rendering
-	 * @cacheProvider The provider to cache this view in, defaults to 'template'
+	 * @cacheSuffix            The suffix to add into the cache entry for this view rendering
+	 * @cacheProvider          The provider to cache this view in, defaults to 'template'
 	 *
 	 * @return The rendered view
 	 */
@@ -277,11 +277,11 @@ component serializable="false" accessors="true" {
 	 *
 	 * @deprecated Use `layout()` instead
 	 *
-	 * @layout The layout to render out
-	 * @module The module to explicitly render this layout from
-	 * @view The view to render within this layout
-	 * @args An optional set of arguments that will be available to this layouts/view rendering ONLY
-	 * @viewModule The module to explicitly render the view from
+	 * @layout        The layout to render out
+	 * @module        The module to explicitly render this layout from
+	 * @view          The view to render within this layout
+	 * @args          An optional set of arguments that will be available to this layouts/view rendering ONLY
+	 * @viewModule    The module to explicitly render the view from
 	 * @prePostExempt If true, pre/post layout interceptors will not be fired. By default they do fire
 	 *
 	 * @return The rendered layout
@@ -300,11 +300,11 @@ component serializable="false" accessors="true" {
 	/**
 	 * Render a layout or a layout + view combo
 	 *
-	 * @layout The layout to render out
-	 * @module The module to explicitly render this layout from
-	 * @view The view to render within this layout
-	 * @args An optional set of arguments that will be available to this layouts/view rendering ONLY
-	 * @viewModule The module to explicitly render the view from
+	 * @layout        The layout to render out
+	 * @module        The module to explicitly render this layout from
+	 * @view          The view to render within this layout
+	 * @args          An optional set of arguments that will be available to this layouts/view rendering ONLY
+	 * @viewModule    The module to explicitly render the view from
 	 * @prePostExempt If true, pre/post layout interceptors will not be fired. By default they do fire
 	 *
 	 * @return The rendered layout
@@ -335,7 +335,7 @@ component serializable="false" accessors="true" {
 	 * Register a closure listener as an interceptor on a specific point
 	 *
 	 * @target The closure/lambda to register
-	 * @point The interception point to register the listener to
+	 * @point  The interception point to register the listener to
 	 */
 	void function listen( required target, required point ){
 		variables.controller.getInterceptorService().listen( argumentCollection = arguments );
@@ -344,12 +344,12 @@ component serializable="false" accessors="true" {
 	/**
 	 * Announce an interception
 	 *
-	 * @state The interception state to announce
-	 * @data A data structure used to pass intercepted information.
-	 * @async If true, the entire interception chain will be ran in a separate thread.
-	 * @asyncAll If true, each interceptor in the interception chain will be ran in a separate thread and then joined together at the end.
-	 * @asyncAllJoin If true, each interceptor in the interception chain will be ran in a separate thread and joined together at the end by default.  If you set this flag to false then there will be no joining and waiting for the threads to finalize.
-	 * @asyncPriority The thread priority to be used. Either LOW, NORMAL or HIGH. The default value is NORMAL
+	 * @state            The interception state to announce
+	 * @data             A data structure used to pass intercepted information.
+	 * @async            If true, the entire interception chain will be ran in a separate thread.
+	 * @asyncAll         If true, each interceptor in the interception chain will be ran in a separate thread and then joined together at the end.
+	 * @asyncAllJoin     If true, each interceptor in the interception chain will be ran in a separate thread and joined together at the end by default.  If you set this flag to false then there will be no joining and waiting for the threads to finalize.
+	 * @asyncPriority    The thread priority to be used. Either LOW, NORMAL or HIGH. The default value is NORMAL
 	 * @asyncJoinTimeout The timeout in milliseconds for the join thread to wait for interceptor threads to finish.  By default there is no timeout.
 	 *
 	 * @return struct of thread information or void
@@ -400,7 +400,7 @@ component serializable="false" accessors="true" {
 	/**
 	 * Get a setting from the system
 	 *
-	 * @name The key of the setting
+	 * @name         The key of the setting
 	 * @defaultValue If not found in config, default return value
 	 *
 	 * @throws SettingNotFoundException
@@ -414,7 +414,7 @@ component serializable="false" accessors="true" {
 	/**
 	 * Get a ColdBox setting
 	 *
-	 * @name The key to get
+	 * @name         The key to get
 	 * @defaultValue The default value if it doesn't exist
 	 *
 	 * @throws SettingNotFoundException
@@ -437,7 +437,7 @@ component serializable="false" accessors="true" {
 	/**
 	 * Set a new setting in the system
 	 *
-	 * @name The key of the setting
+	 * @name  The key of the setting
 	 * @value The value of the setting
 	 *
 	 * @return FrameworkSuperType
@@ -450,8 +450,8 @@ component serializable="false" accessors="true" {
 	/**
 	 * Get a module's settings structure or a specific setting if the setting key is passed
 	 *
-	 * @module The module to retrieve the configuration settings from
-	 * @setting The setting to retrieve if passed
+	 * @module       The module to retrieve the configuration settings from
+	 * @setting      The setting to retrieve if passed
 	 * @defaultValue The default value to return if setting does not exist
 	 *
 	 * @return struct or any
@@ -491,17 +491,17 @@ component serializable="false" accessors="true" {
 	/**
 	 * Relocate user browser requests to other events, URLs, or URIs.
 	 *
-	 * @event The name of the event to run, if not passed, then it will use the default event found in your configuration file
-	 * @URL The full URL you would like to relocate to instead of an event: ex: URL='http://www.google.com'
-	 * @URI The relative URI you would like to relocate to instead of an event: ex: URI='/mypath/awesome/here'
-	 * @queryString The query string or struct to append, if needed. If in SES mode it will be translated to convention name value pairs
-	 * @persist What request collection keys to persist in flash ram
-	 * @persistStruct A structure key-value pairs to persist in flash ram
-	 * @addToken Wether to add the tokens or not. Default is false
-	 * @ssl Whether to relocate in SSL or not
-	 * @baseURL Use this baseURL instead of the index.cfm that is used by default. You can use this for ssl or any full base url you would like to use. Ex: https://mysite.com/index.cfm
+	 * @event             The name of the event to run, if not passed, then it will use the default event found in your configuration file
+	 * @URL               The full URL you would like to relocate to instead of an event: ex: URL='http://www.google.com'
+	 * @URI               The relative URI you would like to relocate to instead of an event: ex: URI='/mypath/awesome/here'
+	 * @queryString       The query string or struct to append, if needed. If in SES mode it will be translated to convention name value pairs
+	 * @persist           What request collection keys to persist in flash ram
+	 * @persistStruct     A structure key-value pairs to persist in flash ram
+	 * @addToken          Wether to add the tokens or not. Default is false
+	 * @ssl               Whether to relocate in SSL or not
+	 * @baseURL           Use this baseURL instead of the index.cfm that is used by default. You can use this for ssl or any full base url you would like to use. Ex: https://mysite.com/index.cfm
 	 * @postProcessExempt Do not fire the postProcess interceptors
-	 * @statusCode The status code to use in the relocation
+	 * @statusCode        The status code to use in the relocation
 	 */
 	void function relocate(
 		event,
@@ -524,14 +524,14 @@ component serializable="false" accessors="true" {
 	 * If you need a route from a module then append the module address: `@moduleName` or prefix it like in run event calls `moduleName:routeName` in order to find the right route.
 	 * The route params will be passed to events as action arguments much how eventArguments work.
 	 *
-	 * @name The name of the route
-	 * @params The parameters of the route to replace
-	 * @cache Cached the output of the runnable execution, defaults to false. A unique key will be created according to event string + arguments.
-	 * @cacheTimeout The time in minutes to cache the results
+	 * @name                   The name of the route
+	 * @params                 The parameters of the route to replace
+	 * @cache                  Cached the output of the runnable execution, defaults to false. A unique key will be created according to event string + arguments.
+	 * @cacheTimeout           The time in minutes to cache the results
 	 * @cacheLastAccessTimeout The time in minutes the results will be removed from cache if idle or requested
-	 * @cacheSuffix The suffix to add into the cache entry for this event rendering
-	 * @cacheProvider The provider to cache this event rendering in, defaults to 'template'
-	 * @prePostExempt If true, pre/post handlers will not be fired. Defaults to false
+	 * @cacheSuffix            The suffix to add into the cache entry for this event rendering
+	 * @cacheProvider          The provider to cache this event rendering in, defaults to 'template'
+	 * @prePostExempt          If true, pre/post handlers will not be fired. Defaults to false
 	 *
 	 * @throws InvalidArgumentException
 	 *
@@ -553,16 +553,16 @@ component serializable="false" accessors="true" {
 	/**
 	 * Executes events with full life-cycle methods and returns the event results if any were returned.
 	 *
-	 * @event The event string to execute, if nothing is passed we will execute the application's default event.
-	 * @prePostExempt If true, pre/post handlers will not be fired. Defaults to false
-	 * @private Execute a private event if set, else defaults to public events
-	 * @defaultEvent The flag that let's this service now if it is the default event running or not. USED BY THE FRAMEWORK ONLY
-	 * @eventArguments A collection of arguments to passthrough to the calling event handler method
-	 * @cache Cached the output of the runnable execution, defaults to false. A unique key will be created according to event string + arguments.
-	 * @cacheTimeout The time in minutes to cache the results
+	 * @event                  The event string to execute, if nothing is passed we will execute the application's default event.
+	 * @prePostExempt          If true, pre/post handlers will not be fired. Defaults to false
+	 * @private                Execute a private event if set, else defaults to public events
+	 * @defaultEvent           The flag that let's this service now if it is the default event running or not. USED BY THE FRAMEWORK ONLY
+	 * @eventArguments         A collection of arguments to passthrough to the calling event handler method
+	 * @cache                  Cached the output of the runnable execution, defaults to false. A unique key will be created according to event string + arguments.
+	 * @cacheTimeout           The time in minutes to cache the results
 	 * @cacheLastAccessTimeout The time in minutes the results will be removed from cache if idle or requested
-	 * @cacheSuffix The suffix to add into the cache entry for this event rendering
-	 * @cacheProvider The provider to cache this event rendering in, defaults to 'template'
+	 * @cacheSuffix            The suffix to add into the cache entry for this event rendering
+	 * @cacheProvider          The provider to cache this event rendering in, defaults to 'template'
 	 *
 	 * @return null or anything produced from the event
 	 */
@@ -584,7 +584,7 @@ component serializable="false" accessors="true" {
 	/**
 	 * Persist variables into the Flash RAM
 	 *
-	 * @persist A list of request collection keys to persist
+	 * @persist       A list of request collection keys to persist
 	 * @persistStruct A struct of key-value pairs to persist
 	 *
 	 * @return FrameworkSuperType
@@ -599,7 +599,7 @@ component serializable="false" accessors="true" {
 	/**
 	 * Retrieve a Java System property or env value by name. It looks at properties first then environment variables
 	 *
-	 * @key The name of the setting to look up.
+	 * @key          The name of the setting to look up.
 	 * @defaultValue The default value to use if the key does not exist in the system properties or the env
 	 */
 	function getSystemSetting( required key, defaultValue ){
@@ -609,7 +609,7 @@ component serializable="false" accessors="true" {
 	/**
 	 * Retrieve a Java System property only!
 	 *
-	 * @key The name of the setting to look up.
+	 * @key          The name of the setting to look up.
 	 * @defaultValue The default value to use if the key does not exist in the system properties or the env
 	 */
 	function getSystemProperty( required key, defaultValue ){
@@ -619,7 +619,7 @@ component serializable="false" accessors="true" {
 	/**
 	 * Retrieve a environment variable only
 	 *
-	 * @key The name of the setting to look up.
+	 * @key          The name of the setting to look up.
 	 * @defaultValue The default value to use if the key does not exist in the system properties or the env
 	 */
 	function getEnv( required key, defaultValue ){
@@ -746,7 +746,7 @@ component serializable="false" accessors="true" {
 	/**
 	 * Functional construct for if statements
 	 *
-	 * @target The boolean evaluator, this can be a boolean value
+	 * @target  The boolean evaluator, this can be a boolean value
 	 * @success The closure/lambda to execute if the boolean value is true
 	 * @failure The closure/lambda to execute if the boolean value is false
 	 *

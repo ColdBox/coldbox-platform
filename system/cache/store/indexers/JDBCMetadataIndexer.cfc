@@ -29,7 +29,7 @@ component extends="coldbox.system.cache.store.indexers.MetadataIndexer" accessor
 	 *
 	 * @fields The list or array of fields to bind this index on
 	 * @config JDBC Configuration structure
-	 * @store The associated storage
+	 * @store  The associated storage
 	 */
 	function init(
 		required fields,
@@ -142,8 +142,8 @@ component extends="coldbox.system.cache.store.indexers.MetadataIndexer" accessor
 	/**
 	 * Get a metadata entry for a specific entry. Exception if key not found
 	 *
-	 * @objectKey The key to get
-	 * @property The metadata property to get
+	 * @objectKey    The key to get
+	 * @property     The metadata property to get
 	 * @defaultValue The default value if property doesn't exist
 	 */
 	function getObjectMetadataProperty(

@@ -149,7 +149,7 @@ component extends="coldbox.system.web.services.BaseService" {
 
 	/**
 	 * Register and activate a new module
-	 * @moduleName The name of the module to load.
+	 * @moduleName     The name of the module to load.
 	 * @invocationPath The module's invocation path to its root from the webroot (the instantiation path,ex:myapp.myCustomModules), if empty we use registry location, if not we are doing a explicit name+path registration. Do not include the module name, you passed that in the first argument right
 	 */
 	function registerAndActivateModule( required moduleName, invocationPath = "" ){
@@ -160,10 +160,10 @@ component extends="coldbox.system.web.services.BaseService" {
 	/**
 	 * Register a module's configuration information and config object
 	 *
-	 * @moduleName 	The name of the module to load.
+	 * @moduleName     The name of the module to load.
 	 * @invocationPath The module's invocation path to its root from the webroot (the instantiation path,ex:myapp.myCustomModules), if empty we use registry locatioif not we are doing a explicit name+path registration. Do not include the module name, you passed that in the first argument right
-	 * @parent The name of the parent module
-	 * @force  Force a registration
+	 * @parent         The name of the parent module
+	 * @force          Force a registration
 	 *
 	 * @throws InvalidModuleName - When a module is not on disk
 	 *
@@ -925,7 +925,7 @@ component extends="coldbox.system.web.services.BaseService" {
 	/**
 	 * Load the module configuration object and return it now loaded
 	 *
-	 * @config The config structure
+	 * @config     The config structure
 	 * @moduleName The module name
 	 *
 	 * @return The ModuleConfig.cfc

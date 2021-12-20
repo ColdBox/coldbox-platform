@@ -34,13 +34,13 @@ component implements="coldbox.system.ioc.IProvider" accessors="true" {
 	/**
 	 * Constructor
 	 *
-	 * @scopeRegistration The injector scope registration structure
+	 * @scopeRegistration             The injector scope registration structure
 	 * @scopeRegistration.doc_generic struct
-	 * @scopeStorage The scope storage utility
-	 * @scopeStorage.doc_generic coldbox.system.core.collections.ScopeStorage
-	 * @name The name of the mapping this provider is binded to, MUTEX with name
-	 * @dsl The DSL string this provider is binded to, MUTEX with name
-	 * @targetObject The target object that requested the provider.
+	 * @scopeStorage                  The scope storage utility
+	 * @scopeStorage.doc_generic      coldbox.system.core.collections.ScopeStorage
+	 * @name                          The name of the mapping this provider is binded to, MUTEX with name
+	 * @dsl                           The DSL string this provider is binded to, MUTEX with name
+	 * @targetObject                  The target object that requested the provider.
 	 */
 	Provider function init(
 		required scopeRegistration,
@@ -98,7 +98,7 @@ component implements="coldbox.system.ioc.IProvider" accessors="true" {
 	/**
 	 * Proxy calls to provided element
 	 *
-	 * @missingMethodName missing method name
+	 * @missingMethodName      missing method name
 	 * @missingMethodArguments missing method arguments
 	 */
 	any function onMissingMethod( required missingMethodName, required missingMethodArguments ){

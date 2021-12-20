@@ -127,9 +127,9 @@ component accessors="true" {
 
 	/**
 	 * Build an aspect dictionary for incoming target objects
-	 * @target The incoming target
+	 * @target  The incoming target
 	 * @mapping The incoming target mapping
-	 * @idCode The incoming target identifier
+	 * @idCode  The incoming target identifier
 	 *
 	 */
 	private function buildClassMatchDictionary(
@@ -182,10 +182,10 @@ component accessors="true" {
 
 	/**
 	 * Build and weave all necessary advices on an object via method matching
-	 * @target The incoming target
-	 * @mapping The incoming target mapping
+	 * @target     The incoming target
+	 * @mapping    The incoming target mapping
 	 * @dictionary The target aspect dictionary
-	 * @idCode The incoming target identifier
+	 * @idCode     The incoming target identifier
 	 *
 	 */
 	private function AOPBuilder(
@@ -222,9 +222,9 @@ component accessors="true" {
 
 	/**
 	 * Process target methods for AOP weaving
-	 * @target The incoming target
-	 * @mapping The incoming target mapping
-	 * @metadata The incoming target metadata
+	 * @target     The incoming target
+	 * @mapping    The incoming target mapping
+	 * @metadata   The incoming target metadata
 	 * @dictionary The target aspect dictionary
 	 *
 	 */
@@ -291,11 +291,11 @@ component accessors="true" {
 
 	/**
 	 * Weave an advise into a jointpoint
-	 * @target The incoming target
-	 * @mapping The incoming target mapping
-	 * @jointPoint The jointpoint to proxy
+	 * @target       The incoming target
+	 * @mapping      The incoming target mapping
+	 * @jointPoint   The jointpoint to proxy
 	 * @jointPointMD The jointpoint metadata to proxy
-	 * @aspects The aspects to weave into the jointpoint
+	 * @aspects      The aspects to weave into the jointpoint
 	 *
 	 */
 	private function weaveAdvice(
@@ -431,7 +431,7 @@ component accessors="true" {
 
 	/**
 	 * Decorate a target with AOP capabilities
-	 * @target The incoming target
+	 * @target  The incoming target
 	 * @mapping The incoming target mapping
 	 *
 	 */

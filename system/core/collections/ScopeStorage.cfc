@@ -18,7 +18,7 @@ component {
 
 	/**
 	 * Store a value in a scope
-	 * @key The key
+	 * @key   The key
 	 * @value The value
 	 * @scope The ColdFusion Scope
 	 */
@@ -30,7 +30,7 @@ component {
 
 	/**
 	 * Delete a value in a scope
-	 * @key The key
+	 * @key   The key
 	 * @scope The ColdFusion Scope
 	 */
 	boolean function delete( required key, required scope ){
@@ -43,8 +43,8 @@ component {
 
 	/**
 	 * Get a value in a scope
-	 * @key The key
-	 * @scope The CF Scope
+	 * @key          The key
+	 * @scope        The CF Scope
 	 * @defaultValue The default value
 	 */
 	function get( required key, required scope, defaultValue ){
@@ -67,7 +67,7 @@ component {
 
 	/**
 	 * Check if a key exists
-	 * @key The key
+	 * @key   The key
 	 * @scope The CF Scope
 	 */
 	boolean function exists( required key, required scope ){

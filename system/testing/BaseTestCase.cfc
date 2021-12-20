@@ -207,7 +207,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	/**
 	 * Reset the persistence of the unit test coldbox app, basically removes the controller from application scope
 	 *
-	 * @orm Reload ORM or not
+	 * @orm         Reload ORM or not
 	 * @wipeRequest Wipe the request scope
 	 *
 	 * @return BaseTestCase
@@ -251,7 +251,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	/**
 	 * Builds an empty functioning request context mocked with methods via MockBox.  You can also optionally wipe all methods on it
 	 * @clearMethods Clear methods on the object
-	 * @decorator The class path to the decorator to build into the mock request context
+	 * @decorator    The class path to the decorator to build into the mock request context
 	 *
 	 * @return coldbox.system.web.context.RequestContext
 	 */
@@ -297,7 +297,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 
 	/**
 	 * ColdBox must be loaded for this to work. Get a mock model object by convention. You can optional clear all the methods on the model object if you wanted to. The object is created but not initiated, that would be your job.
-	 * @name The name of the model to mock and return back
+	 * @name         The name of the model to mock and return back
 	 * @clearMethods Clear methods on the object
 	 */
 	function getMockModel( required name, boolean clearMethods = false ){
@@ -393,12 +393,11 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * This method returns a request context object that
 	 * is decorated and can be used for assertions.
 	 *
-	 * @event                 The event to execute (e.g. 'main.index')
-	 * @route                 The route to execute
-	 *                        (e.g. '/login' which may route to 'sessions.new')
-	 * @private               Call a private event or not.
-	 * @prePostExempt         If true, pre/post handlers will not be fired.
-	 * @eventArguments        A collection of arguments to passthrough to the
+	 * @event          The event to execute (e.g. 'main.index')
+	 * @route          The route to execute (e.g. '/login' which may route to 'sessions.new')
+	 * @private        Call a private event or not.
+	 * @prePostExempt  If true, pre/post handlers will not be fired.
+	 * @eventArguments A collection of arguments to passthrough to the
 	 *                        calling event handler method.
 	 * @renderResults         If true, then it will try to do the normal
 	 *                        rendering procedures and store the rendered content
@@ -406,6 +405,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * @withExceptionHandling If true, then ColdBox will process any errors
 	 *                        through the exception handling framework instead
 	 *                        of just throwing the error. Default: false.
+	 * @domain Override the domain of execution of the request. Default is to use the cgi.server_name variable.
 	 *
 	 * @return                coldbox.system.context.RequestContext
 	 */
@@ -417,7 +417,8 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 		boolean prePostExempt         = false,
 		struct eventArguments         = {},
 		boolean renderResults         = false,
-		boolean withExceptionHandling = false
+		boolean withExceptionHandling = false,
+		domain                        = cgi.SERVER_NAME
 	){
 		var handlerResults  = "";
 		var requestContext  = getRequestContext();
@@ -605,11 +606,11 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	/**
 	 * Shortcut method to making a request through the framework.
 	 *
-	 * @route The route to execute.
-	 * @params Params to pass to the `rc` scope.
-	 * @headers Custom headers to pass as from the request
-	 * @method The method type to execute.  Defaults to GET.
-	 * @renderResults If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
+	 * @route                 The route to execute.
+	 * @params                Params to pass to the `rc` scope.
+	 * @headers               Custom headers to pass as from the request
+	 * @method                The method type to execute.  Defaults to GET.
+	 * @renderResults         If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
 	 * @withExceptionHandling If true, then ColdBox will process any errors through the exception handling framework instead of just throwing the error. Default: false.
 	 */
 	function request(
@@ -640,10 +641,10 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	/**
 	 * Shortcut method to making a GET request through the framework.
 	 *
-	 * @route The route to execute.
-	 * @params Params to pass to the `rc` scope.
-	 * @headers Custom headers to pass as from the request
-	 * @renderResults If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
+	 * @route                 The route to execute.
+	 * @params                Params to pass to the `rc` scope.
+	 * @headers               Custom headers to pass as from the request
+	 * @renderResults         If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
 	 * @withExceptionHandling If true, then ColdBox will process any errors through the exception handling framework instead of just throwing the error. Default: false.
 	 */
 	function get(
@@ -660,10 +661,10 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	/**
 	 * Shortcut method to making a POST request through the framework.
 	 *
-	 * @route The route to execute.
-	 * @params Params to pass to the `rc` scope.
-	 * @headers Custom headers to pass as from the request
-	 * @renderResults If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
+	 * @route                 The route to execute.
+	 * @params                Params to pass to the `rc` scope.
+	 * @headers               Custom headers to pass as from the request
+	 * @renderResults         If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
 	 * @withExceptionHandling If true, then ColdBox will process any errors through the exception handling framework instead of just throwing the error. Default: false.
 	 */
 	function post(
@@ -680,10 +681,10 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	/**
 	 * Shortcut method to making a PUT request through the framework.
 	 *
-	 * @route The route to execute.
-	 * @params Params to pass to the `rc` scope.
-	 * @headers Custom headers to pass as from the request
-	 * @renderResults If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
+	 * @route                 The route to execute.
+	 * @params                Params to pass to the `rc` scope.
+	 * @headers               Custom headers to pass as from the request
+	 * @renderResults         If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
 	 * @withExceptionHandling If true, then ColdBox will process any errors through the exception handling framework instead of just throwing the error. Default: false.
 	 */
 	function put(
@@ -700,10 +701,10 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	/**
 	 * Shortcut method to making a PATCH request through the framework.
 	 *
-	 * @route The route to execute.
-	 * @params Params to pass to the `rc` scope.
-	 * @headers Custom headers to pass as from the request
-	 * @renderResults If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
+	 * @route                 The route to execute.
+	 * @params                Params to pass to the `rc` scope.
+	 * @headers               Custom headers to pass as from the request
+	 * @renderResults         If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
 	 * @withExceptionHandling If true, then ColdBox will process any errors through the exception handling framework instead of just throwing the error. Default: false.
 	 */
 	function patch(
@@ -720,10 +721,10 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	/**
 	 * Shortcut method to making a DELETE request through the framework.
 	 *
-	 * @route The route to execute.
-	 * @params Params to pass to the `rc` scope.
-	 * @headers Custom headers to pass as from the request
-	 * @renderResults If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
+	 * @route                 The route to execute.
+	 * @params                Params to pass to the `rc` scope.
+	 * @headers               Custom headers to pass as from the request
+	 * @renderResults         If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
 	 * @withExceptionHandling If true, then ColdBox will process any errors through the exception handling framework instead of just throwing the error. Default: false.
 	 */
 	function delete(
@@ -785,12 +786,12 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	/**
 	 * Announce an interception
 	 *
-	 * @state The interception state to announce
-	 * @data A data structure used to pass intercepted information.
-	 * @async If true, the entire interception chain will be ran in a separate thread.
-	 * @asyncAll If true, each interceptor in the interception chain will be ran in a separate thread and then joined together at the end.
-	 * @asyncAllJoin If true, each interceptor in the interception chain will be ran in a separate thread and joined together at the end by default.  If you set this flag to false then there will be no joining and waiting for the threads to finalize.
-	 * @asyncPriority The thread priority to be used. Either LOW, NORMAL or HIGH. The default value is NORMAL
+	 * @state            The interception state to announce
+	 * @data             A data structure used to pass intercepted information.
+	 * @async            If true, the entire interception chain will be ran in a separate thread.
+	 * @asyncAll         If true, each interceptor in the interception chain will be ran in a separate thread and then joined together at the end.
+	 * @asyncAllJoin     If true, each interceptor in the interception chain will be ran in a separate thread and joined together at the end by default.  If you set this flag to false then there will be no joining and waiting for the threads to finalize.
+	 * @asyncPriority    The thread priority to be used. Either LOW, NORMAL or HIGH. The default value is NORMAL
 	 * @asyncJoinTimeout The timeout in milliseconds for the join thread to wait for interceptor threads to finish.  By default there is no timeout.
 	 *
 	 * @return struct of thread information or void
@@ -851,14 +852,14 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	/**
 	 * Locates, Creates, Injects and Configures an object model instance
 	 *
-	 * @name The mapping name or CFC instance path to try to build up
+	 * @name          The mapping name or CFC instance path to try to build up
 	 * @initArguments The constructor structure of arguments to passthrough when initializing the instance
-	 * @dsl The dsl string to use to retrieve the instance model object, mutually exclusive with 'name
-	 * @targetObject The object requesting the dependency, usually only used by DSL lookups
-	 * @injector The child injector to use when retrieving the instance
+	 * @dsl           The dsl string to use to retrieve the instance model object, mutually exclusive with 'name
+	 * @targetObject  The object requesting the dependency, usually only used by DSL lookups
+	 * @injector      The child injector to use when retrieving the instance
 	 *
 	 * @throws InstanceNotFoundException - When the requested instance cannot be found
-	 * @throws InvalidChildInjector - When you request an instance from an invalid child injector name
+	 * @throws InvalidChildInjector      - When you request an instance from an invalid child injector name
 	 *
 	 * @return The requested instance
 	 **/
@@ -923,7 +924,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	/**
 	 * Process an exception and returns a rendered bug report
 	 * @controller The ColdBox Controller
-	 * @exception The ColdFusion exception
+	 * @exception  The ColdFusion exception
 	 */
 	private string function processException( required controller, required exception ){
 		// prepare exception facade object + app logger

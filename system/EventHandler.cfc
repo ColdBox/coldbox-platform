@@ -89,7 +89,7 @@ component
 
 	/**
 	 * _privateInvoker for private events
-	 * @method The method to execute
+	 * @method        The method to execute
 	 * @argCollection The arguments to execute the method with.
 	 */
 	any function _privateInvoker( required method, required argCollection ){

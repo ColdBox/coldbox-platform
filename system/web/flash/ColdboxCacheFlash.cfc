@@ -15,7 +15,7 @@ component extends="coldbox.system.web.flash.AbstractFlashScope" accessors="true"
 	/**
 	 * Constructor
 	 * @controller.hint ColdBox Controller
-	 * @defaults.hint Default flash data packet for the flash RAM object=[scope,properties,inflateToRC,inflateToPRC,autoPurge,autoSave]
+	 * @defaults.hint   Default flash data packet for the flash RAM object=[scope,properties,inflateToRC,inflateToPRC,autoPurge,autoSave]
 	 */
 	function init( required controller, required struct defaults = {} ){
 		// default cache name

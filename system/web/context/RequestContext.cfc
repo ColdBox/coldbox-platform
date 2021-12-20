@@ -278,7 +278,7 @@ component serializable="false" accessors="true" {
 	/**
 	 * I Get a reference or deep copy of the public or private request Collection
 	 * @deepCopy Default is false, gives a reference to the collection. True, creates a deep copy of the collection.
-	 * @private Use public or private request collection
+	 * @private  Use public or private request collection
 	 */
 	struct function getCollection( boolean deepCopy = false, boolean private = false ){
 		// Private Collection
@@ -298,7 +298,7 @@ component serializable="false" accessors="true" {
 	/**
 	 * I get a private collection
 	 * @deepCopy Default is false, gives a reference to the collection. True, creates a deep copy of the collection.
-	 * @private Use public or private request collection
+	 * @private  Use public or private request collection
 	 */
 	struct function getPrivateCollection( boolean deepCopy = false ){
 		arguments.private = true;
@@ -328,8 +328,8 @@ component serializable="false" accessors="true" {
 	/**
 	 * Append a structure to the collection, with overwrite or not. Overwrite = false by default
 	 * @collection The collection to incorporate
-	 * @overwrite Overwrite elements, defaults to false
-	 * @private Private or public, defaults public.
+	 * @overwrite  Overwrite elements, defaults to false
+	 * @private    Private or public, defaults public.
 	 */
 	function collectionAppend(
 		required struct collection,
@@ -355,7 +355,7 @@ component serializable="false" accessors="true" {
 	/**
 	 * Append a structure to the collection, with overwrite or not. Overwrite = false by default
 	 * @collection The collection to incorporate
-	 * @overwrite Overwrite elements, defaults to false
+	 * @overwrite  Overwrite elements, defaults to false
 	 */
 	function privateCollectionAppend( required struct collection, boolean overwrite = false ){
 		arguments.private = true;
@@ -384,9 +384,9 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Get a value from the public or private request collection.
-	 * @name The key name
+	 * @name         The key name
 	 * @defaultValue default value
-	 * @private Private or public, defaults public.
+	 * @private      Private or public, defaults public.
 	 */
 	function getValue(
 		required name,
@@ -419,7 +419,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Get a value from the private request collection.
-	 * @name The key name
+	 * @name         The key name
 	 * @defaultValue default value
 	 */
 	function getPrivateValue( required name, defaultValue ){
@@ -429,9 +429,9 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Get a value from the request collection and if simple value, I will trim it.
-	 * @name The key name
+	 * @name         The key name
 	 * @defaultValue default value
-	 * @private Private or public, defaults public.
+	 * @private      Private or public, defaults public.
 	 */
 	function getTrimValue(
 		required name,
@@ -450,7 +450,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Get a trim value from the private request collection.
-	 * @name The key name
+	 * @name         The key name
 	 * @defaultValue default value
 	 */
 	function getPrivateTrimValue( required name, defaultValue ){
@@ -460,8 +460,8 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Set a value in the request collection
-	 * @name The key name
-	 * @value The value
+	 * @name    The key name
+	 * @value   The value
 	 * @private Private or public, defaults public.
 	 *
 	 * @return RequestContext
@@ -482,7 +482,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Set a value in the private request collection
-	 * @name The key name
+	 * @name  The key name
 	 * @value The value
 	 *
 	 * @return RequestContext
@@ -494,7 +494,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * remove a value in the request collection
-	 * @name The key name
+	 * @name    The key name
 	 * @private Private or public, defaults public.
 	 *
 	 * @return RequestContext
@@ -523,7 +523,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Check if a value exists in the request collection
-	 * @name The key name
+	 * @name    The key name
 	 * @private Private or public, defaults public.
 	 */
 	boolean function valueExists( required name, boolean private = false ){
@@ -545,8 +545,8 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Just like cfparam, but for the request collection
-	 * @name The key name
-	 * @value The value
+	 * @name    The key name
+	 * @value   The value
 	 * @private Private or public, defaults public.
 	 *
 	 * @return RequestContext
@@ -568,7 +568,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Just like cfparam, but for the private request collection
-	 * @name The key name
+	 * @name  The key name
 	 * @value The value
 	 *
 	 * @return RequestContext
@@ -671,8 +671,8 @@ component serializable="false" accessors="true" {
 	 * If the exact flag is passed, the path must match exactly.
 	 * Using the `urlMatchesExact` is preferred.
 	 *
-	 * @path    The path to match in the currently routed URL.
-	 * @exact   Flag to do an exact match instead of a partial match
+	 * @path  The path to match in the currently routed URL.
+	 * @exact Flag to do an exact match instead of a partial match
 	 *
 	 * @return  Boolean
 	 */
@@ -817,17 +817,17 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Set the view to render in this request. Private Request Collection Name: currentView, currentLayout
-	 * @view The name of the view to set. If a layout has been defined it will assign it, else if will assign the default layout. No extension please
-	 * @args An optional set of arguments that will be available when the view is rendered
-	 * @layout You can override the rendering layout of this setView() call if you want to. Else it defaults to implicit resolution or another override.
-	 * @module The explicit module view
-	 * @noLayout Boolean flag, wether the view sent in will be using a layout or not. Default is false. Uses a pre set layout or the default layout.
-	 * @cache True if you want to cache the rendered view.
-	 * @cacheTimeout The cache timeout in minutes
+	 * @view                   The name of the view to set. If a layout has been defined it will assign it, else if will assign the default layout. No extension please
+	 * @args                   An optional set of arguments that will be available when the view is rendered
+	 * @layout                 You can override the rendering layout of this setView() call if you want to. Else it defaults to implicit resolution or another override.
+	 * @module                 The explicit module view
+	 * @noLayout               Boolean flag, wether the view sent in will be using a layout or not. Default is false. Uses a pre set layout or the default layout.
+	 * @cache                  True if you want to cache the rendered view.
+	 * @cacheTimeout           The cache timeout in minutes
 	 * @cacheLastAccessTimeout The last access timeout in minutes
-	 * @cacheSuffix Add a cache suffix to the view cache entry. Great for multi-domain caching or i18n caching.
-	 * @cacheProvider The cache provider you want to use for storing the rendered view. By default we use the 'template' cache provider
-	 * @name This triggers a rendering region.  This will be the unique name in the request for specifying a rendering region, you can then render it by passing the unique name to renderView();
+	 * @cacheSuffix            Add a cache suffix to the view cache entry. Great for multi-domain caching or i18n caching.
+	 * @cacheProvider          The cache provider you want to use for storing the rendered view. By default we use the 'template' cache provider
+	 * @name                   This triggers a rendering region.  This will be the unique name in the request for specifying a rendering region, you can then render it by passing the unique name to renderView();
 	 *
 	 * @return RequestContext
 	 */
@@ -942,7 +942,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Set the layout to override and render. Layouts are pre-defined in the config file. However I can override these settings if needed. Do not append a the cfm extension. Private Request Collection name
-	 * @name The name of the layout to set
+	 * @name   The name of the layout to set
 	 * @module The module to use
 	 */
 	function setLayout( required name, module = "" ){
@@ -1121,9 +1121,9 @@ component serializable="false" accessors="true" {
 	 * Builds links to named routes with or without parameters. If the named route is not found, this method will throw an `InvalidArgumentException`.
 	 * If you need a route from a module then append the module address: `@moduleName` or prefix it like in run event calls `moduleName:routenName` in order to find the right route.
 	 *
-	 * @name The name of the route
+	 * @name   The name of the route
 	 * @params The parameters of the route to replace
-	 * @ssl Turn SSL on/off or detect it by default
+	 * @ssl    Turn SSL on/off or detect it by default
 	 *
 	 * @throws InvalidArgumentException
 	 */
@@ -1176,11 +1176,11 @@ component serializable="false" accessors="true" {
 	/**
 	 * Builds links to events or URL Routes
 	 *
-	 * @to The event or route path you want to create the link to
+	 * @to          The event or route path you want to create the link to
 	 * @queryString The query string to append which can be a regular query string string, or a struct of name-value pairs
-	 * @translate Translate between . to / depending on the SES mode on to and queryString arguments. Defaults to true.
-	 * @ssl Turn SSl on/off on URL creation, by default is SSL is enabled, we will use it.
-	 * @baseURL If not using SES, you can use this argument to create your own base url apart from the default of index.cfm. Example: https://mysample.com/index.cfm
+	 * @translate   Translate between . to / depending on the SES mode on to and queryString arguments. Defaults to true.
+	 * @ssl         Turn SSl on/off on URL creation, by default is SSL is enabled, we will use it.
+	 * @baseURL     If not using SES, you can use this argument to create your own base url apart from the default of index.cfm. Example: https://mysample.com/index.cfm
 	 */
 	string function buildLink(
 		to,
@@ -1360,13 +1360,13 @@ component serializable="false" accessors="true" {
 	 * This method will send a file to the browser or requested HTTP protocol according to arguments.
 	 * CF11+ Compatibility
 	 *
-	 * @file The absolute path to the file or a binary file to send
-	 * @name The name to send to the browser via content disposition header.  If not provided then the name of the file or a UUID for a binary file will be used
-	 * @mimeType A valid mime type to use.  If not passed, then we will try to use one according to file type
+	 * @file        The absolute path to the file or a binary file to send
+	 * @name        The name to send to the browser via content disposition header.  If not provided then the name of the file or a UUID for a binary file will be used
+	 * @mimeType    A valid mime type to use.  If not passed, then we will try to use one according to file type
 	 * @disposition The browser content disposition (attachment/inline) header
-	 * @abortAtEnd If true, then this method will do a hard abort, we do not recommend this, prefer the event.noRender() for a graceful abort.
-	 * @extension Only used for binary files which types are not determined.
-	 * @deleteFile Delete the file after it has been streamed to the user. Only used if file is not binary.
+	 * @abortAtEnd  If true, then this method will do a hard abort, we do not recommend this, prefer the event.noRender() for a graceful abort.
+	 * @extension   Only used for binary files which types are not determined.
+	 * @deleteFile  Delete the file after it has been streamed to the user. Only used if file is not binary.
 	 */
 	function sendFile(
 		file               = "",
@@ -1450,25 +1450,25 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Use this method to tell the framework to render data for you. The framework will take care of marshalling the data for you
-	 * @type The type of data to render. Valid types are JSON, JSONP, JSONT, XML, WDDX, PLAIN/HTML, TEXT, PDF. The default is HTML or PLAIN. If an invalid type is sent in, this method will throw an error
-	 * @data The data you would like to marshall and return by the framework
-	 * @contentType The content type of the data. This will be used in the cfcontent tag: text/html, text/plain, text/xml, text/json, etc. The default value is text/html. However, if you choose JSON this method will choose application/json, if you choose WDDX or XML this method will choose text/xml for you.
-	 * @encoding The default character encoding to use.  The default encoding is utf-8
-	 * @statusCode The HTTP status code to send to the browser. Defaults to 200
-	 * @statusText Explains the HTTP status code sent to the browser.
-	 * @location Optional argument used to set the HTTP Location header
-	 * @jsonCallback Only needed when using JSONP, this is the callback to add to the JSON packet
-	 * @jsonQueryFormat JSON Only: This parameter can be a Boolean value that specifies how to serialize ColdFusion queries or a string with possible values "row", "column", or "struct".
-	 * @jsonAsText If set to false, defaults content mime-type to application/json, else will change encoding to plain/text
-	 * @xmlColumnList XML Only: Choose which columns to inspect, by default it uses all the columns in the query, if using a query
-	 * @xmlUseCDATA XML Only: Use CDATA content for ALL values. The default is false
+	 * @type             The type of data to render. Valid types are JSON, JSONP, JSONT, XML, WDDX, PLAIN/HTML, TEXT, PDF. The default is HTML or PLAIN. If an invalid type is sent in, this method will throw an error
+	 * @data             The data you would like to marshall and return by the framework
+	 * @contentType      The content type of the data. This will be used in the cfcontent tag: text/html, text/plain, text/xml, text/json, etc. The default value is text/html. However, if you choose JSON this method will choose application/json, if you choose WDDX or XML this method will choose text/xml for you.
+	 * @encoding         The default character encoding to use.  The default encoding is utf-8
+	 * @statusCode       The HTTP status code to send to the browser. Defaults to 200
+	 * @statusText       Explains the HTTP status code sent to the browser.
+	 * @location         Optional argument used to set the HTTP Location header
+	 * @jsonCallback     Only needed when using JSONP, this is the callback to add to the JSON packet
+	 * @jsonQueryFormat  JSON Only: This parameter can be a Boolean value that specifies how to serialize ColdFusion queries or a string with possible values "row", "column", or "struct".
+	 * @jsonAsText       If set to false, defaults content mime-type to application/json, else will change encoding to plain/text
+	 * @xmlColumnList    XML Only: Choose which columns to inspect, by default it uses all the columns in the query, if using a query
+	 * @xmlUseCDATA      XML Only: Use CDATA content for ALL values. The default is false
 	 * @xmlListDelimiter XML Only: The delimiter in the list. Comma by default
-	 * @xmlRootName XML Only: The name of the initial root element of the XML packet
-	 * @pdfArgs All the PDF arguments to pass along to the CFDocument tag.
-	 * @formats The formats list or array that ColdBox should respond to using the passed in data argument. You can pass any of the valid types (JSON,JSONP,JSONT,XML,WDDX,PLAIN,HTML,TEXT,PDF). For PDF and HTML we will try to render the view by convention based on the incoming event
-	 * @formatsView The view that should be used for rendering HTML/PLAIN/PDF. By default ColdBox uses the name of the event as an implicit view
-	 * @formatsRedirect The arguments that should be passed to relcoate as part of a redirect for the HTML action.  If the format is HTML and this struct is not empty, ColdBox will call relcoate with these arguments.
-	 * @isBinary Bit that determines if the data being set for rendering is binary or not.
+	 * @xmlRootName      XML Only: The name of the initial root element of the XML packet
+	 * @pdfArgs          All the PDF arguments to pass along to the CFDocument tag.
+	 * @formats          The formats list or array that ColdBox should respond to using the passed in data argument. You can pass any of the valid types (JSON,JSONP,JSONT,XML,WDDX,PLAIN,HTML,TEXT,PDF). For PDF and HTML we will try to render the view by convention based on the incoming event
+	 * @formatsView      The view that should be used for rendering HTML/PLAIN/PDF. By default ColdBox uses the name of the event as an implicit view
+	 * @formatsRedirect  The arguments that should be passed to relcoate as part of a redirect for the HTML action.  If the format is HTML and this struct is not empty, ColdBox will call relcoate with these arguments.
+	 * @isBinary         Bit that determines if the data being set for rendering is binary or not.
 	 */
 	function renderData(
 		type = "HTML",
@@ -1605,7 +1605,7 @@ component serializable="false" accessors="true" {
 	 * Get the raw HTTP body content with conversions if needed
 	 *
 	 * @json Try to return the content as deserialized json
-	 * @xml Try to return the content as an XML object
+	 * @xml  Try to return the content as an XML object
 	 */
 	any function getHTTPContent( boolean json = false, boolean xml = false ){
 		// Only read the content once
@@ -1631,7 +1631,7 @@ component serializable="false" accessors="true" {
 	/**
 	 * Get an HTTP header. If the header doesn't exist the default value of empty string is returned.
 	 *
-	 * @header The header to get
+	 * @header       The header to get
 	 * @defaultValue The default value, if not found
 	 */
 	function getHTTPHeader( required header, defaultValue = "" ){
@@ -1650,9 +1650,9 @@ component serializable="false" accessors="true" {
 	 *
 	 * @statusCode the status code
 	 * @statusText the status text
-	 * @name The header name
-	 * @value The header value
-	 * @charset The charset to use, defaults to UTF-8
+	 * @name       The header name
+	 * @value      The header value
+	 * @charset    The charset to use, defaults to UTF-8
 	 *
 	 * @return RequestContext
 	 */
@@ -1708,7 +1708,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Filters the collection or private collection down to only the provided keys.
-	 * @keys A list or array of keys to bring back from the collection or private collection.
+	 * @keys    A list or array of keys to bring back from the collection or private collection.
 	 * @private Private or public, defaults public request collection
 	 */
 	struct function getOnly( required keys, boolean private = false ){
@@ -1738,7 +1738,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Filters the collection or private collection down to all keys except the provided keys.
-	 * @keys A list or array of keys to exclude from the results of the collection or private collection.
+	 * @keys    A list or array of keys to exclude from the results of the collection or private collection.
 	 * @private Private or public, defaults public request collection
 	 */
 	struct function getExcept( required keys, boolean private = false ){
