@@ -4,7 +4,7 @@
  * ---
  * Process DSL functions via LogBox
  **/
-component implements="coldbox.system.ioc.dsl.IDSLBuilder" accessors="true" {
+component accessors="true" {
 
 	/**
 	 * Injector Reference

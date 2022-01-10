@@ -1,4 +1,4 @@
-﻿component implements="coldbox.system.ioc.dsl.IDSLBuilder" accessors="true" {
+﻿component accessors="true" {
 
 	property name="name";
 
