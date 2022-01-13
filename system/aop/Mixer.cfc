@@ -5,8 +5,8 @@
  * I am a WireBox listener that provides you with AOP capabilities in your objects.
  *
  * Listener Properties:
- *	- generationPath:path	- The include path used for code generation
- *	- dictionaryReload:boolean(false) - The flag to always reload aspect dictionary discover information, great for development
+ * - generationPath:path	- The include path used for code generation
+ * - dictionaryReload:boolean(false) - The flag to always reload aspect dictionary discover information, great for development
  */
 component accessors="true" {
 
@@ -49,7 +49,8 @@ component accessors="true" {
 
 	/**
 	 * Listener constructor
-	 * @injector
+	 *
+	 * @injector  
 	 * @properties
 	 */
 	function configure( required injector, required properties ){
@@ -127,10 +128,10 @@ component accessors="true" {
 
 	/**
 	 * Build an aspect dictionary for incoming target objects
+	 *
 	 * @target  The incoming target
 	 * @mapping The incoming target mapping
 	 * @idCode  The incoming target identifier
-	 *
 	 */
 	private function buildClassMatchDictionary(
 		required target,
@@ -182,11 +183,11 @@ component accessors="true" {
 
 	/**
 	 * Build and weave all necessary advices on an object via method matching
+	 *
 	 * @target     The incoming target
 	 * @mapping    The incoming target mapping
 	 * @dictionary The target aspect dictionary
 	 * @idCode     The incoming target identifier
-	 *
 	 */
 	private function AOPBuilder(
 		required target,
@@ -222,11 +223,11 @@ component accessors="true" {
 
 	/**
 	 * Process target methods for AOP weaving
+	 *
 	 * @target     The incoming target
 	 * @mapping    The incoming target mapping
 	 * @metadata   The incoming target metadata
 	 * @dictionary The target aspect dictionary
-	 *
 	 */
 	private function processTargetMethods(
 		required target,
@@ -291,12 +292,12 @@ component accessors="true" {
 
 	/**
 	 * Weave an advise into a jointpoint
+	 *
 	 * @target       The incoming target
 	 * @mapping      The incoming target mapping
 	 * @jointPoint   The jointpoint to proxy
 	 * @jointPointMD The jointpoint metadata to proxy
 	 * @aspects      The aspects to weave into the jointpoint
-	 *
 	 */
 	private function weaveAdvice(
 		required target,
@@ -415,8 +416,8 @@ component accessors="true" {
 
 	/**
 	 * Build out interceptors according to their aspect names
-	 * @aspects The aspects to construct
 	 *
+	 * @aspects The aspects to construct
 	 */
 	private array function buildInterceptors( required aspects ){
 		var interceptors = [];
@@ -431,9 +432,9 @@ component accessors="true" {
 
 	/**
 	 * Decorate a target with AOP capabilities
+	 *
 	 * @target  The incoming target
 	 * @mapping The incoming target mapping
-	 *
 	 */
 	private function decorateAOPTarget( required target, required mapping ){
 		// Create targets struct for method proxing

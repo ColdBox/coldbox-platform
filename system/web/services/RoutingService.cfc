@@ -8,6 +8,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 	/**
 	 * A ColdBox Router this routing service configures with.
+	 *
 	 * @doc_generic coldbox.system.web.routing.Router
 	 */
 	property name="router";
@@ -410,8 +411,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * @module    Incoming module
 	 * @namespace Incoming namespace
 	 * @domain    Incoming domain
-	 *
-	 * @result Struct: { route: found route or empty struct, params: translated params }
+	 * @result    Struct: { route: found route or empty struct, params: translated params }
 	 */
 	struct function findRoute(
 		required action,
@@ -686,6 +686,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 	/**
 	 * Detect extensions from the incoming request
+	 *
 	 * @requestString The incoming request string
 	 * @event         The event object
 	 */
@@ -754,6 +755,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 	/**
 	 * Render a RESTFul response
+	 *
 	 * @route The route response
 	 * @event The event object
 	 */
@@ -914,6 +916,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 	/**
 	 * Check for invalid URL's
+	 *
 	 * @route       The incoming route
 	 * @script_name The cgi script name
 	 * @event       The event object
@@ -929,9 +932,6 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		var rc      = event.getCollection();
 
 		/**
-		Verify we have uniqueURLs ON, the event var exists, route is empty or index.cfm
-		AND
-		if the incoming event is not the default OR it is the default via the URL.
 		**/
 		if (
 			structKeyExists( rc, variables.eventName )
@@ -982,6 +982,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 	/**
 	 * Serialize a URL when invalid
+	 *
 	 * @formVars The incoming form variables
 	 * @event    The event object
 	 */

@@ -2,9 +2,10 @@
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * @author Luis Majano
  *
  * The main interface to produce a ColdBox Application cache.
+ *
+ * @author Luis Majano
  */
 interface extends="coldbox.system.cache.providers.ICacheProvider" {
 

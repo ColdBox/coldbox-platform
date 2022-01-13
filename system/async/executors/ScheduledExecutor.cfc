@@ -32,9 +32,9 @@ component extends="Executor" accessors="true" singleton {
 	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is milliseconds
 	 * @method   The default method to execute if the runnable is a CFC, defaults to `run()`
 	 *
-	 * @throws RejectedExecutionException - if the task cannot be scheduled for execution
-	 *
 	 * @return ScheduledFuture representing pending completion of the task and whose get() method will return null upon completion
+	 *
+	 * @throws RejectedExecutionException - if the task cannot be scheduled for execution
 	 */
 	ScheduledFuture function schedule(
 		required task,
@@ -81,10 +81,10 @@ component extends="Executor" accessors="true" singleton {
 	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is milliseconds
 	 * @method   The default method to execute if the runnable is a CFC, defaults to `run()`
 	 *
+	 * @return a ScheduledFuture representing pending completion of the task, and whose get() method will throw an exception upon cancellation
+	 *
 	 * @throws RejectedExecutionException - if the task cannot be scheduled for execution
 	 * @throws IllegalArgumentException   - if period less than or equal to zero
-	 *
-	 * @return a ScheduledFuture representing pending completion of the task, and whose get() method will throw an exception upon cancellation
 	 */
 	ScheduledFuture function scheduleAtFixedRate(
 		required task,
@@ -120,10 +120,10 @@ component extends="Executor" accessors="true" singleton {
 	 * @timeUnit    The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is milliseconds
 	 * @method      The default method to execute if the runnable is a CFC, defaults to `run()`
 	 *
+	 * @return a ScheduledFuture representing pending completion of the task, and whose get() method will throw an exception upon cancellation
+	 *
 	 * @throws RejectedExecutionException - if the task cannot be scheduled for execution
 	 * @throws IllegalArgumentException   - if spacedDelay less than or equal to zero
-	 *
-	 * @return a ScheduledFuture representing pending completion of the task, and whose get() method will throw an exception upon cancellation
 	 */
 	ScheduledFuture function scheduleWithFixedDelay(
 		required task,
@@ -152,9 +152,8 @@ component extends="Executor" accessors="true" singleton {
 	 * Build out a new scheduled task
 	 *
 	 * @deprecated DO NOT USE, use newTask() instead
-	 *
-	 * @task   The closure or cfc that represents the task
-	 * @method The method on the cfc to call, defaults to "run" (optional)
+	 * @task       The closure or cfc that represents the task
+	 * @method     The method on the cfc to call, defaults to "run" (optional)
 	 */
 	ScheduledTask function newSchedule( required task, method = "run" ){
 		return this.newTask( argumentCollection = arguments );

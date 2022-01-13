@@ -1,5 +1,5 @@
 /*******************************************************************************
- *	Test for custom WireBox DSLs
+ * Test for custom WireBox DSLs
  *******************************************************************************/
 component extends="tests.resources.BaseIntegrationTest" {
 

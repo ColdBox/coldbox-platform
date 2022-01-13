@@ -53,12 +53,14 @@ component accessors="true" {
 
 	/**
 	 * The Global AsyncManager
+	 *
 	 * @see coldbox.system.async.AsyncManager
 	 */
 	property name="asyncManager";
 
 	/**
 	 * The logBox task scheduler executor
+	 *
 	 * @see coldbox.system.async.executors.ScheduledExecutor
 	 */
 	property name="taskScheduler";

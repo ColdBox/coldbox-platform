@@ -23,8 +23,7 @@ component singleton {
 	/**
 	 * Creates a thread pool that reuses a fixed number of threads operating off a shared unbounded queue.
 	 *
-	 * @see https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ExecutorService.html
-	 *
+	 * @see     https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ExecutorService.html
 	 * @threads The number of threads in the pool, defaults to 20
 	 *
 	 * @return ExecutorService: The newly created thread pool
@@ -49,8 +48,7 @@ component singleton {
 	 * Creates a thread pool that can schedule commands to run after a given delay,
 	 * or to execute periodically.
 	 *
-	 * @see https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ScheduledExecutorService.html
-	 *
+	 * @see          https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ScheduledExecutorService.html
 	 * @corePoolSize The number of threads to keep in the pool, even if they are idle, default is 20
 	 *
 	 * @return ScheduledExecutorService: The newly created thread pool

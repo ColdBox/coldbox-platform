@@ -77,8 +77,9 @@ component
 	 * @property     The property to retrieve
 	 * @defaultValue The default value to return if property does not exist
 	 *
-	 * @throws InvalidPropertyException
 	 * @return The property value requested or the default value if not found
+	 *
+	 * @throws InvalidPropertyException
 	 */
 	any function getProperty( required property, defaultValue ){
 		if ( structKeyExists( variables.properties, arguments.property ) ) {

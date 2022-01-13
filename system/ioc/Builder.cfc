@@ -476,10 +476,10 @@ component serializable="false" accessors="true" {
 	 * @targetID     The target ID we are building this dependency for
 	 * @targetObject The target object we are building the DSL dependency for
 	 *
+	 * @return The requested object or null if not found and not required
+	 *
 	 * @throws IllegalDSLException            - When requesting a ColdBox/CacheBox DSL dependency and the library is not linked
 	 * @throws DSLDependencyNotFoundException - If the requested object is not found and it is required
-	 *
-	 * @return The requested object or null if not found and not required
 	 */
 	function buildDSLDependency(
 		required definition,

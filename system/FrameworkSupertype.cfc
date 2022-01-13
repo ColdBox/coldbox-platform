@@ -3,6 +3,7 @@
  * www.ortussolutions.com
  * ---
  * Base class for all things Box
+ *
  * @author Luis Majano <lmajano@ortussolutions.com>
  */
 component serializable="false" accessors="true" {
@@ -31,10 +32,10 @@ component serializable="false" accessors="true" {
 	 * @targetObject  The object requesting the dependency, usually only used by DSL lookups
 	 * @injector      The child injector to use when retrieving the instance
 	 *
+	 * @return The requested instance
+	 *
 	 * @throws InstanceNotFoundException - When the requested instance cannot be found
 	 * @throws InvalidChildInjector      - When you request an instance from an invalid child injector name
-	 *
-	 * @return The requested instance
 	 **/
 	function getInstance(
 		name,
@@ -139,8 +140,7 @@ component serializable="false" accessors="true" {
 	/**
 	 * Render out a view
 	 *
-	 * @deprecated Use view() instead
-	 *
+	 * @deprecated             Use view() instead
 	 * @view                   The the view to render, if not passed, then we look in the request context for the current set view.
 	 * @args                   A struct of arguments to pass into the view for rendering, will be available as 'args' in the view.
 	 * @module                 The module to render the view from explicitly
@@ -223,8 +223,7 @@ component serializable="false" accessors="true" {
 	/**
 	 * Renders an external view anywhere that cfinclude works.
 	 *
-	 * @deprecated Use `externalView()` instead
-	 *
+	 * @deprecated             Use `externalView()` instead
 	 * @view                   The the view to render
 	 * @args                   A struct of arguments to pass into the view for rendering, will be available as 'args' in the view.
 	 * @cache                  Cached the view output or not, defaults to false
@@ -275,8 +274,7 @@ component serializable="false" accessors="true" {
 	/**
 	 * Render a layout or a layout + view combo
 	 *
-	 * @deprecated Use `layout()` instead
-	 *
+	 * @deprecated    Use `layout()` instead
 	 * @layout        The layout to render out
 	 * @module        The module to explicitly render this layout from
 	 * @view          The view to render within this layout
@@ -403,9 +401,9 @@ component serializable="false" accessors="true" {
 	 * @name         The key of the setting
 	 * @defaultValue If not found in config, default return value
 	 *
-	 * @throws SettingNotFoundException
-	 *
 	 * @return The requested setting
+	 *
+	 * @throws SettingNotFoundException
 	 */
 	function getSetting( required name, defaultValue ){
 		return variables.controller.getSetting( argumentCollection = arguments );
@@ -417,9 +415,9 @@ component serializable="false" accessors="true" {
 	 * @name         The key to get
 	 * @defaultValue The default value if it doesn't exist
 	 *
-	 * @throws SettingNotFoundException
-	 *
 	 * @return The framework setting value
+	 *
+	 * @throws SettingNotFoundException
 	 */
 	function getColdBoxSetting( required name, defaultValue ){
 		return variables.controller.getColdBoxSetting( argumentCollection = arguments );
@@ -472,9 +470,9 @@ component serializable="false" accessors="true" {
 	 *
 	 * @module The module to retrieve the configuration structure from
 	 *
-	 * @throws InvalidModuleException - The module passed is invalid
-	 *
 	 * @return The struct requested
+	 *
+	 * @throws InvalidModuleException - The module passed is invalid
 	 */
 	struct function getModuleConfig( required module ){
 		var mConfig = variables.controller.getSetting( "modules" );
@@ -533,9 +531,9 @@ component serializable="false" accessors="true" {
 	 * @cacheProvider          The provider to cache this event rendering in, defaults to 'template'
 	 * @prePostExempt          If true, pre/post handlers will not be fired. Defaults to false
 	 *
-	 * @throws InvalidArgumentException
-	 *
 	 * @return null or anything produced from the route
+	 *
+	 * @throws InvalidArgumentException
 	 */
 	any function runRoute(
 		required name,
@@ -659,9 +657,9 @@ component serializable="false" accessors="true" {
 	 *
 	 * @udflibrary The UDF library to inject
 	 *
-	 * @throws UDFLibraryNotFoundException - When the requested library cannot be found
-	 *
 	 * @return FrameworkSuperType
+	 *
+	 * @throws UDFLibraryNotFoundException - When the requested library cannot be found
 	 */
 	any function includeUDF( required udflibrary ){
 		// Init the mixin location and caches reference

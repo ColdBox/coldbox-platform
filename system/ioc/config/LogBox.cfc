@@ -9,7 +9,7 @@
 component {
 
 	/**
-	 *  Configure logBox
+	 * Configure logBox
 	 */
 	function configure(){
 		logBox = {

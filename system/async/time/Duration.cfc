@@ -395,7 +395,7 @@ component accessors="true" {
 	/**
 	 * Obtains a Duration from a text string such as PnDTnHnMn.nS.
 	 *
-	 *  This will parse a textual representation of a duration, including the string produced by toString(). The formats accepted are based on the ISO-8601 duration format PnDTnHnMn.nS with days considered to be exactly 24 hours.
+	 * This will parse a textual representation of a duration, including the string produced by toString(). The formats accepted are based on the ISO-8601 duration format PnDTnHnMn.nS with days considered to be exactly 24 hours.
 	 *
 	 * Examples:
 	 * "PT20.345S" -- parses as "20.345 seconds"
@@ -407,8 +407,7 @@ component accessors="true" {
 	 * "-PT6H3M"    -- parses as "-6 hours and -3 minutes"
 	 * "-PT-6H+3M"  -- parses as "+6 hours and -3 minutes"
 	 *
-	 * @see https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/Duration.html#parse(java.lang.CharSequence)
-	 *
+	 * @see  https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/Duration.html#parse(java.lang.CharSequence)
 	 * @text The string to parse and build up to a duration
 	 */
 	Duration function parse( required text ){

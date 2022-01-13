@@ -12,13 +12,14 @@ component
 
 	/**
 	 * Set an HTTP Header
+	 *
+	 * return RequestContext
+	 *
 	 * @statusCode.hint the status code
 	 * @statusText.hint the status text
 	 * @name.hint       The header name
 	 * @value.hint      The header value
 	 * @charset.hint    The charset to use, defaults to UTF-8
-	 *
-	 * return RequestContext
 	 */
 	function setHTTPHeader( statusCode, statusText = "", name, value = "" ){
 		// status code?

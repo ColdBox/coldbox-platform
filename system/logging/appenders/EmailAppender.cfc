@@ -5,15 +5,15 @@
  * An appender that sends out emails
  *
  * Properties:
- *	- subject - Get's pre-pended with the category field.
- *	- from - required
- *	- to - required can be a ; list of emails
- *	- cc
- *	- bcc
- *	- mailserver (optional)
- *	- mailpassword (optional)
- *	- mailusername (optional)
- *	- mailport (optional - 25)
+ * - subject - Get's pre-pended with the category field.
+ * - from - required
+ * - to - required can be a ; list of emails
+ * - cc
+ * - bcc
+ * - mailserver (optional)
+ * - mailpassword (optional)
+ * - mailusername (optional)
+ * - mailport (optional - 25)
  **/
 component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 

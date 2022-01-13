@@ -2,9 +2,10 @@
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ----
- * @luis Majano
  *
  * A mock cache provider that keeps cache data in a simple map for testing and assertions
+ *
+ * @luis Majano
  **/
 component
 	accessors   =true

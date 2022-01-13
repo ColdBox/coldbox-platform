@@ -2,10 +2,11 @@
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * @author Luis Majano
  *
  * This is a utility object that helps object stores keep their elements indexed
  * and stored nicely.  It is also a nice way to give back metadata results.
+ *
+ * @author Luis Majano
  */
 component extends="coldbox.system.cache.store.indexers.MetadataIndexer" accessors="true" {
 
@@ -84,18 +85,18 @@ component extends="coldbox.system.cache.store.indexers.MetadataIndexer" accessor
 	 */
 	struct function getPoolMetadata( numeric max = 100 ){
 		var results = {};
-		var params = [ arguments.max ];
-		
+		var params  = [ arguments.max ];
+
 		// make sure the max argument is a valid integer
 		if ( !isValid( "integer", arguments.max ) ) {
-            throw( "invalid max records specified - it must be an integer" );
-        }
+			throw( "invalid max records specified - it must be an integer" );
+		}
 
 		// MySQL Default
 		var sql = "SELECT #variables.fields# FROM #variables.config.table# ORDER BY objectKey LIMIT ?";
 		// MSSQL
 		if ( variables.sqlType == "MSSQL" ) {
-			sql = "SELECT TOP #arguments.max# #variables.fields# FROM #variables.config.table# ORDER BY objectKey";
+			sql    = "SELECT TOP #arguments.max# #variables.fields# FROM #variables.config.table# ORDER BY objectKey";
 			params = [];
 		}
 
@@ -197,8 +198,8 @@ component extends="coldbox.system.cache.store.indexers.MetadataIndexer" accessor
 	 * Get an array of sorted keys for this indexer according to parameters
 	 *
 	 * @objectKey
-	 * @property
-	 * @value
+	 * @property 
+	 * @value    
 	 */
 	array function getSortedKeys(
 		required property,

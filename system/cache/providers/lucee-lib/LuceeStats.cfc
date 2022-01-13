@@ -1,13 +1,6 @@
 ﻿/**
-********************************************************************************
-Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.ortussolutions.com
-********************************************************************************
-Author: Luis Majano
-Description:
-
-A coldfusion statistics object that communicates with the lucee cache stats
-
+* *******************************************************************************
+* *******************************************************************************
 */
 component implements="coldbox.system.cache.util.IStats" accessors="true" {
 

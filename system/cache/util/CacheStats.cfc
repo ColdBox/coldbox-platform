@@ -2,9 +2,10 @@
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * @author Luis Majano
  *
  * This is a cache statistics object.  We do not use internal method calls but leverage the properties directly so it is faster.
+ *
+ * @author Luis Majano
  */
 component implements="coldbox.system.cache.util.IStats" accessors="true" {
 

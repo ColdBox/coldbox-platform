@@ -31,7 +31,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 	 * @levelMin   The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARN
 	 * @levelMax   The default log level for this appender, by default it is 5. Optional. ex: LogBox.logLevels.WARN
 	 *
-	 * @throws SocketAppender.HostNotFound,SocketAppender.PortNotFound
+	 * @throws SocketAppender.HostNotFound ,SocketAppender.PortNotFound
 	 */
 	function init(
 		required name,

@@ -181,7 +181,7 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
-	 *  Get the system data marshaller, you can also retrieve it from wirebox via dataMarshaller@coldbox
+	 * Get the system data marshaller, you can also retrieve it from wirebox via dataMarshaller@coldbox
 	 *
 	 * @return coldbox.system.core.conversion.DataMarhsaller
 	 */
@@ -259,9 +259,9 @@ component serializable="false" accessors="true" {
 	 * @name         The name of the setting
 	 * @defaultValue The default value to use if setting does not exist
 	 *
-	 * @throws SettingNotFoundException
-	 *
 	 * @return The application setting value
+	 *
+	 * @throws SettingNotFoundException
 	 */
 	function getSetting( required name, defaultValue ){
 		if ( variables.configSettings.keyExists( arguments.name ) ) {
@@ -286,9 +286,9 @@ component serializable="false" accessors="true" {
 	 * @name         The key to get
 	 * @defaultValue The default value if it doesn't exist
 	 *
-	 * @throws SettingNotFoundException
-	 *
 	 * @return The framework setting value
+	 *
+	 * @throws SettingNotFoundException
 	 */
 	function getColdBoxSetting( required name, defaultValue ){
 		if ( variables.coldboxSettings.keyExists( arguments.name ) ) {
@@ -715,9 +715,9 @@ component serializable="false" accessors="true" {
 	 * @defaultEvent   The flag that let's this service now if it is the default event running or not. USED BY THE FRAMEWORK ONLY
 	 * @eventArguments A collection of arguments to passthrough to the calling event handler method
 	 *
-	 * @throws InvalidHTTPMethod
-	 *
 	 * @return struct { data:event handler returned data (null), ehBean:event handler bean representation that was fired }
+	 *
+	 * @throws InvalidHTTPMethod
 	 */
 	private function _runEvent(
 		event                 = "",
@@ -1056,6 +1056,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Locate the real path location of a file in a coldbox application. 3 checks: 1) inside of coldbox app, 2) expand the path, 3) Absolute location. If path not found, it returns an empty path
+	 *
 	 * @pathToCheck The relative or absolute file path to verify and locate
 	 */
 	function locateFilePath( required pathToCheck ){
@@ -1080,6 +1081,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Locate the real path location of a directory in a coldbox application. 3 checks: 1) inside of coldbox app, 2) expand the path, 3) Absolute location. If path not found, it returns an empty path
+	 *
 	 * @pathToCheck The relative or absolute directory path to verify and locate
 	 */
 	function locateDirectoryPath( required pathToCheck ){
@@ -1130,6 +1132,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Internal helper to flash persist elements
+	 *
 	 * @return Controller
 	 */
 	private function persistVariables( persist = "", struct persistStruct = {} ){
@@ -1150,6 +1153,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Checks if an action can be executed according to inclusion/exclusion lists
+	 *
 	 * @action    The action to validate
 	 * @inclusion The list of inclusions
 	 * @exclusion The list of exclusions

@@ -25,6 +25,7 @@ component accessors="true" {
 
 	/**
 	 * Constructor
+	 *
 	 * @errorStruct  The CFML error structure
 	 * @extraMessage Custom error messages
 	 * @extraInfo    Extra info to store in the error
@@ -59,6 +60,7 @@ component accessors="true" {
 
 	/**
 	 * Set Memento
+	 *
 	 * @memento The mento to set
 	 */
 	ExceptionBean function setMemento( required memento ){

@@ -31,8 +31,9 @@ component accessors="true" singleton {
 	 * @xmlRootName      XML Only: The name of the initial root element of the XML packet
 	 * @pdfArgs          All the PDF arguments to pass along to the CFDocument tag.
 	 *
+	 * @return Marshalled content according to type and arguments
+	 *
 	 * @throws InvalidMarshallingType - When an invalid rendering type is detected
-	 * @returns Marshalled content according to type and arguments
 	 */
 	function marshallData(
 		required type,

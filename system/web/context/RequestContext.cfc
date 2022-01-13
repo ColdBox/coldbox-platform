@@ -277,6 +277,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * I Get a reference or deep copy of the public or private request Collection
+	 *
 	 * @deepCopy Default is false, gives a reference to the collection. True, creates a deep copy of the collection.
 	 * @private  Use public or private request collection
 	 */
@@ -297,6 +298,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * I get a private collection
+	 *
 	 * @deepCopy Default is false, gives a reference to the collection. True, creates a deep copy of the collection.
 	 * @private  Use public or private request collection
 	 */
@@ -307,6 +309,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Clears the entire collection
+	 *
 	 * @private Use public or private request collection
 	 */
 	function clearCollection( boolean private = false ){
@@ -327,6 +330,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Append a structure to the collection, with overwrite or not. Overwrite = false by default
+	 *
 	 * @collection The collection to incorporate
 	 * @overwrite  Overwrite elements, defaults to false
 	 * @private    Private or public, defaults public.
@@ -354,6 +358,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Append a structure to the collection, with overwrite or not. Overwrite = false by default
+	 *
 	 * @collection The collection to incorporate
 	 * @overwrite  Overwrite elements, defaults to false
 	 */
@@ -364,6 +369,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Get the collection Size
+	 *
 	 * @private Private or public, defaults public.
 	 */
 	numeric function getSize( boolean private = false ){
@@ -384,6 +390,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Get a value from the public or private request collection.
+	 *
 	 * @name         The key name
 	 * @defaultValue default value
 	 * @private      Private or public, defaults public.
@@ -419,6 +426,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Get a value from the private request collection.
+	 *
 	 * @name         The key name
 	 * @defaultValue default value
 	 */
@@ -429,6 +437,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Get a value from the request collection and if simple value, I will trim it.
+	 *
 	 * @name         The key name
 	 * @defaultValue default value
 	 * @private      Private or public, defaults public.
@@ -450,6 +459,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Get a trim value from the private request collection.
+	 *
 	 * @name         The key name
 	 * @defaultValue default value
 	 */
@@ -460,6 +470,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Set a value in the request collection
+	 *
 	 * @name    The key name
 	 * @value   The value
 	 * @private Private or public, defaults public.
@@ -482,6 +493,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Set a value in the private request collection
+	 *
 	 * @name  The key name
 	 * @value The value
 	 *
@@ -494,6 +506,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * remove a value in the request collection
+	 *
 	 * @name    The key name
 	 * @private Private or public, defaults public.
 	 *
@@ -512,6 +525,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * remove a value in the private request collection
+	 *
 	 * @name The key name
 	 *
 	 * @return RequestContext
@@ -523,6 +537,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Check if a value exists in the request collection
+	 *
 	 * @name    The key name
 	 * @private Private or public, defaults public.
 	 */
@@ -536,6 +551,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Check if a value exists in the private request collection
+	 *
 	 * @name The key name
 	 */
 	boolean function privateValueExists( required name ){
@@ -545,6 +561,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Just like cfparam, but for the request collection
+	 *
 	 * @name    The key name
 	 * @value   The value
 	 * @private Private or public, defaults public.
@@ -568,6 +585,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Just like cfparam, but for the private request collection
+	 *
 	 * @name  The key name
 	 * @value The value
 	 *
@@ -674,7 +692,7 @@ component serializable="false" accessors="true" {
 	 * @path  The path to match in the currently routed URL.
 	 * @exact Flag to do an exact match instead of a partial match
 	 *
-	 * @return  Boolean
+	 * @return Boolean
 	 */
 	boolean function urlMatches( required string path, boolean exact = false ){
 		var currentRoutedURL = getCurrentRoutedURL();
@@ -693,9 +711,9 @@ component serializable="false" accessors="true" {
 	/**
 	 * Tests that a given path matches exactly to the currently routed URL.
 	 *
-	 * @path    The path to match exactly to the currently routed URL.
+	 * @path The path to match exactly to the currently routed URL.
 	 *
-	 * @return  Boolean
+	 * @return Boolean
 	 */
 	boolean function urlMatchesExact( required string path ){
 		arguments.exact = true;
@@ -817,6 +835,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Set the view to render in this request. Private Request Collection Name: currentView, currentLayout
+	 *
 	 * @view                   The name of the view to set. If a layout has been defined it will assign it, else if will assign the default layout. No extension please
 	 * @args                   An optional set of arguments that will be available when the view is rendered
 	 * @layout                 You can override the rendering layout of this setView() call if you want to. Else it defaults to implicit resolution or another override.
@@ -930,6 +949,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Mark this request to not use a layout for rendering
+	 *
 	 * @return RequestContext
 	 */
 	function noLayout(){
@@ -942,6 +962,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Set the layout to override and render. Layouts are pre-defined in the config file. However I can override these settings if needed. Do not append a the cfm extension. Private Request Collection name
+	 *
 	 * @name   The name of the layout to set
 	 * @module The module to use
 	 */
@@ -962,6 +983,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Override the default layout for a request
+	 *
 	 * @return RequestContext
 	 */
 	function setDefaultLayout( required defaultLayout ){
@@ -971,6 +993,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Override the default view for a request
+	 *
 	 * @return RequestContext
 	 */
 	function setDefaultView( required defaultView ){
@@ -982,6 +1005,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Override the current event in the request collection. This method does not execute the event, it just replaces the event to be executed by the framework's RunEvent() method. This method is usually called from an onRequestStart or onApplicationStart method
+	 *
 	 * @event The event to override with
 	 *
 	 * @return RequestContext
@@ -993,6 +1017,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Set that this is a proxy request
+	 *
 	 * @return RequestContext
 	 */
 	function setProxyRequest(){
@@ -1008,6 +1033,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Set the flag that tells the framework not to render, just execute
+	 *
 	 * @remove Remove the flag completely
 	 *
 	 * @return RequestContext
@@ -1066,6 +1092,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Set the ses base URL for this request
+	 *
 	 * @return RequestContext
 	 */
 	function setSESBaseURL( required string sesBaseURL ){
@@ -1284,6 +1311,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Check wether the incoming event has been flagged for caching
+	 *
 	 * @cacheEntry The md entry for caching
 	 *
 	 * @return RequestContext
@@ -1301,6 +1329,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Check wether the incoming event has been flagged for caching
+	 *
 	 * @return RequestContext
 	 */
 	function removeEventCacheableEntry(){
@@ -1316,6 +1345,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Set the view cacheable entry
+	 *
 	 * @cacheEntry The md entry for caching
 	 *
 	 * @return RequestContext
@@ -1349,6 +1379,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Get the routed structure of key-value pairs. What the ses interceptor could match.
+	 *
 	 * @return RequestContext
 	 */
 	function setRoutedStruct( required struct routedStruct ){
@@ -1450,6 +1481,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Use this method to tell the framework to render data for you. The framework will take care of marshalling the data for you
+	 *
 	 * @type             The type of data to render. Valid types are JSON, JSONP, JSONT, XML, WDDX, PLAIN/HTML, TEXT, PDF. The default is HTML or PLAIN. If an invalid type is sent in, this method will throw an error
 	 * @data             The data you would like to marshall and return by the framework
 	 * @contentType      The content type of the data. This will be used in the cfcontent tag: text/html, text/plain, text/xml, text/json, etc. The default value is text/html. However, if you choose JSON this method will choose application/json, if you choose WDDX or XML this method will choose text/xml for you.
@@ -1708,6 +1740,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Filters the collection or private collection down to only the provided keys.
+	 *
 	 * @keys    A list or array of keys to bring back from the collection or private collection.
 	 * @private Private or public, defaults public request collection
 	 */
@@ -1730,6 +1763,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Filters the private collection down to only the provided keys.
+	 *
 	 * @keys A list or array of keys to bring back from the private collection.
 	 */
 	struct function getPrivateOnly( required keys ){
@@ -1738,6 +1772,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Filters the collection or private collection down to all keys except the provided keys.
+	 *
 	 * @keys    A list or array of keys to exclude from the results of the collection or private collection.
 	 * @private Private or public, defaults public request collection
 	 */
@@ -1760,6 +1795,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Filters the private collection down to all keys except the provided keys.
+	 *
 	 * @keys A list or array of keys to exclude from the results of the private collection.
 	 */
 	struct function getPrivateExcept( required keys ){
@@ -1834,6 +1870,7 @@ component serializable="false" accessors="true" {
 	/**
 	 * Get's the file mime type for a given file extension, this is mostly used for file delivery.
 	 * If not in the most common, we deliver as a binary octet-stream.
+	 *
 	 * @extension The extension to assume.
 	 */
 	private function getFileMimeType( required string extension ){

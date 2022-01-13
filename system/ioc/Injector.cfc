@@ -13,12 +13,12 @@
  * injector = new coldbox.system.ioc.Injector();
  * </pre>
  *
- *	Binder Startup
+ * Binder Startup
  * <pre class='brush: cf'>
  * injector = new coldbox.system.ioc.Injector(new MyBinder());
  * </pre>
  *
- *	Binder Path Startup
+ * Binder Path Startup
  * <pre class='brush: cf'>
  * injector = new coldbox.system.ioc.Injector( "config.MyBinder" );
  * </pre>
@@ -101,12 +101,14 @@ component
 
 	/**
 	 * The Global AsyncManager
+	 *
 	 * @see coldbox.system.async.AsyncManager
 	 */
 	property name="asyncManager";
 
 	/**
 	 * The logBox task scheduler executor
+	 *
 	 * @see coldbox.system.async.executors.ScheduledExecutor
 	 */
 	property name="taskScheduler";
@@ -422,10 +424,10 @@ component
 	 * @targetObject  The object requesting the dependency, usually only used by DSL lookups
 	 * @injector      The child injector to use when retrieving the instance
 	 *
+	 * @return The requested instance
+	 *
 	 * @throws InstanceNotFoundException - When the requested instance cannot be found
 	 * @throws InvalidChildInjector      - When you request an instance from an invalid child injector name
-	 *
-	 * @return The requested instance
 	 **/
 	function getInstance(
 		name,
@@ -939,6 +941,7 @@ component
 
 	/**
 	 * Get a registered scope in this injector by name
+	 *
 	 * @scope The scope name
 	 */
 	function getScope( required any scope ){
@@ -1048,6 +1051,7 @@ component
 
 	/**
 	 * Process after DI completion routines
+	 *
 	 * @targetObject      The target object to do some goodness on
 	 * @DICompleteMethods The array of DI completion methods to call
 	 */

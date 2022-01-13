@@ -3,6 +3,7 @@
  * www.ortussolutions.com
  * ---
  * The system web renderer
+ *
  * @author Luis Majano <lmajano@ortussolutions.com>
  */
 component
@@ -483,6 +484,7 @@ component
 
 	/**
 	 * Renders an external view anywhere that cfinclude works.
+	 *
 	 * @view                   The the view to render
 	 * @args                   A struct of arguments to pass into the view for rendering, will be available as 'args' in the view.
 	 * @cache                  Cached the view output or not, defaults to false
@@ -699,6 +701,7 @@ component
 
 	/**
 	 * Locate a layout in the conventions system
+	 *
 	 * @layout The layout name
 	 */
 	function locateLayout( required layout ){
@@ -727,6 +730,7 @@ component
 
 	/**
 	 * Locate a layout in the conventions system
+	 *
 	 * @layout         The layout name
 	 * @module         The name of the module we are searching for
 	 * @explicitModule Are we locating explicitly or implicitly for a module layout
@@ -789,6 +793,7 @@ component
 
 	/**
 	 * Locate a view in the conventions or external paths
+	 *
 	 * @view The view to locate
 	 */
 	function locateView( required view ){
@@ -806,6 +811,7 @@ component
 
 	/**
 	 * Locate a view in the conventions system
+	 *
 	 * @view           The view name
 	 * @module         The name of the module we are searching for
 	 * @explicitModule Are we locating explicitly or implicitly for a module layout

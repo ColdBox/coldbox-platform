@@ -166,8 +166,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * Announce an interception to the system. If you use the asynchronous facilities, you will get a thread structure report as a result.
 	 *
 	 * This is needed so interceptors can write to the page output buffer
-	 * @output true
 	 *
+	 * @output           true
 	 * @state            An interception state to process
 	 * @data             A data structure used to pass intercepted information.
 	 * @async            If true, the entire interception chain will be ran in a separate thread.
@@ -432,7 +432,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 *
 	 * @customPoints A comma delimited list or array of custom interception points to append. If they already exists, then they will not be added again.
 	 *
-	 * @return  The current interception points
+	 * @return The current interception points
 	 */
 	array function appendInterceptionPoints( required customPoints ){
 		// Inflate custom points
@@ -464,6 +464,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 	/**
 	 * Unregister an interceptor from an interception state or all states. If the state does not exists, it returns false
+	 *
 	 * @interceptorName The interceptor to unregister
 	 * @state           The state to unregister from, if not, passed, then from all states
 	 */
