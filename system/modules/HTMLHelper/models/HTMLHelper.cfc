@@ -2547,7 +2547,7 @@ component
 
 		// Calculate mapping for the asset in question
 		var mapping = ( arguments.useModuleRoot && len( arguments.currentModule ) ) ? event.getModuleRoot() : controller.getSetting(
-			"appMapping"
+			"webMapping"
 		);
 
 		// Calculate href for asset delivery via Browser

@@ -25,8 +25,9 @@ component accessors="true" {
 	 * Parse the application configuration file
 	 *
 	 * @overrideAppMapping The direct location of the application in the web server.
+	 * @overrideWebMapping
 	 */
-	ApplicationLoader function loadConfiguration( string overrideAppMapping = "" ){
+	ApplicationLoader function loadConfiguration( string overrideAppMapping = "", string overrideWebMapping = "" ){
 		// Create Config Structure
 		var configStruct      = {};
 		var coldboxSettings   = variables.coldboxSettings;
@@ -50,6 +51,8 @@ component accessors="true" {
 		} else {
 			configStruct.appMapping = arguments.overrideAppMapping;
 		}
+		// Store web mapping
+		configStruct.webMapping = arguments.overrideWebMapping;
 
 		// Default Locations for ROOT based apps, which is the default
 		// Parse out the first / to create the invocation Path
@@ -101,6 +104,7 @@ component accessors="true" {
 
 		// Setup Default Application Path from main controller
 		configStruct.applicationPath = variables.controller.getAppRootPath();
+
 		// Check for Override of AppMapping
 		if ( len( trim( arguments.overrideAppMapping ) ) ) {
 			configStruct.applicationPath = expandPath( arguments.overrideAppMapping ) & "/";
