@@ -82,19 +82,26 @@ component extends="coldbox.system.cache.store.indexers.MetadataIndexer" accessor
 	/**
 	 * Get the top 100 pool of metadata elements
 	 */
-	boolean function getPoolMetadata( numeric max = 100 ){
+	struct function getPoolMetadata( numeric max = 100 ){
 		var results = {};
+		var params = [ arguments.max ];
+		
+		// make sure the max argument is a valid integer
+		if ( !isValid( "integer", arguments.max ) ) {
+            throw( "invalid max records specified - it must be an integer" );
+        }
 
 		// MySQL Default
 		var sql = "SELECT #variables.fields# FROM #variables.config.table# ORDER BY objectKey LIMIT ?";
 		// MSSQL
 		if ( variables.sqlType == "MSSQL" ) {
-			sql = "SELECT TOP ? #variables.fields# FROM #variables.config.table# ORDER BY objectKey";
+			sql = "SELECT TOP #arguments.max# #variables.fields# FROM #variables.config.table# ORDER BY objectKey";
+			params = [];
 		}
 
 		queryExecute(
 			sql,
-			[ arguments.max ],
+			params,
 			{
 				datasource : variables.config.dsn,
 				username   : variables.config.dsnUsername,
