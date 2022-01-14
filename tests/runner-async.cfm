@@ -17,4 +17,8 @@
 <cfparam name="url.coverageBrowserOutputDir" default="#expandPath( '/tests/results/coverageReport' )#">
 
 <!--- Include the TestBox HTML Runner --->
-<cfinclude template="/testbox/system/runners/HTMLRunner.cfm" >
+<cfif server.coldfusion.productVersion.listFirst() eq 2016>
+	<h1>Skipping Adobe 2016, too many issues in ACF 2016</h1>
+<cfelse>
+	<cfinclude template="/testbox/system/runners/HTMLRunner.cfm" >
+</cfif>
