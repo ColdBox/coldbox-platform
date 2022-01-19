@@ -223,6 +223,7 @@ component
 
 	/**
 	 * Verifies if an extension is valid in the Router
+	 *
 	 * @extension The extension to validate
 	 */
 	boolean function isValidExtension( required extension ){
@@ -230,8 +231,9 @@ component
 	}
 
 	/**
-	 * @deprecated Please use `getModuleRoutingTable()` instead.
 	 * A quick ColdBox4 compatibility wrapper
+	 *
+	 * @deprecated Please use `getModuleRoutingTable()` instead.
 	 */
 	struct function getModulesRoutingTable(){
 		return getModuleRoutingTable();
@@ -241,11 +243,11 @@ component
 	// DEPRECATED FUNCTIONALITY: Remove in later release
 
 	/**
-	 * @deprecated Please use the Routes.cfc approach instead
 	 *
 	 * Includes a routes configuration file as an added import and returns itself after import
 	 *
-	 * @location The include location of the routes configuration template. Do not add '.cfm'
+	 * @deprecated Please use the Routes.cfc approach instead
+	 * @location   The include location of the routes configuration template. Do not add '.cfm'
 	 *
 	 * @return Router
 	 */
@@ -314,6 +316,7 @@ component
 
 	/**
 	 * Register modules routes in the specified position in the main routing table, and returns itself
+	 *
 	 * @pattern The pattern to match against the URL
 	 * @module  The module to load routes for
 	 * @append  Whether the module entry point route should be appended or pre-pended to the main routes array. By default we append to the end of the array
@@ -380,6 +383,7 @@ component
 
 	/**
 	 * Remove a module's routing table and registration points and return itself
+	 *
 	 * @module The module to remove
 	 *
 	 * @return Router
@@ -397,6 +401,7 @@ component
 
 	/**
 	 * Get a module's routes array
+	 *
 	 * @module The module to get
 	 */
 	array function getModuleRoutes( required module ){
@@ -412,6 +417,7 @@ component
 
 	/**
 	 * Register a namespace in the specified position in the main routing table, and returns itself
+	 *
 	 * @pattern   The pattern to match against the URL.
 	 * @namespace The name of the namespace to register
 	 * @append    Whether the route should be appended or pre-pended to the array. By default we append to the end of the array
@@ -440,6 +446,7 @@ component
 
 	/**
 	 * Get a namespace routes array
+	 *
 	 * @namespace The namespace to get
 	 */
 	array function getNamespaceRoutes( required namespace ){
@@ -456,6 +463,7 @@ component
 
 	/**
 	 * Remove a namespace's routing table and registration points and return itself
+	 *
 	 * @namespace The namespace to remove
 	 *
 	 * @return Router
@@ -477,10 +485,10 @@ component
 	/****************************************************************************************************************************/
 
 	/**
-	 * @deprecated This has been deprecated in favor of the <code>group()</code> function.
 	 *
 	 * Starts a with closure, where all arguments will be prefixed for the next concatenated addRoute() methods until an endWith() is called
 	 *
+	 * @deprecated            This has been deprecated in favor of the <code>group()</code> function.
 	 * @pattern               The pattern to match against the URL.
 	 * @handler               The handler to execute if pattern matched.
 	 * @action                The action in a handler to execute if a pattern is matched.  This can also be a structure based on the HTTP method(GET,POST,PUT,DELETE). ex: {GET:'show', PUT:'update', DELETE:'delete', POST:'save'}
@@ -524,9 +532,10 @@ component
 	}
 
 	/**
-	 * @deprecated This has been deprecated in favor of the <code>group()</code> function.
 	 *
 	 * End a with closure and returns itself
+	 *
+	 * @deprecated This has been deprecated in favor of the <code>group()</code> function.
 	 *
 	 * @return Router
 	 */
@@ -2028,6 +2037,7 @@ component
 
 	/**
 	 * Get the correct route actions based on only and except lists
+	 *
 	 * @initial The initial set of route actions
 	 * @only    Limit actions with only
 	 * @except  Exclude actions with except

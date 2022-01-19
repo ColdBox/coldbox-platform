@@ -2,10 +2,11 @@
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * @author Luis Majano
  *
  * This is a utility object that helps object stores keep their elements indexed and stored nicely.
  * It is also a nice way to give back metadata results.
+ *
+ * @author Luis Majano
  */
 component accessors="true" {
 
@@ -28,7 +29,6 @@ component accessors="true" {
 	 * Constructor
 	 *
 	 * @fields The list or array of fields to bind this index on
-	 *
 	 */
 	function init( required fields ){
 		// Create metadata pool
@@ -169,8 +169,8 @@ component accessors="true" {
 	 * Get an array of sorted keys for this indexer according to parameters
 	 *
 	 * @objectKey
-	 * @property
-	 * @value
+	 * @property 
+	 * @value    
 	 */
 	array function getSortedKeys(
 		required property,

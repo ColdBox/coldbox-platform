@@ -26,13 +26,19 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 *
 	 * @return The LoaderService
 	 */
-	LoaderService function loadApplication( overrideConfigFile = "", overrideAppMapping = "", overrideWebMapping="" ){
+	LoaderService function loadApplication(
+		overrideConfigFile = "",
+		overrideAppMapping = "",
+		overrideWebMapping = ""
+	){
 		var coldBoxSettings = variables.controller.getColdBoxSettings();
 		var services        = variables.controller.getServices();
 
 		// Load application configuration file
-		createAppLoader( arguments.overrideConfigFile )
-			.loadConfiguration( arguments.overrideAppMapping, arguments.overrideWebMapping );
+		createAppLoader( arguments.overrideConfigFile ).loadConfiguration(
+			arguments.overrideAppMapping,
+			arguments.overrideWebMapping
+		);
 
 		// Do we need to create a controller decorator?
 		if ( len( variables.controller.getSetting( "ControllerDecorator" ) ) ) {

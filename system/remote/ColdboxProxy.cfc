@@ -29,9 +29,9 @@ component serializable="false" accessors="true" {
 	/**
 	 * Process a remote call into ColdBox's event model and return data/objects back.
 	 *
-	 * @throws NoEventDetected - When no passed even is incoming via arguments[ "event" ]
-	 *
 	 * @return If no results where found, this method returns null/void
+	 *
+	 * @throws NoEventDetected - When no passed even is incoming via arguments[ "event" ]
 	 */
 	private any function process(){
 		var refLocal = {};
@@ -252,10 +252,10 @@ component serializable="false" accessors="true" {
 	 * @targetObject  The object requesting the dependency, usually only used by DSL lookups
 	 * @injector      The child injector to use when retrieving the instance
 	 *
+	 * @return The requested instance
+	 *
 	 * @throws InstanceNotFoundException - When the requested instance cannot be found
 	 * @throws InvalidChildInjector      - When you request an instance from an invalid child injector name
-	 *
-	 * @return The requested instance
 	 **/
 	private function getInstance(
 		name,

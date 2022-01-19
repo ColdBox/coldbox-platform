@@ -2,8 +2,9 @@
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * @author Luis Majano <lmajano@ortussolutions.com>
  * Loads the framwork into memory and provides a ColdBox application.
+ *
+ * @author Luis Majano <lmajano@ortussolutions.com>
  */
 component serializable="false" accessors="true" {
 
@@ -52,13 +53,13 @@ component serializable="false" accessors="true" {
 		string COLDBOX_APP_KEY,
 		string COLDBOX_APP_MAPPING = "",
 		any COLDBOX_FAIL_FAST      = true,
-		string COLDBOX_WEB_MAPPING = "",
+		string COLDBOX_WEB_MAPPING = ""
 	){
-		variables.COLDBOX_CONFIG_FILE 	= arguments.COLDBOX_CONFIG_FILE;
+		variables.COLDBOX_CONFIG_FILE   = arguments.COLDBOX_CONFIG_FILE;
 		variables.COLDBOX_APP_ROOT_PATH = arguments.COLDBOX_APP_ROOT_PATH;
-		variables.COLDBOX_APP_MAPPING 	= arguments.COLDBOX_APP_MAPPING;
-		variables.COLDBOX_WEB_MAPPING 	= arguments.COLDBOX_WEB_MAPPING;
-		variables.COLDBOX_FAIL_FAST 	= arguments.COLDBOX_FAIL_FAST;
+		variables.COLDBOX_APP_MAPPING   = arguments.COLDBOX_APP_MAPPING;
+		variables.COLDBOX_WEB_MAPPING   = arguments.COLDBOX_WEB_MAPPING;
+		variables.COLDBOX_FAIL_FAST     = arguments.COLDBOX_FAIL_FAST;
 
 		// App Key Check
 		if ( structKeyExists( arguments, "COLDBOX_APP_KEY" ) AND len( trim( arguments.COLDBOX_APP_KEY ) ) ) {
@@ -101,7 +102,13 @@ component serializable="false" accessors="true" {
 		// Create Brand New Controller
 		application[ appKey ] = new coldbox.system.web.Controller( COLDBOX_APP_ROOT_PATH, appKey );
 		// Setup the Framework And Application
-		application[ appKey ].getLoaderService().loadApplication( COLDBOX_CONFIG_FILE, COLDBOX_APP_MAPPING, COLDBOX_WEB_MAPPING );
+		application[ appKey ]
+			.getLoaderService()
+			.loadApplication(
+				COLDBOX_CONFIG_FILE,
+				COLDBOX_APP_MAPPING,
+				COLDBOX_WEB_MAPPING
+			);
 		// Get the reinit key
 		// Application Start Handler
 		try {
@@ -630,6 +637,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Process an exception and returns a rendered bug report
+	 *
 	 * @controller The ColdBox Controller
 	 * @exception  The ColdFusion exception
 	 */
@@ -708,6 +716,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Process render data setup
+	 *
 	 * @controller  The ColdBox controller
 	 * @statusCode  The status code to send
 	 * @statusText  The status text to send

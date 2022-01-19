@@ -407,8 +407,7 @@ component accessors="true" {
 	 * "-PT6H3M"    -- parses as "-6 hours and -3 minutes"
 	 * "-PT-6H+3M"  -- parses as "+6 hours and -3 minutes"
 	 *
-	 * @see https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/Duration.html#parse(java.lang.CharSequence)
-	 *
+	 * @see  https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/Duration.html#parse(java.lang.CharSequence)
 	 * @text The string to parse and build up to a duration
 	 */
 	Duration function parse( required text ){

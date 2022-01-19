@@ -2,10 +2,11 @@
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * @author Luis Majano
  *
  * The main interface for CacheBox object storages.
  * A store is a physical counterpart to a cache, in which objects are kept, indexed and monitored.
+ *
+ * @author Luis Majano
  */
 interface {
 

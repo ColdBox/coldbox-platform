@@ -55,6 +55,7 @@ component accessors=true serializable=false {
 	property name="cacheId" default="";
 	/**
 	 * ColdBox Utility object
+	 *
 	 * @doc_generic coldbox.system.core.util.Util
 	 */
 	property name="utility";
@@ -258,7 +259,7 @@ component accessors=true serializable=false {
 	 * @keys   The comma delimited list or an array of keys to lookup in the cache
 	 * @prefix A prefix to prepend to the keys with, if any
 	 *
-	 * @struct {key:boolean}
+	 * @return struct {key:boolean}
 	 */
 	struct function lookupMulti( required keys, prefix = "" ){
 		if ( isSimpleValue( arguments.keys ) ) {
@@ -283,7 +284,7 @@ component accessors=true serializable=false {
 	 * @keys   The comma delimited list or an array of keys to lookup in the cache
 	 * @prefix A prefix to prepend to the keys with, if any
 	 *
-	 * @struct {key:boolean}
+	 * @return struct {key:boolean}
 	 */
 	struct function getMulti( required keys, prefix = "" ){
 		if ( isSimpleValue( arguments.keys ) ) {

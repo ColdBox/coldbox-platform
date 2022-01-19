@@ -52,6 +52,7 @@ component accessors="true" {
 
 	/**
 	 * Serialize via objectSave()
+	 *
 	 * @target The complex object, such as a query or CFC, that will be serialized.
 	 */
 	function serializeWithObjectSave( any target ){

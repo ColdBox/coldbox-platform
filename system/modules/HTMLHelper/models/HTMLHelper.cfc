@@ -148,6 +148,7 @@ component
 
 	/**
 	 * Generate line breaks
+	 *
 	 * @count The number
 	 */
 	function br( numeric count = 1 ){
@@ -156,6 +157,7 @@ component
 
 	/**
 	 * Generate non-breaking spaces
+	 *
 	 * @count The number
 	 */
 	function nbs( numeric count = 1 ){
@@ -164,6 +166,7 @@ component
 
 	/**
 	 * Generate headers
+	 *
 	 * @content The content
 	 * @size    The size
 	 */
@@ -173,6 +176,7 @@ component
 
 	/**
 	 * Generate tags
+	 *
 	 * @tag      The tag to generate
 	 * @content  The content
 	 * @data     The data-{key} elements to add
@@ -222,6 +226,7 @@ component
 
 	/**
 	 * Generate anchors
+	 *
 	 * @name The name of the anchor
 	 * @text The text of the link
 	 * @data The data-{key} elements to add
@@ -546,6 +551,7 @@ component
 
 	/**
 	 * Slugify a string for URL Safety
+	 *
 	 * @str       Target to slugify
 	 * @maxLength The maximum number of characters for the slug
 	 * @allow     a regex safe list of additional characters to allow
@@ -581,6 +587,7 @@ component
 
 	/**
 	 * Creates auto discovery links for RSS and ATOM feeds.
+	 *
 	 * @type  Type of feed: RSS or ATOM or Custom Type
 	 * @href  Te href link to discover
 	 * @rel   The rel attribute
@@ -2921,7 +2928,6 @@ component
 	 * @tag    The tag to wrap with
 	 * @end    Start or end of tag
 	 * @attrs  The attributes of the tag
-	 *
 	 */
 	private function wrapTag(
 		required buffer,
@@ -2950,6 +2956,7 @@ component
 
 	/**
 	 * Make pretty text
+	 *
 	 * @text Target
 	 */
 	private string function makePretty( required text ){
@@ -2962,6 +2969,7 @@ component
 
 	/**
 	 * Prepare a base link
+	 *
 	 * @noBaseURL Indicator for building
 	 * @src       The source target
 	 */

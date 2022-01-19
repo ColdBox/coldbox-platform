@@ -2,9 +2,10 @@
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * @author Luis Majano
  *
  * I am a concurrent object store. In other words, I am fancy! This store is case-sensitive
+ *
+ * @author Luis Majano
  */
 component implements="coldbox.system.cache.store.IObjectStore" accessors="true" {
 

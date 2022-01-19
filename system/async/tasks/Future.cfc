@@ -91,7 +91,7 @@ component accessors="true" {
 	 * If not already completed, completes this Future with a CancellationException.
 	 * Dependent Futures that have not already completed will also complete exceptionally, with a CompletionException caused by this CancellationException.
 	 *
-	 * @returns true if this task is now cancelled
+	 * @return true if this task is now cancelled
 	 */
 	boolean function cancel( boolean mayInterruptIfRunning = true ){
 		return variables.native.cancel( javacast( "boolean", arguments.mayInterruptIfRunning ) );
@@ -160,7 +160,7 @@ component accessors="true" {
 	 *
 	 * @message An optional message to add to the exception to be thrown.
 	 *
-	 * @returns The same Future
+	 * @return The same Future
 	 */
 	Future function completeExceptionally( message = "Future operation completed with manual exception" ){
 		variables.native.completeExceptionally(
@@ -185,10 +185,10 @@ component accessors="true" {
 	 *
 	 * @defaultValue If the returned value is null, then we can pass a default value to return
 	 *
+	 * @return The result value
+	 *
 	 * @throws CompletionException   - if this future completed exceptionally or a completion computation threw an exception
 	 * @throws CancellationException - if the computation was cancelled
-	 *
-	 * @return The result value
 	 */
 	any function join( defaultValue ){
 		var results = variables.native.join();
@@ -210,8 +210,9 @@ component accessors="true" {
 	 * @timeUnit     The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is milliseconds
 	 * @defaultValue If the Future did not produce a value, then it will return this default value.
 	 *
-	 * @returns The result value
-	 * @throws CancellationException, ExecutionException, InterruptedException, TimeoutException
+	 * @return The result value
+	 *
+	 * @throws CancellationException , ExecutionException, InterruptedException, TimeoutException
 	 */
 	any function get(
 		numeric timeout = 0,
@@ -255,9 +256,9 @@ component accessors="true" {
 	 *
 	 * @defaultValue The value to return if not completed
 	 *
-	 * @returns The result value, if completed, else the given defaultValue
+	 * @return The result value, if completed, else the given defaultValue
 	 *
-	 * @throws CancellationException, CompletionException
+	 * @throws CancellationException , CompletionException
 	 */
 	function getNow( required defaultValue ){
 		return variables.native.getNow( arguments.defaultValue );
@@ -812,8 +813,9 @@ component accessors="true" {
 	 * @timeout  The timeout to use when waiting for each item to be processed
 	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is milliseconds
 	 *
-	 * @throws UnsupportedCollectionException - When something other than an array or struct is passed as items
 	 * @return An array or struct with the items processed in parallel
+	 *
+	 * @throws UnsupportedCollectionException - When something other than an array or struct is passed as items
 	 */
 	any function allApply( items, fn, executor, timeout, timeUnit ){
 		var incomingExecutor = arguments.executor ?: "";
@@ -911,7 +913,7 @@ component accessors="true" {
 	 * @timeout  The timeout value to use, defaults to forever
 	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is milliseconds
 	 *
-	 * @returns This future
+	 * @return This future
 	 */
 	Future function withTimeout( numeric timeout = 0, string timeUnit = "milliseconds" ){
 		variables.futureTimeout = arguments;

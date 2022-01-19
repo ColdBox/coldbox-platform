@@ -50,6 +50,7 @@ component accessors="true" {
 
 	/**
 	 * Constructor
+	 *
 	 * @method                    The method name that was intercepted
 	 * @args                      The argument collection that was intercepted
 	 * @methodMetadata            The method metadata that was intercepted
@@ -92,6 +93,7 @@ component accessors="true" {
 
 	/**
 	 * Increment the interceptor index pointer
+	 *
 	 * @return MethodInvocation
 	 */
 	function incrementInterceptorIndex(){
@@ -101,6 +103,7 @@ component accessors="true" {
 
 	/**
 	 * Set args
+	 *
 	 * @return MethodInvocation
 	 */
 	function setArgs( required args ){

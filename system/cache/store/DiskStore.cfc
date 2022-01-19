@@ -2,9 +2,10 @@
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * @author Luis Majano
  *
  * I am a disk store, I am not that fancy as I am slower.
+ *
+ * @author Luis Majano
  */
 component implements="coldbox.system.cache.store.IObjectStore" accessors="true" {
 

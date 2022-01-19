@@ -108,7 +108,6 @@ component accessors="true" {
 	 *
 	 * @target The target object
 	 * @data   The data used in the interception call
-	 *
 	 */
 	private function invoker( required target, required data ){
 		var results = invoke(

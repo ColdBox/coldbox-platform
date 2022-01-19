@@ -32,7 +32,7 @@ component accessors="true" {
 	 * If not already completed, completes this Future with a CancellationException.
 	 * Dependent Futures that have not already completed will also complete exceptionally, with a CompletionException caused by this CancellationException.
 	 *
-	 * @returns true if this task is now cancelled
+	 * @return true if this task is now cancelled
 	 */
 	boolean function cancel( boolean mayInterruptIfRunning = true ){
 		return variables.native.cancel( javacast( "boolean", arguments.mayInterruptIfRunning ) );
@@ -46,8 +46,9 @@ component accessors="true" {
 	 * @timeUnit     The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is milliseconds
 	 * @defaultValue If the Future did not produce a value, then it will return this default value.
 	 *
-	 * @returns The result value
-	 * @throws CancellationException, ExecutionException, InterruptedException, TimeoutException
+	 * @return The result value
+	 *
+	 * @throws CancellationException , ExecutionException, InterruptedException, TimeoutException
 	 */
 	any function get(
 		numeric timeout = 0,
