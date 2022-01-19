@@ -2,7 +2,6 @@
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * @author Luis Majano
  *
  * This CacheBox provider is our own enterprise cache implementation with many options and storage providers.
  *
@@ -15,6 +14,8 @@
  * - cacheFactory : The linkage to the cachebox factory
  * - eventManager : The linkage to the event manager
  * - cacheID : The unique identity code of this CFC
+ *
+ * @author Luis Majano
  */
 component
 	accessors   ="true"
@@ -35,18 +36,21 @@ component
 
 	/**
 	 * The eviction policy to use on the cache storage: Defaults to LRU
+	 *
 	 * @doc_generic coldbox.system.cache.policies.IEvictionPolicy
 	 */
 	property name="evictionPolicy";
 
 	/**
 	 * The object storage object
+	 *
 	 * @doc_generic coldbox.system.cache.store.IObjectStore
 	 */
 	property name="objectStore";
 
 	/**
 	 * The cache stats object
+	 *
 	 * @doc_generic coldbox.system.cache.util.CacheStats
 	 */
 	property name="stats";
@@ -634,8 +638,7 @@ component
 	 * Announce a key expiration
 	 *
 	 * @objectKey The key target
-	 *
-	 * @result CacheBoxProvider
+	 * @result    CacheBoxProvider
 	 */
 	private function announceExpiration( required objectKey ){
 		// Execute afterCacheElementExpired Interception

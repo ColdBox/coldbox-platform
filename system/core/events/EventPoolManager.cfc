@@ -131,7 +131,7 @@ component accessors="true" {
 	/**
 	 * Get an object from the pool
 	 *
-	 * @name  The name of the object
+	 * @name The name of the object
 	 *
 	 * @throws EventPoolManager.ObjectNotFound
 	 */
@@ -154,7 +154,7 @@ component accessors="true" {
 	 *
 	 * @customStates A comma delimited list or array of custom interception states to append. If they already exists, then they will not be added again.
 	 *
-	 * @return  The current interception points
+	 * @return The current interception points
 	 */
 	array function appendInterceptionPoints( required customStates ){
 		// Inflate custom points

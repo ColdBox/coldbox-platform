@@ -2,10 +2,11 @@
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ----
- * @author Luis Majano
  *
  * The main CacheBox factory and configuration of caches. From this factory
  * is where you will get all the caches you need to work with or register more caches.
+ *
+ * @author Luis Majano
  **/
 component accessors=true serializable=false {
 
@@ -54,12 +55,14 @@ component accessors=true serializable=false {
 
 	/**
 	 * The Global AsyncManager
+	 *
 	 * @see coldbox.system.async.AsyncManager
 	 */
 	property name="asyncManager";
 
 	/**
 	 * The logBox task scheduler executor
+	 *
 	 * @see coldbox.system.async.executors.ScheduledExecutor
 	 */
 	property name="taskScheduler";
@@ -264,8 +267,9 @@ component accessors=true serializable=false {
 	 *
 	 * @name The cache name to get
 	 *
-	 * @throws CacheFactory.CacheNotFoundException
 	 * @return coldbox.system.cache.providers.ICacheProvider
+	 *
+	 * @throws CacheFactory.CacheNotFoundException
 	 */
 	function getCache( required name ){
 		lock name="#variables.lockName#" type="readonly" timeout="20" throwontimeout="true" {
@@ -294,9 +298,9 @@ component accessors=true serializable=false {
 	/**
 	 * Add a default named cache to our registry, create it, config it, register it and return it of type: coldbox.system.cache.providers.ICacheProvider
 	 *
-	 * @name The name of the default cache to create
-	 *
+	 * @name  The name of the default cache to create
 	 * @throw CacheFactory.InvalidNameException,CacheFactory.CacheExistsException
+	 *
 	 * @return coldbox.system.cache.providers.ICacheProvider
 	 */
 	function addDefaultCache( required name ){

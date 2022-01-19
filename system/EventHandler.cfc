@@ -3,6 +3,7 @@
  * www.ortussolutions.com
  * ---
  * Base class for all event handlers
+ *
  * @author Luis Majano <lmajano@ortussolutions.com>
  */
 component
@@ -40,6 +41,7 @@ component
 
 	/**
 	 * Constructor
+	 *
 	 * @controller The ColdBox controller
 	 *
 	 * @return EventHandler
@@ -65,6 +67,7 @@ component
 
 	/**
 	 * Verifies if an action exists in the current event handler, public or private
+	 *
 	 * @action The action to verify that it exists and it is a function
 	 */
 	boolean function _actionExists( required action ){
@@ -81,6 +84,7 @@ component
 
 	/**
 	 * Return action metadata in the current event handler, public or private
+	 *
 	 * @action The action to get the metadata from
 	 */
 	struct function _actionMetadata( required action ){
@@ -89,6 +93,7 @@ component
 
 	/**
 	 * _privateInvoker for private events
+	 *
 	 * @method        The method to execute
 	 * @argCollection The arguments to execute the method with.
 	 */

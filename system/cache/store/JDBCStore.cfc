@@ -2,7 +2,6 @@
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * @author Luis Majano
  *
  * I am a cool cool JDBC Store for CacheBox
  * You need to create the table first with the following columns
@@ -21,6 +20,8 @@
  * We also recommend indexes for: hits, created, lastAccessed, timeout and isExpired columns.
  *
  * Or look in the /coldbox/system/cache/store/sql/*.sql for you sql script for your DB.
+ *
+ * @author Luis Majano
  */
 component implements="coldbox.system.cache.store.IObjectStore" accessors="true" {
 

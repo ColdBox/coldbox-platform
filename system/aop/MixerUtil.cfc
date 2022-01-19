@@ -17,6 +17,7 @@ component {
 
 	/**
 	 * Store JointPoint information
+	 *
 	 * @jointpoint   The jointpoint to proxy
 	 * @interceptors The jointpoint interceptors
 	 *
@@ -32,6 +33,7 @@ component {
 
 	/**
 	 * Invoke a mixed in proxy method
+	 *
 	 * @method The method to proxy execute
 	 * @args   The method args to proxy execute
 	 */
@@ -41,6 +43,7 @@ component {
 
 	/**
 	 * Mix in a template on an injected target
+	 *
 	 * @templatePath The template to mix in
 	 *
 	 * @return Instance
@@ -52,6 +55,7 @@ component {
 
 	/**
 	 * Remove a method from this target mixin
+	 *
 	 * @methodName The method to poof away!
 	 *
 	 * @return Instance
@@ -67,6 +71,7 @@ component {
 
 	/**
 	 * Write an aspect to disk
+	 *
 	 * @genPath The location path
 	 * @code    The code to write
 	 *
@@ -79,6 +84,7 @@ component {
 
 	/**
 	 * Remove an aspect from disk
+	 *
 	 * @filePath The location path
 	 *
 	 * @return Instance

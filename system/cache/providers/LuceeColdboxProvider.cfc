@@ -2,9 +2,10 @@
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * @author Luis Majano
  *
  * This CacheBox provider communicates with the built in caches in the Lucee Engine for ColdBox Apps
+ *
+ * @author Luis Majano
  */
 component
 	accessors   ="true"

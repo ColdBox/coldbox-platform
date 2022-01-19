@@ -420,9 +420,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * @event  The event that was found to be invalid
 	 * @ehBean The event handler bean representing the invalid event
 	 *
-	 * @throws EventHandlerNotRegisteredException,InvalidEventHandlerException
-	 *
 	 * @return The string event that should be executed as the invalid event handler or throws an EventHandlerNotRegisteredException
+	 *
+	 * @throws EventHandlerNotRegisteredException ,InvalidEventHandlerException
 	 */
 	string function invalidEvent( required string event, required ehBean ){
 		// Announce it
@@ -509,9 +509,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	/**
 	 * Register's application event handlers according to convention and external paths
 	 *
-	 * @throws HandlersDirectoryNotFoundException
-	 *
 	 * @return HandlerService
+	 *
+	 * @throws HandlersDirectoryNotFoundException
 	 */
 	function registerHandlers(){
 		var handlersPath                 = controller.getSetting( "handlersPath" );

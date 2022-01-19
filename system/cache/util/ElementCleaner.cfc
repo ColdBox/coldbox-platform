@@ -2,9 +2,10 @@
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * @author Luis Majano
  *
  * A ColdBox utility to help clean cached objects for ColdBox Application Caches
+ *
+ * @author Luis Majano
  */
 component accessors="true" serializable="false" {
 

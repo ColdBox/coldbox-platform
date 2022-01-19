@@ -19,6 +19,7 @@ component implements="coldbox.system.aop.MethodInterceptor" accessors="true" {
 
 	/**
 	 * Constructor
+	 *
 	 * @logResults Log results or not
 	 */
 	function init( boolean logResults = true ){
@@ -28,6 +29,7 @@ component implements="coldbox.system.aop.MethodInterceptor" accessors="true" {
 
 	/**
 	 * Invoke an AOP method invocation
+	 *
 	 * @invocation             The invocation object
 	 * @invocation.doc_generic coldbox.system.aop.methodInvocation
 	 */

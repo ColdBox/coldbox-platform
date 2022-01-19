@@ -69,8 +69,7 @@ component accessors="true" singleton {
 	 * - cached : An unbounded pool where the number of threads will grow according to the tasks it needs to service. The threads are killed by a default 60 second timeout if not used and the pool shrinks back
 	 * - scheduled : A pool to use for scheduled tasks that can run one time or periodically
 	 *
-	 * @see https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ExecutorService.html
-	 *
+	 * @see            https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ExecutorService.html
 	 * @name           The name of the executor used for registration
 	 * @type           The type of executor to build fixed, cached, single, scheduled
 	 * @threads        How many threads to assign to the thread scheduler, default is 20
@@ -98,8 +97,8 @@ component accessors="true" singleton {
 
 	/**
 	 * Build a Java executor according to passed type and threads
-	 * @see https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executors.html
 	 *
+	 * @see            https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executors.html
 	 * @type           Available types are: fixed, cached, single, scheduled, {WireBoxID}
 	 * @threads        The number of threads to seed the executor with, if it allows it
 	 * @debug          Add output debugging
@@ -184,8 +183,9 @@ component accessors="true" singleton {
 	 *
 	 * @name The executor name
 	 *
-	 * @throws ExecutorNotFoundException
 	 * @return The executor object: coldbox.system.async.executors.Executor
+	 *
+	 * @throws ExecutorNotFoundException
 	 */
 	Executor function getExecutor( required name ){
 		if ( hasExecutor( arguments.name ) ) {

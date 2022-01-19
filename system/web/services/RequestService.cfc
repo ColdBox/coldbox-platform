@@ -8,6 +8,7 @@ component extends="coldbox.system.web.services.BaseService" {
 
 	/**
 	 * Constructor
+	 *
 	 * @controller The ColdBox Controller.
 	 */
 	function init( required controller ){
@@ -195,8 +196,7 @@ component extends="coldbox.system.web.services.BaseService" {
 	/**
 	 * Set the request context into the request scope
 	 *
-	 * @context Request Context object
-	 *
+	 * @context        Request Context object
 	 * @RequestService
 	 */
 	RequestService function setContext( required context ){
@@ -289,6 +289,7 @@ component extends="coldbox.system.web.services.BaseService" {
 
 	/**
 	 * Creates a new request context object
+	 *
 	 * @return coldbox.system.web.context.RequestContext
 	 */
 	function createContext( string classPath = "coldbox.system.web.context.RequestContext" ){

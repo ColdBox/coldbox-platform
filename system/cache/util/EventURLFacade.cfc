@@ -130,6 +130,7 @@ component accessors="true" {
 
 	/**
 	 * Builds a basic cache key without the hash component
+	 *
 	 * @keySuffix   The key suffix used
 	 * @targetEvent The targeted ColdBox event string
 	 */

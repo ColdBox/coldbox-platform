@@ -19,7 +19,6 @@ component implements="coldbox.system.ioc.scopes.IScope" accessors="true" {
 	/**
 	 * Configure the scope for operation and returns itself
 	 *
-	 *
 	 * @injector             The linked WireBox injector
 	 * @injector.doc_generic coldbox.system.ioc.Injector
 	 *
@@ -33,7 +32,6 @@ component implements="coldbox.system.ioc.scopes.IScope" accessors="true" {
 
 	/**
 	 * Retrieve an object from scope or create it if not found in scope
-	 *
 	 *
 	 * @mapping             The linked WireBox injector
 	 * @mapping.doc_generic coldbox.system.ioc.config.Mapping

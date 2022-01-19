@@ -12,6 +12,7 @@
  *
  * All these methds can use any of the concrete methods below. The most important one is the getScope()
  * method which will most likely be called by the saveFlash() method in order to persist the flashed map.
+ *
  * @author Luis Majano <lmajano@ortussolutions.com>
  */
 component accessors="true" {
@@ -33,6 +34,7 @@ component accessors="true" {
 
 	/**
 	 * Constructor
+	 *
 	 * @controller ColdBox Controller
 	 * @defaults   Default flash data packet for the flash RAM object=[scope,properties,inflateToRC,inflateToPRC,autoPurge,autoSave]
 	 */
@@ -65,6 +67,7 @@ component accessors="true" {
 
 	/**
 	 * Save the flash storage in preparing to go to the next request
+	 *
 	 * @return SessionFlash
 	 */
 	function saveFlash(){

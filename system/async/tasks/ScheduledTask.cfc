@@ -234,8 +234,7 @@ component accessors="true" {
 	/**
 	 * Set the timezone for this task using the task identifier else we default to our scheduler
 	 *
-	 * @see https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/ZoneId.html
-	 *
+	 * @see      https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/ZoneId.html
 	 * @timezone The timezone string identifier
 	 */
 	ScheduledTask function setTimezone( required timezone ){
@@ -580,7 +579,7 @@ component accessors="true" {
 	 * Calling this method prevents task frequencies to overlap.  By default all tasks are executed with an
 	 * interval but ccould potentially overlap if they take longer to execute than the period.
 	 *
-	 * @period
+	 * @period  
 	 * @timeUnit
 	 */
 	ScheduledTask function withNoOverlaps(){

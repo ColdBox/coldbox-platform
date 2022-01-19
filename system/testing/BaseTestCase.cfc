@@ -52,6 +52,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 
 	/**
 	 * Inspect test case for annotations
+	 *
 	 * @return BaseTestCase
 	 */
 	function metadataInspection(){
@@ -242,6 +243,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 
 	/**
 	 * I will return a mock controller object
+	 *
 	 * @return coldbox.system.testing.mock.web.MockController
 	 */
 	function getMockController(){
@@ -250,6 +252,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 
 	/**
 	 * Builds an empty functioning request context mocked with methods via MockBox.  You can also optionally wipe all methods on it
+	 *
 	 * @clearMethods Clear methods on the object
 	 * @decorator    The class path to the decorator to build into the mock request context
 	 *
@@ -297,6 +300,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 
 	/**
 	 * ColdBox must be loaded for this to work. Get a mock model object by convention. You can optional clear all the methods on the model object if you wanted to. The object is created but not initiated, that would be your job.
+	 *
 	 * @name         The name of the model to mock and return back
 	 * @clearMethods Clear methods on the object
 	 */
@@ -317,6 +321,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 
 	/**
 	 * Get the WireBox reference from the running application
+	 *
 	 * @return coldbox.system.ioc.Injector
 	 */
 	function getWireBox(){
@@ -325,6 +330,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 
 	/**
 	 * Get the CacheBox reference from the running application
+	 *
 	 * @return coldbox.system.cache.CacheFactory
 	 */
 	function getCacheBox(){
@@ -333,6 +339,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 
 	/**
 	 * Get the CacheBox reference from the running application
+	 *
 	 * @cacheName The cache name to retrieve or returns the 'default' cache by default.
 	 *
 	 * @return coldbox.system.cache.providers.ICacheProvider
@@ -343,6 +350,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 
 	/**
 	 * Get the LogBox reference from the running application
+	 *
 	 * @return coldbox.system.logging.LogBox
 	 */
 	function getLogBox(){
@@ -373,6 +381,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 
 	/**
 	 * Setup an initial request capture.  I basically look at the FORM/URL scopes and create the request collection out of them.
+	 *
 	 * @event The event to setup the request context with, simulates the URL/FORM.event
 	 *
 	 * @return BaseTestCase
@@ -401,7 +410,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * @withExceptionHandling If true, then ColdBox will process any errors through the exception handling framework instead of just throwing the error. Default: false.
 	 * @domain                Override the domain of execution of the request. Default is to use the cgi.server_name variable.
 	 *
-	 * @return                coldbox.system.context.RequestContext
+	 * @return coldbox.system.context.RequestContext
 	 */
 	function execute(
 		string event                  = "",
@@ -866,10 +875,10 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * @targetObject  The object requesting the dependency, usually only used by DSL lookups
 	 * @injector      The child injector to use when retrieving the instance
 	 *
+	 * @return The requested instance
+	 *
 	 * @throws InstanceNotFoundException - When the requested instance cannot be found
 	 * @throws InvalidChildInjector      - When you request an instance from an invalid child injector name
-	 *
-	 * @return The requested instance
 	 **/
 	function getInstance(
 		name,
@@ -883,6 +892,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 
 	/**
 	 * Get the ColdBox global utility class
+	 *
 	 * @return coldbox.system.core.util.Util
 	 */
 	function getUtil(){
@@ -931,6 +941,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 
 	/**
 	 * Process an exception and returns a rendered bug report
+	 *
 	 * @controller The ColdBox Controller
 	 * @exception  The ColdFusion exception
 	 */

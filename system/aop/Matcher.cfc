@@ -93,6 +93,7 @@ component accessors="true" {
 
 	/**
 	 * Matches a class to this matcher according to its criteria
+	 *
 	 * @target              The target to match against to
 	 * @mapping             The target mapping to match against
 	 * @mapping.doc_generic coldbox.system.ioc.config.Mapping
@@ -114,6 +115,7 @@ component accessors="true" {
 
 	/**
 	 * Matches a method to this matcher according to its criteria
+	 *
 	 * @metadata The UDF metadata to use for matching
 	 */
 	boolean function matchMethod( required metadata ){
@@ -133,6 +135,7 @@ component accessors="true" {
 
 	/**
 	 * Go through all the rules in this matcher and match
+	 *
 	 * @metadata The UDF metadata to use for matching
 	 */
 	private boolean function matchMethodRules( required metadata ){
@@ -180,6 +183,7 @@ component accessors="true" {
 
 	/**
 	 * Go through all the rules in this matcher and match
+	 *
 	 * @target              The target to match against to
 	 * @mapping             The target mapping to match against
 	 * @mapping.doc_generic coldbox.system.ioc.config.Mapping
@@ -232,6 +236,7 @@ component accessors="true" {
 
 	/**
 	 * Match against return types in methods only
+	 *
 	 * @type The type of return to match against.  Only for method matching
 	 */
 	function returns( required type ){
@@ -241,6 +246,7 @@ component accessors="true" {
 
 	/**
 	 * Matches annotations on components or methods with or without a value
+	 *
 	 * @annotation The annotation to discover
 	 * @value      The value of the annotation that must match. OPTIONAL
 	 */
@@ -255,6 +261,7 @@ component accessors="true" {
 
 	/**
 	 * Match one, list or array of mapping names. Class Matching Only.
+	 *
 	 * @mappings One, list or array of mappings to match
 	 */
 	function mappings( required mappings ){
@@ -267,6 +274,7 @@ component accessors="true" {
 
 	/**
 	 * Matches against a family of components according to the passed classPath. Class Matching Only.
+	 *
 	 * @classPath The class path to verify instance of
 	 */
 	function instanceOf( required classPath ){
@@ -276,6 +284,7 @@ component accessors="true" {
 
 	/**
 	 * Matches a class path or method name to this regular expression
+	 *
 	 * @regex The regular expression to match against
 	 */
 	function regex( required regex ){
@@ -285,6 +294,7 @@ component accessors="true" {
 
 	/**
 	 * A list, one or an array of methods to explicitly match
+	 *
 	 * @methods One, list or array of methods to match
 	 */
 	function methods( required methods ){
@@ -297,6 +307,7 @@ component accessors="true" {
 
 	/**
 	 * AND this matcher with another matcher
+	 *
 	 * @matcher             The matcher to AND this matcher with
 	 * @matcher.doc_generic coldbox.system.aop.Matcher
 	 */
@@ -307,6 +318,7 @@ component accessors="true" {
 
 	/**
 	 * OR this matcher with another matcher
+	 *
 	 * @matcher             The matcher to AND this matcher with
 	 * @matcher.doc_generic coldbox.system.aop.Matcher
 	 */

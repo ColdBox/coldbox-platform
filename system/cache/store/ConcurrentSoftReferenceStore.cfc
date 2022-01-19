@@ -2,10 +2,11 @@
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * @author Luis Majano
  *
  * I am a concurrent soft reference object store. In other words, I am fancy!
  * This store is case-sensitive
+ *
+ * @author Luis Majano
  */
 component extends="coldbox.system.cache.store.ConcurrentStore" accessors=true {
 

@@ -75,8 +75,7 @@ component accessors="true" singleton {
 	/**
 	 * Set the timezone for all tasks to use using the timezone string identifier
 	 *
-	 * @see https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/ZoneId.html
-	 *
+	 * @see      https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/ZoneId.html
 	 * @timezone The timezone string identifier
 	 */
 	Scheduler function setTimezone( required timezone ){
@@ -241,7 +240,6 @@ component accessors="true" singleton {
 	 *
 	 * @task      The task that got executed
 	 * @exception The ColdFusion exception object
-	 *
 	 */
 	function onAnyTaskError( required task, required exception ){
 	}
@@ -251,7 +249,6 @@ component accessors="true" singleton {
 	 *
 	 * @task   The task that got executed
 	 * @result The result (if any) that the task produced
-	 *
 	 */
 	function onAnyTaskSuccess( required task, result ){
 	}
@@ -260,7 +257,6 @@ component accessors="true" singleton {
 	 * Called before ANY task runs
 	 *
 	 * @task The task about to be executed
-	 *
 	 */
 	function beforeAnyTask( required task ){
 	}
@@ -270,7 +266,6 @@ component accessors="true" singleton {
 	 *
 	 * @task   The task that got executed
 	 * @result The result (if any) that the task produced
-	 *
 	 */
 	function afterAnyTask( required task, result ){
 	}
@@ -314,9 +309,9 @@ component accessors="true" singleton {
 	 *
 	 * @name The name of the task
 	 *
-	 * @throws UnregisteredTaskException if no task is found under that name
-	 *
 	 * @return The task record struct: { name, task, future, scheduledAt, registeredAt, error, errorMessage, stacktrace }
+	 *
+	 * @throws UnregisteredTaskException if no task is found under that name
 	 */
 	struct function getTaskRecord( required name ){
 		if ( hasTask( arguments.name ) ) {

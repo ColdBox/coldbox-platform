@@ -76,6 +76,7 @@ component accessors="true" {
 
 	/**
 	 * Set the logBox Configuration to use
+	 *
 	 * @config The configuration file to use
 	 */
 	CacheBoxConfig function logBoxConfig( required string config ){
@@ -199,10 +200,10 @@ component accessors="true" {
 
 	/**
 	 * Define the cachebox factory scope registration
+	 *
 	 * @enabled Enable registration
 	 * @scope   The scope to register on, defaults to application scope
 	 * @key     The key to use in the scope, defaults to cachebox
-
 	 */
 	function scopeRegistration(
 		boolean enabled = variables.DEFAULTS.scopeRegistration.enabled,

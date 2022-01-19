@@ -154,10 +154,10 @@ component
 	 * @targetObject  The object requesting the dependency, usually only used by DSL lookups
 	 * @injector      The child injector to use when retrieving the instance
 	 *
+	 * @return The requested instance
+	 *
 	 * @throws InstanceNotFoundException - When the requested instance cannot be found
 	 * @throws InvalidChildInjector      - When you request an instance from an invalid child injector name
-	 *
-	 * @return The requested instance
 	 **/
 	function getInstance(
 		name,
@@ -341,9 +341,9 @@ component
 	 * @cacheProvider          The provider to cache this event rendering in, defaults to 'template'
 	 * @prePostExempt          If true, pre/post handlers will not be fired. Defaults to false
 	 *
-	 * @throws InvalidArgumentException
-	 *
 	 * @return null or anything produced from the route
+	 *
+	 * @throws InvalidArgumentException
 	 */
 	any function runRoute(
 		required name,
@@ -375,9 +375,9 @@ component
 	 * @name         The key of the setting
 	 * @defaultValue If not found in config, default return value
 	 *
-	 * @throws SettingNotFoundException
-	 *
 	 * @return The requested setting
+	 *
+	 * @throws SettingNotFoundException
 	 */
 	function getSetting( required name, defaultValue ){
 		return variables.controller.getSetting( argumentCollection = arguments );
@@ -389,9 +389,9 @@ component
 	 * @name         The key to get
 	 * @defaultValue The default value if it doesn't exist
 	 *
-	 * @throws SettingNotFoundException
-	 *
 	 * @return The framework setting value
+	 *
+	 * @throws SettingNotFoundException
 	 */
 	function getColdBoxSetting( required name, defaultValue ){
 		return variables.controller.getColdBoxSetting( argumentCollection = arguments );
@@ -444,9 +444,9 @@ component
 	 *
 	 * @module The module to retrieve the configuration structure from
 	 *
-	 * @throws InvalidModuleException - The module passed is invalid
-	 *
 	 * @return The struct requested
+	 *
+	 * @throws InvalidModuleException - The module passed is invalid
 	 */
 	struct function getModuleConfig( required module ){
 		var mConfig = variables.controller.getSetting( "modules" );

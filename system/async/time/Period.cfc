@@ -313,8 +313,7 @@ component accessors="true" {
 	 * "P-1Y2M"          -- Period.of(-1, 2, 0)
 	 * "-P1Y2M"          -- Period.of(-1, -2, 0)
 	 *
-	 * @see https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/Period.html#parse(java.lang.CharSequence)
-	 *
+	 * @see  https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/Period.html#parse(java.lang.CharSequence)
 	 * @text The string to parse and build up to a period
 	 */
 	Period function parse( required text ){

@@ -465,7 +465,7 @@ component extends="EventHandler" {
 	 * @rc    The rc reference
 	 * @prc   The prc reference
 	 *
-	 * @returns 404:Not Found
+	 * @return 404:Not Found
 	 */
 	function onInvalidRoute( event, rc, prc ){
 		arguments.event
@@ -514,7 +514,7 @@ component extends="EventHandler" {
 	 * @prc     The prc reference
 	 * @message The failure message sent in the request package
 	 *
-	 * @returns 417:Expectation Failed
+	 * @return 417:Expectation Failed
 	 */
 	function onExpectationFailed(
 		event   = getRequestContext(),

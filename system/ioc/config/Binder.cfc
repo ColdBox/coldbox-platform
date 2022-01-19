@@ -249,9 +249,9 @@ component accessors="true" {
 	 * @name         The name of the property to get
 	 * @defaultValue The default value if property is not found
 	 *
-	 * @throws PropertyNotFoundException - If the property is not found and no default sent
-	 *
 	 * @return Property value
+	 *
+	 * @throws PropertyNotFoundException - If the property is not found and no default sent
 	 */
 	function getProperty( required name, defaultValue ){
 		// Prop Check
@@ -325,8 +325,9 @@ component accessors="true" {
 	 *
 	 * @name The name of the mapping
 	 *
-	 * @throws MappingNotFoundException - If the named mapping has not been registered
 	 * @return coldbox.system.ioc.config.Mapping
+	 *
+	 * @throws MappingNotFoundException - If the named mapping has not been registered
 	 */
 	Mapping function getMapping( required name ){
 		if ( structKeyExists( variables.mappings, arguments.name ) ) {

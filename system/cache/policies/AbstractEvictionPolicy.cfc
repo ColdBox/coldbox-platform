@@ -24,6 +24,7 @@ component
 
 	/**
 	 * Constructor
+	 *
 	 * @cacheProvider             The associated cache provider
 	 * @cacheProvider.doc_generic coldbox.system.cache.providers.ICacheProvider
 	 */
@@ -103,6 +104,7 @@ component
 
 	/**
 	 * Get utility object
+	 *
 	 * @return coldbox.system.core.util.Util
 	 */
 	private function getUtil(){
