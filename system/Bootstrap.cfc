@@ -52,7 +52,7 @@ component serializable="false" accessors="true" {
 		string COLDBOX_APP_KEY,
 		string COLDBOX_APP_MAPPING = "",
 		any COLDBOX_FAIL_FAST      = true,
-		string COLDBOX_WEB_MAPPING = "",
+		string COLDBOX_WEB_MAPPING = ""
 	){
 		variables.COLDBOX_CONFIG_FILE 	= arguments.COLDBOX_CONFIG_FILE;
 		variables.COLDBOX_APP_ROOT_PATH = arguments.COLDBOX_APP_ROOT_PATH;
