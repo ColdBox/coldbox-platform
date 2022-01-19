@@ -82,20 +82,33 @@ component extends="coldbox.system.cache.store.indexers.MetadataIndexer" accessor
 
 	/**
 	 * Get the top 100 pool of metadata elements
+	 *
+	 * @max The number of records to get, defaults to 100
+	 *
+	 * @return Struct of { hits, timeout, lastAccessTimeout, created, lastAccessed, isExpired, isSimple }
+	 *
+	 * @throws InvalidMaxRecords - When the max argument is not an integer
 	 */
-	boolean function getPoolMetadata( numeric max = 100 ){
+	struct function getPoolMetadata( numeric max = 100 ){
 		var results = {};
+		var params  = [ arguments.max ];
+
+		// make sure the max argument is a valid integer
+		if ( !isValid( "integer", arguments.max ) ) {
+			throw( type: "InvalidMaxRecords", message: "Invalid max records specified - it must be an integer" );
+		}
 
 		// MySQL Default
 		var sql = "SELECT #variables.fields# FROM #variables.config.table# ORDER BY objectKey LIMIT ?";
 		// MSSQL
 		if ( variables.sqlType == "MSSQL" ) {
-			sql = "SELECT TOP ? #variables.fields# FROM #variables.config.table# ORDER BY objectKey";
+			sql    = "SELECT TOP #arguments.max# #variables.fields# FROM #variables.config.table# ORDER BY objectKey";
+			params = [];
 		}
 
 		queryExecute(
 			sql,
-			[ arguments.max ],
+			params,
 			{
 				datasource : variables.config.dsn,
 				username   : variables.config.dsnUsername,
@@ -103,13 +116,13 @@ component extends="coldbox.system.cache.store.indexers.MetadataIndexer" accessor
 			}
 		).each( function( row ){
 			results[ row.objectKey ] = {
-				hits              : row.hits,
-				timeout           : row.timeout,
-				lastAccessTimeout : row.lastAccessTimeout,
-				created           : row.created,
-				LastAccessed      : row.lastAccessed,
-				isExpired         : row.isExpired,
-				isSimple          : row.isSimple
+				"hits"              : row.hits,
+				"timeout"           : row.timeout,
+				"lastAccessTimeout" : row.lastAccessTimeout,
+				"created"           : row.created,
+				"lastAccessed"      : row.lastAccessed,
+				"isExpired"         : row.isExpired,
+				"isSimple"          : row.isSimple
 			};
 		} );
 
