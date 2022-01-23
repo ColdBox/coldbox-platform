@@ -69,10 +69,13 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true" 
 		type   ="boolean"
 		default="true";
 
-    /**
+	/**
 	 * Whether to include the DSN in queryExecute statements. If not, it will use the default set in applciation.cfc
 	 */
-	property name="queryIncludeDsn" type="boolean" default="true";
+	property
+		name   ="queryIncludeDsn"
+		type   ="boolean"
+		default="true";
 
 	/**
 	 * Constructor
@@ -105,24 +108,24 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true" 
 		variables.dsnUsername = config.dsnUsername;
 		variables.dsnPassword = config.dsnPassword;
 
-        // this struct will contain the dsn and credentials if passed into the config. Otherwise queryExecute will default
-        // to the datasource set in application.cfc
-        variables.queryOptions= {};
+		// this struct will contain the dsn and credentials if passed into the config. Otherwise queryExecute will default
+		// to the datasource set in application.cfc
+		variables.queryOptions = {};
 
-        // if DSN username or password were passed, include them in the query options
-        if ( len( variables.dsnUsername ) || len( variables.dsnPassword ) ) {
-            variables.queryOptions[ "dsnUsername" ] = variables.dsnUsername;
-            variables.queryOptions[ "dsnPassword" ] = variables.dsnPassword;
-        }
+		// if DSN username or password were passed, include them in the query options
+		if ( len( variables.dsnUsername ) || len( variables.dsnPassword ) ) {
+			variables.queryOptions[ "dsnUsername" ] = variables.dsnUsername;
+			variables.queryOptions[ "dsnPassword" ] = variables.dsnPassword;
+		}
 
-        if ( isNull( config.queryIncludeDsn ) ) {
-            config.queryIncludeDsn = true;
-        }
+		if ( isNull( config.queryIncludeDsn ) ) {
+			config.queryIncludeDsn = true;
+		}
 
-        // if we should include the dsn in the query options, add it
-        if ( config.queryIncludeDsn ) {
-            variables.queryOptions[ "dsn" ] = variables.dsn;
-        }
+		// if we should include the dsn in the query options, add it
+		if ( config.queryIncludeDsn ) {
+			variables.queryOptions[ "dsn" ] = variables.dsn;
+		}
 
 
 		// Check autoCreate
@@ -427,11 +430,10 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true" 
 	 * @objectKey The object key to clear
 	 */
 	function clear( required objectKey ){
-		
-        var localQueryOptions = duplicate( variables.queryOptions );
-        localQueryOptions[ "result" ] = "local.q";
-        
-        queryExecute(
+		var localQueryOptions         = duplicate( variables.queryOptions );
+		localQueryOptions[ "result" ] = "local.q";
+
+		queryExecute(
 			"DELETE
 			   FROM #variables.table#
 			  WHERE id = ?
