@@ -8,6 +8,8 @@
  *
  * A WireBox Injector: Builds the graphs of objects that make up your application.
  *
+ * All injectors implement: coldbox.system.ioc.IInjector
+ *
  * Easy Startup:
  * <pre class='brush: cf'>
  * injector = new coldbox.system.ioc.Injector();
@@ -22,12 +24,10 @@
  * <pre class='brush: cf'>
  * injector = new coldbox.system.ioc.Injector( "config.MyBinder" );
  * </pre>
+ *
+ * @see coldbox.system.ioc.IInjector
  */
-component
-	serializable="false"
-	accessors   ="true"
-	implements  ="coldbox.system.ioc.IInjector"
-{
+component serializable="false" accessors="true" {
 
 	/**
 	 * Java System

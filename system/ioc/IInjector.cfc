@@ -12,14 +12,14 @@ interface {
 	 * @injector             A WireBox Injector to assign as a parent to this Injector
 	 * @injector.doc_generic coldbox.system.ioc.Injector
 	 *
-	 * @return IInjector
+	 * @return coldbox.system.ioc.IInjector
 	 */
 	function setParent( required injector );
 
 	/**
 	 * Get a reference to the parent injector instance, else an empty simple string meaning nothing is set
 	 *
-	 * @return coldbox.system.ioc.Injector
+	 * @return coldbox.system.ioc.IInjector
 	 */
 	function getParent();
 
@@ -34,7 +34,7 @@ interface {
 	 */
 	function getInstance(
 		name,
-		struct initArguments,
+		struct initArguments = {},
 		dsl,
 		targetObject = "",
 		injector
@@ -50,7 +50,7 @@ interface {
 	/**
 	 * Shutdown the injector gracefully by calling the shutdown events internally
 	 *
-	 * @return IInjector
+	 * @return coldbox.system.ioc.IInjector
 	 */
 	function shutdown();
 
