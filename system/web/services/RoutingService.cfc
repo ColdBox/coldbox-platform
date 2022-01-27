@@ -1108,17 +1108,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			results[ "scriptName" ] = replaceNoCase( results[ "scriptName" ], getContextRoot(), "" );
 		}
 
-		// Clean up the path_info from index.cfm
-		results[ "pathInfo" ] = reReplaceNoCase( results[ "pathInfo" ], "^[/\\]index\.cfm", "" );
-
-		// Clean the scriptname from the pathinfo if it is the first item in case this is a nested application
-		if ( len( results[ "scriptName" ] ) ) {
-			results[ "pathInfo" ] = reReplaceNoCase(
-				results[ "pathInfo" ],
-				"^#results[ "scriptName" ]#\/",
-				""
-			);
-		}
+		// Cleanup the script name in the path info
+		results[ "pathInfo" ] = replaceNoCase(
+			results[ "pathInfo" ],
+			getCGIElement( "script_name", arguments.event ),
+			""
+		);
 
 		// clean 1 or > / in front of route in some cases, scope = one by default
 		results[ "pathInfo" ] = reReplaceNoCase( results[ "pathInfo" ], "^/+", "/" );
