@@ -20,35 +20,42 @@
 
 				var rc = { someURLvar : 1, index : "hello" };
 
+				// test folder with leading index.cfm
+				path_info = "/index.cfm/somefolder/index.cfm?somrURLVar=yes";
+				routingService
+					.$( "getCGIElement" )
+					.$results(
+						path_info, // path_info
+						"index.cfm", // script name
+						"localhost", // domain
+						"index.cfm" // script name again
+					);
+				results = routingService.getCleanedPaths( rc, "event" );
+				expect( results.pathInfo ).toBe( "/someFolder/index.cfm" );
+
 				// test folder with index.cfm
 				var path_info = "/somefolder/index.cfm?somrURLVar=yes";
 				routingService.$( "getCGIElement" ).$results( path_info, "", "localhost" );
 				var results = routingService.getCleanedPaths( rc, "event" );
-				expect( "/someFolder/index.cfm" ).toBe( results.pathInfo );
+				expect( results.pathInfo ).toBe( "/someFolder/index.cfm" );
 
-				// test folder with leading index.cfm
-				path_info = "/index.cfm/somefolder/index.cfm?somrURLVar=yes";
-				routingService.$( "getCGIElement" ).$results( path_info, "", "localhost" );
-				results = routingService.getCleanedPaths( rc, "event" );
-				expect( "/someFolder/index.cfm" ).toBe( results.pathInfo );
-
-				// test folder wwith other .cfm
+				// test folder with other .cfm
 				path_info = "/somefolder/test.cfm?somrURLVar=yes";
 				routingService.$( "getCGIElement" ).$results( path_info, "", "localhost" );
 				results = routingService.getCleanedPaths( rc, "event" );
-				expect( "/someFolder/test.cfm" ).toBe( results.pathInfo );
+				expect( results.pathInfo ).toBe( "/someFolder/test.cfm" );
 
 				// test regular SES route
 				path_info = "/somefolder/test";
 				routingService.$( "getCGIElement" ).$results( path_info, "", "localhost" );
 				results = routingService.getCleanedPaths( rc, "event" );
-				expect( "/somefolder/test" ).toBe( results.pathInfo );
+				expect( results.pathInfo ).toBe( "/somefolder/test" );
 
 				// test regular SES route with index
 				path_info = "/somefolder/index";
 				routingService.$( "getCGIElement" ).$results( path_info, "", "localhost" );
 				results = routingService.getCleanedPaths( rc, "event" );
-				expect( "/somefolder/index" ).toBe( results.pathInfo );
+				expect( results.pathInfo ).toBe( "/somefolder/index" );
 			} );
 
 			describe( "Can have different format detections", function(){

@@ -1111,7 +1111,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// Cleanup the script name in the path info
 		results[ "pathInfo" ] = reReplaceNoCase(
 			results[ "pathInfo" ],
-			getCGIElement( "script_name", arguments.event ).replace( ".", "\.", "all" ),
+			"\/#getCGIElement( "script_name", arguments.event ).replace( ".", "\.", "all" )#",
 			""
 		);
 
