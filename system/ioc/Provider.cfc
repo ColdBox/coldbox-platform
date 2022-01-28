@@ -3,8 +3,10 @@
  * www.ortussolutions.com
  * ---
  * A WireBox provider object that retrieves objects by using the provider pattern.
+ *
+ * @see coldbox.system.ioc.IProvider
  **/
-component implements="coldbox.system.ioc.IProvider" accessors="true" {
+component accessors="true" {
 
 	/**
 	 * The name of the mapping this provider is binded to, MUTEX with name
