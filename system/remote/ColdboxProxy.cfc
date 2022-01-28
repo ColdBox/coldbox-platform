@@ -4,7 +4,7 @@
  * ---
  * This component is the coldbox remote proxy used for model operation.
  * This will convert the framework into a model framework rather than a HTML MVC framework.
- **/
+ */
 component serializable="false" accessors="true" {
 
 	/**
@@ -268,7 +268,10 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
+	 *
 	 * @deprecated
+	 *
+	 * @throws DeprecationException
 	 */
 	private any function getModel( required name, dsl, initArguments ){
 		throw(
