@@ -292,10 +292,16 @@ component extends="coldbox.system.testing.BaseModelTest" {
 			} );
 
 			story( "I can register named routes", function(){
-				given( "A named option", function(){
+				given( "The use of the as() method", function(){
 					then( "the route will register", function(){
 						router.route( "/home" ).as( "Home" );
 						expect( router.getThisRoute().name ).toBe( "home" );
+					} );
+				} );
+				given( "Just the pattern", function(){
+					then( "the name will be the same as the pattern", function(){
+						router.route( "/home" );
+						expect( router.getThisRoute().name ).toBe( "/home" );
 					} );
 				} );
 			} );

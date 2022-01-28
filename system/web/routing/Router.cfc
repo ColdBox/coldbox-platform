@@ -1231,9 +1231,13 @@ component
 	 *
 	 * @pattern The pattern to register
 	 * @target  A response closure/lambda or an event string to execute
-	 * @name    The name of the route
+	 * @name    The name of the route, defaults to the the pattern
 	 */
-	function route( required pattern, target, name = "" ){
+	function route(
+		required pattern,
+		target,
+		name = arguments.pattern
+	){
 		// inline termination
 		if ( !isNull( arguments.target ) ) {
 			// process a with closure if not empty
