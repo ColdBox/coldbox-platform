@@ -3,8 +3,10 @@
  * www.ortussolutions.com
  * ---
  * A no scope scope scope :)
+ *
+ * @see coldbox.system.ioc.scopes.IScope
  **/
-component implements="coldbox.system.ioc.scopes.IScope" accessors="true" {
+component accessors="true" {
 
 	/**
 	 * Injector linkage
