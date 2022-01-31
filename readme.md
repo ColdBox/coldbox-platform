@@ -37,11 +37,11 @@ Holy Ghost which is given unto us. ." Romans 5:5
 
 # Welcome to ColdBox
 
-ColdBox Hierarchical MVC is the de-facto enterprise-level HMVC framework for ColdFusion (CFML) developers. It's professionally backed, conventions-based, modular, highly extensible, and productive. Getting started with ColdBox is quick and painless.  ColdBox takes the pain out of development by giving you a standardized methodology for modern ColdFusion (CFML) development with features such as:
+ColdBox *Hierarchical* MVC is the de-facto enterprise-level [HMVC](https://en.wikipedia.org/wiki/Hierarchical_model%E2%80%93view%E2%80%93controller) framework for ColdFusion (CFML) developers. It's professionally backed, conventions-based, modular, highly extensible, and productive. Getting started with ColdBox is quick and painless.  ColdBox takes the pain out of development by giving you a standardized methodology for modern ColdFusion (CFML) development with features such as:
 
 * [Conventions instead of configuration](https://coldbox.ortusbooks.com/getting-started/conventions)
-* [Modern routing engine](https://coldbox.ortusbooks.com/the-basics/routing)
-* [RESTFul API ready](https://coldbox.ortusbooks.com/the-basics/event-handlers/rendering-data)
+* [Modern URL routing](https://coldbox.ortusbooks.com/the-basics/routing)
+* [RESTFul APIs](https://coldbox.ortusbooks.com/the-basics/event-handlers/rendering-data)
 * [A hierarchical approach to MVC using ColdBox Modules](https://coldbox.ortusbooks.com/hmvc/modules)
 * [Event-driven programming](https://coldbox.ortusbooks.com/digging-deeper/interceptors)
 * [Async and Parallel programming constructs](https://coldbox.ortusbooks.com/digging-deeper/promises-async-programming)
@@ -83,27 +83,26 @@ And constructed with the following guidelines:
 ### Bug Tracking/Agile Boards
 
 * https://ortussolutions.atlassian.net/browse/COLDBOX
-* https://ortussolutions.atlassian.net/browse/WIREBOX
-* https://ortussolutions.atlassian.net/browse/LOGBOX
 * https://ortussolutions.atlassian.net/browse/CACHEBOX
+* https://ortussolutions.atlassian.net/browse/LOGBOX
+* https://ortussolutions.atlassian.net/browse/WIREBOX
 
 ### Documentation
 
 * https://coldbox.ortusbooks.com
-* https://wirebox.ortusbooks.com
 * https://cachebox.ortusbooks.com
 * https://logbox.ortusbooks.com
+* https://wirebox.ortusbooks.com
 
 ### Official Site
 
-* https://www.ortussolutions.com/products/coldbox
 * https://www.coldbox.org
+* https://www.ortussolutions.com/products/coldbox
 
 ## System Requirements
 
-<img src="https://cfmlbadges.monkehworks.com/images/badges/compatibility-coldfusion-2018.svg"><br>
-<img src="https://cfmlbadges.monkehworks.com/images/badges/compatibility-coldfusion-2016.svg"><br>
-<img src="https://cfmlbadges.monkehworks.com/images/badges/compatibility-lucee-5.svg">
+* Lucee 5+
+* Adobe ColdFusion 2018+
 
 ## Quick Installation
 
@@ -127,13 +126,13 @@ Bleeding edge releases are updated automatically when code is committed.
 
 If you want to develop and hack at the source, you will need to download [CommandBox](https://www.ortussolutions.com/products/commandbox) first.
 
-Then you need to install some CommandBox modules in order to work with environment variables and cfml engine configuration. Just type the following command:
+Then you need to install some CommandBox modules in order to work with environment variables and cfml engine configuration. Once you fork/clone the repository, startup a CommandBox shell in the root of the project via `box` and then install all of the project development dependencies:
 
 ```bash
-install commandbox-cfconfig,commandbox-dotenv,commandbox-cfformat
+install
 ```
 
-Then in the root of this project, type `box install` to install the development dependencies.  Create a `.env` file according to the `.env.template` in the root and spice it up for your local database.  The import SQL for the database can be found in `/tests/resources/coolblog.sql`. You can then go ahead and start an embedded server `box server start` and start hacking around.
+Create an `.env` file according to the `.env.template` in the root and spice it up for your local database.  Then import the SQL for the database which can be found in `/tests/resources/coolblog.sql`. You can then go ahead and start an embedded server `box server start` and start hacking around.
 
 For running our test suites you will need 2 more steps, so please refer to the [Readme](tests/readme.md) in the tests folder.
 
