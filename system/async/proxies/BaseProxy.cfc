@@ -57,13 +57,9 @@ component accessors="true" {
 				variables.fusionContextStatic   = createObject( "java", "coldfusion.filter.FusionContext" );
 				variables.originalFusionContext = fusionContextStatic.getCurrent().clone();
 				variables.productVersion        = listFirst( server.coldfusion.productVersion );
-				if ( variables.productVersion > 2016 ) {
-					variables.originalAppScope = variables.originalFusionContext.getApplicationScope();
-				} else {
-					variables.originalAppScope = variables.originalFusionContext.getAppHelper().getAppScope();
-				}
-				variables.originalPageContext = getCFMLContext();
-				variables.originalPage        = variables.originalPageContext.getPage();
+				variables.originalAppScope      = variables.originalFusionContext.getAppHelper().getAppScope();
+				variables.originalPageContext   = getCFMLContext();
+				variables.originalPage          = variables.originalPageContext.getPage();
 			}
 			// out( "==> Storing contexts for thread: #getCurrentThread().toString()#." );
 		}
@@ -143,6 +139,12 @@ component accessors="true" {
 			}
 		} catch ( any e ) {
 			err( "Error loading context #e.toString()#" );
+			writeDump(
+				var=[ createObject( "java", "coldfusion.filter.FusionContext" ).getCurrent() ],
+				output="console",
+				label="FusionContext Exception - Get Current"
+				top = 5
+			);
 		}
 	}
 
