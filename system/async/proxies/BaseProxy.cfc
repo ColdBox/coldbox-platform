@@ -128,6 +128,7 @@ component accessors="true" {
 				// Create a fake page to run this thread in and link it to the fake page context and fusion context
 				var page             = variables.originalPage._clone();
 				page.pageContext     = pageContext;
+				page.pageContext     = pageContext;
 				fusionContext.parent = page;
 
 				// Set the current context of execution now
@@ -142,7 +143,7 @@ component accessors="true" {
 			writeDump(
 				var=[ createObject( "java", "coldfusion.filter.FusionContext" ).getCurrent() ],
 				output="console",
-				label="FusionContext Exception - Get Current"
+				label="FusionContext Exception - Get Current",
 				top = 5
 			);
 		}
