@@ -124,7 +124,7 @@ Bleeding edge releases are updated automatically when code is committed.
 
 ## Collaboration
 
-If you want to develop and hack at the source, you will need to download [CommandBox](https://www.ortussolutions.com/products/commandbox) first.
+First, read our [contributing](CONTRIBUTING.md) guidelines, then you will need to download [CommandBox](https://www.ortussolutions.com/products/commandbox) so you can install dependencies, run the development server and much more.
 
 Then you need to install some CommandBox modules in order to work with environment variables and cfml engine configuration. Once you fork/clone the repository, startup a CommandBox shell in the root of the project via `box` and then install all of the project development dependencies:
 
