@@ -8,6 +8,7 @@ Hola amigo! I'm really excited that you are interested in contributing to ColdBo
 - [Pull Request Guidelines](#pull-request-guidelines)
 - [Security Vulnerabilities](#security-vulnerabilities)
 - [Development Setup](#development-setup)
+	- [Language Compatiblity](#language-compatiblity)
 - [Coding Styles & Formatting](#coding-styles--formatting)
 - [CFC Docs With DocBox](#cfc-docs-with-docbox)
 - [Financial Contributions](#financial-contributions)
@@ -60,6 +61,13 @@ If you discover a security vulnerability, please send an email to the developmen
 ## Development Setup
 
 We have added all the necessary information for you to develop on ColdBox in our [readme collaboration area](../readme.md#collaboration) and also in our [tests readme](../tests/readme.md) so you can setup the database to test against.
+
+### Language Compatiblity
+
+Please make sure your code runs on the following CFML Engines:
+
+- Lucee 5+
+- Adobe ColdFusion 2018+
 
 ## Coding Styles & Formatting
 
