@@ -16,7 +16,7 @@ jobs:
   #############################################
   tests:
     name: Tests
-    if: $GITHUB_REF == 'refs/heads/development'
+    if: ${{ $GITHUB_REF == 'refs/heads/development' }}
     runs-on: ubuntu-20.04
     env:
       DB_USER: root
