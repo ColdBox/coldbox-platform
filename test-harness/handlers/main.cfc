@@ -80,6 +80,13 @@ component {
 		event.setView( "main/testPrivateActions" );
 	}
 
+	function process( event, rc, prc ){
+		log.info( "Processing data..." );
+		sleep( randrange( 500, 1500 ) );
+		log.info( "Processing data finished!" );
+	}
+
+
 	/************************************** PRIVATE ACTIONS *********************************************/
 
 	private function privateInfo( event, rc, prc ){

@@ -39,7 +39,7 @@ component accessors="true" {
 	/**
 	 * Register an object with this pool
 	 *
-	 * @key The key of the object
+	 * @key    The key of the object
 	 * @target The object
 	 *
 	 * @return EventPool
@@ -107,17 +107,13 @@ component accessors="true" {
 	 * Execute the interception point, returns a value if the chain should be stopped (true) or ignored (void/false)
 	 *
 	 * @target The target object
-	 * @data The data used in the interception call
-	 *
+	 * @data   The data used in the interception call
 	 */
 	private function invoker( required target, required data ){
 		var results = invoke(
 			arguments.target,
 			variables.state,
-			{
-				interceptData : arguments.data,
-				data : arguments.data
-			}
+			{ interceptData : arguments.data, data : arguments.data }
 		);
 
 		if ( !isNull( local.results ) && isBoolean( results ) ) {

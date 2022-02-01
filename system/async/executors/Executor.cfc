@@ -26,9 +26,9 @@ component accessors="true" singleton {
 	/**
 	 * Constructor
 	 *
-	 * @name The name of the executor
-	 * @executor The native executor class
-	 * @debug Add output debugging
+	 * @name           The name of the executor
+	 * @executor       The native executor class
+	 * @debug          Add output debugging
 	 * @loadAppContext Load the CFML App contexts or not, disable if not used
 	 */
 	Executor function init(
@@ -55,7 +55,7 @@ component accessors="true" singleton {
 	 * cancel, or get the result of the  the executing task.
 	 *
 	 * @callable THe callable closure/lambda/cfc to execute
-	 * @method The default method to execute if the runnable is a CFC, defaults to `run()`
+	 * @method   The default method to execute if the runnable is a CFC, defaults to `run()`
 	 *
 	 * @return A ColdBox Future Task object
 	 */
@@ -104,12 +104,12 @@ component accessors="true" singleton {
 	 * Blocks until all tasks have completed execution after a shutdown request, or the timeout occurs, or
 	 * the current thread is interrupted, whichever happens first.
 	 *
-	 * @timeout The maximum time to wait
+	 * @timeout  The maximum time to wait
 	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is milliseconds
 	 *
-	 * @throws InterruptedException - if interrupted while waiting
-	 *
 	 * @return true if all tasks have completed following shut down
+	 *
+	 * @throws InterruptedException - if interrupted while waiting
 	 */
 	boolean function awaitTermination( required numeric timeout, timeUnit = "milliseconds" ){
 		return variables.native.awaitTermination(

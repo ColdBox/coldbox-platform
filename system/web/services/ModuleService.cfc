@@ -149,7 +149,8 @@ component extends="coldbox.system.web.services.BaseService" {
 
 	/**
 	 * Register and activate a new module
-	 * @moduleName The name of the module to load.
+	 *
+	 * @moduleName     The name of the module to load.
 	 * @invocationPath The module's invocation path to its root from the webroot (the instantiation path,ex:myapp.myCustomModules), if empty we use registry location, if not we are doing a explicit name+path registration. Do not include the module name, you passed that in the first argument right
 	 */
 	function registerAndActivateModule( required moduleName, invocationPath = "" ){
@@ -160,14 +161,14 @@ component extends="coldbox.system.web.services.BaseService" {
 	/**
 	 * Register a module's configuration information and config object
 	 *
-	 * @moduleName 	The name of the module to load.
+	 * @moduleName     The name of the module to load.
 	 * @invocationPath The module's invocation path to its root from the webroot (the instantiation path,ex:myapp.myCustomModules), if empty we use registry locatioif not we are doing a explicit name+path registration. Do not include the module name, you passed that in the first argument right
-	 * @parent The name of the parent module
-	 * @force  Force a registration
-	 *
-	 * @throws InvalidModuleName - When a module is not on disk
+	 * @parent         The name of the parent module
+	 * @force          Force a registration
 	 *
 	 * @return If the module registered or not
+	 *
+	 * @throws InvalidModuleName - When a module is not on disk
 	 */
 	boolean function registerModule(
 		required moduleName,
@@ -500,9 +501,9 @@ component extends="coldbox.system.web.services.BaseService" {
 	 *
 	 * @moduleName The name of the module to load. It must exist and be valid. Else we ignore it by logging a warning
 	 *
-	 * @throws IllegalModuleState - When the requested module to active is not registered
-	 *
 	 * @return The Service
+	 *
+	 * @throws IllegalModuleState - When the requested module to active is not registered
 	 */
 	ModuleService function activateModule( required moduleName ){
 		var sTime   = getTickCount();
@@ -750,7 +751,7 @@ component extends="coldbox.system.web.services.BaseService" {
 
 			// Log it
 			variables.logger.info(
-				"+ Module (#arguments.moduleName#) Activated (#mConfig.activationTime#ms) => { version: #mConfig.version#, from: #mConfig.path# }"
+				"+ Module (#arguments.moduleName#@#mConfig.version#) activated in (#mConfig.activationTime#ms)"
 			);
 		}
 		// end lock
@@ -760,6 +761,7 @@ component extends="coldbox.system.web.services.BaseService" {
 
 	/**
 	 * Reload a targeted module
+	 *
 	 * @moduleName The module
 	 */
 	ModuleService function reload( required moduleName ){
@@ -788,6 +790,7 @@ component extends="coldbox.system.web.services.BaseService" {
 
 	/**
 	 * Check and see if a module has been registered
+	 *
 	 * @moduleName The module
 	 */
 	function isModuleRegistered( required moduleName ){
@@ -796,6 +799,7 @@ component extends="coldbox.system.web.services.BaseService" {
 
 	/**
 	 * Check and see if a module has been activated
+	 *
 	 * @moduleName The module
 	 */
 	boolean function isModuleActive( required moduleName ){
@@ -912,17 +916,20 @@ component extends="coldbox.system.web.services.BaseService" {
 	 * Unload all registered modules
 	 */
 	ModuleService function unloadAll(){
-		// Unload all modules
-		variables.registeredModules.each( function( key, module ){
-			unload( arguments.key );
-		} );
+		// Verify registered modules
+		if ( !isNull( variables.registeredModules ) && isStruct( variables.registeredModules ) ) {
+			// Unload all modules
+			variables.registeredModules.each( function( key, module ){
+				unload( arguments.key );
+			} );
+		}
 		return this;
 	}
 
 	/**
 	 * Load the module configuration object and return it now loaded
 	 *
-	 * @config The config structure
+	 * @config     The config structure
 	 * @moduleName The module name
 	 *
 	 * @return The ModuleConfig.cfc
@@ -1176,6 +1183,7 @@ component extends="coldbox.system.web.services.BaseService" {
 
 	/**
 	 * Checks if the module can be loaded or registered
+	 *
 	 * @moduleName The module to check
 	 */
 	private boolean function canLoad( required moduleName ){

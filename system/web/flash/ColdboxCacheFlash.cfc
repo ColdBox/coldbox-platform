@@ -3,6 +3,7 @@
  * www.ortussolutions.com
  * ---
  * This flash uses CacheBox
+ *
  * @author Luis Majano <lmajano@ortussolutions.com>
  */
 component extends="coldbox.system.web.flash.AbstractFlashScope" accessors="true" {
@@ -14,8 +15,9 @@ component extends="coldbox.system.web.flash.AbstractFlashScope" accessors="true"
 
 	/**
 	 * Constructor
+	 *
 	 * @controller.hint ColdBox Controller
-	 * @defaults.hint Default flash data packet for the flash RAM object=[scope,properties,inflateToRC,inflateToPRC,autoPurge,autoSave]
+	 * @defaults.hint   Default flash data packet for the flash RAM object=[scope,properties,inflateToRC,inflateToPRC,autoPurge,autoSave]
 	 */
 	function init( required controller, required struct defaults = {} ){
 		// default cache name
@@ -37,38 +39,15 @@ component extends="coldbox.system.web.flash.AbstractFlashScope" accessors="true"
 	}
 
 	/**
-	 * Build Flash Key according to standards
+	 * Build Flash Key according to our user tracking identifiers
 	 */
 	function getFlashKey(){
-		var prefix = "cbFlash:#variables.appName#";
-		var isSessionDefined = getApplicationMetadata().sessionManagement;
-
-		// Check jsession id First
-		if ( isSessionDefined && structKeyExists( session, "sessionid" ) ) {
-			return "cbFlash:" & session.sessionid;
-		}
-		// Check normal cfid and cftoken in cookie
-		else if ( structKeyExists( cookie, "CFID" ) && structKeyExists( cookie, "CFTOKEN" ) ) {
-			return prefix & hash( cookie.cfid & cookie.cftoken );
-		}
-		// Check normal cfid and cftoken in URL
-		else if ( structKeyExists( URL, "CFID" ) && structKeyExists( URL, "CFTOKEN" ) ) {
-			return prefix & hash( URL.cfid & URL.cftoken );
-		}
-		// check session URL Token
-		else if ( isSessionDefined and structKeyExists( session, "URLToken" ) ) {
-			return prefix & session.URLToken;
-		}
-		// fallback for no cookie, session or url basically sessionless requests
-		else if ( isNull( request.cbFlashId ) ) {
-			request.cbFlashId = createUUID();
-		}
-
-		return request.cbFlashId;
+		return "cbFlash:#getController().getUserSessionIdentifier()#";
 	}
 
 	/**
 	 * Save the flash storage in preparing to go to the next request
+	 *
 	 * @return SessionFlash
 	 */
 	function saveFlash(){
@@ -94,6 +73,7 @@ component extends="coldbox.system.web.flash.AbstractFlashScope" accessors="true"
 
 	/**
 	 * Remove the entire flash storage
+	 *
 	 * @return SessionFlash
 	 */
 	function removeFlash(){

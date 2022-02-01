@@ -1,4 +1,4 @@
-﻿component extends="coldbox.system.testing.BaseModelTest"{
+﻿component extends="coldbox.system.testing.BaseModelTest" {
 
 	function setup(){
 		interceptor    = createMock( "coldbox.system.Interceptor" );
@@ -25,13 +25,8 @@
 		mockRS.$( "getFlashScope", flashScope );
 		mockLogBox.$( "getLogger", mockLogger );
 
-		properties = {
-			debugmode  : true,
-			configFile : "config/routes.cfm"
-		};
-		interceptor
-			.init( mockController, properties )
-			.$( "getInterceptorService", mockIService );
+		properties = { debugmode : true, configFile : "config/routes.cfm" };
+		interceptor.init( mockController, properties ).$( "getInterceptorService", mockIService );
 	}
 
 	function testProperties(){

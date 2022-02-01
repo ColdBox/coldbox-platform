@@ -49,7 +49,7 @@ component serializable="false" accessors="true" {
 	/**
 	 * Constructor. If called without a configuration binder, then WireBox will instantiate the default configuration binder found coldbox.system.ioc.config.DefaultBinder
 	 *
-	 * @injector The linked WireBox injector
+	 * @injector             The linked WireBox injector
 	 * @injector.doc_generic coldbox.system.ioc.Injector
 	 *
 	 * @return coldbox.system.ioc.Builder
@@ -63,17 +63,17 @@ component serializable="false" accessors="true" {
 
 		// Internal DSL Registry
 		variables.internalDSL = [
-			"coldbox",
 			"box",
-			"executor",
+			"byType",
 			"cachebox",
+			"coldbox",
+			"executor",
+			"id",
+			"java",
 			"logbox",
 			"model",
-			"id",
 			"provider",
-			"wirebox",
-			"java",
-			"byType"
+			"wirebox"
 		];
 
 		// Do we need to build the coldbox DSL namespace
@@ -110,7 +110,7 @@ component serializable="false" accessors="true" {
 	 * A direct way of registering custom DSL namespaces
 	 *
 	 * @namespace The namespace you would like to register
-	 * @path The instantiation path to the CFC that implements this scope, it must have an init() method and implement: coldbox.system.ioc.dsl.IDSLBuilder
+	 * @path      The instantiation path to the CFC that implements this scope, it must have an init() method and implement: coldbox.system.ioc.dsl.IDSLBuilder
 	 */
 	Builder function registerDSL( required namespace, required path ){
 		// register dsl
@@ -141,9 +141,9 @@ component serializable="false" accessors="true" {
 	/**
 	 * Build a cfc class via mappings
 	 *
-	 * @mapping The mapping to construct
-	 * @mapping.doc_generic coldbox.system.ioc.config.Mapping
-	 * @initArguments The constructor structure of arguments to passthrough when initializing the instance
+	 * @mapping                   The mapping to construct
+	 * @mapping.doc_generic       coldbox.system.ioc.config.Mapping
+	 * @initArguments             The constructor structure of arguments to passthrough when initializing the instance
 	 * @initArguments.doc_generic struct
 	 */
 	function buildCFC( required mapping, initArguments = structNew() ){
@@ -228,9 +228,9 @@ component serializable="false" accessors="true" {
 	/**
 	 * Build an object using a factory method
 	 *
-	 * @mapping The mapping to construct
-	 * @mapping.doc_generic coldbox.system.ioc.config.Mapping
-	 * @initArguments The constructor structure of arguments to passthrough when initializing the instance
+	 * @mapping                   The mapping to construct
+	 * @mapping.doc_generic       coldbox.system.ioc.config.Mapping
+	 * @initArguments             The constructor structure of arguments to passthrough when initializing the instance
 	 * @initArguments.doc_generic struct
 	 */
 	function buildFactoryMethod( required mapping, initArguments = structNew() ){
@@ -268,7 +268,7 @@ component serializable="false" accessors="true" {
 	/**
 	 * Build a Java class via mappings
 	 *
-	 * @mapping The mapping to construct
+	 * @mapping             The mapping to construct
 	 * @mapping.doc_generic coldbox.system.ioc.config.Mapping
 	 */
 	function buildJavaClass( required mapping ){
@@ -304,10 +304,10 @@ component serializable="false" accessors="true" {
 	/**
 	 * Build arguments for a mapping and return the structure representation
 	 *
-	 * @mapping The mapping to construct
+	 * @mapping             The mapping to construct
 	 * @mapping.doc_generic coldbox.system.ioc.config.Mapping
-	 * @argumentArray The argument array of data
-	 * @targetObject The target object we are building the DSL dependency for
+	 * @argumentArray       The argument array of data
+	 * @targetObject        The target object we are building the DSL dependency for
 	 */
 	function buildArgumentCollection(
 		required mapping,
@@ -371,9 +371,9 @@ component serializable="false" accessors="true" {
 	/**
 	 * Build a webservice object
 	 *
-	 * @mapping The mapping to construct
-	 * @mapping.doc_generic coldbox.system.ioc.config.Mapping
-	 * @initArguments The constructor structure of arguments to passthrough when initializing the instance
+	 * @mapping                   The mapping to construct
+	 * @mapping.doc_generic       coldbox.system.ioc.config.Mapping
+	 * @initArguments             The constructor structure of arguments to passthrough when initializing the instance
 	 * @initArguments.doc_generic struct
 	 */
 	function buildWebservice( required mapping, initArguments = {} ){
@@ -400,7 +400,7 @@ component serializable="false" accessors="true" {
 	/**
 	 * Build an rss feed the WireBox way
 	 *
-	 * @mapping The mapping to construct
+	 * @mapping             The mapping to construct
 	 * @mapping.doc_generic coldbox.system.ioc.config.Mapping
 	 */
 	function buildFeed( required mapping ){
@@ -424,8 +424,8 @@ component serializable="false" accessors="true" {
 	/**
 	 * Build a DSL Dependency using a simple dsl string
 	 *
-	 * @dsl The dsl string to build
-	 * @targetID The target ID we are building this dependency for
+	 * @dsl          The dsl string to build
+	 * @targetID     The target ID we are building this dependency for
 	 * @targetObject The target object we are building the DSL dependency for
 	 *
 	 * @return The requested DSL object
@@ -472,14 +472,14 @@ component serializable="false" accessors="true" {
 	/**
 	 * Build a DSL Dependency, if not found, returns null
 	 *
-	 * @definition The dependency definition structure: name, dsl as keys
-	 * @targetID The target ID we are building this dependency for
+	 * @definition   The dependency definition structure: name, dsl as keys
+	 * @targetID     The target ID we are building this dependency for
 	 * @targetObject The target object we are building the DSL dependency for
 	 *
-	 * @throws IllegalDSLException - When requesting a ColdBox/CacheBox DSL dependency and the library is not linked
-	 * @throws DSLDependencyNotFoundException - If the requested object is not found and it is required
-	 *
 	 * @return The requested object or null if not found and not required
+	 *
+	 * @throws IllegalDSLException            - When requesting a ColdBox/CacheBox DSL dependency and the library is not linked
+	 * @throws DSLDependencyNotFoundException - If the requested object is not found and it is required
 	 */
 	function buildDSLDependency(
 		required definition,
@@ -497,6 +497,20 @@ component serializable="false" accessors="true" {
 		// Determine Type of Injection according to type
 		// Some namespaces requires the ColdBox context, if not found, an exception is thrown.
 		switch ( DSLNamespace ) {
+			// CacheBox Context DSL
+			case "cacheBox": {
+				// check if linked
+				if ( !variables.injector.isCacheBoxLinked() AND !variables.injector.isColdBoxLinked() ) {
+					throw(
+						message = "The DSLNamespace: #DSLNamespace# cannot be used as it requires a ColdBox/CacheBox Context",
+						type    = "Builder.IllegalDSLException"
+					);
+				}
+				// retrieve it
+				refLocal.dependency = variables.cacheBoxDSL.process( argumentCollection = arguments );
+				break;
+			}
+
 			// ColdBox Context DSL
 			case "coldbox":
 			case "box": {
@@ -510,6 +524,12 @@ component serializable="false" accessors="true" {
 				break;
 			}
 
+			// coldfusion type annotation
+			case "bytype": {
+				refLocal.dependency = getByTypeDSL( argumentCollection = arguments );
+				break;
+			}
+
 			// Executor
 			case "executor": {
 				// retrieve it
@@ -517,17 +537,9 @@ component serializable="false" accessors="true" {
 				break;
 			}
 
-			// CacheBox Context DSL
-			case "cacheBox": {
-				// check if linked
-				if ( !variables.injector.isCacheBoxLinked() AND !variables.injector.isColdBoxLinked() ) {
-					throw(
-						message = "The DSLNamespace: #DSLNamespace# cannot be used as it requires a ColdBox/CacheBox Context",
-						type    = "Builder.IllegalDSLException"
-					);
-				}
-				// retrieve it
-				refLocal.dependency = variables.cacheBoxDSL.process( argumentCollection = arguments );
+			// java class
+			case "java": {
+				refLocal.dependency = getJavaDSL( argumentCollection = arguments );
 				break;
 			}
 
@@ -553,18 +565,6 @@ component serializable="false" accessors="true" {
 			// wirebox injection DSL always available
 			case "wirebox": {
 				refLocal.dependency = getWireBoxDSL( argumentCollection = arguments );
-				break;
-			}
-
-			// java class
-			case "java": {
-				refLocal.dependency = getJavaDSL( argumentCollection = arguments );
-				break;
-			}
-
-			// coldfusion type annotation
-			case "bytype": {
-				refLocal.dependency = getByTypeDSL( argumentCollection = arguments );
 				break;
 			}
 
@@ -629,10 +629,11 @@ component serializable="false" accessors="true" {
 	/**
 	 * Get a Java object
 	 *
-	 * @definition The dependency definition structure: name, dsl as keys
+	 * @definition   The dependency definition structure: name, dsl as keys
 	 * @targetObject The target object we are building the DSL dependency for
+	 * @targetID     The target ID we are building this dependency for
 	 */
-	private any function getJavaDSL( required definition, targetObject ){
+	private any function getJavaDSL( required definition, targetObject, targetID ){
 		var javaClass = getToken( arguments.definition.dsl, 2, ":" );
 
 		return createObject( "java", javaClass );
@@ -641,10 +642,11 @@ component serializable="false" accessors="true" {
 	/**
 	 * Get dependencies using the wirebox dependency DSL
 	 *
-	 * @definition The dependency definition structure: name, dsl as keys
+	 * @definition   The dependency definition structure: name, dsl as keys
 	 * @targetObject The target object we are building the DSL dependency for
+	 * @targetID     The target ID we are building this dependency for
 	 */
-	private any function getWireBoxDSL( required definition, targetObject ){
+	private any function getWireBoxDSL( required definition, targetObject, targetID ){
 		var thisType         = arguments.definition.dsl;
 		var thisTypeLen      = listLen( thisType, ":" );
 		var thisLocationType = "";
@@ -652,26 +654,26 @@ component serializable="false" accessors="true" {
 
 		// DSL stages
 		switch ( thisTypeLen ) {
-			// WireBox injector
+			// WireBox injector, ex: wirebox
 			case 1: {
 				return variables.injector;
 			}
 
-			// Level 2 DSL
+			// Level 2 DSL, ex: wirebox:asyncManager, wirebox:parent
 			case 2: {
 				thisLocationKey = getToken( thisType, 2, ":" );
 				switch ( thisLocationKey ) {
-					case "parent": {
-						return variables.injector.getParent();
-					}
-					case "eventManager": {
-						return variables.injector.getEventManager();
-					}
 					case "asyncManager": {
 						return variables.injector.getAsyncManager();
 					}
 					case "binder": {
 						return variables.injector.getBinder();
+					}
+					case "eventManager": {
+						return variables.injector.getEventManager();
+					}
+					case "parent": {
+						return variables.injector.getParent();
 					}
 					case "populator": {
 						return variables.injector.getObjectPopulator();
@@ -679,21 +681,40 @@ component serializable="false" accessors="true" {
 					case "properties": {
 						return variables.injector.getBinder().getProperties();
 					}
+					case "targetID": {
+						return arguments.targetID;
+					}
+					case "objectMetadata": {
+						var binder  = variables.injector.getBinder();
+						var mapping = binder.getMapping( arguments.targetID );
+						if ( !mapping.isDiscovered() ) {
+							mapping.process( binder, variables.injector );
+						}
+						return mapping.getObjectMetadata();
+					}
 				}
 				break;
 			}
 
-			// Level 3 DSL
+			// Level 3 DSL, ex: wirebox:scope:singleton, wirebox:property:{thisProperty}, wirebox:child:{injectorName}
 			case 3: {
 				thisLocationType = getToken( thisType, 2, ":" );
 				thisLocationKey  = getToken( thisType, 3, ":" );
 				// DSL Level 2 Stage Types
 				switch ( thisLocationType ) {
+					// Child Injectors
+					case "child": {
+						// We take the name of the instance from the property name
+						return variables.injector
+							.getChildInjector( thisLocationKey )
+							.getInstance( arguments.definition.name );
+					}
 					// Scope DSL
 					case "scope": {
 						return variables.injector.getScope( thisLocationKey );
 						break;
 					}
+					// Registered properties
 					case "property": {
 						return variables.injector.getBinder().getProperty( thisLocationKey );
 						break;
@@ -702,16 +723,40 @@ component serializable="false" accessors="true" {
 				break;
 			}
 			// end level 3 main DSL
+
+			// Child Injector full DSL, ex: wirebox:child:myChild:{DSL}
+			case 4: {
+				thisLocationType = getToken( thisType, 2, ":" );
+				thisLocationKey  = getToken( thisType, 3, ":" );
+				// DSL Level 3 Stage Types
+				switch ( thisLocationType ) {
+					// Child Injectors
+					case "child": {
+						// We have 4 or more stages, so just get the dsl sent to the child by removing the first 3 stages
+						return variables.injector
+							.getChildInjector( thisLocationKey )
+							.getInstance(
+								replaceNoCase(
+									arguments.definition.dsl,
+									"wirebox:child:#thisLocationKey#:",
+									""
+								)
+							);
+					}
+				}
+				break;
+			}
 		}
 	}
 
 	/**
 	 * Get executors
 	 *
-	 * @definition The dependency definition structure: name, dsl as keys
+	 * @definition   The dependency definition structure: name, dsl as keys
 	 * @targetObject The target object we are building the DSL dependency for
+	 * @targetID     The target ID we are building this dependency for
 	 */
-	private any function getExecutorDSl( required definition, targetObject ){
+	private any function getExecutorDSl( required definition, targetObject, targetID ){
 		var asyncManager = variables.injector.getAsyncManager();
 		var thisType     = arguments.definition.dsl;
 		var thisTypeLen  = listLen( thisType, ":" );
@@ -744,10 +789,11 @@ component serializable="false" accessors="true" {
 	/**
 	 * Get dependencies using the model dependency DSL
 	 *
-	 * @definition The dependency definition structure: name, dsl as keys
+	 * @definition   The dependency definition structure: name, dsl as keys
 	 * @targetObject The target object we are building the DSL dependency for
+	 * @targetID     The target ID we are building this dependency for
 	 */
-	private any function getModelDSL( required definition, targetObject ){
+	private any function getModelDSL( required definition, targetObject, targetID ){
 		var thisType    = arguments.definition.dsl;
 		var thisTypeLen = listLen( thisType, ":" );
 		var methodCall  = "";
@@ -808,10 +854,15 @@ component serializable="false" accessors="true" {
 	/**
 	 * Get dependencies using the our provider pattern DSL
 	 *
-	 * @definition The dependency definition structure
+	 * @definition   The dependency definition structure
 	 * @targetObject The target object we are building the DSL dependency for. If empty, means we are just requesting building
+	 * @targetID     The target ID we are building this dependency for
 	 */
-	private any function getProviderDSL( required definition, targetObject = "" ){
+	private any function getProviderDSL(
+		required definition,
+		targetObject = "",
+		targetID
+	){
 		var thisType     = arguments.definition.dsl;
 		var thisTypeLen  = listLen( thisType, ":" );
 		var providerName = "";
@@ -857,10 +908,11 @@ component serializable="false" accessors="true" {
 	/**
 	 * Get dependencies using the mapped type
 	 *
-	 * @definition The dependency definition structure
+	 * @definition   The dependency definition structure
 	 * @targetObject The target object we are building the DSL dependency for. If empty, means we are just requesting building
+	 * @targetID     The target ID we are building this dependency for
 	 */
-	private any function getByTypeDSL( required definition, targetObject ){
+	private any function getByTypeDSL( required definition, targetObject, targetID ){
 		var injectType = arguments.definition.type;
 
 		if ( variables.injector.containsInstance( injectType ) ) {
@@ -871,8 +923,8 @@ component serializable="false" accessors="true" {
 	/**
 	 * Do our virtual inheritance magic
 	 *
-	 * @mapping The mapping to convert to
-	 * @target The target object
+	 * @mapping       The mapping to convert to
+	 * @target        The target object
 	 * @targetMapping The target mapping
 	 *
 	 * @return The target object
@@ -943,11 +995,15 @@ component serializable="false" accessors="true" {
 			.getVariablesMixin()
 			// filter out overrides
 			.filter( function( key, value ){
+				// If it's a property that already exists in the target, exclude it
+				if ( targetVariables.keyExists( arguments.key ) ) {
+					return false;
+				}
+
 				// If it's a function and not excluded and not overriden, then inject it
 				if (
 					isCustomFunction( arguments.value ) AND
-					!listFindNoCase( excludedProperties, arguments.key ) AND
-					!targetVariables.keyExists( arguments.key )
+					!listFindNoCase( excludedProperties, arguments.key )
 				) {
 					return true;
 				}

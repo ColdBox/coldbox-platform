@@ -1,21 +1,26 @@
-﻿component extends="tests.resources.BaseIntegrationTest"{
+﻿component extends="tests.resources.BaseIntegrationTest" {
 
 	function run( testResults, testBox ){
 		// all your suites go here.
 		describe( "Request Services", function(){
-
-			beforeEach(function( currentSpec ){
+			beforeEach( function( currentSpec ){
 				setup();
-				getController().getRoutingService().getRouter().setEnabled( false );
+				getController()
+					.getRoutingService()
+					.getRouter()
+					.setEnabled( false );
 				requestService = getController().getRequestService();
-			});
+			} );
 
-			afterEach(function( currentSpec ){
-				getController().getRoutingService().getRouter().setEnabled( true );
-			});
+			afterEach( function( currentSpec ){
+				getController()
+					.getRoutingService()
+					.getRouter()
+					.setEnabled( true );
+			} );
 
 			it( "can capture requests", function(){
-				var today         = now();
+				var today = now();
 
 				/* Setup test variables */
 				form.name  = "luis majano";
@@ -30,20 +35,22 @@
 				// debug(context.getCollection());
 
 				/* Tests */
-				expect( context ).toBeComponent();
-				expect( url.today ).toBe( context.getValue( "today" ) );
-				expect( url.name ).toBe( context.getValue( "name" ) );
-				expect( context.valueExists( "event" ) ).toBeTrue();
-			});
+				try {
+					expect( context ).toBeComponent();
+					expect( url.today ).toBe( context.getValue( "today" ) );
+					expect( url.name ).toBe( context.getValue( "name" ) );
+					expect( context.valueExists( "event" ) ).toBeTrue();
+				} finally {
+					structDelete( form, "event" );
+					structDelete( url, "event" );
+				}
+			} );
 
 			it( "can capture a json body", function(){
 				var mockContext = prepareMock( requestService.getContext() )
 					.$( "getHTTPContent" )
 					.$callback( function( boolean json = false ){
-						var payload = {
-							"fullName" : "Jon Clausen",
-							"type" : "JSON"
-						};
+						var payload = { "fullName" : "Jon Clausen", "type" : "JSON" };
 
 						if ( json ) {
 							return payload;
@@ -62,7 +69,7 @@
 				expect( context.valueExists( "fullName" ) ).toBeTrue();
 				expect( context.valueExists( "type" ) ).toBeTrue();
 				expect( context.getValue( "type" ) ).toBe( "JSON" );
-			});
+			} );
 
 			it( "can test the default event setup", function(){
 				/* Setup test variables */
@@ -73,9 +80,14 @@
 				var context = requestService.requestCapture();
 
 				/* Tests */
-				expect( context ).toBeComponent();
-				expect( url.event ).toBe( context.getCurrentEvent() );
-			});
+				try {
+					expect( context ).toBeComponent();
+					expect( url.event ).toBe( context.getCurrentEvent() );
+				} finally {
+					structDelete( form, "event" );
+					structDelete( url, "event" );
+				}
+			} );
 
 			it( "can create and check for context in the request scope", function(){
 				var context = requestService.getContext();
@@ -88,8 +100,7 @@
 				requestService.setContext( context );
 				expect( requestService.contextExists() ).toBeTrue();
 				expect( request ).toHaveKey( "cb_requestContext" );
-			});
-
+			} );
 		} );
 	}
 

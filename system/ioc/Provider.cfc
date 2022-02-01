@@ -3,8 +3,10 @@
  * www.ortussolutions.com
  * ---
  * A WireBox provider object that retrieves objects by using the provider pattern.
+ *
+ * @see coldbox.system.ioc.IProvider
  **/
-component implements="coldbox.system.ioc.IProvider" accessors="true"{
+component accessors="true" {
 
 	/**
 	 * The name of the mapping this provider is binded to, MUTEX with name
@@ -34,13 +36,13 @@ component implements="coldbox.system.ioc.IProvider" accessors="true"{
 	/**
 	 * Constructor
 	 *
-	 * @scopeRegistration The injector scope registration structure
+	 * @scopeRegistration             The injector scope registration structure
 	 * @scopeRegistration.doc_generic struct
-	 * @scopeStorage The scope storage utility
-	 * @scopeStorage.doc_generic coldbox.system.core.collections.ScopeStorage
-	 * @name The name of the mapping this provider is binded to, MUTEX with name
-	 * @dsl The DSL string this provider is binded to, MUTEX with name
-	 * @targetObject The target object that requested the provider.
+	 * @scopeStorage                  The scope storage utility
+	 * @scopeStorage.doc_generic      coldbox.system.core.collections.ScopeStorage
+	 * @name                          The name of the mapping this provider is binded to, MUTEX with name
+	 * @dsl                           The DSL string this provider is binded to, MUTEX with name
+	 * @targetObject                  The target object that requested the provider.
 	 */
 	Provider function init(
 		required scopeRegistration,
@@ -56,8 +58,12 @@ component implements="coldbox.system.ioc.IProvider" accessors="true"{
 		variables.targetObject      = arguments.targetObject;
 
 		// Verify incoming name or DSL
-		if( structKeyExists( arguments, "name" ) ){ variables.name = arguments.name; }
-		if( structKeyExists( arguments, "dsl" ) ){ variables.dsl = arguments.dsl; }
+		if ( structKeyExists( arguments, "name" ) ) {
+			variables.name = arguments.name;
+		}
+		if ( structKeyExists( arguments, "dsl" ) ) {
+			variables.dsl = arguments.dsl;
+		}
 
 		return this;
 	}
@@ -65,22 +71,22 @@ component implements="coldbox.system.ioc.IProvider" accessors="true"{
 	/**
 	 * Get the provided object
 	 */
-	any function $get() {
+	any function $get(){
 		var scopeInfo = variables.scopeRegistration;
 
 		// Return if scope exists, else throw exception
-		if( variables.scopeStorage.exists( scopeInfo.key, scopeInfo.scope ) ){
+		if ( variables.scopeStorage.exists( scopeInfo.key, scopeInfo.scope ) ) {
 			// retrieve by name or DSL
-			if( len( variables.name ) ){
+			if ( len( variables.name ) ) {
 				return variables.scopeStorage
 					.get( scopeInfo.key, scopeInfo.scope )
-					.getInstance( name=variables.name, targetObject=variables.targetObject );
+					.getInstance( name = variables.name, targetObject = variables.targetObject );
 			}
 
-			if( len( variables.dsl ) ){
+			if ( len( variables.dsl ) ) {
 				return variables.scopeStorage
 					.get( scopeInfo.key, scopeInfo.scope )
-					.getInstance( dsl=variables.dsl, targetObject=variables.targetObject );
+					.getInstance( dsl = variables.dsl, targetObject = variables.targetObject );
 			}
 		}
 
@@ -94,13 +100,17 @@ component implements="coldbox.system.ioc.IProvider" accessors="true"{
 	/**
 	 * Proxy calls to provided element
 	 *
-	 * @missingMethodName missing method name
+	 * @missingMethodName      missing method name
 	 * @missingMethodArguments missing method arguments
 	 */
 	any function onMissingMethod( required missingMethodName, required missingMethodArguments ){
-		var results = invoke( $get(), arguments.missingMethodName, arguments.missingMethodArguments );
+		var results = invoke(
+			$get(),
+			arguments.missingMethodName,
+			arguments.missingMethodArguments
+		);
 
-		if ( !isNull( local.results ) ){
+		if ( !isNull( local.results ) ) {
 			return results;
 		}
 	}

@@ -1,4 +1,5 @@
-﻿component extends = "coldbox.system.testing.BaseModelTest"{
+﻿component extends="coldbox.system.testing.BaseModelTest" {
+
 	/*********************************** LIFE CYCLE Methods ***********************************/
 
 	// executes before all suites+specs in the run() method
@@ -21,10 +22,7 @@
 				invocation = createMock( "coldbox.system.aop.MethodInvocation" );
 
 				// mock execution arguments
-				args = {
-					id          : createUUID(),
-					createdDate : now()
-				};
+				args = { id : createUUID(), createdDate : now() };
 
 				// mock aspect interceptors
 				interceptors = [ createStub(), createStub() ];
@@ -110,4 +108,5 @@
 		// Go down the rabbit hole
 		return arguments.invocation.proceed() & " aspect2";
 	}
+
 }

@@ -35,11 +35,7 @@
 	}
 
 	function getSetObjectMetdata(){
-		md = {
-			hits         : 1,
-			lastAccessed : now(),
-			created      : now()
-		};
+		md = { hits : 1, lastAccessed : now(), created : now() };
 		assertEquals( false, index.objectExists( "pio" ) );
 		index.setObjectMetadata( "pio", md );
 		assertEquals( md, index.getObjectMetadata( "pio" ) );

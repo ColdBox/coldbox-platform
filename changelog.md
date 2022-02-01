@@ -7,62 +7,80 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ----
 
-## [6.5.1] => 2021-JUL-12
+## [6.6.0] => 2022-JAN-31
 
 ### ColdBox HMVC Core
 
 #### Bug
 
-- [COLDBOX-1024](https://ortussolutions.atlassian.net/browse/COLDBOX-1024) Module helpers no longer injected/mixed into interceptors
+* [COLDBOX-1072](https://ortussolutions.atlassian.net/browse/COLDBOX-1072) Non config apps fails since the core Settings.cfc had the configure() method removed
+* [COLDBOX-1069](https://ortussolutions.atlassian.net/browse/COLDBOX-1069) Framework Initialization Fails in @be on AutoWire of App Scheduler
+* [COLDBOX-1066](https://ortussolutions.atlassian.net/browse/COLDBOX-1066) Scheduled tasks not accessing application scope on Adobe Engines
+* [COLDBOX-1063](https://ortussolutions.atlassian.net/browse/COLDBOX-1063) ColdBox schedulers starting before the application is ready to serve requests
+* [COLDBOX-1062](https://ortussolutions.atlassian.net/browse/COLDBOX-1062) Scheduler service not registering schedulers with the appropriate name
+* [COLDBOX-1051](https://ortussolutions.atlassian.net/browse/COLDBOX-1051) scheduler names can only be used once - executor needs to be removed
+* [COLDBOX-1036](https://ortussolutions.atlassian.net/browse/COLDBOX-1036) Scheduled tasks fail after upgrading to coldbox 6.5. Downgrading to 6.4.0 works.
+* [COLDBOX-1027](https://ortussolutions.atlassian.net/browse/COLDBOX-1027) actions for a specific pattern cannot point to different handlers
 
 #### Improvement
 
-- [COLDBOX-1026](https://ortussolutions.atlassian.net/browse/COLDBOX-1026) Update BeanPopulator for Hibernate 5 detection in Lucee new extension
-- [COLDBOX-1025](https://ortussolutions.atlassian.net/browse/COLDBOX-1025) Added back the finally block, just to make sure cleanup are done in bootstrap reinits
+* [COLDBOX-1074](https://ortussolutions.atlassian.net/browse/COLDBOX-1074) Improvements to module loading/activation log messages
+* [COLDBOX-1071](https://ortussolutions.atlassian.net/browse/COLDBOX-1071) Make unloadAll() in ModuleService more resilient by verifying loaded modules exist
+* [COLDBOX-1061](https://ortussolutions.atlassian.net/browse/COLDBOX-1061) Change default template cache from concurrentSoftReference to ConcurrentReference to avoid auto cleanups
+* [COLDBOX-1056](https://ortussolutions.atlassian.net/browse/COLDBOX-1056) Default route names to pattern when using route()
+* [COLDBOX-1050](https://ortussolutions.atlassian.net/browse/COLDBOX-1050) New router method: `apiResources()` to allow you to define resources without the new and edit actions
+* [COLDBOX-1049](https://ortussolutions.atlassian.net/browse/COLDBOX-1049) Update elixirPath to allow for many permutations of filenames and arguments to avoid cache collisions
+* [COLDBOX-1048](https://ortussolutions.atlassian.net/browse/COLDBOX-1048) Ability for the response `setPagination()` to use any incoming argument for storage
+* [COLDBOX-1037](https://ortussolutions.atlassian.net/browse/COLDBOX-1037) Move `onRequestCapture` after default event capture to allow for consistency on the capture
+* [COLDBOX-980](https://ortussolutions.atlassian.net/browse/COLDBOX-980) Deprecate declaration of multiple resources on a single `resources()` call
+* [COLDBOX-676](https://ortussolutions.atlassian.net/browse/COLDBOX-676) Improve routing DSL to allow for different HTTP verbs on the the same route to point to different events or actions
+
+#### New Feature
+
+* [COLDBOX-1082](https://ortussolutions.atlassian.net/browse/COLDBOX-1082) Announce `onException` interception points for async interceptors
+* [COLDBOX-1080](https://ortussolutions.atlassian.net/browse/COLDBOX-1080) experimental web mapping support to allow for modern app templates with assets outside of the webroot
+* [COLDBOX-1076](https://ortussolutions.atlassian.net/browse/COLDBOX-1076) Ability to pass in the domain to test executions in via integration testing
+* [COLDBOX-1073](https://ortussolutions.atlassian.net/browse/COLDBOX-1073) Enable automated full null support via github actions
+* [COLDBOX-1065](https://ortussolutions.atlassian.net/browse/COLDBOX-1065) ScheduledTask new `getMemento`() to get the state of the task
+* [COLDBOX-1064](https://ortussolutions.atlassian.net/browse/COLDBOX-1064) Schedulers can now get the current thread and thread name: `getCurrentThread(), getThreadName()` as private helpers
+* [COLDBOX-1033](https://ortussolutions.atlassian.net/browse/COLDBOX-1033) New controller method: `getUserSessionIdentifier`() which gives you the unique request tracking identifier according to our algorithms
+* [COLDBOX-1032](https://ortussolutions.atlassian.net/browse/COLDBOX-1032) New coldbox setting `identifierProvider` which can be a closure/udf/lambda that provides a unique tracking identifier for user requests
 
 ----
 
-## [6.5.0] => 2021-JUL-09
-
-### ColdBox HMVC Core
-
-#### Bugs
-
-- COLDBOX-1021 fix lastBusinessDay tests to reflect if the now is the actual last business day of the month
-- COLDBOX-1020 ColdBox does not allow for non-existent client cookies when using Flash RAM
-- COLDBOX-1019 ACF 2021 introduced getTimezone() so we need to be specific when getting timezones in the scheduler or else it fails
-- COLDBOX-1016 CF-2018 stats.lastResult is null when task->call have runEvent("xxxx")
-- COLDBOX-1015 Element cleaner not matching on query strings due to misordering of map keys. Use a TreepMap to normalize ordering so event caching and view caching cleanups can ocur.
-- COLDBOX-1014 response object cached response was never used, rely on the master bootstrap ColdBox cache response header
-- COLDBOX-1013 RendererEncapsulator overwrites view()-Method from FrameworkSupertype
-- COLDBOX-1010 this.nullSupport = true breaks coldbox
-- COLDBOX-1008 ScheduleTask listeners are only testing for isClosure() and lambdas return false, so do an or check for isCustomFunction() to support lambdas
-- COLDBOX-1007 scheduled task doesn't listen to when() in Scheduler.cfc
-- COLDBOX-1004 Custom matchers debug() function not found since it's injected in isolation
-- COLDBOX-1003 Scheduler service DI constructor argument was using the string literal instead of the string value for the scheduler name
-- COLDBOX-1002 added this scope to getTimezone() to address issue with ACF-2021 bif
-- COLDBOX-1001 category not logged correctly in async loggers
-
-#### Improvements
-
-- COLDBOX-1023 Readjustments to fail fast and reloading procedures when there are exceptions and reiniting becomes impossible.
-- COLDBOX-1018 Enable proxy to use the ColdBox app key defined in the bootstrap instead of hard coding it
-- COLDBOX-1017 Delay loadApplicationHelpers() in interceptors so modules can contribute udf helpers and even core interceptors can load them.
-- COLDBOX-1012 Move coldbox inited flag to after after aspects load, so we can make sure all modules are loaded before serving requests
-- COLDBOX-1009 RESTHandler capture JWT TokenException to authentication failures
-
 ### CacheBox
 
-#### Bugs
+#### Bug
 
-- CACHEBOX-68 BlackHoleStore never finishes reap() method
+* [CACHEBOX-76](https://ortussolutions.atlassian.net/browse/CACHEBOX-76) Fixed method return value + SQL compatibility on jdbc metadata indexer thanks to @homestar9
+* [CACHEBOX-75](https://ortussolutions.atlassian.net/browse/CACHEBOX-75) reap operation was not ignoring 0 values for last access timeouts
+* [CACHEBOX-74](https://ortussolutions.atlassian.net/browse/CACHEBOX-74) Typo in queryExecute Attribute "datasource" in the JDBCStore.cfc
 
-### LogBox
+#### Improvement
 
-#### Improvements
+* [CACHEBOX-73](https://ortussolutions.atlassian.net/browse/CACHEBOX-73) Replace IIF and urlEncodedFormat on cache content reports
+* [CACHEBOX-79](https://ortussolutions.atlassian.net/browse/CACHEBOX-79) Lower logging verbosity of cache reaping from info to debug messages
 
-- LOGBOX-63 Allow for dbappender to have default column maps instead of strict maps and allow for all methods to use the maps
+----
 
-#### New Features
+### WireBox
 
-- LOGBOX-64 Ability to add new appenders after config has been registered already
+#### Bug
+
+* [WIREBOX-124](https://ortussolutions.atlassian.net/browse/WIREBOX-124) Killing `IInjector` interface usages due to many issues across cfml engines, leaving them for docs only
+* [WIREBOX-118](https://ortussolutions.atlassian.net/browse/WIREBOX-118) Never override an existing variables key with virtual inheritance
+
+#### Improvement
+
+* [WIREBOX-120](https://ortussolutions.atlassian.net/browse/WIREBOX-120) DSLs process method now receives the caller `targetID` alongside the `targetObject` and the `target` definition
+
+#### New Feature
+
+* [WIREBOX-122](https://ortussolutions.atlassian.net/browse/WIREBOX-122) New wirebox DSL to inject the target's metadata that's cached in the target's binder: `wirebox:objectMetadata`
+* [WIREBOX-121](https://ortussolutions.atlassian.net/browse/WIREBOX-121) New WireBoxDSL: `wirebox:targetID` to give you back the target ID used when injecting the object
+* [WIREBOX-119](https://ortussolutions.atlassian.net/browse/WIREBOX-119) Missing `coldbox:schedulerService` DSL
+* [WIREBOX-117](https://ortussolutions.atlassian.net/browse/WIREBOX-117) HDI - Ability for injectors to have a collection of child injectors to delegate lookups to, basically Hierarchical DI
+
+#### Task
+
+* [WIREBOX-123](https://ortussolutions.atlassian.net/browse/WIREBOX-123) Removal of usage of Injector dsl interface due to so many issues with multiple engines

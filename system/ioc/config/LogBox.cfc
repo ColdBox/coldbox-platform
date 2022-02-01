@@ -6,7 +6,7 @@
  * You can make changes here to determine how WireBox logs information.  For more
  * information about logBox visit: https://logbox.ortusbooks.com
  */
-component{
+component {
 
 	/**
 	 *  Configure logBox
@@ -14,13 +14,9 @@ component{
 	function configure(){
 		logBox = {
 			// Define Appenders
-			appenders = {
-				console = {
-					class = "ConsoleAppender"
-				}
-			},
+			appenders : { console : { class : "ConsoleAppender" } },
 			// Root Logger
-			root = { levelmax = "INFO", appenders = "*" }
+			root      : { levelmax : "INFO", appenders : "*" }
 		};
 	}
 

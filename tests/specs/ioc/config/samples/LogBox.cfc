@@ -14,11 +14,7 @@ component {
 		logBox = {};
 
 		// Define Appenders
-		logBox.appenders = {
-			consoleAppender : {
-				class      : "ConsoleAppender"
-			}
-		};
+		logBox.appenders = { consoleAppender : { class : "ConsoleAppender" } };
 
 		// Root Logger
 		logBox.root = {

@@ -1,4 +1,5 @@
-﻿component extends = "tests.resources.BaseIntegrationTest"{
+﻿component extends="tests.resources.BaseIntegrationTest" {
+
 	this.loadColdBox = false;
 
 	function setup(){
@@ -148,11 +149,7 @@
 
 	// this is not a closure, so as to work on cf8.
 	private function cacheProducer(){
-		return {
-			date : now(),
-			name : "luis majano",
-			id   : createUUID()
-		};
+		return { date : now(), name : "luis majano", id : createUUID() };
 	}
 
 	function testGetQuiet(){
@@ -167,15 +164,16 @@
 	}
 
 	function testGetMulti(){
-		testVal = { name : "luis", age : 32 };
-		cache.getObjectStore().set( "test", testVal, 20 );
+		var testVal = { name : "luis", age : 32 };
+		cache.clearAll();
 		cache.clearStatistics();
+		cache.getObjectStore().set( "test", testVal, 20 );
 
-		results = cache.getMulti( "test,test2" );
+		var results = cache.getMulti( "test,test2" );
 		// debug(results);
 
-		assertEquals( testVal, results.test );
-		assertFalse( structKeyExists( results, "test2" ) );
+		expect( isNull( results.test ) ).toBeFalse();
+		expect( isNull( results.test2 ) ).toBeTrue();
 	}
 
 	function testgetCachedObjectMetadata(){
@@ -220,10 +218,7 @@
 	}
 
 	function testSetMulti(){
-		test = {
-			key1 : { name : "luis", age : 2 },
-			key2 : "hello"
-		};
+		test = { key1 : { name : "luis", age : 2 }, key2 : "hello" };
 		cache.setMulti( test );
 
 		assertEquals( test.key1, cache.get( "key1" ) );
@@ -231,10 +226,7 @@
 	}
 
 	function testClearMulti(){
-		test = {
-			key1 : { name : "luis", age : 2 },
-			key2 : "hello"
-		};
+		test = { key1 : { name : "luis", age : 2 }, key2 : "hello" };
 		cache.setMulti( test );
 
 		cache.clearMulti( "key1,key2" );
@@ -246,11 +238,7 @@
 	function testClearQuiet(){
 		test = {
 			key1 : now(),
-			key2 : {
-				name : "Pio",
-				age  : "32",
-				cool : "beyond belief"
-			}
+			key2 : { name : "Pio", age : "32", cool : "beyond belief" }
 		};
 		cache.setQuiet( "key1", test.key1 );
 
@@ -262,11 +250,7 @@
 	function testClear(){
 		test = {
 			key1 : now(),
-			key2 : {
-				name : "Pio",
-				age  : "32",
-				cool : "beyond belief"
-			}
+			key2 : { name : "Pio", age : "32", cool : "beyond belief" }
 		};
 		cache.setQuiet( "key1", test.key1 );
 
@@ -278,11 +262,7 @@
 	function testClearAll(){
 		test = {
 			key1 : now(),
-			key2 : {
-				name : "Pio",
-				age  : "32",
-				cool : "beyond belief"
-			}
+			key2 : { name : "Pio", age : "32", cool : "beyond belief" }
 		};
 		cache.setMulti( test );
 
@@ -306,11 +286,7 @@
 	function testExpireObjectAndIsExpired(){
 		test = {
 			key1 : now(),
-			key2 : {
-				name : "Pio",
-				age  : "32",
-				cool : "beyond belief"
-			}
+			key2 : { name : "Pio", age : "32", cool : "beyond belief" }
 		};
 		cache.set( "test", test );
 		cache.expireObject( "test" );
@@ -324,11 +300,7 @@
 	function testExpireByKeySnippet(){
 		test = {
 			key1 : now(),
-			key2 : {
-				name : "Pio",
-				age  : "32",
-				cool : "beyond belief"
-			}
+			key2 : { name : "Pio", age : "32", cool : "beyond belief" }
 		};
 		cache.set( "test1", test.key1 );
 		cache.set( "test2", test.key2 );
@@ -342,11 +314,7 @@
 	function testExpireAll(){
 		test = {
 			key1 : now(),
-			key2 : {
-				name : "Pio",
-				age  : "32",
-				cool : "beyond belief"
-			}
+			key2 : { name : "Pio", age : "32", cool : "beyond belief" }
 		};
 		cache.set( "test1", test.key1 );
 		cache.set( "test2", test.key2 );
@@ -360,10 +328,7 @@
 	function testGetKeys(){
 		test = {
 			key1 : now(),
-			key2 : {
-				name : "Luis Mahoney",
-				cool : "You betcha!"
-			}
+			key2 : { name : "Luis Mahoney", cool : "You betcha!" }
 		};
 		cache.set( "test1", test.key1 );
 		cache.set( "test2", test.key2 );
@@ -375,10 +340,7 @@
 	}
 
 	function testReap(){
-		test = {
-			key1 : now(),
-			key2 : { name : "luis", age : 2 }
-		};
+		test = { key1 : now(), key2 : { name : "luis", age : 2 } };
 		cache.clearAll();
 		cache.set( "test1", test.key1 );
 		cache.set( "test2", test.key2 );
@@ -389,4 +351,5 @@
 
 		assertEquals( 0, cache.getSize() );
 	}
+
 }

@@ -13,7 +13,7 @@
  * - eventManager : The linkage to the event manager
  * - cacheID : The unique identity code of this CFC
  **/
- component accessors=true serializable=false{
+component accessors=true serializable=false {
 
 	/**
 	 * The name of this cache provider
@@ -22,11 +22,17 @@
 	/**
 	 * Is the cache enabled or not for operation
 	 */
-	property name="enabled" type="boolean" default="false";
+	property
+		name   ="enabled"
+		type   ="boolean"
+		default="false";
 	/**
 	 * Can this cache do reporting
 	 */
-	property name="reportingEnabled" type="boolean" default="false";
+	property
+		name   ="reportingEnabled"
+		type   ="boolean"
+		default="false";
 	/**
 	 * The stats object linkage if any
 	 */
@@ -49,6 +55,7 @@
 	property name="cacheId" default="";
 	/**
 	 * ColdBox Utility object
+	 *
 	 * @doc_generic coldbox.system.core.util.Util
 	 */
 	property name="utility";
@@ -65,25 +72,25 @@
 	 */
 	function init(){
 		// cache provider name
-		variables.name            = "";
+		variables.name             = "";
 		// enabled flag
-		variables.enabled         = false;
+		variables.enabled          = false;
 		// reporting flag
-		variables.reportingEnabled= false;
+		variables.reportingEnabled = false;
 		// stats reference will go here
-		variables.stats           = "";
+		variables.stats            = "";
 		// configuration structure
-		variables.configuration   = {};
+		variables.configuration    = {};
 		// cache factory instance
-		variables.cacheFactory    = "";
+		variables.cacheFactory     = "";
 		// event manager instance
-		variables.eventManager    = "";
+		variables.eventManager     = "";
 		// cache internal identifier
-		variables.cacheID         = createObject( 'java','java.lang.System' ).identityHashCode( this );
+		variables.cacheID          = createObject( "java", "java.lang.System" ).identityHashCode( this );
 		// ColdBox Utility
-		variables.utility         = new coldbox.system.core.util.Util();
+		variables.utility          = new coldbox.system.core.util.Util();
 		// our UUID creation helper
-		variables.uuidHelper      = createobject( "java", "java.util.UUID" );
+		variables.uuidHelper       = createObject( "java", "java.util.UUID" );
 
 		return this;
 	}
@@ -168,7 +175,7 @@
 	/**
 	 * Set the cache factory reference for this cache
 	 *
-	 * @cacheFactory The cache factory
+	 * @cacheFactory             The cache factory
 	 * @cacheFactory.doc_generic coldbox.system.cache.CacheFactory
 	 *
 	 * @return ICacheProvider
@@ -201,16 +208,16 @@
 	/**
 	 * Sets Multiple Objects in the cache. Sets might be expensive. If the JVM threshold is used and it has been reached, the object won't be cached. If the pool is at maximum it will expire using its eviction policy and still cache the object. Cleanup will be done later.
 	 *
-	 * @mapping The structure of name value pairs to cache
-	 * @timeout The timeout to use on the object (if any, provider specific)
+	 * @mapping           The structure of name value pairs to cache
+	 * @timeout           The timeout to use on the object (if any, provider specific)
 	 * @lastAccessTimeout The idle timeout to use on the object (if any, provider specific)
-	 * @prefix A prefix to prepend to the keys
+	 * @prefix            A prefix to prepend to the keys
 	 */
 	function setMulti(
 		required struct mapping,
-		timeout          ="",
-		lastAccessTimeout="",
-		prefix           =""
+		timeout           = "",
+		lastAccessTimeout = "",
+		prefix            = ""
 	){
 		arguments.mapping.each( function( key, value ){
 			// Cache these puppies
@@ -226,11 +233,11 @@
 	/**
 	 * Clears objects from the cache by using its cache key. The returned value is a structure of name-value pairs of all the keys that where removed from the operation.
 	 *
-	 * @keys The comma delimited list or array of keys to retrieve from the cache
+	 * @keys   The comma delimited list or array of keys to retrieve from the cache
 	 * @prefix A prefix to prepend to the keys
 	 */
-	struct function clearMulti( required keys, prefix="" ){
-		if( isSimpleValue( arguments.keys ) ){
+	struct function clearMulti( required keys, prefix = "" ){
+		if ( isSimpleValue( arguments.keys ) ) {
 			arguments.keys = listToArray( arguments.keys );
 		}
 
@@ -238,7 +245,7 @@
 			// prefix keys
 			.map( function( item ){
 				return prefix & item;
-			})
+			} )
 			// reduce to struct of lookups
 			.reduce( function( result, key ){
 				result[ key ] = clear( key );
@@ -249,13 +256,13 @@
 	/**
 	 * The returned value is a structure of name-value pairs of all the keys that where found or not
 	 *
-	 * @keys The comma delimited list or an array of keys to lookup in the cache
+	 * @keys   The comma delimited list or an array of keys to lookup in the cache
 	 * @prefix A prefix to prepend to the keys with, if any
 	 *
-	 * @struct {key:boolean}
+	 * @return struct {key:boolean}
 	 */
-	struct function lookupMulti( required keys, prefix="" ){
-		if( isSimpleValue( arguments.keys ) ){
+	struct function lookupMulti( required keys, prefix = "" ){
+		if ( isSimpleValue( arguments.keys ) ) {
 			arguments.keys = listToArray( arguments.keys );
 		}
 
@@ -263,7 +270,7 @@
 			// prefix keys
 			.map( function( item ){
 				return prefix & item;
-			})
+			} )
 			// reduce to struct of lookups
 			.reduce( function( result, key ){
 				result[ key ] = lookup( key );
@@ -274,13 +281,13 @@
 	/**
 	 * The returned value is a structure of name-value pairs of all the keys that where found. Not found values will be in the mapping as null
 	 *
-	 * @keys The comma delimited list or an array of keys to lookup in the cache
+	 * @keys   The comma delimited list or an array of keys to lookup in the cache
 	 * @prefix A prefix to prepend to the keys with, if any
 	 *
-	 * @struct {key:boolean}
+	 * @return struct {key:boolean}
 	 */
-	struct function getMulti( required keys, prefix="" ){
-		if( isSimpleValue( arguments.keys ) ){
+	struct function getMulti( required keys, prefix = "" ){
+		if ( isSimpleValue( arguments.keys ) ) {
 			arguments.keys = listToArray( arguments.keys );
 		}
 
@@ -288,7 +295,7 @@
 			// prefix keys
 			.map( function( item ){
 				return prefix & item;
-			})
+			} )
 			// reduce to struct of lookups
 			.reduce( function( result, key ){
 				result[ key ] = get( key );
@@ -299,11 +306,11 @@
 	/**
 	 * Get the cached object's metadata structure. If the object does not exist, it returns an empty structure.
 	 *
-	 * @keys The comma delimited list or array of keys to retrieve from the cache
+	 * @keys   The comma delimited list or array of keys to retrieve from the cache
 	 * @prefix A prefix to prepend to the keys
 	 */
-	struct function getCachedObjectMetadataMulti( required keys, prefix="" ){
-		if( isSimpleValue( arguments.keys ) ){
+	struct function getCachedObjectMetadataMulti( required keys, prefix = "" ){
+		if ( isSimpleValue( arguments.keys ) ) {
 			arguments.keys = listToArray( arguments.keys );
 		}
 
@@ -311,7 +318,7 @@
 			// prefix keys
 			.map( function( item ){
 				return prefix & item;
-			})
+			} )
 			// reduce to struct of lookups
 			.reduce( function( result, key ){
 				result[ key ] = getCachedObjectMetadata( key );
@@ -323,66 +330,63 @@
 	 * Clear by key snippet
 	 *
 	 * @keySnippet The key snippet partial to clear out
-	 * @regex Whether to use regex matching or not, defaults to false
-	 * @async To do this in async mode or sync mode, defaults to false
+	 * @regex      Whether to use regex matching or not, defaults to false
+	 * @async      To do this in async mode or sync mode, defaults to false
 	 *
 	 * @return LuceeProvider
 	 */
-	function clearByKeySnippet( required keySnippet, boolean regex=false, boolean async=false ){
+	function clearByKeySnippet(
+		required keySnippet,
+		boolean regex = false,
+		boolean async = false
+	){
 		var threadName = "clearByKeySnippet_#replace( randomUUID(), "-", "", "all" )#";
 
 		// Async? IF so, do checks
-		if( arguments.async AND NOT inThread() ){
-			thread
-				name      ="#threadName#"
-				keySnippet="#arguments.keySnippet#"
-				regex     ="#arguments.regex#"
-			{
-				variables.elementCleaner.clearByKeySnippet(
-					attributes.keySnippet,
-					attributes.regex
-				);
+		if ( arguments.async AND NOT inThread() ) {
+			thread name="#threadName#" keySnippet="#arguments.keySnippet#" regex="#arguments.regex#" {
+				variables.elementCleaner.clearByKeySnippet( attributes.keySnippet, attributes.regex );
 			}
 		} else {
-			variables.elementCleaner.clearByKeySnippet(
-				arguments.keySnippet,
-				arguments.regex
-			);
+			variables.elementCleaner.clearByKeySnippet( arguments.keySnippet, arguments.regex );
 		}
 
 		return this;
 	}
 
 	/**
-     * Tries to get an object from the cache, if not found, it calls the 'produce' closure to produce the data and cache it
+	 * Tries to get an object from the cache, if not found, it calls the 'produce' closure to produce the data and cache it
 	 *
-	 * @objectKey The object cache key
-	 * @produce The producer closure/lambda
-	 * @timeout The timeout to use on the object (if any, provider specific)
+	 * @objectKey         The object cache key
+	 * @produce           The producer closure/lambda
+	 * @timeout           The timeout to use on the object (if any, provider specific)
 	 * @lastAccessTimeout The idle timeout to use on the object (if any, provider specific)
-	 * @extra A map of name-value pairs to use as extra arguments to pass to a providers set operation
+	 * @extra             A map of name-value pairs to use as extra arguments to pass to a providers set operation
 	 *
 	 * @return The cached or produced data/object
-     */
-    any function getOrSet(
-    	required any objectKey,
+	 */
+	any function getOrSet(
+		required any objectKey,
 		required any produce,
-		any timeout          ="",
-		any lastAccessTimeout="",
-		any extra            ={}
+		any timeout           = "",
+		any lastAccessTimeout = "",
+		any extra             = {}
 	){
-
 		// Verify if it exists? if so, return it.
 		var target = get( arguments.objectKey );
-		if( !isNull( local.target ) ){
+		if ( !isNull( local.target ) ) {
 			return target;
 		}
 
 		// else, produce it
-		lock name="GetOrSet.#variables.cacheID#.#arguments.objectKey#" type="exclusive" timeout="45" throwonTimeout="true"{
+		lock
+			name          ="GetOrSet.#variables.cacheID#.#arguments.objectKey#"
+			type          ="exclusive"
+			timeout       ="45"
+			throwonTimeout="true" {
 			// double lock, due to race conditions
-			var target = get( arguments.objectKey );
-			if( isNull( local.target ) ){
+			var target    = get( arguments.objectKey );
+			if ( isNull( local.target ) ) {
 				// produce it
 				target = arguments.produce();
 				// store it
@@ -432,7 +436,7 @@
 	 * @throws IllegalStateException
 	 */
 	private AbstractCacheBoxProvider function statusCheck(){
-		if( !isEnabled ){
+		if ( !isEnabled ) {
 			throw(
 				message = "The cache #getName()# is not yet enabled",
 				detail  = "The cache was being accessed without the configuration being complete",
@@ -446,17 +450,21 @@
 	 *
 	 * @return AbstractCacheProvider
 	 **/
-	 private function validateConfiguration(){
+	private function validateConfiguration(){
 		// Add in settings not discovered
-	   structAppend( variables.configuration, variables.DEFAULTS, false );
-	   // Validate configuration values, if they don't exist, then default them to DEFAULTS
-	   for( var key in variables.DEFAULTS ){
-		   if( NOT len( variables.configuration[ key ] ) ){
-			   variables.configuration[ key ] = variables.DEFAULTS[ key ];
-		   }
-	   }
+		structAppend(
+			variables.configuration,
+			variables.DEFAULTS,
+			false
+		);
+		// Validate configuration values, if they don't exist, then default them to DEFAULTS
+		for ( var key in variables.DEFAULTS ) {
+			if ( NOT len( variables.configuration[ key ] ) ) {
+				variables.configuration[ key ] = variables.DEFAULTS[ key ];
+			}
+		}
 
-	   return this;
-   }
+		return this;
+	}
 
- }
+}

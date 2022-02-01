@@ -4,53 +4,47 @@
 component {
 
 	// Module Properties
-	this.title 				= "HTML Helper";
+	this.title          = "HTML Helper";
 	// Model Namespace
-	this.modelNamespace		= "HTMLHelper";
+	this.modelNamespace = "HTMLHelper";
 	// CF Mapping
-	this.cfmapping			= "HTMLHelper";
+	this.cfmapping      = "HTMLHelper";
 	// Auto-map models
-	this.autoMapModels		= true;
+	this.autoMapModels  = true;
 	// Module Dependencies
-	this.dependencies 		= [];
+	this.dependencies   = [];
 
 	function configure(){
 		// module settings - stored in modules.name.settings
 		settings = {
 			// The base path of JS assets
-			js_path 		= "",
+			js_path      : "",
 			// The base path of CSS assets
-			css_path 		= "",
+			css_path     : "",
 			// Encode values on all dynamically generated tags in the HTML Helper
-			encodeValues	= false
+			encodeValues : false
 		};
 
 		// Custom Declared Points
-		interceptorSettings = {
-			customInterceptionPoints = ""
-		};
+		interceptorSettings = { customInterceptionPoints : "" };
 
 		// Custom Declared Interceptors
-		interceptors = [
-		];
+		interceptors = [];
 
 		// Map HTML Helper to provide continuity from previous ColdBox apps
-		binder.map( "HTMLHelper@coldbox" )
-			.to( "#moduleMapping#.models.HTMLHelper" );
-
+		binder.map( "HTMLHelper@coldbox" ).to( "#moduleMapping#.models.HTMLHelper" );
 	}
 
 	/**
-	* Fired when the module is registered and activated.
-	*/
+	 * Fired when the module is registered and activated.
+	 */
 	function onLoad(){
 	}
 
 	/**
-	* Fired when the module is unregistered and unloaded
-	*/
+	 * Fired when the module is unregistered and unloaded
+	 */
 	function onUnload(){
-
 	}
 
 }

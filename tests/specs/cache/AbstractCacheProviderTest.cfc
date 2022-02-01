@@ -1,4 +1,5 @@
-﻿component extends = "coldbox.system.testing.BaseModelTest"{
+﻿component extends="coldbox.system.testing.BaseModelTest" {
+
 	function setup(){
 		cp = createMock( "coldbox.system.cache.AbstractCacheBoxProvider" ).init();
 	}
@@ -51,4 +52,5 @@
 
 		assertEquals( mockEventManager, cp.getEventManager() );
 	}
+
 }

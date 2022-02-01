@@ -1,10 +1,11 @@
 ﻿/**
-* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-* www.ortussolutions.com
-* ---
-* This is a base layout object that will help you create custom layout's for messages in appenders
-**/
-component accessors="true"{
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * This is a base layout object that will help you create custom layout's for messages in appenders
+ **/
+component accessors="true" {
+
 	/**
 	 * The LogBox appender this layotu is linked to.
 	 */
@@ -13,7 +14,7 @@ component accessors="true"{
 	// The log levels enum as a public property
 	this.logLevels = new coldbox.system.logging.LogLevels();
 	// A line Sep Constant, man, wish we had final in CF.
-	this.LINE_SEP  = chr(13) & chr(10);
+	this.LINE_SEP  = chr( 13 ) & chr( 10 );
 
 	/**
 	 * Constructor
@@ -33,7 +34,7 @@ component accessors="true"{
 	function format( required logEvent ){
 		throw(
 			message = "You must implement this layout's format() method",
-			type 	= "FormatNotImplementedException"
+			type    = "FormatNotImplementedException"
 		)
 	}
 

@@ -8,6 +8,7 @@ component extends="coldbox.system.web.services.BaseService" {
 
 	/**
 	 * Constructor
+	 *
 	 * @controller The ColdBox Controller.
 	 */
 	function init( required controller ){
@@ -82,12 +83,9 @@ component extends="coldbox.system.web.services.BaseService" {
 		variables.routingService.requestCapture( context );
 
 		// Do we have an override
-		if( !isNull( arguments.event ) && len( arguments.event ) ){
+		if ( !isNull( arguments.event ) && len( arguments.event ) ) {
 			rc[ variables.eventName ] = arguments.event;
 		}
-
-		// Execute onRequestCapture interceptionPoint
-		variables.interceptorService.announce( "onRequestCapture" );
 
 		// Remove FW reserved commands just in case before collection snapshot
 		var fwCache = structKeyExists( rc, "fwCache" );
@@ -117,6 +115,9 @@ component extends="coldbox.system.web.services.BaseService" {
 		// Default Event Action Checks
 		variables.handlerService.defaultActionCheck( context );
 
+		// Execute onRequestCapture interceptionPoint
+		variables.interceptorService.announce( "onRequestCapture" );
+
 		// Are we using event caching?
 		eventCachingTest( context, fwCache );
 
@@ -126,9 +127,9 @@ component extends="coldbox.system.web.services.BaseService" {
 	/**
 	 * Tests if the incoming context is an event cache
 	 *
-	 * @context The request context to test for event caching
+	 * @context                The request context to test for event caching
 	 * @context.docbox_generic coldbox.system.web.context.RequestContext
-	 * @fwCache Flag to hard purge the cache if needed
+	 * @fwCache                Flag to hard purge the cache if needed
 	 */
 	RequestService function eventCachingTest( required context, boolean fwCache = false ){
 		var eventCache      = {};
@@ -160,9 +161,7 @@ component extends="coldbox.system.web.services.BaseService" {
 			// Check for Event Cache Purge
 			if ( arguments.fwCache ) {
 				// Clear the key from the cache
-				variables.cacheBox
-					.getCache( eventDictionary.provider )
-					.clear( eventCache.cacheKey );
+				variables.cacheBox.getCache( eventDictionary.provider ).clear( eventCache.cacheKey );
 
 				// Return don't show cached version
 				return this;
@@ -197,8 +196,7 @@ component extends="coldbox.system.web.services.BaseService" {
 	/**
 	 * Set the request context into the request scope
 	 *
-	 * @context Request Context object
-	 *
+	 * @context        Request Context object
 	 * @RequestService
 	 */
 	RequestService function setContext( required context ){
@@ -291,6 +289,7 @@ component extends="coldbox.system.web.services.BaseService" {
 
 	/**
 	 * Creates a new request context object
+	 *
 	 * @return coldbox.system.web.context.RequestContext
 	 */
 	function createContext( string classPath = "coldbox.system.web.context.RequestContext" ){

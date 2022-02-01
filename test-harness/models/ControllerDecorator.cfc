@@ -64,7 +64,7 @@ component extends="coldbox.system.web.ControllerDecorator" {
 		cacheProvider          = "template"
 	 ){
 		// useful debugging to pinpoint execution exceptions
-		logger.info(
+		logger.debug(
 			"=>Called decorator runEvent(#arguments.toString()#)",
 			!len( arguments.event ) ? callStackGet() : ""
 		);

@@ -27,9 +27,15 @@ component
 	/*********************************** LIFE CYCLE Methods ***********************************/
 
 	function beforeAll(){
-		super.beforeAll();
-		// do your own stuff here
+
+		// Cleanup
 		structDelete( request, "_lastInvalidEvent" );
+		structDelete( url, "event" );
+		structDelete( url, "format" );
+
+		// Super size me!
+		super.beforeAll();
+
 		// Wire up the test object with dependencies
 		if( this.loadColdBox && structKeyExists( application, "wirebox" ) ){
 			application.wirebox.autowire( this );
@@ -68,6 +74,16 @@ component
 
 	function isLucee(){
 		return server.keyExists( "lucee" );
+	}
+
+	function shutdownColdBox(){
+		// Graceful shutdown
+		if ( structKeyExists( application, "cbController" ) ) {
+			application[ "cbController" ].getLoaderService().processShutdown();
+		}
+		// Wipe app scopes
+		structDelete( application, "cbController" );
+		structDelete( application, "wirebox" );
 	}
 
 }

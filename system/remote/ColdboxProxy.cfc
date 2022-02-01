@@ -4,7 +4,7 @@
  * ---
  * This component is the coldbox remote proxy used for model operation.
  * This will convert the framework into a model framework rather than a HTML MVC framework.
- **/
+ */
 component serializable="false" accessors="true" {
 
 	/**
@@ -14,7 +14,7 @@ component serializable="false" accessors="true" {
 
 	// Setup Default Namespace Key for controller locations
 	variables.COLDBOX_APP_KEY = "cbController";
-	if( !isNull( application.cbBootstrap ) ) {
+	if ( !isNull( application.cbBootstrap ) ) {
 		variables.COLDBOX_APP_KEY = application.cbBootstrap.getCOLDBOX_APP_KEY();
 	}
 
@@ -29,9 +29,9 @@ component serializable="false" accessors="true" {
 	/**
 	 * Process a remote call into ColdBox's event model and return data/objects back.
 	 *
-	 * @throws NoEventDetected - When no passed even is incoming via arguments[ "event" ]
-	 *
 	 * @return If no results where found, this method returns null/void
+	 *
+	 * @throws NoEventDetected - When no passed even is incoming via arguments[ "event" ]
 	 */
 	private any function process(){
 		var refLocal = {};
@@ -122,7 +122,7 @@ component serializable="false" accessors="true" {
 	 * Announce an interception
 	 *
 	 * @state The interception state to announce
-	 * @data A data structure used to pass intercepted information.
+	 * @data  A data structure used to pass intercepted information.
 	 */
 	private boolean function announce( required state, struct data = {} ){
 		try {
@@ -246,17 +246,32 @@ component serializable="false" accessors="true" {
 	/**
 	 * Locates, Creates, Injects and Configures an object model instance
 	 *
-	 * @name The mapping name or DSL
+	 * @name          The mapping name or CFC instance path to try to build up
 	 * @initArguments The constructor structure of arguments to passthrough when initializing the instance
-	 * @dsl The dsl to use
+	 * @dsl           The dsl string to use to retrieve the instance model object, mutually exclusive with 'name
+	 * @targetObject  The object requesting the dependency, usually only used by DSL lookups
+	 * @injector      The child injector to use when retrieving the instance
 	 *
-	 */
-	private any function getInstance( required name, initArguments, dsl ){
+	 * @return The requested instance
+	 *
+	 * @throws InstanceNotFoundException - When the requested instance cannot be found
+	 * @throws InvalidChildInjector      - When you request an instance from an invalid child injector name
+	 **/
+	private function getInstance(
+		name,
+		struct initArguments = {},
+		dsl,
+		targetObject = "",
+		injector
+	){
 		return getWireBox().getInstance( argumentCollection = arguments );
 	}
 
 	/**
+	 *
 	 * @deprecated
+	 *
+	 * @throws DeprecationException
 	 */
 	private any function getModel( required name, dsl, initArguments ){
 		throw(
@@ -285,10 +300,10 @@ component serializable="false" accessors="true" {
 	 * Load a coldbox application, and place the coldbox controller in application scope for usage. If the application is already running, then it will not re-do it,
 	 * unless you specify the reload argument or the application expired.
 	 *
-	 * @appMapping The app to load via mapping
+	 * @appMapping     The app to load via mapping
 	 * @configLocation The config cfc to load else use by convention config/Coldboc.cfc
-	 * @reloadApp To reload the app if running
-	 * @appKey The running app key in application scope
+	 * @reloadApp      To reload the app if running
+	 * @appKey         The running app key in application scope
 	 */
 	private void function loadColdbox(
 		required string appMapping,

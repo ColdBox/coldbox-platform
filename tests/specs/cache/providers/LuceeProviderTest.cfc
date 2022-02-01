@@ -1,4 +1,5 @@
-﻿component extends = "tests.resources.BaseIntegrationTest" skip = "isLucee"{
+﻿component extends="tests.resources.BaseIntegrationTest" skip="isLucee" {
+
 	this.loadColdBox = false;
 
 	boolean function isLucee(){
@@ -197,10 +198,7 @@
 	}
 
 	private function cacheProducer(){
-		return {
-			date : now(),
-			name : "luis majano",
-			id   : createUUID()
-		};
+		return { date : now(), name : "luis majano", id : createUUID() };
 	}
+
 }

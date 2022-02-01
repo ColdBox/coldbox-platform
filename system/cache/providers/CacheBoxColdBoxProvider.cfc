@@ -2,20 +2,21 @@
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * @author Luis Majano
  *
  * This CacheBox provider communicates with the built in CacheBox caches
+ *
+ * @author Luis Majano
  */
 component
-	accessors="true"
+	accessors   ="true"
 	serializable="false"
-	implements="coldbox.system.cache.providers.IColdBoxProvider"
-	extends="coldbox.system.cache.providers.CacheBoxProvider"
+	implements  ="coldbox.system.cache.providers.IColdBoxProvider"
+	extends     ="coldbox.system.cache.providers.CacheBoxProvider"
 {
 
 	// Cache Prefixes
-	this.VIEW_CACHEKEY_PREFIX 	= "cbox_view-";
-	this.EVENT_CACHEKEY_PREFIX 	= "cbox_event-";
+	this.VIEW_CACHEKEY_PREFIX  = "cbox_view-";
+	this.EVENT_CACHEKEY_PREFIX = "cbox_event-";
 
 	/**
 	 * Constructor
@@ -55,7 +56,7 @@ component
 	/**
 	 * Set the ColdBox linkage into the provider
 	 *
-	 * @coldbox The ColdBox controller
+	 * @coldbox             The ColdBox controller
 	 * @coldbox.doc_generic coldbox.system.web.Controller
 	 *
 	 * @return IColdboxApplicationCache
@@ -81,16 +82,20 @@ component
 	 *
 	 * @return IColdboxApplicationCache
 	 */
-	function clearAllEvents( boolean async=false ){
-		var threadName = "clearAllEvents_#replace(variables.uuidHelper.randomUUID(),"-","","all")#";
+	function clearAllEvents( boolean async = false ){
+		var threadName = "clearAllEvents_#replace(
+			variables.uuidHelper.randomUUID(),
+			"-",
+			"",
+			"all"
+		)#";
 
 		// Async? IF so, do checks
-		if( arguments.async AND NOT variables.utility.inThread() ){
-			thread name="#threadName#"{
+		if ( arguments.async AND NOT variables.utility.inThread() ) {
+			thread name="#threadName#" {
 				variables.elementCleaner.clearAllEvents();
 			}
-		}
-		else{
+		} else {
 			variables.elementCleaner.clearAllEvents();
 		}
 		return this;
@@ -100,11 +105,11 @@ component
 	 * Clears all the event permutations from the cache according to snippet and querystring. Be careful when using incomplete event name with query strings as partial event names are not guaranteed to match with query string permutations
 	 *
 	 * @eventSnippet The event snippet to clear on. Can be partial or full
-	 * @queryString If passed in, it will create a unique hash out of it. For purging purposes
+	 * @queryString  If passed in, it will create a unique hash out of it. For purging purposes
 	 *
 	 * @return IColdboxApplicationCache
 	 */
-	function clearEvent( required eventSnippet, queryString="" ){
+	function clearEvent( required eventSnippet, queryString = "" ){
 		variables.elementCleaner.clearEvent( arguments.eventsnippet, arguments.queryString );
 		return this;
 	}
@@ -116,16 +121,20 @@ component
 	 *
 	 * @return IColdboxApplicationCache
 	 */
-	function clearAllViews( boolean async=false ){
-		var threadName = "clearAllViews_#replace(variables.uuidHelper.randomUUID(),"-","","all")#";
+	function clearAllViews( boolean async = false ){
+		var threadName = "clearAllViews_#replace(
+			variables.uuidHelper.randomUUID(),
+			"-",
+			"",
+			"all"
+		)#";
 
 		// Async? IF so, do checks
-		if( arguments.async AND NOT variables.utility.inThread() ){
-			thread name="#threadName#"{
+		if ( arguments.async AND NOT variables.utility.inThread() ) {
+			thread name="#threadName#" {
 				variables.elementCleaner.clearAllViews();
 			}
-		}
-		else{
+		} else {
 			variables.elementCleaner.clearAllViews();
 		}
 		return this;
@@ -135,12 +144,12 @@ component
 	 * Clears all the event permutations from the cache according to the list of snippets and querystrings. Be careful when using incomplete event name with query strings as partial event names are not guaranteed to match with query string permutations
 	 *
 	 * @eventSnippet The comma-delimited list event snippet to clear on. Can be partial or full
-	 * @queryString The comma-delimited list of queryStrings passed in. If passed in, it will create a unique hash out of it. For purging purposes.  If passed in the list length must be equal to the list length of the event snippets passed in
+	 * @queryString  The comma-delimited list of queryStrings passed in. If passed in, it will create a unique hash out of it. For purging purposes.  If passed in the list length must be equal to the list length of the event snippets passed in
 	 *
 	 * @return IColdboxApplicationCache
 	 */
-	function clearEventMulti( required eventsnippets, queryString="" ){
-		variables.elementCleaner.clearEventMulti(arguments.eventsnippets,arguments.queryString);
+	function clearEventMulti( required eventsnippets, queryString = "" ){
+		variables.elementCleaner.clearEventMulti( arguments.eventsnippets, arguments.queryString );
 		return this;
 	}
 
@@ -152,7 +161,7 @@ component
 	 * @return IColdboxApplicationCache
 	 */
 	function clearView( required viewSnippet ){
-		variables.elementCleaner.clearView(arguments.viewSnippet);
+		variables.elementCleaner.clearView( arguments.viewSnippet );
 		return this;
 	}
 
@@ -164,7 +173,7 @@ component
 	 * @return IColdboxApplicationCache
 	 */
 	function clearViewMulti( required viewSnippets ){
-		variables.elementCleaner.clearView(arguments.viewsnippets);
+		variables.elementCleaner.clearView( arguments.viewsnippets );
 		return this;
 	}
 

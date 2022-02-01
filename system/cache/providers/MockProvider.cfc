@@ -2,15 +2,16 @@
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ----
- * @luis Majano
  *
  * A mock cache provider that keeps cache data in a simple map for testing and assertions
+ *
+ * @luis Majano
  **/
- component
-	 accessors=true
-	 serializable=false
-	 implements="coldbox.system.cache.providers.IColdBoxProvider"
-	 extends="coldbox.system.cache.AbstractCacheBoxProvider"
+component
+	accessors   =true
+	serializable=false
+	implements  ="coldbox.system.cache.providers.IColdBoxProvider"
+	extends     ="coldbox.system.cache.AbstractCacheBoxProvider"
 {
 
 	/**
@@ -20,17 +21,17 @@
 
 	// CacheBox Provider Property Defaults
 	variables.DEFAULTS = {
-		objectDefaultTimeout           	= 60,
-		objectDefaultLastAccessTimeout 	= 30,
-		useLastAccessTimeouts          	= true,
-		reapFrequency                  	= 2,
-		freeMemoryPercentageThreshold  	= 0,
-		evictionPolicy                 	= "LRU",
-		evictCount                     	= 1,
-		maxObjects                     	= 200,
-		objectStore                    	= "ConcurrentStore",
-		coldboxEnabled                 	= false,
-		resetTimeoutOnAccess 			= false
+		objectDefaultTimeout           : 60,
+		objectDefaultLastAccessTimeout : 30,
+		useLastAccessTimeouts          : true,
+		reapFrequency                  : 2,
+		freeMemoryPercentageThreshold  : 0,
+		evictionPolicy                 : "LRU",
+		evictCount                     : 1,
+		maxObjects                     : 200,
+		objectStore                    : "ConcurrentStore",
+		coldboxEnabled                 : false,
+		resetTimeoutOnAccess           : false
 	};
 
 	/**
@@ -51,9 +52,9 @@
 	 * @return MockProvider
 	 */
 	function configure(){
-		variables.cache 	 		= {};
-		variables.enabled 			= true;
-		variables.reportingEnabled 	= true;
+		variables.cache            = {};
+		variables.enabled          = true;
+		variables.reportingEnabled = true;
 
 		validateConfiguration();
 
@@ -90,12 +91,12 @@
 	 */
 	struct function getStoreMetadataKeyMap(){
 		return {
-			timeout           = "timeout",
-			hits              = "hits",
-			lastAccessTimeout = "lastAccessTimeout",
-			created           = "created",
-			lastAccessed      = "lastAccessed",
-			isExpire          = "isExpired"
+			timeout           : "timeout",
+			hits              : "hits",
+			lastAccessTimeout : "lastAccessTimeout",
+			created           : "created",
+			lastAccessed      : "lastAccessed",
+			isExpire          : "isExpired"
 		};
 	}
 
@@ -172,11 +173,11 @@
 	/**
 	 * Sets an object in the cache and returns an instance of itself
 	 *
-	 * @objectKey The object cache key
-	 * @object The object to cache
-	 * @timeout The timeout to use on the object (if any, provider specific)
+	 * @objectKey         The object cache key
+	 * @object            The object to cache
+	 * @timeout           The timeout to use on the object (if any, provider specific)
 	 * @lastAccessTimeout The idle timeout to use on the object (if any, provider specific)
-	 * @extra A map of name-value pairs to use as extra arguments to pass to a providers set operation
+	 * @extra             A map of name-value pairs to use as extra arguments to pass to a providers set operation
 	 *
 	 * @return MockProvider
 	 */
@@ -194,11 +195,11 @@
 	/**
 	 * Sets an object in the cache with no event calls and returns an instance of itself
 	 *
-	 * @objectKey The object cache key
-	 * @object The object to cache
-	 * @timeout The timeout to use on the object (if any, provider specific)
+	 * @objectKey         The object cache key
+	 * @object            The object to cache
+	 * @timeout           The timeout to use on the object (if any, provider specific)
 	 * @lastAccessTimeout The idle timeout to use on the object (if any, provider specific)
-	 * @extra A map of name-value pairs to use as extra arguments to pass to a providers set operation
+	 * @extra             A map of name-value pairs to use as extra arguments to pass to a providers set operation
 	 *
 	 * @return MockProvider
 	 */
@@ -304,7 +305,7 @@
 	/**
 	 * Set the ColdBox linkage into the provider
 	 *
-	 * @coldbox The ColdBox controller
+	 * @coldbox             The ColdBox controller
 	 * @coldbox.doc_generic coldbox.system.web.Controller
 	 *
 	 * @return MockProvider
@@ -330,7 +331,7 @@
 	 *
 	 * @return MockProvider
 	 */
-	function clearAllEvents( boolean async=false ){
+	function clearAllEvents( boolean async = false ){
 		return this;
 	}
 
@@ -338,11 +339,11 @@
 	 * Clears all the event permutations from the cache according to snippet and querystring. Be careful when using incomplete event name with query strings as partial event names are not guaranteed to match with query string permutations
 	 *
 	 * @eventSnippet The event snippet to clear on. Can be partial or full
-	 * @queryString If passed in, it will create a unique hash out of it. For purging purposes
+	 * @queryString  If passed in, it will create a unique hash out of it. For purging purposes
 	 *
 	 * @return MockProvider
 	 */
-	function clearEvent( required eventSnippet, queryString="" ){
+	function clearEvent( required eventSnippet, queryString = "" ){
 		return this;
 	}
 
@@ -350,11 +351,11 @@
 	 * Clears all the event permutations from the cache according to the list of snippets and querystrings. Be careful when using incomplete event name with query strings as partial event names are not guaranteed to match with query string permutations
 	 *
 	 * @eventSnippet The comma-delimited list event snippet to clear on. Can be partial or full
-	 * @queryString The comma-delimited list of queryStrings passed in. If passed in, it will create a unique hash out of it. For purging purposes.  If passed in the list length must be equal to the list length of the event snippets passed in
+	 * @queryString  The comma-delimited list of queryStrings passed in. If passed in, it will create a unique hash out of it. For purging purposes.  If passed in the list length must be equal to the list length of the event snippets passed in
 	 *
 	 * @return MockProvider
 	 */
-	function clearEventMulti( required eventsnippets, queryString="" ){
+	function clearEventMulti( required eventsnippets, queryString = "" ){
 		return this;
 	}
 
@@ -385,7 +386,7 @@
 	 *
 	 * @return MockProvider
 	 */
-	function clearAllViews( boolean async=false ){
+	function clearAllViews( boolean async = false ){
 		return this;
 	}
 

@@ -178,8 +178,9 @@ component extends="coldbox.system.testing.BaseModelTest" {
 
 				given( "different HTTP verbs for the same route", function(){
 					then( "both verbs should be registered", function(){
-						router.post( "photos/", "photos.create" );
-						router.get( "photos/", "photos.index" );
+						router.post( "photos/", "Photos.create" );
+						router.get( "photos/", "Photos.index" );
+						router.delete( "photos/", "BulkPhotos.delete" );
 
 						var routes = router.getRoutes();
 						expect( routes ).toBeArray();
@@ -187,10 +188,24 @@ component extends="coldbox.system.testing.BaseModelTest" {
 						expect( routes[ 1 ].pattern ).toBe( "photos/" );
 						expect( routes[ 1 ].action ).toBeStruct();
 						expect( routes[ 1 ].action ).toHaveLength(
-							2,
+							3,
 							"The registered route should have two actions"
 						);
-						expect( routes[ 1 ].action ).toBe( { "GET" : "photos.index", "POST" : "photos.create" } );
+						expect( routes[ 1 ].event ).toBe( "", "The event must be empty for multiple HTTP verbs" );
+						expect( routes[ 1 ].handler ).toBe(
+							"",
+							"No handler should be defined so the actions can define one"
+						);
+						expect( routes[ 1 ].action ).toBe( {
+							"GET"    : "Photos.index",
+							"POST"   : "Photos.create",
+							"DELETE" : "BulkPhotos.delete"
+						} );
+						var verbs = listToArray( routes[ 1 ].verbs );
+						expect( verbs ).toHaveLength( 3 );
+						expect( verbs ).toInclude( "GET" );
+						expect( verbs ).toInclude( "POST" );
+						expect( verbs ).toInclude( "DELETE" );
 					} );
 				} );
 			} );
@@ -243,12 +258,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 						var routes = router
 							.getRoutes()
 							.filter( function( item ){
-								return (
-									reFindNoCase( "^api", item.pattern ) && reFindNoCase(
-										"luis",
-										item.handler
-									)
-								);
+								return ( reFindNoCase( "^api", item.pattern ) && reFindNoCase( "luis", item.handler ) );
 							} );
 						expect( routes ).notToBeEmpty();
 					} );
@@ -282,10 +292,16 @@ component extends="coldbox.system.testing.BaseModelTest" {
 			} );
 
 			story( "I can register named routes", function(){
-				given( "A named option", function(){
+				given( "The use of the as() method", function(){
 					then( "the route will register", function(){
 						router.route( "/home" ).as( "Home" );
 						expect( router.getThisRoute().name ).toBe( "home" );
+					} );
+				} );
+				given( "Just the pattern", function(){
+					then( "the name will be the same as the pattern", function(){
+						router.route( "/home" );
+						expect( router.getThisRoute().name ).toBe( "/home" );
 					} );
 				} );
 			} );
@@ -487,91 +503,26 @@ component extends="coldbox.system.testing.BaseModelTest" {
 						expect( routes[ 4 ].action ).toBe( { "GET" : "index", "POST" : "create" } );
 					} );
 				} );
-				given( "I register multiple resources using an array", function(){
-					then( "I should have a suite of routes for that resource", function(){
-						router.resources( [ "photos", "videos" ] );
-						var routes = router.getRoutes();
-						expect( routes ).toBeArray();
-						expect( routes ).toHaveLength( 8 );
-						expect( routes[ 1 ].pattern ).toBe( "photos/:id/edit/" );
-						expect( routes[ 1 ].action ).toBe( { "GET" : "edit" } );
-						expect( routes[ 2 ].pattern ).toBe( "photos/new/" );
-						expect( routes[ 2 ].action ).toBe( { "GET" : "new" } );
-						expect( routes[ 3 ].pattern ).toBe( "photos/:id/" );
-						expect( routes[ 3 ].action ).toBe( {
-							"GET"    : "show",
-							"PATCH"  : "update",
-							"PUT"    : "update",
-							"DELETE" : "delete"
-						} );
-						expect( routes[ 4 ].pattern ).toBe( "photos/" );
-						expect( routes[ 4 ].action ).toBe( { "GET" : "index", "POST" : "create" } );
-						expect( routes[ 5 ].pattern ).toBe( "videos/:id/edit/" );
-						expect( routes[ 5 ].action ).toBe( { "GET" : "edit" } );
-						expect( routes[ 6 ].pattern ).toBe( "videos/new/" );
-						expect( routes[ 6 ].action ).toBe( { "GET" : "new" } );
-						expect( routes[ 7 ].pattern ).toBe( "videos/:id/" );
-						expect( routes[ 7 ].action ).toBe( {
-							"GET"    : "show",
-							"PATCH"  : "update",
-							"PUT"    : "update",
-							"DELETE" : "delete"
-						} );
-						expect( routes[ 8 ].pattern ).toBe( "videos/" );
-						expect( routes[ 8 ].action ).toBe( { "GET" : "index", "POST" : "create" } );
-					} );
-				} );
-				given( "I register multiple resources using a list", function(){
-					then( "I should have a suite of routes for that resource", function(){
-						router.resources( "photos,videos" );
-						var routes = router.getRoutes();
-						expect( routes ).toBeArray();
-						expect( routes ).toHaveLength( 8 );
-						expect( routes[ 1 ].pattern ).toBe( "photos/:id/edit/" );
-						expect( routes[ 1 ].action ).toBe( { "GET" : "edit" } );
-						expect( routes[ 2 ].pattern ).toBe( "photos/new/" );
-						expect( routes[ 2 ].action ).toBe( { "GET" : "new" } );
-						expect( routes[ 3 ].pattern ).toBe( "photos/:id/" );
-						expect( routes[ 3 ].action ).toBe( {
-							"GET"    : "show",
-							"PATCH"  : "update",
-							"PUT"    : "update",
-							"DELETE" : "delete"
-						} );
-						expect( routes[ 4 ].pattern ).toBe( "photos/" );
-						expect( routes[ 4 ].action ).toBe( { "GET" : "index", "POST" : "create" } );
-						expect( routes[ 5 ].pattern ).toBe( "videos/:id/edit/" );
-						expect( routes[ 5 ].action ).toBe( { "GET" : "edit" } );
-						expect( routes[ 6 ].pattern ).toBe( "videos/new/" );
-						expect( routes[ 6 ].action ).toBe( { "GET" : "new" } );
-						expect( routes[ 7 ].pattern ).toBe( "videos/:id/" );
-						expect( routes[ 7 ].action ).toBe( {
-							"GET"    : "show",
-							"PATCH"  : "update",
-							"PUT"    : "update",
-							"DELETE" : "delete"
-						} );
-						expect( routes[ 8 ].pattern ).toBe( "videos/" );
-						expect( routes[ 8 ].action ).toBe( { "GET" : "index", "POST" : "create" } );
-					} );
-				} );
 			} );
 
-			story( "I can register a route with a condition", function() {
-				given( "I register a route with a condition", function() {
-					then( "I should have a route with a condition closure specified", function() {
-						router.route( "/about" )
-							.withCondition( function() {
+			story( "I can register a route with a condition", function(){
+				given( "I register a route with a condition", function(){
+					then( "I should have a route with a condition closure specified", function(){
+						router
+							.route( "/about" )
+							.withCondition( function(){
 								return url.keyExists( "firstName" );
 							} )
-							.withAction( { "GET": "getFirstName" } )
+							.withAction( { "GET" : "getFirstName" } )
 							.toHandler( "About" );
 
 						var routes = router.getRoutes();
 						expect( routes ).toBeArray();
 						expect( routes ).toHaveLength( 1 );
 						expect( routes[ 1 ] ).toHaveKey( "condition" );
-						expect( isClosure( routes[ 1 ].condition ) || isCustomFunction( routes[ 1 ].condition ) ).toBeTrue( "Condition should be callable." );
+						expect( isClosure( routes[ 1 ].condition ) || isCustomFunction( routes[ 1 ].condition ) ).toBeTrue(
+							"Condition should be callable."
+						);
 						expect( routes[ 1 ] ).toHaveKey( "handler" );
 						expect( routes[ 1 ].handler ).toBe( "About" );
 						expect( routes[ 1 ] ).toHaveKey( "action" );
@@ -581,43 +532,49 @@ component extends="coldbox.system.testing.BaseModelTest" {
 					} );
 				} );
 
-				given( "I register two routes with the same pattern and different conditions", function() {
-					then( "I should have two routes showing both conditions", function() {
-						router.route( "/about" )
-							.withCondition( function() {
+				given( "I register two routes with the same pattern and different conditions", function(){
+					then( "I should have two routes showing both conditions", function(){
+						router
+							.route( "/about" )
+							.withCondition( function(){
 								return url.keyExists( "firstName" );
 							} )
-							.withAction( { "GET": "getFirstName" } )
+							.withAction( { "GET" : "getFirstName" } )
 							.toHandler( "About" );
 
-						router.route( "/about" )
-							.withCondition( function() {
+						router
+							.route( "/about" )
+							.withCondition( function(){
 								return url.keyExists( "lastName" );
 							} )
-							.withAction( { "GET": "getLastName" } )
+							.withAction( { "GET" : "getLastName" } )
 							.toHandler( "About" );
 
-							var routes = router.getRoutes();
-							expect( routes ).toBeArray();
-							expect( routes ).toHaveLength( 2 );
+						var routes = router.getRoutes();
+						expect( routes ).toBeArray();
+						expect( routes ).toHaveLength( 2 );
 
-							expect( routes[ 1 ] ).toHaveKey( "condition" );
-							expect( isClosure( routes[ 1 ].condition ) || isCustomFunction( routes[ 1 ].condition ) ).toBeTrue( "Condition should be callable." );
-							expect( routes[ 1 ] ).toHaveKey( "handler" );
-							expect( routes[ 1 ].handler ).toBe( "About" );
-							expect( routes[ 1 ] ).toHaveKey( "action" );
-							expect( routes[ 1 ].action ).toBeStruct();
-							expect( routes[ 1 ].action ).toHaveKey( "GET" );
-							expect( routes[ 1 ].action.GET ).toBe( "getFirstName" );
+						expect( routes[ 1 ] ).toHaveKey( "condition" );
+						expect( isClosure( routes[ 1 ].condition ) || isCustomFunction( routes[ 1 ].condition ) ).toBeTrue(
+							"Condition should be callable."
+						);
+						expect( routes[ 1 ] ).toHaveKey( "handler" );
+						expect( routes[ 1 ].handler ).toBe( "About" );
+						expect( routes[ 1 ] ).toHaveKey( "action" );
+						expect( routes[ 1 ].action ).toBeStruct();
+						expect( routes[ 1 ].action ).toHaveKey( "GET" );
+						expect( routes[ 1 ].action.GET ).toBe( "getFirstName" );
 
-							expect( routes[ 2 ] ).toHaveKey( "condition" );
-							expect( isClosure( routes[ 2 ].condition ) || isCustomFunction( routes[ 2 ].condition ) ).toBeTrue( "Condition should be callable." );
-							expect( routes[ 1 ] ).toHaveKey( "handler" );
-							expect( routes[ 1 ].handler ).toBe( "About" );
-							expect( routes[ 2 ] ).toHaveKey( "action" );
-							expect( routes[ 2 ].action ).toBeStruct();
-							expect( routes[ 2 ].action ).toHaveKey( "GET" );
-							expect( routes[ 2 ].action.GET ).toBe( "getLastName" );
+						expect( routes[ 2 ] ).toHaveKey( "condition" );
+						expect( isClosure( routes[ 2 ].condition ) || isCustomFunction( routes[ 2 ].condition ) ).toBeTrue(
+							"Condition should be callable."
+						);
+						expect( routes[ 1 ] ).toHaveKey( "handler" );
+						expect( routes[ 1 ].handler ).toBe( "About" );
+						expect( routes[ 2 ] ).toHaveKey( "action" );
+						expect( routes[ 2 ].action ).toBeStruct();
+						expect( routes[ 2 ].action ).toHaveKey( "GET" );
+						expect( routes[ 2 ].action.GET ).toBe( "getLastName" );
 					} );
 				} );
 			} );

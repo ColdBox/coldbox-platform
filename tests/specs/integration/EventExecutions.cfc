@@ -39,7 +39,7 @@ component extends="tests.resources.BaseIntegrationTest" {
 				} );
 			} );
 
-			story( "I want to execute a global invalid event handler", function(){
+			xstory( "I want to execute a global invalid event handler", function(){
 				given( "an invalid event", function(){
 					then( "it should fire the global invalid event handler", function(){
 						var e = this.get( "does.not.exist" );

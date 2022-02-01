@@ -1,4 +1,5 @@
-﻿component extends = "coldbox.system.testing.BaseModelTest"{
+﻿component extends="coldbox.system.testing.BaseModelTest" {
+
 	function setup(){
 		logbox   = new coldbox.system.logging.LogBox();
 		appender = createMock( className = "coldbox.system.logging.AbstractAppender" );
@@ -19,4 +20,5 @@
 		appender.setLevelMax( 0 );
 		for ( x = 1; x lte 4; x++ ) assertFalse( appender.canLog( x ) );
 	}
+
 }

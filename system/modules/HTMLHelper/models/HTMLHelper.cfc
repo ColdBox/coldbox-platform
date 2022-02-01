@@ -19,7 +19,7 @@ component
 	/**
 	 * Constructor
 	 *
-	 * @controller The ColdBox Controller
+	 * @controller        The ColdBox Controller
 	 * @controller.inject coldbox
 	 */
 	function init( required controller ){
@@ -36,7 +36,7 @@ component
 	/**
 	 * Generate a script tag with custom JS content
 	 *
-	 * @content The content to render out
+	 * @content      The content to render out
 	 * @sendToHeader Send to header or returned HTML content
 	 */
 	function addJSContent( required content, boolean sendToHeader = false ){
@@ -51,7 +51,7 @@ component
 	/**
 	 * Generate a style tag with custom CSS content
 	 *
-	 * @content The content to render out
+	 * @content      The content to render out
 	 * @sendToHeader Send to header or returned HTML content
 	 */
 	function addStyleContent( required content, boolean sendToHeader = false ){
@@ -75,10 +75,10 @@ component
 	 *
 	 * This method tracks assets in the PRC via the key: <strong>cbox_assets</strong>
 	 *
-	 * @asset The asset(s) to load, only js or css files. This can also be a comma delimited list.
+	 * @asset        The asset(s) to load, only js or css files. This can also be a comma delimited list.
 	 * @sendToHeader Send to header or returned HTML content
-	 * @async HTML5 JavaScript argument: Specifies that the script is executed asynchronously (only for external scripts)
-	 * @defer HTML5 JavaScript argument: Specifies that the script is executed when the page has finished parsing (only for external scripts)
+	 * @async        HTML5 JavaScript argument: Specifies that the script is executed asynchronously (only for external scripts)
+	 * @defer        HTML5 JavaScript argument: Specifies that the script is executed when the page has finished parsing (only for external scripts)
 	 */
 	function addAsset(
 		required asset,
@@ -148,6 +148,7 @@ component
 
 	/**
 	 * Generate line breaks
+	 *
 	 * @count The number
 	 */
 	function br( numeric count = 1 ){
@@ -156,6 +157,7 @@ component
 
 	/**
 	 * Generate non-breaking spaces
+	 *
 	 * @count The number
 	 */
 	function nbs( numeric count = 1 ){
@@ -164,8 +166,9 @@ component
 
 	/**
 	 * Generate headers
+	 *
 	 * @content The content
-	 * @size The size
+	 * @size    The size
 	 */
 	function heading( required content, numeric size = 1 ){
 		return this.tag( "h#arguments.size#", arguments.content );
@@ -173,9 +176,10 @@ component
 
 	/**
 	 * Generate tags
-	 * @tag The tag to generate
-	 * @content The content
-	 * @data The data-{key} elements to add
+	 *
+	 * @tag      The tag to generate
+	 * @content  The content
+	 * @data     The data-{key} elements to add
 	 * @excludes List of attributes to exclude from the tag generation
 	 */
 	function tag(
@@ -222,6 +226,7 @@ component
 
 	/**
 	 * Generate anchors
+	 *
 	 * @name The name of the anchor
 	 * @text The text of the link
 	 * @data The data-{key} elements to add
@@ -238,14 +243,14 @@ component
 	/**
 	 * Create href tags, using the SES base URL or not
 	 *
-	 * @href Where to link to, this can be an action, absolute, etc If not set, we will create a link to the current executed event.
-	 * @text The text of the link
+	 * @href        Where to link to, this can be an action, absolute, etc If not set, we will create a link to the current executed event.
+	 * @text        The text of the link
 	 * @queryString The query string to append, if needed.
-	 * @title The title attribute
-	 * @target The target of the href link
-	 * @ssl If true, it will change http to https if found in the ses base url ONLY
-	 * @noBaseURL Defaults to false. If you want to NOT append a request's ses or html base url, then set this to true
-	 * @data A structure that will add data-{key} elements to the HTML control
+	 * @title       The title attribute
+	 * @target      The target of the href link
+	 * @ssl         If true, it will change http to https if found in the ses base url ONLY
+	 * @noBaseURL   Defaults to false. If you want to NOT append a request's ses or html base url, then set this to true
+	 * @data        A structure that will add data-{key} elements to the HTML control
 	 */
 	function href(
 		href        = "",
@@ -289,15 +294,15 @@ component
 	/**
 	 * Create link tags, using the SES base URL or not
 	 *
-	 * @href The href link to link to
-	 * @rel The rel attribute
-	 * @type The type attribute
-	 * @title The title attribute
-	 * @media The media attribute
-	 * @noBaseURL Defaults to false. If you want to NOT append a request's ses or html base url then set this argument to true
-	 * @charset The charset to add, defaults to utf-8
+	 * @href         The href link to link to
+	 * @rel          The rel attribute
+	 * @type         The type attribute
+	 * @title        The title attribute
+	 * @media        The media attribute
+	 * @noBaseURL    Defaults to false. If you want to NOT append a request's ses or html base url then set this argument to true
+	 * @charset      The charset to add, defaults to utf-8
 	 * @sendToHeader Send to the header via htmlhead by default, else it returns the content
-	 * @data A structure that will add data-{key} elements to the HTML control
+	 * @data         A structure that will add data-{key} elements to the HTML control
 	 */
 	function link(
 		href                 = "",
@@ -333,16 +338,16 @@ component
 	/**
 	 * Create image tags using the SES base URL or not
 	 *
-	 * @src The source URL to link to
-	 * @alt The alt tag
-	 * @class The class tag
-	 * @width The width tag
-	 * @height The height tag
-	 * @title The title tag
-	 * @rel The rel tag
-	 * @name The name tag
+	 * @src       The source URL to link to
+	 * @alt       The alt tag
+	 * @class     The class tag
+	 * @width     The width tag
+	 * @height    The height tag
+	 * @title     The title tag
+	 * @rel       The rel tag
+	 * @name      The name tag
 	 * @noBaseURL Defaults to false. If you want to NOT append a request's ses or html base url then set this argument to true
-	 * @data A structure that will add data-{key} elements to the HTML control
+	 * @data      A structure that will add data-{key} elements to the HTML control
 	 */
 	function img(
 		required src,
@@ -392,10 +397,10 @@ component
 	/**
 	 * Convert a table out of data (either a query or array of structures or array of entities)
 	 *
-	 * @data The query, array of data
+	 * @data     The query, array of data
 	 * @includes The columns to include
 	 * @excludes The columns to exclude
-	 * @name The name tag
+	 * @name     The name tag
 	 */
 	function table(
 		required data,
@@ -454,11 +459,11 @@ component
 	/**
 	 * Generate meta tags
 	 *
-	 * @name A name for the meta tag or an array of struct data to convert to meta tags.Keys [name,content,type]
-	 * @content The content attribute
-	 * @type Either ''name'' or ''equiv'' which produces http-equiv instead of the name
+	 * @name         A name for the meta tag or an array of struct data to convert to meta tags.Keys [name,content,type]
+	 * @content      The content attribute
+	 * @type         Either ''name'' or ''equiv'' which produces http-equiv instead of the name
 	 * @sendToHeader Send to the header via htmlhead by default, else it returns the content
-	 * @property The property attribute
+	 * @property     The property attribute
 	 */
 	function meta(
 		required name,
@@ -546,9 +551,10 @@ component
 
 	/**
 	 * Slugify a string for URL Safety
-	 * @str Target to slugify
+	 *
+	 * @str       Target to slugify
 	 * @maxLength The maximum number of characters for the slug
-	 * @allow a regex safe list of additional characters to allow
+	 * @allow     a regex safe list of additional characters to allow
 	 */
 	function slugify(
 		required str,
@@ -581,11 +587,12 @@ component
 
 	/**
 	 * Creates auto discovery links for RSS and ATOM feeds.
-	 * @type Type of feed: RSS or ATOM or Custom Type
-	 * @href Te href link to discover
-	 * @rel The rel attribute
+	 *
+	 * @type  Type of feed: RSS or ATOM or Custom Type
+	 * @href  Te href link to discover
+	 * @rel   The rel attribute
 	 * @title The title attribute
-	 * @data Struct for data-key elements
+	 * @data  Struct for data-key elements
 	 */
 	function autoDiscoveryLink(
 		type = "RSS",
@@ -620,17 +627,17 @@ component
 	/**
 	 * HTML Video Tag
 	 *
-	 * @src The source URL or array or list of URL's to create video tags for
-	 * @width The width tag
-	 * @height The height tag
-	 * @poster The URL of the image when video is unavailable
-	 * @autoplay Whether or not to start playing the video as soon as it can
-	 * @controls Whether or not to show controls on the video player
-	 * @loop Whether or not to loop the video over and over again
-	 * @preload If true, the video will be loaded at page load, and ready to run. Ignored if 'autoplay' is present
+	 * @src       The source URL or array or list of URL's to create video tags for
+	 * @width     The width tag
+	 * @height    The height tag
+	 * @poster    The URL of the image when video is unavailable
+	 * @autoplay  Whether or not to start playing the video as soon as it can
+	 * @controls  Whether or not to show controls on the video player
+	 * @loop      Whether or not to loop the video over and over again
+	 * @preload   If true, the video will be loaded at page load, and ready to run. Ignored if 'autoplay' is present
 	 * @noBaseURL Defaults to false. If you want to NOT append a request's ses or html base url then set this argument to true
-	 * @name The name tag
-	 * @data A structure that will add data-{key} elements to the HTML control
+	 * @name      The name tag
+	 * @data      A structure that will add data-{key} elements to the HTML control
 	 */
 	function video(
 		required src,
@@ -705,14 +712,14 @@ component
 	/**
 	 * HTML Audio Tag
 	 *
-	 * @src The source URL or array or list of URL's to create video tags for
-	 * @autoplay Whether or not to start playing the video as soon as it can
-	 * @controls Whether or not to show controls on the video player
-	 * @loop Whether or not to loop the video over and over again
-	 * @preload If true, the video will be loaded at page load, and ready to run. Ignored if 'autoplay' is present
+	 * @src       The source URL or array or list of URL's to create video tags for
+	 * @autoplay  Whether or not to start playing the video as soon as it can
+	 * @controls  Whether or not to show controls on the video player
+	 * @loop      Whether or not to loop the video over and over again
+	 * @preload   If true, the video will be loaded at page load, and ready to run. Ignored if 'autoplay' is present
 	 * @noBaseURL Defaults to false. If you want to NOT append a request's ses or html base url then set this argument to true
-	 * @name The name tag
-	 * @data A structure that will add data-{key} elements to the HTML control
+	 * @name      The name tag
+	 * @data      A structure that will add data-{key} elements to the HTML control
 	 */
 	function audio(
 		required src,
@@ -784,10 +791,10 @@ component
 	/**
 	 * HTML Canvas Tag
 	 *
-	 * @id The id of the canvas
-	 * @width The width tag
+	 * @id     The id of the canvas
+	 * @width  The width tag
 	 * @height The height tag
-	 * @data A structure that will add data-{key} elements to the HTML control
+	 * @data   A structure that will add data-{key} elements to the HTML control
 	 */
 	function canvas(
 		required id,
@@ -806,13 +813,13 @@ component
 	/**
 	 * Create cool form tags. Any extra argument will be passed as attributes to the form tag
 	 *
-	 * @action The event or route action to submit to.	This will be inflated using the request's base URL if not a full http URL. If empty, then it is a self-submitting form
-	 * @name The name of the form tag
-	 * @method The HTTP method of the form, defaults to POST
+	 * @action    The event or route action to submit to.	This will be inflated using the request's base URL if not a full http URL. If empty, then it is a self-submitting form
+	 * @name      The name of the form tag
+	 * @method    The HTTP method of the form, defaults to POST
 	 * @multipart Set the multipart encoding type on the form, defaults to false
-	 * @ssl If true, it will change http to https if found in the ses base url ONLY, false will remove SSL
+	 * @ssl       If true, it will change http to https if found in the ses base url ONLY, false will remove SSL
 	 * @noBaseURL Defaults to false. If you want to NOT append a request's ses or html base url then set this argument to true
-	 * @data A structure that will add data-{key} elements to the HTML control
+	 * @data      A structure that will add data-{key} elements to the HTML control
 	 */
 	function startForm(
 		string action     = "",
@@ -887,7 +894,7 @@ component
 	 * Build a field set with or without a legend
 	 *
 	 * @legend The legend to use
-	 * @data A structure that will add data-{key} elements to the HTML control
+	 * @data   A structure that will add data-{key} elements to the HTML control
 	 */
 	function startFieldSet( legend = "", struct data = {} ){
 		var buffer = createObject( "java", "java.lang.StringBuilder" ).init( "<fieldset" );
@@ -916,14 +923,14 @@ component
 	/**
 	 * Render a label tag. Remember that any extra arguments are passed as tag attributes
 	 *
-	 * @field The for who attribute
-	 * @content The label content. If not passed the field is used
-	 * @labelAttrs Attributes to add to the label tag. Empty by default
-	 * @wrapper The wrapper tag to use around the tag. Empty by default
+	 * @field        The for who attribute
+	 * @content      The label content. If not passed the field is used
+	 * @labelAttrs   Attributes to add to the label tag. Empty by default
+	 * @wrapper      The wrapper tag to use around the tag. Empty by default
 	 * @wrapperAttrs Attributes to add to the wrapper tag. Empty by default
-	 * @data A structure that will add data-{key} elements to the HTML control
-	 * @class The class to be applied to the label
-	 * @labelMode 0 - Open and close the label tag with wrappers around it (default); 1 - Open the wrapper and the label but do not close them; 2- Output the content, close the label and the wrapper
+	 * @data         A structure that will add data-{key} elements to the HTML control
+	 * @class        The class to be applied to the label
+	 * @labelMode    0 - Open and close the label tag with wrappers around it (default); 1 - Open the wrapper and the label but do not close them; 2- Output the content, close the label and the wrapper
 	 */
 	function label(
 		required field,
@@ -981,25 +988,25 @@ component
 	/**
 	 * Render out a textarea. Remember that any extra arguments are passed as tag attributes
 	 *
-	 * @name The name of the textarea
-	 * @cols The number of columns
-	 * @rows The number of rows
-	 * @value The value of the textarea
-	 * @disabled Disabled
-	 * @readonly Readonly
-	 * @wrapper The wrapper tag to use around the tag. Empty by default
-	 * @wrapperAttrs Attributes to add to the wrapper tag. Empty by default
-	 * @groupWrapper The wrapper tag to use around the tag and label. Empty by default
+	 * @name              The name of the textarea
+	 * @cols              The number of columns
+	 * @rows              The number of rows
+	 * @value             The value of the textarea
+	 * @disabled          Disabled
+	 * @readonly          Readonly
+	 * @wrapper           The wrapper tag to use around the tag. Empty by default
+	 * @wrapperAttrs      Attributes to add to the wrapper tag. Empty by default
+	 * @groupWrapper      The wrapper tag to use around the tag and label. Empty by default
 	 * @groupWrapperAttrs Attributes to add to the group wrapper tag. Empty by default
-	 * @label If Passed we will prepend a label tag
-	 * @labelAttrs Attributes to add to the label tag. Empty by default
-	 * @labelwrapper The wrapper tag to use around the label. Empty by default
+	 * @label             If Passed we will prepend a label tag
+	 * @labelAttrs        Attributes to add to the label tag. Empty by default
+	 * @labelwrapper      The wrapper tag to use around the label. Empty by default
 	 * @labelWrapperAttrs Attributes to add to the label wrapper tag. Empty by default
-	 * @labelClass The class to be applied to the label
-	 * @bind The entity binded to this control, the value comes by convention from the name attribute
-	 * @bindProperty The property to use for the value, by convention we use the name attribute
-	 * @data A structure that will add data-{key} elements to the HTML control
-	 * @inputInsideLabel If true, closes the label tag after the input tag and puts the label text after the input tag
+	 * @labelClass        The class to be applied to the label
+	 * @bind              The entity binded to this control, the value comes by convention from the name attribute
+	 * @bindProperty      The property to use for the value, by convention we use the name attribute
+	 * @data              A structure that will add data-{key} elements to the HTML control
+	 * @inputInsideLabel  If true, closes the label tag after the input tag and puts the label text after the input tag
 	 */
 	function textArea(
 		name = "",
@@ -1094,23 +1101,23 @@ component
 	/**
 	 * Render out a password field. Remember that any extra arguments are passed as tag attributes
 	 *
-	 * @name The name of the textarea
-	 * @value The value of the textarea
-	 * @disabled Disabled
-	 * @readonly Readonly
-	 * @wrapper The wrapper tag to use around the tag. Empty by default
-	 * @wrapperAttrs Attributes to add to the wrapper tag. Empty by default
-	 * @groupWrapper The wrapper tag to use around the tag and label. Empty by default
+	 * @name              The name of the textarea
+	 * @value             The value of the textarea
+	 * @disabled          Disabled
+	 * @readonly          Readonly
+	 * @wrapper           The wrapper tag to use around the tag. Empty by default
+	 * @wrapperAttrs      Attributes to add to the wrapper tag. Empty by default
+	 * @groupWrapper      The wrapper tag to use around the tag and label. Empty by default
 	 * @groupWrapperAttrs Attributes to add to the group wrapper tag. Empty by default
-	 * @label If Passed we will prepend a label tag
-	 * @labelAttrs Attributes to add to the label tag. Empty by default
-	 * @labelwrapper The wrapper tag to use around the label. Empty by default
+	 * @label             If Passed we will prepend a label tag
+	 * @labelAttrs        Attributes to add to the label tag. Empty by default
+	 * @labelwrapper      The wrapper tag to use around the label. Empty by default
 	 * @labelWrapperAttrs Attributes to add to the label wrapper tag. Empty by default
-	 * @labelClass The class to be applied to the label
-	 * @bind The entity binded to this control, the value comes by convention from the name attribute
-	 * @bindProperty The property to use for the value, by convention we use the name attribute
-	 * @data A structure that will add data-{key} elements to the HTML control
-	 * @inputInsideLabel If true, closes the label tag after the input tag and puts the label text after the input tag
+	 * @labelClass        The class to be applied to the label
+	 * @bind              The entity binded to this control, the value comes by convention from the name attribute
+	 * @bindProperty      The property to use for the value, by convention we use the name attribute
+	 * @data              A structure that will add data-{key} elements to the HTML control
+	 * @inputInsideLabel  If true, closes the label tag after the input tag and puts the label text after the input tag
 	 */
 	function passwordField(
 		name                     = "",
@@ -1138,23 +1145,23 @@ component
 	/**
 	 * Render out a URL field. Remember that any extra arguments are passed as tag attributes
 	 *
-	 * @name The name of the textarea
-	 * @value The value of the textarea
-	 * @disabled Disabled
-	 * @readonly Readonly
-	 * @wrapper The wrapper tag to use around the tag. Empty by default
-	 * @wrapperAttrs Attributes to add to the wrapper tag. Empty by default
-	 * @groupWrapper The wrapper tag to use around the tag and label. Empty by default
+	 * @name              The name of the textarea
+	 * @value             The value of the textarea
+	 * @disabled          Disabled
+	 * @readonly          Readonly
+	 * @wrapper           The wrapper tag to use around the tag. Empty by default
+	 * @wrapperAttrs      Attributes to add to the wrapper tag. Empty by default
+	 * @groupWrapper      The wrapper tag to use around the tag and label. Empty by default
 	 * @groupWrapperAttrs Attributes to add to the group wrapper tag. Empty by default
-	 * @label If Passed we will prepend a label tag
-	 * @labelAttrs Attributes to add to the label tag. Empty by default
-	 * @labelwrapper The wrapper tag to use around the label. Empty by default
+	 * @label             If Passed we will prepend a label tag
+	 * @labelAttrs        Attributes to add to the label tag. Empty by default
+	 * @labelwrapper      The wrapper tag to use around the label. Empty by default
 	 * @labelWrapperAttrs Attributes to add to the label wrapper tag. Empty by default
-	 * @labelClass The class to be applied to the label
-	 * @bind The entity binded to this control, the value comes by convention from the name attribute
-	 * @bindProperty The property to use for the value, by convention we use the name attribute
-	 * @data A structure that will add data-{key} elements to the HTML control
-	 * @inputInsideLabel If true, closes the label tag after the input tag and puts the label text after the input tag
+	 * @labelClass        The class to be applied to the label
+	 * @bind              The entity binded to this control, the value comes by convention from the name attribute
+	 * @bindProperty      The property to use for the value, by convention we use the name attribute
+	 * @data              A structure that will add data-{key} elements to the HTML control
+	 * @inputInsideLabel  If true, closes the label tag after the input tag and puts the label text after the input tag
 	 */
 	function urlField(
 		name                     = "",
@@ -1182,23 +1189,23 @@ component
 	/**
 	 * Render out an email field. Remember that any extra arguments are passed as tag attributes
 	 *
-	 * @name The name of the textarea
-	 * @value The value of the textarea
-	 * @disabled Disabled
-	 * @readonly Readonly
-	 * @wrapper The wrapper tag to use around the tag. Empty by default
-	 * @wrapperAttrs Attributes to add to the wrapper tag. Empty by default
-	 * @groupWrapper The wrapper tag to use around the tag and label. Empty by default
+	 * @name              The name of the textarea
+	 * @value             The value of the textarea
+	 * @disabled          Disabled
+	 * @readonly          Readonly
+	 * @wrapper           The wrapper tag to use around the tag. Empty by default
+	 * @wrapperAttrs      Attributes to add to the wrapper tag. Empty by default
+	 * @groupWrapper      The wrapper tag to use around the tag and label. Empty by default
 	 * @groupWrapperAttrs Attributes to add to the group wrapper tag. Empty by default
-	 * @label If Passed we will prepend a label tag
-	 * @labelAttrs Attributes to add to the label tag. Empty by default
-	 * @labelwrapper The wrapper tag to use around the label. Empty by default
+	 * @label             If Passed we will prepend a label tag
+	 * @labelAttrs        Attributes to add to the label tag. Empty by default
+	 * @labelwrapper      The wrapper tag to use around the label. Empty by default
 	 * @labelWrapperAttrs Attributes to add to the label wrapper tag. Empty by default
-	 * @labelClass The class to be applied to the label
-	 * @bind The entity binded to this control, the value comes by convention from the name attribute
-	 * @bindProperty The property to use for the value, by convention we use the name attribute
-	 * @data A structure that will add data-{key} elements to the HTML control
-	 * @inputInsideLabel If true, closes the label tag after the input tag and puts the label text after the input tag
+	 * @labelClass        The class to be applied to the label
+	 * @bind              The entity binded to this control, the value comes by convention from the name attribute
+	 * @bindProperty      The property to use for the value, by convention we use the name attribute
+	 * @data              A structure that will add data-{key} elements to the HTML control
+	 * @inputInsideLabel  If true, closes the label tag after the input tag and puts the label text after the input tag
 	 */
 	function emailField(
 		name                     = "",
@@ -1226,23 +1233,23 @@ component
 	/**
 	 * Render out a hidden field. Remember that any extra arguments are passed as tag attributes
 	 *
-	 * @name The name of the textarea
-	 * @value The value of the textarea
-	 * @disabled Disabled
-	 * @readonly Readonly
-	 * @wrapper The wrapper tag to use around the tag. Empty by default
-	 * @wrapperAttrs Attributes to add to the wrapper tag. Empty by default
-	 * @groupWrapper The wrapper tag to use around the tag and label. Empty by default
+	 * @name              The name of the textarea
+	 * @value             The value of the textarea
+	 * @disabled          Disabled
+	 * @readonly          Readonly
+	 * @wrapper           The wrapper tag to use around the tag. Empty by default
+	 * @wrapperAttrs      Attributes to add to the wrapper tag. Empty by default
+	 * @groupWrapper      The wrapper tag to use around the tag and label. Empty by default
 	 * @groupWrapperAttrs Attributes to add to the group wrapper tag. Empty by default
-	 * @label If Passed we will prepend a label tag
-	 * @labelAttrs Attributes to add to the label tag. Empty by default
-	 * @labelwrapper The wrapper tag to use around the label. Empty by default
+	 * @label             If Passed we will prepend a label tag
+	 * @labelAttrs        Attributes to add to the label tag. Empty by default
+	 * @labelwrapper      The wrapper tag to use around the label. Empty by default
 	 * @labelWrapperAttrs Attributes to add to the label wrapper tag. Empty by default
-	 * @labelClass The class to be applied to the label
-	 * @bind The entity binded to this control, the value comes by convention from the name attribute
-	 * @bindProperty The property to use for the value, by convention we use the name attribute
-	 * @data A structure that will add data-{key} elements to the HTML control
-	 * @inputInsideLabel If true, closes the label tag after the input tag and puts the label text after the input tag
+	 * @labelClass        The class to be applied to the label
+	 * @bind              The entity binded to this control, the value comes by convention from the name attribute
+	 * @bindProperty      The property to use for the value, by convention we use the name attribute
+	 * @data              A structure that will add data-{key} elements to the HTML control
+	 * @inputInsideLabel  If true, closes the label tag after the input tag and puts the label text after the input tag
 	 */
 	function hiddenField(
 		name                     = "",
@@ -1270,23 +1277,23 @@ component
 	/**
 	 * Render out a text field. Remember that any extra arguments are passed as tag attributes
 	 *
-	 * @name The name of the textarea
-	 * @value The value of the textarea
-	 * @disabled Disabled
-	 * @readonly Readonly
-	 * @wrapper The wrapper tag to use around the tag. Empty by default
-	 * @wrapperAttrs Attributes to add to the wrapper tag. Empty by default
-	 * @groupWrapper The wrapper tag to use around the tag and label. Empty by default
+	 * @name              The name of the textarea
+	 * @value             The value of the textarea
+	 * @disabled          Disabled
+	 * @readonly          Readonly
+	 * @wrapper           The wrapper tag to use around the tag. Empty by default
+	 * @wrapperAttrs      Attributes to add to the wrapper tag. Empty by default
+	 * @groupWrapper      The wrapper tag to use around the tag and label. Empty by default
 	 * @groupWrapperAttrs Attributes to add to the group wrapper tag. Empty by default
-	 * @label If Passed we will prepend a label tag
-	 * @labelAttrs Attributes to add to the label tag. Empty by default
-	 * @labelwrapper The wrapper tag to use around the label. Empty by default
+	 * @label             If Passed we will prepend a label tag
+	 * @labelAttrs        Attributes to add to the label tag. Empty by default
+	 * @labelwrapper      The wrapper tag to use around the label. Empty by default
 	 * @labelWrapperAttrs Attributes to add to the label wrapper tag. Empty by default
-	 * @labelClass The class to be applied to the label
-	 * @bind The entity binded to this control, the value comes by convention from the name attribute
-	 * @bindProperty The property to use for the value, by convention we use the name attribute
-	 * @data A structure that will add data-{key} elements to the HTML control
-	 * @inputInsideLabel If true, closes the label tag after the input tag and puts the label text after the input tag
+	 * @labelClass        The class to be applied to the label
+	 * @bind              The entity binded to this control, the value comes by convention from the name attribute
+	 * @bindProperty      The property to use for the value, by convention we use the name attribute
+	 * @data              A structure that will add data-{key} elements to the HTML control
+	 * @inputInsideLabel  If true, closes the label tag after the input tag and puts the label text after the input tag
 	 */
 	function textField(
 		name                     = "",
@@ -1314,23 +1321,23 @@ component
 	/**
 	 * Render out a file field. Remember that any extra arguments are passed as tag attributes
 	 *
-	 * @name The name of the textarea
-	 * @value The value of the textarea
-	 * @disabled Disabled
-	 * @readonly Readonly
-	 * @wrapper The wrapper tag to use around the tag. Empty by default
-	 * @wrapperAttrs Attributes to add to the wrapper tag. Empty by default
-	 * @groupWrapper The wrapper tag to use around the tag and label. Empty by default
+	 * @name              The name of the textarea
+	 * @value             The value of the textarea
+	 * @disabled          Disabled
+	 * @readonly          Readonly
+	 * @wrapper           The wrapper tag to use around the tag. Empty by default
+	 * @wrapperAttrs      Attributes to add to the wrapper tag. Empty by default
+	 * @groupWrapper      The wrapper tag to use around the tag and label. Empty by default
 	 * @groupWrapperAttrs Attributes to add to the group wrapper tag. Empty by default
-	 * @label If Passed we will prepend a label tag
-	 * @labelAttrs Attributes to add to the label tag. Empty by default
-	 * @labelwrapper The wrapper tag to use around the label. Empty by default
+	 * @label             If Passed we will prepend a label tag
+	 * @labelAttrs        Attributes to add to the label tag. Empty by default
+	 * @labelwrapper      The wrapper tag to use around the label. Empty by default
 	 * @labelWrapperAttrs Attributes to add to the label wrapper tag. Empty by default
-	 * @labelClass The class to be applied to the label
-	 * @bind The entity binded to this control, the value comes by convention from the name attribute
-	 * @bindProperty The property to use for the value, by convention we use the name attribute
-	 * @data A structure that will add data-{key} elements to the HTML control
-	 * @inputInsideLabel If true, closes the label tag after the input tag and puts the label text after the input tag
+	 * @labelClass        The class to be applied to the label
+	 * @bind              The entity binded to this control, the value comes by convention from the name attribute
+	 * @bindProperty      The property to use for the value, by convention we use the name attribute
+	 * @data              A structure that will add data-{key} elements to the HTML control
+	 * @inputInsideLabel  If true, closes the label tag after the input tag and puts the label text after the input tag
 	 */
 	function fileField(
 		name                     = "",
@@ -1358,23 +1365,23 @@ component
 	/**
 	 * Render out a checkbox field. Remember that any extra arguments are passed as tag attributes
 	 *
-	 * @name The name of the textarea
-	 * @value The value of the textarea
-	 * @disabled Disabled
-	 * @checked Checked
-	 * @wrapper The wrapper tag to use around the tag. Empty by default
-	 * @wrapperAttrs Attributes to add to the wrapper tag. Empty by default
-	 * @groupWrapper The wrapper tag to use around the tag and label. Empty by default
+	 * @name              The name of the textarea
+	 * @value             The value of the textarea
+	 * @disabled          Disabled
+	 * @checked           Checked
+	 * @wrapper           The wrapper tag to use around the tag. Empty by default
+	 * @wrapperAttrs      Attributes to add to the wrapper tag. Empty by default
+	 * @groupWrapper      The wrapper tag to use around the tag and label. Empty by default
 	 * @groupWrapperAttrs Attributes to add to the group wrapper tag. Empty by default
-	 * @label If Passed we will prepend a label tag
-	 * @labelAttrs Attributes to add to the label tag. Empty by default
-	 * @labelwrapper The wrapper tag to use around the label. Empty by default
+	 * @label             If Passed we will prepend a label tag
+	 * @labelAttrs        Attributes to add to the label tag. Empty by default
+	 * @labelwrapper      The wrapper tag to use around the label. Empty by default
 	 * @labelWrapperAttrs Attributes to add to the label wrapper tag. Empty by default
-	 * @labelClass The class to be applied to the label
-	 * @bind The entity binded to this control, the value comes by convention from the name attribute
-	 * @bindProperty The property to use for the value, by convention we use the name attribute
-	 * @data A structure that will add data-{key} elements to the HTML control
-	 * @inputInsideLabel If true, closes the label tag after the input tag and puts the label text after the input tag
+	 * @labelClass        The class to be applied to the label
+	 * @bind              The entity binded to this control, the value comes by convention from the name attribute
+	 * @bindProperty      The property to use for the value, by convention we use the name attribute
+	 * @data              A structure that will add data-{key} elements to the HTML control
+	 * @inputInsideLabel  If true, closes the label tag after the input tag and puts the label text after the input tag
 	 */
 	function checkbox(
 		name                     = "",
@@ -1402,23 +1409,23 @@ component
 	/**
 	 * Render out a radiobutton field. Remember that any extra arguments are passed as tag attributes
 	 *
-	 * @name The name of the textarea
-	 * @value The value of the textarea
-	 * @disabled Disabled
-	 * @checked Checked
-	 * @wrapper The wrapper tag to use around the tag. Empty by default
-	 * @wrapperAttrs Attributes to add to the wrapper tag. Empty by default
-	 * @groupWrapper The wrapper tag to use around the tag and label. Empty by default
+	 * @name              The name of the textarea
+	 * @value             The value of the textarea
+	 * @disabled          Disabled
+	 * @checked           Checked
+	 * @wrapper           The wrapper tag to use around the tag. Empty by default
+	 * @wrapperAttrs      Attributes to add to the wrapper tag. Empty by default
+	 * @groupWrapper      The wrapper tag to use around the tag and label. Empty by default
 	 * @groupWrapperAttrs Attributes to add to the group wrapper tag. Empty by default
-	 * @label If Passed we will prepend a label tag
-	 * @labelAttrs Attributes to add to the label tag. Empty by default
-	 * @labelwrapper The wrapper tag to use around the label. Empty by default
+	 * @label             If Passed we will prepend a label tag
+	 * @labelAttrs        Attributes to add to the label tag. Empty by default
+	 * @labelwrapper      The wrapper tag to use around the label. Empty by default
 	 * @labelWrapperAttrs Attributes to add to the label wrapper tag. Empty by default
-	 * @labelClass The class to be applied to the label
-	 * @bind The entity binded to this control, the value comes by convention from the name attribute
-	 * @bindProperty The property to use for the value, by convention we use the name attribute
-	 * @data A structure that will add data-{key} elements to the HTML control
-	 * @inputInsideLabel If true, closes the label tag after the input tag and puts the label text after the input tag
+	 * @labelClass        The class to be applied to the label
+	 * @bind              The entity binded to this control, the value comes by convention from the name attribute
+	 * @bindProperty      The property to use for the value, by convention we use the name attribute
+	 * @data              A structure that will add data-{key} elements to the HTML control
+	 * @inputInsideLabel  If true, closes the label tag after the input tag and puts the label text after the input tag
 	 */
 	function radioButton(
 		name                     = "",
@@ -1446,22 +1453,22 @@ component
 	/**
 	 * Render out a submit button. Remember that any extra arguments are passed as tag attributes
 	 *
-	 * @name The name of the textarea
-	 * @value The value of the textarea
-	 * @disabled Disabled
-	 * @wrapper The wrapper tag to use around the tag. Empty by default
-	 * @wrapperAttrs Attributes to add to the wrapper tag. Empty by default
-	 * @groupWrapper The wrapper tag to use around the tag and label. Empty by default
+	 * @name              The name of the textarea
+	 * @value             The value of the textarea
+	 * @disabled          Disabled
+	 * @wrapper           The wrapper tag to use around the tag. Empty by default
+	 * @wrapperAttrs      Attributes to add to the wrapper tag. Empty by default
+	 * @groupWrapper      The wrapper tag to use around the tag and label. Empty by default
 	 * @groupWrapperAttrs Attributes to add to the group wrapper tag. Empty by default
-	 * @label If Passed we will prepend a label tag
-	 * @labelAttrs Attributes to add to the label tag. Empty by default
-	 * @labelwrapper The wrapper tag to use around the label. Empty by default
+	 * @label             If Passed we will prepend a label tag
+	 * @labelAttrs        Attributes to add to the label tag. Empty by default
+	 * @labelwrapper      The wrapper tag to use around the label. Empty by default
 	 * @labelWrapperAttrs Attributes to add to the label wrapper tag. Empty by default
-	 * @labelClass The class to be applied to the label
-	 * @bind The entity binded to this control, the value comes by convention from the name attribute
-	 * @bindProperty The property to use for the value, by convention we use the name attribute
-	 * @data A structure that will add data-{key} elements to the HTML control
-	 * @inputInsideLabel If true, closes the label tag after the input tag and puts the label text after the input tag
+	 * @labelClass        The class to be applied to the label
+	 * @bind              The entity binded to this control, the value comes by convention from the name attribute
+	 * @bindProperty      The property to use for the value, by convention we use the name attribute
+	 * @data              A structure that will add data-{key} elements to the HTML control
+	 * @inputInsideLabel  If true, closes the label tag after the input tag and puts the label text after the input tag
 	 */
 	function submitButton(
 		name                     = "",
@@ -1488,22 +1495,22 @@ component
 	/**
 	 * Render out a reset button. Remember that any extra arguments are passed as tag attributes
 	 *
-	 * @name The name of the textarea
-	 * @value The value of the textarea
-	 * @disabled Disabled
-	 * @wrapper The wrapper tag to use around the tag. Empty by default
-	 * @wrapperAttrs Attributes to add to the wrapper tag. Empty by default
-	 * @groupWrapper The wrapper tag to use around the tag and label. Empty by default
+	 * @name              The name of the textarea
+	 * @value             The value of the textarea
+	 * @disabled          Disabled
+	 * @wrapper           The wrapper tag to use around the tag. Empty by default
+	 * @wrapperAttrs      Attributes to add to the wrapper tag. Empty by default
+	 * @groupWrapper      The wrapper tag to use around the tag and label. Empty by default
 	 * @groupWrapperAttrs Attributes to add to the group wrapper tag. Empty by default
-	 * @label If Passed we will prepend a label tag
-	 * @labelAttrs Attributes to add to the label tag. Empty by default
-	 * @labelwrapper The wrapper tag to use around the label. Empty by default
+	 * @label             If Passed we will prepend a label tag
+	 * @labelAttrs        Attributes to add to the label tag. Empty by default
+	 * @labelwrapper      The wrapper tag to use around the label. Empty by default
 	 * @labelWrapperAttrs Attributes to add to the label wrapper tag. Empty by default
-	 * @labelClass The class to be applied to the label
-	 * @bind The entity binded to this control, the value comes by convention from the name attribute
-	 * @bindProperty The property to use for the value, by convention we use the name attribute
-	 * @data A structure that will add data-{key} elements to the HTML control
-	 * @inputInsideLabel If true, closes the label tag after the input tag and puts the label text after the input tag
+	 * @labelClass        The class to be applied to the label
+	 * @bind              The entity binded to this control, the value comes by convention from the name attribute
+	 * @bindProperty      The property to use for the value, by convention we use the name attribute
+	 * @data              A structure that will add data-{key} elements to the HTML control
+	 * @inputInsideLabel  If true, closes the label tag after the input tag and puts the label text after the input tag
 	 */
 	function resetButton(
 		name                     = "",
@@ -1530,22 +1537,22 @@ component
 	/**
 	 * Render out a image button. Remember that any extra arguments are passed as tag attributes
 	 *
-	 * @src The image source
-	 * @name The name of the textarea
-	 * @disabled Disabled
-	 * @wrapper The wrapper tag to use around the tag. Empty by default
-	 * @wrapperAttrs Attributes to add to the wrapper tag. Empty by default
-	 * @groupWrapper The wrapper tag to use around the tag and label. Empty by default
+	 * @src               The image source
+	 * @name              The name of the textarea
+	 * @disabled          Disabled
+	 * @wrapper           The wrapper tag to use around the tag. Empty by default
+	 * @wrapperAttrs      Attributes to add to the wrapper tag. Empty by default
+	 * @groupWrapper      The wrapper tag to use around the tag and label. Empty by default
 	 * @groupWrapperAttrs Attributes to add to the group wrapper tag. Empty by default
-	 * @label If Passed we will prepend a label tag
-	 * @labelAttrs Attributes to add to the label tag. Empty by default
-	 * @labelwrapper The wrapper tag to use around the label. Empty by default
+	 * @label             If Passed we will prepend a label tag
+	 * @labelAttrs        Attributes to add to the label tag. Empty by default
+	 * @labelwrapper      The wrapper tag to use around the label. Empty by default
 	 * @labelWrapperAttrs Attributes to add to the label wrapper tag. Empty by default
-	 * @labelClass The class to be applied to the label
-	 * @bind The entity binded to this control, the value comes by convention from the name attribute
-	 * @bindProperty The property to use for the value, by convention we use the name attribute
-	 * @data A structure that will add data-{key} elements to the HTML control
-	 * @inputInsideLabel If true, closes the label tag after the input tag and puts the label text after the input tag
+	 * @labelClass        The class to be applied to the label
+	 * @bind              The entity binded to this control, the value comes by convention from the name attribute
+	 * @bindProperty      The property to use for the value, by convention we use the name attribute
+	 * @data              A structure that will add data-{key} elements to the HTML control
+	 * @inputInsideLabel  If true, closes the label tag after the input tag and puts the label text after the input tag
 	 */
 	function imageButton(
 		required src,
@@ -1572,25 +1579,25 @@ component
 	/**
 	 * Render out an input field. Remember that any extra arguments are passed as tag attributes
 	 *
-	 * @type The type of input field to create, defaults to text
-	 * @name The name of the textarea
-	 * @value The value of the field
-	 * @disabled Disabled
-	 * @checked Checked
-	 * @readOnly Read only
-	 * @wrapper The wrapper tag to use around the tag. Empty by default
-	 * @wrapperAttrs Attributes to add to the wrapper tag. Empty by default
-	 * @groupWrapper The wrapper tag to use around the tag and label. Empty by default
+	 * @type              The type of input field to create, defaults to text
+	 * @name              The name of the textarea
+	 * @value             The value of the field
+	 * @disabled          Disabled
+	 * @checked           Checked
+	 * @readOnly          Read only
+	 * @wrapper           The wrapper tag to use around the tag. Empty by default
+	 * @wrapperAttrs      Attributes to add to the wrapper tag. Empty by default
+	 * @groupWrapper      The wrapper tag to use around the tag and label. Empty by default
 	 * @groupWrapperAttrs Attributes to add to the group wrapper tag. Empty by default
-	 * @label If Passed we will prepend a label tag
-	 * @labelAttrs Attributes to add to the label tag. Empty by default
-	 * @labelwrapper The wrapper tag to use around the label. Empty by default
+	 * @label             If Passed we will prepend a label tag
+	 * @labelAttrs        Attributes to add to the label tag. Empty by default
+	 * @labelwrapper      The wrapper tag to use around the label. Empty by default
 	 * @labelWrapperAttrs Attributes to add to the label wrapper tag. Empty by default
-	 * @labelClass The class to be applied to the label
-	 * @bind The entity binded to this control, the value comes by convention from the name attribute
-	 * @bindProperty The property to use for the value, by convention we use the name attribute
-	 * @data A structure that will add data-{key} elements to the HTML control
-	 * @inputInsideLabel If true, closes the label tag after the input tag and puts the label text after the input tag
+	 * @labelClass        The class to be applied to the label
+	 * @bind              The entity binded to this control, the value comes by convention from the name attribute
+	 * @bindProperty      The property to use for the value, by convention we use the name attribute
+	 * @data              A structure that will add data-{key} elements to the HTML control
+	 * @inputInsideLabel  If true, closes the label tag after the input tag and puts the label text after the input tag
 	 */
 	function inputField(
 		type                     = "text",
@@ -1699,9 +1706,9 @@ component
 	/**
 	 * Render out options.
 	 *
-	 * @values An array, list or query to build options for
-	 * @column If using a query or array of objects the column to display as value and name
-	 * @nameColumn If using a query or array of objects, the name column to display, if not passed defaults to the value column
+	 * @values        An array, list or query to build options for
+	 * @column        If using a query or array of objects the column to display as value and name
+	 * @nameColumn    If using a query or array of objects, the name column to display, if not passed defaults to the value column
 	 * @selectedIndex selected index(s) if any. So either one or a list of indexes
 	 * @selectedValue selected value(s) if any. So either one or a list of values
 	 */
@@ -1813,27 +1820,27 @@ component
 	/**
 	 * Render out a select tag. Remember that any extra arguments are passed as tag attributes
 	 *
-	 * @name The name of the field
-	 * @options The value for the options, usually by calling our options() method
-	 * @column If using a query or array of objects the column to display as value and name
-	 * @nameColumn If using a query or array of objects, the name column to display, if not passed defaults to the value column
-	 * @selectedIndex selected index
-	 * @selectedValue selected value if any
-	 * @bind The entity binded to this control
-	 * @bindProperty The property to use for the value, by convention we use the name attribute
-	 * @disabled Disabled button or not?
-	 * @multiple multiple button or not?
-	 * @wrapper The wrapper tag to use around the tag. Empty by default
-	 * @wrapperAttrs Attributes to add to the wrapper tag. Empty by default
-	 * @groupWrapper The wrapper tag to use around the tag and label. Empty by default
+	 * @name              The name of the field
+	 * @options           The value for the options, usually by calling our options() method
+	 * @column            If using a query or array of objects the column to display as value and name
+	 * @nameColumn        If using a query or array of objects, the name column to display, if not passed defaults to the value column
+	 * @selectedIndex     selected index
+	 * @selectedValue     selected value if any
+	 * @bind              The entity binded to this control
+	 * @bindProperty      The property to use for the value, by convention we use the name attribute
+	 * @disabled          Disabled button or not?
+	 * @multiple          multiple button or not?
+	 * @wrapper           The wrapper tag to use around the tag. Empty by default
+	 * @wrapperAttrs      Attributes to add to the wrapper tag. Empty by default
+	 * @groupWrapper      The wrapper tag to use around the tag and label. Empty by default
 	 * @groupWrapperAttrs Attributes to add to the group wrapper tag. Empty by default
-	 * @label If Passed we will prepend a label tag
-	 * @labelAttrs Attributes to add to the label tag. Empty by default
-	 * @labelwrapper The wrapper tag to use around the label. Empty by default
+	 * @label             If Passed we will prepend a label tag
+	 * @labelAttrs        Attributes to add to the label tag. Empty by default
+	 * @labelwrapper      The wrapper tag to use around the label. Empty by default
 	 * @labelWrapperAttrs Attributes to add to the label wrapper tag. Empty by default
-	 * @data A structure that will add data-{key} elements to the HTML control
-	 * @labelClass The class to be applied to the label
-	 * @inputInsideLabel If true, closes the label tag after the input tag and puts the label text after the input tag
+	 * @data              A structure that will add data-{key} elements to the HTML control
+	 * @labelClass        The class to be applied to the label
+	 * @inputInsideLabel  If true, closes the label tag after the input tag and puts the label text after the input tag
 	 */
 	function select(
 		name                     = "",
@@ -1965,23 +1972,23 @@ component
 	/**
 	 * Render out a button. Remember that any extra arguments are passed as tag attributes
 	 *
-	 * @name The name of the textarea
-	 * @value The value of the textarea
-	 * @disabled Disabled
-	 * @type The type of button to create: button, reset or submit
-	 * @wrapper The wrapper tag to use around the tag. Empty by default
-	 * @wrapperAttrs Attributes to add to the wrapper tag. Empty by default
-	 * @groupWrapper The wrapper tag to use around the tag and label. Empty by default
+	 * @name              The name of the textarea
+	 * @value             The value of the textarea
+	 * @disabled          Disabled
+	 * @type              The type of button to create: button, reset or submit
+	 * @wrapper           The wrapper tag to use around the tag. Empty by default
+	 * @wrapperAttrs      Attributes to add to the wrapper tag. Empty by default
+	 * @groupWrapper      The wrapper tag to use around the tag and label. Empty by default
 	 * @groupWrapperAttrs Attributes to add to the group wrapper tag. Empty by default
-	 * @label If Passed we will prepend a label tag
-	 * @labelAttrs Attributes to add to the label tag. Empty by default
-	 * @labelwrapper The wrapper tag to use around the label. Empty by default
+	 * @label             If Passed we will prepend a label tag
+	 * @labelAttrs        Attributes to add to the label tag. Empty by default
+	 * @labelwrapper      The wrapper tag to use around the label. Empty by default
 	 * @labelWrapperAttrs Attributes to add to the label wrapper tag. Empty by default
-	 * @labelClass The class to be applied to the label
-	 * @bind The entity binded to this control, the value comes by convention from the name attribute
-	 * @bindProperty The property to use for the value, by convention we use the name attribute
-	 * @data A structure that will add data-{key} elements to the HTML control
-	 * @inputInsideLabel If true, closes the label tag after the input tag and puts the label text after the input tag
+	 * @labelClass        The class to be applied to the label
+	 * @bind              The entity binded to this control, the value comes by convention from the name attribute
+	 * @bindProperty      The property to use for the value, by convention we use the name attribute
+	 * @data              A structure that will add data-{key} elements to the HTML control
+	 * @inputInsideLabel  If true, closes the label tag after the input tag and puts the label text after the input tag
 	 */
 	function button(
 		name                     = "",
@@ -2082,21 +2089,21 @@ component
 	/**
 	 * Create fields based on entity properties and relationships
 	 *
-	 * @entity The entity binded to this control
-	 * @groupWrapper The wrapper tag to use around the tag and label. Empty by default
+	 * @entity            The entity binded to this control
+	 * @groupWrapper      The wrapper tag to use around the tag and label. Empty by default
 	 * @groupWrapperAttrs Attributes to add to the group wrapper tag. Empty by default
-	 * @fieldwrapper The wrapper tag to use around the field items. Empty by default
+	 * @fieldwrapper      The wrapper tag to use around the field items. Empty by default
 	 * @fieldWrapperAttrs Attributes to add to the field wrapper tag. Empty by default
-	 * @labelAttrs Attributes to add to the label tag. Empty by default
-	 * @labelwrapper The wrapper tag to use around the label items. Empty by default
+	 * @labelAttrs        Attributes to add to the label tag. Empty by default
+	 * @labelwrapper      The wrapper tag to use around the label items. Empty by default
 	 * @labelWrapperAttrs Attributes to add to the label wrapper tag. Empty by default
-	 * @labelClass The class to be applied to the label
-	 * @textareas A list of property names that you want as textareas
-	 * @booleanSelect If a boolean is detected a dropdown is generated, if false, then radio buttons
-	 * @showRelations If true it will show relation tables for one to one and one to many
-	 * @manytoone A structure of data to help with many to one relationships on how they are presented. Possible key values for each key are [valuecolumn='',namecolumn='',criteria={},sortorder=string]. Example: {criteria={productid=1},sortorder='Department desc'}
-	 * @manytomany A structure of data to help with many to one relationships on how they are presented. Possible key values for each key are [valuecolumn='',namecolumn='',criteria={},sortorder=string,selectColumn='']. Example: {criteria={productid=1},sortorder='Department desc'}
-	 * @inputInsideLabel If true, closes the label tag after the input tag and puts the label text after the input tag
+	 * @labelClass        The class to be applied to the label
+	 * @textareas         A list of property names that you want as textareas
+	 * @booleanSelect     If a boolean is detected a dropdown is generated, if false, then radio buttons
+	 * @showRelations     If true it will show relation tables for one to one and one to many
+	 * @manytoone         A structure of data to help with many to one relationships on how they are presented. Possible key values for each key are [valuecolumn='',namecolumn='',criteria={},sortorder=string]. Example: {criteria={productid=1},sortorder='Department desc'}
+	 * @manytomany        A structure of data to help with many to one relationships on how they are presented. Possible key values for each key are [valuecolumn='',namecolumn='',criteria={},sortorder=string,selectColumn='']. Example: {criteria={productid=1},sortorder='Department desc'}
+	 * @inputInsideLabel  If true, closes the label tag after the input tag and puts the label text after the input tag
 	 */
 	function entityFields(
 		required entity,
@@ -2484,13 +2491,13 @@ component
 	/**
 	 * Adds the versioned path for an asset to the view using ColdBox Elixir
 	 *
-	 * @fileName The asset path to find relative to the includes convention directory
+	 * @fileName       The asset path to find relative to the includes convention directory
 	 * @buildDirectory The build directory inside the includes convention directory
-	 * @sendToHeader Send to the header via htmlhead by default, else it returns the content
-	 * @async HTML5 JavaScript argument: Specifies that the script is executed asynchronously (only for external scripts)
-	 * @defer HTML5 JavaScript argument: Specifies that the script is executed when the page has finished parsing (only for external scripts)
-	 * @version The elixir version to use, defaults to 3
-	 * @manifestRoot The root location in relative from the webroot where the `rev-manifest.json` file exists
+	 * @sendToHeader   Send to the header via htmlhead by default, else it returns the content
+	 * @async          HTML5 JavaScript argument: Specifies that the script is executed asynchronously (only for external scripts)
+	 * @defer          HTML5 JavaScript argument: Specifies that the script is executed when the page has finished parsing (only for external scripts)
+	 * @version        The elixir version to use, defaults to 3
+	 * @manifestRoot   The root location in relative from the webroot where the `rev-manifest.json` file exists
 	 */
 	function elixir(
 		required fileName,
@@ -2517,10 +2524,10 @@ component
 	/**
 	 * Adds the versioned path for an asset to the view using ColdBox Elixir
 	 *
-	 * @fileName The asset path to find relative to the `includes` convention directory
+	 * @fileName      The asset path to find relative to the `includes` convention directory
 	 * @useModuleRoot If true, use the module root as the root of the file path
-	 * @version The elixir version algorithm to use, version 3 is the latest
-	 * @manifestRoot The root location in relative from the webroot where the `rev-manifest.json` file exists
+	 * @version       The elixir version algorithm to use, version 3 is the latest
+	 * @manifestRoot  The root location in relative from the webroot where the `rev-manifest.json` file exists
 	 */
 	function elixirPath(
 		required fileName,
@@ -2528,12 +2535,13 @@ component
 		numeric version       = 3,
 		manifestRoot          = ""
 	){
+		var argumentsHash  = hash( serializeJSON( arguments ) );
 		// Incoming Cleanup
 		arguments.fileName = reReplace( arguments.fileName, "^//?", "" );
 
 		// In local discovery cache?
-		if ( variables.cachedPaths.keyExists( arguments.filename ) ) {
-			return variables.cachedPaths[ arguments.filename ];
+		if ( variables.cachedPaths.keyExists( argumentsHash ) ) {
+			return variables.cachedPaths[ argumentsHash ];
 		}
 
 		// Prepare state checks
@@ -2546,16 +2554,15 @@ component
 
 		// Calculate mapping for the asset in question
 		var mapping = ( arguments.useModuleRoot && len( arguments.currentModule ) ) ? event.getModuleRoot() : controller.getSetting(
-			"appMapping"
+			"webMapping"
 		);
 
-		// Calculat href for asset delivery via Browser
+		// Calculate href for asset delivery via Browser
+		var href = "/#includesLocation#/#arguments.fileName#";
+		var key  = reReplace( href, "^//?", "" );
 		if ( mapping.len() ) {
 			var href = "/#mapping#/#includesLocation#/#arguments.fileName#";
-		} else {
-			var href = "/#includesLocation#/#arguments.fileName#";
 		}
-		var key = reReplace( href, "^//?", "" );
 
 		// Only read, parse and store once the manifest
 		if ( !variables.elixirManifests.keyExists( "elixirManifest-#hash( manifestPath )#" ) ) {
@@ -2578,11 +2585,15 @@ component
 		// Is the key in the manifest?
 		var manifestDirectory = variables.elixirManifests[ hash( manifestPath ) ];
 		if ( !structKeyExists( manifestDirectory, key ) ) {
-			variables.cachedPaths[ arguments.fileName ] = arguments.fileName;
+			variables.cachedPaths[ argumentsHash ] = arguments.fileName;
 			return href;
 		}
-		variables.cachedPaths[ arguments.fileName ] = manifestDirectory[ key ];
-		return "#manifestDirectory[ key ]#";
+		if ( mapping.len() ) {
+			variables.cachedPaths[ argumentsHash ] = "/#mapping#" & manifestDirectory[ key ];
+		} else {
+			variables.cachedPaths[ argumentsHash ] = manifestDirectory[ key ];
+		}
+		return variables.cachedPaths[ argumentsHash ];
 	}
 
 	/**
@@ -2594,8 +2605,8 @@ component
 	 *
 	 * @currentModule Are we in a module call or not
 	 * @useModuleRoot Are we using a module root?
-	 * @version The elixir version
-	 * @manifestRoot Are we customizing the root
+	 * @version       The elixir version
+	 * @manifestRoot  Are we customizing the root
 	 */
 	function discoverElixirManifest(
 		string currentModule  = "",
@@ -2631,10 +2642,10 @@ component
 	/**
 	 * Convert a table out of an array of objects
 	 *
-	 * @data The array to convert into a table
+	 * @data     The array to convert into a table
 	 * @includes The columns to include
 	 * @excludes The columns to exclude
-	 * @buffer The output buffer
+	 * @buffer   The output buffer
 	 */
 	function objectsToTable(
 		required data,
@@ -2690,10 +2701,10 @@ component
 	/**
 	 * Convert a table out of an array of structs
 	 *
-	 * @data The array to convert into a table
+	 * @data     The array to convert into a table
 	 * @includes The columns to include
 	 * @excludes The columns to exclude
-	 * @buffer The output buffer
+	 * @buffer   The output buffer
 	 */
 	function arrayToTable(
 		required data,
@@ -2740,10 +2751,10 @@ component
 	/**
 	 * Convert a table out of a query, usually the header tag has already printed
 	 *
-	 * @data The query to convert into a table
+	 * @data     The query to convert into a table
 	 * @includes The columns to include
 	 * @excludes The columns to exclude
-	 * @buffer The output buffer
+	 * @buffer   The output buffer
 	 */
 	function queryToTable(
 		required data,
@@ -2787,10 +2798,10 @@ component
 	/**
 	 * Convert a sent in tag type to an HTML list
 	 *
-	 * @tag The list tag type
+	 * @tag    The list tag type
 	 * @values An array or list of values
 	 * @column If the values is a query, this is the name of the column to get the data from to create the list
-	 * @data A structure that will add data-{key} elements to the HTML control
+	 * @data   A structure that will add data-{key} elements to the HTML control
 	 */
 	function toHtmlList(
 		required tag,
@@ -2914,10 +2925,9 @@ component
 	 * Wrap a tag in the buffer
 	 *
 	 * @buffer The output buffer
-	 * @tag The tag to wrap with
-	 * @end Start or end of tag
-	 * @attrs The attributes of the tag
-	 *
+	 * @tag    The tag to wrap with
+	 * @end    Start or end of tag
+	 * @attrs  The attributes of the tag
 	 */
 	private function wrapTag(
 		required buffer,
@@ -2946,6 +2956,7 @@ component
 
 	/**
 	 * Make pretty text
+	 *
 	 * @text Target
 	 */
 	private string function makePretty( required text ){
@@ -2958,8 +2969,9 @@ component
 
 	/**
 	 * Prepare a base link
+	 *
 	 * @noBaseURL Indicator for building
-	 * @src The source target
+	 * @src       The source target
 	 */
 	private string function prepareBaseLink( boolean noBaseURL = false, src ){
 		var baseURL = replaceNoCase(
@@ -2986,7 +2998,7 @@ component
 	/**
 	 * checks if a list include exclude check passes
 	 *
-	 * @value The target
+	 * @value    The target
 	 * @includes The includes list
 	 * @excludes The excludes list
 	 */
@@ -3006,9 +3018,9 @@ component
 	/**
 	 * flatten a struct of attributes to strings and returns the incoming buffer
 	 *
-	 * @target The target
+	 * @target   The target
 	 * @excludes The excludes list
-	 * @buffer The buffer object
+	 * @buffer   The buffer object
 	 */
 	private function flattenAttributes(
 		required struct target,
@@ -3081,7 +3093,7 @@ component
 	/**
 	 * Returns an array of values from the query and column
 	 *
-	 * @qry The target query
+	 * @qry        The target query
 	 * @columnName The column name to use
 	 */
 	private array function getColumnArray( required qry, required columnName ){

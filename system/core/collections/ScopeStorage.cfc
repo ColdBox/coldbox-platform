@@ -18,15 +18,12 @@ component {
 
 	/**
 	 * Store a value in a scope
-	 * @key The key
+	 *
+	 * @key   The key
 	 * @value The value
 	 * @scope The ColdFusion Scope
 	 */
-	function put(
-		required key,
-		required value,
-		required scope
-	){
+	function put( required key, required value, required scope ){
 		var scopePointer              = getScope( arguments.scope );
 		scopePointer[ arguments.key ] = arguments.value;
 		return this;
@@ -34,7 +31,8 @@ component {
 
 	/**
 	 * Delete a value in a scope
-	 * @key The key
+	 *
+	 * @key   The key
 	 * @scope The ColdFusion Scope
 	 */
 	boolean function delete( required key, required scope ){
@@ -47,15 +45,12 @@ component {
 
 	/**
 	 * Get a value in a scope
-	 * @key The key
-	 * @scope The CF Scope
+	 *
+	 * @key          The key
+	 * @scope        The CF Scope
 	 * @defaultValue The default value
 	 */
-	function get(
-		required key,
-		required scope,
-		defaultValue
-	){
+	function get( required key, required scope, defaultValue ){
 		// Do stupid ACF Hack due to choking on `default` argument.
 		if ( structKeyExists( arguments, "default" ) ) {
 			arguments.defaultValue = arguments.default;
@@ -75,7 +70,8 @@ component {
 
 	/**
 	 * Check if a key exists
-	 * @key The key
+	 *
+	 * @key   The key
 	 * @scope The CF Scope
 	 */
 	boolean function exists( required key, required scope ){
@@ -84,6 +80,7 @@ component {
 
 	/**
 	 * Get a scope reference
+	 *
 	 * @scope The CF Scope
 	 */
 	any function getScope( required scope ){
@@ -144,6 +141,7 @@ component {
 
 	/**
 	 * Check if a scope is valid, else throws exception
+	 *
 	 * @scope The CF Scope
 	 */
 	any function scopeCheck( required scope ){

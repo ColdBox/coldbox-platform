@@ -2,10 +2,11 @@
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ----
- * @author Luis Majano
  *
  * The main CacheBox factory and configuration of caches. From this factory
  * is where you will get all the caches you need to work with or register more caches.
+ *
+ * @author Luis Majano
  **/
 component accessors=true serializable=false {
 
@@ -54,12 +55,14 @@ component accessors=true serializable=false {
 
 	/**
 	 * The Global AsyncManager
+	 *
 	 * @see coldbox.system.async.AsyncManager
 	 */
 	property name="asyncManager";
 
 	/**
 	 * The logBox task scheduler executor
+	 *
 	 * @see coldbox.system.async.executors.ScheduledExecutor
 	 */
 	property name="taskScheduler";
@@ -67,12 +70,12 @@ component accessors=true serializable=false {
 	/**
 	 * Constructor
 	 *
-	 * @config The CacheBoxConfig object or path to use to configure this instance of CacheBox. If not passed then CacheBox will instantiate the default configuration.
-	 * @config.doc_generic coldbox.system.cache.config.CacheBoxConfig
-	 * @coldbox A coldbox application that this instance of CacheBox can be linked to, if not using it, just ignore it.
+	 * @config              The CacheBoxConfig object or path to use to configure this instance of CacheBox. If not passed then CacheBox will instantiate the default configuration.
+	 * @config.doc_generic  coldbox.system.cache.config.CacheBoxConfig
+	 * @coldbox             A coldbox application that this instance of CacheBox can be linked to, if not using it, just ignore it.
 	 * @coldbox.doc_generic coldbox.system.web.Controller
-	 * @factoryID A unique ID or name for this factory. If not passed I will make one up for you.
-	 * @wirebox A configured wirebox instance to get logbox, asyncManager, and EventManager from.  If not passed, I will create new ones.
+	 * @factoryID           A unique ID or name for this factory. If not passed I will make one up for you.
+	 * @wirebox             A configured wirebox instance to get logbox, asyncManager, and EventManager from.  If not passed, I will create new ones.
 	 */
 	function init( config, coldbox, factoryId = "", wirebox ){
 		var defaultConfigPath = "coldbox.system.cache.config.DefaultConfiguration";
@@ -211,7 +214,7 @@ component accessors=true serializable=false {
 	/**
 	 * Configure the cache factory for operation, called by the init(). You can also re-configure CacheBox programmatically.
 	 *
-	 * @config The CacheBox config object
+	 * @config             The CacheBox config object
 	 * @config.doc_generic coldbox.system.cache.config.CacheBoxConfig
 	 */
 	function configure( required config ){
@@ -264,8 +267,9 @@ component accessors=true serializable=false {
 	 *
 	 * @name The cache name to get
 	 *
-	 * @throws CacheFactory.CacheNotFoundException
 	 * @return coldbox.system.cache.providers.ICacheProvider
+	 *
+	 * @throws CacheFactory.CacheNotFoundException
 	 */
 	function getCache( required name ){
 		lock name="#variables.lockName#" type="readonly" timeout="20" throwontimeout="true" {
@@ -283,7 +287,7 @@ component accessors=true serializable=false {
 	/**
 	 * Register a new instantiated cache with this cache factory
 	 *
-	 * @cache The cache to register
+	 * @cache             The cache to register
 	 * @cache.doc_generic coldbox.system.cache.providers.ICacheProvider
 	 */
 	CacheFactory function addCache( required cache ){
@@ -294,9 +298,9 @@ component accessors=true serializable=false {
 	/**
 	 * Add a default named cache to our registry, create it, config it, register it and return it of type: coldbox.system.cache.providers.ICacheProvider
 	 *
-	 * @name The name of the default cache to create
-	 *
+	 * @name  The name of the default cache to create
 	 * @throw CacheFactory.InvalidNameException,CacheFactory.CacheExistsException
+	 *
 	 * @return coldbox.system.cache.providers.ICacheProvider
 	 */
 	function addDefaultCache( required name ){
@@ -550,9 +554,9 @@ component accessors=true serializable=false {
 	/**
 	 * Replace a registered named cache with a new decorated cache of the same name.
 	 *
-	 * @cache The name of the cache to replace or the actual instance of the cache to replace
-	 * @cache.doc_generic coldbox.system.cache.providers.ICacheProvider or string
-	 * @decoratedCache The decorated cache manager instance to replace with of type coldbox.system.cache.providers.ICacheProvider
+	 * @cache                      The name of the cache to replace or the actual instance of the cache to replace
+	 * @cache.doc_generic          coldbox.system.cache.providers.ICacheProvider or string
+	 * @decoratedCache             The decorated cache manager instance to replace with of type coldbox.system.cache.providers.ICacheProvider
 	 * @decoratedCache.doc_generic coldbox.system.cache.providers.ICacheProvider
 	 */
 	CacheFactory function replaceCache( required cache, required decoratedCache ){
@@ -654,8 +658,8 @@ component accessors=true serializable=false {
 	/**
 	 * Create a new cache according the the arguments, register it and return it of type: coldbox.system.cache.providers.ICacheProvider
 	 *
-	 * @name The name of the cache to create
-	 * @provider The provider class path of the cache to add
+	 * @name       The name of the cache to create
+	 * @provider   The provider class path of the cache to add
 	 * @properties The configuration properties of the cache
 	 *
 	 * @return coldbox.system.cache.providers.ICacheProvider
@@ -691,7 +695,7 @@ component accessors=true serializable=false {
 	/**
 	 * Register a new cache on this cache factory
 	 *
-	 * @cache The cache instance to register with this factory of type: coldbox.system.cache.providers.ICacheProvider
+	 * @cache             The cache instance to register with this factory of type: coldbox.system.cache.providers.ICacheProvider
 	 * @cache.doc_generic coldbox.system.cache.providers.ICacheProvider
 	 *
 	 * @throws CacheFactory.CacheExistsException

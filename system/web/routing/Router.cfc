@@ -121,7 +121,7 @@ component
 	/**
 	 * Constructor
 	 *
-	 * @controller The ColdBox controller linkage
+	 * @controller        The ColdBox controller linkage
 	 * @controller.inject coldbox
 	 */
 	function init( required controller ){
@@ -223,6 +223,7 @@ component
 
 	/**
 	 * Verifies if an extension is valid in the Router
+	 *
 	 * @extension The extension to validate
 	 */
 	boolean function isValidExtension( required extension ){
@@ -230,8 +231,9 @@ component
 	}
 
 	/**
-	 * @deprecated Please use `getModuleRoutingTable()` instead.
 	 * A quick ColdBox4 compatibility wrapper
+	 *
+	 * @deprecated Please use `getModuleRoutingTable()` instead.
 	 */
 	struct function getModulesRoutingTable(){
 		return getModuleRoutingTable();
@@ -241,11 +243,11 @@ component
 	// DEPRECATED FUNCTIONALITY: Remove in later release
 
 	/**
-	 * @deprecated Please use the Routes.cfc approach instead
 	 *
 	 * Includes a routes configuration file as an added import and returns itself after import
 	 *
-	 * @location The include location of the routes configuration template. Do not add '.cfm'
+	 * @deprecated Please use the Routes.cfc approach instead
+	 * @location   The include location of the routes configuration template. Do not add '.cfm'
 	 *
 	 * @return Router
 	 */
@@ -314,9 +316,10 @@ component
 
 	/**
 	 * Register modules routes in the specified position in the main routing table, and returns itself
+	 *
 	 * @pattern The pattern to match against the URL
-	 * @module The module to load routes for
-	 * @append Whether the module entry point route should be appended or pre-pended to the main routes array. By default we append to the end of the array
+	 * @module  The module to load routes for
+	 * @append  Whether the module entry point route should be appended or pre-pended to the main routes array. By default we append to the end of the array
 	 *
 	 * @return Router
 	 */
@@ -380,6 +383,7 @@ component
 
 	/**
 	 * Remove a module's routing table and registration points and return itself
+	 *
 	 * @module The module to remove
 	 *
 	 * @return Router
@@ -397,6 +401,7 @@ component
 
 	/**
 	 * Get a module's routes array
+	 *
 	 * @module The module to get
 	 */
 	array function getModuleRoutes( required module ){
@@ -412,9 +417,10 @@ component
 
 	/**
 	 * Register a namespace in the specified position in the main routing table, and returns itself
-	 * @pattern The pattern to match against the URL.
+	 *
+	 * @pattern   The pattern to match against the URL.
 	 * @namespace The name of the namespace to register
-	 * @append Whether the route should be appended or pre-pended to the array. By default we append to the end of the array
+	 * @append    Whether the route should be appended or pre-pended to the array. By default we append to the end of the array
 	 *
 	 * @return Router
 	 */
@@ -440,6 +446,7 @@ component
 
 	/**
 	 * Get a namespace routes array
+	 *
 	 * @namespace The namespace to get
 	 */
 	array function getNamespaceRoutes( required namespace ){
@@ -456,6 +463,7 @@ component
 
 	/**
 	 * Remove a namespace's routing table and registration points and return itself
+	 *
 	 * @namespace The namespace to remove
 	 *
 	 * @return Router
@@ -477,26 +485,26 @@ component
 	/****************************************************************************************************************************/
 
 	/**
-	 * @deprecated This has been deprecated in favor of the <code>group()</code> function.
 	 *
 	 * Starts a with closure, where all arguments will be prefixed for the next concatenated addRoute() methods until an endWith() is called
 	 *
-	 * @pattern The pattern to match against the URL.
-	 * @handler The handler to execute if pattern matched.
-	 * @action The action in a handler to execute if a pattern is matched.  This can also be a structure based on the HTTP method(GET,POST,PUT,DELETE). ex: {GET:'show', PUT:'update', DELETE:'delete', POST:'save'}
+	 * @deprecated            This has been deprecated in favor of the <code>group()</code> function.
+	 * @pattern               The pattern to match against the URL.
+	 * @handler               The handler to execute if pattern matched.
+	 * @action                The action in a handler to execute if a pattern is matched.  This can also be a structure based on the HTTP method(GET,POST,PUT,DELETE). ex: {GET:'show', PUT:'update', DELETE:'delete', POST:'save'}
 	 * @packageResolverExempt If this is set to true, then the interceptor will not try to do handler package resolving. Else a package will always be resolved. Only works if :handler is in a pattern
-	 * @matchVariables A string of name-value pair variables to add to the request collection when this pattern matches. This is a comma delimited list. Ex: spaceFound=true,missingAction=onTest
-	 * @view The view to dispatch if pattern matches.  No event will be fired, so handler,action will be ignored.
-	 * @viewNoLayout If view is chosen, then you can choose to override and not display a layout with the view. Else the view renders in the assigned layout.
-	 * @valuePairTranslation Activate convention name value pair translations or not. Turned on by default
-	 * @constraints A structure of regex constraint overrides for variable placeholders. The key is the name of the variable, the value is the regex to try to match.
-	 * @module The module to add this route to
-	 * @moduleRouting Called internally by addModuleRoutes to add a module routing route.
-	 * @namespace The namespace to add this route to
-	 * @namespaceRouting Called internally by addNamespaceRoutes to add a namespaced routing route.
-	 * @ssl Makes the route an SSL only route if true, else it can be anything. If an ssl only route is hit without ssl, the interceptor will redirect to it via ssl
-	 * @append Whether the route should be appended or pre-pended to the array. By default we append to the end of the array
-	 * @domain The domain to match, including wildcards
+	 * @matchVariables        A string of name-value pair variables to add to the request collection when this pattern matches. This is a comma delimited list. Ex: spaceFound=true,missingAction=onTest
+	 * @view                  The view to dispatch if pattern matches.  No event will be fired, so handler,action will be ignored.
+	 * @viewNoLayout          If view is chosen, then you can choose to override and not display a layout with the view. Else the view renders in the assigned layout.
+	 * @valuePairTranslation  Activate convention name value pair translations or not. Turned on by default
+	 * @constraints           A structure of regex constraint overrides for variable placeholders. The key is the name of the variable, the value is the regex to try to match.
+	 * @module                The module to add this route to
+	 * @moduleRouting         Called internally by addModuleRoutes to add a module routing route.
+	 * @namespace             The namespace to add this route to
+	 * @namespaceRouting      Called internally by addNamespaceRoutes to add a namespaced routing route.
+	 * @ssl                   Makes the route an SSL only route if true, else it can be anything. If an ssl only route is hit without ssl, the interceptor will redirect to it via ssl
+	 * @append                Whether the route should be appended or pre-pended to the array. By default we append to the end of the array
+	 * @domain                The domain to match, including wildcards
 	 *
 	 * @return Router
 	 */
@@ -524,9 +532,10 @@ component
 	}
 
 	/**
-	 * @deprecated This has been deprecated in favor of the <code>group()</code> function.
 	 *
 	 * End a with closure and returns itself
+	 *
+	 * @deprecated This has been deprecated in favor of the <code>group()</code> function.
 	 *
 	 * @return Router
 	 */
@@ -582,7 +591,7 @@ component
 	 * </pre>
 	 *
 	 * @options The route options that match routing, look at the <code>addRoute()</code> method
-	 * @body The closure or lambda to contain all the routing methods to be grouped with the options data.
+	 * @body    The closure or lambda to contain all the routing methods to be grouped with the options data.
 	 */
 	function group( struct options = {}, body ){
 		// Mark the group
@@ -602,7 +611,12 @@ component
 
 	/**
 	 * Create all RESTful routes for a resource. It will provide automagic mappings between HTTP verbs and URLs to event handlers and actions.
-	 * By convention, the name of the resource maps to the name of the event handler.
+	 *
+	 * By convention the following rules apply
+	 * - The name of the resource maps to the name of the event handler
+	 * - The default paremeter name is called `:id`
+	 * - The available actions are: index, new, create, show, edit, update, delete
+	 *
 	 * Example: `resource = photos` Then we will create the following routes:
 	 * - `/photos` : `GET` -> `photos.index` Display a list of photos
 	 * - `/photos/new` : `GET` -> `photos.new` Returns an HTML form for creating a new photo
@@ -612,15 +626,15 @@ component
 	 * - `/photos/:id` : `PUT/PATCH` -> `photos.update` Update a specific photo
 	 * - `/photos/:id` : `DELETE` -> `photos.delete` Delete a specific photo
 	 *
-	 * @resource The name of a single resource or a list of resources or an array of resources
-	 * @handler The handler for the route. Defaults to the resource name.
+	 * @resource      The name of a single resource to map
+	 * @handler       The handler for the route. Defaults to the resource name.
 	 * @parameterName The name of the id/parameter for the resource. Defaults to `id`.
-	 * @only Limit routes created with only this list or array of actions, e.g. "index,show"
-	 * @except Exclude routes with an except list or array of actions, e.g. "show"
-	 * @module If passed, the module these resources will be attached to.
-	 * @namespace If passed, the namespace these resources will be attached to.
-	 * @pattern If passed, the actual URL pattern to use, else it defaults to `/#arguments.resource#` the name of the resource.
-	 * @meta A struct of metadata to store with ALL the routes created from this resource
+	 * @only          Limit routes created with only this list or array of actions, e.g. "index,show"
+	 * @except        Exclude routes with an except list or array of actions, e.g. "show"
+	 * @module        If passed, the module these resources will be attached to.
+	 * @namespace     If passed, the namespace these resources will be attached to.
+	 * @pattern       If passed, the actual URL pattern to use, else it defaults to `/#arguments.resource#` the name of the resource.
+	 * @meta          A struct of metadata to store with ALL the routes created from this resource
 	 */
 	function resources(
 		required resource,
@@ -640,128 +654,162 @@ component
 		if ( !isArray( arguments.except ) ) {
 			arguments.except = listToArray( arguments.except );
 		}
-		if ( isSimpleValue( arguments.resource ) ) {
-			arguments.resource = listToArray( arguments.resource );
+
+		// Init the action set
+		var actionSet   = {};
+		// Default pattern or look at the incoming pattern sent?
+		var thisPattern = ( len( arguments.pattern ) ? arguments.pattern : "/#arguments.resource#" );
+
+		// Edit
+		actionSet = filterRouteActions(
+			{ GET : "edit" },
+			arguments.only,
+			arguments.except
+		);
+
+		if ( !structIsEmpty( actionSet ) ) {
+			addRoute(
+				pattern  : "#thisPattern#/:#arguments.parameterName#/edit",
+				handler  : isNull( arguments.handler ) ? arguments.resource : arguments.handler,
+				action   : actionSet,
+				module   : arguments.module,
+				namespace: arguments.namespace,
+				meta     : arguments.meta
+			);
 		}
 
-		var actionSet = {};
-
-		// Register all resources
-		for ( var thisResource in arguments.resource ) {
-			// Default pattern or look at the incoming pattern sent?
-			var thisPattern = ( len( arguments.pattern ) ? arguments.pattern : "/#thisResource#" );
-
-			// Edit Routes
-			actionSet = filterRouteActions(
-				{ GET : "edit" },
-				arguments.only,
-				arguments.except
+		// New
+		actionSet = filterRouteActions(
+			{ GET : "new" },
+			arguments.only,
+			arguments.except
+		);
+		if ( !structIsEmpty( actionSet ) ) {
+			addRoute(
+				pattern  : "#thisPattern#/new",
+				handler  : isNull( arguments.handler ) ? arguments.resource : arguments.handler,
+				action   : actionSet,
+				module   : arguments.module,
+				namespace: arguments.namespace,
+				meta     : arguments.meta
 			);
-			if ( !structIsEmpty( actionSet ) ) {
-				addRoute(
-					pattern  : "#thisPattern#/:#arguments.parameterName#/edit",
-					handler  : isNull( arguments.handler ) ? thisResource : arguments.handler,
-					action   : actionSet,
-					module   : arguments.module,
-					namespace: arguments.namespace,
-					meta     : arguments.meta
-				);
-			}
+		}
 
-			// New Routes
-			actionSet = filterRouteActions(
-				{ GET : "new" },
-				arguments.only,
-				arguments.except
+		// Update, Delete, Show
+		actionSet = filterRouteActions(
+			{
+				PUT    : "update",
+				PATCH  : "update",
+				DELETE : "delete",
+				GET    : "show"
+			},
+			arguments.only,
+			arguments.except
+		);
+		if ( !structIsEmpty( actionSet ) ) {
+			addRoute(
+				pattern  : "#thisPattern#/:#arguments.parameterName#",
+				handler  : isNull( arguments.handler ) ? arguments.resource : arguments.handler,
+				action   : actionSet,
+				module   : arguments.module,
+				namespace: arguments.namespace,
+				meta     : arguments.meta
 			);
-			if ( !structIsEmpty( actionSet ) ) {
-				addRoute(
-					pattern  : "#thisPattern#/new",
-					handler  : isNull( arguments.handler ) ? thisResource : arguments.handler,
-					action   : actionSet,
-					module   : arguments.module,
-					namespace: arguments.namespace,
-					meta     : arguments.meta
-				);
-			}
+		}
 
-			// update, delete and show routes
-			actionSet = filterRouteActions(
-				{
-					PUT    : "update",
-					PATCH  : "update",
-					DELETE : "delete",
-					GET    : "show"
-				},
-				arguments.only,
-				arguments.except
+		// Index + Create
+		actionSet = filterRouteActions(
+			{ GET : "index", POST : "create" },
+			arguments.only,
+			arguments.except
+		);
+		if ( !structIsEmpty( actionSet ) ) {
+			addRoute(
+				pattern  : "#thisPattern#",
+				handler  : isNull( arguments.handler ) ? arguments.resource : arguments.handler,
+				action   : actionSet,
+				module   : arguments.module,
+				namespace: arguments.namespace,
+				meta     : arguments.meta
 			);
-			if ( !structIsEmpty( actionSet ) ) {
-				addRoute(
-					pattern  : "#thisPattern#/:#arguments.parameterName#",
-					handler  : isNull( arguments.handler ) ? thisResource : arguments.handler,
-					action   : actionSet,
-					module   : arguments.module,
-					namespace: arguments.namespace,
-					meta     : arguments.meta
-				);
-			}
-
-			// Index + Creation
-			actionSet = filterRouteActions(
-				{ GET : "index", POST : "create" },
-				arguments.only,
-				arguments.except
-			);
-			if ( !structIsEmpty( actionSet ) ) {
-				addRoute(
-					pattern  : "#thisPattern#",
-					handler  : isNull( arguments.handler ) ? thisResource : arguments.handler,
-					action   : actionSet,
-					module   : arguments.module,
-					namespace: arguments.namespace,
-					meta     : arguments.meta
-				);
-			}
 		}
 
 		return this;
 	}
 
 	/**
+	 * Create all API RESTful routes for a resource. It will provide automagic mappings between HTTP verbs and URLs to event handlers and actions.
+	 *
+	 * By convention the following rules apply
+	 * - The name of the resource maps to the name of the event handler
+	 * - The default paremeter name is called `:id`
+	 * - The available actions are: index, create, show, update, delete
+	 *
+	 * Example: `resource = photos` Then we will create the following routes:
+	 * - `/photos` : `GET` -> `photos.index` Get a list of photos from the API
+	 * - `/photos` : `POST` -> `photos.create` Create a new photo
+	 * - `/photos/:id` : `GET` -> `photos.show` Get a specific photo from the API
+	 * - `/photos/:id` : `PUT/PATCH` -> `photos.update` Update a specific photo
+	 * - `/photos/:id` : `DELETE` -> `photos.delete` Delete a specific photo
+	 *
+	 * @resource      The name of a single resource to map
+	 * @handler       The handler for the route. Defaults to the resource name.
+	 * @parameterName The name of the id/parameter for the resource. Defaults to `id`.
+	 * @only          Limit routes created with only this list or array of actions, e.g. "index,show"
+	 * @except        Exclude routes with an except list or array of actions, e.g. "show"
+	 * @module        If passed, the module these resources will be attached to.
+	 * @namespace     If passed, the namespace these resources will be attached to.
+	 * @pattern       If passed, the actual URL pattern to use, else it defaults to `/#arguments.resource#` the name of the resource.
+	 * @meta          A struct of metadata to store with ALL the routes created from this resource
+	 */
+	function apiResources(
+		required resource,
+		handler,
+		parameterName    = "id",
+		only             = [],
+		except           = [ "new", "edit" ],
+		string module    = "",
+		string namespace = "",
+		string pattern   = "",
+		struct meta      = {}
+	){
+		return this.resources( argumentCollection = arguments );
+	}
+
+	/**
 	 * Adds a route to dispatch and returns itself.
 	 *
-	 * @pattern  The pattern to match against the URL.
-	 * @handler The handler to execute if pattern matched.
-	 * @action The action in a handler to execute if a pattern is matched.  This can also be a structure based on the HTTP method(GET,POST,PUT,DELETE). ex: {GET:'show', PUT:'update', DELETE:'delete', POST:'save'}
+	 * @pattern               The pattern to match against the URL.
+	 * @handler               The handler to execute if pattern matched.
+	 * @action                The action in a handler to execute if a pattern is matched.  This can also be a structure based on the HTTP method(GET,POST,PUT,DELETE). ex: {GET:'show', PUT:'update', DELETE:'delete', POST:'save'}
 	 * @packageResolverExempt If this is set to true, then the interceptor will not try to do handler package resolving. Else a package will always be resolved. Only works if :handler is in a pattern
-	 * @matchVariables DEPRECATED: Use RC or PRC structs instead. A string of name-value pair variables to add to the request collection when this pattern matches. This is a comma delimited list. Ex: spaceFound=true,missingAction=onTest
-	 * @view The view to dispatch if pattern matches.  No event will be fired, so handler,action will be ignored.
-	 * @viewNoLayout If view is chosen, then you can choose to override and not display a layout with the view. Else the view renders in the assigned layout.
+	 * @matchVariables        DEPRECATED: Use RC or PRC structs instead. A string of name-value pair variables to add to the request collection when this pattern matches. This is a comma delimited list. Ex: spaceFound=true,missingAction=onTest
+	 * @view                  The view to dispatch if pattern matches.  No event will be fired, so handler,action will be ignored.
+	 * @viewNoLayout          If view is chosen, then you can choose to override and not display a layout with the view. Else the view renders in the assigned layout.
 	 * @valuePairTranslation  Activate convention name value pair translations or not. Turned on by default
-	 * @constraints A structure of regex constraint overrides for variable placeholders. The key is the name of the variable, the value is the regex to try to match.
-	 * @module The module to add this route to
-	 * @moduleRouting Called internally by addModuleRoutes to add a module routing route.
-	 * @namespace The namespace to add this route to
-	 * @namespaceRouting Called internally by addNamespaceRoutes to add a namespaced routing route.
-	 * @ssl Makes the route an SSL only route if true, else it can be anything. If an ssl only route is hit without ssl, the interceptor will redirect to it via ssl
-	 * @append Whether the route should be appended or pre-pended to the array. By default we append to the end of the array
-	 * @response An HTML response string to send back or a closure to be executed that should return the response. The closure takes in a 'params' struct of all matched params and the string will be parsed with the named value pairs as ${param}
-	 * @statusCode The HTTP status code to send to the browser response.
-	 * @statusText Explains the HTTP status code sent to the browser response.
-	 * @condition A closure or UDF to execute that MUST return true to use route if matched or false and continue.
-	 * @name The name of the route
-	 * @domain The domain to match, including wildcards
-	 * @redirect If used, then the route will dispatch a relocation to this value as the new route using the `statuCode` default of 301 (Permanent) or if you define a `statusCode` we will use that.
-	 * @event The event to execute if route matches
-	 * @verbs The allowed HTTP Verbs for the route
-	 * @layout The view layout to use
-	 * @headers The HTTP headers to attach to the response if route matches
-	 * @rc The RC name value pairs to attach if the response matches
-	 * @prc The PRC name value pairs to attach if the response matches
-	 * @viewModule The module the view belongs to
-	 * @layoutModule The module the layout belongs to
-	 * @meta Additional metadata to add to the incoming route
+	 * @constraints           A structure of regex constraint overrides for variable placeholders. The key is the name of the variable, the value is the regex to try to match.
+	 * @module                The module to add this route to
+	 * @moduleRouting         Called internally by addModuleRoutes to add a module routing route.
+	 * @namespace             The namespace to add this route to
+	 * @namespaceRouting      Called internally by addNamespaceRoutes to add a namespaced routing route.
+	 * @ssl                   Makes the route an SSL only route if true, else it can be anything. If an ssl only route is hit without ssl, the interceptor will redirect to it via ssl
+	 * @append                Whether the route should be appended or pre-pended to the array. By default we append to the end of the array
+	 * @response              An HTML response string to send back or a closure to be executed that should return the response. The closure takes in a 'params' struct of all matched params and the string will be parsed with the named value pairs as ${param}
+	 * @statusCode            The HTTP status code to send to the browser response.
+	 * @statusText            Explains the HTTP status code sent to the browser response.
+	 * @condition             A closure or UDF to execute that MUST return true to use route if matched or false and continue.
+	 * @name                  The name of the route
+	 * @domain                The domain to match, including wildcards
+	 * @redirect              If used, then the route will dispatch a relocation to this value as the new route using the `statuCode` default of 301 (Permanent) or if you define a `statusCode` we will use that.
+	 * @event                 The event to execute if route matches
+	 * @verbs                 The allowed HTTP Verbs for the route
+	 * @layout                The view layout to use
+	 * @headers               The HTTP headers to attach to the response if route matches
+	 * @rc                    The RC name value pairs to attach if the response matches
+	 * @prc                   The PRC name value pairs to attach if the response matches
+	 * @viewModule            The module the view belongs to
+	 * @layoutModule          The module the layout belongs to
+	 * @meta                  Additional metadata to add to the incoming route
 	 *
 	 * @return SES
 	 */
@@ -848,16 +896,21 @@ component
 			var actions         = {};
 			var matchingActions = isStruct( matchingRoute.action ) ? matchingRoute.action : {};
 			structAppend( actions, matchingActions, true );
-			for ( var verb in matchingRoute.verbs ) {
-				structInsert( actions, verb, matchingRoute.event );
+			if ( matchingRoute.event != "" ) {
+				for ( var verb in matchingRoute.verbs ) {
+					structInsert( actions, verb, matchingRoute.event );
+				}
 			}
 			var thisRouteActions = isStruct( thisRoute.action ) ? thisRoute.action : {};
 			structAppend( actions, thisRouteActions, true );
-			for ( var verb in thisRoute.verbs ) {
-				structInsert( actions, verb, thisRoute.event );
+			if ( thisRoute.event != "" ) {
+				for ( var verb in thisRoute.verbs ) {
+					structInsert( actions, verb, thisRoute.event );
+				}
 			}
 			matchingRoute.action = actions;
-			matchingRoute.verbs  = "";
+			matchingRoute.verbs  = structKeyList( actions );
+			matchingRoute.event  = "";
 			return this;
 		}
 
@@ -920,7 +973,10 @@ component
 						// Check Digits Repetions
 						if ( find( "{", thisPattern ) ) {
 							thisRegex = listFirst( thisRegex, "{" ) & "{#listLast( thisPattern, "{" )#)";
-							arrayAppend( thisRoute.patternParams, replace( listFirst( thisPattern, "{" ), ":", "" ) );
+							arrayAppend(
+								thisRoute.patternParams,
+								replace( listFirst( thisPattern, "{" ), ":", "" )
+							);
 						} else {
 							thisRegex = thisRegex & "+?)";
 							arrayAppend( thisRoute.patternParams, thisPatternParam );
@@ -1021,7 +1077,10 @@ component
 							// Check Digits Repetions
 							if ( find( "{", thisDomain ) ) {
 								thisRegex = listFirst( thisRegex, "{" ) & "{#listLast( thisDomain, "{" )#)";
-								arrayAppend( thisRoute.domainParams, replace( listFirst( thisDomain, "{" ), ":", "" ) );
+								arrayAppend(
+									thisRoute.domainParams,
+									replace( listFirst( thisDomain, "{" ), ":", "" )
+								);
 							} else {
 								thisRegex = thisRegex & "+?)";
 								arrayAppend( thisRoute.domainParams, thisDomainParam );
@@ -1171,10 +1230,14 @@ component
 	 * </pre>
 	 *
 	 * @pattern The pattern to register
-	 * @target A response closure/lambda or an event string to execute
-	 * @name The name of the route
+	 * @target  A response closure/lambda or an event string to execute
+	 * @name    The name of the route, defaults to the the pattern
 	 */
-	function route( required pattern, target, name = "" ){
+	function route(
+		required pattern,
+		target,
+		name = arguments.pattern
+	){
 		// inline termination
 		if ( !isNull( arguments.target ) ) {
 			// process a with closure if not empty
@@ -1230,7 +1293,7 @@ component
 	 * </pre>
 	 *
 	 * @pattern The pattern to register
-	 * @target A response closure/lambda or an event string to execute
+	 * @target  A response closure/lambda or an event string to execute
 	 */
 	function get( required pattern, target ){
 		variables.thisRoute.verbs = "GET";
@@ -1244,7 +1307,7 @@ component
 	 * </pre>
 	 *
 	 * @pattern The pattern to register
-	 * @target A response closure/lambda or an event string to execute
+	 * @target  A response closure/lambda or an event string to execute
 	 */
 	function post( required pattern, target ){
 		variables.thisRoute.verbs = "POST";
@@ -1258,7 +1321,7 @@ component
 	 * </pre>
 	 *
 	 * @pattern The pattern to register
-	 * @target A response closure/lambda or an event string to execute
+	 * @target  A response closure/lambda or an event string to execute
 	 */
 	function put( required pattern, target ){
 		variables.thisRoute.verbs = "PUT";
@@ -1272,7 +1335,7 @@ component
 	 * </pre>
 	 *
 	 * @pattern The pattern to register
-	 * @target A response closure/lambda or an event string to execute
+	 * @target  A response closure/lambda or an event string to execute
 	 */
 	function delete( required pattern, target ){
 		variables.thisRoute.verbs = "DELETE";
@@ -1286,7 +1349,7 @@ component
 	 * </pre>
 	 *
 	 * @pattern The pattern to register
-	 * @target A response closure/lambda or an event string to execute
+	 * @target  A response closure/lambda or an event string to execute
 	 */
 	function patch( required pattern, target ){
 		variables.thisRoute.verbs = "PATCH";
@@ -1300,7 +1363,7 @@ component
 	 * </pre>
 	 *
 	 * @pattern The pattern to register
-	 * @target A response closure/lambda or an event string to execute
+	 * @target  A response closure/lambda or an event string to execute
 	 */
 	function options( required pattern, target ){
 		variables.thisRoute.verbs = "OPTIONS";
@@ -1317,8 +1380,8 @@ component
 	 * route( "hello", "main.index" ).header( "name", "hello" )
 	 * </pre>
 	 *
-	 * @name The header name
-	 * @value The header value
+	 * @name      The header name
+	 * @value     The header value
 	 * @overwrite Overwrite if already defined
 	 */
 	function header(
@@ -1345,7 +1408,7 @@ component
 	 * route( "hello" ).headers( { ... } ).to( "main.index" )
 	 * </pre>
 	 *
-	 * @map The structure of headers to issue
+	 * @map       The structure of headers to issue
 	 * @overwrite Overwrite the elements
 	 */
 	function headers( required map, boolean overwrite = true ){
@@ -1363,7 +1426,7 @@ component
 	 * route( "hello" ).meta( { secure : true, perms : [] } ).to( "main.index" )
 	 * </pre>
 	 *
-	 * @map The structure of metadata to store within the route
+	 * @map       The structure of metadata to store within the route
 	 * @overwrite Overwrite the elements
 	 */
 	function meta( required map, boolean overwrite = true ){
@@ -1398,8 +1461,8 @@ component
 	 * route( "hello", "main.index" ).rc( "private", true )
 	 * </pre>
 	 *
-	 * @name The key name
-	 * @value The value
+	 * @name      The key name
+	 * @value     The value
 	 * @overwrite Overwrite the value
 	 */
 	function rc(
@@ -1425,7 +1488,7 @@ component
 	 * route( "hello", "main.index" ).rcAppend( { ... } )
 	 * </pre>
 	 *
-	 * @map The structure to append
+	 * @map       The structure to append
 	 * @overwrite Overwrite elements, default behavior
 	 */
 	function rcAppend( required map, boolean overwrite = true ){
@@ -1443,8 +1506,8 @@ component
 	 * route( "hello", "main.index" ).prc( "private", true )
 	 * </pre>
 	 *
-	 * @name The key name
-	 * @value The value
+	 * @name      The key name
+	 * @value     The value
 	 * @overwrite Overwrite the value
 	 */
 	function prc(
@@ -1470,7 +1533,7 @@ component
 	 * route( "hello", "main.index" ).prcAppend( { ... } )
 	 * </pre>
 	 *
-	 * @map The structure to append
+	 * @map       The structure to append
 	 * @overwrite Overwrite elements, default behavior
 	 */
 	function prcAppend( required map, boolean overwrite = true ){
@@ -1715,10 +1778,10 @@ component
 	 * route( "hello", "main.index" ).toView( view="hello", noLayout=true );
 	 * </pre>
 	 *
-	 * @view The view to render
-	 * @layout The layout to use or default one
-	 * @noLayout Use only the view or attach the layout
-	 * @viewModule The module the view comes from
+	 * @view         The view to render
+	 * @layout       The layout to use or default one
+	 * @noLayout     Use only the view or attach the layout
+	 * @viewModule   The module the view comes from
 	 * @layoutModule The module the layout comes from
 	 */
 	function toView(
@@ -1761,7 +1824,7 @@ component
 	 * })
 	 * </pre>
 	 *
-	 * @target The target URI
+	 * @target     The target URI
 	 * @statusCode The statusCode to use, defaults to 301
 	 */
 	function toRedirect( required target, statusCode = 301 ){
@@ -1864,7 +1927,7 @@ component
 	 * } );
 	 * </pre>
 	 *
-	 * @body The body of the response a lambda or closure
+	 * @body       The body of the response a lambda or closure
 	 * @statusCode The status code to use, defaults to 200
 	 * @statusText The status text to use, defaults to 'OK'
 	 *
@@ -1877,7 +1940,10 @@ component
 	){
 		// Arg Check
 		if ( !isClosure( arguments.body ) && !isCustomFunction( arguments.body ) && !isSimpleValue( arguments.body ) ) {
-			throw( type: "InvalidArgumentException", message: "The 'body' argument is not of type closure or string" );
+			throw(
+				type   : "InvalidArgumentException",
+				message: "The 'body' argument is not of type closure or string"
+			);
 		}
 		// process a with closure if not empty
 		if ( !variables.withClosure.isEmpty() ) {
@@ -1975,9 +2041,10 @@ component
 
 	/**
 	 * Get the correct route actions based on only and except lists
+	 *
 	 * @initial The initial set of route actions
-	 * @only 	Limit actions with only
-	 * @except 	Exclude actions with except
+	 * @only    Limit actions with only
+	 * @except  Exclude actions with except
 	 */
 	private struct function filterRouteActions(
 		required struct initial,
@@ -1998,7 +2065,11 @@ component
 			}
 		}
 
-		if ( structKeyExists( arguments, "except" ) && !isNull( arguments.except ) && !arrayIsEmpty( arguments.except ) ) {
+		if (
+			structKeyExists( arguments, "except" ) && !isNull( arguments.except ) && !arrayIsEmpty(
+				arguments.except
+			)
+		) {
 			for ( var HTTPVerb in arguments.initial ) {
 				var methodName = arguments.initial[ HTTPVerb ];
 				for ( var exceptAction in arguments.except ) {

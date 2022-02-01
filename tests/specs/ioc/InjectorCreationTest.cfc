@@ -1,4 +1,5 @@
-﻿component extends = "tests.resources.BaseIntegrationTest"{
+﻿component extends="tests.resources.BaseIntegrationTest" {
+
 	this.loadColdBox = false;
 
 	function setup(){
@@ -229,6 +230,7 @@
 
 	function testVirtualInheritanceCreation(){
 		var c = injector.getInstance( "virtually-inherited-class" );
-		expect( c.getData() ).toBe( "Default Data" );
+		expect( c.getData() ).toBe( "Child Data" );
 	}
+
 }

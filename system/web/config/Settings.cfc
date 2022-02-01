@@ -26,6 +26,7 @@ component {
 		"jsonPayloadToRC"          : true,
 		"autoMapModels"            : true,
 		"environment"              : "production",
+		"identifierProvider"       : "",
 		// Caching
 		"handlersIndexAutoReload"  : false,
 		"handlerCaching"           : true,
@@ -83,5 +84,11 @@ component {
 
 	// Async Configs
 	this.async = { "schedulerThreads" : 20 };
+
+	/**
+	 * Configuration for non-config apps
+	 */
+	function configure(){
+	}
 
 }

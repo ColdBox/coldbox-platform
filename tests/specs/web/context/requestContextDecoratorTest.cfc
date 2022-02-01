@@ -22,7 +22,10 @@ component extends="tests.resources.BaseIntegrationTest" {
 				mockContext    = getMockRequestContext();
 				mockController = getMockController();
 
-				mockDecorator = new coldbox.system.web.context.RequestContextDecorator( mockContext, mockController );
+				mockDecorator = new coldbox.system.web.context.RequestContextDecorator(
+					mockContext,
+					mockController
+				);
 			} );
 
 			it( "can be created", function(){

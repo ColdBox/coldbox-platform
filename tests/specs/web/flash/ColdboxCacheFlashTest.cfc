@@ -1,4 +1,5 @@
-﻿component extends = "coldbox.system.testing.BaseModelTest" model = "coldbox.system.web.flash.ColdboxCacheFlash"{
+﻿component extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.web.flash.ColdboxCacheFlash" {
+
 	function run( testResults, testBox ){
 		// all your suites go here.
 		describe( "ColdBox Cache Flash", function(){
@@ -8,8 +9,11 @@
 
 				// mocks
 				session.sessionid = createUUID();
-				mockController    = createMock( className = "coldbox.system.web.Controller", clearMethods = true );
-				mockCache         = createMock(
+				mockController    = createMock( "coldbox.system.web.Controller" ).init( expandPath( "/root" ) );
+				mockController.getConfigSettings().identifierProvider = function(){
+					return createUUID();
+				};
+				mockCache = createMock(
 					className    = "coldbox.system.cache.providers.CacheBoxProvider",
 					clearMethods = true
 				);
@@ -21,21 +25,9 @@
 
 				// test scope
 				testscope = {
-					test : {
-						content   : "luis",
-						autoPurge : true,
-						keep      : true
-					},
-					date : {
-						content   : now(),
-						autoPurge : true,
-						keep      : true
-					},
-					obj : {
-						content   : obj,
-						autoPurge : true,
-						keep      : true
-					}
+					test : { content : "luis", autoPurge : true, keep : true },
+					date : { content : now(), autoPurge : true, keep : true },
+					obj  : { content : obj, autoPurge : true, keep : true }
 				};
 			} );
 
@@ -65,4 +57,5 @@
 			} );
 		} );
 	}
+
 }

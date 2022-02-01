@@ -2,11 +2,12 @@
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * @author Luis Majano
  *
  * I am the fastest way to cache objects. I am so fast because I don't do anything. I'm really a tool to use when working on caching strategies. When I am in use nothing is cached. It just vanishes.
+ *
+ * @author Luis Majano
  */
-component implements="coldbox.system.cache.store.IObjectStore" accessors=true{
+component implements="coldbox.system.cache.store.IObjectStore" accessors=true {
 
 	/**
 	 * The cache provider reference
@@ -21,26 +22,26 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors=true{
 	/**
 	 * Constructor
 	 *
-	 * @cacheProvider The associated cache provider as coldbox.system.cache.providers.ICacheProvider
+	 * @cacheProvider             The associated cache provider as coldbox.system.cache.providers.ICacheProvider
 	 * @cacheprovider.doc_generic coldbox.system.cache.providers.ICacheProvider
 	 */
 	function init( required cacheProvider ){
 		// Store Fields
-        var fields = "hits,timeout,lastAccessTimeout,created,LastAccessed,isExpired,isSimple";
-        var config = arguments.cacheProvider.getConfiguration();
+		var fields = "hits,timeout,lastAccessTimeout,created,LastAccessed,isExpired,isSimple";
+		var config = arguments.cacheProvider.getConfiguration();
 
-        // Prepare instance
-        variables.cacheProvider     = arguments.cacheProvider;
-        variables.storeID 		    = 'blackhole';
+		// Prepare instance
+		variables.cacheProvider = arguments.cacheProvider;
+		variables.storeID       = "blackhole";
 
-        return this;
+		return this;
 	}
 
-    /**
-     * Flush the store to a permanent storage
-     */
-    void function flush(){
-        return;
+	/**
+	 * Flush the store to a permanent storage
+	 */
+	void function flush(){
+		return;
 	}
 
 	/**
@@ -48,32 +49,32 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors=true{
 	 */
 	void function reap(){
 		return;
-    }
+	}
 
 	/**
 	 * Clear all the elements in the store
 	 */
 	void function clearAll(){
-        return;
+		return;
 	}
 
-    /**
-     * Get the store's pool metadata indexer structure
+	/**
+	 * Get the store's pool metadata indexer structure
 	 *
 	 * @return coldbox.system.cache.store.indexers.MetadataIndexer
-     */
-    function getIndexer(){
-        return;
-    }
+	 */
+	function getIndexer(){
+		return;
+	}
 
-     /**
-     * Get all the store's object keys array
+	/**
+	 * Get all the store's object keys array
 	 *
 	 * @return array
-     */
-    function getKeys(){
-        return [];
-    }
+	 */
+	function getKeys(){
+		return [];
+	}
 
 	/**
 	 * Check if an object is in the store
@@ -102,18 +103,18 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors=true{
 	 */
 	function getQuiet( required objectKey ){
 		return;
-    }
+	}
 
-    /**
+	/**
 	 * Expire an object
 	 *
 	 * @objectKey The key to expire
 	 */
 	void function expireObject( required objectKey ){
 		return;
-    }
+	}
 
-    /**
+	/**
 	 * Expire check
 	 *
 	 * @objectKey The key to check
@@ -127,18 +128,18 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors=true{
 	/**
 	 * Sets an object in the storage
 	 *
-	 * @objectKey The object key
-	 * @object The object to save
-	 * @timeout Timeout in minutes
+	 * @objectKey         The object key
+	 * @object            The object to save
+	 * @timeout           Timeout in minutes
 	 * @lastAccessTimeout Idle Timeout in minutes
-	 * @extras A map of extra name-value pairs to store alongside the object
+	 * @extras            A map of extra name-value pairs to store alongside the object
 	 */
 	void function set(
 		required objectKey,
 		required object,
-		timeout=0,
-		lastAccessTimeout=0,
-		extras={}
+		timeout           = 0,
+		lastAccessTimeout = 0,
+		extras            = {}
 	){
 		return;
 	}
@@ -149,14 +150,14 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors=true{
 	 * @objectKey The object key to clear
 	 */
 	function clear( required objectKey ){
-        return;
-    }
+		return;
+	}
 
-    /**
+	/**
 	 * Get the size of the store
 	 */
 	function getSize(){
-        return 0;
+		return 0;
 	}
 
 }

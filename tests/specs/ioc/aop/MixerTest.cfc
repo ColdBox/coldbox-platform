@@ -8,9 +8,7 @@ component extends="tests.resources.BaseIntegrationTest" {
 		mockLogBox = createEmptyMock( "coldbox.system.logging.LogBox" ).$( "getLogger", mockLogger );
 		mockBinder = createMock( "coldbox.system.ioc.config.Binder" );
 
-		mockInjector = createMock( "coldbox.system.ioc.Injector" )
-			.setLogBox( mockLogBox )
-			.setBinder( mockBinder );
+		mockInjector = createMock( "coldbox.system.ioc.Injector" ).setLogBox( mockLogBox ).setBinder( mockBinder );
 
 		// mixer
 		mixer = createMock( "coldbox.system.aop.Mixer" ).configure( mockInjector, {} );
@@ -24,10 +22,7 @@ component extends="tests.resources.BaseIntegrationTest" {
 			.$( "getName", "unitTest" );
 		mockTarget = createStub();
 		// intercept data
-		data       = {
-			mapping : mockMapping,
-			target  : mockTarget
-		};
+		data       = { mapping : mockMapping, target : mockTarget };
 		mixer.$( "buildAspectDictionary" );
 
 		// 1: target already mixed
@@ -50,15 +45,7 @@ component extends="tests.resources.BaseIntegrationTest" {
 		assertTrue( mixer.$never( "AOPBuilder" ) );
 
 		// 3: target NOT mixed and we need dictionary and it matches with methods
-		dictionary = {
-			"unitTest" : [
-				{
-					classes : "",
-					methods : "",
-					aspects : "1,2"
-				}
-			]
-		};
+		dictionary = { "unitTest" : [ { classes : "", methods : "", aspects : "1,2" } ] };
 		mixer
 			.$( "AOPBuilder" )
 			.$( "buildClassMatchDictionary" )

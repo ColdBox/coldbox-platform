@@ -36,13 +36,8 @@ component extends="tests.resources.BaseIntegrationTest" {
 				expect( t.getEnvironments() ).toInclude( "development" );
 			} );
 
-			it( "can register server fixation", function(){
-				var t = scheduler.task( "cbTask" ).onOneServer();
-				expect( t.getServerFixation() ).toBeTrue();
-			} );
-
 			it( "can be constrained by environment", function(){
-				var t = scheduler.task( "cbTask" );
+				var t = scheduler.task( "cbTask" ).everyMinute();
 
 				expect( t.isConstrained() ).toBeFalse();
 
@@ -52,19 +47,27 @@ component extends="tests.resources.BaseIntegrationTest" {
 				expect( t.isConstrained() ).toBeTrue();
 			} );
 
+			it( "can register server fixation", function(){
+				var t = scheduler.task( "cbTask" ).onOneServer();
+				expect( t.getServerFixation() ).toBeTrue();
+			} );
+
 			it( "can be constrained by server", function(){
-				var t        = scheduler.task( "cbTask" ).onOneServer();
-				var cacheKey = "cbtasks-server-fixation-#replace( t.getName(), " ", "-", "all" )#";
+				var t = scheduler
+					.task( "cbTask-ServerFixation" )
+					.onOneServer()
+					.everyHourAt( 9 )
+					.withNoOverlaps();
 
 				expect( t.isConstrained() ).toBeFalse();
-				expect( t.getCache().getKeys() ).toInclude( cacheKey );
+				expect( t.getCache().getKeys() ).toInclude( t.getFixationCacheKey() );
 
 				// Constrain it
 				t.cleanupTaskRun();
-				expect( t.getCache().getKeys() ).notToInclude( cacheKey );
+				expect( t.getCache().getKeys() ).notToInclude( t.getFixationCacheKey() );
 				t.getCache()
 					.set(
-						cacheKey,
+						t.getFixationCacheKey(),
 						{
 							"task"       : t.getName(),
 							"lockOn"     : now(),
@@ -74,7 +77,7 @@ component extends="tests.resources.BaseIntegrationTest" {
 						5,
 						0
 					);
-				expect( t.getCache().getKeys() ).toInclude( cacheKey );
+				expect( t.getCache().getKeys() ).toInclude( t.getFixationCacheKey() );
 				expect( t.isConstrained() ).toBeTrue();
 				t.cleanupTaskRun();
 			} );

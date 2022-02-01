@@ -12,6 +12,7 @@ component {
 	this.sessionTimeout     = createTimespan( 0, 0, 30, 0 );
 	this.setClientCookies   = true;
 	this.timezone 			= "UTC";
+	this.enableNullSupport = shouldEnableFullNullSupport();
 
 	// COLDBOX STATIC PROPERTY, DO NOT CHANGE UNLESS THIS IS NOT THE ROOT OF YOUR COLDBOX APP
 	COLDBOX_APP_ROOT_PATH = getDirectoryFromPath( getCurrentTemplatePath() );
@@ -45,6 +46,8 @@ component {
 
 	// application start
 	public boolean function onApplicationStart(){
+		writeDump( var="**** Started App Start ****", output="console" );
+
 		var start = getTickCount();
 
 		application.cbBootstrap = new coldbox.system.Bootstrap(
@@ -56,7 +59,8 @@ component {
 		application.cbBootstrap.loadColdbox();
 
 		request.fwloadTime = getTickCount() - start;
-		writeDump( var = "FWLoadTime: #request.fwLoadTime# ms", output = "console" );
+
+		writeDump( var = "> ColdBox On AppStart Loaded in #request.fwLoadTime# ms", output = "console" );
 
 		return true;
 	}
@@ -96,4 +100,9 @@ component {
 		return application.cbBootstrap.onMissingTemplate( argumentCollection = arguments );
 	}
 
+	private boolean function shouldEnableFullNullSupport() {
+        var system = createObject( "java", "java.lang.System" );
+        var value = system.getEnv( "FULL_NULL" );
+        return isNull( value ) ? false : !!value;
+    }
 }

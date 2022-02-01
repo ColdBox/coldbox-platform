@@ -2,12 +2,13 @@
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * @author Luis Majano
  *
  * The main interface for a CacheBox cache provider.  You need to implement all the methods in order for CacheBox to work correctly for the implementing cache provider.
  * Many of the methods return itself, so they are documented in the <pre>@return</pre> annotation since interfaces are very janky in acf11 and 2016
+ *
+ * @author Luis Majano
  */
-interface{
+interface {
 
 	/**
 	 * Get the name of this cache
@@ -69,7 +70,7 @@ interface{
 	/**
 	 * Set the cache factory reference for this cache
 	 *
-	 * @cacheFactory The cache factory
+	 * @cacheFactory             The cache factory
 	 * @cacheFactory.doc_generic coldbox.system.cache.CacheFactory
 	 *
 	 * @return ICacheProvider
@@ -171,15 +172,15 @@ interface{
 	/**
 	 * Sets an object in the cache and returns an instance of itself
 	 *
-	 * @objectKey The object cache key
-	 * @object The object to cache
-	 * @timeout The timeout to use on the object (if any, provider specific)
+	 * @objectKey         The object cache key
+	 * @object            The object to cache
+	 * @timeout           The timeout to use on the object (if any, provider specific)
 	 * @lastAccessTimeout The idle timeout to use on the object (if any, provider specific)
-	 * @extra A map of name-value pairs to use as extra arguments to pass to a providers set operation
+	 * @extra             A map of name-value pairs to use as extra arguments to pass to a providers set operation
 	 *
 	 * @return ICacheProvider
 	 */
- 	function set(
+	function set(
 		required objectKey,
 		required object,
 		timeout,
@@ -190,11 +191,11 @@ interface{
 	/**
 	 * Sets an object in the cache with no event calls and returns an instance of itself
 	 *
-	 * @objectKey The object cache key
-	 * @object The object to cache
-	 * @timeout The timeout to use on the object (if any, provider specific)
+	 * @objectKey         The object cache key
+	 * @object            The object to cache
+	 * @timeout           The timeout to use on the object (if any, provider specific)
 	 * @lastAccessTimeout The idle timeout to use on the object (if any, provider specific)
-	 * @extra A map of name-value pairs to use as extra arguments to pass to a providers set operation
+	 * @extra             A map of name-value pairs to use as extra arguments to pass to a providers set operation
 	 *
 	 * @return ICacheProvider
 	 */

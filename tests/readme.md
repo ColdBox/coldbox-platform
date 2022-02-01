@@ -71,10 +71,16 @@ box server start serverConfigFile=server-adobe@2016.json
 The testing datasource is pre-configured with the following properties that can be found in the file `/.cfconfig.json`, which leverages a MySQL database.
 
 * Database: `coolblog`
-* Username: `mysql`
-* Password: *empty* or whatever is your local password.
+* Username: `root`
+* Password: `mysql`
 
 Modify those values as you need to change the connection details or remove the datasource from the JSON file and create it manually in the admin.  Create a database called `coolblog` and populateit with our SQL script that can be found here: `/tests/resources/coolblog.sql`.  There is a version of the SQL script for MS SQL Server as well in the same folder.
+
+Here's a Docker command that you can run in the root of this project to create and seed the database:
+
+```sh
+docker container run -d --name coolblog -p 3306:3306 -e MYSQL_ROOT_PASSWORD=mysql -e MYSQL_DATABASE=coolblog -v $(pwd)/tests/resources/coolblog.sql:/docker-entrypoint-initdb.d/coolblog.sql mysql:5
+```
 
 ### Lucee Optional: `Default` Cache
 

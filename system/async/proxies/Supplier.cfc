@@ -3,9 +3,9 @@ component extends="BaseProxy" {
 	/**
 	 * Constructor
 	 *
-	 * @supplier The lambda or closure that will supply the elements
-	 * @method An optional method in case the supplier is a CFC instead of a closure
-	 * @debug Add debugging or not
+	 * @supplier       The lambda or closure that will supply the elements
+	 * @method         An optional method in case the supplier is a CFC instead of a closure
+	 * @debug          Add debugging or not
 	 * @loadAppContext By default, we load the Application context into the running thread. If you don't need it, then don't load it.
 	 */
 	function init(

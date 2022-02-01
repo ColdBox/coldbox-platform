@@ -66,13 +66,13 @@ component singleton {
 	/**
 	 * Convert any ColdFUsion date/time or string date/time object to the new Java.time.LocalDateTime class so we can use them as Temporal objects
 	 *
-	 * @target The cf date/time or string object representing the date/time
+	 * @target   The cf date/time or string object representing the date/time
 	 * @timezone If passed, we will use this timezone to build the temporal object. Else we default to UTC
 	 *
-	 * @throws DateTimeException - if the zone ID has an invalid format
-	 * @throws ZoneRulesException - if the zone ID is a region ID that cannot be found
-	 *
 	 * @return A Java temporal object as java.time.LocalDateTime
+	 *
+	 * @throws DateTimeException  - if the zone ID has an invalid format
+	 * @throws ZoneRulesException - if the zone ID is a region ID that cannot be found
 	 */
 	function toLocalDateTime( required target, timezone ){
 		return this
@@ -88,13 +88,13 @@ component singleton {
 	/**
 	 * Convert any ColdFUsion date/time or string date/time object to the new Java.time.LocalDate class so we can use them as Temporal objects
 	 *
-	 * @target The cf date/time or string object representing the date/time
+	 * @target   The cf date/time or string object representing the date/time
 	 * @timezone If passed, we will use this timezone to build the temporal object. Else we default to UTC
 	 *
-	 * @throws DateTimeException - if the zone ID has an invalid format
-	 * @throws ZoneRulesException - if the zone ID is a region ID that cannot be found
-	 *
 	 * @return A Java temporal object as java.time.LocalDate
+	 *
+	 * @throws DateTimeException  - if the zone ID has an invalid format
+	 * @throws ZoneRulesException - if the zone ID is a region ID that cannot be found
 	 */
 	function toLocalDate( required target, timezone ){
 		return this
@@ -110,14 +110,13 @@ component singleton {
 	/**
 	 * Get the Java Zone ID of the passed in timezone identifier string
 	 *
-	 * @see https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/ZoneId.html
-	 *
+	 * @see      https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/ZoneId.html
 	 * @timezone The String timezone identifier
 	 *
-	 * @throws DateTimeException - if the zone ID has an invalid format
-	 * @throws ZoneRulesException - if the zone ID is a region ID that cannot be found
-	 *
 	 * @return Java Timezone java.time.ZoneId
+	 *
+	 * @throws DateTimeException  - if the zone ID has an invalid format
+	 * @throws ZoneRulesException - if the zone ID is a region ID that cannot be found
 	 */
 	function getTimezone( required timezone ){
 		return this.ZoneId.of( javacast( "string", arguments.timezone ) );

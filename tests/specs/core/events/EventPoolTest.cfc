@@ -20,10 +20,7 @@
 	function testProcessEventPool(){
 		target = createObject( "component", "tests.resources.Event" );
 		pool.register( "myEvent", target );
-		data = {
-			hello : "Luis Majano",
-			from  : "#createUUID()#"
-		};
+		data = { hello : "Luis Majano", from : "#createUUID()#" };
 
 		assertequals( arrayLen( target.logs ), 0 );
 		pool.process( data );

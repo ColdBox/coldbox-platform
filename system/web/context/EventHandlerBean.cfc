@@ -109,7 +109,7 @@ component accessors="true" {
 	/**
 	 * Return the full action metadata structure or filter by key and default value if needed
 	 *
-	 * @key The key to search for in the action metadata
+	 * @key          The key to search for in the action metadata
 	 * @defaultValue Default value to return if not found
 	 *
 	 * @return any
@@ -120,12 +120,7 @@ component accessors="true" {
 			return variables.actionMetadata;
 		}
 		// Filter by key
-		if (
-			structKeyExists(
-				variables.actionMetadata,
-				arguments.key
-			)
-		) {
+		if ( structKeyExists( variables.actionMetadata, arguments.key ) ) {
 			return variables.actionMetadata[ arguments.key ];
 		}
 		// Nothing found, just return the default value of empty string
@@ -135,7 +130,7 @@ component accessors="true" {
 	/**
 	 * Return the full handler metadata structure or filter by key and default value if needed
 	 *
-	 * @key The key to search for in the handler metadata
+	 * @key          The key to search for in the handler metadata
 	 * @defaultValue Default value to return if not found
 	 *
 	 * @return any
@@ -146,12 +141,7 @@ component accessors="true" {
 			return variables.handlerMetadata;
 		}
 		// Filter by key
-		if (
-			structKeyExists(
-				variables.handlerMetadata,
-				arguments.key
-			)
-		) {
+		if ( structKeyExists( variables.handlerMetadata, arguments.key ) ) {
 			return variables.handlerMetadata[ arguments.key ];
 		}
 		// Nothing found, just return the default value of empty string

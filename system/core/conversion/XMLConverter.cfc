@@ -227,7 +227,9 @@ Luis Majano
 		</cfif>
 
 		<!--- Create Root --->
-		<cfset buffer.append( "<#rootelement# rowCount=""#arguments.data.recordCount#"" fieldNames=""#columns#"">" )>
+		<cfset buffer.append(
+			"<#rootelement# rowCount=""#arguments.data.recordCount#"" fieldNames=""#columns#"">"
+		)>
 		<!--- Data --->
 		<cfloop query="arguments.data">
 			<cfset buffer.append( "<#itemElement#>" )>
@@ -248,7 +250,9 @@ Luis Majano
 					<cfset buffer.append( "<#col#>#value#</#col#>" )>
 
 					<cfcatch type="any">
-						<cfdump var="#cfcatch#"><cfdump var="#arguments#"><cfdump var="#currentRow#"><cfdump var="#col#"><cfabort>
+						<cfdump var="#cfcatch#"><cfdump var="#arguments#"><cfdump var="#currentRow#"><cfdump
+							var="#col#"
+						><cfabort>
 					</cfcatch>
 				</cftry>
 			</cfloop>
@@ -408,7 +412,13 @@ Luis Majano
 
 	<!------------------------------------------- PRIVATE ------------------------------------------>
 
-	<cffunction name="translateValue" access="private" returntype="any" hint="Translate a value into XML" output="false">
+	<cffunction
+		name      ="translateValue"
+		access    ="private"
+		returntype="any"
+		hint      ="Translate a value into XML"
+		output    ="false"
+	>
 		<cfargument name="args" type="struct" required="true" hint="The original argument collection">
 		<cfargument name="targetValue" type="any" required="true" hint="The value to translate">
 		<cfscript>
@@ -450,117 +460,32 @@ Luis Majano
 		<cfargument name="value" type="string" required="yes">
 		<cfscript>
 		var string = arguments.value;
-		string     = replaceNoCase(
-			string,
-			chr( 8218 ),
-			"&##8218;",
-			"all"
-		); // �
-		string = replaceNoCase( string, chr( 402 ), "&##402;", "all" ); // �
-		string = replaceNoCase(
-			string,
-			chr( 8222 ),
-			"&##8222;",
-			"all"
-		); // �
-		string = replaceNoCase(
-			string,
-			chr( 8230 ),
-			"&##8230;",
-			"all"
-		); // �
-		string = replaceNoCase(
-			string,
-			chr( 8224 ),
-			"&##8224;",
-			"all"
-		); // �
-		string = replaceNoCase(
-			string,
-			chr( 8225 ),
-			"&##8225;",
-			"all"
-		); // �
-		string = replaceNoCase( string, chr( 710 ), "&##710;", "all" ); // �
-		string = replaceNoCase(
-			string,
-			chr( 8240 ),
-			"&##8240;",
-			"all"
-		); // �
-		string = replaceNoCase( string, chr( 352 ), "&##352;", "all" ); // �
-		string = replaceNoCase(
-			string,
-			chr( 8249 ),
-			"&##8249;",
-			"all"
-		); // �
-		string = replaceNoCase( string, chr( 338 ), "&##338;", "all" ); // �
-		string = replaceNoCase(
-			string,
-			chr( 8216 ),
-			"&##8216;",
-			"all"
-		); // �
-		string = replaceNoCase(
-			string,
-			chr( 8217 ),
-			"&##8217;",
-			"all"
-		); // �
-		string = replaceNoCase(
-			string,
-			chr( 8220 ),
-			"&##8220;",
-			"all"
-		); // �
-		string = replaceNoCase(
-			string,
-			chr( 8221 ),
-			"&##8221;",
-			"all"
-		); // �
-		string = replaceNoCase(
-			string,
-			chr( 8226 ),
-			"&##8226;",
-			"all"
-		); // �
-		string = replaceNoCase(
-			string,
-			chr( 8211 ),
-			"&##8211;",
-			"all"
-		); // �
-		string = replaceNoCase(
-			string,
-			chr( 8212 ),
-			"&##8212;",
-			"all"
-		); // �
-		string = replaceNoCase( string, chr( 732 ), "&##732;", "all" ); // �
-		string = replaceNoCase(
-			string,
-			chr( 8482 ),
-			"&##8482;",
-			"all"
-		); // �
-		string = replaceNoCase( string, chr( 353 ), "&##353;", "all" ); // �
-		string = replaceNoCase(
-			string,
-			chr( 8250 ),
-			"&##8250;",
-			"all"
-		); // �
-		string = replaceNoCase( string, chr( 339 ), "&##339;", "all" ); // �
-		string = replaceNoCase( string, chr( 376 ), "&##376;", "all" ); // �
-		string = replaceNoCase( string, chr( 376 ), "&##376;", "all" ); // �
-		string = replaceNoCase(
-			string,
-			chr( 8364 ),
-			"&##8364",
-			"all"
-		); // �
+		string     = replaceNoCase( string, chr( 8218 ), "&##8218;", "all" ); // �
+		string     = replaceNoCase( string, chr( 402 ), "&##402;", "all" ); // �
+		string     = replaceNoCase( string, chr( 8222 ), "&##8222;", "all" ); // �
+		string     = replaceNoCase( string, chr( 8230 ), "&##8230;", "all" ); // �
+		string     = replaceNoCase( string, chr( 8224 ), "&##8224;", "all" ); // �
+		string     = replaceNoCase( string, chr( 8225 ), "&##8225;", "all" ); // �
+		string     = replaceNoCase( string, chr( 710 ), "&##710;", "all" ); // �
+		string     = replaceNoCase( string, chr( 8240 ), "&##8240;", "all" ); // �
+		string     = replaceNoCase( string, chr( 352 ), "&##352;", "all" ); // �
+		string     = replaceNoCase( string, chr( 8249 ), "&##8249;", "all" ); // �
+		string     = replaceNoCase( string, chr( 338 ), "&##338;", "all" ); // �
+		string     = replaceNoCase( string, chr( 8216 ), "&##8216;", "all" ); // �
+		string     = replaceNoCase( string, chr( 8217 ), "&##8217;", "all" ); // �
+		string     = replaceNoCase( string, chr( 8220 ), "&##8220;", "all" ); // �
+		string     = replaceNoCase( string, chr( 8221 ), "&##8221;", "all" ); // �
+		string     = replaceNoCase( string, chr( 8226 ), "&##8226;", "all" ); // �
+		string     = replaceNoCase( string, chr( 8211 ), "&##8211;", "all" ); // �
+		string     = replaceNoCase( string, chr( 8212 ), "&##8212;", "all" ); // �
+		string     = replaceNoCase( string, chr( 732 ), "&##732;", "all" ); // �
+		string     = replaceNoCase( string, chr( 8482 ), "&##8482;", "all" ); // �
+		string     = replaceNoCase( string, chr( 353 ), "&##353;", "all" ); // �
+		string     = replaceNoCase( string, chr( 8250 ), "&##8250;", "all" ); // �
+		string     = replaceNoCase( string, chr( 339 ), "&##339;", "all" ); // �
+		string     = replaceNoCase( string, chr( 376 ), "&##376;", "all" ); // �
+		string     = replaceNoCase( string, chr( 376 ), "&##376;", "all" ); // �
+		string     = replaceNoCase( string, chr( 8364 ), "&##8364", "all" ); // �
 		return string;
 		</cfscript>
 	</cffunction>

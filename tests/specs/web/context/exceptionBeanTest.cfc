@@ -48,11 +48,7 @@
 		this.e.init(
 			this.instance.exceptionStruct,
 			this.instance.extraMessage,
-			{
-				name : "luis",
-				age  : "10",
-				when : now()
-			}
+			{ name : "luis", age : "10", when : now() }
 		);
 		r = this.e.$toString();
 		assertTrue( len( r ) );

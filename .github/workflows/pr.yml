@@ -14,18 +14,22 @@ jobs:
   tests:
     name: Tests
     runs-on: ubuntu-20.04
+    env:
+      DB_USER: root
+      DB_PASSWORD: root
     strategy:
       fail-fast: true
       matrix:
-        cfengine: [ "lucee@5", "adobe@2016", "adobe@2018" ]
+        cfengine: [ "lucee@5", "adobe@2016", "adobe@2018", "adobe@2021" ]
         javaVersion: [ "openjdk8", "openjdk11" ]
+        fullNull: [ "true", "false" ]
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
       - name: Setup Database and Fixtures
         run: |
-          sudo /etc/init.d/mysql start
+          sudo systemctl start mysql.service
           mysql -u${{ env.DB_USER }} -p${{ env.DB_PASSWORD }} -e 'CREATE DATABASE coolblog;'
           mysql -u${{ env.DB_USER }} -p${{ env.DB_PASSWORD }} < tests/resources/coolblog.sql
 
@@ -57,10 +61,16 @@ jobs:
       - name: Start ${{ matrix.cfengine }}/${{ matrix.javaVersion }} Server
         run: |
           box server start serverConfigFile="server-${{ matrix.cfengine }}.json" javaVersion=${{ matrix.javaVersion }} --noSaveSettings --debug
+          # Install Adobe 2021 cfpm modules
+          if [[ "${{ matrix.cfengine }}" == "adobe@2021" ]] ; then
+            box run-script install:2021
+          fi
           # Test the harness
           curl http://127.0.0.1:8599/test-harness
 
       - name: Run Tests
+        env:
+          FULL_NULL: ${{ matrix.fullNull }}
         run: |
           ant -f build/build.xml run-tests
 

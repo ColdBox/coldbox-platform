@@ -1,6 +1,39 @@
 component {
 
+	variables.delay = 15;
+
 	function configure(){
+
+		task( "Scope Test" )
+			.call( function(){
+				writeDump( var="****************************************************************************", output="console" );
+				writeDump( var="Scope Test (application) -> #getThreadName()# #application.keyList()#", output="console" );
+				writeDump( var="Scope Test (server) -> #getThreadName()# #server.keyList()#", output="console" );
+				writeDump( var="Scope Test (cgi) -> #getThreadName()# #cgi.keyList()#", output="console" );
+				writeDump( var="Scope Test (url) -> #getThreadName()# #url.keyList()#", output="console" );
+				writeDump( var="Scope Test (form) -> #getThreadName()# #form.keyList()#", output="console" );
+				writeDump( var="Scope Test (request) -> #getThreadName()# #request.keyList()#", output="console" );
+				writeDump( var="Scope Test (variables) -> #getThreadName()# #variables.keyList()#", output="console" );
+				writeDump( var="****************************************************************************", output="console" );
+			} )
+			.every( 60, "seconds" )
+			.onFailure( function( task, exception ){
+				writeDump( var='====> Scope test failed (#getThreadName()#)!! #exception.message# #exception.stacktrace.left( 500 )#', output="console" );
+			} );
+
+		task( "ProcessJobs" )
+			.call( function(){
+				runEvent( "main.process" );
+			})
+			.every( 5, 'seconds' )
+			.delay( variables.delay, "seconds" )
+			.withNoOverlaps()
+			.onFailure( function( task, exception ){
+				writeDump( var='====> process jobs just failed!! #exception.message#', output="console" );
+			} )
+			.onSuccess( function( task, results ){
+				writeDump( var="====> process jobs success : Stats: #task.getStats().toString()#", output="console" );
+			} );
 
 		task( "testharness-Heartbeat" )
 			.call( function() {
@@ -10,7 +43,7 @@ component {
 				writeDump( var='====> I am in a test harness test schedule!', output="console" );
 			}  )
 				.every( 15, "seconds" )
-				.delay( 60, "seconds" )
+				.delay( variables.delay, "seconds" )
 				.before( function( task ) {
 					writeDump( var='====> Running before the task!', output="console" );
 				} )

@@ -1,4 +1,4 @@
-﻿component extends = "coldbox.system.testing.BaseModelTest"{
+﻿component extends="coldbox.system.testing.BaseModelTest" {
 
 	function setUp(){
 		// Prepare mocks
@@ -21,11 +21,7 @@
 		this.mock2 = createMock( "coldbox.tests.resources.MockInterceptor" );
 		this.key   = "cbox_interceptor_" & "mock";
 
-		this.state.init(
-			"unittest",
-			mockLogBox,
-			mockController
-		);
+		this.state.init( "unittest", mockLogBox, mockController );
 
 		// register one interceptor for testing
 		mockMetadata = {
@@ -125,11 +121,7 @@
 			eventPattern  : ""
 		};
 		mockInterceptor = createMock( "coldbox.tests.resources.MockInterceptor" ).$( "unittest" );
-		this.state.register(
-			this.key,
-			mockInterceptor,
-			mockMetadata
-		);
+		this.state.register( this.key, mockInterceptor, mockMetadata );
 
 		// Invoke
 		makepublic( this.state, "invoker" );
@@ -153,17 +145,9 @@
 		// 1: Execute Threaded
 		// register one interceptor for testing
 		this.state.unregister( this.key );
-		mockMetadata = {
-			async         : true,
-			asyncPriority : "high",
-			eventPattern  : ""
-		};
+		mockMetadata    = { async : true, asyncPriority : "high", eventPattern : "" };
 		mockInterceptor = createMock( "coldbox.tests.resources.MockInterceptor" ).$( "unittest" );
-		this.state.register(
-			this.key,
-			mockInterceptor,
-			mockMetadata
-		);
+		this.state.register( this.key, mockInterceptor, mockMetadata );
 
 		// Invoke
 		makepublic( this.state, "invokerAsync" );

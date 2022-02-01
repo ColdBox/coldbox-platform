@@ -152,8 +152,8 @@ component accessors="true" {
 	/**
 	 * Constructor
 	 *
-	 * @injector The injector this binder is bound to
-	 * @config The WireBox Injector Data Configuration CFC instance or instantiation path to it. Leave blank if using this configuration object programmatically
+	 * @injector   The injector this binder is bound to
+	 * @config     The WireBox Injector Data Configuration CFC instance or instantiation path to it. Leave blank if using this configuration object programmatically
 	 * @properties A structure of binding properties to passthrough to the Binder Configuration CFC
 	 */
 	function init(
@@ -218,9 +218,9 @@ component accessors="true" {
 		// Package Scan Locations
 		variables.scanLocations       = structNew( "ordered" );
 		// Parent Injector Mapping
-		variables.oParentInjector      = "";
+		variables.oParentInjector     = "";
 		// Stop Recursion classes
-		variables.aStopRecursions      = [];
+		variables.aStopRecursions     = [];
 		// Listeners
 		variables.listeners           = [];
 		// Object Mappings
@@ -246,12 +246,12 @@ component accessors="true" {
 	/**
 	 * Get a binded property. If not found it will try to return the default value passed, else it returns an exception
 	 *
-	 * @name The name of the property to get
+	 * @name         The name of the property to get
 	 * @defaultValue The default value if property is not found
 	 *
-	 * @throws PropertyNotFoundException - If the property is not found and no default sent
-	 *
 	 * @return Property value
+	 *
+	 * @throws PropertyNotFoundException - If the property is not found and no default sent
 	 */
 	function getProperty( required name, defaultValue ){
 		// Prop Check
@@ -281,7 +281,7 @@ component accessors="true" {
 	/**
 	 * Create a new binding property
 	 *
-	 * @name The name of the property to set
+	 * @name  The name of the property to set
 	 * @value The value of the property
 	 */
 	Binder function setProperty( required name, required value ){
@@ -325,8 +325,9 @@ component accessors="true" {
 	 *
 	 * @name The name of the mapping
 	 *
-	 * @throws MappingNotFoundException - If the named mapping has not been registered
 	 * @return coldbox.system.ioc.config.Mapping
+	 *
+	 * @throws MappingNotFoundException - If the named mapping has not been registered
 	 */
 	Mapping function getMapping( required name ){
 		if ( structKeyExists( variables.mappings, arguments.name ) ) {
@@ -343,7 +344,7 @@ component accessors="true" {
 	/**
 	 * Set a mapping object into the mappings map
 	 *
-	 * @name The name of the mapping
+	 * @name    The name of the mapping
 	 * @mapping The mapping object to register
 	 */
 	Binder function setMapping( required name, required mapping ){
@@ -382,10 +383,10 @@ component accessors="true" {
 	 * This is equivalent to map('MyService').to('model.MyService').
 	 * Only use if the name of the alias is the same as the last part of the path.
 	 *
-	 * @path The class path to the object to map
+	 * @path      The class path to the object to map
 	 * @namespace Provide namespace to merge it in
-	 * @prepend Where to attach the namespace, at the beginning of the name or end of the name. Defaults to end of name
-	 * @force Forces the registration of the mapping in case it already exists
+	 * @prepend   Where to attach the namespace, at the beginning of the name or end of the name. Defaults to end of name
+	 * @force     Forces the registration of the mapping in case it already exists
 	 */
 	function mapPath(
 		required path,
@@ -409,13 +410,13 @@ component accessors="true" {
 	 * Maps an entire instantiation path directory, please note that the unique name of each file will be used and also processed for alias inspection
 	 *
 	 * @packagePath The instantiation packagePath to map
-	 * @include An include regex that if matches will only include CFCs that match this case insensitive regex
-	 * @exclude An exclude regex that if matches will exclude CFCs that match this case insensitive regex
-	 * @influence The influence closure or UDF that will receive the currently working mapping so you can influence it during the iterations
-	 * @filter The filter closure or UDF that will receive the path of the CFC to process and returns TRUE to continue processing or FALSE to skip processing
-	 * @namespace Provide namespace to merge it in
-	 * @prepend Where to attach the namespace, at the beginning of the name or end of the name. Defaults to end of name
-	 * @process If true, all mappings discovered will be automatically processed for metadata and inspections.  Default is false, everything lazy loads
+	 * @include     An include regex that if matches will only include CFCs that match this case insensitive regex
+	 * @exclude     An exclude regex that if matches will exclude CFCs that match this case insensitive regex
+	 * @influence   The influence closure or UDF that will receive the currently working mapping so you can influence it during the iterations
+	 * @filter      The filter closure or UDF that will receive the path of the CFC to process and returns TRUE to continue processing or FALSE to skip processing
+	 * @namespace   Provide namespace to merge it in
+	 * @prepend     Where to attach the namespace, at the beginning of the name or end of the name. Defaults to end of name
+	 * @process     If true, all mappings discovered will be automatically processed for metadata and inspections.  Default is false, everything lazy loads
 	 *
 	 * @throws DirectoryNotFoundException - If the requested package path does not exist.
 	 */
@@ -578,7 +579,7 @@ component accessors="true" {
 	 *
 	 * @alias A single alias or a list or an array of aliases for this mapping. Remember an object can be referred by many names
 	 */
-	Binder function forceMap( required alias ) {
+	Binder function forceMap( required alias ){
 		arguments.force = true;
 		return map( argumentCollection = arguments );
 	}
@@ -612,7 +613,7 @@ component accessors="true" {
 	 * Map an alias to a factory and its executing method
 	 *
 	 * @factory The mapping factory reference name
-	 * @method The method to execute
+	 * @method  The method to execute
 	 */
 	Binder function toFactoryMethod( required factory, required method ){
 		for ( var mapping in variables.currentMapping ) {
@@ -627,13 +628,13 @@ component accessors="true" {
 	/**
 	 * Map a method argument to a factory method
 	 *
-	 * @name The name of the method argument (Not used for: JAVA,WEBSERVICE)
-	 * @ref The reference mapping id this method argument maps to
-	 * @dsl The construction dsl this argument references. If used, the name value must be used.
-	 * @value The explicit value of the method argument, if passed.
+	 * @name     The name of the method argument (Not used for: JAVA,WEBSERVICE)
+	 * @ref      The reference mapping id this method argument maps to
+	 * @dsl      The construction dsl this argument references. If used, the name value must be used.
+	 * @value    The explicit value of the method argument, if passed.
 	 * @javaCast The type of javaCast() to use on the value of the argument. Only used if using dsl or ref arguments
 	 * @required If the argument is required or not, by default we assume required DI arguments
-	 * @type The type of the argument
+	 * @type     The type of the argument
 	 */
 	Binder function methodArg(
 		name,
@@ -810,13 +811,13 @@ component accessors="true" {
 	/**
 	 * Map a constructor argument to a mapping
 	 *
-	 * @name The name of the constructor argument (Not used for: JAVA,WEBSERVICE)
-	 * @ref The reference mapping id this constructor argument maps to
-	 * @dsl The construction dsl this argument references. If used, the name value must be used.
-	 * @value The explicit value of the constructor argument, if passed.
+	 * @name     The name of the constructor argument (Not used for: JAVA,WEBSERVICE)
+	 * @ref      The reference mapping id this constructor argument maps to
+	 * @dsl      The construction dsl this argument references. If used, the name value must be used.
+	 * @value    The explicit value of the constructor argument, if passed.
 	 * @javaCast The type of javaCast() to use on the value of the argument. Only used if using dsl or ref arguments
 	 * @required If the argument is required or not, by default we assume required DI arguments
-	 * @type The type of the argument
+	 * @type     The type of the argument
 	 */
 	Binder function initArg(
 		name,
@@ -836,12 +837,12 @@ component accessors="true" {
 	/**
 	 * Map setter injection
 	 *
-	 * @name The name of the setter to inject
-	 * @ref The reference mapping id this setter maps to
-	 * @dsl The construction dsl this setter references. If used, the name value must be used.
-	 * @value The explicit value of the setter, if passed.
+	 * @name     The name of the setter to inject
+	 * @ref      The reference mapping id this setter maps to
+	 * @dsl      The construction dsl this setter references. If used, the name value must be used.
+	 * @value    The explicit value of the setter, if passed.
 	 * @javaCast The type of javaCast() to use on the value of the value. Only used if using dsl or ref arguments
-	 * @argName The name of the argument to use, if not passed, we default it to the setter name
+	 * @argName  The name of the argument to use, if not passed, we default it to the setter name
 	 */
 	Binder function setter(
 		required name,
@@ -860,14 +861,14 @@ component accessors="true" {
 	/**
 	 * Map property injection
 	 *
-	 * @name The name of the property to inject
-	 * @ref The reference mapping id this property maps to
-	 * @dsl The construction dsl this property references. If used, the name value must be used.
-	 * @value The explicit value of the property, if passed.
+	 * @name     The name of the property to inject
+	 * @ref      The reference mapping id this property maps to
+	 * @dsl      The construction dsl this property references. If used, the name value must be used.
+	 * @value    The explicit value of the property, if passed.
 	 * @javaCast The type of javaCast() to use on the value of the value. Only used if using dsl or ref arguments
-	 * @scope The scope in the CFC to inject the property to. By default it will inject it to the variables scope
+	 * @scope    The scope in the CFC to inject the property to. By default it will inject it to the variables scope
 	 * @required If the property is required or not, by default we assume required DI
-	 * @type The type of the property
+	 * @type     The type of the property
 	 */
 	Binder function property(
 		required name,
@@ -905,7 +906,7 @@ component accessors="true" {
 	/**
 	 * Add a new provider method mapping
 	 *
-	 * @method The provided method to override or inject as a provider
+	 * @method  The provided method to override or inject as a provider
 	 * @mapping The mapping to provide via the selected method
 	 */
 	Binder function providerMethod( required method, required mapping ){
@@ -1038,8 +1039,8 @@ component accessors="true" {
 	 * Use to define injector scope registration
 	 *
 	 * @enabled Enable registration or not (defaults=false) Boolean
-	 * @scope The scope to register on, defaults to application scope
-	 * @key The key to use in the scope, defaults to wireBox
+	 * @scope   The scope to register on, defaults to application scope
+	 * @key     The key to use in the scope, defaults to wireBox
 	 */
 	Binder function scopeRegistration(
 		boolean enabled = variables.DEFAULTS.scopeRegistration.enabled,
@@ -1099,9 +1100,9 @@ component accessors="true" {
 	/**
 	 * Configure CacheBox operations
 	 *
-	 * @configFile The configuration file to use for loading CacheBox if creating it
-	 * @cacheFactory The CacheBox cache factory instance to link WireBox to
-	 * @enabled  Enable or Disable CacheBox Integration, if you call this method then enabled is set to true as most likely you are trying to enable it
+	 * @configFile     The configuration file to use for loading CacheBox if creating it
+	 * @cacheFactory   The CacheBox cache factory instance to link WireBox to
+	 * @enabled        Enable or Disable CacheBox Integration, if you call this method then enabled is set to true as most likely you are trying to enable it
 	 * @classNamespace The package namespace to use for creating or connecting to CacheBox. Defaults to: coldbox.system.cache
 	 */
 	Binder function cachebox(
@@ -1126,10 +1127,10 @@ component accessors="true" {
 	/**
 	 * Map an object into CacheBox
 	 *
-	 * @key You can override the key it will use for storing in cache. By default it uses the name of the mapping
-	 * @timeout Object Timeout, else defaults to whatever the default is in the chosen cache
+	 * @key               You can override the key it will use for storing in cache. By default it uses the name of the mapping
+	 * @timeout           Object Timeout, else defaults to whatever the default is in the chosen cache
 	 * @lastAccessTimeout Object Timeout, else defaults to whatever the default is in the chosen cache
-	 * @provider Uses the 'default' cache provider by default
+	 * @provider          Uses the 'default' cache provider by default
 	 */
 	Binder function inCacheBox(
 		key               = "",
@@ -1157,7 +1158,7 @@ component accessors="true" {
 	 * Register a new custom dsl namespace
 	 *
 	 * @namespace The namespace you would like to register
-	 * @path The instantiation path to the CFC that implements this scope, it must have an init() method and implement: coldbox.system.ioc.dsl.IDSLBuilder
+	 * @path      The instantiation path to the CFC that implements this scope, it must have an init() method and implement: coldbox.system.ioc.dsl.IDSLBuilder
 	 */
 	Binder function mapDSL( required namespace, required path ){
 		variables.customDSL[ arguments.namespace ] = arguments.path;
@@ -1168,7 +1169,7 @@ component accessors="true" {
 	 * Register a new WireBox custom scope
 	 *
 	 * @annotation The unique scope name to register. This translates to an annotation value on CFCs
-	 * @path The path to the CFC that implements this scope, it must have an init() method and implement: coldbox.system.ioc.scopes.IScope
+	 * @path       The path to the CFC that implements this scope, it must have an init() method and implement: coldbox.system.ioc.scopes.IScope
 	 */
 	Binder function mapScope( required annotation, required path ){
 		variables.customScopes[ arguments.annotation ] = arguments.path;
@@ -1335,10 +1336,10 @@ component accessors="true" {
 	/**
 	 * Add a new listener configuration
 	 *
-	 * @class The class of the listener
+	 * @class      The class of the listener
 	 * @properties The structure of properties for the listener
-	 * @name The name of the listener
-	 * @register If true, registers the listener right away
+	 * @name       The name of the listener
+	 * @register   If true, registers the listener right away
 	 */
 	Binder function listener(
 		required class,
@@ -1370,7 +1371,7 @@ component accessors="true" {
 	/**
 	 * Map a new aspect
 	 *
-	 * @aspect The name or aliases of the aspect
+	 * @aspect      The name or aliases of the aspect
 	 * @autoBinding Allow autobinding of this aspect or not? Defaults to true
 	 */
 	Binder function mapAspect( required aspect, boolean autoBinding = true ){

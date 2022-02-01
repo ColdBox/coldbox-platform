@@ -15,14 +15,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        cfengine: ["lucee@5", "lucee@be", "adobe@2016", "adobe@2018" ]
+        cfengine: [ "lucee@5", "lucee@be", "adobe@2016", "adobe@2018", "adobe2021" ]
+        javaVersion: [ "openjdk8", "openjdk11" ]
+        fullNull: [ "true", "false" ]
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
       - name: Setup Database and Fixtures
         run: |
-          sudo /etc/init.d/mysql start
+          sudo systemctl start mysql.service
           mysql -u${{ env.DB_USER }} -p${{ env.DB_PASSWORD }} -e 'CREATE DATABASE coolblog;'
           mysql -u${{ env.DB_USER }} -p${{ env.DB_PASSWORD }} < tests/resources/coolblog.sql
 
@@ -51,13 +53,19 @@ jobs:
         run: |
           box install
 
-      - name: Start ${{ matrix.cfengine }} Server
+      - name: Start ${{ matrix.cfengine }}/${{ matrix.javaVersion }} Server
         run: |
-          box server start serverConfigFile="server-${{ matrix.cfengine }}.json" --noSaveSettings --debug
+          box server start serverConfigFile="server-${{ matrix.cfengine }}.json" javaVersion=${{ matrix.javaVersion }} --noSaveSettings --debug
+          # Install Adobe 2021 cfpm modules
+          if [[ "${{ matrix.cfengine }}" == "adobe@2021" ]] ; then
+            box run-script install:2021
+          fi
           # Test the harness
           curl http://127.0.0.1:8599/test-harness
 
       - name: Run Tests
+        env:
+          FULL_NULL: ${{ matrix.fullNull }}
         run: |
           ant -f build/build.xml run-tests
 
@@ -66,14 +74,14 @@ jobs:
         if: always()
         with:
           files: tests/results/**/*.xml
-          check_name: "${{ matrix.cfengine }} Test Results"
+          check_name: "${{ matrix.cfengine }}/${{ matrix.javaVersion }} Test Results"
           summary: true
 
       - name: Upload Test Results Artifacts
         if: always()
         uses: actions/upload-artifact@v2
         with:
-          name: coldbox-test-results-${{ matrix.cfengine }}
+          name: coldbox-test-results-${{ matrix.cfengine }}-${{ matrix.javaVersion }}
           path: |
             tests/results/**/*
 
@@ -81,7 +89,7 @@ jobs:
         if: always()
         uses: rtCamp/action-slack-notify@v2
         env:
-          SLACK_CHANNEL: coldbox
+          SLACK_CHANNEL: coding
           SLACK_COLOR: ${{ job.status }} # or a specific color like 'green' or '#ff00ff'
           SLACK_ICON_EMOJI: ":bell:"
           SLACK_MESSAGE: 'ColdBox tests ${{ job.status }} check them out here: https://github.com/coldbox/coldbox-platform/actions'

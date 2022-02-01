@@ -3,6 +3,7 @@
  * www.ortussolutions.com
  * ---
  * A flash scope that is used for unit testing.
+ *
  * @author Luis Majano <lmajano@ortussolutions.com>
  */
 component extends="coldbox.system.web.flash.AbstractFlashScope" accessors="true" {
@@ -12,8 +13,9 @@ component extends="coldbox.system.web.flash.AbstractFlashScope" accessors="true"
 
 	/**
 	 * Constructor
+	 *
 	 * @controller.hint ColdBox Controller
-	 * @defaults.hint Default flash data packet for the flash RAM object=[scope,properties,inflateToRC,inflateToPRC,autoPurge,autoSave]
+	 * @defaults.hint   Default flash data packet for the flash RAM object=[scope,properties,inflateToRC,inflateToPRC,autoPurge,autoSave]
 	 */
 	function init( required controller, required struct defaults = {} ){
 		super.init( argumentCollection = arguments );
@@ -25,6 +27,7 @@ component extends="coldbox.system.web.flash.AbstractFlashScope" accessors="true"
 
 	/**
 	 * Save the flash storage in preparing to go to the next request
+	 *
 	 * @return MockFlash
 	 */
 	function saveFlash(){
@@ -48,6 +51,7 @@ component extends="coldbox.system.web.flash.AbstractFlashScope" accessors="true"
 
 	/**
 	 * Remove the entire flash storage
+	 *
 	 * @return MockFlash
 	 */
 	function removeFlash(){

@@ -25,8 +25,11 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	/**
 	 * If in integration mode, you can tag for your tests to be automatically autowired with dependencies
 	 * by WireBox
- 	 */
-	property name="autowire" type="boolean" default="false";
+	 */
+	property
+		name   ="autowire"
+		type   ="boolean"
+		default="false";
 	/**
 	 * The test case metadata
 	 */
@@ -42,13 +45,14 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	variables.configMapping = "";
 	variables.controller    = "";
 	variables.coldboxAppKey = "cbController";
-	variables.autowire 		= false;
-	variables.metadata 		= {};
+	variables.autowire      = false;
+	variables.metadata      = {};
 
 	/********************************************* LIFE-CYCLE METHODS *********************************************/
 
 	/**
 	 * Inspect test case for annotations
+	 *
 	 * @return BaseTestCase
 	 */
 	function metadataInspection(){
@@ -130,11 +134,8 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 			// Auto registration of test as interceptor
 			variables.controller.getInterceptorService().registerInterceptor( interceptorObject = this );
 			// Do we need to autowire this test?
-			if( variables.autowire ){
-				variables.controller.getWireBox().autowire(
-					target 		: this,
-					targetId 	: variables.metadata.path
-				);
+			if ( variables.autowire ) {
+				variables.controller.getWireBox().autowire( target: this, targetId: variables.metadata.path );
 			}
 		}
 
@@ -207,7 +208,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	/**
 	 * Reset the persistence of the unit test coldbox app, basically removes the controller from application scope
 	 *
-	 * @orm Reload ORM or not
+	 * @orm         Reload ORM or not
 	 * @wipeRequest Wipe the request scope
 	 *
 	 * @return BaseTestCase
@@ -242,6 +243,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 
 	/**
 	 * I will return a mock controller object
+	 *
 	 * @return coldbox.system.testing.mock.web.MockController
 	 */
 	function getMockController(){
@@ -250,8 +252,9 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 
 	/**
 	 * Builds an empty functioning request context mocked with methods via MockBox.  You can also optionally wipe all methods on it
+	 *
 	 * @clearMethods Clear methods on the object
-	 * @decorator The class path to the decorator to build into the mock request context
+	 * @decorator    The class path to the decorator to build into the mock request context
 	 *
 	 * @return coldbox.system.web.context.RequestContext
 	 */
@@ -297,7 +300,8 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 
 	/**
 	 * ColdBox must be loaded for this to work. Get a mock model object by convention. You can optional clear all the methods on the model object if you wanted to. The object is created but not initiated, that would be your job.
-	 * @name The name of the model to mock and return back
+	 *
+	 * @name         The name of the model to mock and return back
 	 * @clearMethods Clear methods on the object
 	 */
 	function getMockModel( required name, boolean clearMethods = false ){
@@ -317,6 +321,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 
 	/**
 	 * Get the WireBox reference from the running application
+	 *
 	 * @return coldbox.system.ioc.Injector
 	 */
 	function getWireBox(){
@@ -325,6 +330,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 
 	/**
 	 * Get the CacheBox reference from the running application
+	 *
 	 * @return coldbox.system.cache.CacheFactory
 	 */
 	function getCacheBox(){
@@ -333,6 +339,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 
 	/**
 	 * Get the CacheBox reference from the running application
+	 *
 	 * @cacheName The cache name to retrieve or returns the 'default' cache by default.
 	 *
 	 * @return coldbox.system.cache.providers.ICacheProvider
@@ -343,6 +350,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 
 	/**
 	 * Get the LogBox reference from the running application
+	 *
 	 * @return coldbox.system.logging.LogBox
 	 */
 	function getLogBox(){
@@ -373,16 +381,17 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 
 	/**
 	 * Setup an initial request capture.  I basically look at the FORM/URL scopes and create the request collection out of them.
+	 *
 	 * @event The event to setup the request context with, simulates the URL/FORM.event
 	 *
 	 * @return BaseTestCase
 	 */
 	function setupRequest( required event ){
-		var controller 	= getController();
-		var eventName 	= controller.getSetting( "eventName" );
+		var controller    = getController();
+		var eventName     = controller.getSetting( "eventName" );
 		// Setup the incoming event
-		URL[ eventName ] 	= arguments.event;
-		FORM[ eventName ] 	= arguments.event;
+		URL[ eventName ]  = arguments.event;
+		FORM[ eventName ] = arguments.event;
 		// Capture the request
 		controller.getRequestService().requestCapture( arguments.event );
 		return this;
@@ -390,24 +399,18 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 
 	/**
 	 * Executes a framework lifecycle by executing an event.
-	 * This method returns a request context object that
-	 * is decorated and can be used for assertions.
+	 * This method returns a request context object that is decorated and can be used for assertions.
 	 *
 	 * @event                 The event to execute (e.g. 'main.index')
-	 * @route                 The route to execute
-	 *                        (e.g. '/login' which may route to 'sessions.new')
+	 * @route                 The route to execute (e.g. '/login' which may route to 'sessions.new')
 	 * @private               Call a private event or not.
 	 * @prePostExempt         If true, pre/post handlers will not be fired.
-	 * @eventArguments        A collection of arguments to passthrough to the
-	 *                        calling event handler method.
-	 * @renderResults         If true, then it will try to do the normal
-	 *                        rendering procedures and store the rendered content
-	 *                        in the RC as cbox_rendered_content.
-	 * @withExceptionHandling If true, then ColdBox will process any errors
-	 *                        through the exception handling framework instead
-	 *                        of just throwing the error. Default: false.
+	 * @eventArguments        A collection of arguments to passthrough to the calling event handler method.
+	 * @renderResults         If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content.
+	 * @withExceptionHandling If true, then ColdBox will process any errors through the exception handling framework instead of just throwing the error. Default: false.
+	 * @domain                Override the domain of execution of the request. Default is to use the cgi.server_name variable.
 	 *
-	 * @return                coldbox.system.context.RequestContext
+	 * @return coldbox.system.context.RequestContext
 	 */
 	function execute(
 		string event                  = "",
@@ -417,14 +420,15 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 		boolean prePostExempt         = false,
 		struct eventArguments         = {},
 		boolean renderResults         = false,
-		boolean withExceptionHandling = false
+		boolean withExceptionHandling = false,
+		domain                        = cgi.SERVER_NAME
 	){
 		var handlerResults  = "";
 		var requestContext  = getRequestContext();
 		var relocationTypes = "TestController.relocate";
 		var cbController    = getController();
-		var requestService 	= cbController.getRequestService();
-		var routingService 	= cbController.getRoutingService();
+		var requestService  = cbController.getRequestService();
+		var routingService  = cbController.getRoutingService();
 		var renderData      = "";
 		var renderedContent = "";
 		var iData           = {};
@@ -436,6 +440,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 		try {
 			// If the route is for the home page, use the default event in the config/ColdBox.cfc
 			if ( arguments.route == "/" ) {
+				// Set the default app event
 				arguments.event = getController().getSetting( "defaultEvent" );
 				requestContext.setValue( requestContext.getEventName(), arguments.event );
 				// Prepare all mocking data for simulating routing request
@@ -447,8 +452,9 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 					.$args( "script_name", requestContext )
 					.$results( "" )
 					.$( "getCGIElement" )
-					.$args( "domain", requestContext )
-					.$results( CGI.SERVER_NAME );
+					.$args( "server_name", requestContext )
+					.$results( arguments.domain );
+				// No route, it's the route
 				arguments.route = "";
 				// Capture the route request
 				controller.getRequestService().requestCapture();
@@ -470,8 +476,8 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 					.$args( "script_name", requestContext )
 					.$results( "" )
 					.$( "getCGIElement" )
-					.$args( "domain", requestContext )
-					.$results( CGI.SERVER_NAME );
+					.$args( "server_name", requestContext )
+					.$results( arguments.domain );
 				// Capture the route request
 				controller.getRequestService().requestCapture();
 			} else {
@@ -486,7 +492,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 
 			// Setup the request Context with setup FORM/URL variables set in the unit test.
 			requestService.setContext( requestContext );
-			//setupRequest( arguments.event );
+			// setupRequest( arguments.event );
 
 			// App Start Handler
 			if ( len( cbController.getSetting( "ApplicationStartHandler" ) ) ) {
@@ -605,12 +611,13 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	/**
 	 * Shortcut method to making a request through the framework.
 	 *
-	 * @route The route to execute.
-	 * @params Params to pass to the `rc` scope.
-	 * @headers Custom headers to pass as from the request
-	 * @method The method type to execute.  Defaults to GET.
-	 * @renderResults If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
+	 * @route                 The route to execute.
+	 * @params                Params to pass to the `rc` scope.
+	 * @headers               Custom headers to pass as from the request
+	 * @method                The method type to execute.  Defaults to GET.
+	 * @renderResults         If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
 	 * @withExceptionHandling If true, then ColdBox will process any errors through the exception handling framework instead of just throwing the error. Default: false.
+	 * @domain                Override the domain of execution of the request. Default is to use the cgi.server_name variable.
 	 */
 	function request(
 		string route                  = "",
@@ -618,7 +625,8 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 		struct headers                = {},
 		string method                 = "GET",
 		boolean renderResults         = true,
-		boolean withExceptionHandling = false
+		boolean withExceptionHandling = false,
+		domain                        = cgi.SERVER_NAME
 	){
 		var mockedEvent = prepareMock( getRequestContext() ).$( "getHTTPMethod", uCase( arguments.method ) );
 		arguments.params
@@ -640,18 +648,20 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	/**
 	 * Shortcut method to making a GET request through the framework.
 	 *
-	 * @route The route to execute.
-	 * @params Params to pass to the `rc` scope.
-	 * @headers Custom headers to pass as from the request
-	 * @renderResults If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
+	 * @route                 The route to execute.
+	 * @params                Params to pass to the `rc` scope.
+	 * @headers               Custom headers to pass as from the request
+	 * @renderResults         If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
 	 * @withExceptionHandling If true, then ColdBox will process any errors through the exception handling framework instead of just throwing the error. Default: false.
+	 * @domain                Override the domain of execution of the request. Default is to use the cgi.server_name variable.
 	 */
 	function get(
 		string route                  = "",
 		struct params                 = {},
 		struct headers                = {},
 		boolean renderResults         = true,
-		boolean withExceptionHandling = false
+		boolean withExceptionHandling = false,
+		domain                        = cgi.SERVER_NAME
 	){
 		arguments.method = "GET";
 		return variables.request( argumentCollection = arguments );
@@ -660,18 +670,20 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	/**
 	 * Shortcut method to making a POST request through the framework.
 	 *
-	 * @route The route to execute.
-	 * @params Params to pass to the `rc` scope.
-	 * @headers Custom headers to pass as from the request
-	 * @renderResults If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
+	 * @route                 The route to execute.
+	 * @params                Params to pass to the `rc` scope.
+	 * @headers               Custom headers to pass as from the request
+	 * @renderResults         If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
 	 * @withExceptionHandling If true, then ColdBox will process any errors through the exception handling framework instead of just throwing the error. Default: false.
+	 * @domain                Override the domain of execution of the request. Default is to use the cgi.server_name variable.
 	 */
 	function post(
 		string route                  = "",
 		struct params                 = {},
 		struct headers                = {},
 		boolean renderResults         = true,
-		boolean withExceptionHandling = false
+		boolean withExceptionHandling = false,
+		domain                        = cgi.SERVER_NAME
 	){
 		arguments.method = "POST";
 		return variables.request( argumentCollection = arguments );
@@ -680,18 +692,20 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	/**
 	 * Shortcut method to making a PUT request through the framework.
 	 *
-	 * @route The route to execute.
-	 * @params Params to pass to the `rc` scope.
-	 * @headers Custom headers to pass as from the request
-	 * @renderResults If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
+	 * @route                 The route to execute.
+	 * @params                Params to pass to the `rc` scope.
+	 * @headers               Custom headers to pass as from the request
+	 * @renderResults         If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
 	 * @withExceptionHandling If true, then ColdBox will process any errors through the exception handling framework instead of just throwing the error. Default: false.
+	 * @domain                Override the domain of execution of the request. Default is to use the cgi.server_name variable.
 	 */
 	function put(
 		string route                  = "",
 		struct params                 = {},
 		struct headers                = {},
 		boolean renderResults         = true,
-		boolean withExceptionHandling = false
+		boolean withExceptionHandling = false,
+		domain                        = cgi.SERVER_NAME
 	){
 		arguments.method = "PUT";
 		return variables.request( argumentCollection = arguments );
@@ -700,18 +714,20 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	/**
 	 * Shortcut method to making a PATCH request through the framework.
 	 *
-	 * @route The route to execute.
-	 * @params Params to pass to the `rc` scope.
-	 * @headers Custom headers to pass as from the request
-	 * @renderResults If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
+	 * @route                 The route to execute.
+	 * @params                Params to pass to the `rc` scope.
+	 * @headers               Custom headers to pass as from the request
+	 * @renderResults         If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
 	 * @withExceptionHandling If true, then ColdBox will process any errors through the exception handling framework instead of just throwing the error. Default: false.
+	 * @domain                Override the domain of execution of the request. Default is to use the cgi.server_name variable.
 	 */
 	function patch(
 		string route                  = "",
 		struct params                 = {},
 		struct headers                = {},
 		boolean renderResults         = true,
-		boolean withExceptionHandling = false
+		boolean withExceptionHandling = false,
+		domain                        = cgi.SERVER_NAME
 	){
 		arguments.method = "PATCH";
 		return variables.request( argumentCollection = arguments );
@@ -720,18 +736,20 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	/**
 	 * Shortcut method to making a DELETE request through the framework.
 	 *
-	 * @route The route to execute.
-	 * @params Params to pass to the `rc` scope.
-	 * @headers Custom headers to pass as from the request
-	 * @renderResults If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
+	 * @route                 The route to execute.
+	 * @params                Params to pass to the `rc` scope.
+	 * @headers               Custom headers to pass as from the request
+	 * @renderResults         If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
 	 * @withExceptionHandling If true, then ColdBox will process any errors through the exception handling framework instead of just throwing the error. Default: false.
+	 * @domain                Override the domain of execution of the request. Default is to use the cgi.server_name variable.
 	 */
 	function delete(
 		string route                  = "",
 		struct params                 = {},
 		struct headers                = {},
 		boolean renderResults         = true,
-		boolean withExceptionHandling = false
+		boolean withExceptionHandling = false,
+		domain                        = cgi.SERVER_NAME
 	){
 		arguments.method = "DELETE";
 		return variables.request( argumentCollection = arguments );
@@ -785,12 +803,12 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	/**
 	 * Announce an interception
 	 *
-	 * @state The interception state to announce
-	 * @data A data structure used to pass intercepted information.
-	 * @async If true, the entire interception chain will be ran in a separate thread.
-	 * @asyncAll If true, each interceptor in the interception chain will be ran in a separate thread and then joined together at the end.
-	 * @asyncAllJoin If true, each interceptor in the interception chain will be ran in a separate thread and joined together at the end by default.  If you set this flag to false then there will be no joining and waiting for the threads to finalize.
-	 * @asyncPriority The thread priority to be used. Either LOW, NORMAL or HIGH. The default value is NORMAL
+	 * @state            The interception state to announce
+	 * @data             A data structure used to pass intercepted information.
+	 * @async            If true, the entire interception chain will be ran in a separate thread.
+	 * @asyncAll         If true, each interceptor in the interception chain will be ran in a separate thread and then joined together at the end.
+	 * @asyncAllJoin     If true, each interceptor in the interception chain will be ran in a separate thread and joined together at the end by default.  If you set this flag to false then there will be no joining and waiting for the threads to finalize.
+	 * @asyncPriority    The thread priority to be used. Either LOW, NORMAL or HIGH. The default value is NORMAL
 	 * @asyncJoinTimeout The timeout in milliseconds for the join thread to wait for interceptor threads to finish.  By default there is no timeout.
 	 *
 	 * @return struct of thread information or void
@@ -849,18 +867,32 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	}
 
 	/**
-	 * Get a instance object from WireBox
+	 * Locates, Creates, Injects and Configures an object model instance
 	 *
-	 * @name The mapping name or CFC path to retrieve
+	 * @name          The mapping name or CFC instance path to try to build up
 	 * @initArguments The constructor structure of arguments to passthrough when initializing the instance
-	 * @dsl The DSL string to use to retrieve an instance
-	 */
-	function getInstance( name, struct initArguments = {}, dsl ){
+	 * @dsl           The dsl string to use to retrieve the instance model object, mutually exclusive with 'name
+	 * @targetObject  The object requesting the dependency, usually only used by DSL lookups
+	 * @injector      The child injector to use when retrieving the instance
+	 *
+	 * @return The requested instance
+	 *
+	 * @throws InstanceNotFoundException - When the requested instance cannot be found
+	 * @throws InvalidChildInjector      - When you request an instance from an invalid child injector name
+	 **/
+	function getInstance(
+		name,
+		struct initArguments = {},
+		dsl,
+		targetObject = "",
+		injector
+	){
 		return getController().getWireBox().getInstance( argumentCollection = arguments );
 	}
 
 	/**
 	 * Get the ColdBox global utility class
+	 *
 	 * @return coldbox.system.core.util.Util
 	 */
 	function getUtil(){
@@ -909,8 +941,9 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 
 	/**
 	 * Process an exception and returns a rendered bug report
+	 *
 	 * @controller The ColdBox Controller
-	 * @exception The ColdFusion exception
+	 * @exception  The ColdFusion exception
 	 */
 	private string function processException( required controller, required exception ){
 		// prepare exception facade object + app logger

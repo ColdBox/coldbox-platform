@@ -11,12 +11,18 @@ component accessors="true" {
 	/**
 	 * The output format of the response, defaults to json
 	 */
-	property name="format" type="string" default="json";
+	property
+		name   ="format"
+		type   ="string"
+		default="json";
 
 	/**
 	 * The data struct that will be used to marshall out the response
 	 */
-	property name="data" type="any" default="";
+	property
+		name   ="data"
+		type   ="any"
+		default="";
 
 	/**
 	 * The pagination struct if any
@@ -26,12 +32,18 @@ component accessors="true" {
 	/**
 	 * A boolean error indicator
 	 */
-	property name="error" type="boolean" default="false";
+	property
+		name   ="error"
+		type   ="boolean"
+		default="false";
 
 	/**
 	 * A binary indicator
 	 */
-	property name="binary" type="boolean" default="false";
+	property
+		name   ="binary"
+		type   ="boolean"
+		default="false";
 
 	/**
 	 * An array of messages to output if any
@@ -41,37 +53,58 @@ component accessors="true" {
 	/**
 	 * The location header if any
 	 */
-	property name="location" type="string" default="";
+	property
+		name   ="location"
+		type   ="string"
+		default="";
 
 	/**
 	 * The json callback if any
 	 */
-	property name="jsonCallback" type="string" default="";
+	property
+		name   ="jsonCallback"
+		type   ="string"
+		default="";
 
 	/**
 	 * JSON Only: This parameter can be a Boolean value that specifies how to serialize ColdFusion queries or a string with possible values row, column, or struct
 	 */
-	property name="jsonQueryFormat" type="string" default="true";
+	property
+		name   ="jsonQueryFormat"
+		type   ="string"
+		default="true";
 
 	/**
 	 * The content type of the response
 	 */
-	property name="contentType" type="string" default="";
+	property
+		name   ="contentType"
+		type   ="string"
+		default="";
 
 	/**
 	 * The status code of the response
 	 */
-	property name="statusCode" type="numeric" default="200";
+	property
+		name   ="statusCode"
+		type   ="numeric"
+		default="200";
 
 	/**
 	 * The status text of the response
 	 */
-	property name="statusText" type="string" default="OK";
+	property
+		name   ="statusText"
+		type   ="string"
+		default="OK";
 
 	/**
 	 * The response time
 	 */
-	property name="responsetime" type="numeric" default="0";
+	property
+		name   ="responsetime"
+		type   ="numeric"
+		default="0";
 
 	/**
 	 * The headers to send with the response
@@ -203,31 +236,22 @@ component accessors="true" {
 	/**
 	 * Add a header into the response
 	 *
-	 * @name The header name ( e.g. "Content-Type" )
+	 * @name  The header name ( e.g. "Content-Type" )
 	 * @value The header value ( e.g. "application/json" )
 	 */
-	Response function addHeader(
-		required string name,
-		required string value
-	){
-		arrayAppend(
-			variables.headers,
-			{
-				name  : arguments.name,
-				value : arguments.value
-			}
-		);
+	Response function addHeader( required string name, required string value ){
+		arrayAppend( variables.headers, { name : arguments.name, value : arguments.value } );
 		return this;
 	}
 
 	/**
 	 * Set the pagination data
 	 *
-	 * @offset The offset
-	 * @maxRows The max rows returned
-	 * @page The page number
+	 * @offset       The offset
+	 * @maxRows      The max rows returned
+	 * @page         The page number
 	 * @totalRecords The total records found
-	 * @totalPages The total pages found
+	 * @totalPages   The total pages found
 	 */
 	Response function setPagination(
 		numeric offset       = 0,
@@ -236,13 +260,7 @@ component accessors="true" {
 		numeric totalRecords = 0,
 		numeric totalPages   = 1
 	){
-		variables.pagination = {
-			"offset"       : arguments.offset,
-			"maxRows"      : arguments.maxRows,
-			"page"         : arguments.page,
-			"totalRecords" : arguments.totalRecords,
-			"totalPages"   : arguments.totalPages
-		};
+		variables.pagination = arguments;
 		return this;
 	}
 
@@ -288,9 +306,9 @@ component accessors="true" {
 	/**
 	 * Sets the data and pagination from a struct with `results` and `pagination`.
 	 *
-	 * @data           The struct containing both results and pagination.
-	 * @resultsKey     The name of the key with the results.
-	 * @paginationKey  The name of the key with the pagination.
+	 * @data          The struct containing both results and pagination.
+	 * @resultsKey    The name of the key with the results.
+	 * @paginationKey The name of the key with the pagination.
 	 *
 	 * @return Returns the Response object for chaining
 	 */
@@ -307,25 +325,21 @@ component accessors="true" {
 	 * Sets the error message with a code for the API response
 	 *
 	 * @errorMessage The error message to set
-	 * @statusCode The status code to set, if any
-	 * @statusText The status text to set, if any
+	 * @statusCode   The status code to set, if any
+	 * @statusText   The status text to set, if any
 	 *
 	 * @return Returns the Response object for chaining
 	 */
 	Response function setErrorMessage(
 		required errorMessage,
 		statusCode,
-		statusText=""
+		statusText = ""
 	){
 		setError( true );
 		addMessage( arguments.errorMessage );
 
 		if ( !isNull( arguments.statusCode ) ) {
-
-			setStatus(
-				arguments.statusCode,
-				arguments.statusText
-			);
+			setStatus( arguments.statusCode, arguments.statusText );
 		}
 
 		return this;

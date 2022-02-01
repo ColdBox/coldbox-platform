@@ -8,6 +8,8 @@
  *
  * A WireBox Injector: Builds the graphs of objects that make up your application.
  *
+ * All injectors implement: coldbox.system.ioc.IInjector
+ *
  * Easy Startup:
  * <pre class='brush: cf'>
  * injector = new coldbox.system.ioc.Injector();
@@ -22,12 +24,10 @@
  * <pre class='brush: cf'>
  * injector = new coldbox.system.ioc.Injector( "config.MyBinder" );
  * </pre>
+ *
+ * @see coldbox.system.ioc.IInjector
  */
-component
-	serializable="false"
-	accessors   ="true"
-	implements  ="coldbox.system.ioc.IInjector"
-{
+component serializable="false" accessors="true" {
 
 	/**
 	 * Java System
@@ -101,24 +101,31 @@ component
 
 	/**
 	 * The Global AsyncManager
+	 *
 	 * @see coldbox.system.async.AsyncManager
 	 */
 	property name="asyncManager";
 
 	/**
 	 * The logBox task scheduler executor
+	 *
 	 * @see coldbox.system.async.executors.ScheduledExecutor
 	 */
 	property name="taskScheduler";
 
 	/**
+	 * An injector can have children injectors referenced by a unique name
+	 */
+	property name="childInjectors" type="struct";
+
+	/**
 	 * Constructor. If called without a configuration binder, then WireBox will instantiate the default configuration binder found in: coldbox.system.ioc.config.DefaultBinder
 	 *
-	 * @binder The WireBox binder or data CFC instance or instantiation path to configure this injector with
-	 * @properties A structure of binding properties to passthrough to the Binder Configuration CFC
+	 * @binder                 The WireBox binder or data CFC instance or instantiation path to configure this injector with
+	 * @properties             A structure of binding properties to passthrough to the Binder Configuration CFC
 	 * @properties.doc_generic struct
-	 * @coldbox A coldbox application context that this instance of WireBox can be linked to, if not using it, we just ignore it.
-	 * @coldbox.doc_generic coldbox.system.web.Controller
+	 * @coldbox                A coldbox application context that this instance of WireBox can be linked to, if not using it, we just ignore it.
+	 * @coldbox.doc_generic    coldbox.system.web.Controller
 	 **/
 	Injector function init(
 		binder            = "coldbox.system.ioc.config.DefaultBinder",
@@ -167,12 +174,14 @@ component
 			"afterInstanceAutowire" // X right after an instance is autowired
 		];
 		// LogBox and Class Logger
-		variables.logBox = "";
-		variables.log    = "";
+		variables.logBox         = "";
+		variables.log            = "";
 		// Parent Injector
-		variables.parent = "";
+		variables.parent         = "";
 		// LifeCycle Scopes
-		variables.scopes = {};
+		variables.scopes         = {};
+		// Child Injectors
+		variables.childInjectors = structNew( "ordered" );
 
 		// Prepare instance ID
 		variables.injectorID = variables.javaSystem.identityHashCode( this );
@@ -200,11 +209,69 @@ component
 	}
 
 	/**
+	 * Verify if a child injector has been registered by name
+	 *
+	 * @name The name of the child injector to check
+	 */
+	boolean function hasChildInjector( required name ){
+		return variables.childInjectors.keyExists( arguments.name );
+	}
+
+	/**
+	 * Register a child injector instance with this injector and set this injector as a parent of the child.
+	 *
+	 * @name  The unique name to register the child with
+	 * @child The child Injector instance to register
+	 */
+	Injector function registerChildInjector( required name, required child ){
+		variables.childInjectors[ arguments.name ] = arguments.child.setParent( this );
+		return this;
+	}
+
+	/**
+	 * Remove a child injector from this injector
+	 *
+	 * @name The unique name of the child injector to remove
+	 *
+	 * @return Boolean indicator if the injector was found and removed (true) or not found and not removed (false)
+	 */
+	boolean function removeChildInjector( required name ){
+		if ( variables.childInjectors.keyExists( arguments.name ) ) {
+			variables.childInjectors[ arguments.name ].shutdown( this );
+			return structDelete( variables.childInjectors, arguments.name );
+		}
+		return falase;
+	}
+
+	/**
+	 * Get a child injector from this injector
+	 *
+	 * @throws ChildNotFoundException - If the passed child name does not exist with this injector
+	 */
+	Injector function getChildInjector( required name ){
+		if ( variables.childInjectors.keyExists( arguments.name ) ) {
+			return variables.childInjectors[ arguments.name ];
+		}
+		throw(
+			type   : "ChildNotFoundException",
+			message: "The child (#arguments.name#) has not been registered in this injector",
+			detail : "Registered children are (#structKeyList( variables.childInjectors )#)"
+		);
+	}
+
+	/**
+	 * Get an array of all the registered child injectors in this injector
+	 */
+	array function getChildInjectorNames(){
+		return variables.childInjectors.keyArray();
+	}
+
+	/**
 	 * Configure this injector for operation, called by the init(). You can also re-configure this injector programmatically, but it is not recommended.
 	 *
-	 * @binder The configuration binder object or path to configure this Injector instance with
-	 * @binder.doc_generic coldbox.system.ioc.config.Binder
-	 * @properties A structure of binding properties to passthrough to the Configuration CFC
+	 * @binder                 The configuration binder object or path to configure this Injector instance with
+	 * @binder.doc_generic     coldbox.system.ioc.config.Binder
+	 * @properties             A structure of binding properties to passthrough to the Configuration CFC
 	 * @properties.doc_generic struct
 	 **/
 	Injector function configure( required binder, required struct properties ){
@@ -311,6 +378,13 @@ component
 			variables.parent.shutdown( this );
 		}
 
+		// Do we have children?
+		if ( structCount( variables.childInjectors ) ) {
+			variables.childInjectors.each( function( childName, childInstance ){
+				arguments.childInstance.shutdown( this );
+			} );
+		}
+
 		// standalone cachebox? Yes, then shut it down baby!
 		if ( isCacheBoxLinked() ) {
 			variables.cacheBox.shutdown( this );
@@ -344,21 +418,38 @@ component
 	/**
 	 * Locates, Creates, Injects and Configures an object model instance
 	 *
-	 * @name The mapping name or CFC instance path to try to build up
+	 * @name          The mapping name or CFC instance path to try to build up
 	 * @initArguments The constructor structure of arguments to passthrough when initializing the instance
-	 * @dsl The dsl string to use to retrieve the instance model object, mutually exclusive with 'name
-	 * @targetObject The object requesting the dependency, usually only used by DSL lookups
-	 *
-	 * @throws InstanceNotFoundException - When the requested instance cannot be found
+	 * @dsl           The dsl string to use to retrieve the instance model object, mutually exclusive with 'name
+	 * @targetObject  The object requesting the dependency, usually only used by DSL lookups
+	 * @injector      The child injector to use when retrieving the instance
 	 *
 	 * @return The requested instance
+	 *
+	 * @throws InstanceNotFoundException - When the requested instance cannot be found
+	 * @throws InvalidChildInjector      - When you request an instance from an invalid child injector name
 	 **/
 	function getInstance(
 		name,
 		struct initArguments = {},
 		dsl,
-		targetObject = ""
+		targetObject = "",
+		injector
 	){
+		// Explicit Child injector request?
+		if ( !isNull( arguments.injector ) ) {
+			if ( variables.childInjectors.keyExists( arguments.injector ) ) {
+				var childInjector = variables.childInjectors[ arguments.injector ];
+				structDelete( arguments, "injector" );
+				return childInjector.getInstance( argumentCollection = arguments );
+			}
+			throw(
+				type   : "InvalidChildInjector",
+				message: "The child injector you requested (#arguments.injector#) has not been registered",
+				detail : "The registered child injectors are [#structKeyList( variables.childInjectors )#]"
+			);
+		}
+
 		// Is the name a DSL?
 		if ( !isNull( arguments.name ) && variables.builder.isDSLString( arguments.name ) ) {
 			arguments.dsl = arguments.name;
@@ -375,26 +466,34 @@ component
 
 		// Check if Mapping Exists?
 		if ( NOT variables.binder.mappingExists( arguments.name ) ) {
-			// No Mapping exists, let's try to locate it first. We are now dealing with request by conventions
+			// Find the instance locally from this injector
 			var instancePath = locateInstance( arguments.name );
 
-			// check if not found and if we have a parent factory
-			if ( NOT len( instancePath ) AND isObject( variables.parent ) ) {
-				// we do have a parent factory so just request it from there, let the hierarchy deal with it
-				return variables.parent.getInstance( argumentCollection = arguments );
-			}
-
-			// If Empty Throw Exception
+			// Try to discover it from the parent or child hierarchies if not found locally
 			if ( NOT len( instancePath ) ) {
+				// Verify parent first, parents know better :)
+				if ( isObject( variables.parent ) && variables.parent.containsInstance( arguments.name ) ) {
+					return variables.parent.getInstance( argumentCollection = arguments );
+				}
+
+				// Verify Children second in registration order
+				for ( var thisChild in variables.childInjectors ) {
+					if ( variables.childInjectors[ thisChild ].containsInstance( arguments.name ) ) {
+						return variables.childInjectors[ thisChild ].getInstance( argumentCollection = arguments );
+					}
+				}
+
+				// We could not find it
 				variables.log.error(
-					"Requested instance:#arguments.name# was not located in any declared scan location(s): #structKeyList( variables.binder.getScanLocations() )# or full CFC path"
+					"Requested instance:#arguments.name# was not located in any declared scan location(s): #structKeyList( variables.binder.getScanLocations() )#, or path, or parent or children"
 				);
 				throw(
 					message = "Requested instance not found: '#arguments.name#'",
-					detail  = "The instance could not be located in any declared scan location(s) (#structKeyList( variables.binder.getScanLocations() )#) or full path location",
+					detail  = "The instance could not be located in any declared scan location(s) (#structKeyList( variables.binder.getScanLocations() )#) or full path location or parent or children",
 					type    = "Injector.InstanceNotFoundException"
 				);
 			}
+
 			// Let's create a mapping for this requested convention name+path as it is the first time we see it
 			registerNewInstance( arguments.name, instancePath );
 		}
@@ -443,9 +542,9 @@ component
 	/**
 	 * Build an instance, this is called from registered scopes only as they provide locking and transactions
 	 *
-	 * @mapping The mapping to construct
+	 * @mapping             The mapping to construct
 	 * @mapping.doc_generic coldbox.system.ioc.config.Mapping
-	 * @initArguments The constructor structure of arguments to passthrough when initializing the instance
+	 * @initArguments       The constructor structure of arguments to passthrough when initializing the instance
 	 **/
 	function buildInstance( required mapping, struct initArguments = {} ){
 		var thisMap = arguments.mapping;
@@ -539,7 +638,7 @@ component
 	/**
 	 * Register a new requested mapping object instance thread safely and returns the mapping configured for this instance
 	 *
-	 * @name The name of the mapping to register
+	 * @name         The name of the mapping to register
 	 * @instancePath The path of the mapping to register
 	 **/
 	function registerNewInstance( required name, required instancePath ){
@@ -568,7 +667,7 @@ component
 	 * A direct way of registering custom DSL namespaces
 	 *
 	 * @namespace The namespace you would like to register
-	 * @path The instantiation path to the CFC that implements this scope, it must have an init() method and implement: coldbox.system.ioc.dsl.IDSLBuilder
+	 * @path      The instantiation path to the CFC that implements this scope, it must have an init() method and implement: coldbox.system.ioc.dsl.IDSLBuilder
 	 */
 	Injector function registerDSL( required namespace, required path ){
 		variables.builder.registerDSL( argumentCollection = arguments );
@@ -585,13 +684,24 @@ component
 		if ( variables.binder.mappingExists( arguments.name ) ) {
 			return true;
 		}
+
 		// check if we can locate it?
 		if ( locateInstance( arguments.name ).len() ) {
 			return true;
 		}
+
 		// Ask parent hierarchy if set
-		if ( isObject( variables.parent ) ) {
-			return variables.parent.containsInstance( arguments.name );
+		if ( isObject( variables.parent ) && variables.parent.containsInstance( arguments.name ) ) {
+			return true;
+		}
+
+		// Ask child hierarchy if set
+		if ( structCount( variables.childInjectors ) ) {
+			return variables.childInjectors
+				.filter( function( childName, childInstance ){
+					return arguments.childInstance.containsInstance( name );
+				} )
+				.count() > 0 ? true : false;
 		}
 
 		// Else NADA!
@@ -642,11 +752,11 @@ component
 	/**
 	 * I wire up target objects with dependencies either by mappings or a-la-carte autowires
 	 *
-	 * @target The target object to wire up
-	 * @mapping The object mapping with all the necessary wiring metadata. Usually passed by scopes and not a-la-carte autowires
-	 * @mapping.doc_generic coldbox.system.ioc.config.Mapping
-	 * @targetID A unique identifier for this target to wire up. Usually a class path or file path should do. If none is passed we will get the id from the passed target via introspection but it will slow down the wiring
-	 * @annotationCheck This value determines if we check if the target contains an autowire annotation in the cfcomponent tag: autowire=true|false, it will only autowire if that metadata attribute is set to true. The default is false, which will autowire anything automatically.
+	 * @target                      The target object to wire up
+	 * @mapping                     The object mapping with all the necessary wiring metadata. Usually passed by scopes and not a-la-carte autowires
+	 * @mapping.doc_generic         coldbox.system.ioc.config.Mapping
+	 * @targetID                    A unique identifier for this target to wire up. Usually a class path or file path should do. If none is passed we will get the id from the passed target via introspection but it will slow down the wiring
+	 * @annotationCheck             This value determines if we check if the target contains an autowire annotation in the cfcomponent tag: autowire=true|false, it will only autowire if that metadata attribute is set to true. The default is false, which will autowire anything automatically.
 	 * @annotationCheck.doc_generic Boolean
 	 */
 	function autowire(
@@ -766,7 +876,7 @@ component
 	/**
 	 * Link a parent Injector with this injector
 	 *
-	 * @injector A WireBox Injector to assign as a parent to this Injector
+	 * @injector             A WireBox Injector to assign as a parent to this Injector
 	 * @injector.doc_generic coldbox.system.ioc.Injector
 	 *
 	 * @return Injector
@@ -831,6 +941,7 @@ component
 
 	/**
 	 * Get a registered scope in this injector by name
+	 *
 	 * @scope The scope name
 	 */
 	function getScope( required any scope ){
@@ -887,7 +998,7 @@ component
 	 * Process mixins on the selected target
 	 *
 	 * @targetObject The target object to do some goodness on
-	 * @mapping The target mapping
+	 * @mapping      The target mapping
 	 */
 	private Injector function processMixins( required targetObject, required mapping ){
 		// If no length, kick out
@@ -913,7 +1024,7 @@ component
 	 * Process provider methods on the selected target
 	 *
 	 * @targetObject The target object to do some goodness on
-	 * @mapping The target mapping
+	 * @mapping      The target mapping
 	 */
 	private Injector function processProviderMethods( required targetObject, required mapping ){
 		var providerMethods = arguments.mapping.getProviderMethods();
@@ -940,7 +1051,8 @@ component
 
 	/**
 	 * Process after DI completion routines
-	 * @targetObject The target object to do some goodness on
+	 *
+	 * @targetObject      The target object to do some goodness on
 	 * @DICompleteMethods The array of DI completion methods to call
 	 */
 	private Injector function processAfterCompleteDI( required targetObject, required DICompleteMethods ){
@@ -967,8 +1079,8 @@ component
 	 * Process property and setter injection
 	 *
 	 * @targetObject The target object to do some goodness on
-	 * @DIData The DI data to use
-	 * @targetID The target ID to process injections
+	 * @DIData       The DI data to use
+	 * @targetID     The target ID to process injections
 	 */
 	private Injector function processInjection(
 		required targetObject,
@@ -1035,11 +1147,11 @@ component
 	/**
 	 * Inject a model object with dependencies via setters or property injections
 	 *
-	 * @target The target that will be injected with dependencies
-	 * @propertyName The name of the property to inject
+	 * @target         The target that will be injected with dependencies
+	 * @propertyName   The name of the property to inject
 	 * @propertyObject The object to inject
-	 * @scope The scope to inject a property into, if any else empty means it is a setter call
-	 * @argName The name of the argument to send if setter injection
+	 * @scope          The scope to inject a property into, if any else empty means it is a setter call
+	 * @argName        The name of the argument to send if setter injection
 	 */
 	private Injector function injectTarget(
 		required target,
@@ -1177,7 +1289,7 @@ component
 	/**
 	 * Configure a standalone version of cacheBox for persistence
 	 *
-	 * @config The cacheBox configuration data structure
+	 * @config             The cacheBox configuration data structure
 	 * @config.doc_generic struct
 	 */
 	private Injector function configureCacheBox( required struct config ){
@@ -1283,8 +1395,8 @@ component
 	/**
 	 * Load a configuration binder object according to passed in type
 	 *
-	 * @binder  The data CFC configuration instance, instantiation path or programmatic binder object to configure this injector with
-	 * @properties  A map of binding properties to passthrough to the Configuration CFC
+	 * @binder     The data CFC configuration instance, instantiation path or programmatic binder object to configure this injector with
+	 * @properties A map of binding properties to passthrough to the Configuration CFC
 	 */
 	private any function buildBinder( required binder, required properties ){
 		// Check if just a plain CFC path and build it

@@ -1,4 +1,4 @@
-﻿component extends="tests.resources.BaseIntegrationTest"{
+﻿component extends="tests.resources.BaseIntegrationTest" {
 
 	this.loadColdBox = false;
 
@@ -12,7 +12,9 @@
 		injector.init();
 
 		mockLogger = createStub().$( "canDebug", false ).$( "error" );
-		util       = createMock( "coldbox.system.core.util.Util" ).$( "getInheritedMetaData" ).$results( { path : "path.to.object" } );
+		util       = createMock( "coldbox.system.core.util.Util" )
+			.$( "getInheritedMetaData" )
+			.$results( { path : "path.to.object" } );
 		injector.setUtility( util );
 		injector.setLog( mockLogger );
 	}
@@ -26,11 +28,7 @@
 		injector.setParent( parent );
 		injector
 			.$property( "cachebox", "variables", cachebox )
-			.$property(
-				"eventManager",
-				"variables",
-				eventManager
-			)
+			.$property( "eventManager", "variables", eventManager )
 			.$( "isCacheBoxLinked", true )
 			.$(
 				method             = "removeFromScope",
@@ -99,9 +97,7 @@
 				properties : {}
 			}
 		];
-		injector
-			.getBinder()
-			.setListeners( listeners );
+		injector.getBinder().setListeners( listeners );
 
 		prepareMock( injector.getEventManager() ).$( "register" );
 
@@ -117,9 +113,7 @@
 				properties : {}
 			}
 		];
-		injector
-			.getBinder()
-			.setListeners( listeners );
+		injector.getBinder().setListeners( listeners );
 
 		try {
 			injector.registerListeners();
@@ -132,16 +126,13 @@
 	function testdoScopeRegistration(){
 		makePublic( injector, "doScopeRegistration" );
 
-		injector.getBinder().scopeRegistration(
-			key   : "mockWireBox",
-			scope : "application"
-		);
+		injector.getBinder().scopeRegistration( key: "mockWireBox", scope: "application" );
 
-		try{
+		try {
 			structDelete( application, "mockWireBox" );
 			injector.doScopeRegistration();
 			structKeyExists( application, "mockWireBox" );
-		} finally{
+		} finally {
 			structDelete( application, "mockWireBox" );
 		}
 	}
@@ -213,11 +204,13 @@
 	}
 
 	function testRemoveFromScope(){
-		injector.getBinder().scopeRegistration(
-			enabled : true,
-			key     : "mockWireBox",
-			scope   : "application"
-		);
+		injector
+			.getBinder()
+			.scopeRegistration(
+				enabled: true,
+				key    : "mockWireBox",
+				scope  : "application"
+			);
 		application.mockWireBox = createStub();
 
 		injector.removeFromScope();
@@ -232,6 +225,40 @@
 	function testAutowireCallsGetInheritedMetaDataForMD(){
 		injector.autowire( target = createStub(), targetID = "myTargetID" );
 		assertTrue( util.$once( "getInheritedMetaData" ) );
+	}
+
+	function testChildInjectorsSetup(){
+		expect( injector.getChildInjectors() ).toBeStruct();
+	}
+
+	function testChildInjectorRegistrationAndExistance(){
+		expect( injector.hasChildInjector( "bogus" ) ).toBeFalse( "Bogus injector not registered" );
+
+		var child = new coldbox.system.ioc.Injector();
+		injector.registerChildInjector( "alexia", child );
+
+		expect( child.getParent() ).toBe( injector );
+		expect( injector.hasChildInjector( "alexia" ) ).toBeTrue();
+	}
+
+	function testGetChildInjector(){
+		var child = new coldbox.system.ioc.Injector();
+		injector.registerChildInjector( "alexia", child );
+
+		expect( injector.getChildInjector( "alexia" ) ).toBe( child );
+	}
+
+	function testGetInvalidChildInjector(){
+		expect( function(){
+			injector.getChildInjector( "bogussss" );
+		} ).toThrow();
+	}
+
+	function testRemoveChildInjector(){
+		var child = prepareMock( new coldbox.system.ioc.Injector() ).$( "shutdown" );
+		injector.registerChildInjector( "alexia", child ).$( "shutdown" );
+		expect( injector.getChildInjector( "alexia" ) ).toBe( child );
+		expect( injector.removeChildInjector( "alexia" ) ).toBeTrue();
 	}
 
 }

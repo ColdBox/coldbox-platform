@@ -4,7 +4,7 @@
  * ---
  * Process DSL functions via ColdBox
  **/
-component implements="coldbox.system.ioc.dsl.IDSLBuilder" accessors="true" {
+component accessors="true" {
 
 	/**
 	 * Injector Reference
@@ -29,7 +29,7 @@ component implements="coldbox.system.ioc.dsl.IDSLBuilder" accessors="true" {
 	/**
 	 * Configure the DSL Builder for operation and returns itself
 	 *
-	 * @injector The linked WireBox Injector
+	 * @injector             The linked WireBox Injector
 	 * @injector.doc_generic coldbox.system.ioc.Injector
 	 *
 	 * @return coldbox.system.ioc.dsl.IDSLBuilder
@@ -46,12 +46,13 @@ component implements="coldbox.system.ioc.dsl.IDSLBuilder" accessors="true" {
 	/**
 	 * Process an incoming DSL definition and produce an object with it
 	 *
-	 * @definition The injection dsl definition structure to process. Keys: name, dsl
+	 * @definition   The injection dsl definition structure to process. Keys: name, dsl
 	 * @targetObject The target object we are building the DSL dependency for. If empty, means we are just requesting building
+	 * @targetID     The target ID we are building this dependency for
 	 *
 	 * @return coldbox.system.ioc.dsl.IDSLBuilder
 	 */
-	function process( required definition, targetObject ){
+	function process( required definition, targetObject, targetID ){
 		var DSLNamespace = listFirst( arguments.definition.dsl, ":" );
 
 		switch ( DSLNamespace ) {
@@ -69,7 +70,7 @@ component implements="coldbox.system.ioc.dsl.IDSLBuilder" accessors="true" {
 	/**
 	 * Process a ColdBox DSL
 	 *
-	 * @definition The injection dsl definition structure to process. Keys: name, dsl
+	 * @definition   The injection dsl definition structure to process. Keys: name, dsl
 	 * @targetObject The target object we are building the DSL dependency for. If empty, means we are just requesting building
 	 */
 	private function getColdBoxDSL( required definition, targetObject ){
@@ -102,19 +103,24 @@ component implements="coldbox.system.ioc.dsl.IDSLBuilder" accessors="true" {
 			case 2: {
 				thisLocationKey = getToken( thisType, 2, ":" );
 				switch ( thisLocationKey ) {
-					// Config Struct
+					case "asyncManager": {
+						return variables.coldbox.getAsyncManager();
+					}
+					case "appScheduler": {
+						return variables.injector.getInstance( "appScheduler@coldbox" );
+					}
 					case "configSettings": {
 						return variables.coldbox.getConfigSettings();
+					}
+					case "fwSettings":
+					case "coldboxSettings": {
+						return variables.coldbox.getColdboxSettings();
 					}
 					case "dataMarshaller": {
 						return variables.coldbox.getDataMarshaller();
 					}
 					case "flash": {
 						return variables.coldbox.getRequestService().getFlashScope();
-					}
-					case "fwSettings":
-					case "coldboxSettings": {
-						return variables.coldbox.getColdboxSettings();
 					}
 					case "handlerService": {
 						return variables.coldbox.getHandlerService();
@@ -125,8 +131,14 @@ component implements="coldbox.system.ioc.dsl.IDSLBuilder" accessors="true" {
 					case "loaderService": {
 						return variables.coldbox.getLoaderService();
 					}
+					case "moduleconfig": {
+						return variables.coldbox.getSetting( "modules" );
+					}
 					case "moduleService": {
 						return variables.coldbox.getModuleService();
+					}
+					case "renderer": {
+						return variables.coldbox.getRenderer();
 					}
 					case "requestContext": {
 						return variables.coldbox.getRequestService().getContext();
@@ -140,17 +152,8 @@ component implements="coldbox.system.ioc.dsl.IDSLBuilder" accessors="true" {
 					case "routingService": {
 						return variables.coldbox.getRoutingService();
 					}
-					case "renderer": {
-						return variables.coldbox.getRenderer();
-					}
-					case "moduleconfig": {
-						return variables.coldbox.getSetting( "modules" );
-					}
-					case "asyncManager": {
-						return variables.coldbox.getAsyncManager();
-					}
-					case "appScheduler": {
-						return variables.injector.getInstance( "appScheduler@coldbox" );
+					case "schedulerService": {
+						return variables.coldbox.getSchedulerService();
 					}
 				}
 				// end of services

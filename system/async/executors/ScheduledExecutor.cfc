@@ -27,14 +27,14 @@ component extends="Executor" accessors="true" singleton {
 	 * is a ScheduledFuture.  Periodic tasks do NOT return a result, while normal delayed
 	 * tasks can.
 	 *
-	 * @task The runnable task closure/lambda/cfc
-	 * @delay The time to delay the first execution
+	 * @task     The runnable task closure/lambda/cfc
+	 * @delay    The time to delay the first execution
 	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is milliseconds
-	 * @method The default method to execute if the runnable is a CFC, defaults to `run()`
-	 *
-	 * @throws RejectedExecutionException - if the task cannot be scheduled for execution
+	 * @method   The default method to execute if the runnable is a CFC, defaults to `run()`
 	 *
 	 * @return ScheduledFuture representing pending completion of the task and whose get() method will return null upon completion
+	 *
+	 * @throws RejectedExecutionException - if the task cannot be scheduled for execution
 	 */
 	ScheduledFuture function schedule(
 		required task,
@@ -75,16 +75,16 @@ component extends="Executor" accessors="true" singleton {
 	 * of the executor. If any execution of this task takes longer than its period,
 	 * then subsequent executions may start late, but will not concurrently execute.
 	 *
-	 * @task The runnable task closure/lambda/cfc
-	 * @every The period between successive executions
-	 * @delay The time to delay the first execution
+	 * @task     The runnable task closure/lambda/cfc
+	 * @every    The period between successive executions
+	 * @delay    The time to delay the first execution
 	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is milliseconds
-	 * @method The default method to execute if the runnable is a CFC, defaults to `run()`
-	 *
-	 * @throws RejectedExecutionException - if the task cannot be scheduled for execution
-	 * @throws IllegalArgumentException - if period less than or equal to zero
+	 * @method   The default method to execute if the runnable is a CFC, defaults to `run()`
 	 *
 	 * @return a ScheduledFuture representing pending completion of the task, and whose get() method will throw an exception upon cancellation
+	 *
+	 * @throws RejectedExecutionException - if the task cannot be scheduled for execution
+	 * @throws IllegalArgumentException   - if period less than or equal to zero
 	 */
 	ScheduledFuture function scheduleAtFixedRate(
 		required task,
@@ -114,16 +114,16 @@ component extends="Executor" accessors="true" singleton {
 	 * suppressed. Otherwise, the task will only terminate via cancellation or
 	 * termination of the executor.
 	 *
-	 * @task The runnable task closure/lambda/cfc
+	 * @task        The runnable task closure/lambda/cfc
 	 * @spacedDelay The delay between the termination of one execution and the commencement of the next
-	 * @delay The time to delay the first execution
-	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is milliseconds
-	 * @method The default method to execute if the runnable is a CFC, defaults to `run()`
-	 *
-	 * @throws RejectedExecutionException - if the task cannot be scheduled for execution
-	 * @throws IllegalArgumentException - if spacedDelay less than or equal to zero
+	 * @delay       The time to delay the first execution
+	 * @timeUnit    The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is milliseconds
+	 * @method      The default method to execute if the runnable is a CFC, defaults to `run()`
 	 *
 	 * @return a ScheduledFuture representing pending completion of the task, and whose get() method will throw an exception upon cancellation
+	 *
+	 * @throws RejectedExecutionException - if the task cannot be scheduled for execution
+	 * @throws IllegalArgumentException   - if spacedDelay less than or equal to zero
 	 */
 	ScheduledFuture function scheduleWithFixedDelay(
 		required task,
@@ -152,9 +152,8 @@ component extends="Executor" accessors="true" singleton {
 	 * Build out a new scheduled task
 	 *
 	 * @deprecated DO NOT USE, use newTask() instead
-	 *
-	 * @task The closure or cfc that represents the task
-	 * @method The method on the cfc to call, defaults to "run" (optional)
+	 * @task       The closure or cfc that represents the task
+	 * @method     The method on the cfc to call, defaults to "run" (optional)
 	 */
 	ScheduledTask function newSchedule( required task, method = "run" ){
 		return this.newTask( argumentCollection = arguments );
@@ -163,8 +162,8 @@ component extends="Executor" accessors="true" singleton {
 	/**
 	 * Build out a new scheduled task representation. Calling this method does not mean that the task is executed.
 	 *
-	 * @name The name of the task
-	 * @task The closure or cfc that represents the task (optional)
+	 * @name   The name of the task
+	 * @task   The closure or cfc that represents the task (optional)
 	 * @method The method on the cfc to call, defaults to "run" (optional)
 	 */
 	ScheduledTask function newTask(
@@ -183,7 +182,7 @@ component extends="Executor" accessors="true" singleton {
 	/**
 	 * Build out a Java Runnable from the incoming cfc/closure/lambda/udf that will be sent to the schedulers.
 	 *
-	 * @task The runnable task closure/lambda/cfc
+	 * @task   The runnable task closure/lambda/cfc
 	 * @method The default method to execute if the runnable is a CFC, defaults to `run()`
 	 *
 	 * @return A java.lang.Runnable

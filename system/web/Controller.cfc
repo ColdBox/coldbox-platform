@@ -10,58 +10,77 @@ component serializable="false" accessors="true" {
 	 * The CFML engine helper
 	 */
 	property name="CFMLEngine";
+
 	/**
 	 * The system utility object
 	 */
 	property name="util";
+
 	/**
 	 * ColdBox initiation flag
 	 */
 	property name="coldboxInitiated" type="boolean";
+
 	/**
-	 * ColdBox application key
+	 * ColdBox application key that tracks the controller in the `application` scope
 	 */
 	property name="appKey";
+
 	/**
 	 * ColdBox application root path
 	 */
 	property name="appRootPath";
+
 	/**
 	 * ColdBox application unique hash key
 	 */
 	property name="appHash";
+
 	/**
-	 * Container for all internal services (LinkedHashMap)
+	 * The ColdFusion application name as per the application scope
+	 */
+	property name="appName";
+
+	/**
+	 * Container for all internal services (ordered struct)
 	 */
 	property name="services";
+
 	/**
 	 * The application configuration settings structure
 	 */
 	property name="configSettings" type="struct";
+
 	/**
 	 * The internal ColdBox settings structure
 	 */
 	property name="coldboxSettings" type="struct";
+
 	/**
 	 * The reference to CacheBox
 	 */
 	property name="cachebox";
+
 	/**
 	 * The reference to WireBox
 	 */
 	property name="wirebox";
+
 	/**
 	 * The reference to LogBox
 	 */
 	property name="logbox";
+
 	/**
 	 * The controller logger object
 	 */
 	property name="log";
+
 	/**
-	 * The view/layout renderer
+	 * The view/layout renderer singleton
 	 */
 	property name="renderer";
+
 	/**
 	 * The Application's AsyncManager
 	 */
@@ -71,9 +90,11 @@ component serializable="false" accessors="true" {
 	 * Constructor
 	 *
 	 * @appRootPath The application root path
-	 * @appKey The application registered application key, default is cbController
+	 * @appKey      The application registered application key, default is cbController
 	 */
 	function init( required appRootPath, appKey = "cbController" ){
+		// Get application name
+		variables.appName  = application.applicationName;
 		// These will be lazy loaded on first use since the framework isn't ready to create it yet
 		variables.renderer = "";
 		variables.wireBox  = "";
@@ -235,12 +256,12 @@ component serializable="false" accessors="true" {
 	/**
 	 * Get a setting from the application
 	 *
-	 * @name The name of the setting
+	 * @name         The name of the setting
 	 * @defaultValue The default value to use if setting does not exist
 	 *
-	 * @throws SettingNotFoundException
-	 *
 	 * @return The application setting value
+	 *
+	 * @throws SettingNotFoundException
 	 */
 	function getSetting( required name, defaultValue ){
 		if ( variables.configSettings.keyExists( arguments.name ) ) {
@@ -262,12 +283,12 @@ component serializable="false" accessors="true" {
 	/**
 	 * Get a ColdBox setting
 	 *
-	 * @name The key to get
+	 * @name         The key to get
 	 * @defaultValue The default value if it doesn't exist
 	 *
-	 * @throws SettingNotFoundException
-	 *
 	 * @return The framework setting value
+	 *
+	 * @throws SettingNotFoundException
 	 */
 	function getColdBoxSetting( required name, defaultValue ){
 		if ( variables.coldboxSettings.keyExists( arguments.name ) ) {
@@ -298,7 +319,7 @@ component serializable="false" accessors="true" {
 	/**
 	 * Set a value in the application configuration settings
 	 *
-	 * @name The name of the setting
+	 * @name  The name of the setting
 	 * @value The value to set
 	 *
 	 * @return Controller instance
@@ -319,17 +340,17 @@ component serializable="false" accessors="true" {
 	/**
 	 * Relocate user browser requests to other events, URLs, or URIs.
 	 *
-	 * @event The name of the event to relocate to, if not passed, then it will use the default event found in your configuration file.
-	 * @queryString The query string or a struct to append, if needed. If in SES mode it will be translated to convention name value pairs
-	 * @addToken Wether to add the tokens or not to the relocation. Default is false
-	 * @persist What request collection keys to persist in flash RAM automatically for you
-	 * @persistStruct A structure of key-value pairs to persist in flash RAM automatically for you
-	 * @ssl Whether to relocate in SSL or not. You need to explicitly say TRUE or FALSE if going out from SSL. If none passed, we look at the even's SES base URL (if in SES mode)
-	 * @baseURL Use this baseURL instead of the index.cfm that is used by default. You can use this for SSL or any full base url you would like to use. Ex: https://mysite.com/index.cfm
+	 * @event             The name of the event to relocate to, if not passed, then it will use the default event found in your configuration file.
+	 * @queryString       The query string or a struct to append, if needed. If in SES mode it will be translated to convention name value pairs
+	 * @addToken          Wether to add the tokens or not to the relocation. Default is false
+	 * @persist           What request collection keys to persist in flash RAM automatically for you
+	 * @persistStruct     A structure of key-value pairs to persist in flash RAM automatically for you
+	 * @ssl               Whether to relocate in SSL or not. You need to explicitly say TRUE or FALSE if going out from SSL. If none passed, we look at the even's SES base URL (if in SES mode)
+	 * @baseURL           Use this baseURL instead of the index.cfm that is used by default. You can use this for SSL or any full base url you would like to use. Ex: https://mysite.com/index.cfm
 	 * @postProcessExempt Do not fire the postProcess interceptors, by default it does
-	 * @URL The full URL you would like to relocate to instead of an event: ex: URL='http://www.google.com'
-	 * @URI The relative URI you would like to relocate to instead of an event: ex: URI='/mypath/awesome/here'
-	 * @statusCode The status code to use in the relocation
+	 * @URL               The full URL you would like to relocate to instead of an event: ex: URL='http://www.google.com'
+	 * @URI               The relative URI you would like to relocate to instead of an event: ex: URI='/mypath/awesome/here'
+	 * @statusCode        The status code to use in the relocation
 	 *
 	 * @return Controller
 	 */
@@ -502,14 +523,14 @@ component serializable="false" accessors="true" {
 	 * If you need a route from a module then append the module address: `@moduleName` or prefix it like in run event calls `moduleName:routeName` in order to find the right route.
 	 * The route params will be passed to events as action arguments much how eventArguments work.
 	 *
-	 * @name The name of the route
-	 * @params The parameters of the route to replace
-	 * @cache Cached the output of the runnable execution, defaults to false. A unique key will be created according to event string + arguments.
-	 * @cacheTimeout The time in minutes to cache the results
+	 * @name                   The name of the route
+	 * @params                 The parameters of the route to replace
+	 * @cache                  Cached the output of the runnable execution, defaults to false. A unique key will be created according to event string + arguments.
+	 * @cacheTimeout           The time in minutes to cache the results
 	 * @cacheLastAccessTimeout The time in minutes the results will be removed from cache if idle or requested
-	 * @cacheSuffix The suffix to add into the cache entry for this event rendering
-	 * @cacheProvider The provider to cache this event rendering in, defaults to 'template'
-	 * @prePostExempt If true, pre/post handlers will not be fired. Defaults to false
+	 * @cacheSuffix            The suffix to add into the cache entry for this event rendering
+	 * @cacheProvider          The provider to cache this event rendering in, defaults to 'template'
+	 * @prePostExempt          If true, pre/post handlers will not be fired. Defaults to false
 	 *
 	 * @throws InvalidArgumentException
 	 */
@@ -593,16 +614,16 @@ component serializable="false" accessors="true" {
 	/**
 	 * Executes events with full life-cycle methods and returns the event results if any were returned.
 	 *
-	 * @event The event string to execute, if nothing is passed we will execute the application's default event.
-	 * @prePostExempt If true, pre/post handlers will not be fired. Defaults to false
-	 * @private Execute a private event if set, else defaults to public events
-	 * @defaultEvent The flag that let's this service now if it is the default event running or not. USED BY THE FRAMEWORK ONLY
-	 * @eventArguments A collection of arguments to passthrough to the calling event handler method
-	 * @cache Cached the output of the runnable execution, defaults to false. A unique key will be created according to event string + arguments.
-	 * @cacheTimeout The time in minutes to cache the results
+	 * @event                  The event string to execute, if nothing is passed we will execute the application's default event.
+	 * @prePostExempt          If true, pre/post handlers will not be fired. Defaults to false
+	 * @private                Execute a private event if set, else defaults to public events
+	 * @defaultEvent           The flag that let's this service now if it is the default event running or not. USED BY THE FRAMEWORK ONLY
+	 * @eventArguments         A collection of arguments to passthrough to the calling event handler method
+	 * @cache                  Cached the output of the runnable execution, defaults to false. A unique key will be created according to event string + arguments.
+	 * @cacheTimeout           The time in minutes to cache the results
 	 * @cacheLastAccessTimeout The time in minutes the results will be removed from cache if idle or requested
-	 * @cacheSuffix The suffix to add into the cache entry for this event rendering
-	 * @cacheProvider The provider to cache this event rendering in, defaults to 'template'
+	 * @cacheSuffix            The suffix to add into the cache entry for this event rendering
+	 * @cacheProvider          The provider to cache this event rendering in, defaults to 'template'
 	 *
 	 * @return null or any
 	 */
@@ -688,15 +709,15 @@ component serializable="false" accessors="true" {
 	/**
 	 * Executes events with full life-cycle methods and returns the event results if any were returned
 	 *
-	 * @event The event string to execute, if nothing is passed we will execute the application's default event.
-	 * @prePostExempt If true, pre/post handlers will not be fired. Defaults to false
-	 * @private Execute a private event if set, else defaults to public events
-	 * @defaultEvent The flag that let's this service now if it is the default event running or not. USED BY THE FRAMEWORK ONLY
+	 * @event          The event string to execute, if nothing is passed we will execute the application's default event.
+	 * @prePostExempt  If true, pre/post handlers will not be fired. Defaults to false
+	 * @private        Execute a private event if set, else defaults to public events
+	 * @defaultEvent   The flag that let's this service now if it is the default event running or not. USED BY THE FRAMEWORK ONLY
 	 * @eventArguments A collection of arguments to passthrough to the calling event handler method
 	 *
-	 * @throws InvalidHTTPMethod
-	 *
 	 * @return struct { data:event handler returned data (null), ehBean:event handler bean representation that was fired }
+	 *
+	 * @throws InvalidHTTPMethod
 	 */
 	private function _runEvent(
 		event                 = "",
@@ -987,11 +1008,55 @@ component serializable="false" accessors="true" {
 	}
 
 	/****************************************************************
-	 * App Locator Methods *
+	 * App + User Locator Methods *
 	 ****************************************************************/
 
 	/**
+	 * This method will return the unique user's request tracking identifier according to our discovery algoritm:
+	 *
+	 * 1. If we have an identifierProvider closure/lambda/udf, then call it and use it
+	 * 2. If we have session enabled, use the jessionId or session URL Token
+	 * 3. If we have cookies enabled, use the cfid/cftoken
+	 * 4. If we have in the URL the cfid/cftoken
+	 * 5. Create a request based tracking identifier: cbUserTrackingId
+	 */
+	string function getUserSessionIdentifier(){
+		// Setup global storage prefix according to app name in case we have multiple apps with storages
+		var prefix           = "coldbox:#variables.appName#:";
+		var isSessionDefined = getApplicationMetadata().sessionManagement;
+
+		// Check settings identifier provider
+		if ( !isSimpleValue( variables.configSettings.identifierProvider ) ) {
+			return prefix & variables.configSettings.identifierProvider();
+		}
+		// Check jsession id First
+		var isSessionDefined = getApplicationMetadata().sessionManagement;
+		if ( isSessionDefined and structKeyExists( session, "sessionid" ) ) {
+			return prefix & session.sessionid;
+		}
+		// check session URL Token
+		else if ( isSessionDefined and structKeyExists( session, "URLToken" ) ) {
+			return prefix & session.URLToken;
+		}
+		// Check cfid and cftoken in cookie
+		else if ( structKeyExists( cookie, "CFID" ) AND structKeyExists( cookie, "CFTOKEN" ) ) {
+			return prefix & hash( cookie.cfid & cookie.cftoken );
+		}
+		// Check cfid and cftoken in URL
+		else if ( structKeyExists( URL, "CFID" ) AND structKeyExists( URL, "CFTOKEN" ) ) {
+			return prefix & hash( URL.cfid & URL.cftoken );
+		}
+		// fallback for no cookie, session or url basically sessionless requests, track the request only
+		else if ( isNull( request.cbUserTrackingId ) ) {
+			request.cbUserTrackingId = prefix & createUUID();
+		}
+
+		return request.cbUserTrackingId;
+	}
+
+	/**
 	 * Locate the real path location of a file in a coldbox application. 3 checks: 1) inside of coldbox app, 2) expand the path, 3) Absolute location. If path not found, it returns an empty path
+	 *
 	 * @pathToCheck The relative or absolute file path to verify and locate
 	 */
 	function locateFilePath( required pathToCheck ){
@@ -1016,6 +1081,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Locate the real path location of a directory in a coldbox application. 3 checks: 1) inside of coldbox app, 2) expand the path, 3) Absolute location. If path not found, it returns an empty path
+	 *
 	 * @pathToCheck The relative or absolute directory path to verify and locate
 	 */
 	function locateDirectoryPath( required pathToCheck ){
@@ -1066,6 +1132,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Internal helper to flash persist elements
+	 *
 	 * @return Controller
 	 */
 	private function persistVariables( persist = "", struct persistStruct = {} ){
@@ -1086,7 +1153,8 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Checks if an action can be executed according to inclusion/exclusion lists
-	 * @action The action to validate
+	 *
+	 * @action    The action to validate
 	 * @inclusion The list of inclusions
 	 * @exclusion The list of exclusions
 	 */

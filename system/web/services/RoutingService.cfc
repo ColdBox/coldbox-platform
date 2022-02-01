@@ -8,6 +8,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 	/**
 	 * A ColdBox Router this routing service configures with.
+	 *
 	 * @doc_generic coldbox.system.web.routing.Router
 	 */
 	property name="router";
@@ -170,6 +171,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// Clean incoming paths
 		var cleanedPaths = getCleanedPaths( rc, arguments.event );
 
+		writeDump( var = "******> Cleaned Paths: #cleanedPaths.toString()#", output = "console" );
+
 		// Check if disabled or in proxy mode, if it is, then exit out.
 		if ( !variables.router.getEnabled() OR arguments.event.isProxyRequest() ) {
 			return;
@@ -204,8 +207,11 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			domain = cleanedPaths[ "domain" ]
 		);
 
+		writeDump( var = "******> Found route: #routeResults.toString()#", output = "console" );
+
 		// Process the route
 		var discoveredEvent = processRoute( routeResults, event, rc, prc );
+		writeDump( var = "******> Discovered Event: #discoveredEvent ?: "N/A"#", output = "console" );
 
 		// Do we use the discovered event?
 		if ( !isNull( local.discoveredEvent ) and discoveredEvent.len() ) {
@@ -217,9 +223,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * Process a route result to be used by the request
 	 *
 	 * @routeResults The route results a <code>findRoute()</code> method returns
-	 * @event The ColdBox Request context
-	 * @rc The requset collection
-	 * @prc The private request collection
+	 * @event        The ColdBox Request context
+	 * @rc           The requset collection
+	 * @prc          The private request collection
 	 *
 	 * @return An event string that can be used for execution. Empty if using something else
 	 */
@@ -307,51 +313,51 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			if ( routeResults.route.module.len() ) {
 				discoveredEvent = routeResults.route.module & ":" & discoveredEvent;
 			}
+		}
 
-			// Process HTTP Verbs
-			if (
-				routeResults.route.verbs.len()
-				and
-				!routeResults.route.verbs.listFindNoCase( httpMethod )
-			) {
+		// Process HTTP Verbs
+		if (
+			routeResults.route.verbs.len()
+			and
+			!routeResults.route.verbs.listFindNoCase( httpMethod )
+		) {
+			// Mark as invalid HTTP Exception
+			arguments.event.setIsInvalidHTTPMethod( true );
+			if ( variables.log.canDebug() ) {
+				variables.log.debug( "Invalid HTTP Method detected: #httpMethod#", routeResults.route );
+			}
+		}
+
+		// If the struct is empty, reset it to an empty string so it goes down the correct code path later on.
+		if ( isStruct( routeResults.route.action ) && structIsEmpty( routeResults.route.action ) ) {
+			routeResults.route.action = "";
+		}
+
+		// Check if using HTTP method actions via struct
+		if ( isStruct( routeResults.route.action ) ) {
+			// Verify HTTP method used is valid
+			if ( structKeyExists( routeResults.route.action, httpMethod ) ) {
+				discoveredEvent &= ( discoveredEvent == "" ? "" : "." ) & "#routeResults.route.action[ httpMethod ]#";
+				// Send for logging in debug mode
+				if ( variables.log.canDebug() ) {
+					variables.log.debug(
+						"Matched HTTP Method (#HTTPMethod#) to routed action: #routeResults.route.action[ httpMethod ]#"
+					);
+				}
+			} else {
 				// Mark as invalid HTTP Exception
+				discoveredEvent &= ".onInvalidHTTPMethod";
 				arguments.event.setIsInvalidHTTPMethod( true );
 				if ( variables.log.canDebug() ) {
 					variables.log.debug( "Invalid HTTP Method detected: #httpMethod#", routeResults.route );
 				}
 			}
-
-			// If the struct is empty, reset it to an empty string so it goes down the correct code path later on.
-			if ( isStruct( routeResults.route.action ) && structIsEmpty( routeResults.route.action ) ) {
-				routeResults.route.action = "";
-			}
-
-			// Check if using HTTP method actions via struct
-			if ( isStruct( routeResults.route.action ) ) {
-				// Verify HTTP method used is valid
-				if ( structKeyExists( routeResults.route.action, httpMethod ) ) {
-					discoveredEvent &= ".#routeResults.route.action[ httpMethod ]#";
-					// Send for logging in debug mode
-					if ( variables.log.canDebug() ) {
-						variables.log.debug(
-							"Matched HTTP Method (#HTTPMethod#) to routed action: #routeResults.route.action[ httpMethod ]#"
-						);
-					}
-				} else {
-					// Mark as invalid HTTP Exception
-					discoveredEvent &= ".onInvalidHTTPMethod";
-					arguments.event.setIsInvalidHTTPMethod( true );
-					if ( variables.log.canDebug() ) {
-						variables.log.debug( "Invalid HTTP Method detected: #httpMethod#", routeResults.route );
-					}
-				}
-			}
-			// Simple value action
-			else if ( !isStruct( routeREsults.route.action ) && routeResults.route.action.len() ) {
-				discoveredEvent &= ".#routeResults.route.action#";
-			}
 		}
-		// end if handler exists
+		// Simple value action
+		else if ( !isStruct( routeREsults.route.action ) && routeResults.route.action.len() ) {
+			discoveredEvent &= ( discoveredEvent == "" ? "" : "." ) & "#routeResults.route.action#";
+		}
+		// end if action exists
 
 		// See if View is Dispatched
 		if ( routeResults.route.view.len() ) {
@@ -400,13 +406,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * the `route` it discovered or an empty structure and the `params` structure which represents
 	 * URL placeholders, convention name value pairs, matching variables, etc.
 	 *
-	 * @action The action evaluated by path_info
-	 * @event The event object
-	 * @module Incoming module
+	 * @action    The action evaluated by path_info
+	 * @event     The event object
+	 * @module    Incoming module
 	 * @namespace Incoming namespace
-	 * @domain Incoming domain
-	 *
-	 * @result Struct: { route: found route or empty struct, params: translated params }
+	 * @domain    Incoming domain
+	 * @result    Struct: { route: found route or empty struct, params: translated params }
 	 */
 	struct function findRoute(
 		required action,
@@ -620,7 +625,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * The cgi element facade method, created so we can do useful mocking
 	 *
 	 * @cgiElement The element to take from CGI
-	 * @event The request context object
+	 * @event      The request context object
 	 *
 	 * @return The cgi element value
 	 */
@@ -639,7 +644,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * Process a route redirection
 	 *
 	 * @routeResults The { params, route } that matched
-	 * @event The request context
+	 * @event        The request context
 	 */
 	private function processRedirect( required routeResults, required event ){
 		var redirectTo = "";
@@ -681,8 +686,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 	/**
 	 * Detect extensions from the incoming request
+	 *
 	 * @requestString The incoming request string
-	 * @event The event object
+	 * @event         The event object
 	 */
 	private function detectExtension( required requestString, required event ){
 		var extension    = listLast( arguments.requestString, "." );
@@ -749,6 +755,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 	/**
 	 * Render a RESTFul response
+	 *
 	 * @route The route response
 	 * @event The event object
 	 */
@@ -805,8 +812,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * Resolve handler/module packages
 	 *
 	 * @routingString The incoming routing string
-	 * @routeParams The incoming route parameters
-	 * @module Module route or not
+	 * @routeParams   The incoming route parameters
+	 * @module        Module route or not
 	 */
 	private function packageResolver(
 		required routingString,
@@ -909,9 +916,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 	/**
 	 * Check for invalid URL's
-	 * @route The incoming route
+	 *
+	 * @route       The incoming route
 	 * @script_name The cgi script name
-	 * @event The event object
+	 * @event       The event object
 	 */
 	private function checkForInvalidURL(
 		required route,
@@ -977,8 +985,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 	/**
 	 * Serialize a URL when invalid
+	 *
 	 * @formVars The incoming form variables
-	 * @event The event object
+	 * @event    The event object
 	 */
 	private function serializeURL( formVars = "", required event ){
 		var vars = arguments.formVars;
@@ -1001,7 +1010,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * Clean up some IIS funkyness where query string is found in the path info. We basically clean it up and add the query string into the RC scope
 	 *
 	 * @requestString the incoming request string
-	 * @rc The request collection struct
+	 * @rc            The request collection struct
 	 */
 	private function fixIISURLVars( required requestString, required rc ){
 		// Find a Matching position of IIS ?
@@ -1022,8 +1031,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * Find the convention name value pairs in the incoming request string, if found, we will incorporate them into the incoming `params` arguments
 	 *
 	 * @requestString the incoming request string
-	 * @match The regex matcher object
-	 * @params The incoming parameter struct
+	 * @match         The regex matcher object
+	 * @params        The incoming parameter struct
 	 */
 	private function findConventionNameValuePairs(
 		required string requestString,
@@ -1060,7 +1069,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	/**
 	 * Get and Clean the path_info and script names structure
 	 *
-	 * @rc The incoming request collection
+	 * @rc    The incoming request collection
 	 * @event The event object
 	 *
 	 * @return struct { pathInfo, scriptName, domain }

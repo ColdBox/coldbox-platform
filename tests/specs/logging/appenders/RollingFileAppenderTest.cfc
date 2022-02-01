@@ -30,7 +30,9 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				};
 
 				// debug(props);
-				fileappender = createMock( "coldbox.system.logging.appenders.RollingFileAppender" ).setLogBox( logBox );
+				fileappender = createMock( "coldbox.system.logging.appenders.RollingFileAppender" ).setLogBox(
+					logBox
+				);
 
 				// mock LogBox
 				logBox              = createMock( classname = "coldbox.system.logging.LogBox", clearMethod = true );
@@ -39,12 +41,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				fileappender.init( "MyFileAppender", props );
 
 				loge = createMock( "coldbox.system.logging.LogEvent" );
-				loge.init(
-					"Unit Test Sample",
-					0,
-					"",
-					"UnitTest"
-				);
+				loge.init( "Unit Test Sample", 0, "", "UnitTest" );
 			} );
 
 			it( "can call registration", function(){

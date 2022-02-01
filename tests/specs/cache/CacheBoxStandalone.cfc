@@ -19,12 +19,16 @@ component extends="testbox.system.BaseSpec" {
 		// all your suites go here.
 		describe( "CacheBox Standalone", function(){
 			it( "can be configured with a standalone configuration object", function(){
-				cacheBox = new coldbox.system.cache.CacheFactory( config = "tests.resources.StandaloneCacheBoxConfig" );
+				cacheBox = new coldbox.system.cache.CacheFactory(
+					config = "tests.resources.StandaloneCacheBoxConfig"
+				);
 				expect( cachebox.getCache( "standalone" ) ).toBeComponent();
 			} );
 
 			it( "can be configured with a LogBox Config object", function(){
-				cacheBox      = new coldbox.system.cache.CacheFactory( config = "tests.resources.StandaloneCacheBoxConfig" );
+				cacheBox = new coldbox.system.cache.CacheFactory(
+					config = "tests.resources.StandaloneCacheBoxConfig"
+				);
 				var appenders = cacheBox
 					.getLogBox()
 					.getConfig()

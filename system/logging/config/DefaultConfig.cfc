@@ -4,7 +4,7 @@
  * ---
  * The default logging configuration for a vanilla LogBox instance
  **/
-component{
+component {
 
 	/**
 	 *  Configure logBox
@@ -12,13 +12,9 @@ component{
 	function configure(){
 		logBox = {
 			// Define Appenders
-			appenders = {
-				console = {
-					class="ConsoleAppender"
-				}
-			},
+			appenders : { console : { class : "ConsoleAppender" } },
 			// Root Logger
-			root = { levelmax="INFO", appenders="*" }
+			root      : { levelmax : "INFO", appenders : "*" }
 		};
 	}
 

@@ -2,8 +2,9 @@
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * @author Luis Majano <lmajano@ortussolutions.com>
  * Loads the framwork into memory and provides a ColdBox application.
+ *
+ * @author Luis Majano <lmajano@ortussolutions.com>
  */
 component serializable="false" accessors="true" {
 
@@ -11,12 +12,14 @@ component serializable="false" accessors="true" {
 
 	// Configuration File Override
 	property name="COLDBOX_CONFIG_FILE";
-	// Application root path
+	// Application root disk path
 	property name="COLDBOX_APP_ROOT_PATH";
 	// The key used in application scope to model this app
 	property name="COLDBOX_APP_KEY";
-	// The application mapping override, only used for Flex/SOAP apps, this is auto-calculated
+	// The application mapping where the CFML assets are located
 	property name="COLDBOX_APP_MAPPING";
+	// The web mapping where the web root is located, usually this is empty unless in a subdirectory
+	property name="COLDBOX_WEB_MAPPING";
 	// Lock Timeout for startup operations
 	property name="lockTimeout";
 	// The application hash used for locks
@@ -29,34 +32,38 @@ component serializable="false" accessors="true" {
 	param name="COLDBOX_APP_ROOT_PATH" default="#getDirectoryFromPath( getBaseTemplatePath() )#";
 	param name="COLDBOX_APP_KEY"       default="cbController";
 	param name="COLDBOX_APP_MAPPING"   default="";
+	param name="COLDBOX_WEB_MAPPING"   default="";
 	param name="appHash"               default="#hash( getBaseTemplatePath() )#";
 	param name="lockTimeout" default="30" type="numeric";
 	param name="COLDBOX_FAIL_FAST" default="true";
 
 	/**
 	 * Constructor, called by your Application CFC
-	 * @COLDBOX_CONFIG_FILE The override location of the config file
+	 *
+	 * @COLDBOX_CONFIG_FILE   The override location of the config file
 	 * @COLDBOX_APP_ROOT_PATH The location of the app on disk
-	 * @COLDBOX_APP_KEY The key used in application scope for this application
-	 * @COLDBOX_APP_MAPPING The application mapping override, only used for Flex/SOAP apps, this is auto-calculated
-	 * @COLDBOX_FAIL_FAST By default if an app is reiniting and a request hits it, we will fail fast with a message. This can be a boolean indicator or a closure.
+	 * @COLDBOX_APP_KEY       The key used in application scope for this application
+	 * @COLDBOX_APP_MAPPING   The application mapping where the CFML assets are located
+	 * @COLDBOX_FAIL_FAST     By default if an app is reiniting and a request hits it, we will fail fast with a message. This can be a boolean indicator or a closure.
+	 * @COLDBOX_WEB_MAPPING   The web mapping where the web root is located, usually this is empty unless in a subdirectory
 	 */
 	Bootstrap function init(
 		required string COLDBOX_CONFIG_FILE,
 		required string COLDBOX_APP_ROOT_PATH,
 		string COLDBOX_APP_KEY,
 		string COLDBOX_APP_MAPPING = "",
-		any COLDBOX_FAIL_FAST      = true
+		any COLDBOX_FAIL_FAST      = true,
+		string COLDBOX_WEB_MAPPING = ""
 	){
-		// Set vars for two main locations
-		setCOLDBOX_CONFIG_FILE( arguments.COLDBOX_CONFIG_FILE );
-		setCOLDBOX_APP_ROOT_PATH( arguments.COLDBOX_APP_ROOT_PATH );
-		setCOLDBOX_APP_MAPPING( arguments.COLDBOX_APP_MAPPING );
-		setCOLDBOX_FAIL_FAST( arguments.COLDBOX_FAIL_FAST );
+		variables.COLDBOX_CONFIG_FILE   = arguments.COLDBOX_CONFIG_FILE;
+		variables.COLDBOX_APP_ROOT_PATH = arguments.COLDBOX_APP_ROOT_PATH;
+		variables.COLDBOX_APP_MAPPING   = arguments.COLDBOX_APP_MAPPING;
+		variables.COLDBOX_WEB_MAPPING   = arguments.COLDBOX_WEB_MAPPING;
+		variables.COLDBOX_FAIL_FAST     = arguments.COLDBOX_FAIL_FAST;
 
 		// App Key Check
 		if ( structKeyExists( arguments, "COLDBOX_APP_KEY" ) AND len( trim( arguments.COLDBOX_APP_KEY ) ) ) {
-			setCOLDBOX_APP_KEY( arguments.COLDBOX_APP_KEY );
+			variables.COLDBOX_APP_KEY = arguments.COLDBOX_APP_KEY;
 		}
 
 		return this;
@@ -95,7 +102,13 @@ component serializable="false" accessors="true" {
 		// Create Brand New Controller
 		application[ appKey ] = new coldbox.system.web.Controller( COLDBOX_APP_ROOT_PATH, appKey );
 		// Setup the Framework And Application
-		application[ appKey ].getLoaderService().loadApplication( COLDBOX_CONFIG_FILE, COLDBOX_APP_MAPPING );
+		application[ appKey ]
+			.getLoaderService()
+			.loadApplication(
+				COLDBOX_CONFIG_FILE,
+				COLDBOX_APP_MAPPING,
+				COLDBOX_WEB_MAPPING
+			);
 		// Get the reinit key
 		// Application Start Handler
 		try {
@@ -624,8 +637,9 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Process an exception and returns a rendered bug report
+	 *
 	 * @controller The ColdBox Controller
-	 * @exception The ColdFusion exception
+	 * @exception  The ColdFusion exception
 	 */
 	private string function processException( required controller, required exception ){
 		// prepare exception facade object + app logger
@@ -702,11 +716,12 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Process render data setup
-	 * @controller The ColdBox controller
-	 * @statusCode The status code to send
-	 * @statusText The status text to send
+	 *
+	 * @controller  The ColdBox controller
+	 * @statusCode  The status code to send
+	 * @statusText  The status text to send
 	 * @contentType The content type to send
-	 * @encoding The content encoding
+	 * @encoding    The content encoding
 	 */
 	private Bootstrap function renderDataSetup(
 		required controller,

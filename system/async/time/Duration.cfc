@@ -218,7 +218,7 @@ component accessors="true" {
 	/**
 	 * Adds this duration to the specified temporal object and return back to you a date/time object
 	 *
-	 * @target The date/time object or string to incorporate the duration into
+	 * @target    The date/time object or string to incorporate the duration into
 	 * @asInstant Return the result either as a date/time string or a java.time.Instant object
 	 *
 	 * @return Return the result either as a date/time string or a java.time.Instant object
@@ -231,7 +231,7 @@ component accessors="true" {
 	/**
 	 * Subtracts this duration to the specified temporal object and return back to you a date/time object
 	 *
-	 * @target The date/time object or string to subtract the duration from
+	 * @target    The date/time object or string to subtract the duration from
 	 * @asInstant Return the result either as a date/time string or a java.time.Instant object
 	 *
 	 * @return Return the result either as a date/time string or a java.time.Instant object
@@ -249,7 +249,7 @@ component accessors="true" {
 	 * LocalTime then the second argument is converted to a LocalTime.
 	 *
 	 * @start The start date/time object
-	 * @end The end date/time object
+	 * @end   The end date/time object
 	 */
 	Duration function between( required start, required end ){
 		// Do it!
@@ -287,7 +287,7 @@ component accessors="true" {
 	 * Returns a copy of this duration with the specified duration subtracted.
 	 *
 	 * @amountToSubtract The amount to subtract
-	 * @unit The units to use
+	 * @unit             The units to use
 	 */
 	Duration function minus( required amountToSubtract, unit = "seconds" ){
 		variables.jDuration = variables.jDuration.minus(
@@ -330,7 +330,7 @@ component accessors="true" {
 	 * Returns a copy of this duration with the specified duration added.
 	 *
 	 * @amountToAdd The amount to add
-	 * @unit The units to use
+	 * @unit        The units to use
 	 */
 	Duration function plus( required amountToAdd, unit = "seconds" ){
 		variables.jDuration = variables.jDuration.plus(
@@ -407,8 +407,7 @@ component accessors="true" {
 	 * "-PT6H3M"    -- parses as "-6 hours and -3 minutes"
 	 * "-PT-6H+3M"  -- parses as "+6 hours and -3 minutes"
 	 *
-	 * @see https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/Duration.html#parse(java.lang.CharSequence)
-	 *
+	 * @see  https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/Duration.html#parse(java.lang.CharSequence)
 	 * @text The string to parse and build up to a duration
 	 */
 	Duration function parse( required text ){
@@ -430,7 +429,7 @@ component accessors="true" {
 	 * Obtains a Duration representing an amount in the specified unit (seconds)
 	 *
 	 * @amount the amount of the duration, measured in terms of the unit, positive or negative
-	 * @unit The time unit: CENTURIES,DAYS,DECADES,ERAS,FOREVER,HALF_DAYS,HOURS,MICROS,MILLENNIA,MILLIS,MINUTES,MONTHS,NANOS,SECONDS,WEEKS,YEARS
+	 * @unit   The time unit: CENTURIES,DAYS,DECADES,ERAS,FOREVER,HALF_DAYS,HOURS,MICROS,MILLENNIA,MILLIS,MINUTES,MONTHS,NANOS,SECONDS,WEEKS,YEARS
 	 */
 	Duration function of( required amount, unit = "seconds" ){
 		variables.jDuration = variables.jDuration.of(
@@ -474,7 +473,7 @@ component accessors="true" {
 	 * The factory will alter the values of the second and nanosecond in order to ensure that the stored nanosecond is in the range
 	 * 0 to 999,999,999. For example, the following will result in exactly the same duration:
 	 *
-	 * @seconds The number of seconds, positive or negative
+	 * @seconds        The number of seconds, positive or negative
 	 * @nanoAdjustment the nanosecond adjustment to the number of seconds, positive or negative
 	 */
 	Duration function ofSeconds( required seconds, nanoAdjustment ){

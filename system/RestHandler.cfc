@@ -31,19 +31,13 @@ component extends="EventHandler" {
 	 * Our Rest handler adds a nice around handler that will be active for all handlers
 	 * that leverage it.  So it can add uniformity, exception handling, tracking and more.
 	 *
-	 * @event The request context
-	 * @rc The rc reference
-	 * @prc The prc reference
-	 * @targetAction The action UDF to execute
+	 * @event          The request context
+	 * @rc             The rc reference
+	 * @prc            The prc reference
+	 * @targetAction   The action UDF to execute
 	 * @eventArguments The original event arguments
 	 */
-	function aroundHandler(
-		event,
-		rc,
-		prc,
-		targetAction,
-		eventArguments
-	){
+	function aroundHandler( event, rc, prc, targetAction, eventArguments ){
 		try {
 			// start a resource timer
 			var stime = getTickCount();
@@ -68,7 +62,7 @@ component extends="EventHandler" {
 			this.onAuthenticationFailure( argumentCollection = arguments );
 		}
 		// Token Decoding Issues
-		catch( "TokenInvalidException" e ){
+		catch ( "TokenInvalidException" e ) {
 			this.onAuthenticationFailure( argumentCollection = arguments );
 		}
 		// Validation Exceptions
@@ -93,31 +87,19 @@ component extends="EventHandler" {
 		} catch ( Any e ) {
 			arguments.exception = e;
 			this.onAnyOtherException( argumentCollection = arguments );
-            // If in development, let's show the error template
-            if ( getSetting( "environment" ) eq "development" ) {
-                rethrow;
-            }
+			// If in development, let's show the error template
+			if ( getSetting( "environment" ) eq "development" ) {
+				rethrow;
+			}
 		}
 
 		// Development additions
 		if ( getSetting( "environment" ) eq "development" ) {
 			arguments.prc.response
-				.addHeader(
-					"x-current-route",
-					arguments.event.getCurrentRoute()
-				)
-				.addHeader(
-					"x-current-routed-url",
-					arguments.event.getCurrentRoutedURL()
-				)
-				.addHeader(
-					"x-current-routed-namespace",
-					arguments.event.getCurrentRoutedNamespace()
-				)
-				.addHeader(
-					"x-current-event",
-					arguments.event.getCurrentEvent()
-				);
+				.addHeader( "x-current-route", arguments.event.getCurrentRoute() )
+				.addHeader( "x-current-routed-url", arguments.event.getCurrentRoutedURL() )
+				.addHeader( "x-current-routed-namespace", arguments.event.getCurrentRoutedNamespace() )
+				.addHeader( "x-current-event", arguments.event.getCurrentEvent() );
 		}
 
 		// end timer
@@ -153,18 +135,11 @@ component extends="EventHandler" {
 		}
 
 		// Global Response Headers
-		arguments.prc.response
-			.addHeader(
-				"x-response-time",
-				arguments.prc.response.getResponseTime()
-			);
+		arguments.prc.response.addHeader( "x-response-time", arguments.prc.response.getResponseTime() );
 
 		// Output the response headers
 		for ( var thisHeader in arguments.prc.response.getHeaders() ) {
-			arguments.event.setHTTPHeader(
-				name  = thisHeader.name,
-				value = thisHeader.value
-			);
+			arguments.event.setHTTPHeader( name = thisHeader.name, value = thisHeader.value );
 		}
 
 		// If results detected, just return them, controllers requesting to return results
@@ -176,11 +151,11 @@ component extends="EventHandler" {
 	/**
 	 * Implicit action that detects exceptions on your handlers and processes them
 	 *
-	 * @event The request context
-	 * @rc The rc reference
-	 * @prc The prc reference
-	 * @faultAction The action that blew up
-	 * @exception The thrown exception
+	 * @event          The request context
+	 * @rc             The rc reference
+	 * @prc            The prc reference
+	 * @faultAction    The action that blew up
+	 * @exception      The thrown exception
 	 * @eventArguments The original event arguments
 	 */
 	function onError(
@@ -197,12 +172,7 @@ component extends="EventHandler" {
 		}
 
 		// If in development and not in testing mode, then show exception template, easier to debug
-		if (
-			getSetting( "environment" ) eq "development" && !isInstanceOf(
-				variables.controller,
-				"MockController"
-			)
-		) {
+		if ( getSetting( "environment" ) eq "development" && !isInstanceOf( variables.controller, "MockController" ) ) {
 			throw( object = arguments.exception );
 		}
 
@@ -227,7 +197,9 @@ component extends="EventHandler" {
 		// Development additions Great for Testing
 		if ( getSetting( "environment" ) eq "development" ) {
 			prc.response
-				.setData( structKeyExists( arguments.exception, "tagContext" ) ? arguments.exception.tagContext : {} )
+				.setData(
+					structKeyExists( arguments.exception, "tagContext" ) ? arguments.exception.tagContext : {}
+				)
 				.addMessage( "Detail: #arguments.exception.detail#" )
 				.addMessage( "StackTrace: #arguments.exception.stacktrace#" );
 		}
@@ -248,19 +220,13 @@ component extends="EventHandler" {
 	 * Action that can be used when validation exceptions ocur.  Can be called manually or automatically
 	 * via thrown exceptions in the around handler
 	 *
-	 * @event The request context
-	 * @rc The rc reference
-	 * @prc The prc reference
+	 * @event          The request context
+	 * @rc             The rc reference
+	 * @prc            The prc reference
 	 * @eventArguments The original event arguments
-	 * @exception The thrown exception
+	 * @exception      The thrown exception
 	 */
-	function onValidationException(
-		event,
-		rc,
-		prc,
-		eventArguments,
-		exception
-	){
+	function onValidationException( event, rc, prc, eventArguments, exception ){
 		// Log Locally
 		if ( log.canDebug() ) {
 			log.debug(
@@ -296,19 +262,13 @@ component extends="EventHandler" {
 	 * Action that can be used when an entity or record is not found. Can be called manually or automatically
 	 * via thrown exceptions in the around handler
 	 *
-	 * @event The request context
-	 * @rc The rc reference
-	 * @prc The prc reference
+	 * @event          The request context
+	 * @rc             The rc reference
+	 * @prc            The prc reference
 	 * @eventArguments The original event arguments
-	 * @exception The thrown exception
+	 * @exception      The thrown exception
 	 */
-	function onEntityNotFoundException(
-		event,
-		rc,
-		prc,
-		eventArguments,
-		exception
-	){
+	function onEntityNotFoundException( event, rc, prc, eventArguments, exception ){
 		// Log Locally
 		if ( log.canDebug() ) {
 			log.debug(
@@ -341,19 +301,13 @@ component extends="EventHandler" {
 	/**
 	 * Action used when the framework detects and Invalid HTTP method for the action
 	 *
-	 * @event The request context
-	 * @rc The rc reference
-	 * @prc The prc reference
-	 * @faultAction The action that was secured
+	 * @event          The request context
+	 * @rc             The rc reference
+	 * @prc            The prc reference
+	 * @faultAction    The action that was secured
 	 * @eventArguments The original event arguments
 	 */
-	function onInvalidHTTPMethod(
-		event,
-		rc,
-		prc,
-		faultAction,
-		eventArguments
-	){
+	function onInvalidHTTPMethod( event, rc, prc, faultAction, eventArguments ){
 		// Log it
 		log.warn(
 			"InvalidHTTPMethod Execution of (#arguments.faultAction#): #arguments.event.getHTTPMethod()#",
@@ -364,7 +318,9 @@ component extends="EventHandler" {
 		arguments.event
 			.getResponse()
 			.setError( true )
-			.addMessage( "InvalidHTTPMethod Execution of (#arguments.faultAction#): #arguments.event.getHTTPMethod()#" )
+			.addMessage(
+				"InvalidHTTPMethod Execution of (#arguments.faultAction#): #arguments.event.getHTTPMethod()#"
+			)
 			.setStatusCode( arguments.event.STATUS.NOT_ALLOWED )
 			.setStatusText( "Invalid HTTP Method" );
 
@@ -383,19 +339,13 @@ component extends="EventHandler" {
 	/**
 	 * Action used when the original action does not exist in a handler.
 	 *
-	 * @event The request context
-	 * @rc The rc reference
-	 * @prc The prc reference
-	 * @missingAction The missing action
+	 * @event          The request context
+	 * @rc             The rc reference
+	 * @prc            The prc reference
+	 * @missingAction  The missing action
 	 * @eventArguments The original event arguments
 	 */
-	function onMissingAction(
-		event,
-		rc,
-		prc,
-		missingAction,
-		eventArguments
-	){
+	function onMissingAction( event, rc, prc, missingAction, eventArguments ){
 		// Setup Response
 		arguments.event
 			.getResponse()
@@ -423,8 +373,8 @@ component extends="EventHandler" {
 	 * It also monitors cbsecurity convention of validator results for setting error messages into the data packet
 	 *
 	 * @event The request context
-	 * @rc The rc reference
-	 * @prc The prc reference
+	 * @rc    The rc reference
+	 * @prc   The prc reference
 	 *
 	 * @return 403
 	 */
@@ -463,8 +413,8 @@ component extends="EventHandler" {
 	 * It will check for cbsecurity validation results and set the appropriate error messages
 	 *
 	 * @event The request context
-	 * @rc The rc reference
-	 * @prc The prc reference
+	 * @rc    The rc reference
+	 * @prc   The prc reference
 	 * @abort Hard abort the request if passed, defaults to false
 	 */
 	function onAuthorizationFailure(
@@ -489,10 +439,7 @@ component extends="EventHandler" {
 		 * When you need a really hard stop to prevent further execution ( use as last resort )
 		 */
 		if ( arguments.abort ) {
-			event.setHTTPHeader(
-				name  = "Content-Type",
-				value = "application/json"
-			);
+			event.setHTTPHeader( name = "Content-Type", value = "application/json" );
 			event.setHTTPHeader(
 				statusCode = "#arguments.event.STATUS.NOT_AUTHORIZED#",
 				statusText = "Not Authorized"
@@ -515,10 +462,10 @@ component extends="EventHandler" {
 	 * </pre>
 	 *
 	 * @event The request context
-	 * @rc The rc reference
-	 * @prc The prc reference
+	 * @rc    The rc reference
+	 * @prc   The prc reference
 	 *
-	 * @returns 404:Not Found
+	 * @return 404:Not Found
 	 */
 	function onInvalidRoute( event, rc, prc ){
 		arguments.event
@@ -529,40 +476,32 @@ component extends="EventHandler" {
 			.addMessage( "The resource requested (#event.getCurrentRoutedURL()#) could not be found" );
 	}
 
-    /**
-     * Action for 'any' exceptions, ie when not caught by previous catch statements
-     *
-	 * @event The request context
-	 * @rc The rc reference
-	 * @prc The prc reference
+	/**
+	 * Action for 'any' exceptions, ie when not caught by previous catch statements
+	 *
+	 * @event          The request context
+	 * @rc             The rc reference
+	 * @prc            The prc reference
 	 * @eventArguments The original event arguments
-	 * @exception The thrown exception
+	 * @exception      The thrown exception
 	 */
-	function onAnyOtherException(
-		event,
-		rc,
-		prc,
-		eventArguments,
-		exception
-	){
+	function onAnyOtherException( event, rc, prc, eventArguments, exception ){
+		// Log Exception
+		log.error(
+			"Error calling #arguments.event.getCurrentEvent()#: #arguments.exception.message# #arguments.exception.detail#",
+			{
+				"_stacktrace" : arguments.exception.stacktrace,
+				"httpData"    : getHTTPRequestData( false )
+			}
+		);
 
-        // Log Exception
-        log.error(
-            "Error calling #arguments.event.getCurrentEvent()#: #arguments.exception.message# #arguments.exception.detail#",
-            {
-                "_stacktrace" : arguments.exception.stacktrace,
-                "httpData"    : getHTTPRequestData( false )
-            }
-        );
-
-        // Setup General Error Response
-        arguments.prc.response
-            .setError( true )
-            .addMessage( "General application error: #arguments.exception.message#" )
-            .setStatusCode( arguments.event.STATUS.INTERNAL_ERROR )
-            .setStatusText( "General application error" );
-
-    }
+		// Setup General Error Response
+		arguments.prc.response
+			.setError( true )
+			.addMessage( "General application error: #arguments.exception.message#" )
+			.setStatusCode( arguments.event.STATUS.INTERNAL_ERROR )
+			.setStatusText( "General application error" );
+	}
 
 	/**
 	 * Utility method for when an expectation of the request fails ( e.g. an expected parameter is not provided )
@@ -570,12 +509,12 @@ component extends="EventHandler" {
 	 * - Add the error flag
 	 * - Add an failure message to the data packet which you can customize
 	 *
-	 * @event The request context
-	 * @rc The rc reference
-	 * @prc The prc reference
+	 * @event   The request context
+	 * @rc      The rc reference
+	 * @prc     The prc reference
 	 * @message The failure message sent in the request package
 	 *
-	 * @returns 417:Expectation Failed
+	 * @return 417:Expectation Failed
 	 */
 	function onExpectationFailed(
 		event   = getRequestContext(),

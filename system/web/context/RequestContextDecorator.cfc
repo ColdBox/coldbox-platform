@@ -16,10 +16,7 @@ component
 	/**
 	 * Constructor
 	 */
-	RequestContextDecorator function init(
-		required oContext,
-		required controller
-	){
+	RequestContextDecorator function init( required oContext, required controller ){
 		// Set the memento state
 		setMemento( arguments.oContext.getMemento() );
 		// Set Controller

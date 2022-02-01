@@ -39,7 +39,7 @@ component accessors="true" singleton {
 	/**
 	 * Constructor
 	 *
-	 * @name The name of this scheduler
+	 * @name         The name of this scheduler
 	 * @asyncManager The async manager we are linked to
 	 */
 	function init( required name, required asyncManager ){
@@ -75,8 +75,7 @@ component accessors="true" singleton {
 	/**
 	 * Set the timezone for all tasks to use using the timezone string identifier
 	 *
-	 * @see https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/ZoneId.html
-	 *
+	 * @see      https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/ZoneId.html
 	 * @timezone The timezone string identifier
 	 */
 	Scheduler function setTimezone( required timezone ){
@@ -209,6 +208,8 @@ component accessors="true" singleton {
 		this.onShutdown();
 		// shutdown executor
 		variables.executor.shutdownNow();
+		// Remove executor
+		variables.asyncManager.deleteExecutor( variables.name & "-scheduler" );
 		// Mark it
 		variables.started = false;
 		// Log it
@@ -237,9 +238,8 @@ component accessors="true" singleton {
 	/**
 	 * Called whenever ANY task fails
 	 *
-	 * @task The task that got executed
+	 * @task      The task that got executed
 	 * @exception The ColdFusion exception object
-	 *
 	 */
 	function onAnyTaskError( required task, required exception ){
 	}
@@ -247,9 +247,8 @@ component accessors="true" singleton {
 	/**
 	 * Called whenever ANY task succeeds
 	 *
-	 * @task The task that got executed
+	 * @task   The task that got executed
 	 * @result The result (if any) that the task produced
-	 *
 	 */
 	function onAnyTaskSuccess( required task, result ){
 	}
@@ -258,7 +257,6 @@ component accessors="true" singleton {
 	 * Called before ANY task runs
 	 *
 	 * @task The task about to be executed
-	 *
 	 */
 	function beforeAnyTask( required task ){
 	}
@@ -266,9 +264,8 @@ component accessors="true" singleton {
 	/**
 	 * Called after ANY task runs
 	 *
-	 * @task The task that got executed
+	 * @task   The task that got executed
 	 * @result The result (if any) that the task produced
-	 *
 	 */
 	function afterAnyTask( required task, result ){
 	}
@@ -312,9 +309,9 @@ component accessors="true" singleton {
 	 *
 	 * @name The name of the task
 	 *
-	 * @throws UnregisteredTaskException if no task is found under that name
-	 *
 	 * @return The task record struct: { name, task, future, scheduledAt, registeredAt, error, errorMessage, stacktrace }
+	 *
+	 * @throws UnregisteredTaskException if no task is found under that name
 	 */
 	struct function getTaskRecord( required name ){
 		if ( hasTask( arguments.name ) ) {
@@ -342,6 +339,20 @@ component accessors="true" singleton {
 		// Delete it
 		variables.tasks.delete( arguments.name );
 		return this;
+	}
+
+	/**
+	 * Get the current thread name
+	 */
+	private function getThreadName(){
+		return getCurrentThread().getName();
+	}
+
+	/**
+	 * Get the current thread java object
+	 */
+	private function getCurrentThread(){
+		return createObject( "java", "java.lang.Thread" ).currentThread();
 	}
 
 }

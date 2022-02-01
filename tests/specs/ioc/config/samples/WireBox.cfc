@@ -52,20 +52,11 @@ WireBox injector is created
 
 		// WireBox Mappings
 		wirebox.mappings = {
-			myBean : {
-				alias : "jose",
-				path  : "my.path.Sample"
-			},
+			myBean : { alias : "jose", path : "my.path.Sample" },
 			buffer : {
-				path              : "java.lang.StringBuilder",
-				type              : this.TYPES.JAVA,
-				DIConstructorArguments : [
-					{
-						name     : "buffer",
-						value    : "16",
-						javaCast : "int"
-					}
-				]
+				path                   : "java.lang.StringBuilder",
+				type                   : this.TYPES.JAVA,
+				DIConstructorArguments : [ { name : "buffer", value : "16", javaCast : "int" } ]
 			}
 		};
 	}

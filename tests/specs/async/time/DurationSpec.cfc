@@ -88,7 +88,7 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 
 			it( "can convert to other time units", function(){
 				expect( duration.ofMinutes( 60 ).toHours() ).toBe( 1 );
-				if( listFirst( engineUtil.JDK_VERSION, "." ) >= 11 ){
+				if ( listFirst( engineUtil.JDK_VERSION, "." ) >= 11 ) {
 					expect( duration.ofMinutes( 60 ).toSeconds() ).toBe( 60 * 60 );
 				}
 				expect( duration.ofMinutes( 60 ).toMillis() ).toBe( 60 * 60 * 1000 );
@@ -103,7 +103,7 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 			it( "can subtract durations to date/time objects", function(){
 				var now = now();
 				var t   = duration.ofDays( 10 ).subtractFrom( now );
-				expect( dateDiff( "d", now, t ) ).toBe( -10 );
+				expect( dateDiff( "d", now, dateFormat( t, "medium" ) ) ).toBe( -10 );
 			} );
 		} );
 	}

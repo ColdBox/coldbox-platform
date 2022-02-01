@@ -53,12 +53,14 @@ component accessors="true" {
 
 	/**
 	 * The Global AsyncManager
+	 *
 	 * @see coldbox.system.async.AsyncManager
 	 */
 	property name="asyncManager";
 
 	/**
 	 * The logBox task scheduler executor
+	 *
 	 * @see coldbox.system.async.executors.ScheduledExecutor
 	 */
 	property name="taskScheduler";
@@ -69,7 +71,7 @@ component accessors="true" {
 	/**
 	 * Constructor
 	 *
-	 * @config The LogBoxConfig object to use to configure this instance of LogBox or a path to your configuration object
+	 * @config  The LogBoxConfig object to use to configure this instance of LogBox or a path to your configuration object
 	 * @coldbox A coldbox application that this instance of logbox can be linked to.
 	 * @wirebox A wirebox injector that this instance of logbox can be linked to.
 	 *
@@ -132,7 +134,7 @@ component accessors="true" {
 	/**
 	 * Configure logbox for operation. You can also re-configure LogBox programmatically. Basically we register all appenders here and all categories
 	 *
-	 * @config The LogBoxConfig object to use to configure this instance of LogBox or the path to your configuration object
+	 * @config             The LogBoxConfig object to use to configure this instance of LogBox or the path to your configuration object
 	 * @config.doc_generic coldbox.system.logging.config.LogBoxConfig
 	 */
 	function configure( required config ){
@@ -284,12 +286,12 @@ component accessors="true" {
 	/**
 	 * Register a new appender object in the appender registry.
 	 *
-	 * @name A unique name for the appender to register. Only unique names can be registered per variables.
-	 * @class The appender's class to register. We will create, init it and register it for you.
+	 * @name       A unique name for the appender to register. Only unique names can be registered per variables.
+	 * @class      The appender's class to register. We will create, init it and register it for you.
 	 * @properties The structure of properties to configure this appender with.
-	 * @layout The layout class to use in this appender for custom message rendering
-	 * @levelMin The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARN
-	 * @levelMax The default log level for this appender, by default it is 4. Optional. ex: LogBox.logLevels.WARN
+	 * @layout     The layout class to use in this appender for custom message rendering
+	 * @levelMin   The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARN
+	 * @levelMax   The default log level for this appender, by default it is 4. Optional. ex: LogBox.logLevels.WARN
 	 */
 	LogBox function registerAppender(
 		required name,
@@ -394,7 +396,7 @@ component accessors="true" {
 
 				if ( !variables.appenderRegistry.keyExists( item ) )
 					// In the event that an appender was added after the initial config load
-					registerAppender( argumentCollection: variables.config.getAllAppenders()[ item ] );
+				registerAppender( argumentCollection: variables.config.getAllAppenders()[ item ] );
 
 				target[ item ] = variables.appenderRegistry[ item ];
 				return target;

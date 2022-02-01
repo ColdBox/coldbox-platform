@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>Welcome to Coldbox!</title>
+	<title>#server.keyExists( "lucee" ) ? "lucee" : "adobe"# #server.coldfusion.productVersion# - Welcome to Coldbox!</title>
 	<meta name="description" content="ColdBox Application Template">
     <meta name="author" content="Ortus Solutions, Corp">
 	<!---Base URL --->

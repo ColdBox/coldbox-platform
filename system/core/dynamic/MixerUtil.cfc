@@ -42,11 +42,7 @@ A utility object that provides runtime mixins
 	>
 		<cfargument name="CFC" required="true" hint="The cfc to mixin">
 		<cfscript>
-		structAppend(
-			arguments.cfc,
-			variables.mixins,
-			true
-		);
+		structAppend( arguments.cfc, variables.mixins, true );
 		</cfscript>
 	</cffunction>
 
@@ -128,12 +124,24 @@ A utility object that provides runtime mixins
 	</cffunction>
 
 	<!--- getVariablesMixin --->
-	<cffunction name="getVariablesMixin" access="public" hint="Get the variables scope" returntype="any" output="true">
+	<cffunction
+		name      ="getVariablesMixin"
+		access    ="public"
+		hint      ="Get the variables scope"
+		returntype="any"
+		output    ="true"
+	>
 		<cfreturn variables>
 	</cffunction>
 
 	<!--- injectMixin --->
-	<cffunction name="injectMixin" hint="Injects a method into the CFC" access="public" returntype="any" output="false">
+	<cffunction
+		name      ="injectMixin"
+		hint      ="Injects a method into the CFC"
+		access    ="public"
+		returntype="any"
+		output    ="false"
+	>
 		<cfargument name="name" required="true" hint="The name to inject the UDF as"/>
 		<cfargument name="UDF" required="true" hint="UDF to inject">
 		<cfscript>
@@ -154,7 +162,12 @@ A utility object that provides runtime mixins
 	>
 		<cfargument name="propertyName" required="true" hint="The name of the property to inject."/>
 		<cfargument name="propertyValue" required="true" hint="The value of the property to inject"/>
-		<cfargument name="scope" required="false" default="variables" hint="The scope to which inject the property to."/>
+		<cfargument
+			name    ="scope"
+			required="false"
+			default ="variables"
+			hint    ="The scope to which inject the property to."
+		/>
 		<cfscript>
 		// Validate Property
 		if ( structKeyExists( evaluate( arguments.scope ), arguments.propertyName ) ) {
@@ -168,7 +181,12 @@ A utility object that provides runtime mixins
 	<!--- getPropertyMixin --->
 	<cffunction name="getPropertyMixin" hint="gets a property" access="public" returntype="any" output="false">
 		<cfargument name="name" required="true" hint="The name of the property to inject."/>
-		<cfargument name="scope" required="false" default="variables" hint="The scope to which inject the property to."/>
+		<cfargument
+			name    ="scope"
+			required="false"
+			default ="variables"
+			hint    ="The scope to which inject the property to."
+		/>
 		<cfargument name="default" required="false" hint="Default value to return"/>
 		<cfscript>
 		var thisScope = variables;
@@ -194,7 +212,12 @@ A utility object that provides runtime mixins
 	>
 		<cfargument name="propertyName" required="true" hint="The name of the property to inject."/>
 		<cfargument name="propertyValue" required="true" hint="The value of the property to inject"/>
-		<cfargument name="scope" required="false" default="variables" hint="The scope to which inject the property to."/>
+		<cfargument
+			name    ="scope"
+			required="false"
+			default ="variables"
+			hint    ="The scope to which inject the property to."
+		/>
 		<cfscript>
 		"#arguments.scope#.#arguments.propertyName#" = arguments.propertyValue;
 
@@ -222,7 +245,12 @@ A utility object that provides runtime mixins
 		output    ="false"
 	>
 		<cfargument name="propertyName" required="true" hint="The name of the property to remove."/>
-		<cfargument name="scope" required="false" default="variables" hint="The scope to which inject the property to."/>
+		<cfargument
+			name    ="scope"
+			required="false"
+			default ="variables"
+			hint    ="The scope to which inject the property to."
+		/>
 		<cfscript>
 		structDelete( evaluate( arguments.scope ), arguments.propertyName );
 

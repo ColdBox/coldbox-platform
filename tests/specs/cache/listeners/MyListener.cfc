@@ -1,4 +1,5 @@
-﻿component output = "false"{
+﻿component output="false" {
+
 	function configure( any cacheBox, struct properties ){
 		variables.cacheBox   = arguments.cacheBox;
 		variables.properties = arguments.properties;
@@ -17,4 +18,5 @@
 	any function afterCacheFactoryConfiguration( struct data ){
 		log.info( "#properties.name# -> afterCacheFactoryConfiguration called", arguments.data.toString() );
 	}
+
 }

@@ -100,15 +100,26 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			.setScope( variables.wirebox.getBinder().SCOPES.SINGLETON )
 			.addDIConstructorArgument( name = "name", value = arguments.name );
 		// Create, register, configure it and start it up baby!
-		var oScheduler = registerScheduler( variables.wirebox.getInstance( arguments.name ) );
+		var oScheduler = registerScheduler(
+			variables.wirebox.getInstance( arguments.name, { name : arguments.name } ).setName( arguments.name )
+		);
 		// Register the Scheduler as an Interceptor as well.
 		variables.controller.getInterceptorService().registerInterceptor( interceptorObject = oScheduler );
 		// Configure it
 		oScheduler.configure();
-		// Start it up
-		oScheduler.startup();
 		// Return it
 		return oScheduler;
+	}
+
+	/**
+	 * This method is ran by the laoder service once the ColdBox application is ready to serve requests.
+	 * It will startup all the schedulers in the order they where registered.
+	 */
+	SchedulerService function startupSchedulers(){
+		for ( var thisScheduler in variables.schedulers ) {
+			variables.schedulers[ thisScheduler ].startup();
+		}
+		return this;
 	}
 
 	/**
