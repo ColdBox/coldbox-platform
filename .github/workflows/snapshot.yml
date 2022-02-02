@@ -16,7 +16,7 @@ jobs:
   #############################################
   tests:
     name: Tests
-    uses: tests.yml
+    uses: ./.github/workflows/tests.yml
 
   #############################################
   # Build ColdBox Now
