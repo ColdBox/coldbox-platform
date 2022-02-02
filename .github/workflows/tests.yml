@@ -89,7 +89,6 @@ jobs:
         with:
           files: tests/results/**/*.xml
           check_name: "${{ matrix.cfengine }} Test Results"
-          summary: true
 
       - name: Upload Test Results Artifacts
         if: always()
