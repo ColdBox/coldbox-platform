@@ -1,6 +1,7 @@
-name: ColdBox Platform CI
+# This workflow tests the ColdBox code using many permutations in the matrix.
+# If successful, then it creates the bleeding edge artifact and publishes it to S3 and ForgeBox
+name: ColdBox Platform Snapshots
 
-# Only on Development we build snapshots
 on:
   push:
     branches:
@@ -15,119 +16,7 @@ jobs:
   #############################################
   tests:
     name: Tests
-    runs-on: ubuntu-20.04
-    env:
-      DB_USER: root
-      DB_PASSWORD: root
-    strategy:
-      fail-fast: false
-      matrix:
-        cfengine: [ "lucee@5", "adobe@2016", "adobe@2018", "adobe@2021" ]
-        fullNull: [ "true", "false" ]
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-
-      - name: Setup Database and Fixtures
-        run: |
-          sudo systemctl start mysql.service
-          mysql -u${{ env.DB_USER }} -p${{ env.DB_PASSWORD }} -e 'CREATE DATABASE coolblog;'
-          mysql -u${{ env.DB_USER }} -p${{ env.DB_PASSWORD }} < tests/resources/coolblog.sql
-
-      - name: Setup Java
-        uses: actions/setup-java@v2
-        with:
-          distribution: "adopt"
-          java-version: "11"
-
-      - name: Setup CommandBox
-        uses: elpete/setup-commandbox@v1.0.0
-
-      - name: Setup .env For Runner
-        run: |
-          touch .env
-          printf "DB_HOST=127.0.0.1\n" >> .env
-          printf "DB_DATABASE=coolblog\n" >> .env
-          printf "DB_DRIVER=MySQL\n" >> .env
-          printf "DB_USER=${{ env.DB_USER }}\n" >> .env
-          printf "DB_PASSWORD=${{ env.DB_PASSWORD }}\n" >> .env
-          printf "DB_CLASS=com.mysql.cj.jdbc.Driver\n" >> .env
-          printf "DB_BUNDLEVERSION=8.0.19\n" >> .env
-          printf "DB_BUNDLENAME=com.mysql.cj\n" >> .env
-
-      - name: Cache CommandBox Dependencies
-        uses: actions/cache@v1
-        if: ${{ true }}
-        with:
-          path: ~/.CommandBox/artifacts
-          key: ${{ runner.OS }}-commandbox-cache-${{ hashFiles( 'box.json' ) }}
-          restore-keys: |
-            ${{ runner.OS }}-commandbox-cache-${{ hashFiles( 'box.json' ) }}
-
-      - name: Install Dependencies
-        run: |
-          # Core dependencies
-          box install
-          # API Docs dependencies
-          cd apidocs && box install
-
-      - name: Start ${{ matrix.cfengine }} Server
-        run: |
-          box server start serverConfigFile="server-${{ matrix.cfengine }}.json" --noSaveSettings --debug
-          # Install Adobe 2021 cfpm modules
-          if [[ "${{ matrix.cfengine }}" == "adobe@2021" ]] ; then
-            box run-script install:2021
-          fi
-          # Test the harness
-          curl http://127.0.0.1:8599/test-harness
-
-      - name: Run Tests Full Null (${{ matrix.fullNull }})
-        env:
-          FULL_NULL: ${{ matrix.fullNull }}
-        run: |
-          ant -f build/build.xml run-tests
-
-      - name: Publish Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v1
-        if: always()
-        with:
-          files: tests/results/**/*.xml
-          check_name: "${{ matrix.cfengine }} Test Results"
-          summary: true
-
-      - name: Upload Test Results Artifacts
-        if: always()
-        uses: actions/upload-artifact@v2
-        with:
-          name: coldbox-test-results-${{ matrix.cfengine }}
-          path: |
-            tests/results/**/*
-
-      - name: Slack Notification
-        if: ${{ failure() }}
-        uses: rtCamp/action-slack-notify@v2
-        env:
-          SLACK_CHANNEL: coding
-          SLACK_COLOR: ${{ job.status }} # or a specific color like 'green' or '#ff00ff'
-          SLACK_ICON_EMOJI: ":bell:"
-          SLACK_MESSAGE: 'ColdBox tests failed :cry:, check them out here: https://github.com/coldbox/coldbox-platform/actions'
-          SLACK_TITLE: ColdBox Tests For ${{ matrix.cfengine }} failed
-          SLACK_USERNAME: CI
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
-
-      - name: Failure Debugging Info
-        if: ${{ failure() }}
-        run: |
-          box server log serverConfigFile="server-${{ matrix.cfengine }}.json"
-
-      - name: Upload Debugging Info To Artifacts
-        if: ${{ failure() }}
-        uses: actions/upload-artifact@v2
-        with:
-          name: Failure Debugging Info - ${{ matrix.cfengine }}
-          path: |
-            .engine/**/logs/*
-            .engine/**/WEB-INF/cfusion/logs/*
+    uses: tests.yml
 
   #############################################
   # Build ColdBox Now
