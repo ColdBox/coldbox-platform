@@ -482,6 +482,10 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 				getInstance( "router@coldbox" ).setEnabled( false );
 				// Capture the request using our passed in event to execute
 				controller.getRequestService().requestCapture( arguments.event );
+				routingService
+					.$( "getCGIElement" )
+					.$args( "path_info", requestContext )
+					.$results( "" );
 			}
 
 			// add the query string parameters from the route to the request context
