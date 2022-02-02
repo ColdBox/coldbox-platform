@@ -2,8 +2,6 @@ name: ColdBox Platform Tests
 
 on:
   workflow_call:
-  push:
-  pull_request:
   workflow_dispatch:
 
 env:
