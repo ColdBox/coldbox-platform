@@ -23,7 +23,6 @@ jobs:
   # Build Snapshot Release
   #############################################
   build:
-    name: Build & Publish
     needs: tests
     uses: ./.github/workflows/release.yml
     secrets:
