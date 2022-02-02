@@ -4,7 +4,6 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 
 	function beforeAll(){
 		variables.asyncManager = new coldbox.system.async.AsyncManager();
-		super.beforeAll();
 	}
 
 	function run( testResults, testBox ){

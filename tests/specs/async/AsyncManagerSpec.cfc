@@ -3,16 +3,15 @@
  */
 component extends="BaseAsyncSpec" {
 
-	/*********************************** BDD SUITES ***********************************/
+	function beforeAll(){
+		asyncManager = new coldbox.system.async.AsyncManager( debug = true );
+	}
 
 	function run( testResults, testBox ){
 		variables.out = createObject( "java", "java.lang.System" ).out;
 
 		// all your suites go here.
 		describe( "ColdBox Async Programming", function(){
-			beforeEach( function( currentSpec ){
-				asyncManager = new coldbox.system.async.AsyncManager( debug = true );
-			} );
 
 			it( "can produce durations", function(){
 				expect(
@@ -50,7 +49,6 @@ component extends="BaseAsyncSpec" {
 				expect( f.get(), "Luis majano loves threads, NOT!" );
 				expect( f.isDone() ).toBeTrue();
 			} );
-
 
 			it( "can create a future with a custom CFML executor", function(){
 				var f = asyncManager.newFuture( function(){

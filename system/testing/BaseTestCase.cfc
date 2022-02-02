@@ -438,22 +438,25 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 		}
 
 		try {
-			// If the route is for the home page, use the default event in the config/ColdBox.cfc
-			if ( arguments.route == "/" ) {
-				// Set the default app event
-				arguments.event = getController().getSetting( "defaultEvent" );
-				requestContext.setValue( requestContext.getEventName(), arguments.event );
-				// Prepare all mocking data for simulating routing request
-				prepareMock( routingService )
-					.$( "getCGIElement" )
-					.$args( "path_info", requestContext )
-					.$results( arguments.route )
+			// Make sure our routing service can be manipulated
+			prepareMock( routingService )
 					.$( "getCGIElement" )
 					.$args( "script_name", requestContext )
 					.$results( "" )
 					.$( "getCGIElement" )
 					.$args( "server_name", requestContext )
 					.$results( arguments.domain );
+
+			// If the route is for the home page, use the default event in the config/ColdBox.cfc
+			if ( arguments.route == "/" ) {
+				// Set the default app event
+				arguments.event = getController().getSetting( "defaultEvent" );
+				requestContext.setValue( requestContext.getEventName(), arguments.event );
+				// Prepare all mocking data for simulating routing request
+				routingService
+					.$( "getCGIElement" )
+					.$args( "path_info", requestContext )
+					.$results( arguments.route );
 				// No route, it's the route
 				arguments.route = "";
 				// Capture the route request
@@ -471,13 +474,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 				prepareMock( routingService )
 					.$( "getCGIElement" )
 					.$args( "path_info", requestContext )
-					.$results( routeParts.route )
-					.$( "getCGIElement" )
-					.$args( "script_name", requestContext )
-					.$results( "" )
-					.$( "getCGIElement" )
-					.$args( "server_name", requestContext )
-					.$results( arguments.domain );
+					.$results( routeParts.route );
 				// Capture the route request
 				controller.getRequestService().requestCapture();
 			} else {
