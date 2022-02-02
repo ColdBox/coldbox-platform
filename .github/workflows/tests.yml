@@ -1,18 +1,17 @@
-name: ColdBox Platform Tests
+# This is a reusable workflow for executing the full ColdBox Test Suites
+name: ColdBox Platform Test Suites
 
+# We are a reusable Workflow only
 on:
   workflow_call:
+    secrets:
+      SLACK_WEBHOOK_URL:
+        required: true
   workflow_dispatch:
 
-env:
-  COLDBOX_PRERELEASE: false
-
 jobs:
-  #############################################
-  # Tests First baby! We fail, no build :(
-  #############################################
   tests:
-    name: Tests
+    name: Test Suites
     runs-on: ubuntu-20.04
     env:
       DB_USER: root
@@ -21,6 +20,7 @@ jobs:
       fail-fast: false
       matrix:
         cfengine: [ "lucee@5", "adobe@2016", "adobe@2018", "adobe@2021" ]
+        javaVersion: [ "openjdk8", "openjdk11" ]
         fullNull: [ "true", "false" ]
     steps:
       - name: Checkout Repository
@@ -69,9 +69,9 @@ jobs:
           # API Docs dependencies
           cd apidocs && box install
 
-      - name: Start ${{ matrix.cfengine }} Server
+      - name: Start ${{ matrix.cfengine }}/${{ matrix.javaVersion }} Server
         run: |
-          box server start serverConfigFile="server-${{ matrix.cfengine }}.json" --noSaveSettings --debug
+          box server start serverConfigFile="server-${{ matrix.cfengine }}.json" javaVersion=${{ matrix.javaVersion }} --noSaveSettings --debug
           # Install Adobe 2021 cfpm modules
           if [[ "${{ matrix.cfengine }}" == "adobe@2021" ]] ; then
             box run-script install:2021
@@ -90,7 +90,7 @@ jobs:
         if: always()
         with:
           files: tests/results/**/*.xml
-          check_name: "${{ matrix.cfengine }} Test Results"
+          check_name: "${{ matrix.cfengine }}/${{ matrix.javaVersion }} Test Results"
           summary: true
 
       - name: Upload Test Results Artifacts

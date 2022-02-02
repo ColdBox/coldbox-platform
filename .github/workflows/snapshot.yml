@@ -15,8 +15,9 @@ jobs:
   # Tests First baby! We fail, no build :(
   #############################################
   tests:
-    name: Tests
     uses: ./.github/workflows/tests.yml
+    secrets:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
   #############################################
   # Build ColdBox Now
