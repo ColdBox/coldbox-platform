@@ -579,12 +579,13 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				} );
 			} );
 
-			describe( "merging routes", function() {
-				it( "can merge a route with event and a route with handler", function() {
+			describe( "merging routes", function(){
+				it( "can merge a route with event and a route with handler", function(){
 					router.post( "/notifications/read", "Notifications.ReadNotifications.create" );
-					router.route( "/notifications/read" )
+					router
+						.route( "/notifications/read" )
 						.withHandler( "Notifications.ReadNotifications" )
-						.toAction( { "POST": "create", "DELETE": "delete" } );
+						.toAction( { "POST" : "create", "DELETE" : "delete" } );
 
 					var routes = router.getRoutes();
 					expect( routes ).toBeArray();

@@ -12,7 +12,6 @@ component extends="BaseAsyncSpec" {
 
 		// all your suites go here.
 		describe( "ColdBox Async Programming", function(){
-
 			it( "can produce durations", function(){
 				expect(
 					asyncManager
