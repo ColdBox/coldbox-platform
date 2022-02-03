@@ -902,7 +902,13 @@ component
 				}
 			}
 			var thisRouteActions = isStruct( thisRoute.action ) ? thisRoute.action : {};
-			structAppend( actions, thisRouteActions, true );
+			for ( var newActionVerb in thisRouteActions ) {
+				var newEvent = thisRouteActions[ newActionVerb ];
+				if ( thisRoute.handler != "" ) {
+					newEvent = thisRoute.handler & "." & newEvent;
+				}
+				actions[ newActionVerb ] = newEvent;
+			}
 			if ( thisRoute.event != "" ) {
 				for ( var verb in thisRoute.verbs ) {
 					structInsert( actions, verb, thisRoute.event );
