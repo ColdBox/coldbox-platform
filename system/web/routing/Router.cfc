@@ -910,7 +910,7 @@ component
 				if ( actions.keyExists( newActionVerb ) && variables.log.canWarn() ) {
 					variables.log.warn(
 						"Duplicate HTTP verb found when merging routing for pattern: [#thisRoute.pattern#]. Changing #uCase( newActionVerb )# action from [#actions[ newActionVerb ]#] to [#newEvent#]",
-						{ existingRoute: matchingRoute, newRoute: thisRoute }
+						{ existingRoute : matchingRoute, newRoute : thisRoute }
 					);
 				}
 				actions[ newActionVerb ] = newEvent;
