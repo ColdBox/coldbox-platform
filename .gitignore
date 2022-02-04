@@ -20,11 +20,16 @@ logs/*
 build-coldbox
 build/build.number
 artifacts/*
+apidocs/CacheBox-APIDocs
+apidocs/ColdBox-APIDocs
+apidocs/logbox-APIDocs
+apidocs/wirebox-APIDocs
 
 # Dependencies
 .engine/**
 testbox/*
-apidocs/docbox/*
+apidocs/testbox
+apidocs/docbox
 ApplicationTemplates/*
 tests/suites/loadtests/logs
 test-harness/**/route-visualizer
