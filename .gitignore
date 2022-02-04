@@ -17,13 +17,10 @@ tests/suites/loadtests/settings.xml
 logs/*
 
 # Build artifacts
-build-coldbox
-build/build.number
 artifacts/*
-apidocs/CacheBox-APIDocs
-apidocs/ColdBox-APIDocs
-apidocs/logbox-APIDocs
-apidocs/wirebox-APIDocs
+apidocs/*-APIDocs
+build/build.number
+build-coldbox
 
 # Dependencies
 .engine/**
