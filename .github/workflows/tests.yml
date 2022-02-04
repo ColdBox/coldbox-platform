@@ -1,5 +1,5 @@
 # This is a reusable workflow for executing the full ColdBox Test Suites
-name: ColdBox Platform Test Suites
+name: ColdBox Test Suites
 
 # We are a reusable Workflow only
 on:

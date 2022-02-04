@@ -1,6 +1,6 @@
 # This workflow tests the ColdBox code using many permutations in the matrix.
 # If successful, then it creates the bleeding edge artifact and publishes it to S3 and ForgeBox
-name: ColdBox Platform Snapshots
+name: ColdBox Snapshots
 
 on:
   push:
