@@ -41,8 +41,8 @@ jobs:
 
       - name: Setup CommandBox New
         run: |
-          curl -L https://www.ortussolutions.com/parent/download/commandbox/type/bin -o /usr/local/bin/box
-          chmod +x /usr/local/bin/box
+          curl -SL https://www.ortussolutions.com/parent/download/commandbox/type/bin -o box
+          chmod +x box && mv box /usr/local/bin
           box install commandbox-cfconfig,commandbox-dotenv
 
       - name: Setup .env For Runner
