@@ -36,10 +36,8 @@ jobs:
           distribution: "adopt"
           java-version: "11"
 
-      - name: Setup CommandBox
+      - name: Setup CommandBox CLI
         uses: Ortus-Solutions/setup-commandbox@main
-        with:
-          installGlobalDependencies: false
 
       - name: Setup .env For Runner
         run: |
