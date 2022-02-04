@@ -11,13 +11,11 @@ on:
       - development
 
 jobs:
-  # Run Tests
   tests:
-    uses: ./.github/workflows/tests.yml
+    uses: ColdBox/coldbox-platform/.github/workflows/tests.yml@development
     secrets:
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
-  # Run formatting
   format:
     name: Format
     runs-on: ubuntu-20.04
