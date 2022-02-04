@@ -1,6 +1,6 @@
 # This workflow is used to release master releases and also by the snapshot workflow
 # to release snapshots.
-name: ColdBox Build & Release
+name: ColdBox Release
 
 on:
   push:
