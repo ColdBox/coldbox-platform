@@ -36,14 +36,8 @@ jobs:
           distribution: "adopt"
           java-version: "11"
 
-      #- name: Setup CommandBox
-      #  uses: elpete/setup-commandbox@v1.0.0
-
-      - name: Setup CommandBox New
-        run: |
-          curl -SL -o box.zip https://www.ortussolutions.com/parent/download/commandbox/type/bin
-          unzip box.zip -d /usr/local/bin
-          box install commandbox-cfconfig,commandbox-dotenv
+      - name: Setup CommandBox
+        uses: Ortus-Solutions/setup-commandbox@main
 
       - name: Setup .env For Runner
         run: |
