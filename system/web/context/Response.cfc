@@ -261,11 +261,11 @@ component accessors="true" {
 		numeric totalPages   = 1
 	){
 		variables.pagination = {
-			"offset": arguments.offset,
-			"maxRows": arguments.maxRows,
-			"page": arguments.page,
-			"totalRecords": arguments.totalRecords,
-			"totalPages": arguments.totalPages
+			"offset"       : arguments.offset,
+			"maxRows"      : arguments.maxRows,
+			"page"         : arguments.page,
+			"totalRecords" : arguments.totalRecords,
+			"totalPages"   : arguments.totalPages
 		};
 		return this;
 	}
