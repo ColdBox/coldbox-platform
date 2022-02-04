@@ -25,7 +25,7 @@ jobs:
 
       - uses: Ortus-Solutions/commandbox-action@v1.0.2
         with:
-        cmd: run-script format
+          cmd: run-script format
 
       - name: Commit Format Changes
         uses: stefanzweifel/git-auto-commit-action@v4
