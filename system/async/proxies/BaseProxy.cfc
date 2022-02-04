@@ -141,10 +141,10 @@ component accessors="true" {
 		} catch ( any e ) {
 			err( "Error loading context #e.toString()#" );
 			writeDump(
-				var=[ createObject( "java", "coldfusion.filter.FusionContext" ).getCurrent() ],
-				output="console",
-				label="FusionContext Exception - Get Current",
-				top = 5
+				var    = [ createObject( "java", "coldfusion.filter.FusionContext" ).getCurrent() ],
+				output = "console",
+				label  = "FusionContext Exception - Get Current",
+				top    = 5
 			);
 		}
 	}
