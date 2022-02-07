@@ -671,11 +671,13 @@ component serializable="false" accessors="true" {
 			!isNull( results.data ) &&
 			isObject( results.data )
 		) {
-			// Ignore, if request context
-			if ( isInstanceOf( results.data, "coldbox.system.web.context.RequestContext" ) ) {
-				results.delete( "data" );
-			} else if ( structKeyExists( results.data, "$renderdata" ) ) {
+			// Verify $renderdata method convention
+			if ( structKeyExists( results.data, "$renderdata" ) ) {
 				results.data = results.data.$renderdata();
+			}
+			// Check if request context and ignore
+			else if ( isInstanceOf( results.data, "coldbox.system.web.context.RequestContext" ) ) {
+				results.delete( "data" );
 			}
 		}
 
