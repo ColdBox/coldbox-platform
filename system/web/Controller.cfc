@@ -365,7 +365,7 @@ component serializable="false" accessors="true" {
 		boolean postProcessExempt = false,
 		URL,
 		URI,
-		numeric statusCode = 0
+		numeric statusCode = 302
 	){
 		// Determine the type of relocation
 		var relocationType  = "EVENT";
@@ -1194,6 +1194,10 @@ component serializable="false" accessors="true" {
 				argCollection = arguments.argCollection
 			);
 		}
+		// Feature Invoker
+		if ( variables.CFMLEngine.hasFeature( "invokeArray" ) ) {
+			return arguments.target[ arguments.method ]( argumentCollection = arguments.argCollection );
+		}
 		return invoke(
 			arguments.target,
 			arguments.method,
@@ -1202,22 +1206,18 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
-	 * Send a CF relocation
+	 * Encapsulate a cf relocation tag. Encapsulated so we can mock it.
 	 */
 	private function sendRelocation(
 		required URL,
 		boolean addToken = false,
-		statusCode       = 0
+		statusCode       = 302
 	){
-		if ( arguments.statusCode neq 0 ) {
-			location(
-				url        = "#arguments.url#",
-				addtoken   = "#addtoken#",
-				statuscode = "#arguments.statusCode#"
-			);
-		} else {
-			location( url = "#arguments.url#", addtoken = "#addtoken#" );
-		}
+		location(
+			url        = "#arguments.URL#",
+			addtoken   = "#arguments.addtoken#",
+			statuscode = "#arguments.statusCode#"
+		);
 		return this;
 	}
 
