@@ -878,34 +878,9 @@ component serializable="false" accessors="true" {
 		}
 		// Discover layout
 		else if ( NOT arguments.nolayout AND NOT getPrivateValue( name = "layoutoverride", defaultValue = false ) ) {
-			// Verify that the view has a layout in the viewLayouts structure, static lookups
-			if ( structKeyExists( variables.viewLayouts, lCase( arguments.view ) ) ) {
-				setPrivateValue( "currentLayout", variables.viewLayouts[ lCase( arguments.view ) ] );
-			} else {
-				// Check the folders structure
-				for ( var key in variables.folderLayouts ) {
-					if ( reFindNoCase( "^#key#", lCase( arguments.view ) ) ) {
-						setPrivateValue( "currentLayout", variables.folderLayouts[ key ] );
-						break;
-					}
-				}
-				// end for loop
-			}
-			// end else
-
-			// If not layout, then set default from main application
-			if ( not privateValueExists( "currentLayout", true ) ) {
-				setPrivateValue( "currentLayout", variables.defaultLayout );
-			}
-
-			// If in current module, check for a module default layout\
-			var cModule = getCurrentModule();
-			if (
-				len( cModule )
-				AND structKeyExists( variables.modules, cModule )
-				AND len( variables.modules[ cModule ].layoutSettings.defaultLayout )
-			) {
-				setPrivateValue( "currentLayout", variables.modules[ cModule ].layoutSettings.defaultLayout );
+			var discoveredLayout = discoverLayout( arguments.view );
+			if ( discoveredLayout != "" ) {
+				setPrivateValue( "currentLayout", discoveredLayout );
 			}
 		}
 		// end layout discover
@@ -945,6 +920,39 @@ component serializable="false" accessors="true" {
 		setPrivateValue( "currentViewArgs", arguments.args, true );
 
 		return this;
+	}
+
+	function discoverLayout( required string view ){
+		// Verify that the view has a layout in the viewLayouts structure, static lookups
+		if ( structKeyExists( variables.viewLayouts, lCase( arguments.view ) ) ) {
+			return variables.viewLayouts[ lCase( arguments.view ) ];
+		} else {
+			// Check the folders structure
+			for ( var key in variables.folderLayouts ) {
+				if ( reFindNoCase( "^#key#", lCase( arguments.view ) ) ) {
+					return variables.folderLayouts[ key ];
+				}
+			}
+			// end for loop
+		}
+		// end else
+
+		// If not layout, then set default from main application
+		if ( not privateValueExists( "currentLayout" ) ) {
+			return variables.defaultLayout;
+		}
+
+		// If in current module, check for a module default layout\
+		var cModule = getCurrentModule();
+		if (
+			len( cModule )
+			AND structKeyExists( variables.modules, cModule )
+			AND len( variables.modules[ cModule ].layoutSettings.defaultLayout )
+		) {
+			return variables.modules[ cModule ].layoutSettings.defaultLayout;
+		}
+
+		return "";
 	}
 
 	/**

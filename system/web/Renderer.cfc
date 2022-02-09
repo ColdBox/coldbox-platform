@@ -577,8 +577,6 @@ component
 		boolean prePostExempt = false
 	){
 		var event                  = getRequestContext();
-		var cbox_implicitLayout    = implicitViewChecks();
-		var cbox_currentLayout     = cbox_implicitLayout;
 		var cbox_locateUDF         = variables.locateLayout;
 		var cbox_explicitModule    = false;
 		var cbox_layoutLocationKey = "";
@@ -608,6 +606,9 @@ component
 
 		// If no passed layout, then get it from implicit values
 		if ( isNull( arguments.layout ) ) {
+			var cbox_implicitLayout = implicitViewChecks(
+				arguments.view != "" ? arguments.view : event.getCurrentView()
+			);
 			// Strip off the .cfm extension if it is set
 			if ( len( cbox_implicitLayout ) GT 4 AND right( cbox_implicitLayout, 4 ) eq ".cfm" ) {
 				cbox_implicitLayout = left( cbox_implicitLayout, len( cbox_implicitLayout ) - 4 );
@@ -627,6 +628,7 @@ component
 			announce( "preLayoutRender", iData );
 		}
 
+		cbox_currentLayout = arguments.layout;
 		// Check explicit layout rendering
 		if ( !isNull( arguments.layout ) ) {
 			// Check if any length on incoming layout
@@ -946,7 +948,7 @@ component
 	/**
 	 * Checks if implicit views are turned on and if so, calculate view according to event.
 	 */
-	private function implicitViewChecks(){
+	private function implicitViewChecks( required string view ){
 		var event  = getRequestContext();
 		var layout = event.getCurrentLayout();
 		var cEvent = event.getCurrentEvent();
@@ -960,16 +962,13 @@ component
 		cEvent = reReplaceNoCase( cEvent, "^([^:.]*):", "" );
 
 		// Check if no view set?
-		if ( NOT len( event.getCurrentView() ) ) {
+		if ( NOT len( arguments.view ) ) {
 			// Implicit views
 			if ( controller.getSetting( name = "caseSensitiveImplicitViews", defaultValue = true ) ) {
-				event.setView( replace( cEvent, ".", "/", "all" ) );
+				return event.discoverLayout( replace( cEvent, ".", "/", "all" ) );
 			} else {
-				event.setView( lCase( replace( cEvent, ".", "/", "all" ) ) );
+				return event.discoverLayout( lCase( replace( cEvent, ".", "/", "all" ) ) );
 			}
-
-			// reset layout according to newly set views;
-			layout = event.getCurrentLayout();
 		}
 
 		return layout;
