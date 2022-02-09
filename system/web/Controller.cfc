@@ -1194,10 +1194,6 @@ component serializable="false" accessors="true" {
 				argCollection = arguments.argCollection
 			);
 		}
-		// Feature Invoker
-		if ( variables.CFMLEngine.hasFeature( "invokeArray" ) ) {
-			return arguments.target[ arguments.method ]( argumentCollection = arguments.argCollection );
-		}
 		return invoke(
 			arguments.target,
 			arguments.method,
