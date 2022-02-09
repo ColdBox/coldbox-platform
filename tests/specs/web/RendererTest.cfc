@@ -126,6 +126,14 @@ component extends="tests.resources.BaseIntegrationTest" {
 				);
 				expect( results ).notToBe( results2 );
 			} );
+
+			it( "can render a layout without changing the request context", function(){
+				var event = getRequestContext();
+				event.overrideEvent( "Main.index" );
+				var beforeView = event.getCurrentView();
+				var results    = r.layout( layout = "Simple", view = "simpleview" );
+				expect( event.getCurrentView() ).toBe( beforeView );
+			} );
 		} );
 	}
 
