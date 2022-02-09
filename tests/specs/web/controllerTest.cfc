@@ -116,7 +116,7 @@
 		controller.relocate( URL = "http://www.coldbox.org", addToken = true );
 		assertEquals( "http://www.coldbox.org", controller.$callLog().sendRelocation[ 1 ].URL );
 		assertEquals( true, controller.$callLog().sendRelocation[ 1 ].addToken );
-		assertEquals( 0, controller.$callLog().sendRelocation[ 1 ].statusCode );
+		assertEquals( 302, controller.$callLog().sendRelocation[ 1 ].statusCode );
 
 		// Full URL with more stuff
 		controller.relocate(
