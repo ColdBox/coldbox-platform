@@ -99,7 +99,8 @@ jobs:
             tests/results/**/*
 
       - name: Slack Notification
-        if: ${{ failure() }}
+        # Only on failures and NOT in pull requests
+        if: ${{ failure() && !startsWith( 'pull_request', github.event_name ) }}
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_CHANNEL: coding
