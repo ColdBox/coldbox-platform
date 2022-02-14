@@ -578,6 +578,31 @@ component extends="coldbox.system.testing.BaseModelTest" {
 					} );
 				} );
 			} );
+
+			describe( "merging routes", function(){
+				it( "can merge a route with event and a route with handler", function(){
+					router.post( "/notifications/read", "Notifications.ReadNotifications.create" );
+					router
+						.route( "/notifications/read" )
+						.withHandler( "Notifications.ReadNotifications" )
+						.toAction( { "POST" : "create", "DELETE" : "delete" } );
+
+					var routes = router.getRoutes();
+					expect( routes ).toBeArray();
+					expect( routes ).toHaveLength( 1 );
+					var route = routes[ 1 ];
+					expect( route ).toHaveKey( "event" );
+					expect( route.event ).toBe( "" );
+					expect( route ).toHaveKey( "handler" );
+					expect( route.handler ).toBe( "" );
+					expect( route ).toHaveKey( "action" );
+					expect( route.action ).toBeStruct();
+					expect( route.action ).toHaveKey( "POST" );
+					expect( route.action.POST ).toBe( "Notifications.ReadNotifications.create" );
+					expect( route.action ).toHaveKey( "DELETE" );
+					expect( route.action.DELETE ).toBe( "Notifications.ReadNotifications.delete" );
+				} );
+			} );
 		} );
 	}
 
