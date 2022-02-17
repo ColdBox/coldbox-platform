@@ -199,7 +199,13 @@ component accessors="true" {
 		variables.responsetime    = 0;
 		variables.headers         = [];
 
-		setPagination();
+		variables.pagination = {
+			"offset"       : 0,
+			"maxRows"      : 0,
+			"page"         : 1,
+			"totalRecords" : 0,
+			"totalPages"   : 1
+		};
 
 		return this;
 	}
@@ -260,7 +266,7 @@ component accessors="true" {
 		numeric totalRecords = 0,
 		numeric totalPages   = 1
 	){
-		variables.pagination = arguments;
+		structAppend( variables.pagination, arguments, true );
 		return this;
 	}
 
@@ -304,9 +310,9 @@ component accessors="true" {
 	}
 
 	/**
-	 * Sets the data and pagination from a struct with `results` and `pagination`.
+	 * Sets the data and pagination from a struct with a `results` and `pagination` key.
 	 *
-	 * @data          The struct containing both results and pagination.
+	 * @data          The struct containing both 'results' and 'pagination' keys
 	 * @resultsKey    The name of the key with the results.
 	 * @paginationKey The name of the key with the pagination.
 	 *
