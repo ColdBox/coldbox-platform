@@ -23,6 +23,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [COLDBOX-1089](https://ortussolutions.atlassian.net/browse/COLDBOX-1089) Update the internal cfml engine checker to have more engine based feature checkers
 * [COLDBOX-1088](https://ortussolutions.atlassian.net/browse/COLDBOX-1088) Switch isInstance check on renderdata in controller to secondary of $renderdata check to optimize speed
 
+### CacheBox
+
+#### Bug
+
+* [CACHEBOX-80](https://ortussolutions.atlassian.net/browse/CACHEBOX-80) Bug in JDBCMetadataIndexer sortedKeys\(\) using non-existent variable `arguments.objectKey`
+
+#### Improvement
+
+* [CACHEBOX-81](https://ortussolutions.atlassian.net/browse/CACHEBOX-81) JDBCStore Dynamically generate queryExecute options \+ new config to always include DSN due to ACF issues
 
 ----
 
