@@ -1,16 +1,29 @@
-name: ColdBox Platform CI
+# This workflow is used to release master releases and also by the snapshot workflow
+# to release snapshots.
+name: ColdBox Release
 
-# Only on Development we build snapshots
 on:
   push:
     branches:
       - master
+  workflow_call:
+    secrets:
+      SLACK_WEBHOOK_URL:
+        required: true
+      FORGEBOX_API_TOKEN:
+        required: true
+      AWS_ACCESS_KEY:
+        required: true
+      AWS_ACCESS_SECRET:
+        required: true
 
 env:
   COLDBOX_PRERELEASE: false
 
 jobs:
-
+  #############################################
+  # Build Snapshot or Final Release
+  #############################################
   build:
     name: Build & Publish Release
     runs-on: ubuntu-20.04
@@ -36,7 +49,7 @@ jobs:
             ${{ runner.OS }}-commandbox-cache-${{ hashFiles( 'box.json' ) }}
 
       - name: Setup CommandBox
-        uses: elpete/setup-commandbox@v1.0.0
+        uses: Ortus-Solutions/setup-commandbox@main
         with:
           forgeboxAPIKey: ${{ secrets.FORGEBOX_API_TOKEN }}
 
@@ -45,7 +58,12 @@ jobs:
         run: |
           echo "COLDBOX_VERSION=`cat box.json | jq '.version' -r`" >> $GITHUB_ENV
           box package set version=@build.version@+@build.number@
+          # master or snapshot
           echo "BRANCH=master" >> $GITHUB_ENV
+          if [ $GITHUB_REF == 'refs/heads/development' ]
+          then
+            echo "BRANCH=development" >> $GITHUB_ENV
+          fi
 
       - name: Install Dependencies
         run: |

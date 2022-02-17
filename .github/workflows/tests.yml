@@ -1,13 +1,16 @@
-name: Cron
+# This is a reusable workflow for executing the full ColdBox Test Suites
+name: ColdBox Test Suites
 
+# We are a reusable Workflow only
 on:
-  schedule:
-    # Run Every Monday Midnight
-    - cron:  0 0 * * 1
+  workflow_call:
+    secrets:
+      SLACK_WEBHOOK_URL:
+        required: true
 
 jobs:
   tests:
-    name: Tests
+    name: Test Suites
     runs-on: ubuntu-20.04
     env:
       DB_USER: root
@@ -15,8 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        cfengine: [ "lucee@5", "lucee@be", "adobe@2016", "adobe@2018", "adobe2021" ]
-        javaVersion: [ "openjdk8", "openjdk11" ]
+        cfengine: [ "lucee@5", "adobe@2016", "adobe@2018", "adobe@2021" ]
         fullNull: [ "true", "false" ]
     steps:
       - name: Checkout Repository
@@ -34,8 +36,8 @@ jobs:
           distribution: "adopt"
           java-version: "11"
 
-      - name: Set Up CommandBox
-        uses: elpete/setup-commandbox@v1.0.0
+      - name: Setup CommandBox CLI
+        uses: Ortus-Solutions/setup-commandbox@main
 
       - name: Setup .env For Runner
         run: |
@@ -49,13 +51,25 @@ jobs:
           printf "DB_BUNDLEVERSION=8.0.19\n" >> .env
           printf "DB_BUNDLENAME=com.mysql.cj\n" >> .env
 
+      - name: Cache CommandBox Dependencies
+        uses: actions/cache@v1
+        if: ${{ true }}
+        with:
+          path: ~/.CommandBox/artifacts
+          key: ${{ runner.OS }}-commandbox-cache-${{ hashFiles( 'box.json' ) }}
+          restore-keys: |
+            ${{ runner.OS }}-commandbox-cache-${{ hashFiles( 'box.json' ) }}
+
       - name: Install Dependencies
         run: |
+          # Core dependencies
           box install
+          # API Docs dependencies
+          cd apidocs && box install
 
-      - name: Start ${{ matrix.cfengine }}/${{ matrix.javaVersion }} Server
+      - name: Start ${{ matrix.cfengine }} Server
         run: |
-          box server start serverConfigFile="server-${{ matrix.cfengine }}.json" javaVersion=${{ matrix.javaVersion }} --noSaveSettings --debug
+          box server start serverConfigFile="server-${{ matrix.cfengine }}.json" --noSaveSettings --debug
           # Install Adobe 2021 cfpm modules
           if [[ "${{ matrix.cfengine }}" == "adobe@2021" ]] ; then
             box run-script install:2021
@@ -63,7 +77,7 @@ jobs:
           # Test the harness
           curl http://127.0.0.1:8599/test-harness
 
-      - name: Run Tests
+      - name: Run Tests Full Null (${{ matrix.fullNull }})
         env:
           FULL_NULL: ${{ matrix.fullNull }}
         run: |
@@ -74,28 +88,33 @@ jobs:
         if: always()
         with:
           files: tests/results/**/*.xml
-          check_name: "${{ matrix.cfengine }}/${{ matrix.javaVersion }} Test Results"
-          summary: true
+          check_name: "${{ matrix.cfengine }} Test Results"
 
       - name: Upload Test Results Artifacts
         if: always()
         uses: actions/upload-artifact@v2
         with:
-          name: coldbox-test-results-${{ matrix.cfengine }}-${{ matrix.javaVersion }}
+          name: coldbox-test-results-${{ matrix.cfengine }}
           path: |
             tests/results/**/*
 
       - name: Slack Notification
-        if: always()
+        # Only on failures and NOT in pull requests
+        if: ${{ failure() && !startsWith( 'pull_request', github.event_name ) }}
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_CHANNEL: coding
           SLACK_COLOR: ${{ job.status }} # or a specific color like 'green' or '#ff00ff'
           SLACK_ICON_EMOJI: ":bell:"
-          SLACK_MESSAGE: 'ColdBox tests ${{ job.status }} check them out here: https://github.com/coldbox/coldbox-platform/actions'
-          SLACK_TITLE: ColdBox Tests For ${{ matrix.cfengine }} ${{ job.status }}
+          SLACK_MESSAGE: 'ColdBox tests failed :cry:, check them out here: https://github.com/coldbox/coldbox-platform/actions'
+          SLACK_TITLE: ColdBox Tests For ${{ matrix.cfengine }} failed
           SLACK_USERNAME: CI
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Failure Debugging Info
+        if: ${{ failure() }}
+        run: |
+          box server log serverConfigFile="server-${{ matrix.cfengine }}.json"
 
       - name: Upload Debugging Info To Artifacts
         if: ${{ failure() }}

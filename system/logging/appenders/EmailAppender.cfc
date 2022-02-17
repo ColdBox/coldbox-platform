@@ -103,7 +103,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 						<p>Extra Info Dump:</p>
 					"
 					);
-					writeDump( loge.getExtraInfo() );
+					writeDump( var = loge.getExtraInfo(), top = 10 );
 				}
 			}
 

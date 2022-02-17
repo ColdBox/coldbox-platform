@@ -5,14 +5,6 @@ component extends="testbox.system.BaseSpec" skip="true" {
 
 	/*********************************** LIFE CYCLE Methods ***********************************/
 
-	// executes before all suites+specs in the run() method
-	function beforeAll(){
-	}
-
-	// executes after all suites+specs in the run() method
-	function afterAll(){
-	}
-
 	/**
 	 * Send output to the console
 	 */

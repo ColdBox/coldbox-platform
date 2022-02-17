@@ -17,14 +17,16 @@ tests/suites/loadtests/settings.xml
 logs/*
 
 # Build artifacts
-build-coldbox
-build/build.number
 artifacts/*
+apidocs/*-APIDocs
+build/build.number
+build-coldbox
 
 # Dependencies
 .engine/**
 testbox/*
-apidocs/docbox/*
+apidocs/testbox
+apidocs/docbox
 ApplicationTemplates/*
 tests/suites/loadtests/logs
 test-harness/**/route-visualizer

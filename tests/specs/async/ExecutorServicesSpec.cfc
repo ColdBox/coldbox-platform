@@ -3,8 +3,6 @@
  */
 component extends="BaseAsyncSpec" {
 
-	/*********************************** BDD SUITES ***********************************/
-
 	function run( testResults, testBox ){
 		// all your suites go here.
 		describe( "ColdBox Async Executor Services", function(){

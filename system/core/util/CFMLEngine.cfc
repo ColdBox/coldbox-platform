@@ -7,8 +7,8 @@
 component {
 
 	// setup the engine properties
-	this.ADOBE = "ADOBE";
-	this.LUCEE = "LUCEE";
+	this.ADOBE = "adobe";
+	this.LUCEE = "lucee";
 
 	// JDK Version
 	this.JDK_VERSION = createObject( "java", "java.lang.System" ).getProperty( "java.version" );
@@ -17,19 +17,23 @@ component {
 	 * Constructor
 	 */
 	function init(){
-		// Feature map
-		variables.features = { adobe : {}, lucee : {} };
+		// Features map by engine
+		variables.features = {
+			adobe2016 : { invokeArray : false },
+			adobe2018 : { invokeArray : false },
+			adobe2021 : { invokeArray : false },
+			lucee     : { invokeArray : true }
+		};
+		variables.productVersion = listFirst( server.coldfusion.productversion );
 
 		return this;
 	}
 
-	// ------------------------------------------- PUBLIC -------------------------------------------
-
 	/**
-	 * Returns the current running CFML major version
+	 * Returns the current running CFML major version level
 	 */
 	numeric function getVersion(){
-		return listFirst( server.coldfusion.productversion );
+		return variables.productVersion;
 	}
 
 	/**
@@ -40,25 +44,44 @@ component {
 	}
 
 	/**
-	 * Get the current CFML Engine
+	 * Verify if this is a lucee server
 	 */
-	string function getEngine(){
-		var engine = this.adobe;
-
-		if ( server.coldfusion.productname eq "Lucee" ) {
-			engine = this.lucee;
-		}
-
-		return engine;
+	boolean function isLucee(){
+		return structKeyExists( server, "lucee" );
 	}
 
 	/**
-	 * Feature Active Check
+	 * Verify if this is an adobe server
+	 */
+	boolean function isAdobe(){
+		return !isLucee();
+	}
+
+	/**
+	 * Get the current CFML Engine name
+	 *
+	 * @return Either 'lucee' or 'adobe'
+	 */
+	string function getEngine(){
+		return ( isLucee() ? this.lucee : this.adobe );
+	}
+
+	/**
+	 * Discover the running engine slug for feature checks
+	 *
+	 * @return lucee, adobe{version}
+	 */
+	string function getFeatureEngineSlug(){
+		return isLucee() ? this.lucee : this.adobe & getVersion();
+	}
+
+	/**
+	 * CFML Engine based features checker. Pass in the feature and engine and see if you can use it.
 	 *
 	 * @feature The feature to check
-	 * @engine  The engine we are checking
+	 * @engine  The engine we are checking or defaults to the running engine
 	 */
-	boolean function featureCheck( required feature, required engine ){
+	boolean function hasFeature( required feature, engine = getFeatureEngineSlug() ){
 		return variables.features[ arguments.engine ][ arguments.feature ];
 	}
 

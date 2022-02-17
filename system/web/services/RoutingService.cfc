@@ -171,8 +171,6 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// Clean incoming paths
 		var cleanedPaths = getCleanedPaths( rc, arguments.event );
 
-		writeDump( var = "******> Cleaned Paths: #cleanedPaths.toString()#", output = "console" );
-
 		// Check if disabled or in proxy mode, if it is, then exit out.
 		if ( !variables.router.getEnabled() OR arguments.event.isProxyRequest() ) {
 			return;
@@ -207,11 +205,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			domain = cleanedPaths[ "domain" ]
 		);
 
-		writeDump( var = "******> Found route: #routeResults.toString()#", output = "console" );
-
 		// Process the route
 		var discoveredEvent = processRoute( routeResults, event, rc, prc );
-		writeDump( var = "******> Discovered Event: #discoveredEvent ?: "N/A"#", output = "console" );
 
 		// Do we use the discovered event?
 		if ( !isNull( local.discoveredEvent ) and discoveredEvent.len() ) {
@@ -269,7 +264,6 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			routeResults.route.redirect.len()
 		) {
 			// Debugging
-			// writeDump( var=[ cgi , prc ], output="console" );
 			return processRedirect( routeResults, event );
 		}
 

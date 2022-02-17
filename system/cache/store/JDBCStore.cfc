@@ -70,6 +70,14 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true" 
 		default="true";
 
 	/**
+	 * Whether to include the DSN in queryExecute statements. If not, it will use the default set in applciation.cfc
+	 */
+	property
+		name   ="queryIncludeDsn"
+		type   ="boolean"
+		default="true";
+
+	/**
 	 * Constructor
 	 *
 	 * @cacheProvider             The associated cache provider as coldbox.system.cache.providers.ICacheProvider
@@ -99,6 +107,26 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true" 
 		}
 		variables.dsnUsername = config.dsnUsername;
 		variables.dsnPassword = config.dsnPassword;
+
+		// this struct will contain the dsn and credentials if passed into the config. Otherwise queryExecute will default
+		// to the datasource set in application.cfc
+		variables.queryOptions = {};
+
+		// if DSN username or password were passed, include them in the query options
+		if ( len( variables.dsnUsername ) || len( variables.dsnPassword ) ) {
+			variables.queryOptions[ "dsnUsername" ] = variables.dsnUsername;
+			variables.queryOptions[ "dsnPassword" ] = variables.dsnPassword;
+		}
+
+		if ( isNull( config.queryIncludeDsn ) ) {
+			config.queryIncludeDsn = true;
+		}
+
+		// if we should include the dsn in the query options, add it
+		if ( config.queryIncludeDsn ) {
+			variables.queryOptions[ "dsn" ] = variables.dsn;
+		}
+
 
 		// Check autoCreate
 		if ( isNull( config.tableAutoCreate ) ) {
@@ -146,11 +174,7 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true" 
 		queryExecute(
 			"TRUNCATE TABLE #variables.table#",
 			{},
-			{
-				datasource : variables.dsn,
-				username   : variables.dsnUsername,
-				password   : variables.dsnPassword
-			}
+			variables.queryOptions
 		);
 	}
 
@@ -163,11 +187,7 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true" 
 		var qResults = queryExecute(
 			"SELECT objectKey FROM #variables.table# ORDER BY objectKey ASC",
 			{},
-			{
-				datasource : variables.dsn,
-				username   : variables.dsnUsername,
-				password   : variables.dsnPassword
-			}
+			variables.queryOptions
 		);
 
 		return (
@@ -205,11 +225,7 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true" 
 				 WHERE id = ?
 				",
 				[ normalizedID ],
-				{
-					datasource : variables.dsn,
-					username   : variables.dsnUsername,
-					password   : variables.dsnPassword
-				}
+				variables.queryOptions
 			);
 
 			// Update stats if found
@@ -236,11 +252,7 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true" 
 						id           : { value : "#normalizedID#", cfsqltype : "varchar" },
 						created      : { value : "#now()#", cfsqltype : "timestamp" }
 					},
-					{
-						datasource : variables.dsn,
-						username   : variables.dsnUsername,
-						password   : variables.dsnPassword
-					}
+					variables.queryOptions
 				);
 			}
 		}
@@ -267,11 +279,7 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true" 
 				WHERE id = ?
 			",
 			[ getNormalizedID( arguments.objectKey ) ],
-			{
-				datasource : variables.dsn,
-				username   : variables.dsnUsername,
-				password   : variables.dsnPassword
-			}
+			variables.queryOptions
 		);
 
 		// Just return if records found, else null
@@ -295,11 +303,7 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true" 
 			  WHERE id = ?
 			",
 			[ 1, getNormalizedID( arguments.objectKey ) ],
-			{
-				datasource : variables.dsn,
-				username   : variables.dsnUsername,
-				password   : variables.dsnPassword
-			}
+			variables.queryOptions
 		);
 	}
 
@@ -318,11 +322,7 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true" 
 			  WHERE id = ?
 			",
 			[ getNormalizedID( arguments.objectKey ) ],
-			{
-				datasource : variables.dsn,
-				username   : variables.dsnUsername,
-				password   : variables.dsnPassword
-			}
+			variables.queryOptions
 		);
 
 		return ( q.recordCount && q.isExpired ? true : false );
@@ -385,11 +385,7 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true" 
 						isExpired : { value : "0", cfsqltype : "bit" },
 						isSimple  : { value : "#isSimple#", cfsqltype : "bit" }
 					},
-					{
-						datasource : variables.dsn,
-						username   : variables.dsnUsername,
-						password   : variables.dsnPassword
-					}
+					variables.queryOptions
 				);
 
 				return;
@@ -423,11 +419,7 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true" 
 					isExpired : { value : "0", cfsqltype : "bit" },
 					isSimple  : { value : "#isSimple#", cfsqltype : "bit" }
 				},
-				{
-					datasource : variables.dsn,
-					username   : variables.dsnUsername,
-					password   : variables.dsnPassword
-				}
+				variables.queryOptions
 			);
 		}
 	}
@@ -438,18 +430,16 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true" 
 	 * @objectKey The object key to clear
 	 */
 	function clear( required objectKey ){
+		var localQueryOptions         = duplicate( variables.queryOptions );
+		localQueryOptions[ "result" ] = "local.q";
+
 		queryExecute(
 			"DELETE
 			   FROM #variables.table#
 			  WHERE id = ?
 			",
 			[ getNormalizedID( arguments.objectKey ) ],
-			{
-				datasource : variables.dsn,
-				username   : variables.dsnUsername,
-				password   : variables.dsnPassword,
-				result     : "local.q"
-			}
+			localQueryOptions
 		);
 
 		return ( q.recordCount ? true : false );
@@ -464,11 +454,7 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true" 
 			   FROM #variables.table#
 			",
 			{},
-			{
-				datasource : variables.dsn,
-				username   : variables.dsnUsername,
-				password   : variables.dsnPassword
-			}
+			variables.queryOptions
 		);
 
 		return q.totalCount;
@@ -497,11 +483,7 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true" 
 			 WHERE id = ?
 			",
 			[ getNormalizedID( arguments.objectKey ) ],
-			{
-				datasource : variables.dsn,
-				username   : variables.dsnUsername,
-				password   : variables.dsnPassword
-			}
+			variables.queryOptions
 		);
 	}
 
@@ -584,11 +566,7 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true" 
 				) #create.afterCreate#
 				",
 				{},
-				{
-					datasource : variables.dsn,
-					username   : variables.dsnUsername,
-					password   : variables.dsnPassword
-				}
+				variables.queryOptions
 			);
 		}
 	}

@@ -438,22 +438,25 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 		}
 
 		try {
+			// Make sure our routing service can be manipulated
+			prepareMock( routingService )
+				.$( "getCGIElement" )
+				.$args( "script_name", requestContext )
+				.$results( "" )
+				.$( "getCGIElement" )
+				.$args( "server_name", requestContext )
+				.$results( arguments.domain );
+
 			// If the route is for the home page, use the default event in the config/ColdBox.cfc
 			if ( arguments.route == "/" ) {
 				// Set the default app event
 				arguments.event = getController().getSetting( "defaultEvent" );
 				requestContext.setValue( requestContext.getEventName(), arguments.event );
 				// Prepare all mocking data for simulating routing request
-				prepareMock( routingService )
+				routingService
 					.$( "getCGIElement" )
 					.$args( "path_info", requestContext )
-					.$results( arguments.route )
-					.$( "getCGIElement" )
-					.$args( "script_name", requestContext )
-					.$results( "" )
-					.$( "getCGIElement" )
-					.$args( "server_name", requestContext )
-					.$results( arguments.domain );
+					.$results( arguments.route );
 				// No route, it's the route
 				arguments.route = "";
 				// Capture the route request
@@ -462,7 +465,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 			// if we were passed a route, parse it and prepare the SES interceptor for routing.
 			else if ( arguments.route.len() ) {
 				// enable the SES interceptor
-				getInstance( "router@coldbox" ).setEnabled( true );
+				// getInstance( "router@coldbox" ).setEnabled( true );
 				// separate the route into the route and the query string
 				var routeParts = explodeRoute( arguments.route );
 				// add the query string parameters from the route to the request context
@@ -471,20 +474,18 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 				prepareMock( routingService )
 					.$( "getCGIElement" )
 					.$args( "path_info", requestContext )
-					.$results( routeParts.route )
-					.$( "getCGIElement" )
-					.$args( "script_name", requestContext )
-					.$results( "" )
-					.$( "getCGIElement" )
-					.$args( "server_name", requestContext )
-					.$results( arguments.domain );
+					.$results( routeParts.route );
 				// Capture the route request
 				controller.getRequestService().requestCapture();
 			} else {
 				// If we were passed just an event, remove routing since we don't need it
-				getInstance( "router@coldbox" ).setEnabled( false );
+				// getInstance( "router@coldbox" ).setEnabled( false );
 				// Capture the request using our passed in event to execute
 				controller.getRequestService().requestCapture( arguments.event );
+				routingService
+					.$( "getCGIElement" )
+					.$args( "path_info", requestContext )
+					.$results( "" );
 			}
 
 			// add the query string parameters from the route to the request context

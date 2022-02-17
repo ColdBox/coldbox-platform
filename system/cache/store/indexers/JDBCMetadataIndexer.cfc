@@ -203,9 +203,11 @@ component extends="coldbox.system.cache.store.indexers.MetadataIndexer" accessor
 	/**
 	 * Get an array of sorted keys for this indexer according to parameters
 	 *
-	 * @objectKey
-	 * @property 
-	 * @value    
+	 * @property  The property to order the keys with
+	 * @sortType  The sorting type, not used by this indexer
+	 * @sortOrder Either `asc` or `desc` for sorting the keys
+	 *
+	 * @return Sorted keys
 	 */
 	array function getSortedKeys(
 		required property,
@@ -216,7 +218,7 @@ component extends="coldbox.system.cache.store.indexers.MetadataIndexer" accessor
 			"SELECT id, objectKey
 			FROM #variables.config.table#
 		    ORDER BY #arguments.property# #arguments.sortOrder#",
-			[ variables.store.getNormalizedID( arguments.objectKey ) ],
+			[],
 			{
 				datasource : variables.config.dsn,
 				username   : variables.config.dsnUsername,

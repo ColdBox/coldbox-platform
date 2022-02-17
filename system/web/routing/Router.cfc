@@ -902,7 +902,19 @@ component
 				}
 			}
 			var thisRouteActions = isStruct( thisRoute.action ) ? thisRoute.action : {};
-			structAppend( actions, thisRouteActions, true );
+			for ( var newActionVerb in thisRouteActions ) {
+				var newEvent = thisRouteActions[ newActionVerb ];
+				if ( thisRoute.handler != "" ) {
+					newEvent = thisRoute.handler & "." & newEvent;
+				}
+				if ( actions.keyExists( newActionVerb ) && variables.log.canWarn() ) {
+					variables.log.warn(
+						"Duplicate HTTP verb found when merging routing for pattern: [#thisRoute.pattern#]. Changing #uCase( newActionVerb )# action from [#actions[ newActionVerb ]#] to [#newEvent#]",
+						{ existingRoute : matchingRoute, newRoute : thisRoute }
+					);
+				}
+				actions[ newActionVerb ] = newEvent;
+			}
 			if ( thisRoute.event != "" ) {
 				for ( var verb in thisRoute.verbs ) {
 					structInsert( actions, verb, thisRoute.event );

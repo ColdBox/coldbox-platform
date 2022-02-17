@@ -789,7 +789,6 @@ component accessors="true" {
 		return this.thenAsync( function(){
 			// return back the completed array results
 			return jFutures.map( function( jFuture ){
-				// writeDump( var=arguments.jFuture.get(), output="console" );
 				return arguments.jFuture.get();
 			} );
 		} );

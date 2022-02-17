@@ -365,7 +365,7 @@ component serializable="false" accessors="true" {
 		boolean postProcessExempt = false,
 		URL,
 		URI,
-		numeric statusCode = 0
+		numeric statusCode = 302
 	){
 		// Determine the type of relocation
 		var relocationType  = "EVENT";
@@ -671,11 +671,13 @@ component serializable="false" accessors="true" {
 			!isNull( results.data ) &&
 			isObject( results.data )
 		) {
-			// Ignore, if request context
-			if ( isInstanceOf( results.data, "coldbox.system.web.context.RequestContext" ) ) {
-				results.delete( "data" );
-			} else if ( structKeyExists( results.data, "$renderdata" ) ) {
+			// Verify $renderdata method convention
+			if ( structKeyExists( results.data, "$renderdata" ) ) {
 				results.data = results.data.$renderdata();
+			}
+			// Check if request context and ignore
+			else if ( isInstanceOf( results.data, "coldbox.system.web.context.RequestContext" ) ) {
+				results.delete( "data" );
 			}
 		}
 
@@ -1200,22 +1202,18 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
-	 * Send a CF relocation
+	 * Encapsulate a cf relocation tag. Encapsulated so we can mock it.
 	 */
 	private function sendRelocation(
 		required URL,
 		boolean addToken = false,
-		statusCode       = 0
+		statusCode       = 302
 	){
-		if ( arguments.statusCode neq 0 ) {
-			location(
-				url        = "#arguments.url#",
-				addtoken   = "#addtoken#",
-				statuscode = "#arguments.statusCode#"
-			);
-		} else {
-			location( url = "#arguments.url#", addtoken = "#addtoken#" );
-		}
+		location(
+			url        = "#arguments.URL#",
+			addtoken   = "#arguments.addtoken#",
+			statuscode = "#arguments.statusCode#"
+		);
 		return this;
 	}
 

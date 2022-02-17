@@ -44,6 +44,7 @@ component{
 				pagePoolClear();
 			}
 			ormReload();
+			onRequestEnd( arguments.targetPage );
 		}
 
 		return true;

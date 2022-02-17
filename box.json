@@ -1,6 +1,6 @@
 {
     "name":"ColdBox Platform",
-    "version":"6.6.0",
+    "version":"6.6.1",
     "location":"https://downloads.ortussolutions.com/ortussolutions/coldbox/@build.version@/coldbox-@build.version@.zip",
     "author":"Ortus Solutions <info@ortussolutions.com>",
     "slug":"coldbox",
@@ -39,7 +39,7 @@
         ]
     },
     "devDependencies":{
-        "testbox":"*",
+        "testbox":"be",
         "commandbox-dotenv":"*",
         "commandbox-cfconfig":"*",
         "commandbox-cfformat":"*"
