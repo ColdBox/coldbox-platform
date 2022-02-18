@@ -3,6 +3,7 @@
 	function setup(){
 		super.setup();
 		mockRequestContext = getMockRequestContext();
+		mockRequestContext.setSESEnabled( false );
 		mockRequestService = createEmptyMock( "coldbox.system.web.services.RequestService" ).$(
 			"getContext",
 			mockRequestContext
@@ -13,6 +14,7 @@
 
 		model
 			.$( "getModuleSettings" )
+			.$( "getRequestContext", mockRequestContext )
 			.$args( "HTMLHelper" )
 			.$results( { js_path : "", css_path : "", encodeValues : false } );
 
