@@ -584,6 +584,11 @@ component
 		var iData                  = arguments;
 		var viewLocations          = "";
 		var explicitView           = getExplicitView();
+		if ( shouldRenderImplicitView( arguments.view != "" ? arguments.view : event.getCurrentView() ) ) {
+			discoverImplicitViews();
+		}
+		var cbox_implicitLayout = event.getCurrentLayout();
+		var cbox_currentLayout  = cbox_implicitLayout;
 
 		// Are we doing a nested view/layout explicit combo or already in its rendering algorithm?
 		if (
@@ -606,9 +611,6 @@ component
 
 		// If no passed layout, then get it from implicit values
 		if ( isNull( arguments.layout ) ) {
-			var cbox_implicitLayout = implicitViewChecks(
-				arguments.view != "" ? arguments.view : event.getCurrentView()
-			);
 			// Strip off the .cfm extension if it is set
 			if ( len( cbox_implicitLayout ) GT 4 AND right( cbox_implicitLayout, 4 ) eq ".cfm" ) {
 				cbox_implicitLayout = left( cbox_implicitLayout, len( cbox_implicitLayout ) - 4 );
@@ -945,33 +947,26 @@ component
 
 	/************************************** PRIVATE *********************************************/
 
+	private boolean function shouldRenderImplicitView( required string view ){
+		return arguments.view.trim() == "" && variables.controller.getSetting( name = "ImplicitViews" );
+	}
+
 	/**
 	 * Checks if implicit views are turned on and if so, calculate view according to event.
 	 */
-	private function implicitViewChecks( required string view ){
+	private void function discoverImplicitViews(){
 		var event  = getRequestContext();
-		var layout = event.getCurrentLayout();
 		var cEvent = event.getCurrentEvent();
-
-		// Is implicit views enabled?
-		if ( not controller.getSetting( name = "ImplicitViews" ) ) {
-			return layout;
-		}
 
 		// Cleanup for modules
 		cEvent = reReplaceNoCase( cEvent, "^([^:.]*):", "" );
 
-		// Check if no view set?
-		if ( NOT len( arguments.view ) ) {
-			// Implicit views
-			if ( controller.getSetting( name = "caseSensitiveImplicitViews", defaultValue = true ) ) {
-				return event.discoverLayout( replace( cEvent, ".", "/", "all" ) );
-			} else {
-				return event.discoverLayout( lCase( replace( cEvent, ".", "/", "all" ) ) );
-			}
+		// Implicit views
+		if ( controller.getSetting( name = "caseSensitiveImplicitViews", defaultValue = true ) ) {
+			event.setView( replace( cEvent, ".", "/", "all" ) );
+		} else {
+			event.setView( lCase( replace( cEvent, ".", "/", "all" ) ) );
 		}
-
-		return layout;
 	}
 
 }

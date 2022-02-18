@@ -134,6 +134,16 @@ component extends="tests.resources.BaseIntegrationTest" {
 				var results    = r.layout( layout = "Simple", view = "simpleview" );
 				expect( event.getCurrentView() ).toBe( beforeView );
 			} );
+
+			it( "can render implicit views", function(){
+				var event = getRequestContext();
+				event.overrideEvent( "Main.index" );
+				event.setPrivateValue( "welcomeMessage", "Welcome to ColdBox!" );
+				var beforeView = event.getCurrentView();
+				expect( beforeView ).toBe( "" );
+				var results = r.layout();
+				expect( event.getCurrentView() ).toBe( "Main/index" );
+			} );
 		} );
 	}
 
