@@ -239,7 +239,7 @@ component serializable="false" accessors="true" {
 			variables.SESBaseURL = arguments.properties.SESBaseURL;
 		}
 		// flag if using SES
-		variables.SESEnabled   = false;
+		variables.SESEnabled   = true;
 		// routed SES structures
 		variables.routedStruct = structNew();
 
