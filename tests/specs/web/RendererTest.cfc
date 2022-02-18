@@ -137,12 +137,12 @@ component extends="tests.resources.BaseIntegrationTest" {
 
 			it( "can render implicit views", function(){
 				var event = getRequestContext();
-				event.overrideEvent( "Main.index" );
+				event.overrideEvent( "main.index" );
 				event.setPrivateValue( "welcomeMessage", "Welcome to ColdBox!" );
 				var beforeView = event.getCurrentView();
 				expect( beforeView ).toBe( "" );
 				var results = r.layout();
-				expect( event.getCurrentView() ).toBe( "Main/index" );
+				expect( event.getCurrentView() ).toBe( "main/index" );
 			} );
 		} );
 	}
