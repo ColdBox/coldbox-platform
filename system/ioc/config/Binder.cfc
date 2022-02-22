@@ -440,6 +440,11 @@ component accessors="true" {
 			);
 		}
 
+		// These checks must be performed safely here so we can be explicit abut the scopes
+		// All refernces to influence and filter inside the closures cannot be scoped or they will find the wrong arguments
+		var hasInfluence = !isNull( arguments.influence );
+		var hasFilter = !isNull( arguments.filter );
+
 		// Clear out any current mappings
 		variables.currentMapping = [];
 
@@ -465,10 +470,10 @@ component accessors="true" {
 					( len( exclude ) AND NOT reFindNoCase( exclude, arguments.thisPath ) )
 					// We have a closure filter, we ask the filter
 					OR
-					( !isNull( arguments.filter ) AND arguments.filter( arguments.thisPath ) )
+					( hasFilter AND filter( arguments.thisPath ) )
 					OR
 					// No include, no exclude and no filter
-					( NOT len( include ) AND NOT len( exclude ) AND isNull( arguments.filter ) )
+					( NOT len( include ) AND NOT len( exclude ) AND !hasFilter )
 				);
 			} )
 			// Transform the path to something usable for object creation
@@ -498,8 +503,8 @@ component accessors="true" {
 				);
 
 				// Are we influencing?
-				if ( !isNull( arguments.influence ) ) {
-					arguments.influence(
+				if ( hasInfluence ) {
+					influence(
 						this,
 						arguments.thisPath,
 						variables.currentMapping[ 1 ]
