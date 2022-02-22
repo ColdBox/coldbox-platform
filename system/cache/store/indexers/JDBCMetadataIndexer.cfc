@@ -57,7 +57,7 @@ component extends="coldbox.system.cache.store.indexers.MetadataIndexer" accessor
 		variables.store = arguments.store;
 
 		variables.isLucee = server.keyExists( "lucee" );
-		
+
 		// Check credentials
 		if ( isNull( variables.config.dsnUsername ) ) {
 			variables.config.dsnUsername = "";
@@ -129,11 +129,7 @@ component extends="coldbox.system.cache.store.indexers.MetadataIndexer" accessor
 			params = [];
 		}
 
-		queryExecute(
-			sql,
-			params,
-			variables.queryOptions
-		).each( function( row ){
+		queryExecute( sql, params, variables.queryOptions ).each( function( row ){
 			results[ row.objectKey ] = {
 				"hits"              : row.hits,
 				"timeout"           : row.timeout,
