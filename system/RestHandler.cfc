@@ -107,7 +107,7 @@ component extends="EventHandler" {
 
 		// Did the controllers set a view to be rendered? If not use renderdata, else just delegate to view.
 		if (
-			isNull( actionResults )
+			isNull( local.actionResults )
 			AND
 			!arguments.event.getCurrentView().len()
 			AND
@@ -143,8 +143,8 @@ component extends="EventHandler" {
 		}
 
 		// If results detected, just return them, controllers requesting to return results
-		if ( !isNull( actionResults ) ) {
-			return actionResults;
+		if ( !isNull( local.actionResults ) ) {
+			return local.actionResults;
 		}
 	}
 

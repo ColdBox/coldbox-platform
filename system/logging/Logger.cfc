@@ -393,10 +393,10 @@ component accessors="true" {
 						thisAppender.logMessage( thread.logEvent );
 					}
 				} else {
-					if ( isNull( logEvent ) ) {
+					if ( isNull( local.logEvent ) ) {
 						var logEvent = new coldbox.system.logging.LogEvent( argumentCollection = arguments );
 					}
-					thisAppender.logMessage( logEvent );
+					thisAppender.logMessage( local.logEvent );
 				}
 			}
 		}

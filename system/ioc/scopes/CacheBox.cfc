@@ -55,7 +55,7 @@ component accessors="true" {
 		refLocal.target = cacheProvider.get( cacheKey );
 
 		// Verify it
-		if ( isNull( refLocal.target ) ) {
+		if ( isNull( local.refLocal.target ) ) {
 			// Lock it
 			lock
 				name           ="WireBox.#variables.injector.getInjectorID()#.CacheBoxScope.#arguments.mapping.getName()#"
@@ -63,9 +63,9 @@ component accessors="true" {
 				timeout        ="30"
 				throwontimeout ="true" {
 				// Double get just in case of race conditions
-				refLocal.target= cacheProvider.get( cacheKey );
-				if ( !isNull( refLocal.target ) ) {
-					return refLocal.target;
+				local.refLocal.target= cacheProvider.get( cacheKey );
+				if ( !isNull( local.refLocal.target ) ) {
+					return local.refLocal.target;
 				}
 
 				// some nice debug info.
@@ -76,26 +76,26 @@ component accessors="true" {
 				}
 
 				// construct it
-				refLocal.target = variables.injector.buildInstance( arguments.mapping, arguments.initArguments );
+				local.refLocal.target = variables.injector.buildInstance( arguments.mapping, arguments.initArguments );
 
 				// If not in wiring thread safety, store in singleton cache to satisfy circular dependencies
 				if ( NOT arguments.mapping.getThreadSafe() ) {
 					cacheProvider.set(
 						cacheKey,
-						refLocal.target,
+						local.refLocal.target,
 						cacheProperties.timeout,
 						cacheProperties.lastAccessTimeout
 					);
 				}
 
 				// wire up dependencies on the object
-				variables.injector.autowire( target = refLocal.target, mapping = arguments.mapping );
+				variables.injector.autowire( target = local.refLocal.target, mapping = arguments.mapping );
 
 				// If thread safe, then now store it in the cache, as all dependencies are now safely wired
 				if ( arguments.mapping.getThreadSafe() ) {
 					cacheProvider.set(
 						cacheKey,
-						refLocal.target,
+						local.refLocal.target,
 						cacheProperties.timeout,
 						cacheProperties.lastAccessTimeout
 					);
@@ -109,11 +109,11 @@ component accessors="true" {
 				}
 
 				// return it
-				return refLocal.target;
+				return local.refLocal.target;
 			}
 			// end lock
 		} else {
-			return refLocal.target;
+			return local.refLocal.target;
 		}
 	}
 

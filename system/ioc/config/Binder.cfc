@@ -465,10 +465,10 @@ component accessors="true" {
 					( len( exclude ) AND NOT reFindNoCase( exclude, arguments.thisPath ) )
 					// We have a closure filter, we ask the filter
 					OR
-					( !isNull( filter ) AND filter( arguments.thisPath ) )
+					( !isNull( arguments.filter ) AND arguments.filter( arguments.thisPath ) )
 					OR
 					// No include, no exclude and no filter
-					( NOT len( include ) AND NOT len( exclude ) AND isNull( filter ) )
+					( NOT len( include ) AND NOT len( exclude ) AND isNull( arguments.filter ) )
 				);
 			} )
 			// Transform the path to something usable for object creation
@@ -498,8 +498,8 @@ component accessors="true" {
 				);
 
 				// Are we influencing?
-				if ( !isNull( influence ) ) {
-					influence(
+				if ( !isNull( arguments.influence ) ) {
+					arguments.influence(
 						this,
 						arguments.thisPath,
 						variables.currentMapping[ 1 ]

@@ -250,39 +250,39 @@ component serializable="false" accessors="true" {
 			}
 
 			// Verify if cached content existed.
-			if ( !isNull( refresults.eventCaching ) ) {
+			if ( !isNull( local.refresults.eventCaching ) ) {
 				// check renderdata
-				if ( refResults.eventCaching.renderData ) {
-					refResults.eventCaching.controller = cbController;
-					renderDataSetup( argumentCollection = refResults.eventCaching );
+				if ( local.refResults.eventCaching.renderData ) {
+					local.refResults.eventCaching.controller = cbController;
+					renderDataSetup( argumentCollection = local.refResults.eventCaching );
 				}
 
 				// Caching Header Identifier
 				getPageContextResponse().setHeader( "x-coldbox-cache-response", "true" );
 
 				// Response Headers that were cached
-				refResults.eventCaching.responseHeaders.each( function( key, value ){
+				local.refResults.eventCaching.responseHeaders.each( function( key, value ){
 					event.setHTTPHeader( name = key, value = value );
 				} );
 
 				// Render Content as binary or just output
-				if ( refResults.eventCaching.isBinary ) {
+				if ( local.refResults.eventCaching.isBinary ) {
 					cbController
 						.getDataMarshaller()
 						.renderContent(
-							type     = "#refResults.eventCaching.contentType#",
-							variable = "#refResults.eventCaching.renderedContent#"
+							type     = "#local.refResults.eventCaching.contentType#",
+							variable = "#local.refResults.eventCaching.renderedContent#"
 						);
 				} else {
 					cbController
 						.getDataMarshaller()
-						.renderContent( type = "#refResults.eventCaching.contentType#", reset = true );
-					writeOutput( refResults.eventCaching.renderedContent );
+						.renderContent( type = "#local.refResults.eventCaching.contentType#", reset = true );
+					writeOutput( local.refResults.eventCaching.renderedContent );
 				}
 			} else {
 				// ****** EXECUTE MAIN EVENT *******/
 				if ( NOT event.getIsNoExecution() ) {
-					refResults.results = cbController.runEvent( defaultEvent = true );
+					local.refResults.results = cbController.runEvent( defaultEvent = true );
 				}
 				// ****** RENDERING PROCEDURES *******/
 				if ( not event.isNoRender() ) {
@@ -301,14 +301,14 @@ component serializable="false" accessors="true" {
 							.marshallData( argumentCollection = renderData );
 					}
 					// Check if handler returned results
-					else if ( !isNull( refResults.results ) ) {
+					else if ( !isNull( local.refResults.results ) ) {
 						// If simple, just return it back, evaluates to HTML
-						if ( isSimpleValue( refResults.results ) ) {
-							renderedContent = refResults.results;
+						if ( isSimpleValue( local.refResults.results ) ) {
+							renderedContent = local.refResults.results;
 						}
 						// ColdBox does native JSON if you return a complex object.
 						else {
-							renderedContent = serializeJSON( refResults.results, true );
+							renderedContent = serializeJSON( local.refResults.results, true );
 							getPageContextResponse().setContentType( "application/json" );
 						}
 					}
