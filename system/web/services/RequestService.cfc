@@ -182,15 +182,37 @@ component extends="coldbox.system.web.services.BaseService" {
 
 	/**
 	 * Get the Request context from request scope or create a new one.
+	 * Creation will be thread safe so two threads sharing the request scope
+	 * don't both create a new context and overwrite
 	 *
 	 * @return coldbox.system.web.context.RequestContext
 	 */
 	function getContext( string classPath = "coldbox.system.web.context.RequestContext" ){
-		return (
-			structKeyExists( request, "cb_requestContext" ) ? request[ "cb_requestContext" ] : createContext(
-				classPath
-			)
-		);
+		var thisContext = getContextFromScope();
+		if( !isNull( thisContext ) ) {
+			return thisContext;
+		}
+		
+		lock scope="request" timeout="30" {
+			
+			// Double check once inside lock
+			var thisContext = getContextFromScope();
+			if( !isNull( thisContext ) ) {
+				return thisContext;
+			}
+			
+			return createContext( classPath );
+		} 
+		
+	}
+
+	/**
+	 * Get the Request context from request scope or return null if not exists
+	 *
+	 * @return coldbox.system.web.context.RequestContext
+	 */
+	private function getContextFromScope(){
+		return request[ "cb_requestContext" ] ?: javaCast( 'null', '' );
 	}
 
 	/**
