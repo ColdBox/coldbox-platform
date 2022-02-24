@@ -367,6 +367,10 @@ component serializable="false" accessors="true" {
 		URI,
 		numeric statusCode = 302
 	){
+		// StatusCode 0 then default it to 302 for backwards compat: Remove by ColdBox 7
+		if( arguments.statusCode == 0 ){
+			arguments.statusCode = 302;
+		}
 		// Determine the type of relocation
 		var relocationType  = "EVENT";
 		var relocationURL   = "";
