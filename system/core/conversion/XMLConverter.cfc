@@ -311,7 +311,7 @@ Luis Majano
 		// Content
 		for ( key in target ) {
 			// Null Checks
-			if ( !structKeyExists( target, key ) || isNull( target[ key ] ) ) {
+			if ( !structKeyExists( target, key ) || isNull( local.target[ key ] ) ) {
 				target[ key ] = "NULL";
 			}
 			// Translate Value

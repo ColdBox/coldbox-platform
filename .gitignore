@@ -35,6 +35,8 @@ system/exceptions/node_modules/**
 # Custom Settings
 test-harness/config/runtime.properties.cfm
 .env
+/settings.xml
+/.settings/
 # Development settings
 build/docker
 docker-compose.yml

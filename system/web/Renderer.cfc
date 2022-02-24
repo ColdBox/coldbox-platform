@@ -287,13 +287,13 @@ component
 			// Try to get from cache
 			iData.renderedView = viewCacheProvider.get( viewCacheKey );
 			// Verify it existed
-			if ( !isNull( iData.renderedView ) ) {
+			if ( !isNull( local.iData.renderedView ) ) {
 				// Post View Render Interception
 				if ( NOT arguments.prepostExempt ) {
-					announce( "postViewRender", iData );
+					announce( "postViewRender", local.iData );
 				}
 				// Return it
-				return iData.renderedView;
+				return local.iData.renderedView;
 			}
 		}
 
@@ -322,7 +322,7 @@ component
 		}
 		// Render simple composite view
 		else {
-			iData.renderedView = renderViewComposite(
+			local.iData.renderedView = renderViewComposite(
 				arguments.view,
 				viewLocations.viewPath,
 				viewLocations.viewHelperPath,
@@ -332,21 +332,21 @@ component
 
 		// Post View Render Interception point
 		if ( NOT arguments.prepostExempt ) {
-			announce( "postViewRender", iData );
+			announce( "postViewRender", local.iData );
 		}
 
 		// Are we caching view
 		if ( arguments.cache && variables.viewCaching ) {
 			viewCacheProvider.set(
 				viewCacheKey,
-				iData.renderedView,
+				local.iData.renderedView,
 				arguments.cacheTimeout,
 				arguments.cacheLastAccessTimeout
 			);
 		}
 
 		// Return view content
-		return iData.renderedView;
+		return local.iData.renderedView;
 	}
 
 	/**

@@ -367,6 +367,10 @@ component serializable="false" accessors="true" {
 		URI,
 		numeric statusCode = 302
 	){
+		// StatusCode 0 then default it to 302 for backwards compat: Remove by ColdBox 7
+		if( arguments.statusCode == 0 ){
+			arguments.statusCode = 302;
+		}
 		// Determine the type of relocation
 		var relocationType  = "EVENT";
 		var relocationURL   = "";
@@ -668,43 +672,43 @@ component serializable="false" accessors="true" {
 
 		// Do we have an object coming back?
 		if (
-			!isNull( results.data ) &&
-			isObject( results.data )
+			!isNull( local.results.data ) &&
+			isObject( local.results.data )
 		) {
 			// Verify $renderdata method convention
-			if ( structKeyExists( results.data, "$renderdata" ) ) {
-				results.data = results.data.$renderdata();
+			if ( structKeyExists( local.results.data, "$renderdata" ) ) {
+				local.results.data = local.results.data.$renderdata();
 			}
 			// Check if request context and ignore
-			else if ( isInstanceOf( results.data, "coldbox.system.web.context.RequestContext" ) ) {
-				results.delete( "data" );
+			else if ( isInstanceOf( local.results.data, "coldbox.system.web.context.RequestContext" ) ) {
+				local.results.delete( "data" );
 			}
 		}
 
 		// Do we need to do action renderings?
 		if (
-			!isNull( results.data ) &&
-			results.ehBean.getActionMetadata( "renderdata", "html" ) neq "html"
+			!isNull( local.results.data ) &&
+			local.results.ehBean.getActionMetadata( "renderdata", "html" ) neq "html"
 		) {
 			// Do action Rendering
 			services.requestService
 				.getContext()
-				.renderdata( type = results.ehBean.getActionMetadata( "renderdata" ), data = results.data );
+				.renderdata( type = local.results.ehBean.getActionMetadata( "renderdata" ), data = local.results.data );
 		}
 
 		// Are we caching
-		if ( isCachingOn && !isNull( results.data ) ) {
+		if ( isCachingOn && !isNull( local.results.data ) ) {
 			oCache.set(
 				objectKey         = cacheKey,
-				object            = results.data,
+				object            = local.results.data,
 				timeout           = arguments.cacheTimeout,
 				lastAccessTimeout = arguments.cacheLastAccessTimeout
 			);
 		}
 
 		// Are we returning data?
-		if ( !isNull( results.data ) ) {
-			return results.data;
+		if ( !isNull( local.results.data ) ) {
+			return local.results.data;
 		}
 	}
 

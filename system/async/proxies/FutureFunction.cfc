@@ -14,13 +14,13 @@ component extends="Function" {
 		try {
 			lock name="#getConcurrentEngineLockName()#" type="exclusive" timeout="60" {
 				var oFuture = variables.target( arguments.t );
-				if ( isNull( oFuture ) || !structKeyExists( oFuture, "getNative" ) ) {
+				if ( isNull( local.oFuture ) || !structKeyExists( local.oFuture, "getNative" ) ) {
 					throw(
 						type    = "IllegalFutureException",
 						message = "The return of the function is NOT a ColdBox Future"
 					);
 				}
-				return oFuture.getNative();
+				return local.oFuture.getNative();
 			}
 		} finally {
 			unLoadContext();

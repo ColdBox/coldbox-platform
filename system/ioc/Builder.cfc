@@ -278,10 +278,10 @@ component serializable="false" accessors="true" {
 
 		// Process arguments to constructor call.
 		for ( var thisArg in DIArgs ) {
-			if ( !isNull( thisArg.javaCast ) ) {
-				args.append( javacast( thisArg.javacast, thisArg.value ) );
+			if ( !isNull( local.thisArg.javaCast ) ) {
+				args.append( javacast( local.thisArg.javacast, local.thisArg.value ) );
 			} else {
-				args.append( thisArg.value );
+				args.append( local.thisArg.value );
 			}
 		}
 
@@ -321,15 +321,15 @@ component serializable="false" accessors="true" {
 		// Process Arguments
 		for ( var thisArg in DIArgs ) {
 			// Process if we have a value and continue
-			if ( !isNull( thisArg.value ) ) {
-				args[ thisArg.name ] = thisArg.value;
+			if ( !isNull( local.thisArg.value ) ) {
+				args[ local.thisArg.name ] = local.thisArg.value;
 				continue;
 			}
 
 			// Is it by DSL construction? If so, add it and continue, if not found it returns null, which is ok
-			if ( !isNull( thisArg.dsl ) ) {
-				args[ thisArg.name ] = buildDSLDependency(
-					definition   = thisArg,
+			if ( !isNull( local.thisArg.dsl ) ) {
+				args[ local.thisArg.name ] = buildDSLDependency(
+					definition   = local.thisArg,
 					targetID     = thisMap.getName(),
 					targetObject = arguments.targetObject
 				);
@@ -337,30 +337,30 @@ component serializable="false" accessors="true" {
 			}
 
 			// If we get here then it is by ref id, so let's verify it exists and optional
-			if ( variables.injector.containsInstance( thisArg.ref ) ) {
-				args[ thisArg.name ] = variables.injector.getInstance( name = thisArg.ref );
+			if ( variables.injector.containsInstance( local.thisArg.ref ) ) {
+				args[ local.thisArg.name ] = variables.injector.getInstance( name = local.thisArg.ref );
 				continue;
 			}
 
 			// Not found, so check if it is required
-			if ( thisArg.required ) {
+			if ( local.thisArg.required ) {
 				// Log the error
 				variables.log.error(
-					"Target: #thisMap.getName()# -> Argument reference not located: #thisArg.name#",
-					thisArg
+					"Target: #thisMap.getName()# -> Argument reference not located: #local.thisArg.name#",
+					local.thisArg
 				);
 				// not found but required, then throw exception
 				throw(
-					message = "Argument reference not located: #thisArg.name#",
-					detail  = "Injecting: #thisMap.getName()#. The argument details are: #thisArg.toString()#.",
+					message = "Argument reference not located: #local.thisArg.name#",
+					detail  = "Injecting: #thisMap.getName()#. The argument details are: #local.thisArg.toString()#.",
 					type    = "Injector.ArgumentNotFoundException"
 				);
 			}
 			// else just log it via debug
 			else if ( variables.log.canDebug() ) {
 				variables.log.debug(
-					"Target: #thisMap.getName()# -> Argument reference not located: #thisArg.name#",
-					thisArg
+					"Target: #thisMap.getName()# -> Argument reference not located: #local.thisArg.name#",
+					local.thisArg
 				);
 			}
 		}
@@ -382,7 +382,7 @@ component serializable="false" accessors="true" {
 
 		// Process args
 		for ( var thisArg in DIArgs ) {
-			argStruct[ thisArg.name ] = thisArg.value;
+			argStruct[ local.thisArg.name ] = local.thisArg.value;
 		}
 
 		// Do we have overrides

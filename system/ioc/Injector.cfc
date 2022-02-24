@@ -1094,14 +1094,14 @@ component serializable="false" accessors="true" {
 			// Init the lookup structure
 			var refLocal   = {};
 			// Check if direct value has been placed.
-			if ( !isNull( thisDIData.value ) ) {
-				refLocal.dependency = thisDIData.value;
+			if ( !isNull( local.thisDIData.value ) ) {
+				refLocal.dependency = local.thisDIData.value;
 			}
 			// else check if dsl is used?
-			else if ( !isNull( thisDIData.dsl ) ) {
+			else if ( !isNull( local.thisDIData.dsl ) ) {
 				// Get DSL dependency by sending entire DI structure to retrieve
 				refLocal.dependency = variables.builder.buildDSLDependency(
-					definition   = thisDIData,
+					definition   = local.thisDIData,
 					targetID     = arguments.targetID,
 					targetObject = arguments.targetObject
 				);

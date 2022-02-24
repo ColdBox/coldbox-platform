@@ -70,8 +70,8 @@ component accessors="true" {
 		}
 
 		// If we have results, return them
-		if ( !isNull( results ) ) {
-			return results;
+		if ( !isNull( local.results ) ) {
+			return local.results;
 		}
 
 		// If we didn't, do we have a default value

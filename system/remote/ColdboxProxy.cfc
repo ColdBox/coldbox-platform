@@ -109,12 +109,12 @@ component serializable="false" accessors="true" {
 		}
 
 		// Return results from handler only if found, else method will produce a null result
-		if ( !isNull( refLocal.results ) ) {
+		if ( !isNull( local.refLocal.results ) ) {
 			// preProxyResults interception call
-			cbController.getInterceptorService().announce( "preProxyResults", { "proxyResults" : refLocal } );
+			cbController.getInterceptorService().announce( "preProxyResults", { "proxyResults" : local.refLocal } );
 
 			// Return The results
-			return refLocal.results;
+			return local.refLocal.results;
 		}
 	}
 

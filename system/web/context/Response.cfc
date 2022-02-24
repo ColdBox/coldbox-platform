@@ -215,7 +215,7 @@ component accessors="true" {
 	 */
 	struct function getMemento(){
 		return variables.filter( function( key, value ){
-			return ( !isNull( value ) && !isCustomFunction( value ) && !listFindNoCase( "this", key ) );
+			return ( !isNull( arguments.value ) && !isCustomFunction( arguments.value ) && !listFindNoCase( "this", key ) );
 		} );
 	}
 
