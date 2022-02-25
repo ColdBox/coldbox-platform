@@ -1494,12 +1494,6 @@
 							"trigger": "event.getRoutedStruct\tfn. (ColdBox:event)",
 							"contents": "event.getRoutedStruct( )"
 						},{
-							"trigger": "event.getSESBaseURL\tfn. (ColdBox:event)",
-							"contents": "event.getSESBaseURL( )"
-						},{
-							"trigger": "event.getSESEnabled\tfn. (ColdBox:event)",
-							"contents": "event.getSESEnabled( )"
-						},{
 							"trigger": "event.getSelf\tfn. (ColdBox:event)",
 							"contents": "event.getSelf( )"
 						},{
@@ -1649,9 +1643,6 @@
 						},{
 							"trigger": "event.setSESBaseURL\tfn. (ColdBox:event)",
 							"contents": "event.setSESBaseURL( sesBaseURL=\"${1:}\" )"
-						},{
-							"trigger": "event.setSESEnabled\tfn. (ColdBox:event)",
-							"contents": "event.setSESEnabled( flag=${1:true,false} )"
 						},{
 							"trigger": "event.setValue\tfn. (ColdBox:event)",
 							"contents": "event.setValue( name=${1:any}, value=${2:any}, private=${3:true,false} )"

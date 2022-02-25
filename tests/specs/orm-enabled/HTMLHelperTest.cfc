@@ -3,7 +3,6 @@
 	function setup(){
 		super.setup();
 		mockRequestContext = getMockRequestContext();
-		mockRequestContext.setSESEnabled( false );
 		mockRequestService = createEmptyMock( "coldbox.system.web.services.RequestService" ).$(
 			"getContext",
 			mockRequestContext
@@ -359,7 +358,7 @@
 
 		str = model.startForm( action = "user.save" );
 		// debug(str);
-		assertTrue( findNoCase( "user.save""", str ) );
+		assertTrue( findNoCase( encodeForHTMLAttribute( "/user/save" ), str ), "Incorrect form start #str#" );
 
 		var mockEvent = getMockRequestContext().$( "buildLink", "http://www.coldbox.org/user/save" );
 		mockRequestService.$( "getContext", mockEvent );
@@ -743,11 +742,11 @@
 	function testhref(){
 		str = model.href( href = "actions.save" );
 		// debug(str);
-		assertEquals( "<a href=""#encodeForHTMLAttribute( "index.cfm?event=actions.save" )#""></a>", str );
+		assertEquals( "<a href=""#encodeForHTMLAttribute( "/actions/save" )#""></a>", str );
 
 		str = model.href( href = "actions.save", text = "Edit" );
 		// debug(str);
-		assertEquals( "<a href=""#encodeForHTMLAttribute( "index.cfm?event=actions.save" )#"">Edit</a>", str );
+		assertEquals( "<a href=""#encodeForHTMLAttribute( "/actions/save" )#"">Edit</a>", str );
 	}
 
 

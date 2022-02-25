@@ -96,7 +96,6 @@
 		// mock data
 		mockFlash   = createMock( "coldbox.system.web.flash.MockFlash" ).init( controller );
 		mockContext = getMockRequestContext();
-		mockContext.setSESEnabled( false );
 
 		mockFlash.$( "saveFlash" );
 
