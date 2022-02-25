@@ -201,7 +201,9 @@ component extends="coldbox.system.async.tasks.ScheduledTask" accessors="true" {
 			return false;
 		}
 		// Else, it exists, check we are the same server that locked! If true, then we can run it baby!
-		else if ( local.serverLock.serverHost eq getStats().inetHost && local.serverLock.serverIp eq getStats().localIp ) {
+		else if (
+			local.serverLock.serverHost eq getStats().inetHost && local.serverLock.serverIp eq getStats().localIp
+		) {
 			return true;
 		} else {
 			variables.log.info(
