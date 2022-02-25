@@ -68,11 +68,6 @@ component serializable="false" accessors="true" {
 	property name="SESBaseURL";
 
 	/**
-	 * Are we in SES mode for the request or not
-	 */
-	property name="SESEnabled" type="boolean";
-
-	/**
 	 * The incoming RESTFul routed struct (if any)
 	 */
 	property name="routedStruct" type="struct";
@@ -238,8 +233,6 @@ component serializable="false" accessors="true" {
 		if ( structKeyExists( arguments.properties, "SESBaseURL" ) ) {
 			variables.SESBaseURL = arguments.properties.SESBaseURL;
 		}
-		// flag if using SES
-		variables.SESEnabled   = true;
 		// routed SES structures
 		variables.routedStruct = structNew();
 
@@ -1065,18 +1058,21 @@ component serializable="false" accessors="true" {
 	/**
 	 * Setter for verifying SES mode
 	 *
+	 * @deprecated
 	 * @return RequestContext
 	 */
 	function setSESEnabled( required boolean flag ){
-		variables.SESEnabled = arguments.flag;
+		variables.controller.getLogbox().getLogger( this ).warn( "SES may no longer be disabled as of Coldbox v6.  This method is deprecated and will be removed in v7." );
 		return this;
 	}
 
 	/**
 	 * Verify if SES is enabled or not in the request
+	 * @deprecated
 	 */
 	boolean function isSES(){
-		return variables.SESEnabled;
+		variables.controller.getLogbox().getLogger( this ).warn( "SES is always enabled as of Coldbox v6.  This method is deprecated and will be removed in v7." );
+		return true;
 	}
 
 	/**
@@ -1248,55 +1244,45 @@ component serializable="false" accessors="true" {
 			frontController = arguments.baseURL;
 		}
 
-		// SES Mode
-		if ( variables.SESEnabled ) {
-			// SSL ON OR TURN IT ON
-			if ( isSSL() OR ( !isNull( arguments.ssl ) and arguments.ssl ) ) {
-				variables.SESBaseURL = replaceNoCase( variables.SESBaseURL, "http:", "https:" );
-			}
+		// SSL ON OR TURN IT ON
+		if ( isSSL() OR ( !isNull( arguments.ssl ) and arguments.ssl ) ) {
+			variables.SESBaseURL = replaceNoCase( variables.SESBaseURL, "http:", "https:" );
+		}
 
-			// SSL Turn Off
-			if ( !isNull( arguments.ssl ) and arguments.ssl eq false ) {
-				variables.SESBaseURL = replaceNoCase( variables.SESBaseURL, "https:", "http:" );
-			}
+		// SSL Turn Off
+		if ( !isNull( arguments.ssl ) and arguments.ssl eq false ) {
+			variables.SESBaseURL = replaceNoCase( variables.SESBaseURL, "https:", "http:" );
+		}
 
-			// Translate link or plain
-			if ( arguments.translate ) {
-				// Convert module into proper entry point
-				if ( listLen( arguments.to, ":" ) > 1 ) {
-					var mConfig = controller.getSetting( "modules" );
-					var module  = listFirst( arguments.to, ":" );
-					if ( structKeyExists( mConfig, module ) ) {
-						arguments.to = mConfig[ module ].inheritedEntryPoint & "/" & listRest( arguments.to, ":" );
-					}
+		// Translate link or plain
+		if ( arguments.translate ) {
+			// Convert module into proper entry point
+			if ( listLen( arguments.to, ":" ) > 1 ) {
+				var mConfig = controller.getSetting( "modules" );
+				var module  = listFirst( arguments.to, ":" );
+				if ( structKeyExists( mConfig, module ) ) {
+					arguments.to = mConfig[ module ].inheritedEntryPoint & "/" & listRest( arguments.to, ":" );
 				}
-				arguments.to = replace( arguments.to, ".", "/", "all" );
+			}
+			arguments.to = replace( arguments.to, ".", "/", "all" );
 
-				// Conversions
-				if ( len( arguments.queryString ) ) {
-					if ( right( arguments.to, 1 ) neq "/" ) {
-						arguments.to = arguments.to & "/";
-					}
-					arguments.to = arguments.to & replace( arguments.queryString, "&", "/", "all" );
-					arguments.to = replace( arguments.to, "=", "/", "all" );
+			// Conversions
+			if ( len( arguments.queryString ) ) {
+				if ( right( arguments.to, 1 ) neq "/" ) {
+					arguments.to = arguments.to & "/";
 				}
-			} else if ( len( arguments.queryString ) ) {
-				arguments.to = arguments.to & "?" & arguments.queryString;
+				arguments.to = arguments.to & replace( arguments.queryString, "&", "/", "all" );
+				arguments.to = replace( arguments.to, "=", "/", "all" );
 			}
+		} else if ( len( arguments.queryString ) ) {
+			arguments.to = arguments.to & "?" & arguments.queryString;
+		}
 
-			// Prepare SES Base URL Link
-			if ( right( variables.SESBaseURL, 1 ) eq "/" ) {
-				return variables.SESBaseURL & arguments.to;
-			} else {
-				return variables.SESBaseURL & "/" & arguments.to;
-			}
+		// Prepare SES Base URL Link
+		if ( right( variables.SESBaseURL, 1 ) eq "/" ) {
+			return variables.SESBaseURL & arguments.to;
 		} else {
-			// Check if sending in Query String
-			if ( len( arguments.queryString ) eq 0 ) {
-				return "#frontController#?#variables.eventName#=#arguments.to#";
-			} else {
-				return "#frontController#?#variables.eventName#=#arguments.to#&#arguments.queryString#";
-			}
+			return variables.SESBaseURL & "/" & arguments.to;
 		}
 	}
 

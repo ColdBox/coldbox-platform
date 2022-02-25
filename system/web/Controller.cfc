@@ -465,7 +465,7 @@ component serializable="false" accessors="true" {
 				relocationURL = oRequestContext.getSESBaseURL();
 				// if the sesBaseURL is nothing, set it to the setting
 				if ( !len( relocationURL ) ) {
-					relocationURL = getSetting( "sesBaseURL" );
+					relocationURL = getSetting( "sesBaseURL", "/" );
 				}
 				// add the trailing slash if there isnt one
 				if ( right( relocationURL, 1 ) neq "/" ) {
