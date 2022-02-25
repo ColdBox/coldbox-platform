@@ -443,7 +443,7 @@ component accessors="true" {
 		// These checks must be performed safely here so we can be explicit abut the scopes
 		// All refernces to influence and filter inside the closures cannot be scoped or they will find the wrong arguments
 		var hasInfluence = !isNull( arguments.influence );
-		var hasFilter = !isNull( arguments.filter );
+		var hasFilter    = !isNull( arguments.filter );
 
 		// Clear out any current mappings
 		variables.currentMapping = [];

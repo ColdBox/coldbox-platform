@@ -85,12 +85,11 @@ component extends="coldbox.system.testing.BaseModelTest" {
 	}
 
 	function testGetModuleEntryPoint(){
-		var event = getRequestContext()
-			.$property(
-				"modules",
-				"variables",
-				{ myModule : { inheritedEntryPoint : "mymodule/" } }
-			);
+		var event = getRequestContext().$property(
+			"modules",
+			"variables",
+			{ myModule : { inheritedEntryPoint : "mymodule/" } }
+		);
 		var r = event.getModuleEntryPoint( "myModule" );
 		expect( r ).toBe( "mymodule/" );
 	}
@@ -102,12 +101,11 @@ component extends="coldbox.system.testing.BaseModelTest" {
 			.$( "getRoutes", [] );
 		mockController.getWireBox().$( "getInstance", mockRouter );
 
-		var event = getRequestContext()
-			.$property(
-				"modules",
-				"variables",
-				{ myModule : { inheritedEntryPoint : "mymodule/" } }
-			);
+		var event = getRequestContext().$property(
+			"modules",
+			"variables",
+			{ myModule : { inheritedEntryPoint : "mymodule/" } }
+		);
 		var r = event.route( "home@mymodule" );
 		// debug( r );
 		expect( r ).toBe( "http://jfetmac/applications/coldbox/test-harness/index.cfm/mymodule/home/" );
@@ -431,7 +429,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		var basessl = "https://www.luismajano.com";
 
 		/* simple setup */
-		event.setsesBaseURL( '/' );
+		event.setsesBaseURL( "/" );
 		testurl = event.buildLink( "general.index" );
 		assertEquals( testurl, "/general/index" );
 

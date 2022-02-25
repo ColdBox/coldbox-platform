@@ -189,21 +189,19 @@ component extends="coldbox.system.web.services.BaseService" {
 	 */
 	function getContext( string classPath = "coldbox.system.web.context.RequestContext" ){
 		var thisContext = getContextFromScope();
-		if( !isNull( thisContext ) ) {
+		if ( !isNull( thisContext ) ) {
 			return thisContext;
 		}
-		
+
 		lock scope="request" timeout="30" {
-			
 			// Double check once inside lock
 			var thisContext = getContextFromScope();
-			if( !isNull( thisContext ) ) {
+			if ( !isNull( thisContext ) ) {
 				return thisContext;
 			}
-			
+
 			return createContext( classPath );
-		} 
-		
+		}
 	}
 
 	/**
@@ -212,7 +210,7 @@ component extends="coldbox.system.web.services.BaseService" {
 	 * @return coldbox.system.web.context.RequestContext
 	 */
 	private function getContextFromScope(){
-		return request[ "cb_requestContext" ] ?: javaCast( 'null', '' );
+		return request[ "cb_requestContext" ] ?: javacast( "null", "" );
 	}
 
 	/**

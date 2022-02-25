@@ -1059,19 +1059,31 @@ component serializable="false" accessors="true" {
 	 * Setter for verifying SES mode
 	 *
 	 * @deprecated
+	 *
 	 * @return RequestContext
 	 */
 	function setSESEnabled( required boolean flag ){
-		variables.controller.getLogbox().getLogger( this ).warn( "SES may no longer be disabled as of Coldbox v6.  This method is deprecated and will be removed in v7." );
+		variables.controller
+			.getLogbox()
+			.getLogger( this )
+			.warn(
+				"SES may no longer be disabled as of Coldbox v6.  This method is deprecated and will be removed in v7."
+			);
 		return this;
 	}
 
 	/**
 	 * Verify if SES is enabled or not in the request
+	 *
 	 * @deprecated
 	 */
 	boolean function isSES(){
-		variables.controller.getLogbox().getLogger( this ).warn( "SES is always enabled as of Coldbox v6.  This method is deprecated and will be removed in v7." );
+		variables.controller
+			.getLogbox()
+			.getLogger( this )
+			.warn(
+				"SES is always enabled as of Coldbox v6.  This method is deprecated and will be removed in v7."
+			);
 		return true;
 	}
 
