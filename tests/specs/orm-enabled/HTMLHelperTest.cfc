@@ -16,7 +16,7 @@
 			.$args( "HTMLHelper" )
 			.$results( { js_path : "", css_path : "", encodeValues : false } );
 
-		model.$( "getRequestContext", mockRequestContext )
+		model.$( "getRequestContext", mockRequestContext );
 
 		model.init( mockController );
 	}
