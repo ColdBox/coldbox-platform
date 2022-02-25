@@ -368,7 +368,7 @@ component serializable="false" accessors="true" {
 		numeric statusCode = 302
 	){
 		// StatusCode 0 then default it to 302 for backwards compat: Remove by ColdBox 7
-		if( arguments.statusCode == 0 ){
+		if ( arguments.statusCode == 0 ) {
 			arguments.statusCode = 302;
 		}
 		// Determine the type of relocation
@@ -693,7 +693,10 @@ component serializable="false" accessors="true" {
 			// Do action Rendering
 			services.requestService
 				.getContext()
-				.renderdata( type = local.results.ehBean.getActionMetadata( "renderdata" ), data = local.results.data );
+				.renderdata(
+					type = local.results.ehBean.getActionMetadata( "renderdata" ),
+					data = local.results.data
+				);
 		}
 
 		// Are we caching
