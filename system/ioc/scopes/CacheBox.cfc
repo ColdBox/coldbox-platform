@@ -58,10 +58,10 @@ component accessors="true" {
 		if ( isNull( local.refLocal.target ) ) {
 			// Lock it
 			lock
-				name           ="WireBox.#variables.injector.getInjectorID()#.CacheBoxScope.#arguments.mapping.getName()#"
-				type           ="exclusive"
-				timeout        ="30"
-				throwontimeout ="true" {
+				name                 ="WireBox.#variables.injector.getInjectorID()#.CacheBoxScope.#arguments.mapping.getName()#"
+				type                 ="exclusive"
+				timeout              ="30"
+				throwontimeout       ="true" {
 				// Double get just in case of race conditions
 				local.refLocal.target= cacheProvider.get( cacheKey );
 				if ( !isNull( local.refLocal.target ) ) {
@@ -76,7 +76,10 @@ component accessors="true" {
 				}
 
 				// construct it
-				local.refLocal.target = variables.injector.buildInstance( arguments.mapping, arguments.initArguments );
+				local.refLocal.target = variables.injector.buildInstance(
+					arguments.mapping,
+					arguments.initArguments
+				);
 
 				// If not in wiring thread safety, store in singleton cache to satisfy circular dependencies
 				if ( NOT arguments.mapping.getThreadSafe() ) {

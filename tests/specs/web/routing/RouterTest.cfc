@@ -602,6 +602,48 @@ component extends="coldbox.system.testing.BaseModelTest" {
 					expect( route.action ).toHaveKey( "DELETE" );
 					expect( route.action.DELETE ).toBe( "Notifications.ReadNotifications.delete" );
 				} );
+
+				it( "does not double up the handler when merging routes", function(){
+					router
+						.route( "global/accounts/:id" )
+						.withAction( { GET : "show", PUT : "update", DELETE : "delete" } )
+						.toHandler( "global.accounts" );
+
+					router
+						.route( "global/accounts" )
+						.withAction( { GET : "index", POST : "create" } )
+						.toHandler( "global.accounts" );
+
+					// now duplicate the routes
+
+					router
+						.route( "global/accounts/:id" )
+						.withAction( { GET : "show", PUT : "update", DELETE : "delete" } )
+						.toHandler( "global.accounts" );
+
+					router
+						.route( "global/accounts" )
+						.withAction( { GET : "index", POST : "create" } )
+						.toHandler( "global.accounts" );
+
+					var routes = router.getRoutes();
+					expect( routes ).toBeArray();
+					expect( routes ).toHaveLength( 2 );
+
+					expect( routes[ 1 ] ).toHaveKey( "pattern" );
+					expect( routes[ 1 ].pattern ).toBe( "global/accounts/:id/" );
+					expect( routes[ 1 ] ).toHaveKey( "handler" );
+					expect( routes[ 1 ].handler ).toBe( "global.accounts" );
+					expect( routes[ 1 ] ).toHaveKey( "action" );
+					expect( routes[ 1 ].action ).toBe( { "DELETE" : "delete", "GET" : "show", "PUT" : "update" } );
+
+					expect( routes[ 2 ] ).toHaveKey( "pattern" );
+					expect( routes[ 2 ].pattern ).toBe( "global/accounts/" );
+					expect( routes[ 2 ] ).toHaveKey( "handler" );
+					expect( routes[ 2 ].handler ).toBe( "global.accounts" );
+					expect( routes[ 2 ] ).toHaveKey( "action" );
+					expect( routes[ 2 ].action ).toBe( { "GET" : "index", "POST" : "create" } );
+				} );
 			} );
 		} );
 	}
