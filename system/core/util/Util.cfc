@@ -78,7 +78,7 @@ component {
 	 */
 	function discoverInetHost(){
 		try {
-			return createObject( "java", "java.net.InetAddress" ).getLocalHost().getHostName();
+			return getInetAddress().getLocalHost().getHostName();
 		} catch ( any e ) {
 			return cgi.SERVER_NAME;
 		}
@@ -87,8 +87,24 @@ component {
 	/**
 	 * Get the server IP Address
 	 */
-	function getServerIp(){
-		return ( isNull( cgi.local_addr ) ? "0.0.0.0" : cgi.local_addr );
+	string function getServerIp(){
+		try {
+			return getInetAddress().getLocalHost().getHostAddress();
+		} catch ( any e ) {
+			return "0.0.0.0";
+		}
+	}
+
+	/**
+	 * Get the Java InetAddress object
+	 *
+	 * @return java.net.InetAddress
+	 */
+	private function getInetAddress(){
+		if ( isNull( variables.inetAddress ) ) {
+			variables.inetAddress = createObject( "java", "java.net.InetAddress" );
+		}
+		return variables.inetAddress;
 	}
 
 	/****************************************************************
