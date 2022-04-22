@@ -34,12 +34,10 @@ component accessors="true" {
 		// Setup properties of the event manager
 		variables.eventStates          = arguments.eventStates;
 		variables.stopRecursionClasses = arguments.stopRecursionClasses;
-
 		// class id code
-		variables.classID = createObject( "java", "java.lang.System" ).identityHashCode( this );
-
+		variables.classID              = createUUID();
 		// Init event pool container
-		variables.eventPoolContainer = structNew();
+		variables.eventPoolContainer   = structNew();
 
 		return this;
 	}

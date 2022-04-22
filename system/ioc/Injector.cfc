@@ -184,7 +184,7 @@ component serializable="false" accessors="true" {
 		variables.childInjectors = structNew( "ordered" );
 
 		// Prepare instance ID
-		variables.injectorID = variables.javaSystem.identityHashCode( this );
+		variables.injectorID = createUUID();
 		// Prepare Lock Info
 		variables.lockName   = "WireBox.Injector.#variables.injectorID#";
 		// Link ColdBox Context if passed

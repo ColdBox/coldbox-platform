@@ -71,7 +71,7 @@ component accessors="true" {
 		// mixer util
 		variables.mixerUtil            = new coldbox.system.aop.MixerUtil();
 		// class id code
-		variables.classID              = variables.system.identityHashCode( this );
+		variables.classID              = variables.uuid.randomUUID();
 
 		// Default Generation Path?
 		if ( NOT structKeyExists( variables.properties, "generationPath" ) ) {
@@ -107,7 +107,7 @@ component accessors="true" {
 
 		// Setup variables
 		var mappingName = lCase( mapping.getName() );
-		var idCode      = variables.system.identityHashCode( target );
+		var idCode      = hash( mappingName );
 
 		// Check if incoming mapping name is already class matched?
 		if ( NOT variables.classMatchDictionary.containsKey( mappingName ) ) {

@@ -47,7 +47,7 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true" 
 
 		// Prepare instance
 		variables.cacheProvider = arguments.cacheProvider;
-		variables.storeID       = createObject( "java", "java.lang.System" ).identityHashCode( this );
+		variables.storeID       = createUUID();
 		variables.indexer       = new coldbox.system.cache.store.indexers.MetadataIndexer( fields );
 		variables.converter     = new coldbox.system.core.conversion.ObjectMarshaller();
 		variables.directoryPath = "";

@@ -31,15 +31,9 @@ component accessors="true" {
 	 * @fields The list or array of fields to bind this index on
 	 */
 	function init( required fields ){
-		// Create metadata pool
 		variables.poolMetadata = createObject( "java", "java.util.concurrent.ConcurrentHashMap" ).init();
-		// Index ID
-		variables.indexID      = createObject( "java", "java.lang.System" ).identityHashCode( this );
-		// Collections (for static .list() method)
-		variables.collections  = createObject( "java", "java.util.Collections" );
-
-		setFields( arguments.fields );
-
+		variables.indexID      = createUUID();
+		variables.fields       = arguments.fields;
 		return this;
 	}
 
@@ -81,7 +75,19 @@ component accessors="true" {
 	 * @return array
 	 */
 	array function getKeys(){
-		return variables.collections.list( variables.poolMetadata.keys() );
+		return getJavaCollections().list( variables.poolMetadata.keys() );
+	}
+
+	/**
+	 * Get the java Collections utility
+	 *
+	 * @return java.util.Collections
+	 */
+	private function getJavaCollections(){
+		if ( isNull( variables.collections ) ) {
+			variables.collections = createObject( "java", "java.util.Collections" );
+		}
+		return variables.collections;
 	}
 
 	/**

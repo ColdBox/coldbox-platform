@@ -58,7 +58,7 @@ component accessors="true" {
 		variables.levelMax = arguments.levelMax;
 
 		// Utilities
-		variables._hash = createObject( "java", "java.lang.System" ).identityHashCode( this );
+		variables._hash = createUUID();
 		variables.util  = new coldbox.system.core.util.Util();
 
 

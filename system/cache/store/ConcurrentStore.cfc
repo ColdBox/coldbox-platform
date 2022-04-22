@@ -41,11 +41,9 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true" 
 
 		// Prepare instance
 		variables.cacheProvider = arguments.cacheProvider;
-		variables.storeID       = createObject( "java", "java.lang.System" ).identityHashCode( this );
+		variables.storeID       = createUUID();
 		variables.pool          = createObject( "java", "java.util.concurrent.ConcurrentHashMap" ).init();
 		variables.indexer       = new coldbox.system.cache.store.indexers.MetadataIndexer( fields );
-		variables.collections   = createObject( "java", "java.util.Collections" );
-
 		return this;
 	}
 
@@ -86,7 +84,19 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true" 
 	 * @return array
 	 */
 	function getKeys(){
-		return variables.collections.list( variables.pool.keys() );
+		return getJavaCollections().list( variables.pool.keys() );
+	}
+
+	/**
+	 * Get the java Collections utility
+	 *
+	 * @return java.util.Collections
+	 */
+	private function getJavaCollections(){
+		if ( isNull( variables.collections ) ) {
+			variables.collections = createObject( "java", "java.util.Collections" );
+		}
+		return variables.collections;
 	}
 
 	/**

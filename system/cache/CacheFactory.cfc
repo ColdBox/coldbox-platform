@@ -81,7 +81,7 @@ component accessors=true serializable=false {
 		var defaultConfigPath = "coldbox.system.cache.config.DefaultConfiguration";
 
 		// CacheBox Factory UniqueID
-		variables.factoryId    = createObject( "java", "java.lang.System" ).identityHashCode( this );
+		variables.factoryId    = createUUID();
 		// Version
 		variables.version      = "@build.version@+@build.number@";
 		// Configuration object

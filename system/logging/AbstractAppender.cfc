@@ -97,16 +97,13 @@ component accessors="true" {
 		levelMax          = 4
 	){
 		// Appender Unique ID */
-		variables._hash       = createObject( "java", "java.lang.System" ).identityHashCode( this );
+		variables._hash        = createUUID();
 		// Flag denoting if the appender is inited or not. This will be set by LogBox upon successful creation and registration.
-		variables.initialized = false;
-
+		variables.initialized  = false;
 		// Appender's Name
-		variables.name = reReplaceNoCase( arguments.name, "[^0-9a-z]", "", "ALL" );
-
+		variables.name         = reReplaceNoCase( arguments.name, "[^0-9a-z]", "", "ALL" );
 		// Set internal properties
-		variables.properties = arguments.properties;
-
+		variables.properties   = arguments.properties;
 		// Custom Renderer For Messages
 		variables.customLayout = "";
 		if ( len( trim( arguments.layout ) ) ) {
