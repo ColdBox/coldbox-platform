@@ -2,21 +2,19 @@
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * This component is the coldbox remote proxy used for model operation.
- * This will convert the framework into a model framework rather than a HTML MVC framework.
+ * This object is a proxy object that can be used by components to tap into ColdBox MVC.
+ * It can be used when building RESTful/SOAP/Services or ORM Event handling,etc.
+ *
+ * It's intent is to provide a way for ANY cfc to talk to a running ColdBox application or even start one up.
+ *
+ * @author Luis Majano
  */
 component serializable="false" accessors="true" {
 
 	/**
-	 * The loaded app key
+	 * Internal key used to track the location in the application scope
 	 */
 	property name="COLDBOX_APP_KEY";
-
-	// Setup Default Namespace Key for controller locations
-	variables.COLDBOX_APP_KEY = "cbController";
-	if ( !isNull( application.cbBootstrap ) ) {
-		variables.COLDBOX_APP_KEY = application.cbBootstrap.getCOLDBOX_APP_KEY();
-	}
 
 	// Remote proxies are created by the CFML engine without calling init(),
 	// so autowire in here in the pseduo constructor
@@ -27,11 +25,21 @@ component serializable="false" accessors="true" {
 	 ****************************************************************/
 
 	/**
+	 * Get the ColdBox app key used in the application scope.
+	 */
+	private function getColdboxAppKey(){
+		if ( !isNull( application.cbBootstrap ) ) {
+			return application.cbBootstrap.getCOLDBOX_APP_KEY();
+		}
+		return "cbController";
+	}
+
+	/**
 	 * Process a remote call into ColdBox's event model and return data/objects back.
 	 *
 	 * @return If no results where found, this method returns null/void
 	 *
-	 * @throws NoEventDetected - When no passed even is incoming via arguments[ "event" ]
+	 * @throws ColdBoxProxy.NoEventDetected - When no passed even is incoming via arguments[ "event" ]
 	 */
 	private any function process(){
 		var refLocal = {};
@@ -180,7 +188,7 @@ component serializable="false" accessors="true" {
 	 */
 	private boolean function verifyColdBox( boolean throwOnNotExist = true ){
 		// Verify the coldbox app is ok, else throw
-		if ( not structKeyExists( application, variables.COLDBOX_APP_KEY ) ) {
+		if ( not structKeyExists( application, getColdboxAppKey() ) ) {
 			if ( arguments.throwOnNotExist ) {
 				throw(
 					message = "ColdBox Controller Not Found",
@@ -203,7 +211,7 @@ component serializable="false" accessors="true" {
 	private any function getController(){
 		// Verify ColdBox
 		verifyColdBox();
-		return application[ variables.COLDBOX_APP_KEY ];
+		return application[ getColdboxAppKey() ];
 	}
 
 	/**
@@ -268,20 +276,6 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
-	 *
-	 * @deprecated
-	 *
-	 * @throws DeprecationException
-	 */
-	private any function getModel( required name, dsl, initArguments ){
-		throw(
-			message = "getModel() is now fully deprecated in favor of getInstance().",
-			type    = "DeprecationException"
-		);
-	}
-
-
-	/**
 	 * Get an interceptor
 	 */
 	private any function getInterceptor( string interceptorName, boolean deepSearch = "false" ){
@@ -309,7 +303,7 @@ component serializable="false" accessors="true" {
 		required string appMapping,
 		string configLocation  = "",
 		boolean reloadApp      = false,
-		required string appKey = "#variables.COLDBOX_APP_KEY#"
+		required string appKey = getColdboxAppKey()
 	){
 		var appHash = hash( getBaseTemplatePath() );
 
@@ -340,12 +334,15 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
-	 * Create and return a util object
+	 * Create and return the ColdBox utility object
 	 *
 	 * @return coldbox.system.core.util.Util
 	 */
 	private any function getUtil(){
-		return new coldbox.system.core.util.Util();
+		if ( isNull( variables.util ) ) {
+			variables.util = new coldbox.system.core.util.Util();
+		}
+		return variables.util;
 	}
 
 	/**
@@ -354,7 +351,10 @@ component serializable="false" accessors="true" {
 	 * @return coldbox.system.remote.RemotingUtil
 	 */
 	private function getRemotingUtil(){
-		return new coldbox.system.remote.RemotingUtil();
+		if ( isNull( variables.remotingUtil ) ) {
+			variables.remotingUtil = new coldbox.system.remote.RemotingUtil();
+		}
+		return variables.remotingUtil;
 	}
 
 	/**
