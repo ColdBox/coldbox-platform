@@ -518,7 +518,7 @@ component accessors="true" {
 				md = arguments.metadata;
 			} else {
 				var produceMetadataUDF = function(){
-					return injector.getUtil().getInheritedMetaData( variables.path, binder.getStopRecursions() );
+					return injector.getUtility().getInheritedMetaData( variables.path, binder.getStopRecursions() );
 				};
 
 				// Are we caching metadata? or just using it

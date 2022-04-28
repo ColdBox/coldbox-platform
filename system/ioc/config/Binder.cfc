@@ -123,6 +123,9 @@ component accessors="true" {
 	 * One day move as static references
 	 */
 
+	// Binder Marker
+	this.$wbBinder = true;
+
 	// Available WireBox public scopes
 	this.SCOPES = new coldbox.system.ioc.Scopes();
 	// Available WireBox public types
@@ -180,7 +183,7 @@ component accessors="true" {
 		// If sent and a data CFC variables
 		if ( !isNull( arguments.config ) and isObject( arguments.config ) ) {
 			// Decorate our data CFC
-			arguments.config.getPropertyMixin = variables.injector.getUtil().getMixerUtil().getPropertyMixin;
+			arguments.config.getPropertyMixin = variables.injector.getUtility().getMixerUtil().getPropertyMixin;
 			// Execute the configuration
 			arguments.config.configure( this );
 			// Load the raw data DSL

@@ -51,14 +51,10 @@ component serializable="false" accessors="true" {
 	 *
 	 * @injector             The linked WireBox injector
 	 * @injector.doc_generic coldbox.system.ioc.Injector
-	 *
-	 * @return coldbox.system.ioc.Builder
 	 */
 	Builder function init( required injector ){
 		variables.injector  = arguments.injector;
 		variables.logBox    = arguments.injector.getLogBox();
-		variables.log       = arguments.injector.getLogBox().getlogger( this );
-		variables.utility   = arguments.injector.getUtil();
 		variables.customDSL = {};
 
 		// Internal DSL Registry
@@ -76,20 +72,53 @@ component serializable="false" accessors="true" {
 			"wirebox"
 		];
 
-		// Do we need to build the coldbox DSL namespace
-		if ( variables.injector.isColdBoxLinked() ) {
-			variables.coldboxDSL = new coldbox.system.ioc.dsl.ColdBoxDSL( arguments.injector );
-		}
-
-		// Is CacheBox Linked?
-		if ( variables.injector.isCacheBoxLinked() ) {
-			variables.cacheBoxDSL = new coldbox.system.ioc.dsl.CacheBoxDSL( arguments.injector );
-		}
-
-		// Build LogBox DSL Namespace
-		variables.logBoxDSL = new coldbox.system.ioc.dsl.LogBoxDSL( arguments.injector );
-
 		return this;
+	}
+
+	/**
+	 * Lazy load getter
+	 *
+	 * @return coldbox.system.ioc.dsl.ColdBoxDSL
+	 */
+	function getColdBoxDSL(){
+		if ( isNull( coldboxDSL ) ) {
+			variables.coldboxDSL = new coldbox.system.ioc.dsl.ColdBoxDSL( variables.injector );
+		}
+		return variables.coldboxDSL;
+	}
+
+	/**
+	 * Lazy load getter
+	 *
+	 * @return coldbox.system.ioc.dsl.CacheBoxDSL
+	 */
+	function getCacheBoxDSL(){
+		if ( isNull( variables.cacheBoxDSL ) ) {
+			variables.cacheBoxDSL = new coldbox.system.ioc.dsl.CacheBoxDSL( variables.injector );
+		}
+		return variables.cacheBoxDSL;
+	}
+
+	/**
+	 * Lazy load getter
+	 *
+	 * @return coldbox.system.ioc.dsl.LogBoxDSL
+	 */
+	function getLogBoxDSL(){
+		if ( isNull( variables.logBoxDSL ) ) {
+			variables.logBoxDSL = new coldbox.system.ioc.dsl.LogBoxDSL( variables.injector );
+		}
+		return variables.logBoxDSL;
+	}
+
+	/**
+	 * Build the logger for this class lazy loaded
+	 */
+	function getLog(){
+		if ( isNull( variables.log ) ) {
+			variables.log = arguments.injector.getLogBox().getlogger( this );
+		}
+		return variables.log;
 	}
 
 	/**
@@ -116,8 +145,8 @@ component serializable="false" accessors="true" {
 		// register dsl
 		variables.customDSL[ arguments.namespace ] = new "#arguments.path#"( variables.injector );
 		// Debugging
-		if ( variables.log.canDebug() ) {
-			variables.log.debug( "Registered custom DSL Builder with namespace: #arguments.namespace#" );
+		if ( getLog().canDebug() ) {
+			getLog().debug( "Registered custom DSL Builder with namespace: #arguments.namespace#" );
 		}
 		return this;
 	}
@@ -345,7 +374,7 @@ component serializable="false" accessors="true" {
 			// Not found, so check if it is required
 			if ( local.thisArg.required ) {
 				// Log the error
-				variables.log.error(
+				getLog().error(
 					"Target: #thisMap.getName()# -> Argument reference not located: #local.thisArg.name#",
 					local.thisArg
 				);
@@ -357,8 +386,8 @@ component serializable="false" accessors="true" {
 				);
 			}
 			// else just log it via debug
-			else if ( variables.log.canDebug() ) {
-				variables.log.debug(
+			else if ( getLog().canDebug() ) {
+				getLog().debug(
 					"Target: #thisMap.getName()# -> Argument reference not located: #local.thisArg.name#",
 					local.thisArg
 				);
@@ -507,7 +536,7 @@ component serializable="false" accessors="true" {
 					);
 				}
 				// retrieve it
-				refLocal.dependency = variables.cacheBoxDSL.process( argumentCollection = arguments );
+				refLocal.dependency = getCacheBoxDSL().process( argumentCollection = arguments );
 				break;
 			}
 
@@ -520,7 +549,7 @@ component serializable="false" accessors="true" {
 						type    = "Builder.IllegalDSLException"
 					);
 				}
-				refLocal.dependency = variables.coldboxDSL.process( argumentCollection = arguments );
+				refLocal.dependency = getColdBoxDSL().process( argumentCollection = arguments );
 				break;
 			}
 
@@ -545,7 +574,7 @@ component serializable="false" accessors="true" {
 
 			// logbox injection DSL always available
 			case "logbox": {
-				refLocal.dependency = variables.logBoxDSL.process( argumentCollection = arguments );
+				refLocal.dependency = getLogBoxDSL().process( argumentCollection = arguments );
 				break;
 			}
 
@@ -599,8 +628,8 @@ component serializable="false" accessors="true" {
 			var injectMessage = "The target '#arguments.targetID#' requested a missing dependency with a #depDesc.toList( " and " )#";
 
 			// Logging
-			if ( variables.log.canError() ) {
-				variables.log.error( injectMessage, arguments.definition );
+			if ( getLog().canError() ) {
+				getLog().error( injectMessage, arguments.definition );
 			}
 
 			// Throw exception as DSL Dependency requested was not located
@@ -779,8 +808,8 @@ component serializable="false" accessors="true" {
 		// Check if executor Exists
 		if ( asyncManager.hasExecutor( executorName ) ) {
 			return asyncManager.getExecutor( executorName );
-		} else if ( variables.log.canDebug() ) {
-			variables.log.debug(
+		} else if ( getLog().canDebug() ) {
+			getLog().debug(
 				"X getExecutorDsl() cannot find executor #executorName# using definition #arguments.definition.toString()#"
 			);
 		}
@@ -844,8 +873,8 @@ component serializable="false" accessors="true" {
 				return invoke( oModel, methodCall );
 			}
 			return oModel;
-		} else if ( variables.log.canDebug() ) {
-			variables.log.debug(
+		} else if ( getLog().canDebug() ) {
+			getLog().debug(
 				"getModelDSL() cannot find model object #modelName# using definition #arguments.definition.toString()#"
 			);
 		}
@@ -946,8 +975,14 @@ component serializable="false" accessors="true" {
 		variables.injector.autowire( target = baseObject, mapping = arguments.mapping );
 
 		// Mix them up baby!
-		variables.utility.getMixerUtil().start( arguments.target );
-		variables.utility.getMixerUtil().start( baseObject );
+		variables.injector
+			.getUtility()
+			.getMixerUtil()
+			.start( arguments.target );
+		variables.injector
+			.getUtility()
+			.getMixerUtil()
+			.start( baseObject );
 
 		// Check if init already exists in target and base? If so, then inject it as $superInit
 		if ( structKeyExists( arguments.target, "init" ) AND structKeyExists( baseObject, "init" ) ) {

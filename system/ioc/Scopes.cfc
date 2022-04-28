@@ -22,25 +22,18 @@ component {
 	 * @scope The scope to check
 	 */
 	boolean function isValidScope( required scope ){
-		for ( var key in this ) {
-			if ( isSimpleValue( this[ key ] ) and this[ key ] eq arguments.scope ) {
-				return true;
-			}
-		}
-		return false;
+		return structKeyArray( this ).findNoCase( arguments.scope ) ? true : false;
 	}
 
 	/**
 	 * Get all valid scopes as an array
 	 */
 	array function getValidScopes(){
-		var scopes = {};
-		for ( var key in this ) {
-			if ( isSimpleValue( this[ key ] ) ) {
-				scopes[ key ] = this[ key ];
-			}
-		}
-		return structKeyArray( scopes );
+		return this
+			.filter( function( key, value ){
+				return isSimpleValue( arguments.value );
+			} )
+			.keyArray();
 	}
 
 }
