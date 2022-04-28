@@ -1,8 +1,10 @@
 <cfscript>
+	TOTAL_ITERATIONS = 4000;
+	createObject( "java", "java.lang.Runtime" ).getRuntime().gc();
 	writeOutput( "<h2>Using: #expandPath( '/coldbox' )#; #server.coldfusion.productName#</h2>" );
 
 	structDelete( application, "wirebox" );
-	iterations = 1000;
+	iterations = TOTAL_ITERATIONS;
 	sTime = getTickCount();
 
 	writeOutput( "<div>Testing for #iterations# iterations...</div><br>" );
@@ -19,21 +21,20 @@
 	instanceTime = getTickCount();
 	while( iterations-- > 0 ){
 		//writeOutput( "#iterations#..." );
-		injector.getInstance( "categoryDAO" );
 		injector.getInstance( "CategoryBean" );
+		//injector.getInstance( "virtually-inherited-class" );
+		injector.getInstance( "categoryDAO" );
 	}
 	writeOutput( "<div>Injector.getInstance() time: #getTickCount() - instanceTime#</div>" );
-
 	writeOutput( "<br><div>Total Time: #getTickCount() - sTime# ms</div>" );
 
-	/**
-	 * 2243
-	 * 639
-	 * 433
-	 * 415
-	 * 436
-	 * 534
-	 * 333
-	 * 344
-	 */
+	iterations = TOTAL_ITERATIONS;
+	sTime = getTickCount();
+	while( iterations-- > 0 ){
+		//writeOutput( "#iterations#..." );
+		createObject( "cbtestharness.models.ioc.category.CategoryDAO" );
+		createObject( "cbtestharness.models.ioc.category.CategoryBean" );
+		createObject( "tests.resources.ChildClass" );
+	}
+	writeOutput( "<br><div>Createobject Time: #getTickCount() - sTime# ms</div>" );
 </cfscript>

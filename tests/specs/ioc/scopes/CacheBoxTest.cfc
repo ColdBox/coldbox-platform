@@ -12,7 +12,7 @@
 		mockCacheBox = createEmptyMock( "coldbox.system.cache.CacheFactory" ).$( "getCache", mockCache );
 		mockInjector = createMock( "coldbox.system.ioc.Injector" )
 			.setLogBox( createstub().$( "getLogger", mockLogger ) )
-			.$( "getUtil", createMock( "coldbox.system.core.util.Util" ) )
+			.$( "getUtility", createMock( "coldbox.system.core.util.Util" ) )
 			.setCacheBox( mockCacheBox )
 			.setLogBox( mockLogBox )
 			.setInjectorID( createUUID() );

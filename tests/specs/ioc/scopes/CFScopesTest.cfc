@@ -10,7 +10,7 @@
 		mockLogBox   = createEmptyMock( "coldbox.system.logging.LogBox" ).$( "getLogger", mockLogger );
 		mockInjector = createMock( "coldbox.system.ioc.Injector" )
 			.setLogBox( createstub().$( "getLogger", mockLogger ) )
-			.$( "getUtil", createMock( "coldbox.system.core.util.Util" ) )
+			.$( "getUtility", createMock( "coldbox.system.core.util.Util" ) )
 			.setLogBox( mockLogBox )
 			.setInjectorID( createUUID() );
 		super.setup();

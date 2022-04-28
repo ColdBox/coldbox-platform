@@ -291,7 +291,7 @@ component {
 	 * Retrieve an instance of Java System
 	 */
 	function getJavaSystem(){
-		if ( !structKeyExists( variables, "javaSystem" ) ) {
+		if( isNull( variables.javaSystem ) ){
 			variables.javaSystem = createObject( "java", "java.lang.System" );
 		}
 		return variables.javaSystem;
@@ -303,10 +303,9 @@ component {
 	 * @return coldbox.system.core.dynamic.MixerUtil
 	 */
 	function getMixerUtil(){
-		if ( structKeyExists( variables, "mixerUtil" ) ) {
-			return variables.mixerUtil;
+		if( isNull( variables.mixerUtil ) ){
+			variables.mixerUtil = new coldbox.system.core.dynamic.MixerUtil();
 		}
-		variables.mixerUtil = new coldbox.system.core.dynamic.MixerUtil();
 		return variables.mixerUtil;
 	}
 

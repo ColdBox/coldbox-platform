@@ -50,6 +50,7 @@ component serializable="false" accessors="true" {
 	Builder function init( required injector ){
 		variables.injector  = arguments.injector;
 		variables.logBox    = arguments.injector.getLogBox();
+		variables.log       = arguments.injector.getLogBox().getlogger( this );
 		variables.customDSL = {};
 
 		// Internal DSL Registry
@@ -107,16 +108,6 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
-	 * Build the logger for this class lazy loaded
-	 */
-	function getLog(){
-		if ( isNull( variables.log ) ) {
-			variables.log = arguments.injector.getLogBox().getlogger( this );
-		}
-		return variables.log;
-	}
-
-	/**
 	 * Register custom DSL builders with this main wirebox builder
 	 */
 	Builder function registerCustomBuilders(){
@@ -138,8 +129,8 @@ component serializable="false" accessors="true" {
 		// register dsl
 		variables.customDSL[ arguments.namespace ] = new "#arguments.path#"( variables.injector );
 		// Debugging
-		if ( getLog().canDebug() ) {
-			getLog().debug( "Registered custom DSL Builder with namespace: #arguments.namespace#" );
+		if ( variables.log.canDebug() ) {
+			variables.log.debug( "Registered custom DSL Builder with namespace: #arguments.namespace#" );
 		}
 		return this;
 	}
@@ -169,15 +160,16 @@ component serializable="false" accessors="true" {
 	 * @initArguments.doc_generic struct
 	 */
 	function buildCFC( required mapping, initArguments = structNew() ){
-		var thisMap = arguments.mapping;
-		var oModel  = createObject( "component", thisMap.getPath() );
+		var thisMap         = arguments.mapping;
+		var oModel          = createObject( "component", thisMap.getPath() );
+		var constructorArgs = thisMap.getDIConstructorArguments();
 
 		// Do we have virtual inheritance?
-		var constructorArgs     = thisMap.getDIConstructorArguments();
-		var constructorArgNames = constructorArgs.map( function( arg ){
-			return arg.name;
-		} );
 		if ( thisMap.isVirtualInheritance() ) {
+			// Original constructor argument names
+			var constructorArgNames = constructorArgs.map( function( arg ){
+				return arg.name;
+			} );
 			// retrieve the VI mapping.
 			var viMapping = variables.injector.getBinder().getMapping( thisMap.getVirtualInheritance() );
 			// Does it match the family already?
@@ -202,14 +194,12 @@ component serializable="false" accessors="true" {
 			// Get Arguments
 			var constructorArgCollection = buildArgumentCollection( thisMap, constructorArgs, oModel );
 
-			// Do We have initArguments to override
-			if ( NOT structIsEmpty( arguments.initArguments ) ) {
-				structAppend(
-					constructorArgCollection,
-					arguments.initArguments,
-					true
-				);
-			}
+			// initArguments to override
+			structAppend(
+				constructorArgCollection,
+				arguments.initArguments,
+				true
+			);
 
 			try {
 				// Invoke constructor
@@ -367,7 +357,7 @@ component serializable="false" accessors="true" {
 			// Not found, so check if it is required
 			if ( local.thisArg.required ) {
 				// Log the error
-				getLog().error(
+				variables.log.error(
 					"Target: #thisMap.getName()# -> Argument reference not located: #local.thisArg.name#",
 					local.thisArg
 				);
@@ -379,8 +369,8 @@ component serializable="false" accessors="true" {
 				);
 			}
 			// else just log it via debug
-			else if ( getLog().canDebug() ) {
-				getLog().debug(
+			else if ( variables.log.canDebug() ) {
+				variables.log.debug(
 					"Target: #thisMap.getName()# -> Argument reference not located: #local.thisArg.name#",
 					local.thisArg
 				);
@@ -621,8 +611,8 @@ component serializable="false" accessors="true" {
 			var injectMessage = "The target '#arguments.targetID#' requested a missing dependency with a #depDesc.toList( " and " )#";
 
 			// Logging
-			if ( getLog().canError() ) {
-				getLog().error( injectMessage, arguments.definition );
+			if ( variables.log.canError() ) {
+				variables.log.error( injectMessage, arguments.definition );
 			}
 
 			// Throw exception as DSL Dependency requested was not located
@@ -801,8 +791,8 @@ component serializable="false" accessors="true" {
 		// Check if executor Exists
 		if ( asyncManager.hasExecutor( executorName ) ) {
 			return asyncManager.getExecutor( executorName );
-		} else if ( getLog().canDebug() ) {
-			getLog().debug(
+		} else if ( variables.log.canDebug() ) {
+			variables.log.debug(
 				"X getExecutorDsl() cannot find executor #executorName# using definition #arguments.definition.toString()#"
 			);
 		}
@@ -866,8 +856,8 @@ component serializable="false" accessors="true" {
 				return invoke( oModel, methodCall );
 			}
 			return oModel;
-		} else if ( getLog().canDebug() ) {
-			getLog().debug(
+		} else if ( variables.log.canDebug() ) {
+			variables.log.debug(
 				"getModelDSL() cannot find model object #modelName# using definition #arguments.definition.toString()#"
 			);
 		}

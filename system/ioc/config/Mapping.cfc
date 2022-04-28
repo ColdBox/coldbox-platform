@@ -462,21 +462,17 @@ component accessors="true" {
 	 * @return Mapping
 	 */
 	Mapping function process( required binder, required injector, metadata ){
-		var md              = variables.objectMetadata;
-		var eventManager    = arguments.injector.getEventManager();
-		var cacheProperties = {};
-
 		// Short circuit, if mapping already discovered, then just exit out.
 		if ( variables.discovered ) {
 			return this;
 		}
 
+		var md              = variables.objectMetadata;
+		var eventManager    = arguments.injector.getEventManager();
+		var cacheProperties = {};
+
 		// Generate a lock token
-		if ( isSimpleValue( variables.path ) ) {
-			var lockToken = variables.path;
-		} else {
-			var lockToken = createUUID();
-		}
+		var lockToken = isSimpleValue( variables.path ) ? variables.path : variables.name;
 
 		// Lock for discovery based on path location, only done once per mapping
 		lock
@@ -484,6 +480,12 @@ component accessors="true" {
 			type          ="exclusive"
 			timeout       ="20"
 			throwOnTimeout="true" {
+
+			// Race Condition Lock
+			if ( variables.discovered ) {
+				return this;
+			}
+
 			// announce inspection
 			var iData     = {
 				mapping  : this,
@@ -543,20 +545,19 @@ component accessors="true" {
 					variables.scope = arguments.binder.SCOPES.SINGLETON;
 				}
 				// Registered Scope Processing
-				if ( structKeyExists( md, "scope" ) ) {
+				else if ( structKeyExists( md, "scope" ) ) {
 					variables.scope = md.scope;
 				}
 				// CacheBox scope processing if cachebox annotation found, or cache annotation found
-				if (
+				else if (
 					structKeyExists( md, "cacheBox" ) OR (
 						structKeyExists( md, "cache" ) AND isBoolean( md.cache ) AND md.cache
 					)
 				) {
 					variables.scope = arguments.binder.SCOPES.CACHEBOX;
 				}
-
 				// check if scope found? If so, then set it to no scope.
-				if ( NOT len( variables.scope ) ) {
+				else{
 					variables.scope = "noscope";
 				}
 			}
@@ -829,7 +830,7 @@ component accessors="true" {
 		md.properties
 			// Only process injectable properties
 			.filter( function( thisProperty ){
-				return structKeyExists( thisProperty, "inject" );
+				return structKeyExists( arguments.thisProperty, "inject" );
 			} )
 			// Process each property
 			.each( function( thisProperty ){

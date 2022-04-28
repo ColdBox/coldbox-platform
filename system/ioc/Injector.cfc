@@ -213,18 +213,6 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
-	 * Lazy loaded scope storage utility
-	 *
-	 * @return coldbox.system.core.collections.ScopeStorage
-	 */
-	function getScopeStorage(){
-		if ( isNull( variables.scopeStorage ) ) {
-			variables.scopeStorage = new coldbox.system.core.collections.ScopeStorage();
-		}
-		return variables.scopeStorage;
-	}
-
-	/**
 	 * Verify if a child injector has been registered by name
 	 *
 	 * @name The name of the child injector to check
@@ -304,6 +292,11 @@ component serializable="false" accessors="true" {
 			// Create local CacheBox reference
 			configureCacheBox( variables.binder.getCacheBoxConfig() );
 		}
+
+		// Create our object builder
+		variables.objectBuilder = new coldbox.system.ioc.Builder( this );
+		// Register Custom DSL Builders
+		variables.objectBuilder.registerCustomBuilders();
 
 		// Register All Custom Listeners
 		registerListeners();
@@ -406,26 +399,6 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
-	 * Get the WireBox object builder
-	 *
-	 * @return coldbox.system.ioc.Builder
-	 */
-	private function getObjectBuilder(){
-		if ( isNull( variables.builder ) ) {
-			lock name="#variables.LockName#.objectbuilder" type="exclusive" throwOnTimeout="true" timeout="15" {
-				if ( isNull( variables.builder ) ) {
-					// Create our object builder
-					variables.builder = new coldbox.system.ioc.Builder( this );
-					// Register Custom DSL Builders
-					variables.builder.registerCustomBuilders();
-				}
-			}
-		}
-
-		return variables.builder;
-	}
-
-	/**
 	 * Locates, Creates, Injects and Configures an object model instance
 	 *
 	 * @name          The mapping name or CFC instance path to try to build up
@@ -461,13 +434,13 @@ component serializable="false" accessors="true" {
 		}
 
 		// Is the name a DSL?
-		if ( !isNull( arguments.name ) && getObjectBuilder().isDSLString( arguments.name ) ) {
+		if ( !isNull( arguments.name ) && variables.objectBuilder.isDSLString( arguments.name ) ) {
 			arguments.dsl = arguments.name;
 		}
 
 		// Get by DSL?
 		if ( !isNull( arguments.dsl ) ) {
-			return getObjectBuilder().buildSimpleDSL(
+			return variables.objectBuilder.buildSimpleDSL(
 				dsl          = arguments.dsl,
 				targetID     = "ExplicitCall",
 				targetObject = arguments.targetObject
@@ -525,20 +498,8 @@ component serializable="false" accessors="true" {
 			}
 		}
 
-		// scope persistence check
-		if ( NOT structKeyExists( variables.scopes, mapping.getScope() ) ) {
-			variables.log.error(
-				"The mapping scope: #mapping.getScope()# is invalid and not registered in the valid scopes: #structKeyList( variables.scopes )#"
-			);
-			throw(
-				message = "Requested mapping scope: #mapping.getScope()# is invalid for #mapping.getName()#",
-				detail  = "The registered valid object scopes are #structKeyList( variables.scopes )#",
-				type    = "Injector.InvalidScopeException"
-			);
-		}
-
 		// Request object from scope now, we now have it from the scope created, initialized and wired
-		var target = getScope( mapping.getScope() ).getFromScope( mapping, arguments.initArguments );
+		var target = variables.scopes[ mapping.getScope() ].getFromScope( mapping, arguments.initArguments );
 
 		// Announce creation, initialization and DI magicfinicitation!
 		variables.eventManager.announce(
@@ -569,15 +530,15 @@ component serializable="false" accessors="true" {
 		// determine construction type
 		switch ( thisMap.getType() ) {
 			case "cfc": {
-				oModel = getObjectBuilder().buildCFC( thisMap, arguments.initArguments );
+				oModel = variables.objectBuilder.buildCFC( thisMap, arguments.initArguments );
 				break;
 			}
 			case "java": {
-				oModel = getObjectBuilder().buildJavaClass( thisMap );
+				oModel = variables.objectBuilder.buildJavaClass( thisMap );
 				break;
 			}
 			case "webservice": {
-				oModel = getObjectBuilder().buildWebservice( thisMap, arguments.initArguments );
+				oModel = variables.objectBuilder.buildWebservice( thisMap, arguments.initArguments );
 				break;
 			}
 			case "constant": {
@@ -585,15 +546,18 @@ component serializable="false" accessors="true" {
 				break;
 			}
 			case "rss": {
-				oModel = getObjectBuilder().buildFeed( thisMap );
+				oModel = variables.objectBuilder.buildFeed( thisMap );
 				break;
 			}
 			case "dsl": {
-				oModel = getObjectBuilder().buildSimpleDSL( dsl = thisMap.getDSL(), targetID = thisMap.getName() );
+				oModel = variables.objectBuilder.buildSimpleDSL(
+					dsl      = thisMap.getDSL(),
+					targetID = thisMap.getName()
+				);
 				break;
 			}
 			case "factory": {
-				oModel = getObjectBuilder().buildFactoryMethod( thisMap, arguments.initArguments );
+				oModel = variables.objectBuilder.buildFactoryMethod( thisMap, arguments.initArguments );
 				break;
 			}
 			case "provider": {
@@ -680,7 +644,7 @@ component serializable="false" accessors="true" {
 	 * @path      The instantiation path to the CFC that implements this scope, it must have an init() method and implement: coldbox.system.ioc.dsl.IDSLBuilder
 	 */
 	Injector function registerDSL( required namespace, required path ){
-		getObjectBuilder().registerDSL( argumentCollection = arguments );
+		variables.objectBuilder.registerDSL( argumentCollection = arguments );
 		return this;
 	}
 
@@ -779,7 +743,7 @@ component serializable="false" accessors="true" {
 		var md           = "";
 
 		// Do we have a mapping? Or is this a-la-carte wiring
-		if ( NOT structKeyExists( arguments, "mapping" ) ) {
+		if ( isNull( arguments.mapping ) ) {
 			// Ok, a-la-carte wiring, let's get our id first
 			// Do we have an incoming target id?
 			if ( NOT len( arguments.targetID ) ) {
@@ -814,20 +778,23 @@ component serializable="false" accessors="true" {
 		// end if mapping not found
 
 		// Set local variable for easy reference use mapping to wire object up.
-		var thisMap = arguments.mapping;
 		if ( NOT len( arguments.targetID ) ) {
-			arguments.targetID = thisMap.getName();
+			arguments.targetID = arguments.mapping.getName();
 		}
 
 		// Only autowire if no annotation check or if there is one, make sure the mapping is set for autowire, and this is a CFC
 		if (
-			thisMap.getType() eq this.TYPES.CFC
+			arguments.mapping.getType() eq this.TYPES.CFC
 			AND
-			( ( arguments.annotationCheck eq false ) OR ( arguments.annotationCheck AND thisMap.isAutowire() ) )
+			(
+				( arguments.annotationCheck eq false ) OR (
+					arguments.annotationCheck AND arguments.mapping.isAutowire()
+				)
+			)
 		) {
 			// announce beforeInstanceAutowire
 			var iData = {
-				mapping  : thisMap,
+				mapping  : arguments.mapping,
 				target   : arguments.target,
 				targetID : arguments.targetID,
 				injector : this
@@ -851,21 +818,21 @@ component serializable="false" accessors="true" {
 			// DIProperty injection
 			processInjection(
 				targetObject,
-				thisMap.getDIProperties(),
+				arguments.mapping.getDIProperties(),
 				arguments.targetID
 			);
 			// DISetter injection
 			processInjection(
 				targetObject,
-				thisMap.getDISetters(),
+				arguments.mapping.getDISetters(),
 				arguments.targetID
 			);
 			// Process Provider Methods
-			processProviderMethods( targetObject, thisMap );
+			processProviderMethods( targetObject, arguments.mapping );
 			// Process Mixins
-			processMixins( targetObject, thisMap );
+			processMixins( targetObject, arguments.mapping );
 			// Process After DI Complete
-			processAfterCompleteDI( targetObject, thisMap.getOnDIComplete() );
+			processAfterCompleteDI( targetObject, arguments.mapping.getOnDIComplete() );
 
 			// After Instance Autowire
 			variables.eventManager.announce( "afterInstanceAutowire", iData );
@@ -874,7 +841,7 @@ component serializable="false" accessors="true" {
 			if ( variables.log.canDebug() ) {
 				variables.log.debug(
 					"Finalized Autowire for: #arguments.targetID#",
-					thisMap.getMemento().toString()
+					arguments.mapping.getMemento().toString()
 				);
 			}
 		}
@@ -936,7 +903,7 @@ component serializable="false" accessors="true" {
 		var scopeInfo = variables.binder.getScopeRegistration();
 		// if enabled remove.
 		if ( scopeInfo.enabled ) {
-			getScopeStorage().delete( scopeInfo.key, scopeInfo.scope );
+			variables.scopeStorage.delete( scopeInfo.key, scopeInfo.scope );
 
 			// Log info
 			if ( variables.log.canDebug() ) {
@@ -961,44 +928,6 @@ component serializable="false" accessors="true" {
 				type   : "InvalidScopeException"
 			);
 		}
-
-		// Lazy Load check
-		if ( isSimpleValue( variables.scopes[ arguments.scope ] ) ) {
-			lock
-				name          ="#variables.LockName#.scope.#arguments.scope#"
-				type          ="exclusive"
-				throwOnTimeout="true"
-				timeout       ="15" {
-				if ( isSimpleValue( variables.scopes[ arguments.scope ] ) ) {
-					switch ( arguments.scope ) {
-						case "NOSCOPE":
-							variables.scopes[ arguments.scope ] = new coldbox.system.ioc.scopes.NoScope( this );
-							break;
-						case "SINGLETON":
-							variables.scopes[ arguments.scope ] = new coldbox.system.ioc.scopes.Singleton( this );
-							break;
-						case "CACHEBOX":
-							variables.scopes[ arguments.scope ] = new coldbox.system.ioc.scopes.CacheBox( this );
-							break;
-						case "REQUEST":
-							variables.scopes[ arguments.scope ] = new coldbox.system.ioc.scopes.RequestScope(
-								this
-							);
-							break;
-						case "SESSION":
-							variables.scopes[ arguments.scope ] = new coldbox.system.ioc.scopes.CFScopes( this );
-							break;
-						case "SERVER":
-							variables.scopes[ arguments.scope ] = new coldbox.system.ioc.scopes.CFScopes( this );
-							break;
-						case "APPLICATION":
-							variables.scopes[ arguments.scope ] = new coldbox.system.ioc.scopes.CFScopes( this );
-							break;
-					}
-				}
-			}
-		}
-
 		return variables.scopes[ arguments.scope ];
 	}
 
@@ -1019,8 +948,8 @@ component serializable="false" accessors="true" {
 		var scopeInfo = variables.binder.getScopeRegistration();
 
 		// Return if it exists, else throw exception
-		if ( getScopeStorage().exists( scopeInfo.key, scopeInfo.scope ) ) {
-			return getScopeStorage().get( scopeInfo.key, scopeInfo.scope );
+		if ( scopeInfo.enabled && variables.scopeStorage.exists( scopeInfo.key, scopeInfo.scope ) ) {
+			return variables.scopeStorage.get( scopeInfo.key, scopeInfo.scope );
 		}
 
 		throw(
@@ -1086,24 +1015,23 @@ component serializable="false" accessors="true" {
 	private Injector function processProviderMethods( required targetObject, required mapping ){
 		var providerMethods = arguments.mapping.getProviderMethods();
 		var providerLen     = arrayLen( providerMethods );
-		var x               = 1;
 
-		// Decorate the target if provider methods found, in preparation for replacements
-		if ( providerLen ) {
-			arguments.targetObject.$wbScopeInfo    = getScopeRegistration();
-			arguments.targetObject.$wbScopeStorage = getScopeStorage();
-			arguments.targetObject.$wbProviders    = {};
+		// Do we have providers?
+		if ( !providerLen ) {
+			return this;
 		}
 
+		// Decorate the target if provider methods found, in preparation for replacements
+		arguments.targetObject.$wbScopeInfo    = variables.binder.getScopeRegistration();
+		arguments.targetObject.$wbScopeStorage = variables.scopeStorage;
+		arguments.targetObject.$wbProviders    = {};
+
 		// iterate and provide baby!
-		for ( var x = 1; x lte providerLen; x++ ) {
+		for ( var thisProvider in providerMethods ) {
 			// add the provided method to the providers structure.
-			arguments.targetObject.$wbProviders[ providerMethods[ x ].method ] = providerMethods[ x ].mapping;
+			arguments.targetObject.$wbProviders[ thisProvider.method ] = thisProvider.mapping;
 			// Override the function by injecting it, this does private/public functions
-			arguments.targetObject.injectMixin(
-				providerMethods[ x ].method,
-				getObjectBuilder().buildProviderMixer
-			);
+			arguments.targetObject.injectMixin( thisProvider.method, variables.objectBuilder.buildProviderMixer );
 		}
 
 		return this;
@@ -1160,7 +1088,7 @@ component serializable="false" accessors="true" {
 			// else check if dsl is used?
 			else if ( !isNull( local.thisDIData.dsl ) ) {
 				// Get DSL dependency by sending entire DI structure to retrieve
-				refLocal.dependency = getObjectBuilder().buildDSLDependency(
+				refLocal.dependency = variables.objectBuilder.buildDSLDependency(
 					definition   = local.thisDIData,
 					targetID     = arguments.targetID,
 					targetObject = arguments.targetObject
@@ -1220,12 +1148,13 @@ component serializable="false" accessors="true" {
 		required scope,
 		required argName
 	){
-		var argCollection                  = {};
-		argCollection[ arguments.argName ] = arguments.propertyObject;
 		//  Property or Setter
 		if ( len( arguments.scope ) == 0 ) {
 			//  Call our mixin invoker: setterMethod
-			arguments.target.invokerMixin( method = "set#arguments.propertyName#", argCollection = argCollection );
+			arguments.target.invokerMixin(
+				method        = "set#arguments.propertyName#",
+				argCollection = { "#arguments.argname#" : arguments.propertyObject }
+			);
 		} else {
 			//  Call our property injector mixin
 			arguments.target.injectPropertyMixin(
@@ -1242,7 +1171,16 @@ component serializable="false" accessors="true" {
 	 * Register all internal and configured WireBox Scopes
 	 */
 	private Injector function registerScopes(){
-		var customScopes = variables.binder.getCustomScopes();
+		// Core Scopes
+		variables.scopes[ "NOSCOPE" ]     = new coldbox.system.ioc.scopes.NoScope( this );
+		variables.scopes[ "SINGLETON" ]   = new coldbox.system.ioc.scopes.Singleton( this );
+		variables.scopes[ "CACHEBOX" ]    = new coldbox.system.ioc.scopes.CacheBox( this );
+		variables.scopes[ "REQUEST" ]     = new coldbox.system.ioc.scopes.RequestScope( this );
+		variables.scopes[ "SESSION" ]     = new coldbox.system.ioc.scopes.CFScopes( this );
+		variables.scopes[ "SERVER" ]      = variables.scopes[ "SESSION" ];
+		variables.scopes[ "APPLICATION" ] = variables.scopes[ "SESSION" ];
+		// Custom Scopes
+		var customScopes                  = variables.binder.getCustomScopes();
 		for ( var key in customScopes ) {
 			variables.scopes[ key ] = createObject( "component", customScopes[ key ] ).init( this );
 			// Debugging
@@ -1306,9 +1244,10 @@ component serializable="false" accessors="true" {
 	 *
 	 * @scopeInfo The scope info struct: key, scope
 	 */
-	private Injector function doScopeRegistration( scopeInfo ){
+	private Injector function doScopeRegistration( scopeInfo = variables.binder.getScopeRegistration() ){
+		variables.scopeStorage = new coldbox.system.core.collections.ScopeStorage();
 		// register injector with scope
-		getScopeStorage().put(
+		variables.scopeStorage.put(
 			arguments.scopeInfo.key,
 			this,
 			arguments.scopeInfo.scope

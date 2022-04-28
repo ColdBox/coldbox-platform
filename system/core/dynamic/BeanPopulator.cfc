@@ -328,7 +328,7 @@ component {
 				if ( pop ) {
 					// Scope Injection?
 					if ( scopeInjection ) {
-						beanInstance.populatePropertyMixin(
+						beanInstance.injectPropertyMixin(
 							propertyName  = key,
 							propertyValue = propertyValue,
 							scope         = arguments.scope
