@@ -22,11 +22,6 @@ component serializable="false" accessors="true" {
 	property name="log";
 
 	/**
-	 * ColdBox Utility
-	 */
-	property name="utility";
-
-	/**
 	 * Custom DSL Map Storage
 	 */
 	property name="customDSL" type="struct";
@@ -123,11 +118,9 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Register custom DSL builders with this main wirebox builder
-	 *
 	 */
 	Builder function registerCustomBuilders(){
 		var customDSL = variables.injector.getBinder().getCustomDSL();
-
 		// Register Custom DSL Builders
 		for ( var key in customDSL ) {
 			registerDSL( namespace = key, path = customDSL[ key ] );

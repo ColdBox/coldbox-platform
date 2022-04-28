@@ -14,11 +14,6 @@ component accessors="true" {
 	property name="injector";
 
 	/**
-	 * Scope Storage Reference
-	 */
-	property name="scopeStorage";
-
-	/**
 	 * Log Reference
 	 */
 	property name="log";
@@ -32,9 +27,8 @@ component accessors="true" {
 	 * @return coldbox.system.ioc.scopes.IScope
 	 */
 	function init( required injector ){
-		variables.injector     = arguments.injector;
-		variables.scopeStorage = new coldbox.system.core.collections.ScopeStorage();
-		variables.log          = arguments.injector.getLogBox().getLogger( this );
+		variables.injector = arguments.injector;
+		variables.log      = arguments.injector.getLogBox().getLogger( this );
 		return this;
 	}
 
@@ -50,14 +44,14 @@ component accessors="true" {
 		var cacheKey = "wirebox:#arguments.mapping.getName()#";
 
 		// Verify it
-		if ( !variables.scopeStorage.exists( cacheKey, CFScope ) ) {
+		if ( !variables.injector.getScopeStorage().exists( cacheKey, CFScope ) ) {
 			// Lock it
 			lock
 				name          ="WireBox.#variables.injector.getInjectorID()#.#CFScope#.#cacheKey#"
 				type          ="exclusive"
 				timeout       ="30"
 				throwontimeout="true" {
-				if ( !variables.scopeStorage.exists( cacheKey, CFScope ) ) {
+				if ( !variables.injector.getScopeStorage().exists( cacheKey, CFScope ) ) {
 					// some nice debug info.
 					if ( variables.log.canDebug() ) {
 						variables.log.debug(
@@ -70,7 +64,7 @@ component accessors="true" {
 
 					// If not in wiring thread safety, store in scope to satisfy circular dependencies
 					if ( NOT arguments.mapping.getThreadSafe() ) {
-						variables.scopeStorage.put( cacheKey, target, CFScope );
+						variables.injector.getScopeStorage().put( cacheKey, target, CFScope );
 					}
 
 					// wire it
@@ -78,7 +72,7 @@ component accessors="true" {
 
 					// If thread safe, then now store it in the scope, as all dependencies are now safely wired
 					if ( arguments.mapping.getThreadSafe() ) {
-						variables.scopeStorage.put( cacheKey, target, CFScope );
+						variables.injector.getScopeStorage().put( cacheKey, target, CFScope );
 					}
 
 					// log it
@@ -94,7 +88,7 @@ component accessors="true" {
 			// end lock
 		}
 
-		return variables.scopeStorage.get( cacheKey, CFScope );
+		return variables.injector.getScopeStorage().get( cacheKey, CFScope );
 	}
 
 
@@ -110,7 +104,7 @@ component accessors="true" {
 		var cacheKey = "wirebox:#arguments.mapping.getName()#";
 		var CFScope  = arguments.mapping.getScope();
 
-		return variables.scopeStorage.exists( cacheKey, CFScope );
+		return variables.injector.getScopeStorage().exists( cacheKey, CFScope );
 	}
 
 }

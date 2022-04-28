@@ -1,18 +1,5 @@
-﻿<!-----------------------------------------------------------------------
-********************************************************************************
-Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.coldbox.org | www.luismajano.com | www.ortussolutions.com
-********************************************************************************
-Author      	 :	Luis Majano
-Description :
-Your WireBox Configuration Binder
------------------------------------------------------------------------>
-<cfcomponent
-	output ="false"
-	hint   ="The default WireBox Injector configuration object"
-	extends="coldbox.system.ioc.config.Binder"
->
-	<cfscript>
+﻿component extends="coldbox.system.ioc.config.Binder"{
+
 	/**
 	 * Configure WireBox, that's it!
 	 */
@@ -45,5 +32,5 @@ Your WireBox Configuration Binder
 
 		map( "WireBoxURL" ).toValue( "www.coldbox.org" );
 	}
-	</cfscript>
-</cfcomponent>
+
+}

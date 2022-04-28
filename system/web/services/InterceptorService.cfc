@@ -277,6 +277,23 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	}
 
 	/**
+	 * To satisfy event manager interface
+	 *
+	 * @target       The target object to register in an event pool
+	 * @name         The name to use when registering the object.  If not passed, the name will be used from the object's metadata
+	 * @customStates A comma delimited list of custom states, if the object or class sent in observes them
+	 *
+	 * @return InterceptorService
+	 */
+	function register( required target, name = "", customStates = "" ){
+		return registerInterceptor(
+			interceptorObject: arguments.target,
+			interceptorName  : arguments.name,
+			customPoints     : arguments.customStates
+		);
+	}
+
+	/**
 	 * Register a new interceptor in ColdBox
 	 *
 	 * @interceptorClass      Mutex with interceptorObject, this is the qualified class of the interceptor to register
