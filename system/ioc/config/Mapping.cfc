@@ -121,6 +121,13 @@ component accessors="true" {
 	}
 
 	/**
+	 * Verify if the influence closure has been seeded.
+	 */
+	boolean function hasInfluenceClosure(){
+		return !isSimpleValue( variables.influenceClosure );
+	}
+
+	/**
 	 * Process a mapping memento. Basically takes in a struct of data to process the mapping's data with.
 	 *
 	 * @memento  The data memento to process
@@ -480,14 +487,13 @@ component accessors="true" {
 			type          ="exclusive"
 			timeout       ="20"
 			throwOnTimeout="true" {
-
 			// Race Condition Lock
 			if ( variables.discovered ) {
 				return this;
 			}
 
 			// announce inspection
-			var iData     = {
+			var iData = {
 				mapping  : this,
 				binder   : arguments.binder,
 				injector : arguments.binder.getInjector()
@@ -557,7 +563,7 @@ component accessors="true" {
 					variables.scope = arguments.binder.SCOPES.CACHEBOX;
 				}
 				// check if scope found? If so, then set it to no scope.
-				else{
+				else {
 					variables.scope = "noscope";
 				}
 			}

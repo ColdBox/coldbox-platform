@@ -127,9 +127,15 @@ component serializable="false" accessors="true" {
 		coldbox           = ""
 	){
 		// Setup Available public scopes
-		this.SCOPES = new coldbox.system.ioc.Scopes();
+		this.SCOPES         = new coldbox.system.ioc.Scopes();
 		// Setup Available public types
-		this.TYPES  = new coldbox.system.ioc.Types();
+		this.TYPES          = new coldbox.system.ioc.Types();
+		// Build out the utilities
+		variables.utility   = new coldbox.system.core.util.Util();
+		variables.mixerUtil = variables.utility.getMixerUtil();
+
+		// Instance contains lookup
+		variables.containsLookupMap = createObject( "java", "java.util.concurrent.ConcurrentHashMap" ).init();
 
 		// Do we have a binder?
 		if ( isSimpleValue( arguments.binder ) AND NOT len( trim( arguments.binder ) ) ) {
@@ -518,8 +524,6 @@ component serializable="false" accessors="true" {
 	 * @initArguments       The constructor structure of arguments to passthrough when initializing the instance
 	 **/
 	function buildInstance( required mapping, struct initArguments = {} ){
-		var thisMap = arguments.mapping;
-
 		// before construction event
 		variables.eventManager.announce(
 			"beforeInstanceCreation",
@@ -528,63 +532,63 @@ component serializable="false" accessors="true" {
 
 		var oModel = "";
 		// determine construction type
-		switch ( thisMap.getType() ) {
+		switch ( arguments.mapping.getType() ) {
 			case "cfc": {
-				oModel = variables.objectBuilder.buildCFC( thisMap, arguments.initArguments );
+				oModel = variables.objectBuilder.buildCFC( arguments.mapping, arguments.initArguments );
 				break;
 			}
 			case "java": {
-				oModel = variables.objectBuilder.buildJavaClass( thisMap );
+				oModel = variables.objectBuilder.buildJavaClass( arguments.mapping );
 				break;
 			}
 			case "webservice": {
-				oModel = variables.objectBuilder.buildWebservice( thisMap, arguments.initArguments );
+				oModel = variables.objectBuilder.buildWebservice( arguments.mapping, arguments.initArguments );
 				break;
 			}
 			case "constant": {
-				oModel = thisMap.getValue();
+				oModel = arguments.mapping.getValue();
 				break;
 			}
 			case "rss": {
-				oModel = variables.objectBuilder.buildFeed( thisMap );
+				oModel = variables.objectBuilder.buildFeed( arguments.mapping );
 				break;
 			}
 			case "dsl": {
 				oModel = variables.objectBuilder.buildSimpleDSL(
-					dsl      = thisMap.getDSL(),
-					targetID = thisMap.getName()
+					dsl      = arguments.mapping.getDSL(),
+					targetID = arguments.mapping.getName()
 				);
 				break;
 			}
 			case "factory": {
-				oModel = variables.objectBuilder.buildFactoryMethod( thisMap, arguments.initArguments );
+				oModel = variables.objectBuilder.buildFactoryMethod( arguments.mapping, arguments.initArguments );
 				break;
 			}
 			case "provider": {
 				// verify if it is a simple value or closure/UDF
-				if ( isSimpleValue( thisMap.getPath() ) ) {
-					oModel = getInstance( thisMap.getPath() ).$get();
+				if ( isSimpleValue( arguments.mapping.getPath() ) ) {
+					oModel = getInstance( arguments.mapping.getPath() ).$get();
 				} else {
-					var closure = thisMap.getPath();
+					var closure = arguments.mapping.getPath();
 					oModel      = closure( injector = this );
 				}
 				break;
 			}
 			default: {
 				throw(
-					message = "Invalid Construction Type: #thisMap.getType()#",
+					message = "Invalid Construction Type: #arguments.mapping.getType()#",
 					type    = "Injector.InvalidConstructionType"
 				);
 			}
 		}
 
 		// Check and see if this mapping as an influence closure
-		var influenceClosure = thisMap.getInfluenceClosure();
-		if ( !isSimpleValue( influenceClosure ) ) {
+		if ( arguments.mapping.hasInfluenceClosure() ) {
+			var influenceClosure = arguments.mapping.getInfluenceClosure();
 			// Influence the creation of the instance
-			var result = influenceClosure( instance = oModel, injector = this );
+			var result           = influenceClosure( instance = oModel, injector = this );
 			// Allow the closure to override the entire instance if it wishes
-			if ( !isNull( local.result ) ) {
+			if ( !isNull( result ) ) {
 				oModel = result;
 			}
 		}
@@ -654,32 +658,42 @@ component serializable="false" accessors="true" {
 	 * @name The object name or alias to search for if this container can locate it or has knowledge of it
 	 */
 	boolean function containsInstance( required name ){
+		var cacheKey = lCase( arguments.name );
+		// Have we asked to locate this instance before?
+		var isFound  = variables.containsLookupMap.get( cacheKey );
+		if ( !isNull( isFound ) ) {
+			return true;
+		}
+
 		// check if we have a mapping first
 		if ( variables.binder.mappingExists( arguments.name ) ) {
-			return true;
+			isFound = true;
 		}
-
 		// check if we can locate it?
-		if ( locateInstance( arguments.name ).len() ) {
-			return true;
+		else if ( locateInstance( arguments.name ).len() ) {
+			isFound = true;
 		}
-
 		// Ask parent hierarchy if set
-		if ( isObject( variables.parent ) && variables.parent.containsInstance( arguments.name ) ) {
-			return true;
+		else if ( isObject( variables.parent ) && variables.parent.containsInstance( arguments.name ) ) {
+			isFound = true;
 		}
-
 		// Ask child hierarchy if set
-		if ( structCount( variables.childInjectors ) ) {
-			return variables.childInjectors
+		else if ( structCount( variables.childInjectors ) ) {
+			isFound = variables.childInjectors
 				.filter( function( childName, childInstance ){
 					return arguments.childInstance.containsInstance( name );
 				} )
 				.count() > 0 ? true : false;
+		} else {
+			isFound = false;
 		}
 
-		// Else NADA!
-		return false;
+		// Cache if located
+		if ( isFound ) {
+			variables.containsLookupMap.put( cacheKey, true );
+		}
+
+		return isFound;
 	}
 
 	/**
@@ -748,7 +762,7 @@ component serializable="false" accessors="true" {
 			// Do we have an incoming target id?
 			if ( NOT len( arguments.targetID ) ) {
 				// need to get metadata to verify identity
-				md                 = getUtility().getInheritedMetaData( arguments.target, getBinder().getStopRecursions() );
+				md                 = variables.utility.getInheritedMetaData( arguments.target, getBinder().getStopRecursions() );
 				// We have identity now, use the full location path
 				arguments.targetID = md.path;
 			}
@@ -758,7 +772,10 @@ component serializable="false" accessors="true" {
 				// No mapping found, means we need to map this object for the first time.
 				// Is md retrieved? If not, retrieve it as we need to register it for the first time.
 				if ( isSimpleValue( md ) ) {
-					md = getUtility().getInheritedMetaData( arguments.target, getBinder().getStopRecursions() );
+					md = variables.utility.getInheritedMetaData(
+						arguments.target,
+						getBinder().getStopRecursions()
+					);
 				}
 				// register new mapping instance
 				registerNewInstance( arguments.targetID, md.path );
@@ -802,7 +819,7 @@ component serializable="false" accessors="true" {
 			variables.eventManager.announce( "beforeInstanceAutowire", iData );
 
 			// prepare instance for wiring, done once for persisted objects and CFCs only
-			getUtility().getMixerUtil().start( arguments.target );
+			variables.mixerUtil.start( arguments.target );
 
 			// Bean Factory Awareness
 			if ( structKeyExists( targetObject, "setBeanFactory" ) ) {
@@ -811,26 +828,40 @@ component serializable="false" accessors="true" {
 			if ( structKeyExists( targetObject, "setInjector" ) ) {
 				targetObject.setInjector( this );
 			}
+
 			// ColdBox Context Awareness
 			if ( structKeyExists( targetObject, "setColdBox" ) ) {
 				targetObject.setColdBox( getColdBox() );
 			}
+
 			// DIProperty injection
-			processInjection(
-				targetObject,
-				arguments.mapping.getDIProperties(),
-				arguments.targetID
-			);
+			if ( arguments.mapping.getDIProperties().len() ) {
+				processInjection(
+					targetObject,
+					arguments.mapping.getDIProperties(),
+					arguments.targetID
+				);
+			}
+
 			// DISetter injection
-			processInjection(
-				targetObject,
-				arguments.mapping.getDISetters(),
-				arguments.targetID
-			);
+			if ( arguments.mapping.getDISetters().len() ) {
+				processInjection(
+					targetObject,
+					arguments.mapping.getDISetters(),
+					arguments.targetID
+				);
+			}
+
 			// Process Provider Methods
-			processProviderMethods( targetObject, arguments.mapping );
+			if ( arguments.mapping.getProviderMethods().len() ) {
+				processProviderMethods( targetObject, arguments.mapping );
+			}
+
 			// Process Mixins
-			processMixins( targetObject, arguments.mapping );
+			if ( arguments.mapping.getMixins().len() ) {
+				processMixins( targetObject, arguments.mapping );
+			}
+
 			// Process After DI Complete
 			processAfterCompleteDI( targetObject, arguments.mapping.getOnDIComplete() );
 
@@ -960,18 +991,6 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
-	 * Lazy load and return the core util object
-	 *
-	 * @return coldbox.system.core.util.Util
-	 */
-	function getUtility(){
-		if ( isNull( variables.utility ) ) {
-			variables.utility = new coldbox.system.core.util.Util();
-		}
-		return variables.utility;
-	}
-
-	/**
 	 * Get the structure of scope registration information
 	 */
 	struct function getScopeRegistration(){
@@ -987,11 +1006,6 @@ component serializable="false" accessors="true" {
 	 * @mapping      The target mapping
 	 */
 	private Injector function processMixins( required targetObject, required mapping ){
-		// If no length, kick out
-		if ( !arguments.mapping.getMixins().len() ) {
-			return this;
-		}
-
 		// Process
 		var mixin = new coldbox.system.ioc.config.Mixin().$init( arguments.mapping.getMixins() );
 
@@ -1014,12 +1028,6 @@ component serializable="false" accessors="true" {
 	 */
 	private Injector function processProviderMethods( required targetObject, required mapping ){
 		var providerMethods = arguments.mapping.getProviderMethods();
-		var providerLen     = arrayLen( providerMethods );
-
-		// Do we have providers?
-		if ( !providerLen ) {
-			return this;
-		}
 
 		// Decorate the target if provider methods found, in preparation for replacements
 		arguments.targetObject.$wbScopeInfo    = variables.binder.getScopeRegistration();
@@ -1044,12 +1052,9 @@ component serializable="false" accessors="true" {
 	 * @DICompleteMethods The array of DI completion methods to call
 	 */
 	private Injector function processAfterCompleteDI( required targetObject, required DICompleteMethods ){
-		var DILen = arrayLen( arguments.DICompleteMethods );
-
 		//  Check for convention first
 		if ( structKeyExists( arguments.targetObject, "onDIComplete" ) ) {
-			//  Call our mixin invoker
-			arguments.targetObject.invokerMixin( method = "onDIComplete" );
+			arguments.targetObject.onDIComplete();
 		}
 
 		//  Iterate on DICompleteMethods
@@ -1174,13 +1179,18 @@ component serializable="false" accessors="true" {
 		// Core Scopes
 		variables.scopes[ "NOSCOPE" ]     = new coldbox.system.ioc.scopes.NoScope( this );
 		variables.scopes[ "SINGLETON" ]   = new coldbox.system.ioc.scopes.Singleton( this );
-		variables.scopes[ "CACHEBOX" ]    = new coldbox.system.ioc.scopes.CacheBox( this );
 		variables.scopes[ "REQUEST" ]     = new coldbox.system.ioc.scopes.RequestScope( this );
 		variables.scopes[ "SESSION" ]     = new coldbox.system.ioc.scopes.CFScopes( this );
 		variables.scopes[ "SERVER" ]      = variables.scopes[ "SESSION" ];
 		variables.scopes[ "APPLICATION" ] = variables.scopes[ "SESSION" ];
+
+		// CacheBox if linked
+		if ( isCacheBoxLinked() ) {
+			variables.scopes[ "CACHEBOX" ] = new coldbox.system.ioc.scopes.CacheBox( this );
+		}
+
 		// Custom Scopes
-		var customScopes                  = variables.binder.getCustomScopes();
+		var customScopes = variables.binder.getCustomScopes();
 		for ( var key in customScopes ) {
 			variables.scopes[ key ] = createObject( "component", customScopes[ key ] ).init( this );
 			// Debugging
@@ -1360,10 +1370,9 @@ component serializable="false" accessors="true" {
 		}
 
 		// Inject Environment Support
-		var util                                = getUtility();
-		arguments.binder[ "getSystemSetting" ]  = util.getSystemSetting;
-		arguments.binder[ "getSystemProperty" ] = util.getSystemProperty;
-		arguments.binder[ "getEnv" ]            = util.getEnv;
+		arguments.binder[ "getSystemSetting" ]  = variables.utility.getSystemSetting;
+		arguments.binder[ "getSystemProperty" ] = variables.utility.getSystemProperty;
+		arguments.binder[ "getEnv" ]            = variables.utility.getEnv;
 
 		// Check if data CFC or binder family
 		if ( !structKeyExists( arguments.binder, "$wbBinder" ) ) {

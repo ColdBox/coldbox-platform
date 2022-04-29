@@ -159,23 +159,23 @@ component serializable="false" accessors="true" {
 	 * @initArguments             The constructor structure of arguments to passthrough when initializing the instance
 	 * @initArguments.doc_generic struct
 	 */
-	function buildCFC( required mapping, initArguments = structNew() ){
-		var thisMap         = arguments.mapping;
-		var oModel          = createObject( "component", thisMap.getPath() );
-		var constructorArgs = thisMap.getDIConstructorArguments();
+	function buildCFC( required mapping, initArguments = {} ){
+		var oModel          = createObject( "component", arguments.mapping.getPath() );
+		var constructorArgs = arguments.mapping.getDIConstructorArguments();
+		var constructorName = arguments.mapping.getConstructor();
 
 		// Do we have virtual inheritance?
-		if ( thisMap.isVirtualInheritance() ) {
+		if ( arguments.mapping.isVirtualInheritance() ) {
 			// Original constructor argument names
 			var constructorArgNames = constructorArgs.map( function( arg ){
 				return arg.name;
 			} );
 			// retrieve the VI mapping.
-			var viMapping = variables.injector.getBinder().getMapping( thisMap.getVirtualInheritance() );
+			var viMapping = variables.injector.getBinder().getMapping( arguments.mapping.getVirtualInheritance() );
 			// Does it match the family already?
 			if ( NOT isInstanceOf( oModel, viMapping.getPath() ) ) {
 				// Virtualize it.
-				toVirtualInheritance( viMapping, oModel, thisMap );
+				toVirtualInheritance( viMapping, oModel, arguments.mapping );
 				// Only add virtual inheritance constructor args if we don't already have one with that name.
 				arrayAppend(
 					constructorArgs,
@@ -190,9 +190,13 @@ component serializable="false" accessors="true" {
 		}
 
 		// Constructor initialization?
-		if ( thisMap.isAutoInit() AND structKeyExists( oModel, thisMap.getConstructor() ) ) {
+		if ( arguments.mapping.isAutoInit() AND structKeyExists( oModel, constructorName ) ) {
 			// Get Arguments
-			var constructorArgCollection = buildArgumentCollection( thisMap, constructorArgs, oModel );
+			var constructorArgCollection = constructorArgs.len() ? buildArgumentCollection(
+				arguments.mapping,
+				constructorArgs,
+				oModel
+			) : {};
 
 			// initArguments to override
 			structAppend(
@@ -202,12 +206,16 @@ component serializable="false" accessors="true" {
 			);
 
 			try {
-				// Invoke constructor
-				invoke(
-					oModel,
-					thisMap.getConstructor(),
-					constructorArgCollection
-				);
+				// Invoke constructor, we do this because using invoke() can be slow
+				if ( constructorName eq "init" ) {
+					oModel.init( argumentCollection = constructorArgCollection );
+				} else {
+					invoke(
+						oModel,
+						constructorName,
+						constructorArgCollection
+					);
+				}
 			} catch ( any e ) {
 				var reducedTagContext = e.tagContext
 					.reduce( function( result, file ){
@@ -225,9 +233,9 @@ component serializable="false" accessors="true" {
 
 				throw(
 					type    = "Builder.BuildCFCDependencyException",
-					message = "Error building: #thisMap.getName()# -> #e.message#
+					message = "Error building: #arguments.mapping.getName()# -> #e.message#
 					#e.detail#.",
-					detail = "DSL: #thisMap.getDSL()#, Path: #thisMap.getPath()#,
+					detail = "DSL: #arguments.mapping.getDSL()#, Path: #arguments.mapping.getPath()#,
 					Error Location:
 					#reducedTagContext#"
 				);
@@ -320,6 +328,8 @@ component serializable="false" accessors="true" {
 	 * @mapping.doc_generic coldbox.system.ioc.config.Mapping
 	 * @argumentArray       The argument array of data
 	 * @targetObject        The target object we are building the DSL dependency for
+	 *
+	 * @return A structure argument collection to initialize an object with
 	 */
 	function buildArgumentCollection(
 		required mapping,

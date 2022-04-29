@@ -1,5 +1,5 @@
 <cfscript>
-	TOTAL_ITERATIONS = 4000;
+	TOTAL_ITERATIONS = randRange( 3000, 4000 );
 	createObject( "java", "java.lang.Runtime" ).getRuntime().gc();
 	writeOutput( "<h2>Using: #expandPath( '/coldbox' )#; #server.coldfusion.productName#</h2>" );
 
