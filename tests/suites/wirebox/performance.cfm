@@ -1,9 +1,13 @@
 <cfscript>
-	TOTAL_ITERATIONS = randRange( 3000, 4000 );
-	createObject( "java", "java.lang.Runtime" ).getRuntime().gc();
+	function cleanup(){
+		structDelete( application, "wirebox" );
+		structDelete( application, "cachebox" );
+	}
+	cleanup();
+
+	TOTAL_ITERATIONS = randRange( 3998, 4000 );
 	writeOutput( "<h2>Using: #expandPath( '/coldbox' )#; #server.coldfusion.productName#</h2>" );
 
-	structDelete( application, "wirebox" );
 	iterations = TOTAL_ITERATIONS;
 	sTime = getTickCount();
 
@@ -34,7 +38,17 @@
 		//writeOutput( "#iterations#..." );
 		createObject( "cbtestharness.models.ioc.category.CategoryDAO" );
 		createObject( "cbtestharness.models.ioc.category.CategoryBean" );
+		createObject( "cbtestharness.models.ioc.category.CategoryService" );
+		createObject( "cbtestharness.models.ioc.product.ProductService" );
+		createObject( "cbtestharness.models.ioc.product.ProductDAO" );
 		createObject( "tests.resources.ChildClass" );
 	}
 	writeOutput( "<br><div>Createobject Time: #getTickCount() - sTime# ms</div>" );
+
+
+
+
+	// Cleanup
+	createObject( "java", "java.lang.Runtime" ).getRuntime().gc();
+	cleanup();
 </cfscript>

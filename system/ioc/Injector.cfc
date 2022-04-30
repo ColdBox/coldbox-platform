@@ -659,9 +659,10 @@ component serializable="false" accessors="true" {
 	 */
 	boolean function containsInstance( required name ){
 		var cacheKey = lCase( arguments.name );
+		var isFound  = false;
+
 		// Have we asked to locate this instance before?
-		var isFound  = variables.containsLookupMap.get( cacheKey );
-		if ( !isNull( isFound ) ) {
+		if ( !isNull( variables.containsLookupMap.get( cacheKey ) ) ) {
 			return true;
 		}
 

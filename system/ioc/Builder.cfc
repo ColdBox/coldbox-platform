@@ -49,6 +49,8 @@ component serializable="false" accessors="true" {
 	 */
 	Builder function init( required injector ){
 		variables.injector  = arguments.injector;
+		variables.utility   = arguments.injector.getUtility();
+		variables.mixerUtil = variables.utility.getMixerUtil();
 		variables.logBox    = arguments.injector.getLogBox();
 		variables.log       = arguments.injector.getLogBox().getlogger( this );
 		variables.customDSL = {};
@@ -945,7 +947,7 @@ component serializable="false" accessors="true" {
 	/**
 	 * Do our virtual inheritance magic
 	 *
-	 * @mapping       The mapping to convert to
+	 * @mapping       The virtual mapping to convert to
 	 * @target        The target object
 	 * @targetMapping The target mapping
 	 *
@@ -965,17 +967,15 @@ component serializable="false" accessors="true" {
 		}
 		// Build it out the base object and wire it
 		var baseObject = variables.injector.buildInstance( arguments.mapping );
-		variables.injector.autowire( target = baseObject, mapping = arguments.mapping );
+		variables.injector.autowire(
+			target  = baseObject,
+			mapping = arguments.mapping,
+			targetID: arguments.mapping.getName()
+		);
 
 		// Mix them up baby!
-		variables.injector
-			.getUtility()
-			.getMixerUtil()
-			.start( arguments.target );
-		variables.injector
-			.getUtility()
-			.getMixerUtil()
-			.start( baseObject );
+		variables.mixerUtil.start( arguments.target );
+		variables.mixerUtil.start( baseObject );
 
 		// Check if init already exists in target and base? If so, then inject it as $superInit
 		if ( structKeyExists( arguments.target, "init" ) AND structKeyExists( baseObject, "init" ) ) {

@@ -8,6 +8,7 @@ component {
 	 */
 	function init(){
 		variables.mixins = {
+			"$wbMixer"            : true,
 			"removeMixin"         : variables.removeMixin,
 			"injectMixin"         : variables.injectMixin,
 			"invokerMixin"        : variables.invokerMixin,
@@ -29,7 +30,9 @@ component {
 	 * @target target object
 	 */
 	function start( required target ){
-		structAppend( arguments.target, variables.mixins, true );
+		if ( !structKeyExists( arguments.target, "$wbMixer" ) ) {
+			structAppend( arguments.target, variables.mixins, true );
+		}
 		return this;
 	}
 
