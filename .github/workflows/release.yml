@@ -52,6 +52,7 @@ jobs:
         uses: Ortus-Solutions/setup-commandbox@v2.0.0
         with:
           forgeboxAPIKey: ${{ secrets.FORGEBOX_API_TOKEN }}
+          version: 5.4.2
 
       - name: Setup Environment Variables For Build Process
         id: current_version
