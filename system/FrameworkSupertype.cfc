@@ -91,20 +91,32 @@ component serializable="false" accessors="true" {
 
 		// json?
 		if ( structKeyExists( arguments, "jsonstring" ) ) {
-			return wirebox.getObjectPopulator().populateFromJSON( argumentCollection = arguments );
+			return variables.controller
+				.getWirebox()
+				.getObjectPopulator()
+				.populateFromJSON( argumentCollection = arguments );
 		}
 		// XML
 		else if ( structKeyExists( arguments, "xml" ) ) {
-			return wirebox.getObjectPopulator().populateFromXML( argumentCollection = arguments );
+			return variables.controller
+				.getWirebox()
+				.getObjectPopulator()
+				.populateFromXML( argumentCollection = arguments );
 		}
 		// Query
 		else if ( structKeyExists( arguments, "qry" ) ) {
-			return wirebox.getObjectPopulator().populateFromQuery( argumentCollection = arguments );
+			return variables.controller
+				.getWirebox()
+				.getObjectPopulator()
+				.populateFromQuery( argumentCollection = arguments );
 		}
 		// Mementos
 		else {
 			// populate
-			return wirebox.getObjectPopulator().populateFromStruct( argumentCollection = arguments );
+			return variables.controller
+				.getWirebox()
+				.getObjectPopulator()
+				.populateFromStruct( argumentCollection = arguments );
 		}
 	}
 
@@ -334,9 +346,12 @@ component serializable="false" accessors="true" {
 	 *
 	 * @target The closure/lambda to register
 	 * @point  The interception point to register the listener to
+	 *
+	 * @return FrameworkSuperType
 	 */
-	void function listen( required target, required point ){
+	function listen( required target, required point ){
 		variables.controller.getInterceptorService().listen( argumentCollection = arguments );
+		return this;
 	}
 
 	/**
@@ -457,7 +472,7 @@ component serializable="false" accessors="true" {
 	any function getModuleSettings( required module, setting, defaultValue ){
 		var moduleSettings = getModuleConfig( arguments.module ).settings;
 		// return specific setting?
-		if ( structKeyExists( arguments, "setting" ) ) {
+		if ( !isNull( arguments.setting ) ) {
 			return (
 				structKeyExists( moduleSettings, arguments.setting ) ? moduleSettings[ arguments.setting ] : arguments.defaultValue
 			);
@@ -514,7 +529,7 @@ component serializable="false" accessors="true" {
 		boolean postProcessExempt,
 		numeric statusCode
 	){
-		controller.relocate( argumentCollection = arguments );
+		variables.controller.relocate( argumentCollection = arguments );
 	}
 
 	/**
@@ -588,7 +603,7 @@ component serializable="false" accessors="true" {
 	 * @return FrameworkSuperType
 	 */
 	function persistVariables( persist = "", struct persistStruct = {} ){
-		controller.persistVariables( argumentCollection = arguments );
+		variables.controller.persistVariables( argumentCollection = arguments );
 		return this;
 	}
 
@@ -738,7 +753,10 @@ component serializable="false" accessors="true" {
 	 * @return coldbox.system.async.AsyncManager
 	 */
 	any function async(){
-		return variables.wirebox.getInstance( "asyncManager@coldbox" );
+		if ( isNull( variables.asyncManager ) ) {
+			variables.asyncManager = variables.controller.getWireBox().getInstance( "asyncManager@coldbox" );
+		}
+		return variables.asyncManager;
 	}
 
 	/**
@@ -761,6 +779,16 @@ component serializable="false" accessors="true" {
 			arguments.failure();
 		}
 		return this;
+	}
+
+	/**
+	 * This function allows you to serialize simple or complex data so it can be used within HTML Attributes.
+	 *
+	 * @data The simple or complex data to bind to an HTML Attribute
+	 */
+	function forAttribute( required data ){
+		arguments.data = ( isSimpleValue( arguments.data ) ? arguments.data : serializeJSON( arguments.data ) );
+		return encodeForHTMLAttribute( arguments.data );
 	}
 
 }
