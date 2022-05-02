@@ -54,7 +54,7 @@
 		mapping     = createMock( "coldbox.system.ioc.config.Mapping" ).init( "MyTest" );
 		// mocks
 		mockBuilder = createMock( "coldbox.system.ioc.Builder" ).init( injector );
-		injector.$property( "builder", "variables", mockBuilder );
+		injector.$property( "objectBuilder", "variables", mockBuilder );
 		injector.getEventManager().$( "process" );
 		mockStub = createStub();
 
