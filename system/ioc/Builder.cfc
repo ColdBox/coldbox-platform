@@ -168,14 +168,14 @@ component serializable="false" accessors="true" {
 
 		// Do we have virtual inheritance?
 		if ( arguments.mapping.isVirtualInheritance() ) {
-			// Original constructor argument names
-			var constructorArgNames = constructorArgs.map( function( arg ){
-				return arg.name;
-			} );
 			// retrieve the VI mapping.
 			var viMapping = variables.injector.getBinder().getMapping( arguments.mapping.getVirtualInheritance() );
 			// Does it match the family already?
 			if ( NOT isInstanceOf( oModel, viMapping.getPath() ) ) {
+				// Original constructor argument names
+				var constructorArgNames = constructorArgs.map( function( arg ){
+					return arg.name;
+				} );
 				// Virtualize it.
 				toVirtualInheritance( viMapping, oModel, arguments.mapping );
 				// Only add virtual inheritance constructor args if we don't already have one with that name.
