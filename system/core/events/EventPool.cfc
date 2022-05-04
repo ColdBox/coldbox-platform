@@ -23,23 +23,18 @@ component accessors="true" {
 	 */
 	function init( required state ){
 		// Create the event pool, start with 5 instead of 16 to save space
-		variables.pool  = createObject( "java", "java.util.LinkedHashMap" ).init( 5 );
+		variables.pool = createObject( "java", "java.util.Collections" ).synchronizedMap(
+			createObject( "java", "java.util.LinkedHashMap" ).init( 5 )
+		);
 		variables.state = arguments.state;
 
 		return this;
 	}
 
 	/**
-	 * Stupid accessors in CF11 does not work.
-	 */
-	function getPool(){
-		return variables.pool;
-	}
-
-	/**
 	 * Register an object with this pool
 	 *
-	 * @key    The key of the object
+	 * @key    The key of the object, will be lowercased to conform to non-case sensitivity
 	 * @target The object
 	 *
 	 * @return EventPool
@@ -52,33 +47,29 @@ component accessors="true" {
 	/**
 	 * Unregister an object from this pool
 	 *
-	 * @key The key of the object
+	 * @key The key of the object, will be lowercased to conform to non-case sensitivity
 	 */
 	boolean function unregister( required key ){
-		arguments.key = lCase( arguments.key );
-		if ( structKeyExists( variables.pool, arguments.key ) ) {
-			variables.pool.remove( arguments.key );
-			return true;
-		}
-		return false;
+		var results = variables.pool.remove( lCase( arguments.key ) );
+		return isNull( results ) ? false : true;
 	}
 
 	/**
 	 * Check if a key exists in the pool
 	 */
 	boolean function exists( required key ){
-		return structKeyExists( variables.pool, lCase( arguments.key ) );
+		return variables.pool.containsKey( lCase( arguments.key ) );
 	}
 
 	/**
 	 * Get an object from this event pool. Else return a blank structure if not found
+	 *
+	 * @key The key name of the object
+	 *
+	 * @return The requested object or an empty structure
 	 */
-	function getObject( required key ){
-		arguments.key = lCase( arguments.key );
-		if ( structKeyExists( variables.pool, arguments.key ) ) {
-			return variables.pool[ arguments.key ];
-		}
-		return {};
+	any function getObject( required key ){
+		return variables.pool.getOrDefault( lCase( arguments.key ), {} );
 	}
 
 	/**
@@ -90,7 +81,7 @@ component accessors="true" {
 	 */
 	function process( required data ){
 		// Loop and execute each target object as registered in order
-		for ( var key in variables.pool ) {
+		for ( var key in structKeyArray( variables.pool ) ) {
 			// Invoke the execution point
 			var stopChain = invoker( variables.pool[ key ], arguments.data );
 
@@ -108,8 +99,10 @@ component accessors="true" {
 	 *
 	 * @target The target object
 	 * @data   The data used in the interception call
+	 *
+	 * @return A boolean indicator that the interception chain needs to be broken or not.
 	 */
-	private function invoker( required target, required data ){
+	private boolean function invoker( required target, required data ){
 		var results = invoke(
 			arguments.target,
 			variables.state,

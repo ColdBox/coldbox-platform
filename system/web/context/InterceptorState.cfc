@@ -2,7 +2,9 @@
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * This object models an interception state
+ * The interception state is an event pool object.  It tracks all registered announcements by name
+ * and can iterate and announce the state listeners for you.
+ *
  */
 component accessors="true" extends="coldbox.system.core.events.EventPool" {
 
@@ -15,7 +17,6 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 	 * Metadata map for objects
 	 */
 	property name="metadataMap";
-
 
 	/**
 	 * Constructor
@@ -34,11 +35,9 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 		// Controller
 		variables.controller  = arguments.controller;
 		// md ref map
-		variables.metadataMap = structNew();
-		// java system
-		variables.javaSystem  = createObject( "java", "java.lang.System" );
+		variables.metadataMap = {};
 		// Utilities
-		variables.utility     = new coldbox.system.core.util.Util();
+		variables.utility     = arguments.controller.getUtil();
 		// UUID Helper
 		variables.uuidHelper  = createObject( "java", "java.util.UUID" );
 		// Logger Object
@@ -48,7 +47,7 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 	}
 
 	/**
-	 * Return the state's metadata map for it's registered interecptors
+	 * Return the state's metadata map for it's registered interceptors
 	 *
 	 * @interceptorKey Pass a key and retrieve that interceptor's metadata map only
 	 */
@@ -178,16 +177,19 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 			);
 		}
 
+		// Store data so we don't have to duplicate via stupid cfthread
+		request[ threadName ] = arguments.data;
+
 		thread
 			name      ="#threadName#"
 			action    ="run"
 			priority  ="#arguments.asyncPriority#"
-			data      ="#arguments.data#"
 			threadName="#threadName#"
 			buffer    ="#arguments.buffer#" {
+			// Process it
 			variables.processSync(
 				event  = variables.controller.getRequestService().getContext(),
-				data   = attributes.data,
+				data   = request[ attributes.threadName ],
 				buffer = attributes.buffer
 			);
 
@@ -222,9 +224,7 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 	){
 		var interceptors = getInterceptors();
 		var threadnames  = [];
-		var key          = "";
 		var threadData   = {};
-		var threadIndex  = "";
 
 		if ( variables.log.canDebug() ) {
 			variables.log.debug(
@@ -232,7 +232,17 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 			);
 		}
 
-		for ( var key in interceptors ) {
+		var thisThreadGroup = "ichain_async_group_#replace(
+			variables.uuidHelper.randomUUID(),
+			"-",
+			"",
+			"all"
+		)#";
+
+		// Seed data into thread group request tracker to avoid stupid cfthread data duplication
+		request[ thisThreadGroup ] = arguments.data;
+
+		for ( var key in structKeyArray( interceptors ) ) {
 			var thisThreadName = "ichain_#key#_#replace(
 				variables.uuidHelper.randomUUID(),
 				"-",
@@ -242,13 +252,13 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 			threadNames.append( thisThreadName );
 
 			thread
-				name      ="#thisThreadName#"
-				action    ="run"
-				priority  ="#arguments.asyncPriority#"
-				data      ="#arguments.data#"
-				threadName="#thisThreadName#"
-				buffer    ="#arguments.buffer#"
-				key       ="#key#" {
+				name       ="#thisThreadName#"
+				action     ="run"
+				priority   ="#arguments.asyncPriority#"
+				threadName ="#thisThreadName#"
+				threadGroup="#thisThreadGroup#"
+				buffer     ="#arguments.buffer#"
+				key        ="#key#" {
 				try {
 					// Retrieve interceptor to fire and local context
 					var thisInterceptor = this.getInterceptors().get( attributes.key );
@@ -260,7 +270,7 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 						variables.invoker(
 							interceptor    = thisInterceptor,
 							event          = event,
-							data           = attributes.data,
+							data           = request[ attributes.threadGroup ],
 							interceptorKey = attributes.key,
 							buffer         = attributes.buffer
 						);
@@ -319,7 +329,7 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 		}
 
 		// Loop and execute each interceptor as registered in order
-		for ( var key in interceptors ) {
+		for ( var key in structKeyArray( interceptors ) ) {
 			// Retrieve interceptor
 			var thisInterceptor = interceptors.get( key );
 

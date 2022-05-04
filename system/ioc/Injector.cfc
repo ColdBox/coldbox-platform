@@ -1107,17 +1107,12 @@ component serializable="false" accessors="true" {
 
 			// Check if dependency located, else log it and skip
 			if ( structKeyExists( refLocal, "dependency" ) ) {
-				// scope or setter determination
-				refLocal.scope = "";
-				if ( structKeyExists( arguments.DIData[ x ], "scope" ) ) {
-					refLocal.scope = arguments.DIData[ x ].scope;
-				}
 				// Inject dependency
 				injectTarget(
 					target         = targetObject,
 					propertyName   = arguments.DIData[ x ].name,
 					propertyObject = refLocal.dependency,
-					scope          = refLocal.scope,
+					scope          = arguments.DIData[ x ].scope,
 					argName        = arguments.DIData[ x ].argName
 				);
 
