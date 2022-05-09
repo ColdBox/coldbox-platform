@@ -1261,7 +1261,9 @@ component serializable="false" accessors="true" {
 
 		// Log info
 		if ( variables.log.canDebug() ) {
-			variables.log.debug( "Scope Registration enabled and Injector scoped to: #arguments.scopeInfo.toString()#" );
+			variables.log.debug(
+				"Scope Registration enabled and Injector scoped to: #arguments.scopeInfo.toString()#"
+			);
 		}
 
 		return this;
