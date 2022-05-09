@@ -186,18 +186,23 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 			priority  ="#arguments.asyncPriority#"
 			threadName="#threadName#"
 			buffer    ="#arguments.buffer#" {
-			// Process it
-			variables.processSync(
-				event  = variables.controller.getRequestService().getContext(),
-				data   = request[ attributes.threadName ],
-				buffer = attributes.buffer
-			);
-
-			if ( variables.log.canDebug() ) {
-				variables.log.debug(
-					"Finished threaded interceptor chain: #getState()# with thread name: #attributes.threadName#",
-					thread
+			try {
+				// Process it
+				variables.processSync(
+					event  = variables.controller.getRequestService().getContext(),
+					data   = request[ attributes.threadName ],
+					buffer = attributes.buffer
 				);
+
+				if ( variables.log.canDebug() ) {
+					variables.log.debug(
+						"Finished threaded interceptor chain: #getState()# with thread name: #attributes.threadName#",
+						thread
+					);
+				}
+			} catch ( any e ) {
+				variables.controller.getInterceptorService().announce( "onException", { exception : e } );
+				rethrow;
 			}
 		}
 
