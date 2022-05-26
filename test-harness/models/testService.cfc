@@ -1,15 +1,9 @@
-<cfcomponent name="testService" output="false">
-	<cfscript>
-	instance             = structNew();
-	instance.testGateway = 0;
-	</cfscript>
+component accessors = true{
 
-	<cffunction name="gettestGateway" access="public" output="false" returntype="any" hint="Get testGateway">
-		<cfreturn instance.testGateway/>
-	</cffunction>
+	property name="testGateway" inject="testGateway";
 
-	<cffunction name="settestGateway" access="public" output="false" returntype="void" hint="Set testGateway">
-		<cfargument name="testGateway" type="any" required="true"/>
-		<cfset instance.testGateway = arguments.testGateway/>
-	</cffunction>
-</cfcomponent>
+	function init(){
+		variables.testGateway = 0;
+		return this;
+	}
+}

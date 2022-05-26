@@ -1,5 +1,7 @@
-﻿<cfcomponent name="testGateway" output="false">
-	<cfscript>
-	instance = structNew();
-	</cfscript>
-</cfcomponent>
+﻿component{
+
+	function init(){
+		return this;
+	}
+
+}
