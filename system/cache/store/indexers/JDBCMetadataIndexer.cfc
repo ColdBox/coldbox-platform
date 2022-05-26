@@ -58,6 +58,33 @@ component extends="coldbox.system.cache.store.indexers.MetadataIndexer" accessor
 
 		variables.isLucee = server.keyExists( "lucee" );
 
+		// Check credentials
+		if ( isNull( variables.config.dsnUsername ) ) {
+			variables.config.dsnUsername = "";
+		}
+		if ( isNull( variables.config.dsnPassword ) ) {
+			variables.config.dsnPassword = "";
+		}
+
+		// this struct will contain the dsn and credentials if passed into the config. Otherwise queryExecute will default
+		// to the datasource set in application.cfc
+		variables.queryOptions = {};
+
+		// if DSN username or password were passed, include them in the query options
+		if ( len( variables.config.dsnUsername ) || len( variables.config.dsnPassword ) ) {
+			variables.queryOptions[ "dsnUsername" ] = variables.config.dsnUsername;
+			variables.queryOptions[ "dsnPassword" ] = variables.config.dsnPassword;
+		}
+
+		if ( isNull( variables.config.queryIncludeDsn ) ) {
+			variables.config.queryIncludeDsn = true;
+		}
+
+		// if we should include the dsn in the query options, add it
+		if ( variables.config.queryIncludeDsn ) {
+			variables.queryOptions[ "dsn" ] = variables.config.dsn;
+		}
+
 		return this;
 	}
 
@@ -72,11 +99,7 @@ component extends="coldbox.system.cache.store.indexers.MetadataIndexer" accessor
 			  FROM #variables.config.table#
 			 WHERE id = ?",
 			[ variables.store.getNormalizedID( arguments.objectKey ) ],
-			{
-				datasource : variables.config.dsn,
-				username   : variables.config.dsnUsername,
-				password   : variables.config.dsnPassword
-			}
+			variables.queryOptions
 		).recordCount eq 1;
 	}
 
@@ -106,15 +129,7 @@ component extends="coldbox.system.cache.store.indexers.MetadataIndexer" accessor
 			params = [];
 		}
 
-		queryExecute(
-			sql,
-			params,
-			{
-				datasource : variables.config.dsn,
-				username   : variables.config.dsnUsername,
-				password   : variables.config.dsnPassword
-			}
-		).each( function( row ){
+		queryExecute( sql, params, variables.queryOptions ).each( function( row ){
 			results[ row.objectKey ] = {
 				"hits"              : row.hits,
 				"timeout"           : row.timeout,
@@ -140,11 +155,7 @@ component extends="coldbox.system.cache.store.indexers.MetadataIndexer" accessor
 			  FROM #variables.config.table#
 			 WHERE id = ?",
 			[ variables.store.getNormalizedID( arguments.objectKey ) ],
-			{
-				datasource : variables.config.dsn,
-				username   : variables.config.dsnUsername,
-				password   : variables.config.dsnPassword
-			}
+			variables.queryOptions
 		);
 
 		return variables.fields.listReduce( function( accumulator, target ){
@@ -170,11 +181,7 @@ component extends="coldbox.system.cache.store.indexers.MetadataIndexer" accessor
 			  FROM #variables.config.table#
 			 WHERE id = ?",
 			[ variables.store.getNormalizedID( arguments.objectKey ) ],
-			{
-				datasource : variables.config.dsn,
-				username   : variables.config.dsnUsername,
-				password   : variables.config.dsnPassword
-			}
+			variables.queryOptions
 		);
 
 		if ( structKeyExists( metadata, arguments.property ) ) {
@@ -219,11 +226,7 @@ component extends="coldbox.system.cache.store.indexers.MetadataIndexer" accessor
 			FROM #variables.config.table#
 		    ORDER BY #arguments.property# #arguments.sortOrder#",
 			[],
-			{
-				datasource : variables.config.dsn,
-				username   : variables.config.dsnUsername,
-				password   : variables.config.dsnPassword
-			}
+			variables.queryOptions
 		);
 
 		return (
