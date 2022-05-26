@@ -50,21 +50,17 @@ component extends="coldbox.system.cache.store.indexers.MetadataIndexer" accessor
 		// store db sql compatibility type: used mostly for pagination
 		variables.sqlType = ( findNoCase( "Microsoft SQL", DBData.database_productName ) ? "MSSQL" : "MySQL" );
 
-		// store jdbc configuration
+		// store jdbc configuration + params
+		param name="arguments.config.dsnUsername" default="";
+		param name="arguments.config.dsnPassword" default="";
+		param name="arguments.config.queryIncludeDsn" default="true";
 		variables.config = arguments.config;
 
 		// store storage reference
 		variables.store = arguments.store;
 
+		// lucee marker
 		variables.isLucee = server.keyExists( "lucee" );
-
-		// Check credentials
-		if ( isNull( variables.config.dsnUsername ) ) {
-			variables.config.dsnUsername = "";
-		}
-		if ( isNull( variables.config.dsnPassword ) ) {
-			variables.config.dsnPassword = "";
-		}
 
 		// this struct will contain the dsn and credentials if passed into the config. Otherwise queryExecute will default
 		// to the datasource set in application.cfc
@@ -72,17 +68,13 @@ component extends="coldbox.system.cache.store.indexers.MetadataIndexer" accessor
 
 		// if DSN username or password were passed, include them in the query options
 		if ( len( variables.config.dsnUsername ) || len( variables.config.dsnPassword ) ) {
-			variables.queryOptions[ "dsnUsername" ] = variables.config.dsnUsername;
-			variables.queryOptions[ "dsnPassword" ] = variables.config.dsnPassword;
-		}
-
-		if ( isNull( variables.config.queryIncludeDsn ) ) {
-			variables.config.queryIncludeDsn = true;
+			variables.queryOptions[ "username" ] = variables.config.dsnUsername;
+			variables.queryOptions[ "password" ] = variables.config.dsnPassword;
 		}
 
 		// if we should include the dsn in the query options, add it
 		if ( variables.config.queryIncludeDsn ) {
-			variables.queryOptions[ "dsn" ] = variables.config.dsn;
+			variables.queryOptions[ "datasource" ] = variables.config.dsn;
 		}
 
 		return this;
