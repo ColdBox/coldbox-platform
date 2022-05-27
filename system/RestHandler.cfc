@@ -162,8 +162,8 @@ component extends="EventHandler" {
 		event,
 		rc,
 		prc,
-		faultAction = "",
-		exception,
+		faultAction    = "",
+		exception      = {},
 		eventArguments = {}
 	){
 		// Try to discover exception, if not, hard error
@@ -226,7 +226,7 @@ component extends="EventHandler" {
 	 * @eventArguments The original event arguments
 	 * @exception      The thrown exception
 	 */
-	function onValidationException( event, rc, prc, eventArguments, exception ){
+	function onValidationException( event, rc, prc, eventArguments, exception = {} ){
 		// Log Locally
 		if ( log.canDebug() ) {
 			log.debug(
@@ -271,7 +271,7 @@ component extends="EventHandler" {
 	 * @eventArguments The original event arguments
 	 * @exception      The thrown exception
 	 */
-	function onEntityNotFoundException( event, rc, prc, eventArguments, exception ){
+	function onEntityNotFoundException( event, rc, prc, eventArguments, exception = {} ){
 		// Log Locally
 		if ( log.canDebug() ) {
 			log.debug(
@@ -386,11 +386,11 @@ component extends="EventHandler" {
 	 * @return 403
 	 */
 	function onAuthenticationFailure(
-		event = getRequestContext(),
-		rc    = getRequestCollection(),
-		prc   = getRequestCollection( private = true ),
-		abort = false,
-		exception
+		event     = getRequestContext(),
+		rc        = getRequestCollection(),
+		prc       = getRequestCollection( private = true ),
+		abort     = false,
+		exception = {}
 	){
 		// Announce exception
 		announce( "onException", { "exception" : arguments.exception } );
@@ -430,11 +430,11 @@ component extends="EventHandler" {
 	 * @exception The thrown exception
 	 */
 	function onAuthorizationFailure(
-		event = getRequestContext(),
-		rc    = getRequestCollection(),
-		prc   = getRequestCollection( private = true ),
-		abort = false,
-		exception
+		event     = getRequestContext(),
+		rc        = getRequestCollection(),
+		prc       = getRequestCollection( private = true ),
+		abort     = false,
+		exception = {}
 	){
 		// Announce exception
 		announce( "onException", { "exception" : arguments.exception } );
@@ -501,7 +501,7 @@ component extends="EventHandler" {
 	 * @eventArguments The original event arguments
 	 * @exception      The thrown exception
 	 */
-	function onAnyOtherException( event, rc, prc, eventArguments, exception ){
+	function onAnyOtherException( event, rc, prc, eventArguments, exception = {} ){
 		// Log Exception
 		log.error(
 			"Error calling #arguments.event.getCurrentEvent()#: #arguments.exception.message# #arguments.exception.detail#",
