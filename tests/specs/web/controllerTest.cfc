@@ -16,37 +16,37 @@
 	}
 
 	function testDependencies(){
-		assertTrue( isObject( controller.getLoaderService() ) );
-		assertTrue( isObject( controller.getRequestService() ) );
-		assertTrue( isObject( controller.getinterceptorService() ) );
-		assertTrue( isObject( controller.getHandlerService() ) );
-		assertTrue( isObject( controller.getModuleService() ) );
+		expect( controller.getLoaderService() ).toBeComponent();
+		expect( controller.getRequestService() ).toBeComponent();
+		expect( controller.getinterceptorService() ).toBeComponent();
+		expect( controller.getHandlerService() ).toBeComponent();
+		expect( controller.getModuleService() ).toBeComponent();
 	}
 
 	function testSettings(){
 		// Populate
-		config = {
+		var config = {
 			handlerCaching : true,
 			mysetting      : "nothing",
 			eventCaching   : true
 		};
-		fwsettings = { Author : "Luis Majano" };
+		var fwsettings = { Author : "Luis Majano" };
 
 		controller.setConfigSettings( config );
 		controller.setColdboxSettings( fwsettings );
 
-		obj = controller.getConfigSettings();
-		assertFalse( structIsEmpty( obj ), "Structure populated" );
+		expect( controller.getConfigSettings() ).toBe( config );
+		expect( controller.getColdBoxSettings() ).toBe( fwsettings );
 	}
 
 	function testSettingProcedures(){
 		// Populate
-		config = {
+		var config = {
 			handlerCaching : true,
 			mysetting      : "nothing",
 			eventCaching   : true
 		};
-		fwsettings = { Author : "Luis Majano" };
+		var fwsettings = { Author : "Luis Majano" };
 
 		controller.setConfigSettings( config );
 		controller.setColdboxSettings( fwsettings );
@@ -94,23 +94,24 @@
 
 	function testRelocate(){
 		// mock data
-		mockFlash   = createMock( "coldbox.system.web.flash.MockFlash" ).init( controller );
+		mockFlash   = createMock( "coldbox.system.web.flash.MockFlash" ).init( controller ).$( "saveFlash" );
 		mockContext = getMockRequestContext();
 
-		mockFlash.$( "saveFlash" );
-
-		controller.setConfigSettings( {
-			eventName    : "event",
-			defaultEvent : "main.index",
-			flash        : { autoSave : true }
-		} );
 		controller
+			.setConfigSettings( {
+				eventName    : "event",
+				defaultEvent : "main.index",
+				flash        : { autoSave : true },
+				SESBaseURL   : "http://localhost"
+			} )
 			.$( "persistVariables" )
 			.$( "pushTimers" )
-			.$( "sendRelocation" );
-		controller.getRequestService().$( "getContext", mockContext );
-		controller.getRequestService().$( "getFlashScope", mockFlash );
-		controller.getRequestService().$( "announce" );
+			.$( "sendRelocation" )
+			// More Mocks
+			.getRequestService()
+			.$( "getContext", mockContext )
+			.$( "getFlashScope", mockFlash )
+			.$( "announce" );
 
 		// Test Full URL
 		controller.relocate( URL = "http://www.coldbox.org", addToken = true );
