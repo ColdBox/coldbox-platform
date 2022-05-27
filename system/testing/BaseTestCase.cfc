@@ -10,18 +10,22 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * The application mapping this test links to
 	 */
 	property name="appMapping";
+
+	/**
+	 * The web mapping this test links to
+	 */
+	property name="webMapping";
+
 	/**
 	 * The configuration location this test links to
 	 */
 	property name="configMapping";
+
 	/**
 	 * The ColdBox controller this test links to
 	 */
 	property name="controller";
-	/**
-	 * The application key for the ColdBox applicatin this test links to
-	 */
-	property name="coldboxAppKey";
+
 	/**
 	 * If in integration mode, you can tag for your tests to be automatically autowired with dependencies
 	 * by WireBox
@@ -30,6 +34,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 		name   ="autowire"
 		type   ="boolean"
 		default="false";
+
 	/**
 	 * The test case metadata
 	 */
@@ -42,16 +47,16 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 
 	// Internal Properties
 	variables.appMapping    = "";
+	variables.webMapping    = "";
 	variables.configMapping = "";
 	variables.controller    = "";
-	variables.coldboxAppKey = "cbController";
 	variables.autowire      = false;
 	variables.metadata      = {};
 
 	/********************************************* LIFE-CYCLE METHODS *********************************************/
 
 	/**
-	 * Inspect test case for annotations
+	 * Inspect test case for ColdBox loading annotations and autowiring
 	 *
 	 * @return BaseTestCase
 	 */
@@ -61,13 +66,13 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 		if ( structKeyExists( variables.metadata, "appMapping" ) ) {
 			variables.appMapping = variables.metadata.appMapping;
 		}
+		// Inspect for webMapping annotation
+		if ( structKeyExists( variables.metadata, "webMapping" ) ) {
+			variables.webMapping = variables.metadata.webMapping;
+		}
 		// Configuration File mapping
 		if ( structKeyExists( variables.metadata, "configMapping" ) ) {
 			variables.configMapping = variables.metadata.configMapping;
-		}
-		// ColdBox App Key
-		if ( structKeyExists( variables.metadata, "coldboxAppKey" ) ) {
-			variables.coldboxAppKey = variables.metadata.coldboxAppKey;
 		}
 		// Load coldBox annotation
 		if ( structKeyExists( variables.metadata, "loadColdbox" ) ) {
@@ -85,52 +90,30 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	}
 
 	/**
+	 * Get or construct a ColdBox Virtual Application
+	 */
+	function getColdBoxVirtualApp(){
+		if ( isNull( request.coldBoxVirtualApp ) ) {
+			request.coldBoxVirtualApp = new coldbox.system.testing.VirtualApp(
+				appMapping = variables.appMapping,
+				configPath = variables.configMapping,
+				webMapping = variables.webMapping
+			);
+		}
+		return request.coldBoxVirtualApp;
+	}
+
+	/**
 	 * The main setup method for running ColdBox Integration enabled tests
 	 */
 	function beforeTests(){
-		var appRootPath = "";
-		var context     = "";
-
 		// metadataInspection
 		metadataInspection();
 
 		// Load ColdBox Application for testing?
 		if ( this.loadColdbox ) {
-			// Check on Scope First
-			if ( structKeyExists( application, getColdboxAppKey() ) ) {
-				variables.controller = application[ getColdboxAppKey() ];
-			} else {
-				// Verify App Root Path
-				if ( NOT len( variables.appMapping ) ) {
-					variables.appMapping = "/";
-				}
-				appRootPath = expandPath( variables.appMapping );
-				// Clean the path for nice root path.
-				if ( NOT reFind( "(/|\\)$", appRootPath ) ) {
-					appRootPath = appRootPath & "/";
-				}
-				// Setup Coldbox configuration by convention
-				if ( NOT len( variables.configMapping ) ) {
-					if ( len( variables.appMapping ) ) {
-						variables.configMapping = variables.appMapping & ".config.Coldbox";
-					} else {
-						variables.configMapping = "config.Coldbox";
-					}
-				}
-				// Initialize mock Controller
-				variables.controller = new coldbox.system.testing.mock.web.MockController(
-					appRootPath = appRootPath,
-					appKey      = variables.coldboxAppKey
-				);
-				// persist for mock testing in right name
-				application[ getColdboxAppKey() ] = variables.controller;
-				// Setup
-				variables.controller
-					.getLoaderService()
-					.loadApplication( variables.configMapping, variables.appMapping );
-			}
-			// Load Module CF Mappings so modules can work properly
-			variables.controller.getModuleService().loadMappings();
+			// Startit up!
+			variables.controller = getColdBoxVirtualApp().startup();
 			// Auto registration of test as interceptor
 			variables.controller.getInterceptorService().registerInterceptor( interceptorObject = this );
 			// Do we need to autowire this test?
@@ -139,7 +122,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 			}
 		}
 
-		// Let's add Custom Matchers
+		// Let's add the ColdBox Custom Matchers
 		addMatchers( "coldbox.system.testing.CustomMatchers" );
 	}
 
@@ -149,11 +132,8 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	function setup(){
 		// Are we doing integration tests
 		if ( this.loadColdbox ) {
-			// verify ColdBox still exists, else load it again:
-			if ( !structKeyExists( application, getColdboxAppKey() ) ) {
+			if ( !getColdBoxVirtualApp().isRunning() ) {
 				beforeTests();
-			} else {
-				variables.controller = application[ getColdBoxAppKey() ];
 			}
 			// remove context + reset headers
 			variables.controller.getRequestService().removeContext();
@@ -167,7 +147,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 */
 	function afterTests(){
 		if ( this.unLoadColdbox ) {
-			shutdownColdBox();
+			getColdBoxVirtualApp().shutdown();
 		}
 	}
 
@@ -192,20 +172,6 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	}
 
 	/**
-	 * Gracefully shutdown ColdBox
-	 */
-	function shutdownColdBox(){
-		// Graceful shutdown
-		if ( structKeyExists( application, getColdboxAppKey() ) ) {
-			application[ getColdboxAppKey() ].getLoaderService().processShutdown();
-		}
-
-		// Wipe app scopes
-		structDelete( application, getColdboxAppKey() );
-		structDelete( application, "wirebox" );
-	}
-
-	/**
 	 * Reset the persistence of the unit test coldbox app, basically removes the controller from application scope
 	 *
 	 * @orm         Reload ORM or not
@@ -215,7 +181,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 */
 	function reset( boolean orm = false, boolean wipeRequest = true ){
 		// Shutdown gracefully ColdBox
-		shutdownColdBox();
+		getColdBoxVirtualApp().shutdown();
 
 		// Lucee Cleanups
 		if ( server.keyExists( "lucee" ) ) {
@@ -344,7 +310,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * @return coldbox.system.cache.providers.ICacheProvider
 	 */
 	function getCache( required cacheName = "default" ){
-		return getController().getCache( arguments.cacheName );
+		return variables.controller.getCache( arguments.cacheName );
 	}
 
 	/**
@@ -362,7 +328,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * @return coldbox.system.web.context.RequestContext
 	 */
 	function getRequestContext(){
-		return getController()
+		return variables.controller
 			.getRequestService()
 			.getContext( "coldbox.system.testing.mock.web.context.MockRequestContext" );
 	}
@@ -373,7 +339,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * @return coldbox.system.web.Flash.AbstractFlashScope
 	 */
 	function getFlashScope(){
-		return getController().getRequestService().getFlashScope();
+		return variables.controller.getRequestService().getFlashScope();
 	}
 
 	/********************************************* APPLICATION EXECUTION METHODS *********************************************/
@@ -386,13 +352,12 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * @return BaseTestCase
 	 */
 	function setupRequest( required event ){
-		var controller    = getController();
-		var eventName     = controller.getSetting( "eventName" );
+		var eventName     = variables.controller.getSetting( "eventName" );
 		// Setup the incoming event
 		URL[ eventName ]  = arguments.event;
 		FORM[ eventName ] = arguments.event;
 		// Capture the request
-		controller.getRequestService().requestCapture( arguments.event );
+		variables.controller.getRequestService().requestCapture( arguments.event );
 		return this;
 	}
 
