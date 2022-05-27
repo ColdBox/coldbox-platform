@@ -577,8 +577,6 @@ component
 		boolean prePostExempt = false
 	){
 		var event                  = getRequestContext();
-		var cbox_implicitLayout    = implicitViewChecks();
-		var cbox_currentLayout     = cbox_implicitLayout;
 		var cbox_locateUDF         = variables.locateLayout;
 		var cbox_explicitModule    = false;
 		var cbox_layoutLocationKey = "";
@@ -586,6 +584,13 @@ component
 		var iData                  = arguments;
 		var viewLocations          = "";
 		var explicitView           = getExplicitView();
+
+		// Are we discovering implicit views: setting must be on and no view set.
+		if ( shouldRenderImplicitView( arguments.view != "" ? arguments.view : event.getCurrentView() ) ) {
+			discoverImplicitViews();
+		}
+		var cbox_implicitLayout = event.getCurrentLayout();
+		var cbox_currentLayout  = cbox_implicitLayout;
 
 		// Are we doing a nested view/layout explicit combo or already in its rendering algorithm?
 		if (
@@ -612,7 +617,8 @@ component
 			if ( len( cbox_implicitLayout ) GT 4 AND right( cbox_implicitLayout, 4 ) eq ".cfm" ) {
 				cbox_implicitLayout = left( cbox_implicitLayout, len( cbox_implicitLayout ) - 4 );
 			}
-			arguments.layout = cbox_implicitLayout;
+			arguments.layout   = cbox_implicitLayout;
+			cbox_currentLayout = arguments.layout;
 		}
 
 		// module default value
@@ -944,35 +950,31 @@ component
 	/************************************** PRIVATE *********************************************/
 
 	/**
-	 * Checks if implicit views are turned on and if so, calculate view according to event.
+	 * Verifies if we should render the implicit view or not
 	 */
-	private function implicitViewChecks(){
-		var event  = getRequestContext();
-		var layout = event.getCurrentLayout();
-		var cEvent = event.getCurrentEvent();
+	private boolean function shouldRenderImplicitView( required string view ){
+		return variables.controller.getSetting( name = "ImplicitViews" ) && arguments.view.trim() == "";
+	}
 
-		// Is implicit views enabled?
-		if ( not controller.getSetting( name = "ImplicitViews" ) ) {
-			return layout;
+	/**
+	 * Set's the view according to the executed event.
+	 *
+	 * @return Renderer
+	 */
+	private function discoverImplicitViews(){
+		var event = getRequestContext();
+
+		// Get and cleanup the current event to discover the view
+		var cEvent = reReplaceNoCase( event.getCurrentEvent(), "^([^:.]*):", "" );
+
+		// Implicit views
+		if ( variables.controller.getSetting( name = "caseSensitiveImplicitViews", defaultValue = true ) ) {
+			event.setView( replace( cEvent, ".", "/", "all" ) );
+		} else {
+			event.setView( lCase( replace( cEvent, ".", "/", "all" ) ) );
 		}
 
-		// Cleanup for modules
-		cEvent = reReplaceNoCase( cEvent, "^([^:.]*):", "" );
-
-		// Check if no view set?
-		if ( NOT len( event.getCurrentView() ) ) {
-			// Implicit views
-			if ( controller.getSetting( name = "caseSensitiveImplicitViews", defaultValue = true ) ) {
-				event.setView( replace( cEvent, ".", "/", "all" ) );
-			} else {
-				event.setView( lCase( replace( cEvent, ".", "/", "all" ) ) );
-			}
-
-			// reset layout according to newly set views;
-			layout = event.getCurrentLayout();
-		}
-
-		return layout;
+		return this;
 	}
 
 }

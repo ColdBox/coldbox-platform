@@ -846,7 +846,7 @@ component serializable="false" accessors="true" {
 		name
 	){
 		// Do we have an incoming rendering region definition? If we do, store it and return
-		if ( structKeyExists( arguments, "name" ) ) {
+		if ( !isNull( arguments.name ) ) {
 			variables.renderingRegions[ arguments.name ] = arguments;
 			return this;
 		}
@@ -855,42 +855,16 @@ component serializable="false" accessors="true" {
 		variables.privateContext[ "viewModule" ] = arguments.module;
 
 		// Direct Layout Usage
-		if ( structKeyExists( arguments, "layout" ) ) {
+		if ( !isNull( arguments.layout ) && len( arguments.layout ) ) {
 			setLayout( arguments.layout );
 		}
-		// Discover layout
-		else if ( NOT arguments.nolayout AND NOT getPrivateValue( name = "layoutoverride", defaultValue = false ) ) {
-			// Verify that the view has a layout in the viewLayouts structure, static lookups
-			if ( structKeyExists( variables.viewLayouts, lCase( arguments.view ) ) ) {
-				setPrivateValue( "currentLayout", variables.viewLayouts[ lCase( arguments.view ) ] );
-			} else {
-				// Check the folders structure
-				for ( var key in variables.folderLayouts ) {
-					if ( reFindNoCase( "^#key#", lCase( arguments.view ) ) ) {
-						setPrivateValue( "currentLayout", variables.folderLayouts[ key ] );
-						break;
-					}
-				}
-				// end for loop
-			}
-			// end else
-
-			// If not layout, then set default from main application
-			if ( not privateValueExists( "currentLayout", true ) ) {
-				setPrivateValue( "currentLayout", variables.defaultLayout );
-			}
-
-			// If in current module, check for a module default layout\
-			var cModule = getCurrentModule();
-			if (
-				len( cModule )
-				AND structKeyExists( variables.modules, cModule )
-				AND len( variables.modules[ cModule ].layoutSettings.defaultLayout )
-			) {
-				setPrivateValue( "currentLayout", variables.modules[ cModule ].layoutSettings.defaultLayout );
+		// else try to discover it.
+		else if ( NOT arguments.noLayout AND NOT getPrivateValue( name = "layoutoverride", defaultValue = false ) ) {
+			var discoveredLayout = discoverLayout( arguments.view );
+			if ( discoveredLayout.len() ) {
+				setPrivateValue( "currentLayout", discoveredLayout );
 			}
 		}
-		// end layout discover
 
 		// No Layout Rendering?
 		if ( arguments.nolayout ) {
@@ -927,6 +901,46 @@ component serializable="false" accessors="true" {
 		setPrivateValue( "currentViewArgs", arguments.args, true );
 
 		return this;
+	}
+
+	/**
+	 * This function discovers implicitly the layout that accompanies the passed in view
+	 * via the <pre>viewLayouts</pre> setting.
+	 *
+	 * @view The target view to discover the layout for.
+	 *
+	 * @return The layout attached to this view for rendering purposes, if none is discovered an empty string is returned.
+	 */
+	function discoverLayout( required string view ){
+		// Verify that the view has a layout in the viewLayouts
+		if ( structKeyExists( variables.viewLayouts, arguments.view ) ) {
+			return variables.viewLayouts[ arguments.view ];
+		}
+
+		// Check the folders conventions now
+		for ( var key in variables.folderLayouts ) {
+			if ( reFindNoCase( "^#key#", arguments.view ) ) {
+				return variables.folderLayouts[ key ];
+			}
+		}
+
+		// If in current module, check for a module default layout
+		var cModule = getCurrentModule();
+		if (
+			len( cModule )
+			AND structKeyExists( variables.modules, cModule )
+			AND len( variables.modules[ cModule ].layoutSettings.defaultLayout )
+		) {
+			return variables.modules[ cModule ].layoutSettings.defaultLayout;
+		}
+
+		// Fallback to application global layout
+		if ( not privateValueExists( "currentLayout" ) ) {
+			return variables.defaultLayout;
+		}
+
+		// Else, we have no clue what layout, set to empty
+		return "";
 	}
 
 	/**

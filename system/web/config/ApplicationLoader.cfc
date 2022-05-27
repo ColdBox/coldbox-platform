@@ -525,8 +525,8 @@ component accessors="true" {
 			// register views
 			if ( structKeyExists( thisLayout, "views" ) ) {
 				for ( var i = 1; i lte listLen( thislayout.views ); i = i + 1 ) {
-					if ( not structKeyExists( LayoutViewStruct, lCase( listGetAt( thisLayout.views, i ) ) ) ) {
-						LayoutViewStruct[ lCase( listGetAt( thisLayout.views, i ) ) ] = thisLayout.file;
+					if ( not structKeyExists( layoutViewStruct, lCase( listGetAt( thisLayout.views, i ) ) ) ) {
+						layoutViewStruct[ lCase( listGetAt( thisLayout.views, i ) ) ] = thisLayout.file;
 					}
 				}
 			}
@@ -534,16 +534,16 @@ component accessors="true" {
 			// register folders
 			if ( structKeyExists( thisLayout, "folders" ) ) {
 				for ( var i = 1; i lte listLen( thisLayout.folders ); i = i + 1 ) {
-					if ( not structKeyExists( LayoutFolderStruct, lCase( listGetAt( thisLayout.folders, i ) ) ) ) {
-						LayoutFolderStruct[ lCase( listGetAt( thisLayout.folders, i ) ) ] = thisLayout.file;
+					if ( not structKeyExists( layoutFolderStruct, lCase( listGetAt( thisLayout.folders, i ) ) ) ) {
+						layoutFolderStruct[ lCase( listGetAt( thisLayout.folders, i ) ) ] = thisLayout.file;
 					}
 				}
 			}
 		}
 
 		// Register extra layout/view/folder combos
-		configStruct.ViewLayouts   = LayoutViewStruct;
-		configStruct.FolderLayouts = LayoutFolderStruct;
+		configStruct.viewLayouts   = layoutViewStruct;
+		configStruct.folderLayouts = layoutFolderStruct;
 	}
 
 	/**

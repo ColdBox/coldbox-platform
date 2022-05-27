@@ -278,14 +278,14 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 		);
 
 		// Create mock properties
-		rcProps.DefaultLayout     = "";
-		rcProps.DefaultView       = "";
+		rcProps.defaultLayout     = "";
+		rcProps.defaultView       = "";
 		rcProps.isSES             = false;
 		rcProps.sesBaseURL        = "";
 		rcProps.eventName         = "event";
-		rcProps.ViewLayouts       = structNew();
-		rcProps.FolderLayouts     = structNew();
-		rcProps.RegisteredLayouts = structNew();
+		rcProps.viewLayouts       = structNew();
+		rcProps.folderLayouts     = structNew();
+		rcProps.registeredLayouts = structNew();
 		rcProps.modules           = structNew();
 		mockRC.init( properties = rcProps, controller = mockController );
 
