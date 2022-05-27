@@ -176,9 +176,6 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			return;
 		}
 
-		// Enable the routing services for the request
-		arguments.event.setSESEnabled( true );
-
 		// Activate and record the incoming URL for multi-domain hosting ONLY
 		if ( variables.router.getMultiDomainDiscovery() ) {
 			arguments.event.setSESBaseURL( variables.router.composeRoutingUrl() );
