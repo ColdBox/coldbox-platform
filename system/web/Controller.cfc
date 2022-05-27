@@ -372,7 +372,7 @@ component serializable="false" accessors="true" {
 			arguments.statusCode = 302;
 		}
 		// Determine the type of relocation
-		var relocationType  = "EVENT";
+		var relocationType  = "SES";
 		var relocationURL   = "";
 		var eventName       = variables.configSettings[ "EventName" ];
 		var frontController = listLast( CGI.SCRIPT_NAME, "/" );
@@ -380,13 +380,10 @@ component serializable="false" accessors="true" {
 		var routeString     = 0;
 
 		// Determine relocation type
-		if ( oRequestContext.isSES() ) {
-			relocationType = "SES";
-		}
-		if ( structKeyExists( arguments, "URL" ) ) {
+		if ( !isNull( arguments.url ) ) {
 			relocationType = "URL";
 		}
-		if ( structKeyExists( arguments, "URI" ) ) {
+		if ( !isNull( arguments.URI ) ) {
 			relocationType = "URI";
 		}
 
@@ -394,6 +391,7 @@ component serializable="false" accessors="true" {
 		if ( len( trim( arguments.event ) ) eq 0 ) {
 			arguments.event = getSetting( "DefaultEvent" );
 		}
+
 		// Query String Struct to String
 		if ( isStruct( arguments.queryString ) ) {
 			arguments.queryString = arguments.queryString
@@ -403,6 +401,7 @@ component serializable="false" accessors="true" {
 				}, [] )
 				.toList( "&" );
 		}
+
 		// Overriding Front Controller via baseURL argument
 		if ( len( trim( arguments.baseURL ) ) ) {
 			frontController = arguments.baseURL;
@@ -435,7 +434,7 @@ component serializable="false" accessors="true" {
 			}
 
 			// Default event relocations
-			case "SES": {
+			default: {
 				// Convert module into proper entry point
 				if ( listLen( arguments.event, ":" ) > 1 ) {
 					var mConfig = getSetting( "modules" );
@@ -480,18 +479,6 @@ component serializable="false" accessors="true" {
 				relocationURL = relocationURL & routeString;
 
 				break;
-			}
-			default: {
-				// Basic URL Relocation
-				relocationURL = "#frontController#?#eventName#=#arguments.event#";
-				// Check SSL?
-				if ( structKeyExists( arguments, "ssl" ) ) {
-					relocationURL = updateSSL( relocationURL, arguments.ssl );
-				}
-				// Query String?
-				if ( len( trim( arguments.queryString ) ) ) {
-					relocationURL = relocationURL & "&#arguments.queryString#";
-				}
 			}
 		}
 

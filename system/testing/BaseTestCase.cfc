@@ -280,8 +280,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 		// Create mock properties
 		rcProps.defaultLayout     = "";
 		rcProps.defaultView       = "";
-		rcProps.isSES             = false;
-		rcProps.sesBaseURL        = "";
+		rcProps.sesBaseURL        = "http://localhost";
 		rcProps.eventName         = "event";
 		rcProps.viewLayouts       = structNew();
 		rcProps.folderLayouts     = structNew();

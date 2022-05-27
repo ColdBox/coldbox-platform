@@ -767,7 +767,7 @@ component
 		// ID Normalization
 		normalizeID( arguments );
 
-		// create video tag
+		// create audio tag
 		flattenAttributes( arguments, "noBaseURL,src", audio );
 
 		// Add single source
