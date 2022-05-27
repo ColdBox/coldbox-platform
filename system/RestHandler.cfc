@@ -45,9 +45,9 @@ component extends="EventHandler" {
 			arguments.event.getResponse();
 			// prepare argument execution
 			var actionArgs = {
-				event : arguments.event,
-				rc    : arguments.rc,
-				prc   : arguments.prc
+				"event" : arguments.event,
+				"rc"    : arguments.rc,
+				"prc"   : arguments.prc
 			};
 			structAppend( actionArgs, arguments.eventArguments );
 			// Incoming Format Detection
@@ -235,6 +235,9 @@ component extends="EventHandler" {
 			);
 		}
 
+		// Announce exception
+		announce( "onException", { "exception" : arguments.exception } );
+
 		// Setup Response
 		arguments.event
 			.getResponse()
@@ -276,6 +279,9 @@ component extends="EventHandler" {
 				arguments.exception.extendedInfo
 			);
 		}
+
+		// Announce exception
+		announce( "onException", { "exception" : arguments.exception } );
 
 		// Setup Response
 		arguments.event
@@ -372,9 +378,10 @@ component extends="EventHandler" {
 	 *
 	 * It also monitors cbsecurity convention of validator results for setting error messages into the data packet
 	 *
-	 * @event The request context
-	 * @rc    The rc reference
-	 * @prc   The prc reference
+	 * @event     The request context
+	 * @rc        The rc reference
+	 * @prc       The prc reference
+	 * @exception The thrown exception
 	 *
 	 * @return 403
 	 */
@@ -382,8 +389,12 @@ component extends="EventHandler" {
 		event = getRequestContext(),
 		rc    = getRequestCollection(),
 		prc   = getRequestCollection( private = true ),
-		abort = false
+		abort = false,
+		exception
 	){
+		// Announce exception
+		announce( "onException", { "exception" : arguments.exception } );
+
 		// case when the a jwt token was valid, but expired
 		if (
 			!isNull( arguments.prc.cbSecurity_validatorResults ) &&
@@ -412,17 +423,22 @@ component extends="EventHandler" {
 	 *
 	 * It will check for cbsecurity validation results and set the appropriate error messages
 	 *
-	 * @event The request context
-	 * @rc    The rc reference
-	 * @prc   The prc reference
-	 * @abort Hard abort the request if passed, defaults to false
+	 * @event     The request context
+	 * @rc        The rc reference
+	 * @prc       The prc reference
+	 * @abort     Hard abort the request if passed, defaults to false
+	 * @exception The thrown exception
 	 */
 	function onAuthorizationFailure(
 		event = getRequestContext(),
 		rc    = getRequestCollection(),
 		prc   = getRequestCollection( private = true ),
-		abort = false
+		abort = false,
+		exception
 	){
+		// Announce exception
+		announce( "onException", { "exception" : arguments.exception } );
+
 		arguments.event
 			.getResponse()
 			.setError( true )
@@ -494,6 +510,9 @@ component extends="EventHandler" {
 				"httpData"    : getHTTPRequestData( false )
 			}
 		);
+
+		// Announce exception
+		announce( "onException", { "exception" : arguments.exception } );
 
 		// Setup General Error Response
 		arguments.prc.response
