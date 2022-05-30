@@ -121,9 +121,15 @@ component accessors="true" {
 	property name="noOverlaps" type="boolean";
 
 	/**
-	 * Get the ColdBox utility object
+	 * The constraint of when the task can start execution.
 	 */
-	property name="util";
+	property name="startOnDateTime";
+
+	/**
+	 * The constraint of when the task must not continue to execute
+	 */
+	property name="endOnDateTime";
+
 
 	/**
 	 * Constructor
@@ -167,6 +173,8 @@ component accessors="true" {
 		variables.weekdays         = false;
 		variables.lastBusinessDay  = false;
 		variables.noOverlaps       = false;
+		variables.startOn          = "";
+		variables.endOn            = "";
 		// Probable Scheduler or not
 		variables.scheduler        = "";
 		// Prepare execution tracking stats
@@ -1200,9 +1208,33 @@ component accessors="true" {
 	}
 
 	/**
+	 * Set when this task should start execution on. By default it starts automatically.
+	 *
+	 * @date The date when this task should start execution on
+	 * @time The specific time using 24 hour format => HH:mm, defaults to 00:00
+	 */
+	ScheduledTask function startOn( required date, string time = "00:00" ){
+		writeDump( var = dateFormat( date, "yyyy-mm-dd" ), top = 5 );
+		abort;
+		return this;
+	}
+
+	/**
+	 * Set when this task should stop execution on. By default it never ends
+	 *
+	 * @date The date when this task should stop execution on
+	 * @time The specific time using 24 hour format => HH:mm, defaults to 00:00
+	 */
+	ScheduledTask function endOn( required date, string time = "00:00" ){
+		return this;
+	}
+
+	/**
 	 * --------------------------------------------------------------------------
 	 * TimeUnit Methods
 	 * --------------------------------------------------------------------------
+	 * These methods are used to set the time unit of the interval or periods.
+	 * Last one called wins!
 	 */
 
 	/**
@@ -1268,7 +1300,7 @@ component accessors="true" {
 	 *
 	 * @throws InvalidTimeException - If the time is invalid, else it just continues operation
 	 */
-	private function validateTime( required time ){
+	function validateTime( required time ){
 		// Regex check
 		if ( !reFind( "^[0-2][0-9]\:[0-5][0-9]$", arguments.time ) ) {
 			throw(

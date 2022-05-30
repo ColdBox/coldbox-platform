@@ -347,6 +347,15 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 						"Weekend (#mockNow.getDayOfWeek().getvalue()#) should be constrained"
 					);
 				} );
+
+				fit( "can have a startOn constraint", function(){
+					var t = scheduler
+						.task( "test" )
+						.everyDay()
+						.startOn( now() );
+
+					writeDump( var = t, top = 5 );
+				} );
 			} );
 		} );
 	}
