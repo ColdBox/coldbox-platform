@@ -51,10 +51,10 @@ component extends="coldbox.system.cache.store.indexers.MetadataIndexer" accessor
 		variables.sqlType = ( findNoCase( "Microsoft SQL", DBData.database_productName ) ? "MSSQL" : "MySQL" );
 
 		// store jdbc configuration + params
-		param name="arguments.config.dsnUsername" default="";
-		param name="arguments.config.dsnPassword" default="";
-		param name="arguments.config.queryIncludeDsn" default="true";
-		variables.config = arguments.config;
+		param name      ="arguments.config.dsnUsername"     default="";
+		param name      ="arguments.config.dsnPassword"     default="";
+		param name      ="arguments.config.queryIncludeDsn" default="true";
+		variables.config= arguments.config;
 
 		// store storage reference
 		variables.store = arguments.store;

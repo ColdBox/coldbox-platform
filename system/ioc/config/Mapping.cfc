@@ -563,7 +563,7 @@ component accessors="true" {
 					variables.scope = arguments.binder.SCOPES.CACHEBOX;
 				}
 				// check if scope found? If so, then set it to no scope.
-				else if( !len( variables.scope ) ) {
+				else if ( !len( variables.scope ) ) {
 					variables.scope = "noscope";
 				}
 			}
