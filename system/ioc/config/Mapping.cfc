@@ -502,16 +502,16 @@ component accessors="true" {
 
 			// Processing only done for CFC's,rest just mark and return
 			if ( variables.type neq arguments.binder.TYPES.CFC ) {
-				if ( NOT len( variables.scope ) ) {
+				if ( !len( variables.scope ) ) {
 					variables.scope = "noscope";
 				}
-				if ( NOT len( variables.autowire ) ) {
+				if ( !len( variables.autowire ) ) {
 					variables.autowire = true;
 				}
-				if ( NOT len( variables.eagerInit ) ) {
+				if ( !len( variables.eagerInit ) ) {
 					variables.eagerInit = false;
 				}
-				if ( NOT len( variables.threadSafe ) ) {
+				if ( !len( variables.threadSafe ) ) {
 					variables.threadSafe = false;
 				}
 				// finished processing mark as discovered
@@ -545,17 +545,17 @@ component accessors="true" {
 			variables.objectMetadata = md;
 
 			// Process persistence if not set already by configuration as it takes precedence
-			if ( NOT len( variables.scope ) ) {
+			if ( !len( variables.scope ) ) {
 				// Singleton Processing
 				if ( structKeyExists( md, "singleton" ) ) {
 					variables.scope = arguments.binder.SCOPES.SINGLETON;
 				}
 				// Registered Scope Processing
-				else if ( structKeyExists( md, "scope" ) ) {
+				if ( structKeyExists( md, "scope" ) ) {
 					variables.scope = md.scope;
 				}
 				// CacheBox scope processing if cachebox annotation found, or cache annotation found
-				else if (
+				if (
 					structKeyExists( md, "cacheBox" ) OR (
 						structKeyExists( md, "cache" ) AND isBoolean( md.cache ) AND md.cache
 					)
@@ -563,7 +563,7 @@ component accessors="true" {
 					variables.scope = arguments.binder.SCOPES.CACHEBOX;
 				}
 				// check if scope found? If so, then set it to no scope.
-				else {
+				else if ( !len( variables.scope ) ) {
 					variables.scope = "noscope";
 				}
 			}
@@ -572,11 +572,11 @@ component accessors="true" {
 			// Cachebox Persistence Processing
 			if ( variables.scope EQ arguments.binder.SCOPES.CACHEBOX ) {
 				// Check if we already have a key, maybe added via configuration
-				if ( NOT len( variables.cache.key ) ) {
+				if ( !len( variables.cache.key ) ) {
 					variables.cache.key = "wirebox-#variables.name#";
 				}
 				// Check the default provider now to see if set by configuration
-				if ( NOT len( variables.cache.provider ) ) {
+				if ( !len( variables.cache.provider ) ) {
 					// default it first
 					variables.cache.provider = "default";
 					// Now check the annotations for the provider
@@ -585,14 +585,14 @@ component accessors="true" {
 					}
 				}
 				// Check if timeouts set by configuration or discovery
-				if ( NOT len( variables.cache.timeout ) ) {
+				if ( !len( variables.cache.timeout ) ) {
 					// Discovery by annocations
 					if ( structKeyExists( md, "cachetimeout" ) AND isNumeric( md.cacheTimeout ) ) {
 						variables.cache.timeout = md.cacheTimeout;
 					}
 				}
 				// Check if lastAccessTimeout set by configuration or discovery
-				if ( NOT len( variables.cache.lastAccessTimeout ) ) {
+				if ( !len( variables.cache.lastAccessTimeout ) ) {
 					// Discovery by annocations
 					if ( structKeyExists( md, "cacheLastAccessTimeout" ) AND isNumeric( md.cacheLastAccessTimeout ) ) {
 						variables.cache.lastAccessTimeout = md.cacheLastAccessTimeout;
@@ -612,7 +612,7 @@ component accessors="true" {
 			}
 
 			// eagerInit annotation only if not overridden
-			if ( NOT len( variables.eagerInit ) ) {
+			if ( !len( variables.eagerInit ) ) {
 				if ( structKeyExists( md, "eagerInit" ) ) {
 					variables.eagerInit = true;
 				} else {
@@ -622,7 +622,7 @@ component accessors="true" {
 			}
 
 			// threadSafe wiring annotation
-			if ( NOT len( variables.threadSafe ) ) {
+			if ( !len( variables.threadSafe ) ) {
 				if ( structKeyExists( md, "threadSafe" ) AND NOT len( md.threadSafe ) ) {
 					variables.threadSafe = true;
 				} else if ( structKeyExists( md, "threadSafe" ) AND len( md.threadSafe ) AND isBoolean( md.threadSafe ) ) {
@@ -641,7 +641,7 @@ component accessors="true" {
 			}
 
 			// autowire only if not overridden
-			if ( NOT len( variables.autowire ) ) {
+			if ( !len( variables.autowire ) ) {
 				// Check if autowire annotation found or autowire already set
 				if ( structKeyExists( md, "autowire" ) and isBoolean( md.autowire ) ) {
 					variables.autoWire = md.autowire;
