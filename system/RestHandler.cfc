@@ -288,7 +288,9 @@ component extends="EventHandler" {
 			.getResponse()
 			.setError( true )
 			.setData( rc.id ?: "" )
-			.addMessage( "The record you requested cannot be found in this system" )
+			.addMessage(
+				len( exception.message ) ? exception.message : "The record you requested cannot be found in this system"
+			)
 			.setStatusCode( arguments.event.STATUS.NOT_FOUND )
 			.setStatusText( "Not Found" );
 
