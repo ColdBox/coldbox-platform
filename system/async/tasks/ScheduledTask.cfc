@@ -121,9 +121,15 @@ component accessors="true" {
 	property name="noOverlaps" type="boolean";
 
 	/**
-	 * Get the ColdBox utility object
+	 * The constraint of when the task can start execution.
 	 */
-	property name="util";
+	property name="startOnDateTime";
+
+	/**
+	 * The constraint of when the task must not continue to execute
+	 */
+	property name="endOnDateTime";
+
 
 	/**
 	 * Constructor
@@ -167,6 +173,8 @@ component accessors="true" {
 		variables.weekdays         = false;
 		variables.lastBusinessDay  = false;
 		variables.noOverlaps       = false;
+		variables.startOnDateTime  = "";
+		variables.endOnDateTime    = "";
 		// Probable Scheduler or not
 		variables.scheduler        = "";
 		// Prepare execution tracking stats
@@ -371,6 +379,20 @@ component accessors="true" {
 			variables.dayOfTheWeek > 0 &&
 			now.getDayOfWeek().getValue() != variables.dayOfTheWeek
 		) {
+			return true;
+		}
+
+		// Do we have a start on constraint
+		if( len( variables.startOnDateTime ) &&
+			now.isBefore( variables.startOnDateTime )
+		){
+			return true;
+		}
+
+		// Do we have a end on constraint
+		if( len( variables.endOnDateTime ) &&
+			now.isAfter( variables.endOnDateTime )
+		){
 			return true;
 		}
 
@@ -579,7 +601,7 @@ component accessors="true" {
 	 * Calling this method prevents task frequencies to overlap.  By default all tasks are executed with an
 	 * interval but ccould potentially overlap if they take longer to execute than the period.
 	 *
-	 * @period  
+	 * @period
 	 * @timeUnit
 	 */
 	ScheduledTask function withNoOverlaps(){
@@ -1200,9 +1222,33 @@ component accessors="true" {
 	}
 
 	/**
+	 * Set when this task should start execution on. By default it starts automatically.
+	 *
+	 * @date The date when this task should start execution on => yyyy-mm-dd format is preferred.
+	 * @time The specific time using 24 hour format => HH:mm, defaults to 00:00
+	 */
+	ScheduledTask function startOn( required date, string time = "00:00" ){
+		variables.startOnDateTime = variables.chronoUnitHelper.parse( "#dateFormat( arguments.date, "yyyy-mm-dd" )#T#arguments.time#" );
+		return this;
+	}
+
+	/**
+	 * Set when this task should stop execution on. By default it never ends
+	 *
+	 * @date The date when this task should stop execution on => yyyy-mm-dd format is preferred.
+	 * @time The specific time using 24 hour format => HH:mm, defaults to 00:00
+	 */
+	ScheduledTask function endOn( required date, string time = "00:00" ){
+		variables.endOnDateTime = variables.chronoUnitHelper.parse( "#dateFormat( arguments.date, "yyyy-mm-dd" )#T#arguments.time#" );
+		return this;
+	}
+
+	/**
 	 * --------------------------------------------------------------------------
 	 * TimeUnit Methods
 	 * --------------------------------------------------------------------------
+	 * These methods are used to set the time unit of the interval or periods.
+	 * Last one called wins!
 	 */
 
 	/**
@@ -1268,7 +1314,7 @@ component accessors="true" {
 	 *
 	 * @throws InvalidTimeException - If the time is invalid, else it just continues operation
 	 */
-	private function validateTime( required time ){
+	function validateTime( required time ){
 		// Regex check
 		if ( !reFind( "^[0-2][0-9]\:[0-5][0-9]$", arguments.time ) ) {
 			throw(
