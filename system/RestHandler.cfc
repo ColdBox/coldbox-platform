@@ -272,6 +272,10 @@ component extends="EventHandler" {
 	 * @exception      The thrown exception
 	 */
 	function onEntityNotFoundException( event, rc, prc, eventArguments, exception = {} ){
+		// Param Exceptions, just in case
+		param name="arguments.exception.message" default="";
+		param name="arguments.exception.extendedInfo" default="";
+
 		// Log Locally
 		if ( log.canDebug() ) {
 			log.debug(
