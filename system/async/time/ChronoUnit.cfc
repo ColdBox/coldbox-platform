@@ -15,6 +15,8 @@ component singleton {
 
 	// The java chrono unit we model
 	variables.jChronoUnit = createObject( "java", "java.time.temporal.ChronoUnit" );
+	// Java LocalDateTime class
+	variables.jLocalDateTime = createObject( "java", "java.time.LocalDateTime" );
 	// Unit that represents the concept of a century.
 	this.CENTURIES        = variables.jChronoUnit.CENTURIES;
 	// Unit that represents the concept of a day.
@@ -86,7 +88,18 @@ component singleton {
 	}
 
 	/**
-	 * Convert any ColdFUsion date/time or string date/time object to the new Java.time.LocalDate class so we can use them as Temporal objects
+	 * Convert an incoming ISO-8601 formatted string to a Java LocalDateTime object
+	 *
+	 * @target The ISO-8601 formatted string
+	 *
+	 * @return a java LocalDateTime object
+	 */
+	function parse( required target ){
+		return variables.jLocalDateTime.parse( arguments.target );
+	}
+
+	/**
+	 * Convert any ColdFusion date/time or string date/time object to the new Java.time.LocalDate class so we can use them as Temporal objects
 	 *
 	 * @target   The cf date/time or string object representing the date/time
 	 * @timezone If passed, we will use this timezone to build the temporal object. Else we default to UTC

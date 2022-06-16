@@ -382,6 +382,20 @@ component accessors="true" {
 			return true;
 		}
 
+		// Do we have a start on constraint
+		if( len( variables.startOnDateTime ) &&
+			now.isBefore( variables.startOnDateTime )
+		){
+			return true;
+		}
+
+		// Do we have a end on constraint
+		if( len( variables.endOnDateTime ) &&
+			now.isAfter( variables.endOnDateTime )
+		){
+			return true;
+		}
+
 		return false;
 	}
 
@@ -587,7 +601,7 @@ component accessors="true" {
 	 * Calling this method prevents task frequencies to overlap.  By default all tasks are executed with an
 	 * interval but ccould potentially overlap if they take longer to execute than the period.
 	 *
-	 * @period  
+	 * @period
 	 * @timeUnit
 	 */
 	ScheduledTask function withNoOverlaps(){
@@ -1214,7 +1228,7 @@ component accessors="true" {
 	 * @time The specific time using 24 hour format => HH:mm, defaults to 00:00
 	 */
 	ScheduledTask function startOn( required date, string time = "00:00" ){
-		variables.startOnDateTime = dateTimeFormat( "#arguments.date# #arguments.time#", "yyyy-mm-dd HH:nn" );
+		variables.startOnDateTime = variables.chronoUnitHelper.parse( "#dateFormat( arguments.date, "yyyy-mm-dd" )#T#arguments.time#" );
 		return this;
 	}
 
@@ -1225,7 +1239,7 @@ component accessors="true" {
 	 * @time The specific time using 24 hour format => HH:mm, defaults to 00:00
 	 */
 	ScheduledTask function endOn( required date, string time = "00:00" ){
-		variables.endOnDateTime = dateTimeFormat( "#arguments.date# #arguments.time#", "yyyy-mm-dd HH:nn" );
+		variables.endOnDateTime = variables.chronoUnitHelper.parse( "#dateFormat( arguments.date, "yyyy-mm-dd" )#T#arguments.time#" );
 		return this;
 	}
 
