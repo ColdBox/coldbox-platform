@@ -352,7 +352,7 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 					var t = scheduler
 						.task( "test" )
 						.everyDay()
-						.startOn( now() );
+						.startOn( "01/01/2022" );
 
 					writeDump( var = t, top = 5 );
 				} );

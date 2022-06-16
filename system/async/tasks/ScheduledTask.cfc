@@ -173,8 +173,8 @@ component accessors="true" {
 		variables.weekdays         = false;
 		variables.lastBusinessDay  = false;
 		variables.noOverlaps       = false;
-		variables.startOn          = "";
-		variables.endOn            = "";
+		variables.startOnDateTime  = "";
+		variables.endOnDateTime    = "";
 		// Probable Scheduler or not
 		variables.scheduler        = "";
 		// Prepare execution tracking stats
@@ -1210,22 +1210,22 @@ component accessors="true" {
 	/**
 	 * Set when this task should start execution on. By default it starts automatically.
 	 *
-	 * @date The date when this task should start execution on
+	 * @date The date when this task should start execution on => yyyy-mm-dd format is preferred.
 	 * @time The specific time using 24 hour format => HH:mm, defaults to 00:00
 	 */
 	ScheduledTask function startOn( required date, string time = "00:00" ){
-		writeDump( var = dateFormat( date, "yyyy-mm-dd" ), top = 5 );
-		abort;
+		variables.startOnDateTime = dateTimeFormat( "#arguments.date# #arguments.time#", "yyyy-mm-dd HH:nn" );
 		return this;
 	}
 
 	/**
 	 * Set when this task should stop execution on. By default it never ends
 	 *
-	 * @date The date when this task should stop execution on
+	 * @date The date when this task should stop execution on => yyyy-mm-dd format is preferred.
 	 * @time The specific time using 24 hour format => HH:mm, defaults to 00:00
 	 */
 	ScheduledTask function endOn( required date, string time = "00:00" ){
+		variables.endOnDateTime = dateTimeFormat( "#arguments.date# #arguments.time#", "yyyy-mm-dd HH:nn" );
 		return this;
 	}
 
