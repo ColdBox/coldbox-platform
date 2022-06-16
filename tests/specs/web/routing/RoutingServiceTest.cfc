@@ -1,11 +1,13 @@
 ﻿component extends="tests.resources.BaseIntegrationTest" {
 
 	function beforeAll(){
+		super.beforeAll();
 		super.setup();
 		routingService = prepareMock( getController().getRoutingService() );
 	}
 
 	function afterAll(){
+		super.afterAll();
 		shutdownColdBox();
 	}
 
