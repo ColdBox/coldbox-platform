@@ -380,10 +380,10 @@ component serializable="false" accessors="true" {
 		var routeString     = 0;
 
 		// Determine relocation type
-		if ( !isNull( arguments.url ) ) {
+		if ( !isNull( arguments.url ) && len( arguments.url ) ) {
 			relocationType = "URL";
 		}
-		if ( !isNull( arguments.URI ) ) {
+		if ( !isNull( arguments.URI ) && len( arguments.URI ) ) {
 			relocationType = "URI";
 		}
 
@@ -1129,13 +1129,16 @@ component serializable="false" accessors="true" {
 	/**
 	 * Internal helper to flash persist elements
 	 *
+	 * @persist       What request collection keys to persist in flash RAM automatically for you
+	 * @persistStruct A structure of key-value pairs to persist in flash RAM automatically for you
+	 *
 	 * @return Controller
 	 */
 	private function persistVariables( persist = "", struct persistStruct = {} ){
 		var flash = getRequestService().getFlashScope();
 
 		// persist persistStruct if passed
-		if ( structKeyExists( arguments, "persistStruct" ) ) {
+		if ( !isNull( arguments.persistStruct ) ) {
 			flash.putAll( map = arguments.persistStruct, saveNow = true );
 		}
 
