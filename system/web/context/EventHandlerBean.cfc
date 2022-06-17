@@ -107,6 +107,17 @@ component accessors="true" {
 	/************************************** UTILITY METHODS *********************************************/
 
 	/**
+	 * This verifies if a specific action has been tagged with an annotation.
+	 *
+	 * @key The annotation key to verify
+	 *
+	 * @return True if the action has been annotated with the key, else false.
+	 */
+	boolean function actionMetadataExists( required key ){
+		return variables.actionMetadata.keyExists( arguments.key );
+	}
+
+	/**
 	 * Return the full action metadata structure or filter by key and default value if needed
 	 *
 	 * @key          The key to search for in the action metadata

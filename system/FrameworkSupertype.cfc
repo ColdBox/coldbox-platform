@@ -16,7 +16,7 @@ component serializable="false" accessors="true" {
 	/**
 	 * @deprecated
 	 */
-	function getModel(){
+	function getModel() cbMethod{
 		throw(
 			message = "getModel() is now fully deprecated in favor of getInstance().",
 			type    = "DeprecationException"
@@ -43,7 +43,7 @@ component serializable="false" accessors="true" {
 		dsl,
 		targetObject = "",
 		injector
-	){
+	) cbMethod{
 		return variables.controller.getWirebox().getInstance( argumentCollection = arguments );
 	}
 
@@ -81,7 +81,7 @@ component serializable="false" accessors="true" {
 		string jsonstring,
 		string xml,
 		query qry
-	){
+	) cbMethod{
 		// Do we have a model or name
 		if ( isSimpleValue( arguments.model ) ) {
 			arguments.target = getInstance( model );
@@ -125,7 +125,7 @@ component serializable="false" accessors="true" {
 	 *
 	 * @return coldbox.system.web.Renderer
 	 */
-	function getRenderer(){
+	function getRenderer() cbMethod{
 		return variables.controller.getRenderer();
 	}
 
@@ -134,7 +134,7 @@ component serializable="false" accessors="true" {
 	 *
 	 * @return coldbox.system.web.context.RequestContext
 	 */
-	function getRequestContext(){
+	function getRequestContext() cbMethod{
 		return variables.controller.getRequestService().getContext();
 	}
 
@@ -145,7 +145,7 @@ component serializable="false" accessors="true" {
 	 *
 	 * @return The requeted collection
 	 */
-	struct function getRequestCollection( boolean private = false ){
+	struct function getRequestCollection( boolean private = false ) cbMethod{
 		return getRequestContext().getCollection( private = arguments.private );
 	}
 
@@ -187,7 +187,7 @@ component serializable="false" accessors="true" {
 		collectionDelim            = "",
 		boolean prePostExempt      = false,
 		name
-	){
+	) cbMethod{
 		return variables.controller.getRenderer().renderView( argumentCollection = arguments );
 	}
 
@@ -228,7 +228,7 @@ component serializable="false" accessors="true" {
 		collectionDelim            = "",
 		boolean prePostExempt      = false,
 		name
-	){
+	) cbMethod{
 		return variables.controller.getRenderer().renderView( argumentCollection = arguments );
 	}
 
@@ -254,7 +254,7 @@ component serializable="false" accessors="true" {
 		cacheLastAccessTimeout = "",
 		cacheSuffix            = "",
 		cacheProvider          = "template"
-	){
+	) cbMethod{
 		return variables.controller.getRenderer().renderExternalView( argumentCollection = arguments );
 	}
 
@@ -279,7 +279,7 @@ component serializable="false" accessors="true" {
 		cacheLastAccessTimeout = "",
 		cacheSuffix            = "",
 		cacheProvider          = "template"
-	){
+	) cbMethod{
 		return variables.controller.getRenderer().renderExternalView( argumentCollection = arguments );
 	}
 
@@ -303,7 +303,7 @@ component serializable="false" accessors="true" {
 		struct args           = {},
 		viewModule            = "",
 		boolean prePostExempt = false
-	){
+	) cbMethod{
 		return variables.controller.getRenderer().renderLayout( argumentCollection = arguments );
 	}
 
@@ -326,7 +326,7 @@ component serializable="false" accessors="true" {
 		struct args           = {},
 		viewModule            = "",
 		boolean prePostExempt = false
-	){
+	) cbMethod{
 		return variables.controller.getRenderer().renderLayout( argumentCollection = arguments );
 	}
 
@@ -337,7 +337,7 @@ component serializable="false" accessors="true" {
 	 *
 	 * @return Interceptor
 	 */
-	function getInterceptor( required interceptorName ){
+	function getInterceptor( required interceptorName ) cbMethod{
 		return variables.controller.getInterceptorService().getInterceptor( argumentCollection = arguments );
 	}
 
@@ -349,7 +349,7 @@ component serializable="false" accessors="true" {
 	 *
 	 * @return FrameworkSuperType
 	 */
-	function listen( required target, required point ){
+	function listen( required target, required point ) cbMethod{
 		variables.controller.getInterceptorService().listen( argumentCollection = arguments );
 		return this;
 	}
@@ -375,7 +375,7 @@ component serializable="false" accessors="true" {
 		boolean asyncAllJoin     = true,
 		asyncPriority            = "NORMAL",
 		numeric asyncJoinTimeout = 0
-	){
+	) cbMethod{
 		// Backwards Compat: Remove by ColdBox 7
 		if ( !isNull( arguments.interceptData ) ) {
 			arguments.data = arguments.interceptData;
@@ -394,7 +394,7 @@ component serializable="false" accessors="true" {
 		boolean asyncAllJoin     = true,
 		asyncPriority            = "NORMAL",
 		numeric asyncJoinTimeout = 0
-	){
+	) cbMethod{
 		arguments.data = arguments.interceptData;
 		return announce( argumentCollection = arguments );
 	}
@@ -406,7 +406,7 @@ component serializable="false" accessors="true" {
 	 *
 	 * @return coldbox.system.cache.providers.IColdBoxProvider
 	 */
-	function getCache( name = "default" ){
+	function getCache( name = "default" ) cbMethod{
 		return variables.controller.getCache( arguments.name );
 	}
 
@@ -420,7 +420,7 @@ component serializable="false" accessors="true" {
 	 *
 	 * @throws SettingNotFoundException
 	 */
-	function getSetting( required name, defaultValue ){
+	function getSetting( required name, defaultValue ) cbMethod{
 		return variables.controller.getSetting( argumentCollection = arguments );
 	}
 
@@ -434,7 +434,7 @@ component serializable="false" accessors="true" {
 	 *
 	 * @throws SettingNotFoundException
 	 */
-	function getColdBoxSetting( required name, defaultValue ){
+	function getColdBoxSetting( required name, defaultValue ) cbMethod{
 		return variables.controller.getColdBoxSetting( argumentCollection = arguments );
 	}
 
@@ -443,7 +443,7 @@ component serializable="false" accessors="true" {
 	 *
 	 * @name The key of the setting
 	 */
-	boolean function settingExists( required name ){
+	boolean function settingExists( required name ) cbMethod{
 		return variables.controller.settingExists( argumentCollection = arguments );
 	}
 
@@ -455,7 +455,7 @@ component serializable="false" accessors="true" {
 	 *
 	 * @return FrameworkSuperType
 	 */
-	any function setSetting( required name, required value ){
+	any function setSetting( required name, required value ) cbMethod{
 		controller.setSetting( argumentCollection = arguments );
 		return this;
 	}
@@ -469,7 +469,7 @@ component serializable="false" accessors="true" {
 	 *
 	 * @return struct or any
 	 */
-	any function getModuleSettings( required module, setting, defaultValue ){
+	any function getModuleSettings( required module, setting, defaultValue ) cbMethod{
 		var moduleSettings = getModuleConfig( arguments.module ).settings;
 		// return specific setting?
 		if ( !isNull( arguments.setting ) ) {
@@ -489,7 +489,7 @@ component serializable="false" accessors="true" {
 	 *
 	 * @throws InvalidModuleException - The module passed is invalid
 	 */
-	struct function getModuleConfig( required module ){
+	struct function getModuleConfig( required module ) cbMethod{
 		var mConfig = variables.controller.getSetting( "modules" );
 		if ( structKeyExists( mConfig, arguments.module ) ) {
 			return mConfig[ arguments.module ];
@@ -528,7 +528,7 @@ component serializable="false" accessors="true" {
 		baseURL,
 		boolean postProcessExempt,
 		numeric statusCode
-	){
+	) cbMethod{
 		variables.controller.relocate( argumentCollection = arguments );
 	}
 
@@ -559,7 +559,7 @@ component serializable="false" accessors="true" {
 		cacheSuffix            = "",
 		cacheProvider          = "template",
 		boolean prePostExempt  = false
-	){
+	) cbMethod{
 		return variables.controller.runRoute( argumentCollection = arguments );
 	}
 
@@ -590,7 +590,7 @@ component serializable="false" accessors="true" {
 		cacheLastAccessTimeout = "",
 		cacheSuffix            = "",
 		cacheProvider          = "template"
-	){
+	) cbMethod{
 		return variables.controller.runEvent( argumentCollection = arguments );
 	}
 
@@ -602,7 +602,7 @@ component serializable="false" accessors="true" {
 	 *
 	 * @return FrameworkSuperType
 	 */
-	function persistVariables( persist = "", struct persistStruct = {} ){
+	function persistVariables( persist = "", struct persistStruct = {} ) cbMethod{
 		variables.controller.persistVariables( argumentCollection = arguments );
 		return this;
 	}
@@ -615,7 +615,7 @@ component serializable="false" accessors="true" {
 	 * @key          The name of the setting to look up.
 	 * @defaultValue The default value to use if the key does not exist in the system properties or the env
 	 */
-	function getSystemSetting( required key, defaultValue ){
+	function getSystemSetting( required key, defaultValue ) cbMethod{
 		return variables.controller.getUtil().getSystemSetting( argumentCollection = arguments );
 	}
 
@@ -625,7 +625,7 @@ component serializable="false" accessors="true" {
 	 * @key          The name of the setting to look up.
 	 * @defaultValue The default value to use if the key does not exist in the system properties or the env
 	 */
-	function getSystemProperty( required key, defaultValue ){
+	function getSystemProperty( required key, defaultValue ) cbMethod{
 		return variables.controller.getUtil().getSystemProperty( argumentCollection = arguments );
 	}
 
@@ -635,7 +635,7 @@ component serializable="false" accessors="true" {
 	 * @key          The name of the setting to look up.
 	 * @defaultValue The default value to use if the key does not exist in the system properties or the env
 	 */
-	function getEnv( required key, defaultValue ){
+	function getEnv( required key, defaultValue ) cbMethod{
 		return variables.controller.getUtil().getEnv( argumentCollection = arguments );
 	}
 
@@ -644,7 +644,7 @@ component serializable="false" accessors="true" {
 	 *
 	 * @pathToCheck The file path to check
 	 */
-	string function locateFilePath( required pathToCheck ){
+	string function locateFilePath( required pathToCheck ) cbMethod{
 		return variables.controller.locateFilePath( argumentCollection = arguments );
 	}
 
@@ -653,7 +653,7 @@ component serializable="false" accessors="true" {
 	 *
 	 * @pathToCheck The file path to check
 	 */
-	string function locateDirectoryPath( required pathToCheck ){
+	string function locateDirectoryPath( required pathToCheck ) cbMethod{
 		return variables.controller.locateDirectoryPath( argumentCollection = arguments );
 	}
 
@@ -663,7 +663,7 @@ component serializable="false" accessors="true" {
 	 *
 	 * @asset The asset(s) to load, only js or css files. This can also be a comma delimited list.
 	 */
-	string function addAsset( required asset ){
+	string function addAsset( required asset ) cbMethod{
 		return getInstance( "@HTMLHelper" ).addAsset( argumentCollection = arguments );
 	}
 
@@ -676,7 +676,7 @@ component serializable="false" accessors="true" {
 	 *
 	 * @throws UDFLibraryNotFoundException - When the requested library cannot be found
 	 */
-	any function includeUDF( required udflibrary ){
+	any function includeUDF( required udflibrary ) cbMethod{
 		// Init the mixin location and caches reference
 		var defaultCache     = getCache( "default" );
 		var mixinLocationKey = hash( variables.controller.getAppHash() & arguments.udfLibrary );
@@ -732,7 +732,7 @@ component serializable="false" accessors="true" {
 	 *
 	 * @return FrameworkSuperType
 	 */
-	any function loadApplicationHelpers( boolean force = false ){
+	any function loadApplicationHelpers( boolean force = false ) cbMethod{
 		if ( structKeyExists( this, "$super" ) && !arguments.force ) {
 			return this;
 		}
@@ -752,7 +752,7 @@ component serializable="false" accessors="true" {
 	 *
 	 * @return coldbox.system.async.AsyncManager
 	 */
-	any function async(){
+	any function async() cbMethod{
 		if ( isNull( variables.asyncManager ) ) {
 			variables.asyncManager = variables.controller.getWireBox().getInstance( "asyncManager@coldbox" );
 		}
@@ -772,7 +772,7 @@ component serializable="false" accessors="true" {
 		required boolean target,
 		required success,
 		failure
-	){
+	) cbMethod{
 		if ( arguments.target ) {
 			arguments.success();
 		} else if ( !isNull( arguments.failure ) ) {
@@ -786,7 +786,7 @@ component serializable="false" accessors="true" {
 	 *
 	 * @data The simple or complex data to bind to an HTML Attribute
 	 */
-	function forAttribute( required data ){
+	function forAttribute( required data ) cbMethod{
 		arguments.data = ( isSimpleValue( arguments.data ) ? arguments.data : serializeJSON( arguments.data ) );
 		return encodeForHTMLAttribute( arguments.data );
 	}

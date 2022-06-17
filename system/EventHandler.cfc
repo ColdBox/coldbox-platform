@@ -46,7 +46,7 @@ component
 	 *
 	 * @return EventHandler
 	 */
-	function init( required controller ){
+	function init( required controller ) cbMethod{
 		// Register Controller
 		variables.controller = arguments.controller;
 		// Register LogBox
@@ -70,7 +70,7 @@ component
 	 *
 	 * @action The action to verify that it exists and it is a function
 	 */
-	boolean function _actionExists( required action ){
+	boolean function _actionExists( required action ) cbMethod{
 		return (
 			( structKeyExists( this, arguments.action ) AND isCustomFunction( this[ arguments.action ] ) )
 			OR
@@ -87,7 +87,7 @@ component
 	 *
 	 * @action The action to get the metadata from
 	 */
-	struct function _actionMetadata( required action ){
+	struct function _actionMetadata( required action ) cbMethod{
 		return getMetadata( variables[ arguments.action ] );
 	}
 
@@ -97,7 +97,7 @@ component
 	 * @method        The method to execute
 	 * @argCollection The arguments to execute the method with.
 	 */
-	any function _privateInvoker( required method, required argCollection ){
+	any function _privateInvoker( required method, required argCollection ) cbMethod{
 		var _targetAction  = variables[ arguments.method ];
 		var _targetResults = _targetAction( argumentCollection = arguments.argCollection );
 		if ( !isNull( local._targetResults ) ) {

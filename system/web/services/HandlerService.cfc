@@ -141,7 +141,17 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		var oEventURLFacade = variables.templateCache.getEventURLFacade();
 
 		// Create Runnable Object via WireBox
-		var oEventHandler = newHandler( arguments.ehBean.getRunnable() );
+		var oEventHandler       = newHandler( arguments.ehBean.getRunnable() );
+		// Process An Invalid Event
+		var processInvalidEvent = function(){
+			// The handler exists but the action requested does not, let's go into invalid execution mode
+			var targetInvalidEvent = invalidEvent( ehBean.getFullEvent(), ehBean );
+			// If we get here, then the invalid event kicked in and exists, else an exception is thrown above
+			// set the invalid event handler as the current event
+			oRequestContext.overrideEvent( targetInvalidEvent );
+			// Go retrieve the handler that will handle the invalid event so it can execute.
+			return getHandler( getHandlerBean( targetInvalidEvent ), oRequestContext );
+		};
 
 		/* ::::::::::::::::::::::::::::::::::::::::: EVENT METHOD TESTING :::::::::::::::::::::::::::::::::::::::::::: */
 
@@ -162,15 +172,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			) {
 				return oEventHandler;
 			}
-
-			// The handler exists but the action requested does not, let's go into invalid execution mode
-			var targetInvalidEvent = invalidEvent( arguments.ehBean.getFullEvent(), arguments.ehBean );
-
-			// If we get here, then the invalid event kicked in and exists, else an exception is thrown above
-			// set the invalid event handler as the current event
-			oRequestContext.overrideEvent( targetInvalidEvent );
-			// Go retrieve the handler that will handle the invalid event so it can execute.
-			return getHandler( getHandlerBean( targetInvalidEvent ), oRequestContext );
+			// Invalid Event processing
+			return processInvalidEvent();
 		}
 		// method check finalized.
 
@@ -179,6 +182,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			arguments.ehBean
 				.setActionMetadata( oEventHandler._actionMetadata( arguments.ehBean.getMethod() ) )
 				.setHandlerMetadata( getMetadata( oEventHandler ) );
+		}
+
+		// Are they trying to execute an internal ColdBox method?
+		if ( arguments.ehBean.actionMetadataExists( "cbMethod" ) ) {
+			// Invalid Event processing
+			return processInvalidEvent();
 		}
 
 		/* ::::::::::::::::::::::::::::::::::::::::: EVENT CACHING :::::::::::::::::::::::::::::::::::::::::::: */
