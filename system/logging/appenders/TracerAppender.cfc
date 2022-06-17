@@ -41,7 +41,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 		if ( hasCustomLayout() ) {
 			entry = getCustomLayout().format( loge );
 		} else {
-			entry = "#loge.getMessage()# ExtraInfo: #loge.getextraInfoAsString()#";
+			entry = "#loge.getMessage()# | ExtraInfo: #loge.getextraInfoAsString()#";
 		}
 
 		// Severity by cftrace

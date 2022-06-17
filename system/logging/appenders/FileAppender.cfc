@@ -103,7 +103,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 		} else {
 			// Cleanup main message
 			if ( len( loge.getExtraInfoAsString() ) ) {
-				message = message & " " & loge.getExtraInfoAsString();
+				message = message & " | ExtraInfo:" & loge.getExtraInfoAsString();
 			}
 			message = replace( message, """", """""", "all" );
 			message = replace( message, "#chr( 13 )##chr( 10 )#", "  ", "all" );

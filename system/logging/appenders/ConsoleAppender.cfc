@@ -48,7 +48,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 		} else {
 			// Cleanup main message
 			if ( len( loge.getExtraInfoAsString() ) ) {
-				message &= " ExtraInfo: " & loge.getExtraInfoAsString();
+				message &= " | ExtraInfo: " & loge.getExtraInfoAsString();
 			}
 
 			// Entry string
