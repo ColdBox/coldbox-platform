@@ -64,7 +64,7 @@ component accessors="true" {
 	property name="scheduler";
 
 	/**
-	 * The collection of stats for the task: { created, lastRun, nextRun, totalRuns, totalFailures, totalSuccess, lastResult, neverRun, lastExecutionTime }
+	 * The collection of stats for the task: { created, lastRun, totalRuns, totalFailures, totalSuccess, lastResult, neverRun, lastExecutionTime }
 	 */
 	property name="stats" type="struct";
 
@@ -185,8 +185,6 @@ component accessors="true" {
 			"created"           : now(),
 			// The last execution run timestamp
 			"lastRun"           : "",
-			// When's the next execution
-			"nextRun"           : "",
 			// Total runs
 			"totalRuns"         : 0,
 			// Total faiulres
@@ -383,16 +381,18 @@ component accessors="true" {
 		}
 
 		// Do we have a start on constraint
-		if( len( variables.startOnDateTime ) &&
+		if (
+			len( variables.startOnDateTime ) &&
 			now.isBefore( variables.startOnDateTime )
-		){
+		) {
 			return true;
 		}
 
 		// Do we have a end on constraint
-		if( len( variables.endOnDateTime ) &&
+		if (
+			len( variables.endOnDateTime ) &&
 			now.isAfter( variables.endOnDateTime )
-		){
+		) {
 			return true;
 		}
 
@@ -601,7 +601,7 @@ component accessors="true" {
 	 * Calling this method prevents task frequencies to overlap.  By default all tasks are executed with an
 	 * interval but ccould potentially overlap if they take longer to execute than the period.
 	 *
-	 * @period
+	 * @period  
 	 * @timeUnit
 	 */
 	ScheduledTask function withNoOverlaps(){
