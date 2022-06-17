@@ -265,6 +265,11 @@ component serializable="false" accessors="true" {
 					event.setHTTPHeader( name = key, value = value );
 				} );
 
+				// Cached Status Code
+				if ( isNumeric( local.refResults.eventCaching.statusCode ) ) {
+					event.setHTTPHeader( statusCode = local.refResults.eventCaching.statusCode );
+				}
+
 				// Render Content as binary or just output
 				if ( local.refResults.eventCaching.isBinary ) {
 					cbController
@@ -342,49 +347,32 @@ component serializable="false" accessors="true" {
 							)
 						)
 					) {
-						lock
-							type                  ="exclusive"
-							name                  ="#variables.appHash#.caching.#eCacheEntry.cacheKey#"
-							timeout               ="#variables.lockTimeout#"
-							throwontimeout        ="true" {
-							// Try to discover the content type
-							var defaultContentType= "text/html";
-							// Discover from event caching first.
-							if ( !structIsEmpty( renderData ) ) {
-								defaultContentType = renderData.contentType;
-							} else {
-								// Else, ask the engine
-								defaultContentType = getPageContextResponse().getContentType();
-							}
+						// prepare storage entry
+						var cacheEntry = {
+							renderedContent : renderedContent,
+							renderData      : !renderData.isEmpty(),
+							contentType     : !isNull( renderData.contentType ) ? renderData.contentType : getPageContextResponse().getContentType(),
+							encoding        : "UTF-8",
+							statusCode      : getPageContextResponse().getStatus(),
+							statusText      : "",
+							isBinary        : false,
+							responseHeaders : event.getResponseHeaders()
+						};
 
-							// prepare storage entry
-							var cacheEntry = {
-								renderedContent : renderedContent,
-								renderData      : false,
-								contentType     : defaultContentType,
-								encoding        : "",
-								statusCode      : "",
-								statusText      : "",
-								isBinary        : false,
-								responseHeaders : event.getResponseHeaders()
-							};
-
-							// is this a render data entry? If So, append data
-							if ( !structIsEmpty( renderData ) ) {
-								cacheEntry.renderData = true;
-								structAppend( cacheEntry, renderData, true );
-							}
-
-							// Cache it
-							cacheBox
-								.getCache( eCacheEntry.provider )
-								.set(
-									eCacheEntry.cacheKey,
-									cacheEntry,
-									eCacheEntry.timeout,
-									eCacheEntry.lastAccessTimeout
-								);
+						// is this a render data entry? If So, append data
+						if ( !renderData.isEmpty() ) {
+							structAppend( cacheEntry, renderData, true );
 						}
+
+						// Cache it
+						cacheBox
+							.getCache( eCacheEntry.provider )
+							.set(
+								eCacheEntry.cacheKey,
+								cacheEntry,
+								eCacheEntry.timeout,
+								eCacheEntry.lastAccessTimeout
+							);
 					}
 					// end event caching
 
