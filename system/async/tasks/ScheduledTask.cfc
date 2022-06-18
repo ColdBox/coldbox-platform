@@ -470,10 +470,15 @@ component accessors="true" {
 		} catch ( any e ) {
 			// store failures
 			variables.stats.totalFailures = variables.stats.totalFailures + 1;
-			// Life Cycle
+			// Log it, so it doesn't go to ether
+			err( "Error running task (#getname()#) : #e.message & e.detail#" );
+			err( "Stacktrace for task (#getname()#) : #e.stackTrace#" );
+
+			// Life Cycle onTaskFailure call
 			if ( isClosure( variables.onTaskFailure ) || isCustomFunction( variables.onTaskFailure ) ) {
 				variables.onTaskFailure( this, e );
 			}
+			// If we have a scheduler attached, called the schedulers life-cycle
 			if ( hasScheduler() ) {
 				getScheduler().onAnyTaskError( this, e );
 			}
