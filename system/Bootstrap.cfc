@@ -161,7 +161,7 @@ component serializable="false" accessors="true" {
 							// process preReinit interceptors
 							application[ appKey ].getInterceptorService().announce( "preReinit" );
 							// Shutdown the application services
-							application[ appKey ].getLoaderService().processShutdown();
+							application[ appKey ].getLoaderService().processShutdown( force = true );
 						}
 						// Reload ColdBox
 						loadColdBox();

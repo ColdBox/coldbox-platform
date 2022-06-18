@@ -25,7 +25,7 @@ component {
 			.call( function(){
 				runEvent( "main.process" );
 			})
-			.every( 5, 'seconds' )
+			.every( 20, 'seconds' )
 			.delay( variables.delay, "seconds" )
 			.withNoOverlaps()
 			.onFailure( function( task, exception ){

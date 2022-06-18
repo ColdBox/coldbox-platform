@@ -90,10 +90,12 @@ component accessors="true" {
 	/**
 	 * Shuts down a virtual ColdBox application.
 	 * It expects the <pre>cbController</pre> to be the app by convention.
+	 *
+	 * @force If true, it forces all shutdowns this is usually true when doing reinits. Defaults to true for testing.
 	 */
-	function shutdown(){
+	function shutdown( boolean force = true ){
 		if ( !isNull( application.cbController ) ) {
-			application.cbController.getLoaderService().processShutdown();
+			application.cbController.getLoaderService().processShutdown( force = arguments.force );
 		}
 		structDelete( application, "cbController" );
 		structDelete( application, "wirebox" );

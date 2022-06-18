@@ -153,8 +153,6 @@ component accessors="true" {
 		// time unit helper
 		variables.chronoUnitHelper = new coldbox.system.async.time.ChronoUnit();
 		variables.timeUnitHelper   = new coldbox.system.async.time.TimeUnit();
-		// System Helper
-		variables.System           = createObject( "java", "java.lang.System" );
 		// Init Properties
 		variables.task             = arguments.task;
 		variables.method           = arguments.method;
@@ -218,12 +216,31 @@ component accessors="true" {
 	 */
 
 	/**
+	 * Call this method periodically in a long-running task to check to see if the thread has been interrupted.
+	 *
+	 * @throws UserInterruptException - When the thread has been interrupted
+	 */
+	function checkInterrupted(){
+		var thisThread = createObject( "java", "java.lang.Thread" ).currentThread();
+		// Has the user/system tried to interrupt this thread?
+		if ( thisThread.isInterrupted() ) {
+			// This clears the interrupted status. i.e., "yeah, yeah, I'm on it!"
+			thisThread.interrupted();
+			throw(
+				"UserInterruptException",
+				"UserInterruptException",
+				""
+			);
+		}
+	}
+
+	/**
 	 * Utility to send to output to the output stream
 	 *
 	 * @var Variable/Message to send
 	 */
 	ScheduledTask function out( required var ){
-		variables.System.out.println( arguments.var.toString() );
+		variables.executor.out( arguments.var.toString() );
 		return this;
 	}
 
@@ -233,7 +250,7 @@ component accessors="true" {
 	 * @var Variable/Message to send
 	 */
 	ScheduledTask function err( required var ){
-		variables.System.err.println( arguments.var.toString() );
+		variables.executor.err( arguments.var.toString() );
 		return this;
 	}
 

@@ -206,8 +206,8 @@ component accessors="true" singleton {
 	Scheduler function shutdown(){
 		// callback
 		this.onShutdown();
-		// shutdown executor
-		variables.executor.shutdownNow();
+		// shutdown executor and await termination
+		variables.executor.shutdownAndAwaitTermination();
 		// Remove executor
 		variables.asyncManager.deleteExecutor( variables.name & "-scheduler" );
 		// Mark it
