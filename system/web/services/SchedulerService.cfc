@@ -45,11 +45,13 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 	/**
 	 * Process a ColdBox service shutdown
+	 *
+	 * @force If true, it forces all shutdowns this is usually true when doing reinits
 	 */
-	function onShutdown(){
+	function onShutdown( boolean force = false ){
 		variables.schedulers.each( function( name, thisScheduler ){
 			variables.log.info( "† Shutting down Scheduler (#arguments.name#)..." );
-			arguments.thisScheduler.shutdown();
+			arguments.thisScheduler.shutdown( arguments.force );
 		} );
 	}
 
