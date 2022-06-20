@@ -249,7 +249,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// Process services reinit
 		structEach( variables.controller.getServices(), function( key, thisService ){
 			variables.log.info( "† Shutting down ColdBox #arguments.key# service..." );
-			thisService.onShutdown( force = arguments.force );
+			thisService.onShutdown( force = force );
 		} );
 
 		// Shutdown any services like cache engine, etc.
