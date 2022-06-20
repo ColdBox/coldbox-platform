@@ -4,6 +4,12 @@ component {
 
 	function configure(){
 
+		xtask( "Disabled Task" )
+			.call ( function(){
+				writeDump( var="Disabled", output="console" );
+			})
+			.every( 1, "second" );
+
 		task( "Scope Test" )
 			.call( function(){
 				writeDump( var="****************************************************************************", output="console" );

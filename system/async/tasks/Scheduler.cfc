@@ -94,6 +94,16 @@ component accessors="true" singleton {
 	}
 
 	/**
+	 * Register a new task in this scheduler but disable it immediately.  This is useful
+	 * when debugging tasks and have the easy ability to disable them.
+	 *
+	 * @return The registered and disabled Scheduled Task
+	 */
+	ScheduledTask function xtask( required name ){
+		return task( argumentCollection = arguments ).disable();
+	}
+
+	/**
 	 * Register a new task in this scheduler that will be executed once the `startup()` is fired or manually
 	 * via the run() method of the task.
 	 *
