@@ -413,7 +413,7 @@ component serializable="false" accessors="true" {
 			case "URL": {
 				relocationURL = arguments.URL;
 				// Check SSL?
-				if ( structKeyExists( arguments, "ssl" ) ) {
+				if ( !isNull( arguments.ssl ) ) {
 					relocationURL = updateSSL( relocationURL, arguments.ssl );
 				}
 				// Query String?
@@ -471,7 +471,7 @@ component serializable="false" accessors="true" {
 					relocationURL = relocationURL & "/";
 				}
 				// Check SSL?
-				if ( structKeyExists( arguments, "ssl" ) ) {
+				if ( !isNull( arguments.ssl ) ) {
 					relocationURL = updateSSL( relocationURL, arguments.ssl );
 				}
 

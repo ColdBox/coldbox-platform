@@ -32,7 +32,7 @@ component extends="coldbox.system.web.ControllerDecorator" {
 		boolean postProcessExempt = false,
 		URL,
 		URI,
-		numeric statusCode = 0
+		numeric statusCode = 302
 	){
 		var rc = getRequestService().getContext().getCollection();
 
@@ -44,7 +44,7 @@ component extends="coldbox.system.web.ControllerDecorator" {
 		}
 
 		// Post Process
-		if ( arguments.postProcessExempt ) {
+		if ( !isNull( arguments.postProcessExempt) && arguments.postProcessExempt ) {
 			getInterceptorService().announce( "postProcess" );
 		}
 
