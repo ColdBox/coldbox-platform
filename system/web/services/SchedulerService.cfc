@@ -51,7 +51,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	function onShutdown( boolean force = false ){
 		variables.schedulers.each( function( name, thisScheduler ){
 			variables.log.info( "† Shutting down Scheduler (#arguments.name#)..." );
-			arguments.thisScheduler.shutdown( arguments.force );
+			arguments.thisScheduler.shutdown( force );
 		} );
 	}
 
