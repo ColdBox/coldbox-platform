@@ -482,6 +482,13 @@ component accessors="true" {
 			if ( hasScheduler() ) {
 				getScheduler().onAnyTaskError( this, e );
 			}
+			// After Tasks Interceptor with the exception as the last result
+			if ( isClosure( variables.afterTask ) || isCustomFunction( variables.afterTask ) ) {
+				variables.afterTask( this, e );
+			}
+			if ( hasScheduler() ) {
+				getScheduler().afterAnyTask( this, e );
+			}
 		} finally {
 			// Store finalization stats
 			variables.stats.lastRun           = now();
