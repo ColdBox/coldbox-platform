@@ -474,20 +474,27 @@ component accessors="true" {
 			err( "Error running task (#getname()#) : #e.message & e.detail#" );
 			err( "Stacktrace for task (#getname()#) : #e.stackTrace#" );
 
-			// Life Cycle onTaskFailure call
-			if ( isClosure( variables.onTaskFailure ) || isCustomFunction( variables.onTaskFailure ) ) {
-				variables.onTaskFailure( this, e );
-			}
-			// If we have a scheduler attached, called the schedulers life-cycle
-			if ( hasScheduler() ) {
-				getScheduler().onAnyTaskError( this, e );
-			}
-			// After Tasks Interceptor with the exception as the last result
-			if ( isClosure( variables.afterTask ) || isCustomFunction( variables.afterTask ) ) {
-				variables.afterTask( this, e );
-			}
-			if ( hasScheduler() ) {
-				getScheduler().afterAnyTask( this, e );
+			// Try to execute the error handlers. Try try try just in case.
+			try {
+				// Life Cycle onTaskFailure call
+				if ( isClosure( variables.onTaskFailure ) || isCustomFunction( variables.onTaskFailure ) ) {
+					variables.onTaskFailure( this, e );
+				}
+				// If we have a scheduler attached, called the schedulers life-cycle
+				if ( hasScheduler() ) {
+					getScheduler().onAnyTaskError( this, e );
+				}
+				// After Tasks Interceptor with the exception as the last result
+				if ( isClosure( variables.afterTask ) || isCustomFunction( variables.afterTask ) ) {
+					variables.afterTask( this, e );
+				}
+				if ( hasScheduler() ) {
+					getScheduler().afterAnyTask( this, e );
+				}
+			} catch ( any afterException ) {
+				// Log it, so it doesn't go to ether and executor doesn't die.
+				err( "Error running task (#getname()#) after/error handlers : #afterException.message & afterException.detail#" );
+				err( "Stacktrace for task (#getname()#) after/error handlers : #afterException.stackTrace#" );
 			}
 		} finally {
 			// Store finalization stats
