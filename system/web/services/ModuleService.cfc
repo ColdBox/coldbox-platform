@@ -718,8 +718,9 @@ component extends="coldbox.system.web.services.BaseService" {
 				mConfig.scheduler = variables.controller
 					.getSchedulerService()
 					.loadScheduler(
-						name: "cbScheduler@#arguments.moduleName#",
-						path: mConfig.schedulerInvocationPath
+						name  : "cbScheduler@#arguments.moduleName#",
+						path  : mConfig.schedulerInvocationPath,
+						module: arguments.moduleName
 					);
 			}
 

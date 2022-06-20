@@ -21,7 +21,7 @@
     "JVM":{
         "heapSize":"1024"
     },
-	"cfconfig": {
-		"file" : ".cfconfig.json"
-	}
+    "cfconfig":{
+        "file":".cfconfig.json"
+    }
 }

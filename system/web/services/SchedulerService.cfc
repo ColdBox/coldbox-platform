@@ -86,12 +86,17 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * Load a scheduler cfc by path and name, usually this is called from module services or ways to register
 	 * a-la-carte schedulers
 	 *
-	 * @name The name to register the scheduler with
-	 * @path The path to instantiate the scheduler cfc
+	 * @name   The name to register the scheduler with
+	 * @path   The path to instantiate the scheduler cfc
+	 * @module The name of the ColdBox module that requested the registration (empty if it's a global scheduler)
 	 *
 	 * @return The created, configured, registered, and activated scheduler
 	 */
-	function loadScheduler( required name, required path ){
+	function loadScheduler(
+		required name,
+		required path,
+		string module = ""
+	){
 		// Log it
 		variables.log.info( "Loading ColdBox Task Scheduler (#arguments.name#) at => #arguments.path#..." );
 		// Process as a Scheduler.cfc with virtual inheritance
@@ -101,14 +106,38 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			.setThreadSafe( true )
 			.setScope( variables.wirebox.getBinder().SCOPES.SINGLETON )
 			.addDIConstructorArgument( name = "name", value = arguments.name );
+
 		// Create, register, configure it and start it up baby!
 		var oScheduler = registerScheduler(
 			variables.wirebox.getInstance( arguments.name, { name : arguments.name } ).setName( arguments.name )
 		);
+
 		// Register the Scheduler as an Interceptor as well.
 		variables.controller.getInterceptorService().registerInterceptor( interceptorObject = oScheduler );
+
+		// Inject useful global properties
+		var oUtil = variables.controller.getUtil();
+		oScheduler
+			.injectPropertyMixin( "coldboxVersion", variables.controller.getColdBoxSettings().version )
+			.injectPropertyMixin( "appMapping", variables.controller.getSetting( "appMapping" ) )
+			.injectPropertyMixin( "getJavaSystem", oUtil.getJavaSystem )
+			.injectPropertyMixin( "getSystemSetting", oUtil.getSystemSetting )
+			.injectPropertyMixin( "getSystemProperty", oUtil.getSystemProperty )
+			.injectPropertyMixin( "getEnv", oUtil.getEnv );
+
+		// Is this a module scheduler?
+		if ( len( arguments.module ) ) {
+			var moduleConfig = variables.controller.getConfigSettings().modules[ arguments.module ];
+			// Inject useful module data
+			oScheduler
+				.injectPropertyMixin( "moduleMapping", moduleConfig.mapping )
+				.injectPropertyMixin( "modulePath", moduleConfig.path )
+				.injectPropertyMixin( "moduleSettings", moduleConfig.settings );
+		}
+
 		// Configure it
 		oScheduler.configure();
+
 		// Return it
 		return oScheduler;
 	}
