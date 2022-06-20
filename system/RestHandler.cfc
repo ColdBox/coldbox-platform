@@ -363,7 +363,7 @@ component extends="EventHandler" {
 			.getResponse()
 			.setError( true )
 			.addMessage( "Action '#arguments.missingAction#' could not be found" )
-			.setStatusCode( arguments.event.STATUS.NOT_ALLOWED )
+			.setStatusCode( arguments.event.STATUS.NOT_FOUND )
 			.setStatusText( "Invalid Action" );
 
 		// Render Error Out
