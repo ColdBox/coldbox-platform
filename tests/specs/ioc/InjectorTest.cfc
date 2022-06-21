@@ -74,11 +74,7 @@
 		assert( len( injector.getVersion() ) );
 	}
 	function testGetInjectorID(){
-		// debug( injector.getInjectorID() );
-		assertEquals(
-			createObject( "java", "java.lang.System" ).identityHashCode( injector ),
-			injector.getInjectorID()
-		);
+		expect( injector.getInjectorID() ).notToBeEmpty();
 	}
 
 	function testRegisterListeners(){

@@ -28,7 +28,6 @@ component accessors="true" {
 	 */
 	function init( required injector ){
 		variables.injector = arguments.injector;
-		variables.log      = arguments.injector.getLogBox().getLogger( this );
 		return this;
 	}
 

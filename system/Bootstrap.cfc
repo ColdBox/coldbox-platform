@@ -161,7 +161,7 @@ component serializable="false" accessors="true" {
 							// process preReinit interceptors
 							application[ appKey ].getInterceptorService().announce( "preReinit" );
 							// Shutdown the application services
-							application[ appKey ].getLoaderService().processShutdown();
+							application[ appKey ].getLoaderService().processShutdown( force = true );
 						}
 						// Reload ColdBox
 						loadColdBox();
@@ -250,39 +250,44 @@ component serializable="false" accessors="true" {
 			}
 
 			// Verify if cached content existed.
-			if ( !isNull( refresults.eventCaching ) ) {
+			if ( !isNull( local.refresults.eventCaching ) ) {
 				// check renderdata
-				if ( refResults.eventCaching.renderData ) {
-					refResults.eventCaching.controller = cbController;
-					renderDataSetup( argumentCollection = refResults.eventCaching );
+				if ( local.refResults.eventCaching.renderData ) {
+					local.refResults.eventCaching.controller = cbController;
+					renderDataSetup( argumentCollection = local.refResults.eventCaching );
 				}
 
 				// Caching Header Identifier
 				getPageContextResponse().setHeader( "x-coldbox-cache-response", "true" );
 
 				// Response Headers that were cached
-				refResults.eventCaching.responseHeaders.each( function( key, value ){
+				local.refResults.eventCaching.responseHeaders.each( function( key, value ){
 					event.setHTTPHeader( name = key, value = value );
 				} );
 
+				// Cached Status Code
+				if ( isNumeric( local.refResults.eventCaching.statusCode ) ) {
+					event.setHTTPHeader( statusCode = local.refResults.eventCaching.statusCode );
+				}
+
 				// Render Content as binary or just output
-				if ( refResults.eventCaching.isBinary ) {
+				if ( local.refResults.eventCaching.isBinary ) {
 					cbController
 						.getDataMarshaller()
 						.renderContent(
-							type     = "#refResults.eventCaching.contentType#",
-							variable = "#refResults.eventCaching.renderedContent#"
+							type     = "#local.refResults.eventCaching.contentType#",
+							variable = "#local.refResults.eventCaching.renderedContent#"
 						);
 				} else {
 					cbController
 						.getDataMarshaller()
-						.renderContent( type = "#refResults.eventCaching.contentType#", reset = true );
-					writeOutput( refResults.eventCaching.renderedContent );
+						.renderContent( type = "#local.refResults.eventCaching.contentType#", reset = true );
+					writeOutput( local.refResults.eventCaching.renderedContent );
 				}
 			} else {
 				// ****** EXECUTE MAIN EVENT *******/
 				if ( NOT event.getIsNoExecution() ) {
-					refResults.results = cbController.runEvent( defaultEvent = true );
+					local.refResults.results = cbController.runEvent( defaultEvent = true );
 				}
 				// ****** RENDERING PROCEDURES *******/
 				if ( not event.isNoRender() ) {
@@ -301,14 +306,14 @@ component serializable="false" accessors="true" {
 							.marshallData( argumentCollection = renderData );
 					}
 					// Check if handler returned results
-					else if ( !isNull( refResults.results ) ) {
+					else if ( !isNull( local.refResults.results ) ) {
 						// If simple, just return it back, evaluates to HTML
-						if ( isSimpleValue( refResults.results ) ) {
-							renderedContent = refResults.results;
+						if ( isSimpleValue( local.refResults.results ) ) {
+							renderedContent = local.refResults.results;
 						}
 						// ColdBox does native JSON if you return a complex object.
 						else {
-							renderedContent = serializeJSON( refResults.results, true );
+							renderedContent = serializeJSON( local.refResults.results, true );
 							getPageContextResponse().setContentType( "application/json" );
 						}
 					}
@@ -342,49 +347,32 @@ component serializable="false" accessors="true" {
 							)
 						)
 					) {
-						lock
-							type                  ="exclusive"
-							name                  ="#variables.appHash#.caching.#eCacheEntry.cacheKey#"
-							timeout               ="#variables.lockTimeout#"
-							throwontimeout        ="true" {
-							// Try to discover the content type
-							var defaultContentType= "text/html";
-							// Discover from event caching first.
-							if ( !structIsEmpty( renderData ) ) {
-								defaultContentType = renderData.contentType;
-							} else {
-								// Else, ask the engine
-								defaultContentType = getPageContextResponse().getContentType();
-							}
+						// prepare storage entry
+						var cacheEntry = {
+							renderedContent : renderedContent,
+							renderData      : !renderData.isEmpty(),
+							contentType     : !isNull( renderData.contentType ) ? renderData.contentType : getPageContextResponse().getContentType(),
+							encoding        : "UTF-8",
+							statusCode      : getPageContextResponse().getStatus(),
+							statusText      : "",
+							isBinary        : false,
+							responseHeaders : event.getResponseHeaders()
+						};
 
-							// prepare storage entry
-							var cacheEntry = {
-								renderedContent : renderedContent,
-								renderData      : false,
-								contentType     : defaultContentType,
-								encoding        : "",
-								statusCode      : "",
-								statusText      : "",
-								isBinary        : false,
-								responseHeaders : event.getResponseHeaders()
-							};
-
-							// is this a render data entry? If So, append data
-							if ( !structIsEmpty( renderData ) ) {
-								cacheEntry.renderData = true;
-								structAppend( cacheEntry, renderData, true );
-							}
-
-							// Cache it
-							cacheBox
-								.getCache( eCacheEntry.provider )
-								.set(
-									eCacheEntry.cacheKey,
-									cacheEntry,
-									eCacheEntry.timeout,
-									eCacheEntry.lastAccessTimeout
-								);
+						// is this a render data entry? If So, append data
+						if ( !renderData.isEmpty() ) {
+							structAppend( cacheEntry, renderData, true );
 						}
+
+						// Cache it
+						cacheBox
+							.getCache( eCacheEntry.provider )
+							.set(
+								eCacheEntry.cacheKey,
+								cacheEntry,
+								eCacheEntry.timeout,
+								eCacheEntry.lastAccessTimeout
+							);
 					}
 					// end event caching
 

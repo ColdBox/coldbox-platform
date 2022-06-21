@@ -904,7 +904,7 @@ component
 			var thisRouteActions = isStruct( thisRoute.action ) ? thisRoute.action : {};
 			for ( var newActionVerb in thisRouteActions ) {
 				var newEvent = thisRouteActions[ newActionVerb ];
-				if ( thisRoute.handler != "" ) {
+				if ( thisRoute.handler != "" && thisRoute.handler != matchingRoute.handler ) {
 					newEvent = thisRoute.handler & "." & newEvent;
 				}
 				if ( actions.keyExists( newActionVerb ) && variables.log.canWarn() ) {

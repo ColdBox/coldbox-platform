@@ -233,8 +233,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 	/**
 	 * Process the shutdown of the application
+	 *
+	 * @force If true, it forces all shutdowns this is usually true when doing reinits
 	 */
-	LoaderService function processShutdown(){
+	LoaderService function processShutdown( boolean force = false ){
 		variables.log.info( "† Shutting down ColdBox..." );
 
 		// Announce shutdown
@@ -247,7 +249,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// Process services reinit
 		structEach( variables.controller.getServices(), function( key, thisService ){
 			variables.log.info( "† Shutting down ColdBox #arguments.key# service..." );
-			thisService.onShutdown();
+			thisService.onShutdown( force = force );
 		} );
 
 		// Shutdown any services like cache engine, etc.
@@ -262,7 +264,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 		// Shutdown all ColdBox Scheduler Tasks, no need to delete them as WireBox will be nuked!
 		variables.log.info( "† Shutting down ColdBox Task Scheduler..." );
-		asyncManager.shutdownAllExecutors( force = true );
+		asyncManager.shutdownAllExecutors( force = arguments.force );
 
 		// Shutdown LogBox LAST
 		variables.log.info( "† Shutting down LogBox..." );

@@ -123,6 +123,9 @@ component accessors="true" {
 	 * One day move as static references
 	 */
 
+	// Binder Marker
+	this.$wbBinder = true;
+
 	// Available WireBox public scopes
 	this.SCOPES = new coldbox.system.ioc.Scopes();
 	// Available WireBox public types
@@ -180,7 +183,7 @@ component accessors="true" {
 		// If sent and a data CFC variables
 		if ( !isNull( arguments.config ) and isObject( arguments.config ) ) {
 			// Decorate our data CFC
-			arguments.config.getPropertyMixin = variables.injector.getUtil().getMixerUtil().getPropertyMixin;
+			arguments.config.getPropertyMixin = variables.injector.getUtility().getMixerUtil().getPropertyMixin;
 			// Execute the configuration
 			arguments.config.configure( this );
 			// Load the raw data DSL
@@ -440,6 +443,11 @@ component accessors="true" {
 			);
 		}
 
+		// These checks must be performed safely here so we can be explicit abut the scopes
+		// All refernces to influence and filter inside the closures cannot be scoped or they will find the wrong arguments
+		var hasInfluence = !isNull( arguments.influence );
+		var hasFilter    = !isNull( arguments.filter );
+
 		// Clear out any current mappings
 		variables.currentMapping = [];
 
@@ -465,10 +473,10 @@ component accessors="true" {
 					( len( exclude ) AND NOT reFindNoCase( exclude, arguments.thisPath ) )
 					// We have a closure filter, we ask the filter
 					OR
-					( !isNull( filter ) AND filter( arguments.thisPath ) )
+					( hasFilter AND filter( arguments.thisPath ) )
 					OR
 					// No include, no exclude and no filter
-					( NOT len( include ) AND NOT len( exclude ) AND isNull( filter ) )
+					( NOT len( include ) AND NOT len( exclude ) AND !hasFilter )
 				);
 			} )
 			// Transform the path to something usable for object creation
@@ -498,7 +506,7 @@ component accessors="true" {
 				);
 
 				// Are we influencing?
-				if ( !isNull( influence ) ) {
+				if ( hasInfluence ) {
 					influence(
 						this,
 						arguments.thisPath,

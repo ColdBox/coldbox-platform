@@ -37,6 +37,14 @@ component accessors="true" singleton {
 	property name="timezone";
 
 	/**
+	 * The default timeout to use when gracefully shutting down this scheduler. Default is 30 seconds.
+	 */
+	property
+		name   ="shutdownTimeout"
+		type   ="numeric"
+		default="30";
+
+	/**
 	 * Constructor
 	 *
 	 * @name         The name of this scheduler
@@ -44,17 +52,19 @@ component accessors="true" singleton {
 	 */
 	function init( required name, required asyncManager ){
 		// Utility class
-		variables.util         = new coldbox.system.core.util.Util();
+		variables.util            = new coldbox.system.core.util.Util();
+		// Default shutdown timeout
+		variables.shutdownTimeout = 30;
 		// Name
-		variables.name         = arguments.name;
+		variables.name            = arguments.name;
 		// The async manager
-		variables.asyncManager = arguments.asyncManager;
+		variables.asyncManager    = arguments.asyncManager;
 		// The collection of tasks we will run
-		variables.tasks        = structNew( "ordered" );
+		variables.tasks           = structNew( "ordered" );
 		// Default TimeZone to UTC for all tasks
-		variables.timezone     = createObject( "java", "java.time.ZoneId" ).systemDefault();
+		variables.timezone        = createObject( "java", "java.time.ZoneId" ).systemDefault();
 		// Build out the executor for this scheduler
-		variables.executor     = arguments.asyncManager.newExecutor(
+		variables.executor        = arguments.asyncManager.newExecutor(
 			name: arguments.name & "-scheduler",
 			type: "scheduled"
 		);
@@ -81,6 +91,16 @@ component accessors="true" singleton {
 	Scheduler function setTimezone( required timezone ){
 		variables.timezone = createObject( "java", "java.time.ZoneId" ).of( arguments.timezone );
 		return this;
+	}
+
+	/**
+	 * Register a new task in this scheduler but disable it immediately.  This is useful
+	 * when debugging tasks and have the easy ability to disable them.
+	 *
+	 * @return The registered and disabled Scheduled Task
+	 */
+	ScheduledTask function xtask( required name ){
+		return task( argumentCollection = arguments ).disable();
 	}
 
 	/**
@@ -202,12 +222,19 @@ component accessors="true" singleton {
 
 	/**
 	 * Shutdown this scheduler by calling the executor to shutdown and disabling all tasks
+	 *
+	 * @force   If true, it forces all shutdowns this is usually true when doing reinits
+	 * @timeout The timeout in seconds to wait for the shutdown of all tasks, defaults to 30 or whatever you set using the setShutdownTimeout() method
 	 */
-	Scheduler function shutdown(){
+	Scheduler function shutdown( boolean force = false, numeric timeout = variables.shutdownTimeout ){
 		// callback
-		this.onShutdown();
-		// shutdown executor
-		variables.executor.shutdownNow();
+		this.onShutdown( argumentCollection = arguments );
+		// shutdown executor and await termination or kill it now!
+		if ( arguments.force ) {
+			variables.executor.shutdownNow();
+		} else {
+			variables.executor.shutdownAndAwaitTermination( arguments.timeout );
+		}
 		// Remove executor
 		variables.asyncManager.deleteExecutor( variables.name & "-scheduler" );
 		// Mark it

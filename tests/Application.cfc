@@ -37,6 +37,13 @@ component{
 	public boolean function onRequestStart( targetPage ){
 		// Set a high timeout for long running tests
 		setting requestTimeout="9999";
+		// New ColdBox Virtual Application Starter
+		request.coldBoxVirtualApp = new coldbox.system.testing.VirtualApp( appMapping = "/cbTestHarness" );
+
+		// If hitting the runner or specs, prep our virtual app and database
+		if ( getBaseTemplatePath().replace( expandPath( "/tests" ), "" ).reFindNoCase( "(runner|specs)" ) ) {
+			request.coldBoxVirtualApp.startup(  );
+		}
 
 		// ORM Reload for fresh results
 		if( structKeyExists( url, "fwreinit" ) ){
@@ -44,21 +51,14 @@ component{
 				pagePoolClear();
 			}
 			ormReload();
-			onRequestEnd( arguments.targetPage );
+			request.coldBoxVirtualApp.restart();
 		}
 
 		return true;
 	}
 
 	public void function onRequestEnd( required targetPage ) {
-
-		if( !isNull( application.cbController ) ){
-			application.cbController.getLoaderService().processShutdown();
-		}
-
-		structDelete( application, "cbController" );
-		structDelete( application, "wirebox" );
-
+		request.coldBoxVirtualApp.shutdown();
 	}
 
 	private boolean function shouldEnableFullNullSupport() {

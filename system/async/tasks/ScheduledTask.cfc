@@ -64,7 +64,7 @@ component accessors="true" {
 	property name="scheduler";
 
 	/**
-	 * The collection of stats for the task: { created, lastRun, nextRun, totalRuns, totalFailures, totalSuccess, lastResult, neverRun, lastExecutionTime }
+	 * The collection of stats for the task: { created, lastRun, totalRuns, totalFailures, totalSuccess, lastResult, neverRun, lastExecutionTime }
 	 */
 	property name="stats" type="struct";
 
@@ -121,9 +121,15 @@ component accessors="true" {
 	property name="noOverlaps" type="boolean";
 
 	/**
-	 * Get the ColdBox utility object
+	 * The constraint of when the task can start execution.
 	 */
-	property name="util";
+	property name="startOnDateTime";
+
+	/**
+	 * The constraint of when the task must not continue to execute
+	 */
+	property name="endOnDateTime";
+
 
 	/**
 	 * Constructor
@@ -147,8 +153,6 @@ component accessors="true" {
 		// time unit helper
 		variables.chronoUnitHelper = new coldbox.system.async.time.ChronoUnit();
 		variables.timeUnitHelper   = new coldbox.system.async.time.TimeUnit();
-		// System Helper
-		variables.System           = createObject( "java", "java.lang.System" );
 		// Init Properties
 		variables.task             = arguments.task;
 		variables.method           = arguments.method;
@@ -167,6 +171,8 @@ component accessors="true" {
 		variables.weekdays         = false;
 		variables.lastBusinessDay  = false;
 		variables.noOverlaps       = false;
+		variables.startOnDateTime  = "";
+		variables.endOnDateTime    = "";
 		// Probable Scheduler or not
 		variables.scheduler        = "";
 		// Prepare execution tracking stats
@@ -177,8 +183,6 @@ component accessors="true" {
 			"created"           : now(),
 			// The last execution run timestamp
 			"lastRun"           : "",
-			// When's the next execution
-			"nextRun"           : "",
 			// Total runs
 			"totalRuns"         : 0,
 			// Total faiulres
@@ -212,12 +216,31 @@ component accessors="true" {
 	 */
 
 	/**
+	 * Call this method periodically in a long-running task to check to see if the thread has been interrupted.
+	 *
+	 * @throws UserInterruptException - When the thread has been interrupted
+	 */
+	function checkInterrupted(){
+		var thisThread = createObject( "java", "java.lang.Thread" ).currentThread();
+		// Has the user/system tried to interrupt this thread?
+		if ( thisThread.isInterrupted() ) {
+			// This clears the interrupted status. i.e., "yeah, yeah, I'm on it!"
+			thisThread.interrupted();
+			throw(
+				"UserInterruptException",
+				"UserInterruptException",
+				""
+			);
+		}
+	}
+
+	/**
 	 * Utility to send to output to the output stream
 	 *
 	 * @var Variable/Message to send
 	 */
 	ScheduledTask function out( required var ){
-		variables.System.out.println( arguments.var.toString() );
+		variables.executor.out( arguments.var.toString() );
 		return this;
 	}
 
@@ -227,7 +250,7 @@ component accessors="true" {
 	 * @var Variable/Message to send
 	 */
 	ScheduledTask function err( required var ){
-		variables.System.err.println( arguments.var.toString() );
+		variables.executor.err( arguments.var.toString() );
 		return this;
 	}
 
@@ -374,6 +397,22 @@ component accessors="true" {
 			return true;
 		}
 
+		// Do we have a start on constraint
+		if (
+			len( variables.startOnDateTime ) &&
+			now.isBefore( variables.startOnDateTime )
+		) {
+			return true;
+		}
+
+		// Do we have a end on constraint
+		if (
+			len( variables.endOnDateTime ) &&
+			now.isAfter( variables.endOnDateTime )
+		) {
+			return true;
+		}
+
 		return false;
 	}
 
@@ -431,12 +470,31 @@ component accessors="true" {
 		} catch ( any e ) {
 			// store failures
 			variables.stats.totalFailures = variables.stats.totalFailures + 1;
-			// Life Cycle
-			if ( isClosure( variables.onTaskFailure ) || isCustomFunction( variables.onTaskFailure ) ) {
-				variables.onTaskFailure( this, e );
-			}
-			if ( hasScheduler() ) {
-				getScheduler().onAnyTaskError( this, e );
+			// Log it, so it doesn't go to ether
+			err( "Error running task (#getname()#) : #e.message & e.detail#" );
+			err( "Stacktrace for task (#getname()#) : #e.stackTrace#" );
+
+			// Try to execute the error handlers. Try try try just in case.
+			try {
+				// Life Cycle onTaskFailure call
+				if ( isClosure( variables.onTaskFailure ) || isCustomFunction( variables.onTaskFailure ) ) {
+					variables.onTaskFailure( this, e );
+				}
+				// If we have a scheduler attached, called the schedulers life-cycle
+				if ( hasScheduler() ) {
+					getScheduler().onAnyTaskError( this, e );
+				}
+				// After Tasks Interceptor with the exception as the last result
+				if ( isClosure( variables.afterTask ) || isCustomFunction( variables.afterTask ) ) {
+					variables.afterTask( this, e );
+				}
+				if ( hasScheduler() ) {
+					getScheduler().afterAnyTask( this, e );
+				}
+			} catch ( any afterException ) {
+				// Log it, so it doesn't go to ether and executor doesn't die.
+				err( "Error running task (#getname()#) after/error handlers : #afterException.message & afterException.detail#" );
+				err( "Stacktrace for task (#getname()#) after/error handlers : #afterException.stackTrace#" );
 			}
 		} finally {
 			// Store finalization stats
@@ -1200,9 +1258,33 @@ component accessors="true" {
 	}
 
 	/**
+	 * Set when this task should start execution on. By default it starts automatically.
+	 *
+	 * @date The date when this task should start execution on => yyyy-mm-dd format is preferred.
+	 * @time The specific time using 24 hour format => HH:mm, defaults to 00:00
+	 */
+	ScheduledTask function startOn( required date, string time = "00:00" ){
+		variables.startOnDateTime = variables.chronoUnitHelper.parse( "#dateFormat( arguments.date, "yyyy-mm-dd" )#T#arguments.time#" );
+		return this;
+	}
+
+	/**
+	 * Set when this task should stop execution on. By default it never ends
+	 *
+	 * @date The date when this task should stop execution on => yyyy-mm-dd format is preferred.
+	 * @time The specific time using 24 hour format => HH:mm, defaults to 00:00
+	 */
+	ScheduledTask function endOn( required date, string time = "00:00" ){
+		variables.endOnDateTime = variables.chronoUnitHelper.parse( "#dateFormat( arguments.date, "yyyy-mm-dd" )#T#arguments.time#" );
+		return this;
+	}
+
+	/**
 	 * --------------------------------------------------------------------------
 	 * TimeUnit Methods
 	 * --------------------------------------------------------------------------
+	 * These methods are used to set the time unit of the interval or periods.
+	 * Last one called wins!
 	 */
 
 	/**
@@ -1268,7 +1350,7 @@ component accessors="true" {
 	 *
 	 * @throws InvalidTimeException - If the time is invalid, else it just continues operation
 	 */
-	private function validateTime( required time ){
+	function validateTime( required time ){
 		// Regex check
 		if ( !reFind( "^[0-2][0-9]\:[0-5][0-9]$", arguments.time ) ) {
 			throw(

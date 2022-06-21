@@ -86,6 +86,11 @@ component {
 		log.info( "Processing data finished!" );
 	}
 
+	function badUrl( event, rc, prc ) cache="true" cacheTimeout="1"{
+		event.setHTTPHeader( "404", "Not Found" );
+		return "bad url";
+	}
+
 
 	/************************************** PRIVATE ACTIONS *********************************************/
 

@@ -58,7 +58,7 @@ component accessors="true" {
 		variables.levelMax = arguments.levelMax;
 
 		// Utilities
-		variables._hash = createObject( "java", "java.lang.System" ).identityHashCode( this );
+		variables._hash = createUUID();
 		variables.util  = new coldbox.system.core.util.Util();
 
 
@@ -393,10 +393,10 @@ component accessors="true" {
 						thisAppender.logMessage( thread.logEvent );
 					}
 				} else {
-					if ( isNull( logEvent ) ) {
+					if ( isNull( local.logEvent ) ) {
 						var logEvent = new coldbox.system.logging.LogEvent( argumentCollection = arguments );
 					}
-					thisAppender.logMessage( logEvent );
+					thisAppender.logMessage( local.logEvent );
 				}
 			}
 		}

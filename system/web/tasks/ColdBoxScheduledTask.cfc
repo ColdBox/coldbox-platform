@@ -157,7 +157,7 @@ component extends="coldbox.system.async.tasks.ScheduledTask" accessors="true" {
 		// Only cleanup if your are the fixated server
 		var fixationData = getCache().get( cacheKey );
 		if (
-			!isNull( fixationData ) && isStruct( fixationData ) && fixationData.serverhost eq getStats().inetHost && fixationData.serverIp eq getStats().localIp
+			!isNull( local.fixationData ) && isStruct( local.fixationData ) && local.fixationData.serverhost eq getStats().inetHost && local.fixationData.serverIp eq getStats().localIp
 		) {
 			// Cleanup server fixation locks after task execution, wether failure or success
 			// This way, the tasks can run on a round-robin approach on a clustered environment
@@ -193,19 +193,21 @@ component extends="coldbox.system.async.tasks.ScheduledTask" accessors="true" {
 		// Get the lock now. At least one server must have set it by now
 		var serverLock = getCache().get( keyName );
 		// If no lock something really went wrong, so constrain it and log it
-		if ( isNull( serverLock ) || !isStruct( serverLock ) ) {
+		if ( isNull( local.serverLock ) || !isStruct( local.serverLock ) ) {
 			variables.log.error(
 				"Server lock for task (#getName()#) is null or not a struct, something is wrong with the cache set, please verify it with key (#keyName#).",
-				( !isNull( serverLock ) ? serverLock : "" )
+				( !isNull( local.serverLock ) ? local.serverLock : "" )
 			);
 			return false;
 		}
 		// Else, it exists, check we are the same server that locked! If true, then we can run it baby!
-		else if ( serverLock.serverHost eq getStats().inetHost && serverLock.serverIp eq getStats().localIp ) {
+		else if (
+			local.serverLock.serverHost eq getStats().inetHost && local.serverLock.serverIp eq getStats().localIp
+		) {
 			return true;
 		} else {
 			variables.log.info(
-				"Skipping task (#getName()#) as it is constrained to run on one server (#serverLock.serverHost#/#serverLock.serverIp#). This server (#getStats().inetHost#/#getStats().localIp#) is different."
+				"Skipping task (#getName()#) as it is constrained to run on one server (#local.serverLock.serverHost#/#local.serverLock.serverIp#). This server (#getStats().inetHost#/#getStats().localIp#) is different."
 			);
 			return false;
 		}

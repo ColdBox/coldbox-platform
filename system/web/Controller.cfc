@@ -367,8 +367,12 @@ component serializable="false" accessors="true" {
 		URI,
 		numeric statusCode = 302
 	){
+		// StatusCode 0 then default it to 302 for backwards compat: Remove by ColdBox 7
+		if ( arguments.statusCode == 0 ) {
+			arguments.statusCode = 302;
+		}
 		// Determine the type of relocation
-		var relocationType  = "EVENT";
+		var relocationType  = "SES";
 		var relocationURL   = "";
 		var eventName       = variables.configSettings[ "EventName" ];
 		var frontController = listLast( CGI.SCRIPT_NAME, "/" );
@@ -376,13 +380,10 @@ component serializable="false" accessors="true" {
 		var routeString     = 0;
 
 		// Determine relocation type
-		if ( oRequestContext.isSES() ) {
-			relocationType = "SES";
-		}
-		if ( structKeyExists( arguments, "URL" ) ) {
+		if ( !isNull( arguments.url ) && len( arguments.url ) ) {
 			relocationType = "URL";
 		}
-		if ( structKeyExists( arguments, "URI" ) ) {
+		if ( !isNull( arguments.URI ) && len( arguments.URI ) ) {
 			relocationType = "URI";
 		}
 
@@ -390,6 +391,7 @@ component serializable="false" accessors="true" {
 		if ( len( trim( arguments.event ) ) eq 0 ) {
 			arguments.event = getSetting( "DefaultEvent" );
 		}
+
 		// Query String Struct to String
 		if ( isStruct( arguments.queryString ) ) {
 			arguments.queryString = arguments.queryString
@@ -399,6 +401,7 @@ component serializable="false" accessors="true" {
 				}, [] )
 				.toList( "&" );
 		}
+
 		// Overriding Front Controller via baseURL argument
 		if ( len( trim( arguments.baseURL ) ) ) {
 			frontController = arguments.baseURL;
@@ -410,7 +413,7 @@ component serializable="false" accessors="true" {
 			case "URL": {
 				relocationURL = arguments.URL;
 				// Check SSL?
-				if ( structKeyExists( arguments, "ssl" ) ) {
+				if ( !isNull( arguments.ssl ) ) {
 					relocationURL = updateSSL( relocationURL, arguments.ssl );
 				}
 				// Query String?
@@ -431,7 +434,7 @@ component serializable="false" accessors="true" {
 			}
 
 			// Default event relocations
-			case "SES": {
+			default: {
 				// Convert module into proper entry point
 				if ( listLen( arguments.event, ":" ) > 1 ) {
 					var mConfig = getSetting( "modules" );
@@ -468,7 +471,7 @@ component serializable="false" accessors="true" {
 					relocationURL = relocationURL & "/";
 				}
 				// Check SSL?
-				if ( structKeyExists( arguments, "ssl" ) ) {
+				if ( !isNull( arguments.ssl ) ) {
 					relocationURL = updateSSL( relocationURL, arguments.ssl );
 				}
 
@@ -476,18 +479,6 @@ component serializable="false" accessors="true" {
 				relocationURL = relocationURL & routeString;
 
 				break;
-			}
-			default: {
-				// Basic URL Relocation
-				relocationURL = "#frontController#?#eventName#=#arguments.event#";
-				// Check SSL?
-				if ( structKeyExists( arguments, "ssl" ) ) {
-					relocationURL = updateSSL( relocationURL, arguments.ssl );
-				}
-				// Query String?
-				if ( len( trim( arguments.queryString ) ) ) {
-					relocationURL = relocationURL & "&#arguments.queryString#";
-				}
 			}
 		}
 
@@ -668,43 +659,46 @@ component serializable="false" accessors="true" {
 
 		// Do we have an object coming back?
 		if (
-			!isNull( results.data ) &&
-			isObject( results.data )
+			!isNull( local.results.data ) &&
+			isObject( local.results.data )
 		) {
 			// Verify $renderdata method convention
-			if ( structKeyExists( results.data, "$renderdata" ) ) {
-				results.data = results.data.$renderdata();
+			if ( structKeyExists( local.results.data, "$renderdata" ) ) {
+				local.results.data = local.results.data.$renderdata();
 			}
 			// Check if request context and ignore
-			else if ( isInstanceOf( results.data, "coldbox.system.web.context.RequestContext" ) ) {
-				results.delete( "data" );
+			else if ( isInstanceOf( local.results.data, "coldbox.system.web.context.RequestContext" ) ) {
+				local.results.delete( "data" );
 			}
 		}
 
 		// Do we need to do action renderings?
 		if (
-			!isNull( results.data ) &&
-			results.ehBean.getActionMetadata( "renderdata", "html" ) neq "html"
+			!isNull( local.results.data ) &&
+			local.results.ehBean.getActionMetadata( "renderdata", "html" ) neq "html"
 		) {
 			// Do action Rendering
 			services.requestService
 				.getContext()
-				.renderdata( type = results.ehBean.getActionMetadata( "renderdata" ), data = results.data );
+				.renderdata(
+					type = local.results.ehBean.getActionMetadata( "renderdata" ),
+					data = local.results.data
+				);
 		}
 
 		// Are we caching
-		if ( isCachingOn && !isNull( results.data ) ) {
+		if ( isCachingOn && !isNull( local.results.data ) ) {
 			oCache.set(
 				objectKey         = cacheKey,
-				object            = results.data,
+				object            = local.results.data,
 				timeout           = arguments.cacheTimeout,
 				lastAccessTimeout = arguments.cacheLastAccessTimeout
 			);
 		}
 
 		// Are we returning data?
-		if ( !isNull( results.data ) ) {
-			return results.data;
+		if ( !isNull( local.results.data ) ) {
+			return local.results.data;
 		}
 	}
 
@@ -1135,13 +1129,16 @@ component serializable="false" accessors="true" {
 	/**
 	 * Internal helper to flash persist elements
 	 *
+	 * @persist       What request collection keys to persist in flash RAM automatically for you
+	 * @persistStruct A structure of key-value pairs to persist in flash RAM automatically for you
+	 *
 	 * @return Controller
 	 */
 	private function persistVariables( persist = "", struct persistStruct = {} ){
 		var flash = getRequestService().getFlashScope();
 
 		// persist persistStruct if passed
-		if ( structKeyExists( arguments, "persistStruct" ) ) {
+		if ( !isNull( arguments.persistStruct ) ) {
 			flash.putAll( map = arguments.persistStruct, saveNow = true );
 		}
 

@@ -78,7 +78,7 @@ component {
 	 */
 	function discoverInetHost(){
 		try {
-			return createObject( "java", "java.net.InetAddress" ).getLocalHost().getHostName();
+			return getInetAddress().getLocalHost().getHostName();
 		} catch ( any e ) {
 			return cgi.SERVER_NAME;
 		}
@@ -87,8 +87,24 @@ component {
 	/**
 	 * Get the server IP Address
 	 */
-	function getServerIp(){
-		return ( isNull( cgi.local_addr ) ? "0.0.0.0" : cgi.local_addr );
+	string function getServerIp(){
+		try {
+			return getInetAddress().getLocalHost().getHostAddress();
+		} catch ( any e ) {
+			return "0.0.0.0";
+		}
+	}
+
+	/**
+	 * Get the Java InetAddress object
+	 *
+	 * @return java.net.InetAddress
+	 */
+	private function getInetAddress(){
+		if ( isNull( variables.inetAddress ) ) {
+			variables.inetAddress = createObject( "java", "java.net.InetAddress" );
+		}
+		return variables.inetAddress;
 	}
 
 	/****************************************************************
@@ -275,7 +291,7 @@ component {
 	 * Retrieve an instance of Java System
 	 */
 	function getJavaSystem(){
-		if ( !structKeyExists( variables, "javaSystem" ) ) {
+		if ( isNull( variables.javaSystem ) ) {
 			variables.javaSystem = createObject( "java", "java.lang.System" );
 		}
 		return variables.javaSystem;
@@ -287,10 +303,9 @@ component {
 	 * @return coldbox.system.core.dynamic.MixerUtil
 	 */
 	function getMixerUtil(){
-		if ( structKeyExists( variables, "mixerUtil" ) ) {
-			return variables.mixerUtil;
+		if ( isNull( variables.mixerUtil ) ) {
+			variables.mixerUtil = new coldbox.system.core.dynamic.MixerUtil();
 		}
-		variables.mixerUtil = new coldbox.system.core.dynamic.MixerUtil();
 		return variables.mixerUtil;
 	}
 

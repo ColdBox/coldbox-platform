@@ -16,7 +16,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		// all your suites go here.
 		describe( "Response Object", function(){
 			beforeEach( function( currentSpec ){
-				handler            = createMock( "coldbox.system.RestHandler" );
+				handler            = createMock( "coldbox.system.RestHandler" ).$( "announce" ).$( "announceInterception" );
 				mockController     = createMock( "coldbox.system.web.Controller" );
 				flashScope         = createEmptyMock( "coldbox.system.web.flash.MockFlash" );
 				mockRequestContext = createMock( "coldbox.system.web.context.RequestContext" ).init(

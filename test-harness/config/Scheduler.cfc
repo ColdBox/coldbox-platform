@@ -4,6 +4,12 @@ component {
 
 	function configure(){
 
+		xtask( "Disabled Task" )
+			.call ( function(){
+				writeDump( var="Disabled", output="console" );
+			})
+			.every( 1, "second" );
+
 		task( "Scope Test" )
 			.call( function(){
 				writeDump( var="****************************************************************************", output="console" );
@@ -25,7 +31,7 @@ component {
 			.call( function(){
 				runEvent( "main.process" );
 			})
-			.every( 5, 'seconds' )
+			.every( 20, 'seconds' )
 			.delay( variables.delay, "seconds" )
 			.withNoOverlaps()
 			.onFailure( function( task, exception ){

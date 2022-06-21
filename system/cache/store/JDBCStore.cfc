@@ -49,18 +49,22 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true" 
 	 * The datasource to use for the connection
 	 */
 	property name="dsn";
+
 	/**
 	 * The table to use for storage
 	 */
 	property name="table";
+
 	/**
 	 * The username to use for the connection, if any
 	 */
 	property name="dsnUsername";
+
 	/**
 	 * The password to use for the connection, if any
 	 */
 	property name="dsnPassword";
+
 	/**
 	 * Auto create the table or just use it
 	 */
@@ -84,55 +88,40 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true" 
 	 * @cacheprovider.doc_generic coldbox.system.cache.providers.ICacheProvider
 	 */
 	function init( required cacheProvider ){
-		// Store Fields
 		var fields = "objectKey,hits,timeout,lastAccessTimeout,created,lastAccessed,isExpired,isSimple";
 		var config = arguments.cacheProvider.getConfiguration();
 
+		// Param sql config data
+		param name="config.dsnUsername"     default="";
+		param name="config.dsnPassword"     default="";
+		param name="config.queryIncludeDsn" default="true";
+		param name="config.tableAutoCreate" default="true";
+
 		// Prepare instance
-		variables.cacheProvider = arguments.cacheProvider;
-		variables.storeID       = createObject( "java", "java.lang.System" ).identityHashCode( this );
-		variables.converter     = new coldbox.system.core.conversion.ObjectMarshaller();
-		variables.indexer       = new coldbox.system.cache.store.indexers.JDBCMetadataIndexer( fields, config, this );
-
-		// Get Extra config data
-		variables.dsn   = config.dsn;
-		variables.table = config.table;
-
-		// Check credentials
-		if ( isNull( config.dsnUsername ) ) {
-			config.dsnUsername = "";
-		}
-		if ( isNull( config.dsnPassword ) ) {
-			config.dsnPassword = "";
-		}
-		variables.dsnUsername = config.dsnUsername;
-		variables.dsnPassword = config.dsnPassword;
+		variables.cacheProvider   = arguments.cacheProvider;
+		variables.storeID         = createUUID();
+		variables.converter       = new coldbox.system.core.conversion.ObjectMarshaller();
+		variables.indexer         = new coldbox.system.cache.store.indexers.JDBCMetadataIndexer( fields, config, this );
+		variables.dsn             = config.dsn;
+		variables.table           = config.table;
+		variables.dsnUsername     = config.dsnUsername;
+		variables.dsnPassword     = config.dsnPassword;
+		variables.tableAutoCreate = config.tableAutoCreate;
 
 		// this struct will contain the dsn and credentials if passed into the config. Otherwise queryExecute will default
 		// to the datasource set in application.cfc
 		variables.queryOptions = {};
 
 		// if DSN username or password were passed, include them in the query options
-		if ( len( variables.dsnUsername ) || len( variables.dsnPassword ) ) {
-			variables.queryOptions[ "dsnUsername" ] = variables.dsnUsername;
-			variables.queryOptions[ "dsnPassword" ] = variables.dsnPassword;
-		}
-
-		if ( isNull( config.queryIncludeDsn ) ) {
-			config.queryIncludeDsn = true;
+		if ( len( config.dsnUsername ) || len( config.dsnPassword ) ) {
+			variables.queryOptions[ "username" ] = config.dsnUsername;
+			variables.queryOptions[ "password" ] = config.dsnPassword;
 		}
 
 		// if we should include the dsn in the query options, add it
 		if ( config.queryIncludeDsn ) {
-			variables.queryOptions[ "dsn" ] = variables.dsn;
+			variables.queryOptions[ "datasource" ] = config.dsn;
 		}
-
-
-		// Check autoCreate
-		if ( isNull( config.tableAutoCreate ) ) {
-			config.tableAutoCreate = true;
-		}
-		variables.tableAutoCreate = config.tableAutoCreate;
 
 		// ensure the table
 		if ( variables.tableAutoCreate ) {

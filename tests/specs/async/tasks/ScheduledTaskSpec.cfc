@@ -347,6 +347,60 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 						"Weekend (#mockNow.getDayOfWeek().getvalue()#) should be constrained"
 					);
 				} );
+
+				story( "can restrict tasks via a start on constraint", function(){
+					given( "a valid start on constraint", function(){
+						then( "it should run the task", function(){
+							var targetDate = "01/01/2022";
+							var t          = scheduler
+								.task( "test" )
+								.everyDay()
+								.startOn( "01/01/2022", "09:00" );
+							expect( t.isConstrained() ).toBeFalse(
+								"Task should run as #now()# is after #targetDate#"
+							);
+						} );
+					} );
+					given( "an invalid start on constraint", function(){
+						then( "it should not allow the task to run yet", function(){
+							var targetDate = dateFormat( dateAdd( "d", 5, now() ), "yyyy-mm-dd" );
+							var t          = scheduler
+								.task( "test" )
+								.everyDay()
+								.startOn( targetDate );
+							expect( t.isConstrained() ).toBeTrue(
+								"Task should NOT run as #now()# is NOT after #targetDate#"
+							);
+						} );
+					} );
+				} );
+
+				fstory( "can restrict tasks via a end on constraint", function(){
+					given( "a valid end on constraint", function(){
+						then( "it should run the task", function(){
+							var targetDate = dateFormat( dateAdd( "d", 5, now() ), "yyyy-mm-dd" );
+							var t          = scheduler
+								.task( "test" )
+								.everyDay()
+								.endOn( targetDate, "09:00" );
+							expect( t.isConstrained() ).toBeFalse(
+								"Task should run as #now()# is before #targetDate#"
+							);
+						} );
+					} );
+					given( "an invalid end on constraint", function(){
+						then( "it should not allow the task to run yet", function(){
+							var targetDate = dateFormat( dateAdd( "d", -5, now() ), "yyyy-mm-dd" );
+							var t          = scheduler
+								.task( "test" )
+								.everyDay()
+								.endOn( targetDate );
+							expect( t.isConstrained() ).toBeTrue(
+								"Task should NOT run as #now()# is NOT before #targetDate#"
+							);
+						} );
+					} );
+				} );
 			} );
 		} );
 	}

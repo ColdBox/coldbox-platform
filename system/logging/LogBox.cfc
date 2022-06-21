@@ -83,7 +83,7 @@ component accessors="true" {
 		wirebox = ""
 	){
 		// LogBox Unique ID
-		variables.logboxID          = createObject( "java", "java.lang.System" ).identityHashCode( this );
+		variables.logboxID          = createUUID();
 		// Appenders
 		variables.appenderRegistry  = structNew();
 		// Loggers

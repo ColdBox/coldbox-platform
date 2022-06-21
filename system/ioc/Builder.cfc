@@ -22,11 +22,6 @@ component serializable="false" accessors="true" {
 	property name="log";
 
 	/**
-	 * ColdBox Utility
-	 */
-	property name="utility";
-
-	/**
 	 * Custom DSL Map Storage
 	 */
 	property name="customDSL" type="struct";
@@ -51,14 +46,13 @@ component serializable="false" accessors="true" {
 	 *
 	 * @injector             The linked WireBox injector
 	 * @injector.doc_generic coldbox.system.ioc.Injector
-	 *
-	 * @return coldbox.system.ioc.Builder
 	 */
 	Builder function init( required injector ){
 		variables.injector  = arguments.injector;
+		variables.utility   = arguments.injector.getUtility();
+		variables.mixerUtil = variables.utility.getMixerUtil();
 		variables.logBox    = arguments.injector.getLogBox();
 		variables.log       = arguments.injector.getLogBox().getlogger( this );
-		variables.utility   = arguments.injector.getUtil();
 		variables.customDSL = {};
 
 		// Internal DSL Registry
@@ -76,29 +70,50 @@ component serializable="false" accessors="true" {
 			"wirebox"
 		];
 
-		// Do we need to build the coldbox DSL namespace
-		if ( variables.injector.isColdBoxLinked() ) {
-			variables.coldboxDSL = new coldbox.system.ioc.dsl.ColdBoxDSL( arguments.injector );
-		}
-
-		// Is CacheBox Linked?
-		if ( variables.injector.isCacheBoxLinked() ) {
-			variables.cacheBoxDSL = new coldbox.system.ioc.dsl.CacheBoxDSL( arguments.injector );
-		}
-
-		// Build LogBox DSL Namespace
-		variables.logBoxDSL = new coldbox.system.ioc.dsl.LogBoxDSL( arguments.injector );
-
 		return this;
 	}
 
 	/**
-	 * Register custom DSL builders with this main wirebox builder
+	 * Lazy load getter
 	 *
+	 * @return coldbox.system.ioc.dsl.ColdBoxDSL
+	 */
+	function getColdBoxDSL(){
+		if ( isNull( coldboxDSL ) ) {
+			variables.coldboxDSL = new coldbox.system.ioc.dsl.ColdBoxDSL( variables.injector );
+		}
+		return variables.coldboxDSL;
+	}
+
+	/**
+	 * Lazy load getter
+	 *
+	 * @return coldbox.system.ioc.dsl.CacheBoxDSL
+	 */
+	function getCacheBoxDSL(){
+		if ( isNull( variables.cacheBoxDSL ) ) {
+			variables.cacheBoxDSL = new coldbox.system.ioc.dsl.CacheBoxDSL( variables.injector );
+		}
+		return variables.cacheBoxDSL;
+	}
+
+	/**
+	 * Lazy load getter
+	 *
+	 * @return coldbox.system.ioc.dsl.LogBoxDSL
+	 */
+	function getLogBoxDSL(){
+		if ( isNull( variables.logBoxDSL ) ) {
+			variables.logBoxDSL = new coldbox.system.ioc.dsl.LogBoxDSL( variables.injector );
+		}
+		return variables.logBoxDSL;
+	}
+
+	/**
+	 * Register custom DSL builders with this main wirebox builder
 	 */
 	Builder function registerCustomBuilders(){
 		var customDSL = variables.injector.getBinder().getCustomDSL();
-
 		// Register Custom DSL Builders
 		for ( var key in customDSL ) {
 			registerDSL( namespace = key, path = customDSL[ key ] );
@@ -146,22 +161,23 @@ component serializable="false" accessors="true" {
 	 * @initArguments             The constructor structure of arguments to passthrough when initializing the instance
 	 * @initArguments.doc_generic struct
 	 */
-	function buildCFC( required mapping, initArguments = structNew() ){
-		var thisMap = arguments.mapping;
-		var oModel  = createObject( "component", thisMap.getPath() );
+	function buildCFC( required mapping, initArguments = {} ){
+		var oModel          = createObject( "component", arguments.mapping.getPath() );
+		var constructorArgs = arguments.mapping.getDIConstructorArguments();
+		var constructorName = arguments.mapping.getConstructor();
 
 		// Do we have virtual inheritance?
-		var constructorArgs     = thisMap.getDIConstructorArguments();
-		var constructorArgNames = constructorArgs.map( function( arg ){
-			return arg.name;
-		} );
-		if ( thisMap.isVirtualInheritance() ) {
+		if ( arguments.mapping.isVirtualInheritance() ) {
 			// retrieve the VI mapping.
-			var viMapping = variables.injector.getBinder().getMapping( thisMap.getVirtualInheritance() );
+			var viMapping = variables.injector.getBinder().getMapping( arguments.mapping.getVirtualInheritance() );
 			// Does it match the family already?
 			if ( NOT isInstanceOf( oModel, viMapping.getPath() ) ) {
+				// Original constructor argument names
+				var constructorArgNames = constructorArgs.map( function( arg ){
+					return arg.name;
+				} );
 				// Virtualize it.
-				toVirtualInheritance( viMapping, oModel, thisMap );
+				toVirtualInheritance( viMapping, oModel, arguments.mapping );
 				// Only add virtual inheritance constructor args if we don't already have one with that name.
 				arrayAppend(
 					constructorArgs,
@@ -176,26 +192,32 @@ component serializable="false" accessors="true" {
 		}
 
 		// Constructor initialization?
-		if ( thisMap.isAutoInit() AND structKeyExists( oModel, thisMap.getConstructor() ) ) {
+		if ( arguments.mapping.isAutoInit() AND structKeyExists( oModel, constructorName ) ) {
 			// Get Arguments
-			var constructorArgCollection = buildArgumentCollection( thisMap, constructorArgs, oModel );
+			var constructorArgCollection = constructorArgs.len() ? buildArgumentCollection(
+				arguments.mapping,
+				constructorArgs,
+				oModel
+			) : {};
 
-			// Do We have initArguments to override
-			if ( NOT structIsEmpty( arguments.initArguments ) ) {
-				structAppend(
-					constructorArgCollection,
-					arguments.initArguments,
-					true
-				);
-			}
+			// initArguments to override
+			structAppend(
+				constructorArgCollection,
+				arguments.initArguments,
+				true
+			);
 
 			try {
-				// Invoke constructor
-				invoke(
-					oModel,
-					thisMap.getConstructor(),
-					constructorArgCollection
-				);
+				// Invoke constructor, we do this because using invoke() can be slow
+				if ( constructorName eq "init" ) {
+					oModel.init( argumentCollection = constructorArgCollection );
+				} else {
+					invoke(
+						oModel,
+						constructorName,
+						constructorArgCollection
+					);
+				}
 			} catch ( any e ) {
 				var reducedTagContext = e.tagContext
 					.reduce( function( result, file ){
@@ -213,9 +235,9 @@ component serializable="false" accessors="true" {
 
 				throw(
 					type    = "Builder.BuildCFCDependencyException",
-					message = "Error building: #thisMap.getName()# -> #e.message#
+					message = "Error building: #arguments.mapping.getName()# -> #e.message#
 					#e.detail#.",
-					detail = "DSL: #thisMap.getDSL()#, Path: #thisMap.getPath()#,
+					detail = "DSL: #arguments.mapping.getDSL()#, Path: #arguments.mapping.getPath()#,
 					Error Location:
 					#reducedTagContext#"
 				);
@@ -278,10 +300,10 @@ component serializable="false" accessors="true" {
 
 		// Process arguments to constructor call.
 		for ( var thisArg in DIArgs ) {
-			if ( !isNull( thisArg.javaCast ) ) {
-				args.append( javacast( thisArg.javacast, thisArg.value ) );
+			if ( !isNull( local.thisArg.javaCast ) ) {
+				args.append( javacast( local.thisArg.javacast, local.thisArg.value ) );
 			} else {
-				args.append( thisArg.value );
+				args.append( local.thisArg.value );
 			}
 		}
 
@@ -308,6 +330,8 @@ component serializable="false" accessors="true" {
 	 * @mapping.doc_generic coldbox.system.ioc.config.Mapping
 	 * @argumentArray       The argument array of data
 	 * @targetObject        The target object we are building the DSL dependency for
+	 *
+	 * @return A structure argument collection to initialize an object with
 	 */
 	function buildArgumentCollection(
 		required mapping,
@@ -321,15 +345,15 @@ component serializable="false" accessors="true" {
 		// Process Arguments
 		for ( var thisArg in DIArgs ) {
 			// Process if we have a value and continue
-			if ( !isNull( thisArg.value ) ) {
-				args[ thisArg.name ] = thisArg.value;
+			if ( !isNull( local.thisArg.value ) ) {
+				args[ local.thisArg.name ] = local.thisArg.value;
 				continue;
 			}
 
 			// Is it by DSL construction? If so, add it and continue, if not found it returns null, which is ok
-			if ( !isNull( thisArg.dsl ) ) {
-				args[ thisArg.name ] = buildDSLDependency(
-					definition   = thisArg,
+			if ( !isNull( local.thisArg.dsl ) ) {
+				args[ local.thisArg.name ] = buildDSLDependency(
+					definition   = local.thisArg,
 					targetID     = thisMap.getName(),
 					targetObject = arguments.targetObject
 				);
@@ -337,30 +361,30 @@ component serializable="false" accessors="true" {
 			}
 
 			// If we get here then it is by ref id, so let's verify it exists and optional
-			if ( variables.injector.containsInstance( thisArg.ref ) ) {
-				args[ thisArg.name ] = variables.injector.getInstance( name = thisArg.ref );
+			if ( variables.injector.containsInstance( local.thisArg.ref ) ) {
+				args[ local.thisArg.name ] = variables.injector.getInstance( name = local.thisArg.ref );
 				continue;
 			}
 
 			// Not found, so check if it is required
-			if ( thisArg.required ) {
+			if ( local.thisArg.required ) {
 				// Log the error
 				variables.log.error(
-					"Target: #thisMap.getName()# -> Argument reference not located: #thisArg.name#",
-					thisArg
+					"Target: #thisMap.getName()# -> Argument reference not located: #local.thisArg.name#",
+					local.thisArg
 				);
 				// not found but required, then throw exception
 				throw(
-					message = "Argument reference not located: #thisArg.name#",
-					detail  = "Injecting: #thisMap.getName()#. The argument details are: #thisArg.toString()#.",
+					message = "Argument reference not located: #local.thisArg.name#",
+					detail  = "Injecting: #thisMap.getName()#. The argument details are: #local.thisArg.toString()#.",
 					type    = "Injector.ArgumentNotFoundException"
 				);
 			}
 			// else just log it via debug
 			else if ( variables.log.canDebug() ) {
 				variables.log.debug(
-					"Target: #thisMap.getName()# -> Argument reference not located: #thisArg.name#",
-					thisArg
+					"Target: #thisMap.getName()# -> Argument reference not located: #local.thisArg.name#",
+					local.thisArg
 				);
 			}
 		}
@@ -382,7 +406,7 @@ component serializable="false" accessors="true" {
 
 		// Process args
 		for ( var thisArg in DIArgs ) {
-			argStruct[ thisArg.name ] = thisArg.value;
+			argStruct[ local.thisArg.name ] = local.thisArg.value;
 		}
 
 		// Do we have overrides
@@ -507,7 +531,7 @@ component serializable="false" accessors="true" {
 					);
 				}
 				// retrieve it
-				refLocal.dependency = variables.cacheBoxDSL.process( argumentCollection = arguments );
+				refLocal.dependency = getCacheBoxDSL().process( argumentCollection = arguments );
 				break;
 			}
 
@@ -520,7 +544,7 @@ component serializable="false" accessors="true" {
 						type    = "Builder.IllegalDSLException"
 					);
 				}
-				refLocal.dependency = variables.coldboxDSL.process( argumentCollection = arguments );
+				refLocal.dependency = getColdBoxDSL().process( argumentCollection = arguments );
 				break;
 			}
 
@@ -545,7 +569,7 @@ component serializable="false" accessors="true" {
 
 			// logbox injection DSL always available
 			case "logbox": {
-				refLocal.dependency = variables.logBoxDSL.process( argumentCollection = arguments );
+				refLocal.dependency = getLogBoxDSL().process( argumentCollection = arguments );
 				break;
 			}
 
@@ -923,7 +947,7 @@ component serializable="false" accessors="true" {
 	/**
 	 * Do our virtual inheritance magic
 	 *
-	 * @mapping       The mapping to convert to
+	 * @mapping       The virtual mapping to convert to
 	 * @target        The target object
 	 * @targetMapping The target mapping
 	 *
@@ -943,11 +967,15 @@ component serializable="false" accessors="true" {
 		}
 		// Build it out the base object and wire it
 		var baseObject = variables.injector.buildInstance( arguments.mapping );
-		variables.injector.autowire( target = baseObject, mapping = arguments.mapping );
+		variables.injector.autowire(
+			target  = baseObject,
+			mapping = arguments.mapping,
+			targetID: arguments.mapping.getName()
+		);
 
 		// Mix them up baby!
-		variables.utility.getMixerUtil().start( arguments.target );
-		variables.utility.getMixerUtil().start( baseObject );
+		variables.mixerUtil.start( arguments.target );
+		variables.mixerUtil.start( baseObject );
 
 		// Check if init already exists in target and base? If so, then inject it as $superInit
 		if ( structKeyExists( arguments.target, "init" ) AND structKeyExists( baseObject, "init" ) ) {

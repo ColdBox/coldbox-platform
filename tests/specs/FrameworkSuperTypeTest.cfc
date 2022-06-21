@@ -7,34 +7,57 @@ component extends="tests.resources.BaseIntegrationTest" {
 			beforeEach( function( currentSpec ){
 				setup();
 
-				target = new coldbox.system.FrameworkSupertype();
-				target.setController( getController() );
+				target = prepareMock( new coldbox.system.FrameworkSupertype() ).setController( getController() );
 			} );
 
+			it( "can retrieve the async manager", function(){
+				expect( target.async() ).toBeComponent();
+			} );
 
-			it( "can do when statements with no failures", function(){
-				var result = false;
-				target.when( true, function(){
-					result = true;
+			story( "should encode data for binding to html attributes", function(){
+				given( "a simple value", function(){
+					then( "it should encode it", function(){
+						var data = "Welcome's you to > appreciation < of ^&+ life.""";
+						expect( target.forAttribute( data ) ).toBe( encodeForHTMLAttribute( data ) );
+					} );
 				} );
-				expect( result ).toBeTrue();
+				given( "a complex value", function(){
+					then( "it should encode it", function(){
+						var data = {
+							now  : now(),
+							data : "hello's welcome <html>data</html>"""
+						};
+						expect( target.forAttribute( data ) ).toBe(
+							encodeForHTMLAttribute( serializeJSON( data ) )
+						);
+					} );
+				} );
 			} );
 
-			it( "can do when statements with failures", function(){
-				var result = true;
-				target.when(
-					false,
-					function(){
+			story( "can support fluent when() constructs to supplant traditional if statements", function(){
+				it( "can do when statements with no failures", function(){
+					var result = false;
+					target.when( true, function(){
 						result = true;
-					},
-					function(){
-						result = false;
-					}
-				);
-				expect( result ).toBeFalse();
+					} );
+					expect( result ).toBeTrue();
+				} );
+				it( "can do when statements with failures", function(){
+					var result = true;
+					target.when(
+						false,
+						function(){
+							result = true;
+						},
+						function(){
+							result = false;
+						}
+					);
+					expect( result ).toBeFalse();
+				} );
 			} );
 
-			describe( "Can do population", function(){
+			story( "can do object population from many input sources", function(){
 				it( "from the request collection", function(){
 					var rc   = getRequestContext().getCollection();
 					rc.fname = "luis";

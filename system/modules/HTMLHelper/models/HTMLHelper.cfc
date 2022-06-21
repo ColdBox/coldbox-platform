@@ -767,7 +767,7 @@ component
 		// ID Normalization
 		normalizeID( arguments );
 
-		// create video tag
+		// create audio tag
 		flattenAttributes( arguments, "noBaseURL,src", audio );
 
 		// Add single source
@@ -2243,7 +2243,7 @@ component
 					// values should be an array of objects, so let's convert them
 					loc.relArray = invoke( arguments.entity, "get#prop.name#" );
 
-					if ( isNull( loc.relArray ) ) {
+					if ( isNull( local.loc.relArray ) ) {
 						loc.relArray = [];
 					}
 					if ( NOT len( loc.selectColumn ) AND arrayLen( loc.relArray ) ) {
@@ -2287,7 +2287,7 @@ component
 					// We just show them as a nice table because we are not scaffolding, just display
 					// values should be an array of objects, so let's convert them
 					loc.relArray                = invoke( arguments.entity, "get#prop.name#" );
-					if ( isNull( loc.relArray ) ) {
+					if ( isNull( local.loc.relArray ) ) {
 						loc.relArray = [];
 					}
 
@@ -2323,7 +2323,7 @@ component
 					// We just show them as a nice table because we are not scaffolding, just display
 					// values should be an array of objects, so let's convert them
 					loc.data                    = invoke( arguments.entity, "get#prop.name#" );
-					if ( isNull( loc.data ) ) {
+					if ( isNull( local.loc.data ) ) {
 						loc.relArray = [];
 					} else {
 						loc.relArray = [ loc.data ];

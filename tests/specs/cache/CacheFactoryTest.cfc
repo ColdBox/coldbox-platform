@@ -16,11 +16,7 @@
 		// debug( cacheFactory.getVersion() );
 	}
 	function testGetFactoryID(){
-		// debug( cacheFactory.getFactoryID() );
-		assertEquals(
-			createObject( "java", "java.lang.System" ).identityHashCode( cacheFactory ),
-			cacheFactory.getFactoryID()
-		);
+		expect( cacheFactory.getFactoryId() ).notToBeEmpty();
 	}
 
 	function testconfigureLogBox(){

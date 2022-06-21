@@ -83,12 +83,7 @@ component
 	 * @return IColdboxApplicationCache
 	 */
 	function clearAllEvents( boolean async = false ){
-		var threadName = "clearAllEvents_#replace(
-			variables.uuidHelper.randomUUID(),
-			"-",
-			"",
-			"all"
-		)#";
+		var threadName = "clearAllEvents_#replace( randomUUID(), "-", "", "all" )#";
 
 		// Async? IF so, do checks
 		if ( arguments.async AND NOT variables.utility.inThread() ) {
@@ -122,12 +117,7 @@ component
 	 * @return IColdboxApplicationCache
 	 */
 	function clearAllViews( boolean async = false ){
-		var threadName = "clearAllViews_#replace(
-			variables.uuidHelper.randomUUID(),
-			"-",
-			"",
-			"all"
-		)#";
+		var threadName = "clearAllViews_#replace( randomUUID(), "-", "", "all" )#";
 
 		// Async? IF so, do checks
 		if ( arguments.async AND NOT variables.utility.inThread() ) {

@@ -20,27 +20,39 @@ component accessors="true" singleton {
 	 */
 	property name="native";
 
+	/**
+	 * The default timeout the executor service will wait for all of it's tasks to shutdown.
+	 * The default is 30 seconds. This number is in seconds.
+	 */
+	property
+		name   ="shutdownTimeout"
+		type   ="numeric"
+		default="30";
+
 	// Prepare the static time unit class
 	this.$timeUnit = new coldbox.system.async.time.TimeUnit();
 
 	/**
 	 * Constructor
 	 *
-	 * @name           The name of the executor
-	 * @executor       The native executor class
-	 * @debug          Add output debugging
-	 * @loadAppContext Load the CFML App contexts or not, disable if not used
+	 * @name            The name of the executor
+	 * @executor        The native executor class
+	 * @debug           Add output debugging
+	 * @loadAppContext  Load the CFML App contexts or not, disable if not used
+	 * @shutdownTimeout The timeout in seconds to use when gracefully shutting down the executor. Defaults to 30 seconds.
 	 */
 	Executor function init(
 		required name,
 		required executor,
-		boolean debug          = false,
-		boolean loadAppContext = true
+		boolean debug           = false,
+		boolean loadAppContext  = true,
+		numeric shutdownTimeout = 30
 	){
-		variables.name           = arguments.name;
-		variables.native         = arguments.executor;
-		variables.debug          = arguments.debug;
-		variables.loadAppContext = arguments.loadAppContext;
+		variables.name            = arguments.name;
+		variables.native          = arguments.executor;
+		variables.debug           = arguments.debug;
+		variables.loadAppContext  = arguments.loadAppContext;
+		variables.shutdownTimeout = arguments.shutdownTimeout;
 
 		return this;
 	}
@@ -105,17 +117,58 @@ component accessors="true" singleton {
 	 * the current thread is interrupted, whichever happens first.
 	 *
 	 * @timeout  The maximum time to wait
-	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is milliseconds
+	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is seconds
 	 *
 	 * @return true if all tasks have completed following shut down
 	 *
 	 * @throws InterruptedException - if interrupted while waiting
 	 */
-	boolean function awaitTermination( required numeric timeout, timeUnit = "milliseconds" ){
+	boolean function awaitTermination( required numeric timeout, timeUnit = "seconds" ){
 		return variables.native.awaitTermination(
 			javacast( "long", arguments.timeout ),
 			this.$timeUnit.get( arguments.timeUnit )
 		);
+	}
+
+	/**
+	 * Shuts down the executor in two phases, first by calling the shutdown() and rejecting all incoming tasks.
+	 * Second, calling shutdownNow() aggresively if tasks did not shutdown on time to cancel any lingering tasks.
+	 *
+	 * @timeout The timeout in seconds to wait for the shutdown.  By deafult we use the default on the property shutdownTimeout (30s)
+	 */
+	Executor function shutdownAndAwaitTermination( numeric timeout = variables.shutdownTimeout ){
+		var sTime = getTickCount();
+		// Disable new tasks from being submitted
+		shutdown();
+		try {
+			out( "Executor (#getName()#) shutdown executed, waiting for tasks to finalize..." );
+
+			// Wait for tasks to terminate
+			if ( !awaitTermination( arguments.timeout ) ) {
+				out( "Executor tasks did not shutdown, forcibly shutting down executor (#getName()#)..." );
+
+				// Cancel all tasks forcibly
+				var taskList = shutdownNow();
+
+				out( "Tasks waiting execution on executor (#getName()#) -> #taskList.toString()#" );
+
+				// Wait again now forcibly
+				if ( !awaitTermination( arguments.timeout ) ) {
+					err( "Executor (#getName()#) did not terminate even gracefully :(" );
+					return this;
+				}
+			}
+			out( "Executor (#getName()#) shutdown completed in (#numberFormat( getTickCount() - sTime )#ms)" );
+		}
+		// Catch if exceptions or interrupted
+		catch ( any e ) {
+			out( "Executor (#getName()#) shutdown interrupted or exception thrown (#e.message & e.detail#) :)" );
+			// force it down!
+			shutdownNow();
+			// Preserve interrupt status
+			createObject( "java", "java.lang.Thread" ).currentThread().interrupt();
+		}
+		return this;
 	}
 
 	/**
@@ -222,6 +275,26 @@ component accessors="true" singleton {
 			"isTerminating"      : isTerminating(),
 			"isShutdown"         : isShutdown()
 		};
+	}
+
+	/**
+	 * Utility to send to output to the output stream
+	 *
+	 * @var Variable/Message to send
+	 */
+	Executor function out( required var ){
+		createObject( "java", "java.lang.System" ).out.println( arguments.var.toString() );
+		return this;
+	}
+
+	/**
+	 * Utility to send to output to the error stream
+	 *
+	 * @var Variable/Message to send
+	 */
+	Executor function err( required var ){
+		createObject( "java", "java.lang.System" ).err.println( arguments.var.toString() );
+		return this;
 	}
 
 }

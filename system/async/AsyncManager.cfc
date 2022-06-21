@@ -236,32 +236,39 @@ component accessors="true" singleton {
 	 * Shutdown an executor or force it to shutdown, you can also do this from the Executor themselves.
 	 * If an un-registered executor name is passed, it will ignore it
 	 *
-	 * @force Use the shutdownNow() instead of the shutdown() method
+	 * @name    The name of the executor to shutdown
+	 * @force   Use the shutdownNow() instead of the shutdown() method
+	 * @timeout The timeout to use when force=false, to make sure all tasks finish gracefully. Deafult is 30 seconds.
 	 */
-	AsyncManager function shutdownExecutor( required name, boolean force = false ){
+	AsyncManager function shutdownExecutor(
+		required name,
+		boolean force   = false,
+		numeric timeout = 30
+	){
 		if ( hasExecutor( arguments.name ) ) {
 			if ( arguments.force ) {
 				variables.executors[ arguments.name ].shutdownNow();
 			} else {
-				variables.executors[ arguments.name ].shutdown();
+				variables.executors[ arguments.name ].shutdownAndAwaitTermination( arguments.timeout );
 			}
 		}
 		return this;
 	}
 
 	/**
-	 * Shutdown all registered executors in the system
+	 * Shutdown all registered executors in the system gracefully or not by using force = true
 	 *
-	 * @force By default (false) it gracefully shuts them down, else uses the shutdownNow() methods
+	 * @force   By default (false) it gracefully shuts them down, else uses the shutdownNow() methods
+	 * @timeout The timeout to use when force=false, to make sure all tasks finish gracefully. Deafult is 30 seconds.
 	 *
 	 * @return AsyncManager
 	 */
-	AsyncManager function shutdownAllExecutors( boolean force = false ){
+	AsyncManager function shutdownAllExecutors( boolean force = false, numeric timeout = 30 ){
 		variables.executors.each( function( key, schedule ){
 			if ( force ) {
 				arguments.schedule.shutdownNow();
 			} else {
-				arguments.schedule.shutdown();
+				arguments.schedule.shutdownAndAwaitTermination( timeout );
 			}
 		} );
 		return this;

@@ -68,11 +68,6 @@ component serializable="false" accessors="true" {
 	property name="SESBaseURL";
 
 	/**
-	 * Are we in SES mode for the request or not
-	 */
-	property name="SESEnabled" type="boolean";
-
-	/**
 	 * The incoming RESTFul routed struct (if any)
 	 */
 	property name="routedStruct" type="struct";
@@ -197,60 +192,47 @@ component serializable="false" accessors="true" {
 	 */
 	function init( required struct properties = {}, required any controller ){
 		// Store controller;
-		variables.controller = arguments.controller;
-
+		variables.controller        = arguments.controller;
 		// Create the Collections
-		variables.context        = structNew();
-		variables.privateContext = structNew();
-
+		variables.context           = structNew();
+		variables.privateContext    = structNew();
 		// flag for no event execution
-		variables.isNoExecution = false;
+		variables.isNoExecution     = false;
 		// the name of the event via URL/FORM/REMOTE
-		variables.eventName     = arguments.properties.eventName;
-
+		variables.eventName         = arguments.properties.eventName;
 		// Registered Layouts
 		variables.registeredLayouts = structNew();
 		if ( structKeyExists( arguments.properties, "registeredLayouts" ) ) {
 			variables.registeredLayouts = arguments.properties.registeredLayouts;
 		}
-
 		// Registered Folder Layouts
 		variables.folderLayouts = structNew();
 		if ( structKeyExists( arguments.properties, "folderLayouts" ) ) {
 			variables.folderLayouts = arguments.properties.folderLayouts;
 		}
-
 		// Registered View Layouts
 		variables.viewLayouts = structNew();
 		if ( structKeyExists( arguments.properties, "viewLayouts" ) ) {
 			variables.viewLayouts = arguments.properties.viewLayouts;
 		}
-
 		// Private Modules reference
-		variables.modules = arguments.properties.modules;
-
+		variables.modules       = arguments.properties.modules;
 		// Default layout + View
 		variables.defaultLayout = arguments.properties.defaultLayout;
 		variables.defaultView   = arguments.properties.defaultView;
-
 		// SES Base URL
-		variables.SESBaseURL = "";
+		variables.SESBaseURL    = "";
 		if ( structKeyExists( arguments.properties, "SESBaseURL" ) ) {
 			variables.SESBaseURL = arguments.properties.SESBaseURL;
 		}
-		// flag if using SES
-		variables.SESEnabled   = false;
 		// routed SES structures
-		variables.routedStruct = structNew();
-
+		variables.routedStruct      = structNew();
 		// Private Flag for Invalid HTTP Method
 		variables.invalidHTTPMethod = false;
-
 		// Rendering Regions
-		variables.renderingRegions = {};
-
+		variables.renderingRegions  = {};
 		// Response Headers
-		variables.responseHeaders = {};
+		variables.responseHeaders   = {};
 
 		return this;
 	}
@@ -864,7 +846,7 @@ component serializable="false" accessors="true" {
 		name
 	){
 		// Do we have an incoming rendering region definition? If we do, store it and return
-		if ( structKeyExists( arguments, "name" ) ) {
+		if ( !isNull( arguments.name ) ) {
 			variables.renderingRegions[ arguments.name ] = arguments;
 			return this;
 		}
@@ -873,42 +855,16 @@ component serializable="false" accessors="true" {
 		variables.privateContext[ "viewModule" ] = arguments.module;
 
 		// Direct Layout Usage
-		if ( structKeyExists( arguments, "layout" ) ) {
+		if ( !isNull( arguments.layout ) && len( arguments.layout ) ) {
 			setLayout( arguments.layout );
 		}
-		// Discover layout
-		else if ( NOT arguments.nolayout AND NOT getPrivateValue( name = "layoutoverride", defaultValue = false ) ) {
-			// Verify that the view has a layout in the viewLayouts structure, static lookups
-			if ( structKeyExists( variables.viewLayouts, lCase( arguments.view ) ) ) {
-				setPrivateValue( "currentLayout", variables.viewLayouts[ lCase( arguments.view ) ] );
-			} else {
-				// Check the folders structure
-				for ( var key in variables.folderLayouts ) {
-					if ( reFindNoCase( "^#key#", lCase( arguments.view ) ) ) {
-						setPrivateValue( "currentLayout", variables.folderLayouts[ key ] );
-						break;
-					}
-				}
-				// end for loop
-			}
-			// end else
-
-			// If not layout, then set default from main application
-			if ( not privateValueExists( "currentLayout", true ) ) {
-				setPrivateValue( "currentLayout", variables.defaultLayout );
-			}
-
-			// If in current module, check for a module default layout\
-			var cModule = getCurrentModule();
-			if (
-				len( cModule )
-				AND structKeyExists( variables.modules, cModule )
-				AND len( variables.modules[ cModule ].layoutSettings.defaultLayout )
-			) {
-				setPrivateValue( "currentLayout", variables.modules[ cModule ].layoutSettings.defaultLayout );
+		// else try to discover it.
+		else if ( NOT arguments.noLayout AND NOT getPrivateValue( name = "layoutoverride", defaultValue = false ) ) {
+			var discoveredLayout = discoverLayout( arguments.view );
+			if ( discoveredLayout.len() ) {
+				setPrivateValue( "currentLayout", discoveredLayout );
 			}
 		}
-		// end layout discover
 
 		// No Layout Rendering?
 		if ( arguments.nolayout ) {
@@ -945,6 +901,46 @@ component serializable="false" accessors="true" {
 		setPrivateValue( "currentViewArgs", arguments.args, true );
 
 		return this;
+	}
+
+	/**
+	 * This function discovers implicitly the layout that accompanies the passed in view
+	 * via the <pre>viewLayouts</pre> setting.
+	 *
+	 * @view The target view to discover the layout for.
+	 *
+	 * @return The layout attached to this view for rendering purposes, if none is discovered an empty string is returned.
+	 */
+	function discoverLayout( required string view ){
+		// Verify that the view has a layout in the viewLayouts
+		if ( structKeyExists( variables.viewLayouts, arguments.view ) ) {
+			return variables.viewLayouts[ arguments.view ];
+		}
+
+		// Check the folders conventions now
+		for ( var key in variables.folderLayouts ) {
+			if ( reFindNoCase( "^#key#", arguments.view ) ) {
+				return variables.folderLayouts[ key ];
+			}
+		}
+
+		// If in current module, check for a module default layout
+		var cModule = getCurrentModule();
+		if (
+			len( cModule )
+			AND structKeyExists( variables.modules, cModule )
+			AND len( variables.modules[ cModule ].layoutSettings.defaultLayout )
+		) {
+			return variables.modules[ cModule ].layoutSettings.defaultLayout;
+		}
+
+		// Fallback to application global layout
+		if ( not privateValueExists( "currentLayout" ) ) {
+			return variables.defaultLayout;
+		}
+
+		// Else, we have no clue what layout, set to empty
+		return "";
 	}
 
 	/**
@@ -1065,18 +1061,21 @@ component serializable="false" accessors="true" {
 	/**
 	 * Setter for verifying SES mode
 	 *
+	 * @deprecated This will be removed in ColdBox 7
+	 *
 	 * @return RequestContext
 	 */
 	function setSESEnabled( required boolean flag ){
-		variables.SESEnabled = arguments.flag;
 		return this;
 	}
 
 	/**
 	 * Verify if SES is enabled or not in the request
+	 *
+	 * @deprecated This will be removed in ColdBox 7
 	 */
 	boolean function isSES(){
-		return variables.SESEnabled;
+		return true;
 	}
 
 	/**
@@ -1248,55 +1247,45 @@ component serializable="false" accessors="true" {
 			frontController = arguments.baseURL;
 		}
 
-		// SES Mode
-		if ( variables.SESEnabled ) {
-			// SSL ON OR TURN IT ON
-			if ( isSSL() OR ( !isNull( arguments.ssl ) and arguments.ssl ) ) {
-				variables.SESBaseURL = replaceNoCase( variables.SESBaseURL, "http:", "https:" );
-			}
+		// SSL ON OR TURN IT ON
+		if ( isSSL() OR ( !isNull( arguments.ssl ) and arguments.ssl ) ) {
+			variables.SESBaseURL = replaceNoCase( variables.SESBaseURL, "http:", "https:" );
+		}
 
-			// SSL Turn Off
-			if ( !isNull( arguments.ssl ) and arguments.ssl eq false ) {
-				variables.SESBaseURL = replaceNoCase( variables.SESBaseURL, "https:", "http:" );
-			}
+		// SSL Turn Off
+		if ( !isNull( arguments.ssl ) and arguments.ssl eq false ) {
+			variables.SESBaseURL = replaceNoCase( variables.SESBaseURL, "https:", "http:" );
+		}
 
-			// Translate link or plain
-			if ( arguments.translate ) {
-				// Convert module into proper entry point
-				if ( listLen( arguments.to, ":" ) > 1 ) {
-					var mConfig = controller.getSetting( "modules" );
-					var module  = listFirst( arguments.to, ":" );
-					if ( structKeyExists( mConfig, module ) ) {
-						arguments.to = mConfig[ module ].inheritedEntryPoint & "/" & listRest( arguments.to, ":" );
-					}
+		// Translate link or plain
+		if ( arguments.translate ) {
+			// Convert module into proper entry point
+			if ( listLen( arguments.to, ":" ) > 1 ) {
+				var mConfig = controller.getSetting( "modules" );
+				var module  = listFirst( arguments.to, ":" );
+				if ( structKeyExists( mConfig, module ) ) {
+					arguments.to = mConfig[ module ].inheritedEntryPoint & "/" & listRest( arguments.to, ":" );
 				}
-				arguments.to = replace( arguments.to, ".", "/", "all" );
+			}
+			arguments.to = replace( arguments.to, ".", "/", "all" );
 
-				// Conversions
-				if ( len( arguments.queryString ) ) {
-					if ( right( arguments.to, 1 ) neq "/" ) {
-						arguments.to = arguments.to & "/";
-					}
-					arguments.to = arguments.to & replace( arguments.queryString, "&", "/", "all" );
-					arguments.to = replace( arguments.to, "=", "/", "all" );
+			// Conversions
+			if ( len( arguments.queryString ) ) {
+				if ( right( arguments.to, 1 ) neq "/" ) {
+					arguments.to = arguments.to & "/";
 				}
-			} else if ( len( arguments.queryString ) ) {
-				arguments.to = arguments.to & "?" & arguments.queryString;
+				arguments.to = arguments.to & replace( arguments.queryString, "&", "/", "all" );
+				arguments.to = replace( arguments.to, "=", "/", "all" );
 			}
+		} else if ( len( arguments.queryString ) ) {
+			arguments.to = arguments.to & "?" & arguments.queryString;
+		}
 
-			// Prepare SES Base URL Link
-			if ( right( variables.SESBaseURL, 1 ) eq "/" ) {
-				return variables.SESBaseURL & arguments.to;
-			} else {
-				return variables.SESBaseURL & "/" & arguments.to;
-			}
+		// Prepare SES Base URL Link
+		if ( right( variables.SESBaseURL, 1 ) eq "/" ) {
+			return variables.SESBaseURL & arguments.to;
 		} else {
-			// Check if sending in Query String
-			if ( len( arguments.queryString ) eq 0 ) {
-				return "#frontController#?#variables.eventName#=#arguments.to#";
-			} else {
-				return "#frontController#?#variables.eventName#=#arguments.to#&#arguments.queryString#";
-			}
+			return variables.SESBaseURL & "/" & arguments.to;
 		}
 	}
 

@@ -9,10 +9,9 @@
 			"getContext",
 			getMockRequestContext()
 		);
-		mockController = createEmptyMock( "coldbox.system.web.Controller" ).$(
-			"getRequestService",
-			mockRequestService
-		);
+		mockController = createMock( "coldbox.system.web.Controller" )
+			.init( expandPath( "/cbtestharness" ) )
+			.$( "getRequestService", mockRequestService );
 
 		this.state = createMock( "coldbox.system.web.context.InterceptorState" );
 		this.event = getMockRequestContext();

@@ -329,7 +329,7 @@
 		var xml = xmlParse( str );
 		assertEquals( xml.video.XMLAttributes.width, "200" );
 		assertEquals( xml.video.XMLAttributes.height, "200" );
-		assertEquals( xml.video.XMLAttributes.src, "includes/movie.ogg" );
+		expect( xml.video.XMLAttributes.src ).toInclude( "includes/movie.ogg" );
 	}
 
 	function testAudio(){
@@ -341,7 +341,7 @@
 		var xml = xmlParse( str );
 		assertEquals( xml.audio.XMLAttributes.autoplay, "autoplay" );
 		assertEquals( xml.audio.XMLAttributes.loop, "loop" );
-		assertEquals( xml.audio.XMLAttributes.src, "includes/song.ogg" );
+		expect( xml.audio.XMLAttributes.src ).toInclude( "includes/song.ogg" );
 	}
 
 	function testCanvas(){
@@ -355,8 +355,7 @@
 		assertEquals( "</form>", str );
 
 		str = model.startForm( action = "user.save" );
-		// debug(str);
-		assertTrue( findNoCase( "user.save""", str ) );
+		expect( str ).toInclude( "&##x2f;user&##x2f;save" );
 
 		var mockEvent = getMockRequestContext().$( "buildLink", "http://www.coldbox.org/user/save" );
 		mockRequestService.$( "getContext", mockEvent );
@@ -739,12 +738,12 @@
 
 	function testhref(){
 		str = model.href( href = "actions.save" );
-		// debug(str);
-		assertEquals( "<a href=""#encodeForHTMLAttribute( "index.cfm?event=actions.save" )#""></a>", str );
+
+		assertEquals( "<a href=""#encodeForHTMLAttribute( "http://localhost/actions/save" )#""></a>", str );
 
 		str = model.href( href = "actions.save", text = "Edit" );
 		// debug(str);
-		assertEquals( "<a href=""#encodeForHTMLAttribute( "index.cfm?event=actions.save" )#"">Edit</a>", str );
+		assertEquals( "<a href=""#encodeForHTMLAttribute( "http://localhost/actions/save" )#"">Edit</a>", str );
 	}
 
 

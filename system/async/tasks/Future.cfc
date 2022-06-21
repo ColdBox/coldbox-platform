@@ -193,11 +193,11 @@ component accessors="true" {
 	any function join( defaultValue ){
 		var results = variables.native.join();
 
-		if ( !isNull( results ) ) {
-			return results;
+		if ( !isNull( local.results ) ) {
+			return local.results;
 		}
 
-		if ( isNull( results ) && !isNull( arguments.defaultValue ) ) {
+		if ( isNull( local.results ) && !isNull( arguments.defaultValue ) ) {
 			return arguments.defaultValue;
 		}
 	}
@@ -240,8 +240,8 @@ component accessors="true" {
 		}
 
 		// If we have results, return them
-		if ( !isNull( results ) ) {
-			return results;
+		if ( !isNull( local.results ) ) {
+			return local.results;
 		}
 
 		// If we didn't, do we have a default value

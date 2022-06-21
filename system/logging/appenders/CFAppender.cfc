@@ -60,7 +60,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 		if ( hasCustomLayout() ) {
 			entry = getCustomLayout().format( arguments.logEvent );
 		} else {
-			entry = "#arguments.logEvent.getCategory()# #arguments.logEvent.getMessage()# ExtraInfo: #arguments.logEvent.getextraInfoAsString()#";
+			entry = "#arguments.logEvent.getCategory()# #arguments.logEvent.getMessage()# | ExtraInfo: #arguments.logEvent.getextraInfoAsString()#";
 		}
 
 		if ( getProperty( "logType" ) == "file" ) {

@@ -19,6 +19,7 @@ component accessors=true serializable=false {
 	 * The name of this cache provider
 	 */
 	property name="name" default="";
+
 	/**
 	 * Is the cache enabled or not for operation
 	 */
@@ -26,6 +27,7 @@ component accessors=true serializable=false {
 		name   ="enabled"
 		type   ="boolean"
 		default="false";
+
 	/**
 	 * Can this cache do reporting
 	 */
@@ -33,32 +35,39 @@ component accessors=true serializable=false {
 		name   ="reportingEnabled"
 		type   ="boolean"
 		default="false";
+
 	/**
 	 * The stats object linkage if any
 	 */
 	property name="stats" default="";
+
 	/**
 	 * The cache configuration struct
 	 */
 	property name="configuration" type="struct";
+
 	/**
 	 * The cache factory linkage
 	 */
 	property name="cacheFactory" default="";
+
 	/**
 	 * The event manager linkage
 	 */
 	property name="eventManager" default="";
+
 	/**
 	 * The internal cache Id
 	 */
 	property name="cacheId" default="";
+
 	/**
 	 * ColdBox Utility object
 	 *
 	 * @doc_generic coldbox.system.core.util.Util
 	 */
 	property name="utility";
+
 	/**
 	 * A Java utility to generate UUIDs
 	 */
@@ -86,12 +95,7 @@ component accessors=true serializable=false {
 		// event manager instance
 		variables.eventManager     = "";
 		// cache internal identifier
-		variables.cacheID          = createObject( "java", "java.lang.System" ).identityHashCode( this );
-		// ColdBox Utility
-		variables.utility          = new coldbox.system.core.util.Util();
-		// our UUID creation helper
-		variables.uuidHelper       = createObject( "java", "java.util.UUID" );
-
+		variables.cacheID          = createUUID();
 		return this;
 	}
 
@@ -100,6 +104,18 @@ component accessors=true serializable=false {
 	 */
 	function getName(){
 		return variables.name;
+	}
+
+	/**
+	 * Get the ColdBox Utility class
+	 *
+	 * @return coldbox.system.core.util.Util
+	 */
+	function getUtility(){
+		if ( isNull( variables.utility ) ) {
+			variables.utility = new coldbox.system.core.util.Util();
+		}
+		return variables.utility;
 	}
 
 	/**
@@ -409,6 +425,10 @@ component accessors=true serializable=false {
 	 * Produce a fast random UUID
 	 */
 	function randomUUID(){
+		// our UUID creation helper
+		if ( isNull( variables.uuidHelper ) ) {
+			variables.uuidHelper = createObject( "java", "java.util.UUID" );
+		}
 		return variables.uuidHelper.randomUUID();
 	}
 
@@ -425,7 +445,7 @@ component accessors=true serializable=false {
 	 * Verifies if the request is in the current thread or another spawned thread
 	 */
 	boolean function inThread(){
-		return variables.utility.inThread();
+		return getUtility().inThread();
 	}
 
 	/************************************ PRIVATE ************************************/

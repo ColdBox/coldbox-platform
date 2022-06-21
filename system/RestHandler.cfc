@@ -45,9 +45,9 @@ component extends="EventHandler" {
 			arguments.event.getResponse();
 			// prepare argument execution
 			var actionArgs = {
-				event : arguments.event,
-				rc    : arguments.rc,
-				prc   : arguments.prc
+				"event" : arguments.event,
+				"rc"    : arguments.rc,
+				"prc"   : arguments.prc
 			};
 			structAppend( actionArgs, arguments.eventArguments );
 			// Incoming Format Detection
@@ -107,7 +107,7 @@ component extends="EventHandler" {
 
 		// Did the controllers set a view to be rendered? If not use renderdata, else just delegate to view.
 		if (
-			isNull( actionResults )
+			isNull( local.actionResults )
 			AND
 			!arguments.event.getCurrentView().len()
 			AND
@@ -143,8 +143,8 @@ component extends="EventHandler" {
 		}
 
 		// If results detected, just return them, controllers requesting to return results
-		if ( !isNull( actionResults ) ) {
-			return actionResults;
+		if ( !isNull( local.actionResults ) ) {
+			return local.actionResults;
 		}
 	}
 
@@ -162,8 +162,8 @@ component extends="EventHandler" {
 		event,
 		rc,
 		prc,
-		faultAction = "",
-		exception,
+		faultAction    = "",
+		exception      = {},
 		eventArguments = {}
 	){
 		// Try to discover exception, if not, hard error
@@ -226,7 +226,7 @@ component extends="EventHandler" {
 	 * @eventArguments The original event arguments
 	 * @exception      The thrown exception
 	 */
-	function onValidationException( event, rc, prc, eventArguments, exception ){
+	function onValidationException( event, rc, prc, eventArguments, exception = {} ){
 		// Log Locally
 		if ( log.canDebug() ) {
 			log.debug(
@@ -234,6 +234,9 @@ component extends="EventHandler" {
 				arguments.exception.extendedInfo ?: ""
 			);
 		}
+
+		// Announce exception
+		announce( "onException", { "exception" : arguments.exception } );
 
 		// Setup Response
 		arguments.event
@@ -268,7 +271,11 @@ component extends="EventHandler" {
 	 * @eventArguments The original event arguments
 	 * @exception      The thrown exception
 	 */
-	function onEntityNotFoundException( event, rc, prc, eventArguments, exception ){
+	function onEntityNotFoundException( event, rc, prc, eventArguments, exception = {} ){
+		// Param Exceptions, just in case
+		param name="arguments.exception.message"      default="";
+		param name="arguments.exception.extendedInfo" default="";
+
 		// Log Locally
 		if ( log.canDebug() ) {
 			log.debug(
@@ -277,12 +284,17 @@ component extends="EventHandler" {
 			);
 		}
 
+		// Announce exception
+		announce( "onException", { "exception" : arguments.exception } );
+
 		// Setup Response
 		arguments.event
 			.getResponse()
 			.setError( true )
 			.setData( rc.id ?: "" )
-			.addMessage( "The record you requested cannot be found in this system" )
+			.addMessage(
+				len( exception.message ) ? exception.message : "The record you requested cannot be found in this system"
+			)
 			.setStatusCode( arguments.event.STATUS.NOT_FOUND )
 			.setStatusText( "Not Found" );
 
@@ -372,18 +384,23 @@ component extends="EventHandler" {
 	 *
 	 * It also monitors cbsecurity convention of validator results for setting error messages into the data packet
 	 *
-	 * @event The request context
-	 * @rc    The rc reference
-	 * @prc   The prc reference
+	 * @event     The request context
+	 * @rc        The rc reference
+	 * @prc       The prc reference
+	 * @exception The thrown exception
 	 *
 	 * @return 403
 	 */
 	function onAuthenticationFailure(
-		event = getRequestContext(),
-		rc    = getRequestCollection(),
-		prc   = getRequestCollection( private = true ),
-		abort = false
+		event     = getRequestContext(),
+		rc        = getRequestCollection(),
+		prc       = getRequestCollection( private = true ),
+		abort     = false,
+		exception = {}
 	){
+		// Announce exception
+		announce( "onException", { "exception" : arguments.exception } );
+
 		// case when the a jwt token was valid, but expired
 		if (
 			!isNull( arguments.prc.cbSecurity_validatorResults ) &&
@@ -412,17 +429,22 @@ component extends="EventHandler" {
 	 *
 	 * It will check for cbsecurity validation results and set the appropriate error messages
 	 *
-	 * @event The request context
-	 * @rc    The rc reference
-	 * @prc   The prc reference
-	 * @abort Hard abort the request if passed, defaults to false
+	 * @event     The request context
+	 * @rc        The rc reference
+	 * @prc       The prc reference
+	 * @abort     Hard abort the request if passed, defaults to false
+	 * @exception The thrown exception
 	 */
 	function onAuthorizationFailure(
-		event = getRequestContext(),
-		rc    = getRequestCollection(),
-		prc   = getRequestCollection( private = true ),
-		abort = false
+		event     = getRequestContext(),
+		rc        = getRequestCollection(),
+		prc       = getRequestCollection( private = true ),
+		abort     = false,
+		exception = {}
 	){
+		// Announce exception
+		announce( "onException", { "exception" : arguments.exception } );
+
 		arguments.event
 			.getResponse()
 			.setError( true )
@@ -485,7 +507,7 @@ component extends="EventHandler" {
 	 * @eventArguments The original event arguments
 	 * @exception      The thrown exception
 	 */
-	function onAnyOtherException( event, rc, prc, eventArguments, exception ){
+	function onAnyOtherException( event, rc, prc, eventArguments, exception = {} ){
 		// Log Exception
 		log.error(
 			"Error calling #arguments.event.getCurrentEvent()#: #arguments.exception.message# #arguments.exception.detail#",
@@ -494,6 +516,9 @@ component extends="EventHandler" {
 				"httpData"    : getHTTPRequestData( false )
 			}
 		);
+
+		// Announce exception
+		announce( "onException", { "exception" : arguments.exception } );
 
 		// Setup General Error Response
 		arguments.prc.response

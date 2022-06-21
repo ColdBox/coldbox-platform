@@ -30,11 +30,6 @@
 component serializable="false" accessors="true" {
 
 	/**
-	 * Java System
-	 */
-	property name="javaSystem";
-
-	/**
 	 * ColdBox  Utility class
 	 */
 	property name="utility";
@@ -121,11 +116,10 @@ component serializable="false" accessors="true" {
 	/**
 	 * Constructor. If called without a configuration binder, then WireBox will instantiate the default configuration binder found in: coldbox.system.ioc.config.DefaultBinder
 	 *
-	 * @binder                 The WireBox binder or data CFC instance or instantiation path to configure this injector with
-	 * @properties             A structure of binding properties to passthrough to the Binder Configuration CFC
-	 * @properties.doc_generic struct
-	 * @coldbox                A coldbox application context that this instance of WireBox can be linked to, if not using it, we just ignore it.
-	 * @coldbox.doc_generic    coldbox.system.web.Controller
+	 * @binder              The WireBox binder or data CFC instance or instantiation path to configure this injector with
+	 * @properties          A structure of binding properties to passthrough to the Binder Configuration CFC
+	 * @coldbox             A coldbox application context that this instance of WireBox can be linked to, if not using it, we just ignore it.
+	 * @coldbox.doc_generic coldbox.system.web.Controller
 	 **/
 	Injector function init(
 		binder            = "coldbox.system.ioc.config.DefaultBinder",
@@ -133,21 +127,20 @@ component serializable="false" accessors="true" {
 		coldbox           = ""
 	){
 		// Setup Available public scopes
-		this.SCOPES = new coldbox.system.ioc.Scopes();
+		this.SCOPES         = new coldbox.system.ioc.Scopes();
 		// Setup Available public types
-		this.TYPES  = new coldbox.system.ioc.Types();
+		this.TYPES          = new coldbox.system.ioc.Types();
+		// Build out the utilities
+		variables.utility   = new coldbox.system.core.util.Util();
+		variables.mixerUtil = variables.utility.getMixerUtil();
+
+		// Instance contains lookup
+		variables.containsLookupMap = createObject( "java", "java.util.concurrent.ConcurrentHashMap" ).init();
 
 		// Do we have a binder?
 		if ( isSimpleValue( arguments.binder ) AND NOT len( trim( arguments.binder ) ) ) {
 			arguments.binder = "coldbox.system.ioc.config.DefaultBinder";
 		}
-
-		// Java System
-		variables.javaSystem   = createObject( "java", "java.lang.System" );
-		// Utility class
-		variables.utility      = new coldbox.system.core.util.Util();
-		// Scope Storages
-		variables.scopeStorage = new coldbox.system.core.collections.ScopeStorage();
 		// Version
 		variables.version      = "@build.version@+@build.number@";
 		// The Configuration Binder object
@@ -174,17 +167,25 @@ component serializable="false" accessors="true" {
 			"afterInstanceAutowire" // X right after an instance is autowired
 		];
 		// LogBox and Class Logger
-		variables.logBox         = "";
-		variables.log            = "";
+		variables.logBox = "";
+		variables.log    = "";
 		// Parent Injector
-		variables.parent         = "";
+		variables.parent = "";
 		// LifeCycle Scopes
-		variables.scopes         = {};
+		variables.scopes = {
+			"APPLICATION" : "",
+			"CACHEBOX"    : "",
+			"NOSCOPE"     : "",
+			"REQUEST"     : "",
+			"SERVER"      : "",
+			"SESSION"     : "",
+			"SINGLETON"   : ""
+		};
 		// Child Injectors
 		variables.childInjectors = structNew( "ordered" );
 
 		// Prepare instance ID
-		variables.injectorID = variables.javaSystem.identityHashCode( this );
+		variables.injectorID = createUUID();
 		// Prepare Lock Info
 		variables.lockName   = "WireBox.Injector.#variables.injectorID#";
 		// Link ColdBox Context if passed
@@ -198,6 +199,15 @@ component serializable="false" accessors="true" {
 				threads: 20
 			);
 		} else {
+			// link LogBox
+			variables.logBox        = variables.coldbox.getLogBox();
+			// Configure Logging for this injector
+			variables.log           = variables.logBox.getLogger( this );
+			// Link CacheBox
+			variables.cacheBox      = variables.coldbox.getCacheBox();
+			// Link Event Manager
+			variables.eventManager  = variables.coldbox.getInterceptorService();
+			// Link Async Manager
 			variables.asyncManager  = variables.coldbox.getAsyncManager();
 			variables.taskScheduler = variables.asyncManager.getExecutor( "coldbox-tasks" );
 		}
@@ -275,81 +285,60 @@ component serializable="false" accessors="true" {
 	 * @properties.doc_generic struct
 	 **/
 	Injector function configure( required binder, required struct properties ){
-		var iData       = {};
-		var withColdbox = isColdBoxLinked();
+		// Create and Configure Event Manager
+		configureEventManager();
 
-		// Lock For Configuration
-		lock name=variables.lockName type="exclusive" timeout="30" throwontimeout="true" {
-			if ( withColdBox ) {
-				// link LogBox
-				variables.logBox       = variables.coldbox.getLogBox();
-				// Configure Logging for this injector
-				variables.log          = variables.logBox.getLogger( this );
-				// Link CacheBox
-				variables.cacheBox     = variables.coldbox.getCacheBox();
-				// Link Event Manager
-				variables.eventManager = variables.coldbox.getInterceptorService();
-			}
+		// Store binder object built accordingly to our binder building procedures
+		variables.binder = buildBinder( arguments.binder, arguments.properties );
 
-			// Create and Configure Event Manager
-			configureEventManager();
-
-			// Store binder object built accordingly to our binder building procedures
-			variables.binder = buildBinder( arguments.binder, arguments.properties );
-
-			// Create local cache, logging and event management if not coldbox context linked.
-			if ( NOT withColdbox ) {
-				// Running standalone, so create our own logging first
-				configureLogBox( variables.binder.getLogBoxConfig() );
-				// Create local CacheBox reference
-				configureCacheBox( variables.binder.getCacheBoxConfig() );
-			}
-
-			// Register All Custom Listeners
-			registerListeners();
-			// Create our object builder
-			variables.builder = new coldbox.system.ioc.Builder( this );
-			// Register Custom DSL Builders
-			variables.builder.registerCustomBuilders();
-			// Register Life Cycle Scopes
-			registerScopes();
-			// Parent Injector declared
-			if ( isObject( variables.binder.getParentInjector() ) ) {
-				setParent( variables.binder.getParentInjector() );
-			}
-
-			// Scope registration if enabled?
-			if ( variables.binder.getScopeRegistration().enabled ) {
-				doScopeRegistration();
-			}
-
-			// Register binder as an interceptor
-			if ( NOT isColdBoxLinked() ) {
-				variables.eventManager.register( variables.binder, "wirebox-binder" );
-			} else {
-				variables.eventManager.registerInterceptor(
-					interceptorObject = variables.binder,
-					interceptorName   = "wirebox-binder"
-				);
-			}
-
-			// process mappings for metadata and initialization.
-			if ( variables.binder.getAutoProcessMappings() ) {
-				variables.binder.processMappings();
-			}
-
-			// Process Eager Inits
-			variables.binder.processEagerInits();
-
-			// Check if binder has onLoad convention and execute callback
-			if ( structKeyExists( variables.binder, "onLoad" ) ) {
-				variables.binder.onLoad( this );
-			}
-
-			// Announce To Listeners we are online
-			iData.injector = this;
-			variables.eventManager.announce( "afterInjectorConfiguration", iData );
+		// Create local cache, logging and event management if not coldbox context linked.
+		if ( NOT isColdBoxLinked() ) {
+			// Running standalone, so create our own logging first
+			configureLogBox( variables.binder.getLogBoxConfig() );
+			// Create local CacheBox reference
+			configureCacheBox( variables.binder.getCacheBoxConfig() );
 		}
+
+		// Create our object builder
+		variables.objectBuilder = new coldbox.system.ioc.Builder( this );
+		// Register Custom DSL Builders
+		variables.objectBuilder.registerCustomBuilders();
+
+		// Register All Custom Listeners
+		registerListeners();
+
+		// Register Life Cycle Scopes
+		registerScopes();
+
+		// Parent Injector declared
+		if ( isObject( variables.binder.getParentInjector() ) ) {
+			setParent( variables.binder.getParentInjector() );
+		}
+
+		// Scope registration if enabled?
+		if ( variables.binder.getScopeRegistration().enabled ) {
+			doScopeRegistration( variables.binder.getScopeRegistration() );
+		}
+
+		// Register binder as an interceptor
+		variables.eventManager.register( variables.binder, "wirebox-binder" );
+
+		// process mappings for metadata and initialization if enabled
+		// we lazy load processing
+		if ( variables.binder.getAutoProcessMappings() ) {
+			variables.binder.processMappings();
+		}
+
+		// Process Eager Inits
+		variables.binder.processEagerInits();
+
+		// Check if binder has onLoad convention and execute callback
+		if ( structKeyExists( variables.binder, "onLoad" ) ) {
+			variables.binder.onLoad( this );
+		}
+
+		// Announce To Listeners we are online
+		variables.eventManager.announce( "afterInjectorConfiguration", { injector : this } );
 
 		return this;
 	}
@@ -451,13 +440,13 @@ component serializable="false" accessors="true" {
 		}
 
 		// Is the name a DSL?
-		if ( !isNull( arguments.name ) && variables.builder.isDSLString( arguments.name ) ) {
+		if ( !isNull( arguments.name ) && variables.objectBuilder.isDSLString( arguments.name ) ) {
 			arguments.dsl = arguments.name;
 		}
 
 		// Get by DSL?
 		if ( !isNull( arguments.dsl ) ) {
-			return variables.builder.buildSimpleDSL(
+			return variables.objectBuilder.buildSimpleDSL(
 				dsl          = arguments.dsl,
 				targetID     = "ExplicitCall",
 				targetObject = arguments.targetObject
@@ -515,18 +504,6 @@ component serializable="false" accessors="true" {
 			}
 		}
 
-		// scope persistence check
-		if ( NOT structKeyExists( variables.scopes, mapping.getScope() ) ) {
-			variables.log.error(
-				"The mapping scope: #mapping.getScope()# is invalid and not registered in the valid scopes: #structKeyList( variables.scopes )#"
-			);
-			throw(
-				message = "Requested mapping scope: #mapping.getScope()# is invalid for #mapping.getName()#",
-				detail  = "The registered valid object scopes are #structKeyList( variables.scopes )#",
-				type    = "Injector.InvalidScopeException"
-			);
-		}
-
 		// Request object from scope now, we now have it from the scope created, initialized and wired
 		var target = variables.scopes[ mapping.getScope() ].getFromScope( mapping, arguments.initArguments );
 
@@ -547,8 +524,6 @@ component serializable="false" accessors="true" {
 	 * @initArguments       The constructor structure of arguments to passthrough when initializing the instance
 	 **/
 	function buildInstance( required mapping, struct initArguments = {} ){
-		var thisMap = arguments.mapping;
-
 		// before construction event
 		variables.eventManager.announce(
 			"beforeInstanceCreation",
@@ -557,60 +532,63 @@ component serializable="false" accessors="true" {
 
 		var oModel = "";
 		// determine construction type
-		switch ( thisMap.getType() ) {
+		switch ( arguments.mapping.getType() ) {
 			case "cfc": {
-				oModel = variables.builder.buildCFC( thisMap, arguments.initArguments );
+				oModel = variables.objectBuilder.buildCFC( arguments.mapping, arguments.initArguments );
 				break;
 			}
 			case "java": {
-				oModel = variables.builder.buildJavaClass( thisMap );
+				oModel = variables.objectBuilder.buildJavaClass( arguments.mapping );
 				break;
 			}
 			case "webservice": {
-				oModel = variables.builder.buildWebservice( thisMap, arguments.initArguments );
+				oModel = variables.objectBuilder.buildWebservice( arguments.mapping, arguments.initArguments );
 				break;
 			}
 			case "constant": {
-				oModel = thisMap.getValue();
+				oModel = arguments.mapping.getValue();
 				break;
 			}
 			case "rss": {
-				oModel = variables.builder.buildFeed( thisMap );
+				oModel = variables.objectBuilder.buildFeed( arguments.mapping );
 				break;
 			}
 			case "dsl": {
-				oModel = variables.builder.buildSimpleDSL( dsl = thisMap.getDSL(), targetID = thisMap.getName() );
+				oModel = variables.objectBuilder.buildSimpleDSL(
+					dsl      = arguments.mapping.getDSL(),
+					targetID = arguments.mapping.getName()
+				);
 				break;
 			}
 			case "factory": {
-				oModel = variables.builder.buildFactoryMethod( thisMap, arguments.initArguments );
+				oModel = variables.objectBuilder.buildFactoryMethod( arguments.mapping, arguments.initArguments );
 				break;
 			}
 			case "provider": {
 				// verify if it is a simple value or closure/UDF
-				if ( isSimpleValue( thisMap.getPath() ) ) {
-					oModel = getInstance( thisMap.getPath() ).$get();
+				if ( isSimpleValue( arguments.mapping.getPath() ) ) {
+					oModel = getInstance( arguments.mapping.getPath() ).$get();
 				} else {
-					var closure = thisMap.getPath();
+					var closure = arguments.mapping.getPath();
 					oModel      = closure( injector = this );
 				}
 				break;
 			}
 			default: {
 				throw(
-					message = "Invalid Construction Type: #thisMap.getType()#",
+					message = "Invalid Construction Type: #arguments.mapping.getType()#",
 					type    = "Injector.InvalidConstructionType"
 				);
 			}
 		}
 
 		// Check and see if this mapping as an influence closure
-		var influenceClosure = thisMap.getInfluenceClosure();
-		if ( !isSimpleValue( influenceClosure ) ) {
+		if ( arguments.mapping.hasInfluenceClosure() ) {
+			var influenceClosure = arguments.mapping.getInfluenceClosure();
 			// Influence the creation of the instance
-			var result = influenceClosure( instance = oModel, injector = this );
+			var result           = influenceClosure( instance = oModel, injector = this );
 			// Allow the closure to override the entire instance if it wishes
-			if ( !isNull( local.result ) ) {
+			if ( !isNull( result ) ) {
 				oModel = result;
 			}
 		}
@@ -670,7 +648,7 @@ component serializable="false" accessors="true" {
 	 * @path      The instantiation path to the CFC that implements this scope, it must have an init() method and implement: coldbox.system.ioc.dsl.IDSLBuilder
 	 */
 	Injector function registerDSL( required namespace, required path ){
-		variables.builder.registerDSL( argumentCollection = arguments );
+		variables.objectBuilder.registerDSL( argumentCollection = arguments );
 		return this;
 	}
 
@@ -680,32 +658,43 @@ component serializable="false" accessors="true" {
 	 * @name The object name or alias to search for if this container can locate it or has knowledge of it
 	 */
 	boolean function containsInstance( required name ){
+		var cacheKey = lCase( arguments.name );
+		var isFound  = false;
+
+		// Have we asked to locate this instance before?
+		if ( !isNull( variables.containsLookupMap.get( cacheKey ) ) ) {
+			return true;
+		}
+
 		// check if we have a mapping first
 		if ( variables.binder.mappingExists( arguments.name ) ) {
-			return true;
+			isFound = true;
 		}
-
 		// check if we can locate it?
-		if ( locateInstance( arguments.name ).len() ) {
-			return true;
+		else if ( locateInstance( arguments.name ).len() ) {
+			isFound = true;
 		}
-
 		// Ask parent hierarchy if set
-		if ( isObject( variables.parent ) && variables.parent.containsInstance( arguments.name ) ) {
-			return true;
+		else if ( isObject( variables.parent ) && variables.parent.containsInstance( arguments.name ) ) {
+			isFound = true;
 		}
-
 		// Ask child hierarchy if set
-		if ( structCount( variables.childInjectors ) ) {
-			return variables.childInjectors
+		else if ( structCount( variables.childInjectors ) ) {
+			isFound = variables.childInjectors
 				.filter( function( childName, childInstance ){
 					return arguments.childInstance.containsInstance( name );
 				} )
 				.count() > 0 ? true : false;
+		} else {
+			isFound = false;
 		}
 
-		// Else NADA!
-		return false;
+		// Cache if located
+		if ( isFound ) {
+			variables.containsLookupMap.put( cacheKey, true );
+		}
+
+		return isFound;
 	}
 
 	/**
@@ -769,7 +758,7 @@ component serializable="false" accessors="true" {
 		var md           = "";
 
 		// Do we have a mapping? Or is this a-la-carte wiring
-		if ( NOT structKeyExists( arguments, "mapping" ) ) {
+		if ( isNull( arguments.mapping ) ) {
 			// Ok, a-la-carte wiring, let's get our id first
 			// Do we have an incoming target id?
 			if ( NOT len( arguments.targetID ) ) {
@@ -807,20 +796,23 @@ component serializable="false" accessors="true" {
 		// end if mapping not found
 
 		// Set local variable for easy reference use mapping to wire object up.
-		var thisMap = arguments.mapping;
 		if ( NOT len( arguments.targetID ) ) {
-			arguments.targetID = thisMap.getName();
+			arguments.targetID = arguments.mapping.getName();
 		}
 
 		// Only autowire if no annotation check or if there is one, make sure the mapping is set for autowire, and this is a CFC
 		if (
-			thisMap.getType() eq this.TYPES.CFC
+			arguments.mapping.getType() eq this.TYPES.CFC
 			AND
-			( ( arguments.annotationCheck eq false ) OR ( arguments.annotationCheck AND thisMap.isAutowire() ) )
+			(
+				( arguments.annotationCheck eq false ) OR (
+					arguments.annotationCheck AND arguments.mapping.isAutowire()
+				)
+			)
 		) {
 			// announce beforeInstanceAutowire
 			var iData = {
-				mapping  : thisMap,
+				mapping  : arguments.mapping,
 				target   : arguments.target,
 				targetID : arguments.targetID,
 				injector : this
@@ -828,7 +820,7 @@ component serializable="false" accessors="true" {
 			variables.eventManager.announce( "beforeInstanceAutowire", iData );
 
 			// prepare instance for wiring, done once for persisted objects and CFCs only
-			variables.utility.getMixerUtil().start( arguments.target );
+			variables.mixerUtil.start( arguments.target );
 
 			// Bean Factory Awareness
 			if ( structKeyExists( targetObject, "setBeanFactory" ) ) {
@@ -837,28 +829,42 @@ component serializable="false" accessors="true" {
 			if ( structKeyExists( targetObject, "setInjector" ) ) {
 				targetObject.setInjector( this );
 			}
+
 			// ColdBox Context Awareness
 			if ( structKeyExists( targetObject, "setColdBox" ) ) {
 				targetObject.setColdBox( getColdBox() );
 			}
+
 			// DIProperty injection
-			processInjection(
-				targetObject,
-				thisMap.getDIProperties(),
-				arguments.targetID
-			);
+			if ( arguments.mapping.getDIProperties().len() ) {
+				processInjection(
+					targetObject,
+					arguments.mapping.getDIProperties(),
+					arguments.targetID
+				);
+			}
+
 			// DISetter injection
-			processInjection(
-				targetObject,
-				thisMap.getDISetters(),
-				arguments.targetID
-			);
+			if ( arguments.mapping.getDISetters().len() ) {
+				processInjection(
+					targetObject,
+					arguments.mapping.getDISetters(),
+					arguments.targetID
+				);
+			}
+
 			// Process Provider Methods
-			processProviderMethods( targetObject, thisMap );
+			if ( arguments.mapping.getProviderMethods().len() ) {
+				processProviderMethods( targetObject, arguments.mapping );
+			}
+
 			// Process Mixins
-			processMixins( targetObject, thisMap );
+			if ( arguments.mapping.getMixins().len() ) {
+				processMixins( targetObject, arguments.mapping );
+			}
+
 			// Process After DI Complete
-			processAfterCompleteDI( targetObject, thisMap.getOnDIComplete() );
+			processAfterCompleteDI( targetObject, arguments.mapping.getOnDIComplete() );
 
 			// After Instance Autowire
 			variables.eventManager.announce( "afterInstanceAutowire", iData );
@@ -867,7 +873,7 @@ component serializable="false" accessors="true" {
 			if ( variables.log.canDebug() ) {
 				variables.log.debug(
 					"Finalized Autowire for: #arguments.targetID#",
-					thisMap.getMemento().toString()
+					arguments.mapping.getMemento().toString()
 				);
 			}
 		}
@@ -943,8 +949,17 @@ component serializable="false" accessors="true" {
 	 * Get a registered scope in this injector by name
 	 *
 	 * @scope The scope name
+	 *
+	 * @throws InvalidScopeException - When the scope requested has not been registered in this Injector
 	 */
 	function getScope( required any scope ){
+		if ( !variables.scopes.keyExists( arguments.scope ) ) {
+			throw(
+				message: "The scope requested (#arguments.scope#) has not been registered in WireBox",
+				detail : "The valid registered scopes are: #variables.scopes.keyList()#",
+				type   : "InvalidScopeException"
+			);
+		}
 		return variables.scopes[ arguments.scope ];
 	}
 
@@ -952,7 +967,7 @@ component serializable="false" accessors="true" {
 	 * Clear the singleton cache
 	 */
 	Injector function clearSingletons(){
-		variables.scopes[ "SINGLETON" ].clear();
+		getScope( "SINGLETON" ).clear();
 		return this;
 	}
 
@@ -965,7 +980,7 @@ component serializable="false" accessors="true" {
 		var scopeInfo = variables.binder.getScopeRegistration();
 
 		// Return if it exists, else throw exception
-		if ( variables.scopeStorage.exists( scopeInfo.key, scopeInfo.scope ) ) {
+		if ( scopeInfo.enabled && variables.scopeStorage.exists( scopeInfo.key, scopeInfo.scope ) ) {
 			return variables.scopeStorage.get( scopeInfo.key, scopeInfo.scope );
 		}
 
@@ -974,15 +989,6 @@ component serializable="false" accessors="true" {
 			detail  = "The scope info is: #scopeInfo.toString()#",
 			type    = "Injector.InvalidScopeRegistration"
 		);
-	}
-
-	/**
-	 * Return the core util object
-	 *
-	 * @return coldbox.system.core.util.Util
-	 */
-	function getUtil(){
-		return variables.utility;
 	}
 
 	/**
@@ -1001,11 +1007,6 @@ component serializable="false" accessors="true" {
 	 * @mapping      The target mapping
 	 */
 	private Injector function processMixins( required targetObject, required mapping ){
-		// If no length, kick out
-		if ( !arguments.mapping.getMixins().len() ) {
-			return this;
-		}
-
 		// Process
 		var mixin = new coldbox.system.ioc.config.Mixin().$init( arguments.mapping.getMixins() );
 
@@ -1028,22 +1029,18 @@ component serializable="false" accessors="true" {
 	 */
 	private Injector function processProviderMethods( required targetObject, required mapping ){
 		var providerMethods = arguments.mapping.getProviderMethods();
-		var providerLen     = arrayLen( providerMethods );
-		var x               = 1;
 
 		// Decorate the target if provider methods found, in preparation for replacements
-		if ( providerLen ) {
-			arguments.targetObject.$wbScopeInfo    = getScopeRegistration();
-			arguments.targetObject.$wbScopeStorage = variables.scopeStorage;
-			arguments.targetObject.$wbProviders    = {};
-		}
+		arguments.targetObject.$wbScopeInfo    = variables.binder.getScopeRegistration();
+		arguments.targetObject.$wbScopeStorage = variables.scopeStorage;
+		arguments.targetObject.$wbProviders    = {};
 
 		// iterate and provide baby!
-		for ( var x = 1; x lte providerLen; x++ ) {
+		for ( var thisProvider in providerMethods ) {
 			// add the provided method to the providers structure.
-			arguments.targetObject.$wbProviders[ providerMethods[ x ].method ] = providerMethods[ x ].mapping;
+			arguments.targetObject.$wbProviders[ thisProvider.method ] = thisProvider.mapping;
 			// Override the function by injecting it, this does private/public functions
-			arguments.targetObject.injectMixin( providerMethods[ x ].method, variables.builder.buildProviderMixer );
+			arguments.targetObject.injectMixin( thisProvider.method, variables.objectBuilder.buildProviderMixer );
 		}
 
 		return this;
@@ -1056,12 +1053,9 @@ component serializable="false" accessors="true" {
 	 * @DICompleteMethods The array of DI completion methods to call
 	 */
 	private Injector function processAfterCompleteDI( required targetObject, required DICompleteMethods ){
-		var DILen = arrayLen( arguments.DICompleteMethods );
-
 		//  Check for convention first
 		if ( structKeyExists( arguments.targetObject, "onDIComplete" ) ) {
-			//  Call our mixin invoker
-			arguments.targetObject.invokerMixin( method = "onDIComplete" );
+			arguments.targetObject.onDIComplete();
 		}
 
 		//  Iterate on DICompleteMethods
@@ -1094,14 +1088,14 @@ component serializable="false" accessors="true" {
 			// Init the lookup structure
 			var refLocal   = {};
 			// Check if direct value has been placed.
-			if ( !isNull( thisDIData.value ) ) {
-				refLocal.dependency = thisDIData.value;
+			if ( !isNull( local.thisDIData.value ) ) {
+				refLocal.dependency = local.thisDIData.value;
 			}
 			// else check if dsl is used?
-			else if ( !isNull( thisDIData.dsl ) ) {
+			else if ( !isNull( local.thisDIData.dsl ) ) {
 				// Get DSL dependency by sending entire DI structure to retrieve
-				refLocal.dependency = variables.builder.buildDSLDependency(
-					definition   = thisDIData,
+				refLocal.dependency = variables.objectBuilder.buildDSLDependency(
+					definition   = local.thisDIData,
 					targetID     = arguments.targetID,
 					targetObject = arguments.targetObject
 				);
@@ -1113,17 +1107,12 @@ component serializable="false" accessors="true" {
 
 			// Check if dependency located, else log it and skip
 			if ( structKeyExists( refLocal, "dependency" ) ) {
-				// scope or setter determination
-				refLocal.scope = "";
-				if ( structKeyExists( arguments.DIData[ x ], "scope" ) ) {
-					refLocal.scope = arguments.DIData[ x ].scope;
-				}
 				// Inject dependency
 				injectTarget(
 					target         = targetObject,
 					propertyName   = arguments.DIData[ x ].name,
 					propertyObject = refLocal.dependency,
-					scope          = refLocal.scope,
+					scope          = arguments.DIData[ x ].scope,
 					argName        = arguments.DIData[ x ].argName
 				);
 
@@ -1160,12 +1149,13 @@ component serializable="false" accessors="true" {
 		required scope,
 		required argName
 	){
-		var argCollection                  = {};
-		argCollection[ arguments.argName ] = arguments.propertyObject;
 		//  Property or Setter
 		if ( len( arguments.scope ) == 0 ) {
 			//  Call our mixin invoker: setterMethod
-			arguments.target.invokerMixin( method = "set#arguments.propertyName#", argCollection = argCollection );
+			arguments.target.invokerMixin(
+				method        = "set#arguments.propertyName#",
+				argCollection = { "#arguments.argname#" : arguments.propertyObject }
+			);
 		} else {
 			//  Call our property injector mixin
 			arguments.target.injectPropertyMixin(
@@ -1182,30 +1172,21 @@ component serializable="false" accessors="true" {
 	 * Register all internal and configured WireBox Scopes
 	 */
 	private Injector function registerScopes(){
-		var customScopes = variables.binder.getCustomScopes();
-
-		// register no_scope
-		variables.scopes[ "NOSCOPE" ]   = new coldbox.system.ioc.scopes.NoScope( this );
-		// register singleton
-		variables.scopes[ "SINGLETON" ] = new coldbox.system.ioc.scopes.Singleton( this );
-		// is cachebox linked?
-		if ( isCacheBoxLinked() ) {
-			variables.scopes[ "CACHEBOX" ] = new coldbox.system.ioc.scopes.CacheBox( this );
-		}
-		// CF Scopes and references
+		// Core Scopes
+		variables.scopes[ "NOSCOPE" ]     = new coldbox.system.ioc.scopes.NoScope( this );
+		variables.scopes[ "SINGLETON" ]   = new coldbox.system.ioc.scopes.Singleton( this );
 		variables.scopes[ "REQUEST" ]     = new coldbox.system.ioc.scopes.RequestScope( this );
 		variables.scopes[ "SESSION" ]     = new coldbox.system.ioc.scopes.CFScopes( this );
 		variables.scopes[ "SERVER" ]      = variables.scopes[ "SESSION" ];
 		variables.scopes[ "APPLICATION" ] = variables.scopes[ "SESSION" ];
 
-		// Debugging
-		if ( variables.log.canDebug() ) {
-			variables.log.debug(
-				"Registered all internal lifecycle scopes successfully: #structKeyList( variables.scopes )#"
-			);
+		// CacheBox if linked
+		if ( isCacheBoxLinked() ) {
+			variables.scopes[ "CACHEBOX" ] = new coldbox.system.ioc.scopes.CacheBox( this );
 		}
 
-		// Register Custom Scopes
+		// Custom Scopes
+		var customScopes = variables.binder.getCustomScopes();
 		for ( var key in customScopes ) {
 			variables.scopes[ key ] = createObject( "component", customScopes[ key ] ).init( this );
 			// Debugging
@@ -1213,7 +1194,6 @@ component serializable="false" accessors="true" {
 				variables.log.debug( "Registered custom scope: #key# (#customScopes[ key ]#)" );
 			}
 		}
-
 		return this;
 	}
 
@@ -1221,12 +1201,8 @@ component serializable="false" accessors="true" {
 	 * Register all the configured listeners in the configuration file
 	 */
 	private Injector function registerListeners(){
-		var listeners = variables.binder.getListeners();
-		var regLen    = arrayLen( listeners );
-
-		// iterate and register listeners
-		for ( var x = 1; x lte regLen; x++ ) {
-			registerListener( listeners[ x ] );
+		for ( var thisListener in variables.binder.getListeners() ) {
+			registerListener( thisListener );
 		}
 		return this;
 	}
@@ -1271,16 +1247,23 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Register this injector on a user specified scope
+	 *
+	 * @scopeInfo The scope info struct: key, scope
 	 */
-	private Injector function doScopeRegistration(){
-		var scopeInfo = variables.binder.getScopeRegistration();
-
+	private Injector function doScopeRegistration( scopeInfo = variables.binder.getScopeRegistration() ){
+		variables.scopeStorage = new coldbox.system.core.collections.ScopeStorage();
 		// register injector with scope
-		variables.scopeStorage.put( scopeInfo.key, this, scopeInfo.scope );
+		variables.scopeStorage.put(
+			arguments.scopeInfo.key,
+			this,
+			arguments.scopeInfo.scope
+		);
 
 		// Log info
 		if ( variables.log.canDebug() ) {
-			variables.log.debug( "Scope Registration enabled and Injector scoped to: #scopeInfo.toString()#" );
+			variables.log.debug(
+				"Scope Registration enabled and Injector scoped to: #arguments.scopeInfo.toString()#"
+			);
 		}
 
 		return this;
@@ -1289,12 +1272,9 @@ component serializable="false" accessors="true" {
 	/**
 	 * Configure a standalone version of cacheBox for persistence
 	 *
-	 * @config             The cacheBox configuration data structure
-	 * @config.doc_generic struct
+	 * @config The cacheBox configuration data structure
 	 */
 	private Injector function configureCacheBox( required struct config ){
-		var args = {};
-
 		// is cachebox enabled?
 		if ( NOT arguments.config.enabled ) {
 			return this;
@@ -1314,22 +1294,15 @@ component serializable="false" accessors="true" {
 
 		// Do we have a configuration file?
 		if ( len( arguments.config.configFile ) ) {
-			// xml?
-			if ( listFindNoCase( "xml,cfm", listLast( arguments.config.configFile, "." ) ) ) {
-				args[ "XMLConfig" ] = arguments.config.configFile;
-			} else {
-				// cfc
-				args[ "CFCConfigPath" ] = arguments.config.configFile;
-			}
-
 			// Create CacheBox
 			var oConfig = createObject( "component", "#arguments.config.classNamespace#.config.CacheBoxConfig" ).init(
-				argumentCollection = args
+				CFCConfigPath: arguments.config.configFile
 			);
 			variables.cacheBox = createObject( "component", "#arguments.config.classNamespace#.CacheFactory" ).init(
 				config  = oConfig,
 				wirebox = this
 			);
+
 			// debugging
 			if ( variables.log.canDebug() ) {
 				variables.log.debug(
@@ -1355,17 +1328,7 @@ component serializable="false" accessors="true" {
 	 * Configure a standalone version of logBox for logging
 	 */
 	private Injector function configureLogBox( required configPath ){
-		var args = structNew();
-
-		// xml?
-		if ( listFindNoCase( "xml,cfm", listLast( arguments.configPath, "." ) ) ) {
-			args[ "XMLConfig" ] = arguments.configPath;
-		} else {
-			// cfc
-			args[ "CFCConfigPath" ] = arguments.configPath;
-		}
-
-		var config = new coldbox.system.logging.config.LogBoxConfig( argumentCollection = args );
+		var config = new coldbox.system.logging.config.LogBoxConfig( CFCConfigPath: arguments.configPath );
 
 		// Create LogBox
 		variables.logBox = new coldbox.system.logging.LogBox( config = config, wirebox = this );
@@ -1410,7 +1373,7 @@ component serializable="false" accessors="true" {
 		arguments.binder[ "getEnv" ]            = variables.utility.getEnv;
 
 		// Check if data CFC or binder family
-		if ( NOT isInstanceOf( arguments.binder, "coldbox.system.ioc.config.Binder" ) ) {
+		if ( !structKeyExists( arguments.binder, "$wbBinder" ) ) {
 			// simple data cfc, create native binder and decorate data CFC
 			var nativeBinder = new coldbox.system.ioc.config.Binder(
 				injector   = this,
