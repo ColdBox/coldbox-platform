@@ -49,9 +49,16 @@ component accessors="true" {
 	/**
 	 * Startup a virtual ColdBox application for integration testing purposes.
 	 *
+	 * @force Force the startup of the application even if found. Default is false
+	 *
 	 * @return The loaded Application controller
 	 */
-	function startup(){
+	function startup( boolean force = false ){
+		// Return back if it's already running and not forcing
+		if( isRunning() && !arguments.force ){
+			return application.cbController;
+		}
+
 		// Initialize mock Controller
 		application.cbController = new coldbox.system.testing.mock.web.MockController(
 			appRootPath = variables.appRootPath,
@@ -85,6 +92,14 @@ component accessors="true" {
 	 */
 	boolean function isRunning(){
 		return !isNull( application.cbController );
+	}
+
+	/**
+	 * Get the running application controller. Null if not in scope!
+	 *
+	 */
+	function getController(){
+		return isRunning() ? application.cbController : javaCast( "null", "" );
 	}
 
 	/**
