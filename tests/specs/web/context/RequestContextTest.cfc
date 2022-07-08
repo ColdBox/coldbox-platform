@@ -722,4 +722,10 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		expect( event.urlMatchesExact( "/foo/bar" ) ).toBeFalse();
 	}
 
+	function testGetAllHeaders(){
+		var event = getRequestContext();
+		expect( event.getRequestHeaders() ).toBeStruct();
+		expect( event.getRequestHeaders() ).notToBeEmpty();
+	}
+
 }

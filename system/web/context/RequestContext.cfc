@@ -82,6 +82,11 @@ component serializable="false" accessors="true" {
 	 */
 	property name="responseHeaders" type="struct";
 
+	/**
+	 * A cached version of getHTTPRequestData().headers
+	 */
+	property name="requestHeaders" type="struct";
+
 	/************************************** STATIC CONSTRUCTS *********************************************/
 
 	// HTTP VERB ALIASES
@@ -233,6 +238,8 @@ component serializable="false" accessors="true" {
 		variables.renderingRegions  = {};
 		// Response Headers
 		variables.responseHeaders   = {};
+		// Request Headers
+		variables.requestHeaders    = getHTTPRequestData( false ).headers;
 
 		return this;
 	}
@@ -1656,7 +1663,7 @@ component serializable="false" accessors="true" {
 	 * @defaultValue The default value, if not found
 	 */
 	function getHTTPHeader( required header, defaultValue = "" ){
-		var headers = getHTTPRequestData( false ).headers;
+		var headers = getRequestHeaders();
 
 		// ADOBE FIX YOUR ISNULL BS
 		if ( headers.keyExists( arguments.header ) ) {
