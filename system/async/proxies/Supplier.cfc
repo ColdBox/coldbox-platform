@@ -37,7 +37,14 @@ component extends="BaseProxy" {
 					return invoke( variables.target, variables.method );
 				}
 			}
-		} finally {
+		}
+		catch( any e ){
+			// Log it, so it doesn't go to ether
+			err( "Error running Supplier: #e.message & e.detail#" );
+			err( "Stacktrace for Supplier: #e.stackTrace#" );
+			rethrow;
+		}
+		finally {
 			unLoadContext();
 		}
 	}

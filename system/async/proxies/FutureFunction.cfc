@@ -22,6 +22,11 @@ component extends="Function" {
 				}
 				return local.oFuture.getNative();
 			}
+		} catch ( any e ) {
+			// Log it, so it doesn't go to ether
+			err( "Error running FutureFunction: #e.message & e.detail#" );
+			err( "Stacktrace for FutureFunction: #e.stackTrace#" );
+			rethrow;
 		} finally {
 			unLoadContext();
 		}
