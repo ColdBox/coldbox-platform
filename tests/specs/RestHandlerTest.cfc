@@ -151,7 +151,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				var response = mockRequestContext.getResponse();
 				expect( response.getError() ).toBeTrue();
 				expect( response.getStatusText() ).toBe( "Invalid Action" );
-				expect( response.getStatusCode() ).toBe( 405 );
+				expect( response.getStatusCode() ).toBe( 404 );
 			} );
 
 			it( "can handle onInvalidHTTPMethod", function(){
