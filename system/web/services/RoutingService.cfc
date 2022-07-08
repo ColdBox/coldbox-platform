@@ -792,6 +792,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// render it out
 		event
 			.renderdata(
+				type       = isSimpleValue( theResponse ) ? "HTML" : "JSON",
 				data       = theResponse,
 				statusCode = aRoute.statusCode,
 				statusText = aRoute.statusText
