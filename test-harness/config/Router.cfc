@@ -99,6 +99,8 @@ component {
 
 		route( "invalid-main-verbs" ).withVerbs( "post" ).to( "main.index" );
 
+		get( "/base-test-case/headers" ).to( "BaseTestCaseHandler.headers" );
+
 		// Default Application Routing
 		route( ":handler/:action?/:id-numeric?" ).end();
 

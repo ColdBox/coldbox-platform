@@ -11,7 +11,20 @@ component
 {
 
 	/**
-	 * Set an HTTP Header
+	 * Sets a test request header.
+	 *
+	 * @name  The request header name.
+	 * @value The request header value.
+	 *
+	 * @return The MockRequestContext instance.
+	 */
+	public MockRequestContext function setRequestHeader( required string name, required string value ){
+		variables.requestHeaders[ arguments.name ] = arguments.value;
+		return this;
+	}
+
+	/**
+	 * Set an HTTP Response Header
 	 *
 	 * return RequestContext
 	 *
