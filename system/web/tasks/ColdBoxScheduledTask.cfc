@@ -222,4 +222,24 @@ component extends="coldbox.system.async.tasks.ScheduledTask" accessors="true" {
 		return variables.cachebox.getCache( variables.cacheName );
 	}
 
+	/**
+	 * Send info messages to LogBox
+	 *
+	 * @var Variable/Message to send
+	 */
+	ScheduledTask function out( required var ){
+		variables.log.info( arguments.var.toString() );
+		return this;
+	}
+
+	/**
+	 * Send errors to LogBox
+	 *
+	 * @var Variable/Message to send
+	 */
+	ScheduledTask function err( required var ){
+		variables.log.error( arguments.var.toString() );
+		return this;
+	}
+
 }
