@@ -328,6 +328,12 @@ component extends="coldbox.system.web.services.BaseService" {
 				oContext,
 				controller
 			);
+
+			oDecorator = variables.controller
+				.getWireBox()
+				.getObjectBuilder()
+				.virtuallyInherit( target = oDecorator, baseObject = oContext );
+
 			// Set Request Context in storage
 			setContext( oDecorator );
 			// Return

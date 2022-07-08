@@ -18,7 +18,7 @@ component
 	 *
 	 * @return The MockRequestContext instance.
 	 */
-	public MockRequestContext function setRequestHeader( required string name, required string value ){
+	public any function setRequestHeader( required string name, required string value ){
 		variables.requestHeaders[ arguments.name ] = arguments.value;
 		return this;
 	}

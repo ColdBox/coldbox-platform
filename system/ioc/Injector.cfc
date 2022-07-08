@@ -114,6 +114,11 @@ component serializable="false" accessors="true" {
 	property name="childInjectors" type="struct";
 
 	/**
+	 * The WireBox Builder for this Injector
+	 */
+	property name="objectBuilder";
+
+	/**
 	 * Constructor. If called without a configuration binder, then WireBox will instantiate the default configuration binder found in: coldbox.system.ioc.config.DefaultBinder
 	 *
 	 * @binder              The WireBox binder or data CFC instance or instantiation path to configure this injector with
