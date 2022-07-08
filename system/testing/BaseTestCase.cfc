@@ -726,7 +726,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * @return cbox_rendered_content or an empty string
 	 */
 	function getRenderedContent(){
-		return getValue( "cbox_rendered_content", "" );
+		return this.getValue( "cbox_rendered_content", "" );
 	}
 
 	/**
@@ -735,7 +735,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * @return The handler results or an empty string
 	 */
 	function getHandlerResults(){
-		return getValue( "cbox_handler_results", "" );
+		return this.getValue( "cbox_handler_results", "" );
 	}
 
 	/**
@@ -744,7 +744,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * @return cbox_render_data or an empty struct
 	 */
 	function getRenderData(){
-		return getPrivateValue( name = "cbox_renderdata", defaultValue = structNew() );
+		return this.getPrivateValue( name = "cbox_renderdata", defaultValue = structNew() );
 	}
 
 	/**
@@ -753,7 +753,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * @return cbox_statusCode or 200
 	 */
 	function getStatusCode(){
-		return getValue( "relocate_STATUSCODE", getValue( "cbox_statusCode", 200 ) );
+		return this.getValue( "relocate_STATUSCODE", this.getValue( "cbox_statusCode", 200 ) );
 	}
 
 	/**
