@@ -4,7 +4,11 @@
  * ---
  * Base class used to decorate ColdBox MVC Application Controller
  */
-component accessors="true" serializable="false" {
+component
+	extends     ="coldbox.system.web.context.RequestContext"
+	accessors   ="true"
+	serializable="false"
+{
 
 	// The original request context
 	property name="requestContext";
@@ -13,9 +17,12 @@ component accessors="true" serializable="false" {
 	 * Constructor
 	 */
 	RequestContextDecorator function init( required oContext, required controller ){
+		// Set the memento state
+		setMemento( arguments.oContext.getMemento() );
+		// Set Controller
+		instance.controller      = arguments.controller;
 		// Composite the original context
 		variables.requestContext = arguments.oContext;
-		variables.requestContext.setController( arguments.controller );
 
 		return this;
 	}
@@ -26,19 +33,11 @@ component accessors="true" serializable="false" {
 	function configure(){
 	}
 
-	function getController(){
-		return variables.requestContext.getController();
-	}
-
 	/**
 	 * Get original controller
 	 */
-	function onMissingMethod( required string missingMethodName, required struct missingMethodArguments ){
-		return invoke(
-			variables.requestContext,
-			arguments.missingMethodName,
-			arguments.missingMethodArguments
-		);
+	function getController(){
+		return instance.controller;
 	}
 
 }

@@ -602,7 +602,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 		arguments.headers
 			.keyArray()
 			.each( function( name ){
-				mockedEvent.setRequestHeader( arguments.name, headers[ arguments.name ] );
+				mockedEvent.getRequestHeaders()[ arguments.name ] = headers[ arguments.name ];
 			} );
 		return this.execute( argumentCollection = arguments );
 	}

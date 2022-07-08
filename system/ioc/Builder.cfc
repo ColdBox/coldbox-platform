@@ -947,12 +947,19 @@ component serializable="false" accessors="true" {
 	/**
 	 * Do our virtual inheritance magic
 	 *
-	 * @mapping The virtual mapping to convert to
-	 * @target  The target object
+	 * @mapping       The virtual mapping to convert to
+	 * @target        The target object
+	 * @targetMapping The target mapping
 	 *
 	 * @return The target object
 	 */
-	function toVirtualInheritance( required mapping, required target ){
+	function toVirtualInheritance(
+		required mapping,
+		required target,
+		required targetMapping
+	){
+		var excludedProperties = "$super,super,$wbaopmixed,$mixed,this,init";
+
 		// Check if the base mapping has been discovered yet
 		if ( NOT arguments.mapping.isDiscovered() ) {
 			// process inspection of instance
@@ -966,55 +973,53 @@ component serializable="false" accessors="true" {
 			targetID: arguments.mapping.getName()
 		);
 
-		return virtuallyInherit( target = arguments.target, baseObject = baseObject );
-	}
-
-	public any function virtuallyInherit( required any target, required any baseObject ){
-		var excludedProperties = "$super,super,$wbaopmixed,$mixed,this,init";
-
 		// Mix them up baby!
 		variables.mixerUtil.start( arguments.target );
-		variables.mixerUtil.start( arguments.baseObject );
+		variables.mixerUtil.start( baseObject );
 
 		// Check if init already exists in target and base? If so, then inject it as $superInit
-		if ( structKeyExists( arguments.target, "init" ) AND structKeyExists( arguments.baseObject, "init" ) ) {
-			arguments.target.$superInit = arguments.baseObject.init;
+		if ( structKeyExists( arguments.target, "init" ) AND structKeyExists( baseObject, "init" ) ) {
+			arguments.target.$superInit = baseObject.init;
 		}
 
 		// Mix in public methods and public properties
-		for ( var key in arguments.baseObject ) {
+		for ( var key in baseObject ) {
 			// If target has overridden method, then don't override it with mixin, simulated inheritance
 			if ( NOT structKeyExists( arguments.target, key ) AND NOT listFindNoCase( excludedProperties, key ) ) {
 				// inject method in both variables and this scope to simulate public access
-				arguments.target.injectMixin( key, arguments.baseObject[ key ] );
+				arguments.target.injectMixin( key, baseObject[ key ] );
 			}
 		}
 
 		// Prepare for private property/method Injections
 		var targetVariables   = arguments.target.getVariablesMixin();
-		var baseObjectMD      = getMetadata( arguments.baseObject );
 		var generateAccessors = false;
-		if ( baseObjectMD.keyExists( "accessors" ) and baseObjectMD.accessors ) {
+		if (
+			arguments.mapping.getObjectMetadata().keyExists( "accessors" ) and arguments.mapping.getObjectMetadata().accessors
+		) {
 			generateAccessors = true;
 		}
 		var baseProperties = {};
 
 		// Process baseProperties lookup map
-		if ( baseObjectMD.keyExists( "properties" ) ) {
-			baseObjectMD.properties.each( function( item ){
-				baseProperties[ item.name ] = true;
-			} );
+		if ( arguments.mapping.getObjectMetadata().keyExists( "properties" ) ) {
+			arguments.mapping
+				.getObjectMetadata()
+				.properties
+				.each( function( item ){
+					baseProperties[ item.name ] = true;
+				} );
 		}
 
 		// Commenting out for now, as I believe this causes double initializations of objects
 		// Copy init only if the base object has it and the child doesn't.
-		// if ( !structKeyExists( arguments.target, "init" ) AND structKeyExists( arguments.baseObject, "init" ) ) {
-		//	arguments.target.injectMixin( "init", arguments.baseObject.init );
+		// if ( !structKeyExists( arguments.target, "init" ) AND structKeyExists( baseObject, "init" ) ) {
+		//	arguments.target.injectMixin( "init", baseObject.init );
 		// }
 
 		// local reference to arguments to use in closures below
 		var args = arguments;
-		arguments.baseObject
+		baseObject
 			.getVariablesMixin()
 			// filter out overrides
 			.filter( function( key, value ){
@@ -1052,7 +1057,7 @@ component serializable="false" accessors="true" {
 			} );
 
 		// Mix in virtual super class
-		arguments.target.$super = arguments.baseObject;
+		arguments.target.$super = baseObject;
 
 		return arguments.target;
 	}
