@@ -815,7 +815,7 @@ component serializable="false" accessors="true" {
 	/**
 	 * Set the invalid http method flag
 	 */
-	RequestContext function setIsInvalidHTTPMethod( boolean target = true ){
+	function setIsInvalidHTTPMethod( boolean target = true ){
 		variables.invalidHTTPMethod = arguments.target;
 		return this;
 	}
