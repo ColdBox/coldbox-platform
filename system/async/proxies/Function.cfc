@@ -36,6 +36,11 @@ component extends="BaseProxy" {
 				}
 				return variables.target( arguments.t );
 			}
+		} catch ( any e ) {
+			// Log it, so it doesn't go to ether
+			err( "Error running Function: #e.message & e.detail#" );
+			err( "Stacktrace for Function: #e.stackTrace#" );
+			rethrow;
 		} finally {
 			unLoadContext();
 		}

@@ -27,6 +27,11 @@ component extends="BaseProxy" {
 					isNull( arguments.u ) ? javacast( "null", "" ) : arguments.u
 				);
 			}
+		} catch ( any e ) {
+			// Log it, so it doesn't go to ether
+			err( "Error running BiFunction: #e.message & e.detail#" );
+			err( "Stacktrace for BiFunction: #e.stackTrace#" );
+			rethrow;
 		} finally {
 			unLoadContext();
 		}

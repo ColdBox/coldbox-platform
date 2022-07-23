@@ -89,6 +89,8 @@ component accessors="true" {
 			.injectPropertyMixin( "controller", variables.controller )
 			.injectPropertyMixin( "logBoxConfig", variables.controller.getLogBox().getConfig() )
 			.injectPropertyMixin( "appMapping", configStruct.appMapping )
+			.injectPropertyMixin( "webMapping", configStruct.webMapping )
+			.injectPropertyMixin( "coldboxVersion", coldboxSettings.version )
 			.injectPropertyMixin( "getJavaSystem", variables.util.getJavaSystem )
 			.injectPropertyMixin( "getSystemSetting", variables.util.getSystemSetting )
 			.injectPropertyMixin( "getSystemProperty", variables.util.getSystemProperty )

@@ -24,7 +24,14 @@ component extends="BaseProxy" {
 			lock name="#getConcurrentEngineLockName()#" type="exclusive" timeout="60" {
 				variables.target( arguments.t );
 			}
-		} finally {
+		}
+		catch( any e ){
+			// Log it, so it doesn't go to ether
+			err( "Error running Consumer: #e.message & e.detail#" );
+			err( "Stacktrace for Consumer: #e.stackTrace#" );
+			rethrow;
+		}
+		finally {
 			unLoadContext();
 		}
 	}

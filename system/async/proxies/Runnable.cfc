@@ -37,6 +37,11 @@ component extends="BaseProxy" {
 					invoke( variables.target, variables.method );
 				}
 			}
+		} catch ( any e ) {
+			// Log it, so it doesn't go to ether
+			err( "Error running runnable: #e.message & e.detail#" );
+			err( "Stacktrace for runnable: #e.stackTrace#" );
+			rethrow;
 		} finally {
 			unLoadContext();
 		}
