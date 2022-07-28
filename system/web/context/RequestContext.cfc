@@ -1158,19 +1158,19 @@ component serializable="false" accessors="true" {
 		var router       = variables.controller.getWirebox().getInstance( "router@coldbox" );
 		var targetRoutes = router.getRoutes();
 		var entryPoint   = "";
-		var __RouteName = arguments.name;
+		var __RouteName  = arguments.name;
 
 		// Module Route?
 		if ( find( "@", arguments.name ) ) {
 			var targetModule = getToken( arguments.name, 2, "@" );
 			targetRoutes     = router.getModuleRoutes( targetModule );
-			__RouteName   = getToken( arguments.name, 1, "@" );
+			__RouteName      = getToken( arguments.name, 1, "@" );
 			entryPoint       = variables.modules[ targetmodule ].inheritedEntryPoint;
 		}
 		if ( find( ":", arguments.name ) ) {
 			var targetModule = getToken( arguments.name, 1, ":" );
 			targetRoutes     = router.getModuleRoutes( targetModule );
-			__RouteName   = getToken( arguments.name, 2, ":" );
+			__RouteName      = getToken( arguments.name, 2, ":" );
 			entryPoint       = variables.modules[ targetmodule ].inheritedEntryPoint;
 		}
 
