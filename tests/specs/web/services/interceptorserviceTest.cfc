@@ -74,11 +74,28 @@
 		assertTrue( called );
 	}
 
+	function testListenArgumentOrder(){
+		var called = false;
+		iService.listen( "onCall", function() { called = true } );
+		iService.announce( "onCall" );
+		assertTrue( called );
+	}
+
 	function testUnlisten(){
 		var called = false;
 		var listener = function() { called = true };
 		iService.listen( listener, "onCall" );
 		iService.unlisten( listener, "onCall" );
+
+		iService.announce( "onCall" );
+		assertFalse( called );
+	}
+
+	function testUnlistenArgumentOrder(){
+		var called = false;
+		var listener = function() { called = true };
+		iService.listen( "onCall", listener );
+		iService.unlisten( "onCall", listener );
 
 		iService.announce( "onCall" );
 		assertFalse( called );

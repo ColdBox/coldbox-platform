@@ -266,6 +266,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * @point  The interception point from which to unregister the listener
 	 */
 	void function unlisten( required target, required point ){
+		arguments = normalizeListenArguments( argumentCollection = arguments );
 		unregister( "closure-#arguments.point#-#hash( target.toString() )#" );
 	}
 
@@ -276,6 +277,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * @point  The interception point to register the listener to
 	 */
 	void function listen( required target, required point ){
+		arguments = normalizeListenArguments( argumentCollection = arguments );
 		// Append Custom Points
 		appendInterceptionPoints( arguments.point );
 		// Register the listener
@@ -652,4 +654,21 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		return pointsFound;
 	}
 
+
+	/**
+	 * Allow point-first arguments when calling listen() or unlisten().
+	 * 
+	 * Basically flips the `target` and `point` arguments if the former is found to be a string instead of closure.
+	 *
+	 * @target Could be the target closure... could be the listen point.
+	 * @point Could be the interception point... could be the target closure
+	 */
+	private struct function normalizeListenArguments( required target, required point ){
+		if ( isValid( "string", arguments.target ) ){
+			var closure = arguments.point;
+			arguments.point = arguments.target;
+			arguments.target = closure;
+		}
+		return arguments;
+	}
 }
