@@ -69,7 +69,7 @@
 
 	function testListen(){
 		var called = false;
-		iService.listen( function() { called = true }, "onCall" );
+		iService.listen( function() { called = true; }, "onCall" );
 		iService.announce( "onCall" );
 		assertTrue( called );
 	}
@@ -83,7 +83,7 @@
 
 	function testUnlisten(){
 		var called = false;
-		var listener = function() { called = true };
+		var listener = function() { called = true; };
 		iService.listen( listener, "onCall" );
 		iService.unlisten( listener, "onCall" );
 
