@@ -260,6 +260,16 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	}
 
 	/**
+	 * Unregister the given closure from a specific interception point
+	 *
+	 * @target The closure/lambda to unregister
+	 * @point  The interception point from which to unregister the listener
+	 */
+	void function unlisten( required target, required point ){
+		unregister( "closure-#arguments.point#-#hash( target.toString() )#" );
+	}
+
+	/**
 	 * Register a closure listener as an interceptor on a specific point
 	 *
 	 * @target The closure/lambda to register
