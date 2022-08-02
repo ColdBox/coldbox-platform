@@ -11,9 +11,7 @@
 			.createEmptyMock( "coldbox.system.web.services.RequestService" )
 			.$( "getContext", mockRequestContext );
 		mockLogBox   = mockBox.createEmptyMock( "coldbox.system.logging.LogBox" );
-		mockLogger   = mockBox
-			.createEmptyMock( "coldbox.system.logging.Logger" )
-			.$( "canDebug", false );
+		mockLogger   = mockBox.createEmptyMock( "coldbox.system.logging.Logger" ).$( "canDebug", false );
 		mockFlash    = mockBox.createMock( "coldbox.system.web.flash.MockFlash" ).init( mockController );
 		mockCacheBox = mockBox.createEmptyMock( "coldbox.system.cache.CacheFactory" );
 		mockCache    = mockBox.createEmptyMock( "coldbox.system.cache.providers.CacheBoxColdBoxProvider" );
@@ -69,21 +67,27 @@
 
 	function testListen(){
 		var called = false;
-		iService.listen( function() { called = true }, "onCall" );
+		iService.listen( function(){
+			called = true
+		}, "onCall" );
 		iService.announce( "onCall" );
 		assertTrue( called );
 	}
 
 	function testListenArgumentOrder(){
 		var called = false;
-		iService.listen( "onCall", function() { called = true } );
+		iService.listen( "onCall", function(){
+			called = true
+		} );
 		iService.announce( "onCall" );
 		assertTrue( called );
 	}
 
 	function testUnlisten(){
-		var called = false;
-		var listener = function() { called = true };
+		var called   = false;
+		var listener = function(){
+			called = true
+		};
 		iService.listen( listener, "onCall" );
 		iService.unlisten( listener, "onCall" );
 
@@ -92,8 +96,10 @@
 	}
 
 	function testUnlistenArgumentOrder(){
-		var called = false;
-		var listener = function() { called = true };
+		var called   = false;
+		var listener = function(){
+			called = true
+		};
 		iService.listen( "onCall", listener );
 		iService.unlisten( "onCall", listener );
 

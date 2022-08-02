@@ -657,18 +657,19 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 	/**
 	 * Allow point-first arguments when calling listen() or unlisten().
-	 * 
+	 *
 	 * Basically flips the `target` and `point` arguments if the former is found to be a string instead of closure.
 	 *
 	 * @target Could be the target closure... could be the listen point.
-	 * @point Could be the interception point... could be the target closure
+	 * @point  Could be the interception point... could be the target closure
 	 */
 	private struct function normalizeListenArguments( required target, required point ){
-		if ( isValid( "string", arguments.target ) ){
-			var closure = arguments.point;
-			arguments.point = arguments.target;
+		if ( isValid( "string", arguments.target ) ) {
+			var closure      = arguments.point;
+			arguments.point  = arguments.target;
 			arguments.target = closure;
 		}
 		return arguments;
 	}
+
 }
