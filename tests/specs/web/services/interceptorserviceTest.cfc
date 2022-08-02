@@ -11,7 +11,7 @@
 			.createEmptyMock( "coldbox.system.web.services.RequestService" )
 			.$( "getContext", mockRequestContext );
 		mockLogBox   = mockBox.createEmptyMock( "coldbox.system.logging.LogBox" );
-		mockLogger   = mockBox.createEmptyMock( "coldbox.system.logging.Logger" );
+		mockLogger   = mockBox.createEmptyMock( "coldbox.system.logging.Logger" ).$( "canDebug", false );
 		mockFlash    = mockBox.createMock( "coldbox.system.web.flash.MockFlash" ).init( mockController );
 		mockCacheBox = mockBox.createEmptyMock( "coldbox.system.cache.CacheFactory" );
 		mockCache    = mockBox.createEmptyMock( "coldbox.system.cache.providers.CacheBoxColdBoxProvider" );
@@ -63,6 +63,27 @@
 		iService.registerInterceptors();
 
 		assertTrue( iService.$count( 1, "registerInterceptor" ) );
+	}
+
+	function testListen(){
+		var called = false;
+		iService.listen( function(){
+			called = true;
+		}, "onCall" );
+		iService.announce( "onCall" );
+		assertTrue( called );
+	}
+
+	function testUnlisten(){
+		var called   = false;
+		var listener = function(){
+			called = true;
+		};
+		iService.listen( listener, "onCall" );
+		iService.unlisten( listener, "onCall" );
+
+		iService.announce( "onCall" );
+		assertFalse( called );
 	}
 
 	function testInterceptionPoints(){
