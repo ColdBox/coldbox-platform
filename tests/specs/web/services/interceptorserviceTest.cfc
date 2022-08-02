@@ -76,7 +76,9 @@
 
 	function testListenArgumentOrder(){
 		var called = false;
-		iService.listen( "onCall", function() { called = true } );
+		iService.listen( "onCall", function(){
+			called = true;
+		} );
 		iService.announce( "onCall" );
 		assertTrue( called );
 	}
@@ -94,8 +96,10 @@
 	}
 
 	function testUnlistenArgumentOrder(){
-		var called = false;
-		var listener = function() { called = true };
+		var called   = false;
+		var listener = function(){
+			called = true;
+		};
 		iService.listen( "onCall", listener );
 		iService.unlisten( "onCall", listener );
 
