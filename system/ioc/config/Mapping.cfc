@@ -352,16 +352,20 @@ component accessors="true" {
 	}
 
 	/**
-	 * Add a new property di definition
+	 * Add a new property injection definition
 	 *
-	 * @name     The name of the property to inject
-	 * @ref      The reference mapping id this property maps to
-	 * @dsl      The construction dsl this property references. If used, the name value must be used.
-	 * @value    The explicit value of the property, if passed.
-	 * @javaCast The type of javaCast() to use on the value of the value. Only used if using dsl or ref arguments
-	 * @scope    The scope in the CFC to inject the property to. By default it will inject it to the variables scope
-	 * @required If the property is required or not, by default we assume required DI
-	 * @type     The type of the property
+	 * @name             The name of the property to inject
+	 * @ref              The reference mapping id this property maps to
+	 * @dsl              The construction dsl this property references. If used, the name value must be used.
+	 * @value            The explicit value of the property, if passed.
+	 * @javaCast         The type of javaCast() to use on the value of the value. Only used if using dsl or ref arguments
+	 * @scope            The scope in the CFC to inject the property to. By default it will inject it to the variables scope
+	 * @required         If the property is required or not, by default we assume required DI
+	 * @type             The type of the property
+	 * @delegate         If the property is an object delegate, else null
+	 * @delegatePrefix   If the property has a delegate prefix, else null
+	 * @delegateSuffix   If the property has a delegate suffix, else null
+	 * @delegateExcludes If the property has a delegate exclusion list, else null
 	 */
 	Mapping function addDIProperty(
 		required name,
@@ -370,19 +374,20 @@ component accessors="true" {
 		value,
 		javaCast,
 		scope            = "variables",
-		required required=true,
-		type             = "any"
+		boolean required = true,
+		type             = "any",
+		delegate,
+		delegatePrefix,
+		delegateSuffix
 	){
 		// check if already registered, if it is, just return
-		for ( var x = 1; x lte arrayLen( variables.DIProperties ); x++ ) {
-			if ( variables.DIProperties[ x ].name eq arguments.name ) {
+		for ( var thisProperty in variables.DIProperties ) {
+			if ( thisProperty.name eq arguments.name ) {
 				return this;
 			}
 		}
 
-		var definition = getNewDIDefinition();
-		structAppend( definition, arguments, true );
-		arrayAppend( variables.DIProperties, definition );
+		arrayAppend( variables.DIProperties, getNewDIDefinition().append( arguments, true ) );
 
 		return this;
 	}
@@ -849,7 +854,31 @@ component accessors="true" {
 					required: (
 						structKeyExists( arguments.thisProperty, "required" ) ? arguments.thisProperty.required : true
 					),
-					type: ( structKeyExists( arguments.thisProperty, "type" ) ? arguments.thisProperty.type : "any" )
+					type    : ( structKeyExists( arguments.thisProperty, "type" ) ? arguments.thisProperty.type : "any" ),
+					delegate: (
+						structKeyExists( arguments.thisProperty, "delegate" ) ? arguments.thisProperty.delegate : javacast(
+							"null",
+							""
+						)
+					),
+					delegatePrefix: (
+						structKeyExists( arguments.thisProperty, "delegatePrefix" ) ? arguments.thisProperty.delegatePrefix : javacast(
+							"null",
+							""
+						)
+					),
+					delegateSuffix: (
+						structKeyExists( arguments.thisProperty, "delegateSuffix" ) ? arguments.thisProperty.delegateSuffix : javacast(
+							"null",
+							""
+						)
+					),
+					delegateExcludes: (
+						structKeyExists( arguments.thisProperty, "delegateExcludes" ) ? arguments.thisProperty.delegateExcludes : javacast(
+							"null",
+							""
+						)
+					)
 				);
 			} );
 
@@ -912,15 +941,19 @@ component accessors="true" {
 	 */
 	private struct function getNewDIDefinition(){
 		return {
-			"name"     : "",
-			"value"    : javacast( "null", "" ),
-			"dsl"      : javacast( "null", "" ),
-			"scope"    : "variables",
-			"javaCast" : javacast( "null", "" ),
-			"ref"      : javacast( "null", "" ),
-			"required" : false,
-			"argName"  : "",
-			"type"     : "any"
+			"name"             : "",
+			"value"            : javacast( "null", "" ),
+			"dsl"              : javacast( "null", "" ),
+			"scope"            : "variables",
+			"javaCast"         : javacast( "null", "" ),
+			"ref"              : javacast( "null", "" ),
+			"required"         : false,
+			"argName"          : "",
+			"type"             : "any",
+			"delegate"         : javacast( "null", "" ),
+			"delegatePrefix"   : javacast( "null", "" ),
+			"delegateSuffix"   : javacast( "null", "" ),
+			"delegateExcludes" : javacast( "null", "" )
 		};
 	}
 

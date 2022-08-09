@@ -741,12 +741,11 @@ component serializable="false" accessors="true" {
 	/**
 	 * I wire up target objects with dependencies either by mappings or a-la-carte autowires
 	 *
-	 * @target                      The target object to wire up
-	 * @mapping                     The object mapping with all the necessary wiring metadata. Usually passed by scopes and not a-la-carte autowires
-	 * @mapping.doc_generic         coldbox.system.ioc.config.Mapping
-	 * @targetID                    A unique identifier for this target to wire up. Usually a class path or file path should do. If none is passed we will get the id from the passed target via introspection but it will slow down the wiring
-	 * @annotationCheck             This value determines if we check if the target contains an autowire annotation in the cfcomponent tag: autowire=true|false, it will only autowire if that metadata attribute is set to true. The default is false, which will autowire anything automatically.
-	 * @annotationCheck.doc_generic Boolean
+	 * @target              The target object to wire up
+	 * @mapping             The object mapping with all the necessary wiring metadata. Usually passed by scopes and not a-la-carte autowires
+	 * @mapping.doc_generic coldbox.system.ioc.config.Mapping
+	 * @targetID            A unique identifier for this target to wire up. Usually a class path or file path should do. If none is passed we will get the id from the passed target via introspection but it will slow down the wiring
+	 * @annotationCheck     This value determines if we check if the target contains an autowire annotation in the cfcomponent tag: autowire=true|false, it will only autowire if that metadata attribute is set to true. The default is false, which will autowire anything automatically.
 	 */
 	function autowire(
 		required target,
@@ -838,18 +837,18 @@ component serializable="false" accessors="true" {
 			// DIProperty injection
 			if ( arguments.mapping.getDIProperties().len() ) {
 				processInjection(
-					targetObject,
-					arguments.mapping.getDIProperties(),
-					arguments.targetID
+					targetObject: targetObject,
+					DIData      : arguments.mapping.getDIProperties(),
+					targetId    : arguments.targetID
 				);
 			}
 
 			// DISetter injection
 			if ( arguments.mapping.getDISetters().len() ) {
 				processInjection(
-					targetObject,
-					arguments.mapping.getDISetters(),
-					arguments.targetID
+					targetObject: targetObject,
+					DIData      : arguments.mapping.getDISetters(),
+					targetId    : arguments.targetID
 				);
 			}
 
@@ -1072,21 +1071,19 @@ component serializable="false" accessors="true" {
 	/**
 	 * Process property and setter injection
 	 *
-	 * @targetObject The target object to do some goodness on
-	 * @DIData       The DI data to use
+	 * @targetObject The target object to do some goodness on, usually a CFC
+	 * @DIData       The DI data array to use for injection
 	 * @targetID     The target ID to process injections
 	 */
 	private Injector function processInjection(
 		required targetObject,
-		required DIData,
-		required targetID
+		required array DIData,
+		required string targetID
 	){
-		var DILen = arrayLen( arguments.DIData );
-
-		for ( var x = 1; x lte DILen; x++ ) {
-			var thisDIData = arguments.DIData[ x ];
+		for ( var thisDIData in arguments.DIData ) {
 			// Init the lookup structure
-			var refLocal   = {};
+			var refLocal = {};
+
 			// Check if direct value has been placed.
 			if ( !isNull( local.thisDIData.value ) ) {
 				refLocal.dependency = local.thisDIData.value;
@@ -1102,35 +1099,125 @@ component serializable="false" accessors="true" {
 			}
 			// else we have to have a reference ID or a nasty bug has occurred
 			else {
-				refLocal.dependency = getInstance( arguments.DIData[ x ].ref );
+				refLocal.dependency = getInstance( thisDIData.ref );
 			}
 
-			// Check if dependency located, else log it and skip
+			// Do we have a dependency to inject?
 			if ( structKeyExists( refLocal, "dependency" ) ) {
 				// Inject dependency
 				injectTarget(
 					target         = targetObject,
-					propertyName   = arguments.DIData[ x ].name,
+					propertyName   = thisDIData.name,
 					propertyObject = refLocal.dependency,
-					scope          = arguments.DIData[ x ].scope,
-					argName        = arguments.DIData[ x ].argName
+					scope          = thisDIData.scope,
+					argName        = thisDIData.argName
 				);
+
+				// Is this injection a delegation?
+				if ( !isNull( thisDIData.delegate ) ) {
+					processDelegation(
+						target  : targetObject,
+						delegate: refLocal.dependency,
+						DIData  : thisDIData
+					);
+				}
 
 				// some debugging goodness
 				if ( variables.log.canDebug() ) {
 					variables.log.debug(
-						"Dependency: #arguments.DIData[ x ].toString()# --> injected into #arguments.targetID#"
+						"Dependency: #thisDIData.toString()# --> injected into #arguments.targetID#"
 					);
 				}
 			} else if ( variables.log.canDebug() ) {
 				variables.log.debug(
-					"Dependency: #arguments.DIData[ x ].toString()# Not Found when wiring #arguments.targetID#. Registered mappings are: #structKeyList( variables.binder.getMappings() )#"
+					"Dependency: #thisDIData.toString()# Not Found when wiring #arguments.targetID#. Registered mappings are: #structKeyList( variables.binder.getMappings() )#"
 				);
 			}
 		}
 		// end iteration
 
 		return this;
+	}
+
+	/**
+	 * Process a target objecte dependency delegation
+	 *
+	 * @target     The targeted object injected with the dependency
+	 * @dependency The dependency object
+	 * @DIData     The DI information about the delegation/injection
+	 */
+	private function processDelegation(
+		required target,
+		required delegate,
+		required DIData
+	){
+		// Init lookup map in the target
+		param arguments.target.$wbDelegateMap   = {};
+		param arguments.DIData.delegateExcludes = "";
+
+		// Process if the delegation has inclusivity
+		// No length : all methods
+		// With length : use the declared methods
+		var delegateIncludes = len( arguments.DIData.delegate ) ? arguments.DIData.delegate.listToArray() : [];
+		// Delegation Exclusions
+		var delegateExcludes = [
+			"init",
+			"$init",
+			"onDIComplete",
+			"setInjector",
+			"setBeanFactory",
+			"setColdBox"
+		];
+		arrayAppend(
+			delegateExcludes,
+			variables.mixerUtil.getMixins().keyArray(),
+			true
+		)
+		arrayAppend(
+			delegateExcludes,
+			arguments.DIData.delegateExcludes.listToArray(),
+			true
+		);
+
+		// Process the right delegate prefix and suffixes
+		// Null : empty
+		// No length : use the property name
+		// With length : use it
+		var delegateSuffix = isNull( arguments.DIData.delegateSuffix ) ? "" : len(
+			arguments.DIData.delegateSuffix
+		) ? arguments.DIData.delegateSuffix : arguments.DIData.name;
+		var delegatePrefix = isNull( arguments.DIData.delegatePrefix ) ? "" : len(
+			arguments.DIData.delegatePrefix
+		) ? arguments.DIData.delegatePrefix : arguments.DIData.name;
+
+		// Process all public methods on the delegate
+		structKeyArray( arguments.delegate )
+			// Only functions or closures
+			.filter( function( thisMethod ){
+				return isCustomFunction( delegate[ arguments.thisMethod ] ) || isClosure(
+					delegate[ arguments.thisMethod ]
+				);
+			} )
+			// Exclusions
+			.filter( function( thisMethod ){
+				return !arrayContainsNoCase( delegateExcludes, arguments.thisMethod );
+			} )
+			// Inclusivity : No includes, just passthrough, else verify it
+			.filter( function( thisMethod ){
+				return !arrayLen( delegateIncludes ) || arrayContainsNoCase(
+					delegateIncludes,
+					arguments.thisMethod
+				);
+			} )
+			// Delegate it baby!
+			.each( function( thisMethod ){
+				var delegationMethod                      = "#delegatePrefix##arguments.thisMethod##delegateSuffix#";
+				// Lookup targets
+				target.$wbDelegateMap[ delegationMethod ] = { delegate : delegate, method : arguments.thisMethod };
+				// inject delegation method to our core
+				target[ delegationMethod ]                = variables.mixerUtil.getByDelegate;
+			} )
+		;
 	}
 
 	/**
