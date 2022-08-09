@@ -1172,7 +1172,7 @@ component serializable="false" accessors="true" {
 			delegateExcludes,
 			variables.mixerUtil.getMixins().keyArray(),
 			true
-		)
+		);
 		arrayAppend(
 			delegateExcludes,
 			arguments.DIData.delegateExcludes.listToArray(),
