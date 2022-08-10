@@ -1159,7 +1159,7 @@ component serializable="false" accessors="true" {
 		// No length : all methods
 		// With length : use the declared methods
 		var delegateIncludes = len( arguments.DIData.delegate ) ? arguments.DIData.delegate.listToArray() : [];
-		// Delegation Exclusions
+		// Delegation Exclusions : Core
 		var delegateExcludes = [
 			"init",
 			"$init",
@@ -1168,11 +1168,13 @@ component serializable="false" accessors="true" {
 			"setBeanFactory",
 			"setColdBox"
 		];
+		// Exclude core mixins
 		arrayAppend(
 			delegateExcludes,
 			variables.mixerUtil.getMixins().keyArray(),
 			true
 		);
+		// Exclude targeted excludes
 		arrayAppend(
 			delegateExcludes,
 			arguments.DIData.delegateExcludes.listToArray(),
@@ -1211,11 +1213,14 @@ component serializable="false" accessors="true" {
 			} )
 			// Delegate it baby!
 			.each( function( thisMethod ){
-				var delegationMethod                      = "#delegatePrefix##arguments.thisMethod##delegateSuffix#";
-				// Lookup targets
-				target.$wbDelegateMap[ delegationMethod ] = { delegate : delegate, method : arguments.thisMethod };
-				// inject delegation method to our core
-				target[ delegationMethod ]                = variables.mixerUtil.getByDelegate;
+				var delegationMethod = "#delegatePrefix##arguments.thisMethod##delegateSuffix#";
+				// Only add delegate if not overriden
+				if( !structKeyExists( target, delegationMethod ){
+					// Lookup targets
+					target.$wbDelegateMap[ delegationMethod ] = { delegate : delegate, method : arguments.thisMethod };
+					// inject delegation method to our core
+					target[ delegationMethod ]                = variables.mixerUtil.getByDelegate;
+				}
 			} )
 		;
 	}
