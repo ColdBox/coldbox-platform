@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ----
 
+## [6.8.1] => 2022-AUG-11
+
+### ColdBox HMVC Core
+
+#### Bug
+
+* [COLDBOX-1139](https://ortussolutions.atlassian.net/browse/COLDBOX-1139) make event caching cache keys lower cased to avoid case issues when clearing keys
+* [COLDBOX-1138](https://ortussolutions.atlassian.net/browse/COLDBOX-1138) Event Cache Response Has Status Code of 0 or `null`
+
+----
+
 ## [6.8.0] => 2022-JUL-23
 
 ### ColdBox HMVC Core
