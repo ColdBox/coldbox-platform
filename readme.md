@@ -102,7 +102,7 @@ And constructed with the following guidelines:
 ## System Requirements
 
 * Lucee 5+
-* Adobe ColdFusion 2018+ (2016 Has Been Deprecated)
+* Adobe ColdFusion 2018+
 
 ## Quick Installation
 

@@ -19,7 +19,6 @@ component {
 	function init(){
 		// Features map by engine
 		variables.features = {
-			adobe2016 : { invokeArray : false },
 			adobe2018 : { invokeArray : false },
 			adobe2021 : { invokeArray : false },
 			lucee     : { invokeArray : true }

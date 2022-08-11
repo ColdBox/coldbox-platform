@@ -180,7 +180,6 @@ component
 
 	/**
 	 * Clear the cache statistics
-	 * NOT IMPLEMENTED FOR ACF 2016+
 	 *
 	 * @return ICacheProvider
 	 */
@@ -547,4 +546,3 @@ component
 	}
 
 }
-

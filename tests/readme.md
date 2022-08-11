@@ -52,16 +52,14 @@ Startup the test server via the following command: `box server start` in the roo
 
 We deliver the capabilities for you to test the following engines:
 
-* Lucee 4.5 (Default)
 * Lucee 5
-* ACF 11
-* ACF 2016
 * ACF 2018
+* ACF 2021
 
 Just look at the appropriate `server-engine.json` file in the root of the repository so you can test a specific engine like this:
 
 ```
-box server start serverConfigFile=server-adobe@2016.json
+box server start serverConfigFile=server-adobe@2021.json
 ```
 
 > **Note:** Run the above command from the root of the repo.

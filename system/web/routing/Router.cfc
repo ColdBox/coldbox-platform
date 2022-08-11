@@ -275,42 +275,6 @@ component
 	}
 
 	/****************************************************************************************************************************/
-	// CF-11/2016 include .cfm template can't access the methods which are only declare as property... (hack) have to create setter/getter methods
-	// Remove this with new CFC approach. CFM files will have to upgrade to CFC capabilities once feature is complete.
-
-	function setBaseURL( string baseURL ){
-		variables.baseURL = arguments.baseURL;
-		return this;
-	}
-	function getBaseURL(){
-		return variables.baseURL;
-	}
-	function setUniqueURLS( boolean uniqueURLS ){
-		variables.uniqueURLS = arguments.uniqueURLS;
-		return this;
-	}
-	function getUniqueURLS(){
-		return variables.uniqueURLS;
-	}
-	function setValidExtensions( required extensions ){
-		variables.validExtensions = arguments.extensions;
-	}
-	function setFullRewrites( boolean target ){
-		variables.fullRewrites = arguments.target;
-		return this;
-	}
-	function getFullRewrites(){
-		return variables.fullRewrites;
-	}
-	function setMultiDomainDiscovery( boolean target ){
-		variables.multiDomainDiscovery = arguments.target;
-		return this;
-	}
-	function getMultiDomainDiscovery(){
-		return variables.multiDomainDiscovery;
-	}
-
-	/****************************************************************************************************************************/
 	/* 											ROUTING TABLE METHODS															*/
 	/****************************************************************************************************************************/
 
