@@ -135,7 +135,7 @@ component accessors="true" {
 	 * @targetEvent The targeted ColdBox event string
 	 */
 	string function buildBasicCacheKey( required keySuffix, required targetEvent ){
-		return variables.cacheProvider.getEventCacheKeyPrefix() & arguments.targetEvent & "-" & arguments.keySuffix & "-";
+		return lCase( variables.cacheProvider.getEventCacheKeyPrefix() & arguments.targetEvent & "-" & arguments.keySuffix & "-" );
 	}
 
 }
