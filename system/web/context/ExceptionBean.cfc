@@ -392,17 +392,21 @@ component accessors="true" {
 			"
 				);
 			} else if ( isSimpleValue( arguments.scope[ i ]) && i == 'SQL Sent'  ) {
-				//Special formatting for SQL 
+				//Special highlighing for SQL 
 				var exceptionMessage = "";
-				var lines = 0
+				var lines = 0;
 				try {
 					//Get error line from position in error details
 					exceptionMessage = arguments.scope["Exception Detail"];
 					var lineNumberResults = refind("Position\: ([0-9]+)",exceptionMessage,0,true,'all');
-					if(lineNumberResults.len() && lineNumberResults[1].match.len() == 2){
-						var lineBreaks = refind('\n',left(arguments.scope[ i ],lineNumberResults[1].match[2]) ,0,false,'all');
-						lines = lineBreaks.len() ?: 0;
-						lines++;
+					if(
+						isArray(lineNumberResults)
+						&& arrayLen(lineNumberResults) 
+						&& arrayLen(lineNumberResults[1].match) == 2
+						){
+						var lineBreaks = refind('\n',trim(left(arguments.scope[ i ],lineNumberResults[1].match[2])),0,false,'all');
+						lines = isArray(lineBreaks) ? arrayLen(lineBreaks) : 0;
+						lines++; //starts at 1 not 0
 						exceptionMessage &= " (line #lines#)"
 					}
 				} catch (e any){}
