@@ -59,6 +59,29 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		expect( r ).toBe( "http://jfetmac/applications/coldbox/test-harness/index.cfm/contactus/" );
 	}
 
+	function testValidRoutesInQuery(){
+		// This test is for a specific Lucee bug we're working around
+		// https://ortussolutions.atlassian.net/browse/COLDBOX-1136
+
+		// Mocks
+		var mockRouter = createStub().$( "getRoutes", [ { name : "contactus", pattern : "contactus/" } ] );
+		mockController.getWireBox().$( "getInstance", mockRouter );
+
+		var myQry = queryNew(
+			"name,age",
+			"varchar,integer",
+			[ [ "foo", 20 ] ]
+		);
+
+		// We want to make sure the `name` column in the query doesn't affect the inner closure used in this method
+		cfloop( query = myQry ) {
+			var r = getRequestContext().route( "contactus" );
+		}
+
+		// debug( r );
+		expect( r ).toBe( "http://jfetmac/applications/coldbox/test-harness/index.cfm/contactus/" );
+	}
+
 	function testNamedRoutesWithBuildLink(){
 		// Mocks
 		var mockRouter = createStub().$( "getRoutes", [ { name : "contactus", pattern : "contactus/" } ] );
