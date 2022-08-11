@@ -95,14 +95,26 @@
 			OR findNoCase( "DatabaseQueryException", getMetadata( oException.getExceptionStruct() ).getName() )
 		) AND findNoCase( "database", oException.getType() )
 	) {
+		local.exceptionInfo = oException.getExceptionStruct();
 		local.databaseInfo = {
 			"SQL State"            : oException.getSQLState(),
 			"NativeErrorCode"      : oException.getNativeErrorCode(),
 			"SQL Sent"             : oException.getSQL(),
 			"Driver Error Message" : oException.getqueryError(),
 			"Name-Value Pairs"     : oException.getWhere(),
-			"Exception Detail"     : oException.getExceptionStruct().Message,
-			"Datasource"     	   : oException.getExceptionStruct().DataSource
+			"Exception Detail"     : local.exceptionInfo.Message,
+			"Datasource"     	   : structKeyExists( local.exceptionInfo, 'datasource' ) ? local.exceptionInfo.datasource : "",
+			"Additional Info"      : structKeyExists( local.exceptionInfo, 'additional' ) ? local.exceptionInfo.additional : "",
+			"itemorder"      : [
+				"Datasource",
+				"Name-Value Pairs",
+				"SQL Sent",
+				"SQL State",
+				"NativeErrorCode",
+				"Driver Error Message",
+				"Exception Detail",
+				"Additional Info"
+			]
 		};
 	}
 
@@ -417,10 +429,8 @@
 						<!--- Determine Source Highlighter --->
 						<cfset highlighter = ( listLast( thisTagContext.template, "." ) eq "cfm" ? "cf" : "js" )/>
 						<cfset spacing = "#chr( 20 )##chr( 20 )##chr( 20 )##chr( 20 )#">
-						
 						<!--- Output code only once per instance found --->
 						<cfset filecontent = []>
-
 						<!--- Replace spaces with space charaters for correct indentation --->
 						<cfloop file="#thisTagContext.template#" index="line">
 							<cfset findInitalSpaces = reFind( "^[\s\t]+", line, 0, true, "All" )>
