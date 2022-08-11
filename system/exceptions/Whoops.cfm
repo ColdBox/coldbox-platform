@@ -414,34 +414,35 @@
 				<cfloop array="#local.e.tagContext#" item="thisTagContext" index="i">
 					<!--- Verify if File Exists: Just in case it's a core CFML engine file, else don't add it --->
 					<cfif fileExists( thisTagContext.template )>
-
 						<!--- Determine Source Highlighter --->
 						<cfset highlighter = ( listLast( thisTagContext.template, "." ) eq "cfm" ? "cf" : "js" )/>
-						<cfset spacing = "#chr(20)##chr(20)##chr(20)##chr(20)#">
-
+						<cfset spacing = "#chr( 20 )##chr( 20 )##chr( 20 )##chr( 20 )#">
+						
 						<!--- Output code only once per instance found --->
-						<cfset filecontent = "">				
+						<cfset filecontent = []>
 
 						<!--- Replace spaces with space charaters for correct indentation --->
 						<cfloop file="#thisTagContext.template#" index="line">
-							<cfset findInitalSpaces = refind("^[\s\t]+",line,0,true,"All")>
-							<cfif trim(line) is not "" and arrayLen(findInitalSpaces)>
-								<cfset trimmedline = right(line,len(line) - findInitalSpaces[1].len[1])>
-								<cfset filecontent &= repeatString(spacing,findInitalSpaces[1].len[1]) & trimmedline>
+							<cfset findInitalSpaces = reFind( "^[\s\t]+", line, 0, true, "All" )>
+							<cfif trim( line ) is not "" and arrayLen( findInitalSpaces )>
+								<cfset trimmedline = right( line, len( line ) - findInitalSpaces[ 1 ].len[ 1 ] )>
+								<cfset arrayAppend(
+									filecontent,
+									"#repeatString( spacing, findInitalSpaces[ 1 ].len[ 1 ] )##trimmedline#"
+								)>
 							<cfelse>
-								<cfset filecontent &= chr(20) & line>
+								<cfset arrayAppend( filecontent, "#chr( 20 )##line#" )>
 							</cfif>
-							<cfset filecontent &= "#chr( 13 )##chr( 10 )#">
 						</cfloop>
-						
 						<cfif NOT structKeyExists( stackRenderings, thisTagContext.template )>
 							<script
 								id="stackframe-#hash( thisTagContext.template )#"
 								type="text"
 								async
-							><![CDATA[#filecontent#]]></script>
+							><![CDATA[#arrayToList( filecontent, "#chr( 13 )##chr( 10 )#" )#]]></script>
 							<cfset stackRenderings[ thisTagContext.template ] = true>
 						</cfif>
+
 						<!--- Pre source holder --->
 						<pre
 							id="stack#stackFrames - i + 1#-code"
