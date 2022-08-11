@@ -391,6 +391,47 @@ component accessors="true" {
 					timeFormat( arguments.scope[ i ], "HH:mm:ss" ) & "</td>
 			"
 				);
+			} else if ( isSimpleValue( arguments.scope[ i ]) && i == 'SQL Sent'  ) {
+				//Special formatting for SQL 
+				var exceptionMessage = "";
+				var lines = 0
+				try {
+					//Get error line from position in error details
+					exceptionMessage = arguments.scope["Exception Detail"];
+					var lineNumberResults = refind("Position\: ([0-9]+)",exceptionMessage,0,true,'all');
+					if(lineNumberResults.len() && lineNumberResults[1].match.len() == 2){
+						var lineBreaks = refind('\n',left(arguments.scope[ i ],lineNumberResults[1].match[2]) ,0,false,'all');
+						lines = lineBreaks.len() ?: 0;
+						lines++;
+						exceptionMessage &= " (line #lines#)"
+					}
+				} catch (e any){}
+
+				list.append(
+					"<td class="" sqlcode "" width="" 250 "">" & i & "</td>"
+				);
+
+				list.append(
+					"<td class="" sqlcode overflow-scroll ""><pre>"
+						& (
+							len( exceptionMessage ) ? exceptionMessage : "<em>---</em>"
+						) &
+					"</pre><pre  class=""brush:sql;gutter:false;highlight: #lines#"">
+			" & (len( arguments.scope[ i ] ) ? arguments.scope[ i ] : "<em>---</em>") & "</pre></td>"
+				);
+
+
+			
+			} else if ( isJSON( arguments.scope[ i ] ) && arrayFind(['{','['],left(arguments.scope[ i ],1)) > 0 ) {
+				// Special formatting for JSON Strings
+				list.append(
+					"<td class="" sqlcode "" width="" 250 "">" & i & "</td>"
+				);
+
+				list.append(
+					"<td class="" sqlcode overflow-scroll ""><pre  class=""brush:js;gutter:false"">" 
+						& (len( arguments.scope[ i ] ) ? formatJSON(arguments.scope[ i ]) : "<em>---</em>") & "</pre></td>"
+				);
 			} else if ( isSimpleValue( arguments.scope[ i ] ) ) {
 				list.append(
 					"<td width="" 250 "">" & i & "</td>
@@ -468,6 +509,75 @@ component accessors="true" {
 
 		return list.toString();
 	}
+
+
+	/**
+	 * Formats a JSON string with indents &amp; new lines.
+	 * v1.0 by Ben Koshy
+	 * 
+	 * @param str      JSON string (Required)
+	 * @return Returns a string of indent-formated JSON 
+	 * @author Ben Koshy (cf@animex.com) 
+	 * @version 0, September 16, 2012 
+	 */
+	// formatJSON() :: formats and indents JSON string
+	// based on blog post @ http://ketanjetty.com/coldfusion/javascript/format-json/
+	// modified for CFScript By Ben Koshy @animexcom
+	// usage: result = formatJSON('STRING TO BE FORMATTED') OR result = formatJSON(StringVariableToFormat);
+
+	public string function formatJSON(str) {
+		var fjson = '';
+		var pos = 0;
+		var regex = ':"([^"]+)?.*';
+		var strLen = len(arguments.str);
+		var indentStr = "  "; // Adjust Indent Token If you Like
+		var newLine = chr(10); // Adjust New Line Token If you Like
+		
+		var string = '';
+		var prev = '';
+		var char = '';
+		var commaPos = 0;
+		var commaPosArr = [];
+		for (var i=1; i<strlen; i++) { 
+			char=mid(arguments.str,i,1); 
+			prev =""; 
+			if(i !=1){ prev=mid(arguments.str,i-1,1); } 
+			strhascomma=false;
+
+			if(prev== ':' && char== '"'){ 
+				string=mid(arguments.str,i-1,(strLen-i));
+				string=REReplaceNoCase(string,regex,'\1');
+				commaposarr=REFindNoCase(',',string,1,true); 
+				if(commaposarr.pos[1] != 0){
+					 commapos="i" + commaposarr.pos[arraylen(commaposarr.pos)]; 
+				} 
+			} 
+
+			if (char== '}' || char== ']') { 
+				fjson &=newLine; pos=pos - 1; 
+				for (var j=1; j<=pos; j++) { 
+					fjson &=indentStr;
+				} 
+			} 
+
+			fjson &=char;
+			if (char== '{' || char== '[' || (char== ',' && i !=commaPos)) { 
+				commapos=0; 
+				fjson &=newLine; 
+				if (char== '{' || char== '[') { 
+					pos=pos + 1; 
+				} 
+				for (var k=1; k<=pos; k++) { 
+					fjson &=indentStr; 
+				} 
+			} 
+		} 
+		fjson &=newLine & '}'; 
+		return trim(fjson); 
+	}
+
+
+
 
 	/**
 	 * Compose a screen for a file to open in an editor
