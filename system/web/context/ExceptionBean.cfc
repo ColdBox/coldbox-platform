@@ -412,11 +412,11 @@ component accessors="true" {
 				} catch (e any){}
 
 				list.append(
-					"<td class="" sqlcode "" width="" 250 "">" & i & "</td>"
+					"<td class="" code-cell "" width="" 250 "">" & i & "</td>"
 				);
 
 				list.append(
-					"<td class="" sqlcode overflow-scroll ""><pre>"
+					"<td class="" code-cell overflow-scroll ""><pre>"
 						& (
 							len( exceptionMessage ) ? exceptionMessage : "<em>---</em>"
 						) &
@@ -429,11 +429,11 @@ component accessors="true" {
 			} else if ( isJSON( arguments.scope[ i ] ) && arrayFind(['{','['],left(arguments.scope[ i ],1)) > 0 ) {
 				// Special formatting for JSON Strings
 				list.append(
-					"<td class="" sqlcode "" width="" 250 "">" & i & "</td>"
+					"<td class="" code-cell "" width="" 250 "">" & i & "</td>"
 				);
 
 				list.append(
-					"<td class="" sqlcode overflow-scroll ""><pre  class=""brush:js;gutter:false"">" 
+					"<td class="" code-cell overflow-scroll ""><pre  class=""brush:js;gutter:false"">" 
 						& (len( arguments.scope[ i ] ) ? formatJSON(arguments.scope[ i ]) : "<em>---</em>") & "</pre></td>"
 				);
 			} else if ( isSimpleValue( arguments.scope[ i ] ) ) {
