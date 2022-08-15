@@ -299,7 +299,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * @point Could be the interception point... could be the target closure
 	 */
 	private struct function normalizeListenArguments( required target, required point ){
-	        if ( isValid( "string", arguments.target ) ){
+	        if ( isSimpleValue( arguments.target ) ){
 	                var closure = arguments.point;
 	                arguments.point = arguments.target;
 	                arguments.target = closure;
