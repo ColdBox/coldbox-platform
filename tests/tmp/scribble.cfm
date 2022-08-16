@@ -1,10 +1,5 @@
-﻿<cfdirectory
-	action   ="list"
-	directory="#expandPath( "/test-harness/models" )#"
-	filter   ="*.cfc"
-	recurse  ="true"
-	listinfo ="name"
-	name     ="qObjects"
->
+﻿<cfscript>
+test = new Test();
 
-<cfdump var="#qObjects#">
+writeDump( var=getMetadata( test ), top = 5 );
+</cfscript>

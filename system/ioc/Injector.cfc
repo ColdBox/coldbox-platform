@@ -1113,7 +1113,7 @@ component serializable="false" accessors="true" {
 					argName        = thisDIData.argName
 				);
 
-				// Is this injection a delegation?
+				// Is this injection a delegation also?
 				if ( !isNull( thisDIData.delegate ) ) {
 					processDelegation(
 						target  : targetObject,

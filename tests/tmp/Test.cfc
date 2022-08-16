@@ -1,4 +1,6 @@
-component{
+component
+	delegates = "prefix>Delegate1,Delegate2,Delegate3"
+{
 
 	property name="data" observedBy="dataObserver";
 

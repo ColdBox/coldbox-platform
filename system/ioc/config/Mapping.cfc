@@ -362,7 +362,7 @@ component accessors="true" {
 	 * @scope            The scope in the CFC to inject the property to. By default it will inject it to the variables scope
 	 * @required         If the property is required or not, by default we assume required DI
 	 * @type             The type of the property
-	 * @delegate         If the property is an object delegate, else null
+	 * @delegate         If the property is an object delegate it will be empty or the list of methods to delegate to, else null
 	 * @delegatePrefix   If the property has a delegate prefix, else null
 	 * @delegateSuffix   If the property has a delegate suffix, else null
 	 * @delegateExcludes If the property has a delegate exclusion list, else null
@@ -378,7 +378,8 @@ component accessors="true" {
 		type             = "any",
 		delegate,
 		delegatePrefix,
-		delegateSuffix
+		delegateSuffix,
+		delegateExcludes
 	){
 		// check if already registered, if it is, just return
 		for ( var thisProperty in variables.DIProperties ) {
@@ -645,6 +646,11 @@ component accessors="true" {
 				}
 			}
 
+			// Delegates?
+			if ( md.keyExists( "delegates" ) && len( md.delegates.trim() ) ) {
+				processComponentDelegates( md.delegates.trim() );
+			}
+
 			// autowire only if not overridden
 			if ( !len( variables.autowire ) ) {
 				// Check if autowire annotation found or autowire already set
@@ -687,6 +693,52 @@ component accessors="true" {
 		// End lock
 
 		return this;
+	}
+
+	/**
+	 * Process all the component delegates using WireBox delegate syntax expression
+	 *
+	 * @expression The CFC delegates annotation string expression
+	 */
+	private function processComponentDelegates( required expression ){
+		arguments.expression
+			.listToArray()
+			.map( function( item ){
+				arguments.item = arguments.item.trim();
+				var model      = reReplaceNoCase(
+					arguments.item.getToken( 1, "=" ),
+					"^(.*)(>|<)",
+					"",
+					"all"
+				);
+				return {
+					"name"     : "wbDelegate_#model#_#hash( arguments.item )#",
+					"ref"      : model,
+					"delegate" : getToken( arguments.item, 2, "=" ),
+					"raw"      : arguments.item
+				};
+			} )
+			// Map Prefixes
+			.map( function( item ){
+				if ( reFind( "^>", arguments.item.raw ) ) {
+					arguments.item.delegatePrefix = arguments.item.ref;
+				} else if ( reFind( "^(.*)(>)", arguments.item.raw ) ) {
+					arguments.item.delegatePrefix = getToken( arguments.item.raw, 1, ">" );
+				}
+				return arguments.item;
+			} )
+			// Map Suffixes
+			.map( function( item ){
+				if ( reFind( "^<", arguments.item.raw ) ) {
+					arguments.item.delegateSuffix = arguments.item.ref;
+				} else if ( reFind( "^(.*)(<)", arguments.item.raw ) ) {
+					arguments.item.delegateSuffix = getToken( arguments.item.raw, 1, "<" )
+				}
+				return arguments.item;
+			} )
+			.each( function( item ){
+				addDIProperty( argumentCollection = arguments.item );
+			} );
 	}
 
 	/**
