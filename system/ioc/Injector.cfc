@@ -1215,11 +1215,14 @@ component serializable="false" accessors="true" {
 			.each( function( thisMethod ){
 				var delegationMethod = "#delegatePrefix##arguments.thisMethod##delegateSuffix#";
 				// Only add delegate if not overriden
-				if( !structKeyExists( target, delegationMethod ) ){
+				if ( !structKeyExists( target, delegationMethod ) ) {
 					// Lookup targets
-					target.$wbDelegateMap[ delegationMethod ] = { delegate : delegate, method : arguments.thisMethod };
+					target.$wbDelegateMap[ delegationMethod ] = {
+						delegate : delegate,
+						method   : arguments.thisMethod
+					};
 					// inject delegation method to our core
-					target[ delegationMethod ]                = variables.mixerUtil.getByDelegate;
+					target[ delegationMethod ] = variables.mixerUtil.getByDelegate;
 				}
 			} )
 		;

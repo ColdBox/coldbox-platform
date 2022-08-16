@@ -86,6 +86,27 @@
 		assertFalse( called );
 	}
 
+	function testListenReverseArgumentOrder(){
+		var called = false;
+		iService.listen( "onCall", function(){
+			called = true;
+		} );
+		iService.announce( "onCall" );
+		assertTrue( called );
+	}
+
+	function testUnlistenReverseArgumentOrder(){
+		var called   = false;
+		var listener = function(){
+			called = true;
+		};
+		iService.listen( "onCall", listener );
+		iService.unlisten( "onCall", listener );
+
+		iService.announce( "onCall" );
+		assertFalse( called );
+	}
+
 	function testInterceptionPoints(){
 		// test registration again
 		assertTrue( arrayLen( iService.getInterceptionPoints() ) gt 0 );
