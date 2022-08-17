@@ -53,7 +53,7 @@
 		assertTrue( structCount( scope.getSingletons() ) eq 0 );
 	}
 
-	function testSingletonsThatErrorInAutowireAreRemoved(){
+	function testInstancesThatErrorInAutowireAreRemoved(){
 		var mapping = createMock( "coldbox.system.ioc.config.Mapping" ).init( name = "singletontest" );
 		mapping.setThreadSafe( false );
 		mockInjector.$( "buildInstance", mockStub );

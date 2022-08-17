@@ -59,7 +59,7 @@
 		o = scope.getFromScope( mapping, {} );
 	}
 
-	function testSingletonsThatErrorInAutowireAreRemoved(){
+	function testInstancesThatErrorInAutowireAreRemoved(){
 		var mapping = createMock( "coldbox.system.ioc.config.Mapping" ).init( name = "CacheTest" );
 
 		mapping.setCacheProperties(
