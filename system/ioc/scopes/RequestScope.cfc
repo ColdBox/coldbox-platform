@@ -55,8 +55,13 @@ component accessors="true" {
 			var target          = variables.injector.buildInstance( arguments.mapping, arguments.initArguments );
 			request[ cacheKey ] = target;
 
-			// wire it
-			variables.injector.autowire( target = target, mapping = arguments.mapping );
+			try {
+				// wire it
+				variables.injector.autowire( target = target, mapping = arguments.mapping );
+			} catch ( any e ) {
+				structDelete( request, cacheKey );
+				rethrow;
+			}
 
 			// log it
 			if ( variables.log.canDebug() ) {
