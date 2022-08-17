@@ -37,6 +37,7 @@
 		mapping.setThreadSafe( true );
 		mockInjector.$( "buildInstance", mockStub );
 		mockInjector.$( "autowire" ).$throws( type = "CustomAutowireError", message = "Error in autowire" );
+		structDelete( request, "wirebox:RequestTest" );
 
 		expect( function(){
 			scope.getFromScope( mapping, {} );
