@@ -67,8 +67,13 @@ component accessors="true" {
 						variables.injector.getScopeStorage().put( cacheKey, target, CFScope );
 					}
 
-					// wire it
-					variables.injector.autowire( target = target, mapping = arguments.mapping );
+					try {
+						// wire it
+						variables.injector.autowire( target = target, mapping = arguments.mapping );
+					} catch ( any e ) {
+						variables.injector.getScopeStorage().delete( cacheKey, CFScope );
+						rethrow;
+					}
 
 					// If thread safe, then now store it in the scope, as all dependencies are now safely wired
 					if ( arguments.mapping.getThreadSafe() ) {
