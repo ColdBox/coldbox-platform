@@ -28,7 +28,7 @@
 	function testGetFromScope(){
 		// 1: Default construction
 		var mapping = createMock( "coldbox.system.ioc.config.Mapping" ).init( name = "singletontest" );
-		mapping.setThreadSafe( true );
+		mapping.setThreadSafe( false );
 		mockInjector.$( "buildInstance", mockStub ).$( "autowire", mockStub );
 		var o = scope.getFromScope( mapping, {} );
 
@@ -51,6 +51,17 @@
 		assertTrue( structCount( scope.getSingletons() ) eq 1 );
 		scope.clear();
 		assertTrue( structCount( scope.getSingletons() ) eq 0 );
+	}
+
+	function testSingletonsThatErrorInAutowireAreRemoved(){
+		var mapping = createMock( "coldbox.system.ioc.config.Mapping" ).init( name = "singletontest" );
+		mapping.setThreadSafe( false );
+		mockInjector.$( "buildInstance", mockStub );
+		mockInjector.$( "autowire" ).$throws( type = "CustomAutowireError", message = "Error in autowire" );
+		expect( function(){
+			scope.getFromScope( mapping, {} );
+		} ).toThrow( "CustomAutowireError" );
+		expect( scope.getSingletons() ).toBeEmpty();
 	}
 	</cfscript>
 </cfcomponent>

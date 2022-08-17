@@ -76,8 +76,13 @@ component accessors="true" {
 						variables.singletons.put( cacheKey, tmpSingleton );
 					}
 
-					// wire up dependencies on the singleton object
-					variables.injector.autowire( target = tmpSingleton, mapping = arguments.mapping );
+					try {
+						// wire up dependencies on the singleton object
+						variables.injector.autowire( target = tmpSingleton, mapping = arguments.mapping );
+					} catch ( any e ) {
+						variables.singletons.remove( cacheKey );
+						rethrow;
+					}
 
 					// If thread safe, then now store it in the singleton cache, as all dependencies are now safely wired
 					if ( arguments.mapping.getThreadSafe() ) {
