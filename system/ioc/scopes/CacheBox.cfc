@@ -91,8 +91,13 @@ component accessors="true" {
 					);
 				}
 
-				// wire up dependencies on the object
-				variables.injector.autowire( target = local.refLocal.target, mapping = arguments.mapping );
+				try {
+					// wire up dependencies on the object
+					variables.injector.autowire( target = local.refLocal.target, mapping = arguments.mapping );
+				} catch ( any e ) {
+					cacheProvider.clear( cacheKey );
+					rethrow;
+				}
 
 				// If thread safe, then now store it in the cache, as all dependencies are now safely wired
 				if ( arguments.mapping.getThreadSafe() ) {
