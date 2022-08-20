@@ -95,12 +95,26 @@
 			OR findNoCase( "DatabaseQueryException", getMetadata( oException.getExceptionStruct() ).getName() )
 		) AND findNoCase( "database", oException.getType() )
 	) {
+		local.exceptionInfo = oException.getExceptionStruct();
 		local.databaseInfo = {
 			"SQL State"            : oException.getSQLState(),
 			"NativeErrorCode"      : oException.getNativeErrorCode(),
 			"SQL Sent"             : oException.getSQL(),
 			"Driver Error Message" : oException.getqueryError(),
-			"Name-Value Pairs"     : oException.getWhere()
+			"Name-Value Pairs"     : oException.getWhere(),
+			"Exception Detail"     : local.exceptionInfo.Message,
+			"Datasource"     	   : structKeyExists( local.exceptionInfo, 'datasource' ) ? local.exceptionInfo.datasource : "",
+			"Additional Info"      : structKeyExists( local.exceptionInfo, 'additional' ) ? local.exceptionInfo.additional : "",
+			"itemorder"      : [
+				"Datasource",
+				"Name-Value Pairs",
+				"SQL Sent",
+				"SQL State",
+				"NativeErrorCode",
+				"Driver Error Message",
+				"Exception Detail",
+				"Additional Info"
+			]
 		};
 	}
 
@@ -135,12 +149,14 @@
 			<script src="/coldbox/system/exceptions/js/syntaxhighlighter.js"></script>
 			<script src="/coldbox/system/exceptions/js/javascript-brush.js"></script>
 			<script src="/coldbox/system/exceptions/js/coldfusion-brush.js"></script>
+			<script src="/coldbox/system/exceptions/js/sql-brush.js"></script>
 			<link type="text/css" rel="stylesheet" href="/coldbox/system/exceptions/css/syntaxhighlighter-theme.css">
 			<link type="text/css" rel="stylesheet" href="/coldbox/system/exceptions/css/whoops.css">
 			<script>
 				SyntaxHighlighter.defaults[ 'gutter' ] 		= true;
 				SyntaxHighlighter.defaults[ 'smart-tabs' ] 	= false;
 				SyntaxHighlighter.defaults[ 'tab-size' ]   	=  4;
+
 				//SyntaxHighlighter.all();
 			</script>
 		</head>
@@ -312,17 +328,17 @@
 							</h2>
 							<div class="data-filter" title="Filter Scopes">
 								<i data-eva="funnel-outline" fill="white"></i>
-								<a class="button active" 	href="javascript:void(0);" onclick="filterScopes( this, '' );">All</a>
-								<a class="button" 			href="javascript:void(0);" onclick="filterScopes( this, 'eventdetails' );">Error Details</a>
-								<a class="button" 			href="javascript:void(0);" onclick="filterScopes( this, 'frameworksnapshot_scope' );">Framework Snapshot</a>
-								<a class="button" 			href="javascript:void(0);" onclick="filterScopes( this, 'database_scope' );">Database</a>
-								<a class="button" 			href="javascript:void(0);" onclick="filterScopes( this, 'rc_scope' );">RC</a>
-								<a class="button" 			href="javascript:void(0);" onclick="filterScopes( this, 'prc_scope' );">PRC</a>
-								<a class="button" 			href="javascript:void(0);" onclick="filterScopes( this, 'headers_scope' );">Headers</a>
-								<a class="button" 			href="javascript:void(0);" onclick="filterScopes( this, 'session_scope' );">Session</a>
-								<a class="button" 			href="javascript:void(0);" onclick="filterScopes( this, 'application_scope' );">Application</a>
-								<a class="button" 			href="javascript:void(0);" onclick="filterScopes( this, 'cookies_scope' );">Cookies</a>
-								<a class="button" 			href="javascript:void(0);" onclick="filterScopes( this, 'stacktrace_scope' );">Raw Stack Trace</a>
+								<a class="button all active"				href="javascript:void(0);" onclick="filterScopes( this, '' );">All</a>
+								<a class="button eventdetails" 				href="javascript:void(0);" onclick="filterScopes( this, 'eventdetails' );">Error Details</a>
+								<a class="button frameworksnapshot_scope" 	href="javascript:void(0);" onclick="filterScopes( this, 'frameworksnapshot_scope' );">Framework Snapshot</a>
+								<a class="button database_scope" 			href="javascript:void(0);" onclick="filterScopes( this, 'database_scope' );">Database</a>
+								<a class="button rc_scope" 					href="javascript:void(0);" onclick="filterScopes( this, 'rc_scope' );">RC</a>
+								<a class="button prc_scope" 				href="javascript:void(0);" onclick="filterScopes( this, 'prc_scope' );">PRC</a>
+								<a class="button headers_scope" 			href="javascript:void(0);" onclick="filterScopes( this, 'headers_scope' );">Headers</a>
+								<a class="button session_scope" 			href="javascript:void(0);" onclick="filterScopes( this, 'session_scope' );">Session</a>
+								<a class="button application_scope" 		href="javascript:void(0);" onclick="filterScopes( this, 'application_scope' );">Application</a>
+								<a class="button cookies_scope" 			href="javascript:void(0);" onclick="filterScopes( this, 'cookies_scope' );">Cookies</a>
+								<a class="button stacktrace_scope" 			href="javascript:void(0);" onclick="filterScopes( this, 'stacktrace_scope' );">Raw Stack Trace</a>
 							</div>
 						</div>
 
@@ -410,17 +426,30 @@
 				<cfloop array="#local.e.tagContext#" item="thisTagContext" index="i">
 					<!--- Verify if File Exists: Just in case it's a core CFML engine file, else don't add it --->
 					<cfif fileExists( thisTagContext.template )>
-
 						<!--- Determine Source Highlighter --->
 						<cfset highlighter = ( listLast( thisTagContext.template, "." ) eq "cfm" ? "cf" : "js" )/>
-
+						<cfset spacing = "#chr( 20 )##chr( 20 )##chr( 20 )##chr( 20 )#">
 						<!--- Output code only once per instance found --->
+						<cfset filecontent = []>
+						<!--- Replace spaces with space charaters for correct indentation --->
+						<cfloop file="#thisTagContext.template#" index="line">
+							<cfset findInitalSpaces = reFind( "^[\s\t]+", line, 0, true, "All" )>
+							<cfif trim( line ) is not "" and arrayLen( findInitalSpaces )>
+								<cfset trimmedline = right( line, len( line ) - findInitalSpaces[ 1 ].len[ 1 ] )>
+								<cfset arrayAppend(
+									filecontent,
+									"#repeatString( spacing, findInitalSpaces[ 1 ].len[ 1 ] )##trimmedline#"
+								)>
+							<cfelse>
+								<cfset arrayAppend( filecontent, "#chr( 20 )##line#" )>
+							</cfif>
+						</cfloop>
 						<cfif NOT structKeyExists( stackRenderings, thisTagContext.template )>
 							<script
 								id="stackframe-#hash( thisTagContext.template )#"
 								type="text"
 								async
-							><![CDATA[<cfloop file="#thisTagContext.template#" index="line">#line##chr( 13 )##chr( 10 )#</cfloop>]]></script>
+							><![CDATA[#arrayToList( filecontent, "#chr( 13 )##chr( 10 )#" )#]]></script>
 							<cfset stackRenderings[ thisTagContext.template ] = true>
 						</cfif>
 
@@ -450,6 +479,13 @@
 			<script>
 				// activate icons
 				eva.replace();
+
+				SyntaxHighlighter.highlight('brush:sql');
+				<cfif local.e.type == 'database'>
+					var buttonEl = document.querySelector(".button.database_scope");
+					filterScopes( buttonEl, 'database_scope' );
+					toggleCodePreview();
+				</cfif>
 			</script>
 		</body>
 	</html>
