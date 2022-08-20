@@ -66,6 +66,27 @@
 						expect( o ).toBe( mockStub );
 					} );
 				} );
+
+				given( "An object that fails in autowiring", function(){
+					then( "it should not be stored in the scope", function(){
+						var mapping = createMock( "coldbox.system.ioc.config.Mapping" ).init(
+							name = "CFScopeTest"
+						);
+						mapping.setScope( "session" );
+						mapping.setThreadSafe( false );
+						mockInjector.$( "buildInstance", mockStub );
+						mockInjector
+							.$( "autowire" )
+							.$throws( type = "CustomAutowireError", message = "Error in autowire" );
+						structClear( session );
+
+						expect( function(){
+							scope.getFromScope( mapping, {} );
+						} ).toThrow( "CustomAutowireError" );
+
+						expect( session ).toBeEmpty();
+					} );
+				} );
 			} );
 		} );
 	}
