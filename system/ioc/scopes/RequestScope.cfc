@@ -83,11 +83,32 @@ component accessors="true" {
 	 * @mapping             The linked WireBox injector
 	 * @mapping.doc_generic coldbox.system.ioc.config.Mapping
 	 *
-	 * @return coldbox.system.ioc.scopes.IScope
+	 * @return True if the mapping exists in the singleton cache
 	 */
 	boolean function exists( required mapping ){
 		var cacheKey = "wirebox:#arguments.mapping.getName()#";
 		return structKeyExists( request, cacheKey );
+	}
+
+	/**
+	 * Clear the request based objects
+	 *
+	 * @key If passed, we will try to remove that key from the request based cache instead of every key
+	 */
+	RequestScope function clear( string key ){
+		if ( !isNull( arguments.key ) ) {
+			structDelete( request, "wirebox:#arguments.key#" );
+		} else {
+			request
+				.keyArray()
+				.filter( function( key ){
+					return arguments.key.findNoCase( "wirebox:" );
+				} )
+				.each( function( key ){
+					structDelete( request, arguments.key );
+				} )
+		}
+		return this;
 	}
 
 }

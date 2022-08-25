@@ -53,6 +53,14 @@
 		assertTrue( structCount( scope.getSingletons() ) eq 0 );
 	}
 
+	function testClearSpecificKey(){
+		assertTrue( structCount( scope.getSingletons() ) eq 0 );
+		scope.getSingletons().put( "test", mockStub );
+		assertTrue( structCount( scope.getSingletons() ) eq 1 );
+		scope.clear( "TesT" );
+		assertTrue( structCount( scope.getSingletons() ) eq 0 );
+	}
+
 	function testInstancesThatErrorInAutowireAreRemoved(){
 		var mapping = createMock( "coldbox.system.ioc.config.Mapping" ).init( name = "singletontest" );
 		mapping.setThreadSafe( false );

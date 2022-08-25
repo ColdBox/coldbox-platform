@@ -113,7 +113,7 @@ component accessors="true" {
 	 * @mapping             The linked WireBox injector
 	 * @mapping.doc_generic coldbox.system.ioc.config.Mapping
 	 *
-	 * @return coldbox.system.ioc.scopes.IScope
+	 * @return True if the mapping exists in the singleton cache
 	 */
 	boolean function exists( required mapping ){
 		return variables.singletons.containsKey( lCase( arguments.mapping.getName() ) );
@@ -121,9 +121,15 @@ component accessors="true" {
 
 	/**
 	 * Clear the singletons scopes
+	 *
+	 * @key If passed, we will try to remove that key from the singleton cache instead of every key
 	 */
-	function clear(){
-		variables.singletons = createObject( "java", "java.util.concurrent.ConcurrentHashMap" ).init();
+	Singleton function clear( string key ){
+		if ( !isNull( arguments.key ) ) {
+			variables.singletons.remove( lCase( arguments.key ) );
+		} else {
+			variables.singletons.clear();
+		}
 		return this;
 	}
 
