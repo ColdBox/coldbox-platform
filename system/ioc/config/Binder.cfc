@@ -895,6 +895,16 @@ component accessors="true" {
 	}
 
 	/**
+	 * Set any delegates on the target mapping
+	 *
+	 * @expression The delegates expression to define for the mapping
+	 */
+	Binder function delegates( required expression ){
+		variables.currentMapping.setDelegates( arguments.expression );
+		return this;
+	}
+
+	/**
 	 * The methods to execute once DI completes on the mapping
 	 *
 	 * @methods A list or an array of methods to execute once the mapping is created, inited and DI has happened.

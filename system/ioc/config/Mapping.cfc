@@ -11,34 +11,35 @@ component accessors="true" {
 	 * Mapping Properties
 	 */
 
-	property name="name";
-	property name="alias" type="array";
-	property name="type";
-	property name="value";
-	property name="path";
-	property name="method";
-	property name="constructor";
-	property name="autoWire";
-	property name="autoInit" type="boolean";
-	property name="eagerInit";
-	property name="scope";
-	property name="dsl";
-	property name="cache" type="struct";
-	property name="DIConstructorArguments";
-	property name="DIProperties"      type="array";
-	property name="DISetters"         type="array";
-	property name="DIMethodArguments" type="array";
-	property name="onDIComplete"      type="array";
-	property name="discovered"        type="boolean";
-	property name="objectMetadata"    type="struct";
-	property name="providerMethods"   type="array";
+	property name="alias"             type="array";
 	property name="aspect"            type="boolean";
 	property name="aspectAutoBinding" type="boolean";
-	property name="virtualInheritance";
+	property name="autoInit"          type="boolean";
+	property name="autoWire";
+	property name="cache" type="struct";
+	property name="constructor";
+	property name="delegates";
+	property name="DIConstructorArguments";
+	property name="DIMethodArguments" type="array";
+	property name="DIProperties"      type="array";
+	property name="discovered"        type="boolean";
+	property name="DISetters"         type="array";
+	property name="dsl";
+	property name="eagerInit";
 	property name="extraAttributes" type="struct";
-	property name="mixins"          type="array";
-	property name="threadSafe";
 	property name="influenceClosure";
+	property name="method";
+	property name="mixins" type="array";
+	property name="name";
+	property name="objectMetadata" type="struct";
+	property name="onDIComplete"   type="array";
+	property name="path";
+	property name="providerMethods" type="array";
+	property name="scope";
+	property name="threadSafe";
+	property name="type";
+	property name="value";
+	property name="virtualInheritance";
 
 	/**
 	 * Constructor
@@ -107,6 +108,8 @@ component accessors="true" {
 		variables.threadSafe             = "";
 		// A closure that can influence the creation of the mapping
 		variables.influenceClosure       = "";
+		// Delegates syntax
+		variables.delegates              = "";
 
 		return this;
 	}
@@ -247,6 +250,13 @@ component accessors="true" {
 	 */
 	boolean function isDSL(){
 		return ( len( variables.dsl ) GT 0 );
+	}
+
+	/**
+	 * Do we have any delegates declared explicitly
+	 */
+	boolean function hasDelegates(){
+		return variables.delegates.len();
 	}
 
 	/**
@@ -646,9 +656,12 @@ component accessors="true" {
 				}
 			}
 
-			// Delegates?
+			// Delegates by Metadata and by Explicit Definition
 			if ( md.keyExists( "delegates" ) && len( md.delegates.trim() ) ) {
 				processComponentDelegates( md.delegates.trim() );
+			}
+			if ( hasDelegates() ) {
+				processComponentDelegates( variables.delegates );
 			}
 
 			// autowire only if not overridden

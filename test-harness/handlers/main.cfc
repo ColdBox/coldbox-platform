@@ -1,4 +1,4 @@
-component {
+component{
 
 	property name="asyncManager" inject="coldbox:asyncManager";
 
@@ -35,6 +35,14 @@ component {
 
 	function index( event, rc, prc, name = "ColdBox" ){
 		prc.welcomeMessage = "Welcome to #arguments.name#!";
+
+		// when( true, function(){
+		// 	prc.when = true;
+		// });
+		// .unless( false, function(){
+		// 	prc.unless = true;
+		// });
+
 		event.setView( "main/index" );
 	}
 
