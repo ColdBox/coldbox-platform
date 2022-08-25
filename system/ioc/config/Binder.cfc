@@ -869,14 +869,18 @@ component accessors="true" {
 	/**
 	 * Map property injection
 	 *
-	 * @name     The name of the property to inject
-	 * @ref      The reference mapping id this property maps to
-	 * @dsl      The construction dsl this property references. If used, the name value must be used.
-	 * @value    The explicit value of the property, if passed.
-	 * @javaCast The type of javaCast() to use on the value of the value. Only used if using dsl or ref arguments
-	 * @scope    The scope in the CFC to inject the property to. By default it will inject it to the variables scope
-	 * @required If the property is required or not, by default we assume required DI
-	 * @type     The type of the property
+	 * @name             The name of the property to inject
+	 * @ref              The reference mapping id this property maps to
+	 * @dsl              The construction dsl this property references. If used, the name value must be used.
+	 * @value            The explicit value of the property, if passed.
+	 * @javaCast         The type of javaCast() to use on the value of the value. Only used if using dsl or ref arguments
+	 * @scope            The scope in the CFC to inject the property to. By default it will inject it to the variables scope
+	 * @required         If the property is required or not, by default we assume required DI
+	 * @type             The type of the property
+	 * @delegate         If the property is an object delegate it will be empty or the list of methods to delegate to, else null
+	 * @delegatePrefix   If the property has a delegate prefix, else null
+	 * @delegateSuffix   If the property has a delegate suffix, else null
+	 * @delegateExcludes If the property has a delegate exclusion list, else null
 	 */
 	Binder function property(
 		required name,
@@ -886,7 +890,11 @@ component accessors="true" {
 		javaCast,
 		scope            = "variables",
 		required required=true,
-		type             = "any"
+		type             = "any",
+		delegate,
+		delegatePrefix,
+		delegateSuffix,
+		delegateExcludes
 	){
 		for ( var mapping in variables.currentMapping ) {
 			mapping.addDIProperty( argumentCollection = arguments );
