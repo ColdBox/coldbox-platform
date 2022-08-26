@@ -1,5 +1,5 @@
-﻿<cfcomponent extends="coldbox.system.testing.BaseModelTest">
-	<cfscript>
+﻿component extends="coldbox.system.testing.BaseModelTest" {
+
 	function setup(){
 		util   = createMock( "coldbox.system.core.util.Util" );
 		class1 = createObject( "component", "tests.resources.Class1" );
@@ -238,5 +238,5 @@
 		}
 		fail( "Item '#itemName#' doesn't exists." );
 	}
-	</cfscript>
-</cfcomponent>
+
+}

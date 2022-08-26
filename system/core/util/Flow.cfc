@@ -20,7 +20,7 @@ component singleton {
 		required boolean target,
 		required success,
 		failure
-	){
+	) cbmethod{
 		if ( arguments.target ) {
 			arguments.success();
 		} else if ( !isNull( arguments.failure ) ) {
@@ -43,8 +43,8 @@ component singleton {
 		required boolean target,
 		required success,
 		failure
-	){
-		if ( arguments.target ) {
+	) cbmethod{
+		if ( !arguments.target ) {
 			arguments.success();
 		} else if ( !isNull( arguments.failure ) ) {
 			arguments.failure();
@@ -67,7 +67,7 @@ component singleton {
 		required type,
 		message = "",
 		detail  = ""
-	){
+	) cbmethod{
 		if ( arguments.target ) {
 			throw(
 				type    = arguments.type,
@@ -93,7 +93,7 @@ component singleton {
 		required type,
 		message = "",
 		detail  = ""
-	){
+	) cbmethod{
 		if ( !arguments.target ) {
 			throw(
 				type    = arguments.type,
@@ -102,6 +102,30 @@ component singleton {
 			);
 		}
 		return this;
+	}
+
+	/**
+	 * Verify if the target argument is `null` and if it is, then execute the `success` closure, else if passed
+	 * execute the `failure` closure.
+	 */
+	function ifNull( target, required success, failure ) cbmethod{
+		return when(
+			isNull( arguments.target ),
+			arguments.success,
+			arguments.failure ?: javacast( "null", "" )
+		);
+	}
+
+	/**
+	 * Verify if the target argument is not `null` and if it is, then execute the `success` closure, else if passed
+	 * execute the `failure` closure.
+	 */
+	function ifPresent( target, required success, failure ) cbmethod{
+		return when(
+			!isNull( arguments.target ),
+			arguments.success,
+			arguments.failure ?: javacast( "null", "" )
+		);
 	}
 
 }

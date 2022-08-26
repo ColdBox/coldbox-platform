@@ -34,29 +34,6 @@ component extends="tests.resources.BaseIntegrationTest" {
 				} );
 			} );
 
-			story( "can support fluent when() constructs to supplant traditional if statements", function(){
-				it( "can do when statements with no failures", function(){
-					var result = false;
-					target.when( true, function(){
-						result = true;
-					} );
-					expect( result ).toBeTrue();
-				} );
-				it( "can do when statements with failures", function(){
-					var result = true;
-					target.when(
-						false,
-						function(){
-							result = true;
-						},
-						function(){
-							result = false;
-						}
-					);
-					expect( result ).toBeFalse();
-				} );
-			} );
-
 			story( "can do object population from many input sources", function(){
 				it( "from the request collection", function(){
 					var rc   = getRequestContext().getCollection();
