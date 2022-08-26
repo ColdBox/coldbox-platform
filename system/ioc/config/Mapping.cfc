@@ -719,13 +719,13 @@ component accessors="true" {
 			.map( function( item ){
 				arguments.item = arguments.item.trim();
 				var model      = reReplaceNoCase(
-					arguments.item.getToken( 1, "=" ),
+					arguments.item.getToken( 1, "=" ),  // remove only methods if any
 					"^(.*)(>|<)",
 					"",
 					"all"
 				);
 				return {
-					"name"     : "wbDelegate_#model#_#hash( arguments.item )#",
+					"name"     : "wbDelegate_#listLast( model, "." )#_#hash( arguments.item )#",
 					"ref"      : model,
 					"delegate" : getToken( arguments.item, 2, "=" ),
 					"raw"      : arguments.item

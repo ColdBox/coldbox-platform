@@ -36,12 +36,12 @@ component{
 	function index( event, rc, prc, name = "ColdBox" ){
 		prc.welcomeMessage = "Welcome to #arguments.name#!";
 
-		// when( true, function(){
-		// 	prc.when = true;
-		// });
-		// .unless( false, function(){
-		// 	prc.unless = true;
-		// });
+		unless( false, function(){
+			prc.whenFalse = true;
+		})
+		.when( true, function(){
+			prc.when = true;
+		});
 
 		event.setView( "main/index" );
 	}

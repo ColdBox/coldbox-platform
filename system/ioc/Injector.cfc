@@ -1214,15 +1214,24 @@ component serializable="false" accessors="true" {
 			// Delegate it baby!
 			.each( function( thisMethod ){
 				var delegationMethod = "#delegatePrefix##arguments.thisMethod##delegateSuffix#";
-				// Only add delegate if not overriden
+
+				// Check if this method has been override by the user first
 				if ( !structKeyExists( target, delegationMethod ) ) {
 					// Lookup targets
 					target.$wbDelegateMap[ delegationMethod ] = {
 						delegate : delegate,
 						method   : arguments.thisMethod
 					};
-					// inject delegation method to our core
-					target[ delegationMethod ] = variables.mixerUtil.getByDelegate;
+					// inject delegation into the target
+					target.injectMixin( delegationMethod, variables.mixerUtil.getByDelegate );
+				}
+				// Has it been injected by another delegate?
+				else if ( structKeyExists( target.$wbDelegateMap, delegationMethod ) ) {
+					throw(
+						type    = "DuplicateDelegateException",
+						message = "The method: (#delegationMethod#) from the (#getMetadata( delegate ).name#) delegate has already been injected by (#getMetadata( target.$wbDelegateMap[ delegationMethod ].delegate ).name#)",
+						detail  = "The target object is (#getMetadata( target ).name#)."
+					);
 				}
 			} )
 		;

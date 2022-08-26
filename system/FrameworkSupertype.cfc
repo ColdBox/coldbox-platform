@@ -6,7 +6,7 @@
  *
  * @author Luis Majano <lmajano@ortussolutions.com>
  */
-component serializable="false" accessors="true" {
+component serializable="false" accessors="true" delegates="coldbox.system.core.util.Flow"{
 
 	/**
 	 * App Controller
@@ -768,18 +768,18 @@ component serializable="false" accessors="true" {
 	 *
 	 * @return Returns the SuperType object for chaining
 	 */
-	function when(
-		required boolean target,
-		required success,
-		failure
-	) cbMethod{
-		if ( arguments.target ) {
-			arguments.success();
-		} else if ( !isNull( arguments.failure ) ) {
-			arguments.failure();
-		}
-		return this;
-	}
+	// function when(
+	// 	required boolean target,
+	// 	required success,
+	// 	failure
+	// ) cbMethod{
+	// 	if ( arguments.target ) {
+	// 		arguments.success();
+	// 	} else if ( !isNull( arguments.failure ) ) {
+	// 		arguments.failure();
+	// 	}
+	// 	return this;
+	// }
 
 	/**
 	 * This function allows you to serialize simple or complex data so it can be used within HTML Attributes.
