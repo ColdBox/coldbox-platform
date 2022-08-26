@@ -2,11 +2,15 @@
     "dependencies":{
         "route-visualizer":"^1.2.0+4"
     },
+    "devDependencies":{
+        "cbdebugger":"^3.5.0+64"
+    },
     "installPaths":{
+        "cbdebugger":"modules/cbdebugger/",
         "route-visualizer":"modules/route-visualizer/"
-	},
-	"scripts" : {
-		"format" : "cfformat run config/,external/,handlers/,interceptors/,models/,remote/,tests/,models/",
-		"format:watch":"cfformat watch **/*.cfc ./.cfformat.json"
-	}
+    },
+    "scripts":{
+        "format":"cfformat run config/,external/,handlers/,interceptors/,models/,remote/,tests/,models/",
+        "format:watch":"cfformat watch **/*.cfc ./.cfformat.json"
+    }
 }

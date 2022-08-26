@@ -534,10 +534,13 @@ component extends="coldbox.system.web.services.BaseService" {
 			return this;
 		}
 
-		// Get module settings
 		var mConfig = modules[ arguments.moduleName ];
 
-		// Do we have dependencies to activate first
+		/*
+		|--------------------------------------------------------------------------
+		| Module Dependencies Activation
+		|--------------------------------------------------------------------------
+		*/
 		mConfig.dependencies.each( function( thisDependency ){
 			variables.logger.debug( "==> Activating '#moduleName#' dependency: #thisDependency#" );
 			// Activate dependency first
@@ -559,7 +562,11 @@ component extends="coldbox.system.web.services.BaseService" {
 			type          ="exclusive"
 			timeout       ="20"
 			throwontimeout="true" {
-			// preModuleLoad interception
+			/*
+			|--------------------------------------------------------------------------
+			| Module Load Event
+			|--------------------------------------------------------------------------
+			*/
 			variables.interceptorService.announce(
 				"preModuleLoad",
 				{
@@ -568,19 +575,31 @@ component extends="coldbox.system.web.services.BaseService" {
 				}
 			);
 
-			// Register handlers
+			/*
+			|--------------------------------------------------------------------------
+			| Module Handlers
+			|--------------------------------------------------------------------------
+			*/
 			mConfig.registeredHandlers = controller
 				.getHandlerService()
 				.getHandlerListing( mconfig.handlerPhysicalPath );
 			mConfig.registeredHandlers = arrayToList( mConfig.registeredHandlers );
 
-			// Register the Config as an observable also.
+			/*
+			|--------------------------------------------------------------------------
+			| Module Config Observer
+			|--------------------------------------------------------------------------
+			*/
 			variables.interceptorService.registerInterceptor(
 				interceptorObject = variables.mConfigCache[ arguments.moduleName ],
 				interceptorName   = "ModuleConfig:#arguments.moduleName#"
 			);
 
-			// Register Models
+			/*
+			|--------------------------------------------------------------------------
+			| Module Models
+			|--------------------------------------------------------------------------
+			*/
 			if ( mConfig.autoMapModels AND directoryExists( mconfig.modelsPhysicalPath ) ) {
 				// Add as a mapped directory with module name as the namespace with correct mapping path
 				var packagePath = (
@@ -613,7 +632,11 @@ component extends="coldbox.system.web.services.BaseService" {
 				// binder.processMappings();
 			}
 
-			// Register Interceptors with Announcement service
+			/*
+			|--------------------------------------------------------------------------
+			| Module Interceptors
+			|--------------------------------------------------------------------------
+			*/
 			mConfig.interceptors.each( function( thisInterceptor ){
 				variables.interceptorService.registerInterceptor(
 					interceptorClass      = thisInterceptor.class,
@@ -622,7 +645,11 @@ component extends="coldbox.system.web.services.BaseService" {
 				);
 			} );
 
-			// Register module routing entry point pre-pended to routes
+			/*
+			|--------------------------------------------------------------------------
+			| Module Routing
+			|--------------------------------------------------------------------------
+			*/
 			if ( mConfig.entryPoint.len() ) {
 				var parentEntryPoint      = "";
 				var visitParentEntryPoint = function( parent ){
@@ -650,7 +677,7 @@ component extends="coldbox.system.web.services.BaseService" {
 					append  = false
 				);
 
-				// Does the module have its own config.Router.cfc, if so, let's use it as well.
+				// config/Router.cfc Conventions
 				if ( fileExists( mConfig.routerPhysicalPath ) ) {
 					// Process as a Router.cfc with virtual inheritance
 					wirebox
@@ -706,14 +733,22 @@ component extends="coldbox.system.web.services.BaseService" {
 				controller.getSetting( "applicationHelper" ).addAll( mConfig.applicationHelper );
 			}
 
-			// Register Executors if any are registered
+			/*
+			|--------------------------------------------------------------------------
+			| Module Executors
+			|--------------------------------------------------------------------------
+			*/
 			mConfig.executors.each( function( key, config ){
 				arguments.config.name = arguments.key;
 				variables.controller.getAsyncManager().newExecutor( argumentCollection = arguments.config );
 				variables.logger.info( "+ Registered Module (#moduleName#) Executor: #arguments.key#" );
 			} );
 
-			// Register Scheduler if it exists as scheduler@moduleName
+			/*
+			|--------------------------------------------------------------------------
+			| Module Schedulers
+			|--------------------------------------------------------------------------
+			*/
 			if ( fileExists( mConfig.schedulerPhysicalPath ) ) {
 				mConfig.scheduler = variables.controller
 					.getSchedulerService()
@@ -724,7 +759,11 @@ component extends="coldbox.system.web.services.BaseService" {
 					);
 			}
 
-			// Call on module configuration object onLoad() if found
+			/*
+			|--------------------------------------------------------------------------
+			| onLoad() Lifecycle
+			|--------------------------------------------------------------------------
+			*/
 			if ( structKeyExists( variables.mConfigCache[ arguments.moduleName ], "onLoad" ) ) {
 				variables.mConfigCache[ arguments.moduleName ].onLoad();
 			}
@@ -732,15 +771,23 @@ component extends="coldbox.system.web.services.BaseService" {
 			// Mark it as loaded as it is now activated
 			mConfig.activated = true;
 
-			// Now activate any children
+			/*
+			|--------------------------------------------------------------------------
+			| Activate Module Children
+			|--------------------------------------------------------------------------
+			*/
 			mConfig.childModules.each( function( thisChild ){
 				activateModule( moduleName = thisChild );
 			} );
 
-			// Lock activation time
+			// Log activation time
 			mConfig.activationTime = getTickCount() - sTime;
 
-			// postModuleLoad interception
+			/*
+			|--------------------------------------------------------------------------
+			| Module Done Event
+			|--------------------------------------------------------------------------
+			*/
 			variables.interceptorService.announce(
 				"postModuleLoad",
 				{
@@ -750,7 +797,7 @@ component extends="coldbox.system.web.services.BaseService" {
 				}
 			);
 
-			// Log it
+			// We are done! Phew!
 			variables.logger.info(
 				"+ Module (#arguments.moduleName#@#mConfig.version#) activated in (#mConfig.activationTime#ms)"
 			);
@@ -943,7 +990,11 @@ component extends="coldbox.system.web.services.BaseService" {
 		// Build a new router for this module so we can track its routes
 		arguments.config.router = variables.wirebox.getInstance( "coldbox.system.web.routing.Router" );
 
-		// MixIn Variables Scope
+		/*
+		|--------------------------------------------------------------------------
+		| Module Injections
+		|--------------------------------------------------------------------------
+		*/
 		oConfig
 			.injectPropertyMixin( "controller", controller )
 			.injectPropertyMixin( "coldboxVersion", controller.getColdBoxSettings().version )
@@ -962,15 +1013,28 @@ component extends="coldbox.system.web.services.BaseService" {
 			.injectPropertyMixin( "appRouter", variables.wireBox.getInstance( "router@coldbox" ) )
 			.injectPropertyMixin( "router", arguments.config.router );
 
-		// Configure the module
+		/*
+		|--------------------------------------------------------------------------
+		| Module Config Seeding
+		|--------------------------------------------------------------------------
+		*/
 		oConfig.configure();
 
+		/*
+		|--------------------------------------------------------------------------
+		| Module Environment Control
+		|--------------------------------------------------------------------------
+		*/
 		// Get parent environment settings and if same convention of 'environment'() found, execute it.
 		if ( structKeyExists( oConfig, appSettings.environment ) ) {
 			invoke( oConfig, "#appSettings.environment#" );
 		}
 
-		// Start Processing Properties
+		/*
+		|--------------------------------------------------------------------------
+		| Module Properties Processing
+		|--------------------------------------------------------------------------
+		*/
 
 		// title
 		if ( !structKeyExists( oConfig, "title" ) ) {
@@ -1059,35 +1123,49 @@ component extends="coldbox.system.web.services.BaseService" {
 		if ( structKeyExists( oConfig, "activate" ) ) {
 			mConfig.activate = oConfig.activate;
 		}
-		// Merge the settings with the parent module settings
+
+
+		/*
+		|--------------------------------------------------------------------------
+		| Module Parent Settings
+		|--------------------------------------------------------------------------
+		*/
+		mConfig.parentSettings = oConfig.getPropertyMixin( "parentSettings", "variables", {} );
+
+		/*
+		|--------------------------------------------------------------------------
+		| Module Settings + Global App Overrides
+		|--------------------------------------------------------------------------
+		*/
+
+		mConfig.settings = oConfig.getPropertyMixin( "settings", "variables", {} );
 		if ( structKeyExists( oConfig, "parseParentSettings" ) ) {
 			mConfig.parseParentSettings = oConfig.parseParentSettings;
 		}
 
-		// Get the parent settings
-		mConfig.parentSettings = oConfig.getPropertyMixin( "parentSettings", "variables", {} );
-		// Get the module settings
-		mConfig.settings       = oConfig.getPropertyMixin( "settings", "variables", {} );
-		// Process executors
-		mConfig.executors      = oConfig.getPropertyMixin( "executors", "variables", {} );
-		// Add the module settings to the parent settings under the modules namespace
+		// If true, then look into the global app and load the module config overrides
 		if ( mConfig.parseParentSettings ) {
-			// Merge the parent module settings into module settings
-			var parentModuleSettings = controller
+			// Global config/Coldbox.cfc moduleSettings override
+			var globalModuleSettings = controller
 				.getSetting( "ColdBoxConfig" )
-				.getPropertyMixin( "moduleSettings", "variables", structNew() );
-			if ( !structKeyExists( parentModuleSettings, mConfig.modelNamespace ) ) {
-				parentModuleSettings[ mConfig.modelNamespace ] = {};
+				.getPropertyMixin( "moduleSettings", "variables", {} );
+			param name="globalModuleSettings[ mConfig.modelNamespace ]" default="#structNew()#";
+			mConfig.settings.append( globalModuleSettings[ mConfig.modelNamespace ], true );
+
+			// config/{mConfig.modelNamespace}.cfc overrides
+			if ( fileExists( "#appSettings.applicationPath#config/#mConfig.modelnamespace#.cfc" ) ) {
+				loadModuleSettingsOverride( mConfig, mConfig.modelNamespace );
 			}
-			structAppend(
-				mConfig.settings,
-				parentModuleSettings[ mConfig.modelNamespace ],
-				true
-			);
 		}
+		// Store the reference globally
 		appSettings.moduleSettings[ mConfig.modelNamespace ] = mConfig.settings;
-		// Get Interceptors
-		mConfig.interceptors                                 = oConfig.getPropertyMixin( "interceptors", "variables", [] );
+
+		/*
+		|--------------------------------------------------------------------------
+		| Module Interceptor Normalizations and Custom Interception Points
+		|--------------------------------------------------------------------------
+		*/
+		mConfig.interceptors = oConfig.getPropertyMixin( "interceptors", "variables", [] );
 		for ( var x = 1; x lte arrayLen( mConfig.interceptors ); x = x + 1 ) {
 			// Name check
 			if ( NOT structKeyExists( mConfig.interceptors[ x ], "name" ) ) {
@@ -1099,7 +1177,6 @@ component extends="coldbox.system.web.services.BaseService" {
 			}
 		}
 
-		// Get custom interception points
 		mConfig.interceptorSettings = oConfig.getPropertyMixin(
 			"interceptorSettings",
 			"variables",
@@ -1109,17 +1186,37 @@ component extends="coldbox.system.web.services.BaseService" {
 			mConfig.interceptorSettings.customInterceptionPoints = "";
 		}
 
-		// Get SES Routes
+		/*
+		|--------------------------------------------------------------------------
+		| Module Executors
+		|--------------------------------------------------------------------------
+		*/
+		mConfig.executors = oConfig.getPropertyMixin( "executors", "variables", {} );
+
+		/*
+		|--------------------------------------------------------------------------
+		| Module Routing
+		|--------------------------------------------------------------------------
+		*/
 		mConfig.routes    = oConfig.getPropertyMixin( "routes", "variables", [] );
-		// Get SES Resources
 		mConfig.resources = oConfig.getPropertyMixin( "resources", "variables", [] );
-		// Get and Append Module conventions
+
+		/*
+		|--------------------------------------------------------------------------
+		| Module Conventions
+		|--------------------------------------------------------------------------
+		*/
 		structAppend(
 			mConfig.conventions,
 			oConfig.getPropertyMixin( "conventions", "variables", {} ),
 			true
 		);
-		// Get Module Layout Settings
+
+		/*
+		|--------------------------------------------------------------------------
+		| Module Layouts/Views
+		|--------------------------------------------------------------------------
+		*/
 		structAppend(
 			mConfig.layoutSettings,
 			oConfig.getPropertyMixin( "layoutSettings", "variables", {} ),
@@ -1146,6 +1243,59 @@ component extends="coldbox.system.web.services.BaseService" {
 				scanModulesDirectory( item );
 			} );
 	}
+
+	/**
+	 * Load module settings override from config disk
+	 *
+	 * @config     The module config struct
+	 * @moduleName The target module name
+	 */
+	private function loadModuleSettingsOverride( required struct config, required moduleName ){
+		var mConfig     = arguments.config;
+		var appSettings = controller.getConfigSettings();
+		var configPath  = len( appSettings.appMapping ) ? "#appSettings.appMapping#.config.#arguments.moduleName#" : "config.#arguments.moduleName#";
+		var oConfig     = variables.wirebox.getInstance( configPath );
+
+		/*
+		|--------------------------------------------------------------------------
+		| Config Injections
+		|--------------------------------------------------------------------------
+		*/
+		oConfig
+			.injectPropertyMixin( "controller", controller )
+			.injectPropertyMixin( "coldboxVersion", controller.getColdBoxSettings().version )
+			.injectPropertyMixin( "appMapping", controller.getSetting( "appMapping" ) )
+			.injectPropertyMixin( "moduleMapping", mConfig.mapping )
+			.injectPropertyMixin( "modulePath", mConfig.path )
+			.injectPropertyMixin( "logBox", controller.getLogBox() )
+			.injectPropertyMixin( "log", controller.getLogBox().getLogger( oConfig ) )
+			.injectPropertyMixin( "wirebox", variables.wireBox )
+			.injectPropertyMixin( "binder", variables.wireBox.getBinder() )
+			.injectPropertyMixin( "cachebox", controller.getCacheBox() )
+			.injectPropertyMixin( "getJavaSystem", controller.getUtil().getJavaSystem )
+			.injectPropertyMixin( "getSystemSetting", controller.getUtil().getSystemSetting )
+			.injectPropertyMixin( "getSystemProperty", controller.getUtil().getSystemProperty )
+			.injectPropertyMixin( "getEnv", controller.getUtil().getEnv )
+			.injectPropertyMixin( "appRouter", variables.wireBox.getInstance( "router@coldbox" ) )
+			.injectPropertyMixin( "router", arguments.config.router );
+
+		/*
+		|--------------------------------------------------------------------------
+		| Module Settings Config Seeding
+		|--------------------------------------------------------------------------
+		*/
+		mConfig.settings.append( oConfig.configure(), true );
+
+		/*
+		|--------------------------------------------------------------------------
+		| Module Environment Control
+		|--------------------------------------------------------------------------
+		*/
+		// Get parent environment settings and if same convention of 'environment'() found, execute it.
+		if ( structKeyExists( oConfig, appSettings.environment ) ) {
+			mConfig.settings.append( invoke( oConfig, "#appSettings.environment#" ), true );
+		}
+	};
 
 	/**
 	 * Get an array of modules found and add to the registry structure
