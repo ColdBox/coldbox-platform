@@ -1153,7 +1153,7 @@ component extends="coldbox.system.web.services.BaseService" {
 			mConfig.settings.append( globalModuleSettings[ mConfig.modelNamespace ], true );
 
 			// config/{mConfig.modelNamespace}.cfc overrides
-			if ( fileExists( "#appSettings.applicationPath#config/#mConfig.modelnamespace#.cfc" ) ) {
+			if ( fileExists( "#appSettings.applicationPath#config/modules/#mConfig.modelnamespace#.cfc" ) ) {
 				loadModuleSettingsOverride( mConfig, mConfig.modelNamespace );
 			}
 		}
@@ -1253,7 +1253,7 @@ component extends="coldbox.system.web.services.BaseService" {
 	private function loadModuleSettingsOverride( required struct config, required moduleName ){
 		var mConfig     = arguments.config;
 		var appSettings = controller.getConfigSettings();
-		var configPath  = len( appSettings.appMapping ) ? "#appSettings.appMapping#.config.#arguments.moduleName#" : "config.#arguments.moduleName#";
+		var configPath  = len( appSettings.appMapping ) ? "#appSettings.appMapping#.config.modules.#arguments.moduleName#" : "config.modules.#arguments.moduleName#";
 		var oConfig     = variables.wirebox.getInstance( configPath );
 
 		/*
