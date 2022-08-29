@@ -99,4 +99,16 @@ component output="false" singleton {
 		return "Yep, onInvalidHTTPMethod works!";
 	}
 
+	function renderingPdf( event, rc, prc ) {
+		cfheader( name='content-disposition', value='attachment;filename="Delivered by Hand.pdf"' );
+
+		event.renderData(
+			data='Just some testing text, inline rendering PDF'
+			,type='pdf'
+			,pdfArgs={ pagetype:'A4', unit:'cm', margintop:'1', marginbottom:'1',marginleft:'1', marginright:'1' }
+		);
+
+		return;
+	}
+
 }

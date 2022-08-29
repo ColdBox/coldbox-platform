@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
@@ -108,6 +108,7 @@ component accessors="true" singleton {
 					// Convert to PDF
 					include "CFDocument.cfm";
 				}
+				break;
 			}
 
 			// Plaint TEXT, HTML, CUSTOM Data
