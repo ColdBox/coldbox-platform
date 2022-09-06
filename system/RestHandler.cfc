@@ -167,7 +167,11 @@ component extends="EventHandler" {
 		eventArguments = {}
 	){
 		// Try to discover exception, if not, hard error
-		if ( ( isNull( arguments.exception ) || structIsEmpty( arguments.exception ) ) && !isNull( arguments.prc.exception ) ) {
+		if (
+			( isNull( arguments.exception ) || structIsEmpty( arguments.exception ) ) && !isNull(
+				arguments.prc.exception
+			)
+		) {
 			arguments.exception = arguments.prc.exception.getExceptionStruct();
 		}
 
