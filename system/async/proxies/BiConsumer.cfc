@@ -18,11 +18,11 @@ component extends="BaseProxy" {
 	 * Performs this operation on the given arguments.
 	 * See https://docs.oracle.com/javase/8/docs/api/java/util/function/BiConsumer.html#accept-T-U-
 	 */
-	function accept( required t, required u ){
+	function accept( t, u ){
 		loadContext();
 		try {
 			lock name="#getConcurrentEngineLockName()#" type="exclusive" timeout="60" {
-				variables.target( arguments.t, arguments.u );
+				variables.target( arguments.t ?: javaCast( "null", "" ), arguments.u ?: javaCast( "null", "" ) );
 			}
 		} catch ( any e ) {
 			// Log it, so it doesn't go to ether
