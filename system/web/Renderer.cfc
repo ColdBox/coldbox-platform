@@ -252,7 +252,7 @@ component
 		}
 
 		// Cleanup leading / in views, just in case
-		arguments.view = reReplace( arguments.view, "^(\\|/)", "" );
+		arguments.view = reReplace( arguments.view, "^(\\|//)", "" );
 
 		// Announce preViewRender interception
 		if ( NOT arguments.prepostExempt ) {
@@ -332,7 +332,9 @@ component
 
 		// Post View Render Interception point
 		if ( NOT arguments.prepostExempt ) {
-			announce( "postViewRender", local.iData );
+			announce( "postViewRender", local.iData.append( {
+				viewPath : viewLocations.viewPath
+			} ) );
 		}
 
 		// Are we caching view
@@ -699,7 +701,9 @@ component
 
 		// Announce
 		if ( not arguments.prePostExempt ) {
-			announce( "postLayoutRender", iData );
+			announce( "postLayoutRender", iData.append( {
+				viewPath : viewLocations.viewPath
+			} ) );
 		}
 
 		return iData.renderedLayout;
