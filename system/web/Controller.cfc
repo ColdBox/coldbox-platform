@@ -740,7 +740,10 @@ component serializable="false" accessors="true" {
 		// Setup interception data
 		var iData = {
 			"processedEvent" : arguments.event,
-			"eventArguments" : arguments.eventArguments
+			"eventArguments" : arguments.eventArguments,
+			"data" : "",
+			"ehBean" : "",
+			"handler" : ""
 		};
 
 		// Reset Invalid Event if default, just in case listeners used metadata
@@ -980,6 +983,8 @@ component serializable="false" accessors="true" {
 				}
 
 				// Execute postEvent interceptor
+				iData.handler = oHandler;
+				iData.append( results );
 				services.interceptorService.announce( "postEvent", iData );
 			}
 			// end if prePostExempt
