@@ -719,7 +719,7 @@ component accessors="true" {
 			.map( function( item ){
 				arguments.item = arguments.item.trim();
 				var model      = reReplaceNoCase(
-					arguments.item.getToken( 1, "=" ),  // remove only methods if any
+					arguments.item.getToken( 1, "=" ), // remove only methods if any
 					"^(.*)(>|<)",
 					"",
 					"all"
