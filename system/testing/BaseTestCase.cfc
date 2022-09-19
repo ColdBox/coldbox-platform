@@ -49,7 +49,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	variables.appMapping    = "";
 	variables.webMapping    = "";
 	variables.configMapping = "";
-	variables.controller    = "";
+	variables.controller    = application.keyExists( "cbController" ) ? application.cbController : "";
 	variables.autowire      = false;
 	variables.metadata      = {};
 
