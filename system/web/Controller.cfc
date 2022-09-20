@@ -741,9 +741,9 @@ component serializable="false" accessors="true" {
 		var iData = {
 			"processedEvent" : arguments.event,
 			"eventArguments" : arguments.eventArguments,
-			"data" : "",
-			"ehBean" : "",
-			"handler" : ""
+			"data"           : "",
+			"ehBean"         : "",
+			"handler"        : ""
 		};
 
 		// Reset Invalid Event if default, just in case listeners used metadata
