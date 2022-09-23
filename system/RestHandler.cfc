@@ -59,10 +59,12 @@ component extends="EventHandler" {
 		}
 		// Auth Issues
 		catch ( "InvalidCredentials" e ) {
+			arguments.exception = e;
 			this.onAuthenticationFailure( argumentCollection = arguments );
 		}
 		// Token Decoding Issues
 		catch ( "TokenInvalidException" e ) {
+			arguments.exception = e;
 			this.onAuthenticationFailure( argumentCollection = arguments );
 		}
 		// Validation Exceptions
