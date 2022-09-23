@@ -984,14 +984,12 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	}
 
 	/**
-	 * Helper method to deal with ACF2016's overload of the page context response, come on Adobe, get your act together!
-	 **/
+	 * Helper method to deal with ACF's overload of the page context response, come on Adobe, get your act together!
+	 */
 	private function getPageContextResponse(){
-		if ( structKeyExists( server, "lucee" ) ) {
-			return getPageContext().getResponse();
-		} else {
-			return getPageContext().getResponse().getResponse();
-		}
+		return server.keyExists( "lucee" ) ? getPageContext().getResponse() : getPageContext()
+			.getResponse()
+			.getResponse();
 	}
 
 }

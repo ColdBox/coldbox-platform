@@ -744,16 +744,12 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
-	 * Helper method to deal with ACF2016's overload of the page context response, come on Adobe, get your act together!
-	 **/
+	 * Helper method to deal with ACF's overload of the page context response, come on Adobe, get your act together!
+	 */
 	private function getPageContextResponse(){
-		var response = getPageContext().getResponse();
-		try {
-			response.getStatus();
-			return response;
-		} catch ( any e ) {
-			return response.getResponse();
-		}
+		return server.keyExists( "lucee" ) ? getPageContext().getResponse() : getPageContext()
+			.getResponse()
+			.getResponse();
 	}
 
 }
