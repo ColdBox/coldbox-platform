@@ -513,7 +513,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 						}
 					}
 					// Skip rendering if event.noRender is set
-					else if ( requestContext.getPrivateValue( "coldbox_norender", false ) ){
+					else if ( requestContext.getPrivateValue( "coldbox_norender", false ) ) {
 						renderedContent = "";
 					}
 					// render layout/view pair
