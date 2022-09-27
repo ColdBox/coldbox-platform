@@ -512,6 +512,10 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 							renderedContent = serializeJSON( handlerResults );
 						}
 					}
+					// Skip rendering if event.noRender is set
+					else if ( requestContext.getPrivateValue( "coldbox_norender", false ) ) {
+						renderedContent = "";
+					}
 					// render layout/view pair
 					else {
 						requestContext.setValue( "cbox_statusCode", getNativeStatusCode() );
