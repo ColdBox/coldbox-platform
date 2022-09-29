@@ -332,9 +332,7 @@ component
 
 		// Post View Render Interception point
 		if ( NOT arguments.prepostExempt ) {
-			announce( "postViewRender", local.iData.append( {
-				viewPath : viewLocations.viewPath
-			} ) );
+			announce( "postViewRender", local.iData.append( { viewPath : viewLocations.viewPath } ) );
 		}
 
 		// Are we caching view
@@ -701,9 +699,7 @@ component
 
 		// Announce
 		if ( not arguments.prePostExempt ) {
-			announce( "postLayoutRender", iData.append( {
-				viewPath : viewLocations.viewPath
-			} ) );
+			announce( "postLayoutRender", iData.append( { viewPath : viewLocations.viewPath } ) );
 		}
 
 		return iData.renderedLayout;

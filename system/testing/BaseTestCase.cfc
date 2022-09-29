@@ -48,7 +48,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	variables.appMapping    = "";
 	variables.webMapping    = "";
 	variables.configMapping = "";
-	variables.controller    = "";
+	variables.controller    = application.keyExists( "cbController" ) ? application.cbController : "";
 	variables.autowire      = false;
 	variables.metadata      = {};
 
@@ -510,6 +510,10 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 						} else {
 							renderedContent = serializeJSON( handlerResults );
 						}
+					}
+					// Skip rendering if event.noRender is set
+					else if ( requestContext.getPrivateValue( "coldbox_norender", false ) ) {
+						renderedContent = "";
 					}
 					// render layout/view pair
 					else {
@@ -983,14 +987,12 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	}
 
 	/**
-	 * Helper method to deal with ACF2016's overload of the page context response, come on Adobe, get your act together!
-	 **/
+	 * Helper method to deal with ACF's overload of the page context response, come on Adobe, get your act together!
+	 */
 	private function getPageContextResponse(){
-		if ( structKeyExists( server, "lucee" ) ) {
-			return getPageContext().getResponse();
-		} else {
-			return getPageContext().getResponse().getResponse();
-		}
+		return server.keyExists( "lucee" ) ? getPageContext().getResponse() : getPageContext()
+			.getResponse()
+			.getResponse();
 	}
 
 }
