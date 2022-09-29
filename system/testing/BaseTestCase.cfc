@@ -41,9 +41,8 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	property name="metadata" type="struct";
 
 	// Public Switch Properties
-	// TODO: Remove by ColdBox 4.2+ and move to variables scope.
 	this.loadColdbox   = true;
-	this.unLoadColdBox = true;
+	this.unLoadColdBox = false;
 
 	// Internal Properties
 	variables.appMapping    = "";
