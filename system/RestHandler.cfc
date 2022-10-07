@@ -86,7 +86,9 @@ component extends="EventHandler" {
 		catch ( "RecordNotFound" e ) {
 			arguments.exception = e;
 			this.onEntityNotFoundException( argumentCollection = arguments );
-		} catch ( Any e ) {
+		}
+		// Global Catch
+		catch ( Any e ) {
 			arguments.exception = e;
 			this.onAnyOtherException( argumentCollection = arguments );
 			// If in development, let's show the error template
@@ -169,7 +171,7 @@ component extends="EventHandler" {
 		eventArguments = {}
 	){
 		// Try to discover exception, if not, hard error
-		if ( isNull( arguments.exception ) && !isNull( arguments.prc.exception ) ) {
+		if ( !isNull( arguments.prc.exception ) && ( isNull( arguments.exception ) || isEmpty( arguments.exception ) ) ) {
 			arguments.exception = arguments.prc.exception.getExceptionStruct();
 		}
 
