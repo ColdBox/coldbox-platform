@@ -393,9 +393,10 @@ component extends="EventHandler" {
 	 * @event     The request context
 	 * @rc        The rc reference
 	 * @prc       The prc reference
+	 * @abort     Hard abort the request if passed, defaults to false
 	 * @exception The thrown exception
 	 *
-	 * @return 403
+	 * @return 401
 	 */
 	function onAuthenticationFailure(
 		event     = getRequestContext(),
@@ -427,6 +428,22 @@ component extends="EventHandler" {
 			.setStatusCode( arguments.event.STATUS.NOT_AUTHENTICATED )
 			.setStatusText( "Invalid or Missing Credentials" )
 			.addMessage( "Invalid or Missing Authentication Credentials" );
+
+		/**
+		 * When you need a really hard stop to prevent further execution ( use as last resort )
+		 */
+		if ( arguments.abort ) {
+			event.setHTTPHeader( name = "Content-Type", value = "application/json" );
+			event.setHTTPHeader(
+				statusCode = "#arguments.event.STATUS.NOT_AUTHENTICATED#",
+				statusText = "Invalid or Missing Credentials"
+			);
+
+			writeOutput( serializeJSON( prc.response.getDataPacket( reset = this.resetDataOnError ) ) );
+
+			flush;
+			abort;
+		}
 	}
 
 	/**
