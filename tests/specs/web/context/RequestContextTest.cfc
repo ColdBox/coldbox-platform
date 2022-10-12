@@ -717,11 +717,6 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		var javaUrl = createObject( "java", "java.net.URL" ).init( event.getFullUrl() );
 	}
 
-	function testGetHost(){
-		var event = getRequestContext();
-		expect( event.getHost() ).toInclude( "127.0.0.1" );
-	}
-
 	function testGetFullUrlWithAppMapping(){
 		mockController
 			.$( "getSetting" )

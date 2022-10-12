@@ -1100,13 +1100,6 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
-	 * Get the current host you are on via host header discovery
-	 */
-	string function getHost(){
-		return getHTTPHeader( "x-forwarded-host", getHTTPHeader( "host", cgi.host ) );
-	}
-
-	/**
 	 * Returns index.cfm?{eventName}=
 	 */
 	string function getSelf(){
