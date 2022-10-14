@@ -237,7 +237,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 
 		// Create functioning request context
 		mockRC         = getMockBox().createMock( "coldbox.system.web.context.RequestContext" );
-		mockController = !isSimpleValue( variables.controller ) ? variables.controller : getMockController();
+		mockController = !isSimpleValue( variables.controller ) ? prepareMock( variables.controller ) : getMockController();
 
 		// Create mock properties
 		rcProps.defaultLayout     = "";
