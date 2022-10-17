@@ -12,7 +12,7 @@ on:
 
 jobs:
   tests:
-    uses: ColdBox/coldbox-platform/.github/workflows/tests.yml@development
+    uses: ./.github/workflows/tests.yml
     secrets:
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
