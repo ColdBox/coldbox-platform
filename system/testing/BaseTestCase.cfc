@@ -41,9 +41,8 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	property name="metadata" type="struct";
 
 	// Public Switch Properties
-	// TODO: Remove by ColdBox 4.2+ and move to variables scope.
 	this.loadColdbox   = true;
-	this.unLoadColdBox = true;
+	this.unLoadColdBox = false;
 
 	// Internal Properties
 	variables.appMapping    = "";
@@ -238,10 +237,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 
 		// Create functioning request context
 		mockRC         = getMockBox().createMock( "coldbox.system.web.context.RequestContext" );
-		mockController = createObject( "component", "coldbox.system.testing.mock.web.MockController" ).init(
-			"/unittest",
-			"unitTest"
-		);
+		mockController = !isSimpleValue( variables.controller ) ? prepareMock( variables.controller ) : getMockController();
 
 		// Create mock properties
 		rcProps.defaultLayout     = "";

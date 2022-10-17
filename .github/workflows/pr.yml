@@ -6,9 +6,11 @@ on:
       - "main"
       - "master"
       - "development"
+      - "releases/**"
   pull_request:
     branches:
       - development
+      - "releases/**"
 
 jobs:
   tests:

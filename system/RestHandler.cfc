@@ -59,10 +59,12 @@ component extends="EventHandler" {
 		}
 		// Auth Issues
 		catch ( "InvalidCredentials" e ) {
+			arguments.exception = e;
 			this.onAuthenticationFailure( argumentCollection = arguments );
 		}
 		// Token Decoding Issues
 		catch ( "TokenInvalidException" e ) {
+			arguments.exception = e;
 			this.onAuthenticationFailure( argumentCollection = arguments );
 		}
 		// Validation Exceptions
@@ -84,7 +86,9 @@ component extends="EventHandler" {
 		catch ( "RecordNotFound" e ) {
 			arguments.exception = e;
 			this.onEntityNotFoundException( argumentCollection = arguments );
-		} catch ( Any e ) {
+		}
+		// Global Catch
+		catch ( Any e ) {
 			arguments.exception = e;
 			this.onAnyOtherException( argumentCollection = arguments );
 			// If in development, let's show the error template
@@ -167,7 +171,9 @@ component extends="EventHandler" {
 		eventArguments = {}
 	){
 		// Try to discover exception, if not, hard error
-		if ( isNull( arguments.exception ) && !isNull( arguments.prc.exception ) ) {
+		if (
+			!isNull( arguments.prc.exception ) && ( isNull( arguments.exception ) || isEmpty( arguments.exception ) )
+		) {
 			arguments.exception = arguments.prc.exception.getExceptionStruct();
 		}
 
@@ -387,9 +393,10 @@ component extends="EventHandler" {
 	 * @event     The request context
 	 * @rc        The rc reference
 	 * @prc       The prc reference
+	 * @abort     Hard abort the request if passed, defaults to false
 	 * @exception The thrown exception
 	 *
-	 * @return 403
+	 * @return 401
 	 */
 	function onAuthenticationFailure(
 		event     = getRequestContext(),
@@ -421,6 +428,22 @@ component extends="EventHandler" {
 			.setStatusCode( arguments.event.STATUS.NOT_AUTHENTICATED )
 			.setStatusText( "Invalid or Missing Credentials" )
 			.addMessage( "Invalid or Missing Authentication Credentials" );
+
+		/**
+		 * When you need a really hard stop to prevent further execution ( use as last resort )
+		 */
+		if ( arguments.abort ) {
+			event.setHTTPHeader( name = "Content-Type", value = "application/json" );
+			event.setHTTPHeader(
+				statusCode = "#arguments.event.STATUS.NOT_AUTHENTICATED#",
+				statusText = "Invalid or Missing Credentials"
+			);
+
+			writeOutput( serializeJSON( prc.response.getDataPacket( reset = this.resetDataOnError ) ) );
+
+			flush;
+			abort;
+		}
 	}
 
 	/**

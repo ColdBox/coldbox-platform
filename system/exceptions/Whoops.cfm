@@ -201,7 +201,7 @@
 
 						<h1 class="exception__timestamp" title="Time of exception">
 							<i data-eva="clock-outline" fill="##7fcbe2"></i>
-							<span>#dateFormat( now(), "MM/DD/YYYY" )# #timeFormat( now(), "hh:MM:SS TT" )#</span>
+							<span>#dateTimeFormat( now(), "mm/dd/yyyy hh:nn tt" )#</span>
 						</h1>
 
 						<h1 class="exception__type" title="Error Code and Exception Type">

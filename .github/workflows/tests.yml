@@ -42,9 +42,7 @@ jobs:
           java-version: "11"
 
       - name: Setup CommandBox CLI
-        uses: Ortus-Solutions/setup-commandbox@v2.0.0
-        with:
-          version: 5.4.2
+        uses: Ortus-Solutions/setup-commandbox@main
 
       - name: Setup .env For Runner
         run: |
