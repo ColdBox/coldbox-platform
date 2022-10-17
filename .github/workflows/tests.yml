@@ -121,7 +121,7 @@ jobs:
       - name: Failure Debugging Info
         if: ${{ failure() }}
         run: |
-          box server log serverConfigFile="server-${{ matrix.cfengine }}.json"
+          box server log serverConfigFile="server.json"
 
       - name: Upload Debugging Info To Artifacts
         if: ${{ failure() }}
