@@ -76,7 +76,7 @@ jobs:
 
       - name: Start ${{ matrix.cfengine }} Server
         run: |
-          box server start serverConfigFile="server-${{ matrix.cfengine }}.json" --noSaveSettings --debug
+          box server start cfengine="${{ matrix.cfengine }}" --noSaveSettings --debug
           # Install Adobe 2021 cfpm modules
           if [[ "${{ matrix.cfengine }}" == "adobe@2021" ]] ; then
             box run-script install:2021
