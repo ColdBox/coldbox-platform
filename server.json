@@ -1,7 +1,6 @@
 {
     "app":{
-        "cfengine":"lucee@5",
-        "serverHomeDirectory":".engine"
+        "cfengine":"lucee@5"
     },
     "name":"coldbox",
     "force":true,
