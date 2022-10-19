@@ -539,9 +539,14 @@ component serializable="false" accessors="true" {
 			case "coldbox":
 			case "box": {
 				if ( !variables.injector.isColdBoxLinked() ) {
+					var targetName = "";
+					if( isObject( targetObject ) ) {
+						targetName = getMetaData( targetObject ).name;
+					}
 					throw(
-						message = "The DSLNamespace: #DSLNamespace# cannot be used as it requires a ColdBox Context",
-						type    = "Builder.IllegalDSLException"
+						message = "The DSLNamespace: [#DSLNamespace#] cannot be used as it requires a ColdBox Context",
+						type    = "Builder.IllegalDSLException",
+						detail	= "DSL: [#arguments.definition.dsl#], target: [#targetName#]"
 					);
 				}
 				refLocal.dependency = getColdBoxDSL().process( argumentCollection = arguments );
