@@ -52,14 +52,10 @@
         "format":"cfformat run system/**/*.cfc,tests/specs/**/*.cfc --overwrite",
         "format:watch":"cfformat watch system/**/*.cfc,tests/specs/**/*.cfc ./.cfformat.json",
         "format:check":"cfformat check system/**/*.cfc,tests/specs/**/*.cfc",
-        "start:lucee":"server start cfengine=lucee@5 --force",
-        "start:2018":"server start cfengine=adobe@2018 --force",
-        "start:2021":"server start cfengine=adobe@2021 --force",
-        "log:lucee":"server log --follow",
-        "log:2018":"server log --follow",
-        "log:2021":"server log --follow",
-        "cfpm":"echo '\".engine/WEB-INF/cfusion/bin/cfpm.sh\"' | run",
-        "cfpm:install":"echo '\".engine/WEB-INF/cfusion/bin/cfpm.sh\" install ${1}' | run",
-        "install:2021":"run-script cfpm:install zip,orm,mysql,postgresql,sqlserver,document,feed,mail,debugger"
+        "start:lucee":"server start cfengine=lucee@5",
+        "start:2018":"server start cfengine=adobe@2018",
+        "start:2021":"server start cfengine=adobe@2021",
+        "log":"server log --follow",
+        "onServerInstall":"cfpm install zip,orm,mysql,postgresql,sqlserver,document,feed,mail,debugger"
     }
 }
