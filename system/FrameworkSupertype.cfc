@@ -537,6 +537,16 @@ component
 	}
 
 	/**
+	 * Redirect back to the previous URL via the referrer header, else use the fallback
+	 *
+	 * @fallback The fallback event or uri if the referrer is empty, defaults to `/`
+	 */
+	function back( fallback= "/" ) cbMethod{
+		var event = getRequestContext();
+		relocate( URL = event.getHTTPHeader( 'referer', event.buildLink( arguments.fallback ) ) );
+	}
+
+	/**
 	 * Executes internal named routes with or without parameters. If the named route is not found or the route has no event to execute then this method will throw an `InvalidArgumentException`.
 	 * If you need a route from a module then append the module address: `@moduleName` or prefix it like in run event calls `moduleName:routeName` in order to find the right route.
 	 * The route params will be passed to events as action arguments much how eventArguments work.

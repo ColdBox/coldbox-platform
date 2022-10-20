@@ -14,6 +14,32 @@ component extends="tests.resources.BaseIntegrationTest" {
 				expect( target.async() ).toBeComponent();
 			} );
 
+			story( "it can use the back() function to return to the previous URI", function(){
+				given( "no previous referer", function(){
+					then( "it should use the fallback", function(){
+						var fallback = "main.dashboard";
+						var mockContext = getMockRequestContext();
+						mockContext.getHTTPHeader = function( header, defaultValue ){
+							return defaultValue;
+						};
+						target.$( "relocate" ).$( "getRequestContext", mockContext );
+						target.back( fallback );
+						expect( target.$callLog().relocate[ 1 ].url ).toInclude( "dashboard" );
+					});
+				});
+				given( "a previous referer", function(){
+					then( "it should use the referer", function(){
+						var mockContext = getMockRequestContext();
+						mockContext.getHTTPHeader = function( header, defaultValue ){
+							return "http://localhost/luis/majano";
+						};
+						target.$( "relocate" ).$( "getRequestContext", mockContext );
+						target.back();
+						expect( target.$callLog().relocate[ 1 ].url ).toInclude( "majano" );
+					});
+				});
+			});
+
 			story( "should encode data for binding to html attributes", function(){
 				given( "a simple value", function(){
 					then( "it should encode it", function(){
