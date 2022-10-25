@@ -774,12 +774,25 @@ component
 	}
 
 	/**
+	* Convenience method to ensure unprefixed JSON, when ACF secure prefixing is enabled
+	*
+	* @obj   the object to be serialized
+	*/
+	string function toJSON( any obj ){
+		return serializeJSON(
+			obj,
+			false,
+			listFindNoCase( "Lucee", server.coldfusion.productname ) ? "utf-8" : false
+		);
+	}
+
+	/**
 	 * This function allows you to serialize simple or complex data so it can be used within HTML Attributes.
 	 *
 	 * @data The simple or complex data to bind to an HTML Attribute
 	 */
 	function forAttribute( required data ) cbMethod{
-		arguments.data = ( isSimpleValue( arguments.data ) ? arguments.data : serializeJSON( arguments.data ) );
+		arguments.data = ( isSimpleValue( arguments.data ) ? arguments.data : toJSON( arguments.data ) );
 		return encodeForHTMLAttribute( arguments.data );
 	}
 
