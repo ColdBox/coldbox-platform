@@ -541,9 +541,9 @@ component
 	 *
 	 * @fallback The fallback event or uri if the referrer is empty, defaults to `/`
 	 */
-	function back( fallback= "/" ) cbMethod{
+	function back( fallback = "/" ) cbMethod{
 		var event = getRequestContext();
-		relocate( URL = event.getHTTPHeader( 'referer', event.buildLink( arguments.fallback ) ) );
+		relocate( URL = event.getHTTPHeader( "referer", event.buildLink( arguments.fallback ) ) );
 	}
 
 	/**
@@ -774,10 +774,10 @@ component
 	}
 
 	/**
-	* Convenience method to ensure unprefixed JSON, when ACF secure prefixing is enabled
-	*
-	* @obj   the object to be serialized
-	*/
+	 * Convenience method to ensure unprefixed JSON, when ACF secure prefixing is enabled
+	 *
+	 * @obj the object to be serialized
+	 */
 	string function toJSON( any obj ){
 		return serializeJSON(
 			obj,
