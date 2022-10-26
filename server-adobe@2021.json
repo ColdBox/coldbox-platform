@@ -1,0 +1,27 @@
+{
+    "app":{
+        "cfengine":"adobe@2021",
+        "serverHomeDirectory":".engine/adobe2021"
+    },
+    "name":"coldbox-adobe@2021",
+    "force":true,
+    "openBrowser":false,
+    "web":{
+        "directoryBrowsing":true,
+        "http":{
+            "port":"8599"
+        },
+        "rewrites":{
+            "enable":true
+        },
+        "aliases":{
+            "/coldbox":"./"
+        }
+    },
+    "JVM":{
+        "heapSize":"1024"
+    },
+	"cfconfig": {
+		"file" : ".cfconfig.json"
+	}
+}
