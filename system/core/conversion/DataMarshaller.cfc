@@ -66,7 +66,7 @@ component accessors="true" singleton {
 			case "JSON":
 			case "JSONP": {
 				// marshall to JSON
-				results = variables.controller.getUtil().toJson( arguments.data );
+				results = variables.coldbox.getUtil().toJson( arguments.data );
 				// wrap results in callback function for JSONP
 				if ( len( arguments.jsonCallback ) > 0 ) {
 					results = "#arguments.jsonCallback#(#results#)";
