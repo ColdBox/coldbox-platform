@@ -7,8 +7,9 @@
 component accessors="true" singleton {
 
 	// DI
-	property name="xmlConverter"   inject="XMLConverter@coldbox";
+	property name="xmlConverter"   inject="provider:XMLConverter@coldbox";
 	property name="requestService" inject="coldbox:requestService";
+	property name="coldbox"        inject="coldbox";
 
 	/**
 	 * Constructor
@@ -67,7 +68,7 @@ component accessors="true" singleton {
 			case "JSON":
 			case "JSONP": {
 				// marshall to JSON
-				results = serializeJSON( arguments.data, arguments.jsonQueryFormat );
+				results = variables.controller.getUtil().toJson( arguments.data );
 				// wrap results in callback function for JSONP
 				if ( len( arguments.jsonCallback ) > 0 ) {
 					results = "#arguments.jsonCallback#(#results#)";
@@ -95,7 +96,7 @@ component accessors="true" singleton {
 					args.columnlist = arguments.xmlColumnList;
 				}
 				// Marshal to xml
-				results = xmlConverter.toXML( argumentCollection = args );
+				results = variables.xmlConverter.toXML( argumentCollection = args );
 				break;
 			}
 

@@ -541,9 +541,9 @@ component
 	 *
 	 * @fallback The fallback event or uri if the referrer is empty, defaults to `/`
 	 */
-	function back( fallback= "/" ) cbMethod{
+	function back( fallback = "/" ) cbMethod{
 		var event = getRequestContext();
-		relocate( URL = event.getHTTPHeader( 'referer', event.buildLink( arguments.fallback ) ) );
+		relocate( URL = event.getHTTPHeader( "referer", event.buildLink( arguments.fallback ) ) );
 	}
 
 	/**
@@ -779,8 +779,23 @@ component
 	 * @data The simple or complex data to bind to an HTML Attribute
 	 */
 	function forAttribute( required data ) cbMethod{
-		arguments.data = ( isSimpleValue( arguments.data ) ? arguments.data : serializeJSON( arguments.data ) );
+		arguments.data = (
+			isSimpleValue( arguments.data ) ? arguments.data : variables.controller
+				.getUtil()
+				.toJson( arguments.data )
+		);
 		return encodeForHTMLAttribute( arguments.data );
+	}
+
+	/**
+	 * Opinionated method that serializes json in a more digetstible way:
+	 * - queries as array of structs
+	 * - no dumb secure prefixes
+	 *
+	 * @obj The object to be serialized
+	 */
+	string function toJson( any obj ){
+		return variables.controller.getUtil().toJson( arguments.obj );
 	}
 
 }

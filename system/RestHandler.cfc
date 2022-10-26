@@ -439,7 +439,7 @@ component extends="EventHandler" {
 				statusText = "Invalid or Missing Credentials"
 			);
 
-			writeOutput( serializeJSON( prc.response.getDataPacket( reset = this.resetDataOnError ) ) );
+			writeOutput( toJson( prc.response.getDataPacket( reset = this.resetDataOnError ) ) );
 
 			flush;
 			abort;

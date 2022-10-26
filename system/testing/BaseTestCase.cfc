@@ -505,7 +505,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 						if ( isSimpleValue( handlerResults ) ) {
 							renderedContent = handlerResults;
 						} else {
-							renderedContent = serializeJSON( handlerResults );
+							renderedContent = getUtil().toJson( handlerResults );
 						}
 					}
 					// Skip rendering if event.noRender is set

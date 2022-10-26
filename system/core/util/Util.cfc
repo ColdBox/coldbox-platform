@@ -162,6 +162,23 @@ component {
 	 ****************************************************************/
 
 	/**
+	 * Opinionated method that serializes json in a more digetstible way:
+	 * - queries as array of structs
+	 * - no dumb secure prefixes
+	 *
+	 * @obj The object to be serialized
+	 */
+	string function toJson( any obj ){
+		// https://cfdocs.org/serializejson
+		// We default to "struct" serialization for queries.  The CFML defaults are dumb and just nasty!
+		return serializeJSON(
+			arguments.obj,
+			"struct",
+			listFindNoCase( "Lucee", server.coldfusion.productname ) ? "utf-8" : false
+		);
+	}
+
+	/**
 	 * PlaceHolder Replacer for strings containing <code>${}</code> patterns
 	 *
 	 * @str      The string target

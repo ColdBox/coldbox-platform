@@ -2535,7 +2535,7 @@ component
 		numeric version       = 3,
 		manifestRoot          = ""
 	){
-		var argumentsHash  = hash( serializeJSON( arguments ) );
+		var argumentsHash  = hash( controller.getUtil().toJson( arguments ) );
 		// Incoming Cleanup
 		arguments.fileName = reReplace( arguments.fileName, "^//?", "" );
 
