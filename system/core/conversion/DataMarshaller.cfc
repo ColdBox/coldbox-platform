@@ -25,7 +25,6 @@ component accessors="true" singleton {
 	 * @data             The data to marshall
 	 * @encoding         The default character encoding to use, defaults to UTF-8
 	 * @jsonCallback     Only needed when using JSONP, this is the callback to add to the JSON packet
-	 * @jsonQueryFormat  JSON Only: This parameter can be a Boolean value that specifies how to serialize ColdFusion queries or a string with possible values row, column, or struct
 	 * @xmlColumnList    XML Only: Choose which columns to inspect, by default it uses all the columns in the query, if using a query
 	 * @xmlUseCDATA      XML Only: Use CDATA content for ALL values. The default is false
 	 * @xmlListDelimiter XML Only: The delimiter in the list. Comma by default
@@ -41,7 +40,6 @@ component accessors="true" singleton {
 		required data,
 		encoding            = "UTF-8",
 		jsonCallback        = "",
-		jsonQueryFormat     = true,
 		xmlColumnList       = "",
 		boolean xmlUseCDATA = false,
 		xmlListDelimiter    = ",",

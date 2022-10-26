@@ -126,15 +126,14 @@ component extends="EventHandler" {
 
 			// Magical renderings
 			event.renderData(
-				type            = arguments.prc.response.getFormat(),
-				data            = responseData,
-				contentType     = arguments.prc.response.getContentType(),
-				statusCode      = arguments.prc.response.getStatusCode(),
-				statusText      = arguments.prc.response.getStatusText(),
-				location        = arguments.prc.response.getLocation(),
-				isBinary        = arguments.prc.response.getBinary(),
-				jsonCallback    = arguments.prc.response.getJsonCallback(),
-				jsonQueryFormat = arguments.prc.response.getJsonQueryFormat()
+				type         = arguments.prc.response.getFormat(),
+				data         = responseData,
+				contentType  = arguments.prc.response.getContentType(),
+				statusCode   = arguments.prc.response.getStatusCode(),
+				statusText   = arguments.prc.response.getStatusText(),
+				location     = arguments.prc.response.getLocation(),
+				isBinary     = arguments.prc.response.getBinary(),
+				jsonCallback = arguments.prc.response.getJsonCallback()
 			);
 		}
 

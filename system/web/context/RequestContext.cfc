@@ -1480,7 +1480,6 @@ component serializable="false" accessors="true" {
 	 * @statusText       Explains the HTTP status code sent to the browser.
 	 * @location         Optional argument used to set the HTTP Location header
 	 * @jsonCallback     Only needed when using JSONP, this is the callback to add to the JSON packet
-	 * @jsonQueryFormat  JSON Only: This parameter can be a Boolean value that specifies how to serialize ColdFusion queries or a string with possible values "row", "column", or "struct".
 	 * @jsonAsText       If set to false, defaults content mime-type to application/json, else will change encoding to plain/text
 	 * @xmlColumnList    XML Only: Choose which columns to inspect, by default it uses all the columns in the query, if using a query
 	 * @xmlUseCDATA      XML Only: Use CDATA content for ALL values. The default is false
@@ -1501,7 +1500,6 @@ component serializable="false" accessors="true" {
 		statusText          = "",
 		location            = "",
 		jsonCallback        = "",
-		jsonQueryFormat     = "true",
 		boolean jsonAsText  = false,
 		xmlColumnList       = "",
 		boolean xmlUseCDATA = false,
@@ -1547,14 +1545,7 @@ component serializable="false" accessors="true" {
 		rd.xmlRootName      = arguments.xmlRootName;
 
 		// JSON Properties
-		// Backwards compatibility, remove after next release
-		if ( arguments.jsonQueryFormat == "query" ) {
-			arguments.jsonQueryFormat = true;
-		} else if ( arguments.jsonQueryFormat == "array" ) {
-			arguments.jsonQueryFormat = false;
-		}
-		rd.jsonQueryFormat = arguments.jsonQueryFormat;
-		rd.jsonCallBack    = arguments.jsonCallBack;
+		rd.jsonCallBack = arguments.jsonCallBack;
 
 		// PDF properties
 		rd.pdfArgs = arguments.pdfArgs;
