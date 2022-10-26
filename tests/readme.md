@@ -56,20 +56,10 @@ We deliver the capabilities for you to test the following engines:
 * ACF 2018
 * ACF 2021
 
-Using the `server.json` file in the root of the repository, you can test a specific engine like this:
+Just look at the appropriate `server-engine.json` file in the root of the repository so you can test a specific engine like this:
 
-```bash
-box server start cfengine=adobe@2021
 ```
-
-Or you can use the shortcuts defined in `box.json`:
-
-```bash
-box run-script start:lucee
-# OR
-box run-script start:2018
-# OR
-box run-script start:2021
+box server start serverConfigFile=server-adobe@2021.json
 ```
 
 > **Note:** Run the above command from the root of the repo.

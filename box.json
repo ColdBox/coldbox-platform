@@ -52,10 +52,13 @@
         "format":"cfformat run system/**/*.cfc,tests/specs/**/*.cfc --overwrite",
         "format:watch":"cfformat watch system/**/*.cfc,tests/specs/**/*.cfc ./.cfformat.json",
         "format:check":"cfformat check system/**/*.cfc,tests/specs/**/*.cfc",
-        "start:lucee":"server start cfengine=lucee@5",
-        "start:2018":"server start cfengine=adobe@2018",
-        "start:2021":"server start cfengine=adobe@2021",
         "log":"server log --follow",
-        "onServerInstall":"cfpm install zip,orm,mysql,postgresql,sqlserver,document,feed,mail,debugger"
+        "onServerInstall":"cfpm install zip,orm,mysql,postgresql,sqlserver,document,feed,mail,debugger",
+        "start:lucee":"server start serverConfigFile='server-lucee@5.json' --force",
+        "start:2018":"server start serverConfigFile='server-adobe@2018.json' --force",
+        "start:2021":"server start serverConfigFile='server-adobe@2021.json' --force",
+        "log:lucee":"server log coldbox-lucee@5 --follow",
+        "log:2018":"server log coldbox-adobe@2018 --follow",
+        "log:2021":"server log coldbox-adobe@2021 --follow"
     }
 }
