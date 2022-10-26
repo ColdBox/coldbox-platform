@@ -1576,7 +1576,7 @@
 							"contents": "event.removeValue( name=${1:any}, private=${2:true,false} )"
 						},{
 							"trigger": "event.renderData\tfn. (ColdBox:event)",
-							"contents": "event.renderData( type=${1:any}, data=${2:any}, contentType=${3:any}, encoding=${4:any}, statusCode=${5:numeric}, statusText=${6:any}, location=${7:any}, jsonCallback=${8:any}, jsonQueryFormat=${9:any}, jsonAsText=${10:true,false}, xmlColumnList=${11:any}, xmlUseCDATA=${12:true,false}, xmlListDelimiter=${13:any}, xmlRootName=${14:any}, pdfArgs=${15:{}}, formats=${16:any}, formatsView=${17:any}, formatsRedirect=${18:any}, isBinary=${19:true,false} )"
+							"contents": "event.renderData( type=${1:any}, data=${2:any}, contentType=${3:any}, encoding=${4:any}, statusCode=${5:numeric}, statusText=${6:any}, location=${7:any}, jsonCallback=${8:any}, jsonAsText=${10:true,false}, xmlColumnList=${11:any}, xmlUseCDATA=${12:true,false}, xmlListDelimiter=${13:any}, xmlRootName=${14:any}, pdfArgs=${15:{}}, formats=${16:any}, formatsView=${17:any}, formatsRedirect=${18:any}, isBinary=${19:true,false} )"
 						},{
 							"trigger": "event.renderWithFormats\tfn. (ColdBox:event)",
 							"contents": "event.renderWithFormats( )"
