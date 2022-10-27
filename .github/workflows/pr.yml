@@ -11,6 +11,7 @@ on:
     branches:
       - development
       - "releases/**"
+      - pr-cfformat-workflow # TESTING!!
 
 jobs:
   format:
