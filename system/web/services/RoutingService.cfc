@@ -483,7 +483,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 					}
 				}
 				
-				if(arrayFindNoCase(arguments.excludedPatterns,_routes[ i ].pattern) > 0) continue;
+				if( arrayFindNoCase( arguments.excludedPatterns, _routes[ i ].pattern ) > 0 ) continue;
 
 				// Setup the found Route: we dup to avoid reference collisions
 				results.route = duplicate( _routes[ i ] );
@@ -581,7 +581,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 					action = packagedRequestString,
 					event  = arguments.event,
 					module = arguments.module,
-					excludedPatterns: arguments.excludedPatterns
+					excludedPatterns = arguments.excludedPatterns
 				);
 			}
 		}
