@@ -1,13 +1,7 @@
-### ❗ WARNING ❗ ##
-# This workflow runs on the original repo with a a read/write repo token and ALL SECRET ACCESS.
-# AND, it checks out the untrusted PR in order to format it.
-# It is imperative that this workflow only run passive code checks and formats.
-# Any execution of the PR code can potentially access the github api for this repo, send secrets to a pastebin, etc.
-###
 name: Pull Requests
 
 on:
-  pull_request_target:
+  pull_request:
     branches:
       - development
       - "releases/**"
@@ -17,12 +11,11 @@ jobs:
   format:
     name: Format
     runs-on: ubuntu-20.04
+    permissions:
+      pull-requests: write
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
-        with:
-          ref: ${{github.event.pull_request.head.ref}}
-          repository: ${{github.event.pull_request.head.repo.full_name}}
 
       - uses: Ortus-Solutions/commandbox-action@v1.0.2
         with:
