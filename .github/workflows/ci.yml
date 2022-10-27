@@ -1,0 +1,30 @@
+name: Direct Commits
+
+on:
+  push:
+    branches-ignore:
+      - "main"
+      - "master"
+      - "development"
+      - "releases/**"
+
+jobs:
+  format:
+    name: Format
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - uses: Ortus-Solutions/commandbox-action@v1.0.2
+        with:
+          cmd: run-script format
+
+      - name: Commit Format Changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Apply cfformat changes
+
+  tests:
+    uses: ./.github/workflows/tests.yml
+    secrets: inherit
