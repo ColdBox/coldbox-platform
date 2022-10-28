@@ -397,19 +397,21 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * the `route` it discovered or an empty structure and the `params` structure which represents
 	 * URL placeholders, convention name value pairs, matching variables, etc.
 	 *
-	 * @action    The action evaluated by path_info
-	 * @event     The event object
-	 * @module    Incoming module
-	 * @namespace Incoming namespace
-	 * @domain    Incoming domain
-	 * @result    Struct: { route: found route or empty struct, params: translated params }
+	 * @action    			The action evaluated by path_info
+	 * @event     			The event object
+	 * @module    			Incoming module
+	 * @namespace 			Incoming namespace
+	 * @domain    			Incoming domain
+	 * @excludedPatterns    An array of pattern strings to exclude from possible matches
+	 * @result    			Struct: { route: found route or empty struct, params: translated params }
 	 */
 	struct function findRoute(
 		required action,
 		required event,
 		module    = "",
 		namespace = "",
-		domain    = ""
+		domain    = "",
+		excludedPatterns = []
 	){
 		var requestString = arguments.action;
 		var rc            = event.getCollection();
@@ -480,6 +482,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 						continue;
 					}
 				}
+				
+				if( arrayFindNoCase( arguments.excludedPatterns, _routes[ i ].pattern ) > 0 ) continue;
 
 				// Setup the found Route: we dup to avoid reference collisions
 				results.route = duplicate( _routes[ i ] );
@@ -514,7 +518,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			// build routing argument struct based on module/namespace context
 			var contextRouting = {
 				action : reReplaceNoCase( requestString, results.route.regexpattern, "" ),
-				event  : arguments.event
+				event  : arguments.event,
+				excludedPatterns: arguments.excludedPatterns
 			};
 			// add module or namespace
 			if ( len( results.route.moduleRouting ) ) {
@@ -575,7 +580,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				return findRoute(
 					action = packagedRequestString,
 					event  = arguments.event,
-					module = arguments.module
+					module = arguments.module,
+					excludedPatterns = arguments.excludedPatterns
 				);
 			}
 		}
