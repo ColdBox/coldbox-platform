@@ -15,8 +15,8 @@ component accessors="true" singleton {
 	 * Constructor
 	 */
 	function init(){
-		// Lazy loaded if ORM is used
-		variables.ormEntityMap = {};
+		// ORM Entity map. Lazy loaded if used.
+		variables.ormEntityMap = [];
 		return this;
 	}
 
@@ -277,10 +277,6 @@ component accessors="true" singleton {
 		boolean composeRelationships = false
 	){
 		var scopeInjection = false;
-		var udfCall        = "";
-		var args           = "";
-		var nullValue      = false;
-		var propertyValue  = "";
 
 		try {
 			// Scope injection detection
@@ -294,12 +290,13 @@ component accessors="true" singleton {
 
 			// Populate Bean
 			for ( var key in arguments.memento ) {
-				// init population flag
-				var pop = true;
-				// init nullValue flag and shortcut to property value
+				// Init population variables
+				var pop           = true;
+				var propertyValue = "";
+				var nullValue     = false;
+
 				// conditional with StructKeyExist, to prevent language issues with Null value checking of struct keys in ACF
 				if ( structKeyExists( arguments.memento, key ) ) {
-					nullValue     = false;
 					propertyValue = arguments.memento[ key ];
 				} else {
 					nullValue     = true;
@@ -323,16 +320,43 @@ component accessors="true" singleton {
 					pop = false;
 				}
 
-				// Continue with next item or not
+				// Are we allowed to populate or not
 				if ( !pop ) {
 					continue;
+				}
+
+				// Null Empty Include/Exclude Lists
+				// If a value is an empty string, then we will coerce it to null
+				if ( arguments.nullEmptyInclude == "*" ) {
+					nullValue = true;
+				}
+				if ( arguments.nullEmptyExclude == "*" ) {
+					nullValue = false;
+				}
+				// Is property in empty-to-null include list?
+				if ( ( len( arguments.nullEmptyInclude ) && listFindNoCase( arguments.nullEmptyInclude, key ) ) ) {
+					nullValue = true;
+				}
+				// Is property in empty-to-null exclude list, or is exclude list "*"?
+				if ( ( len( arguments.nullEmptyExclude ) AND listFindNoCase( arguments.nullEmptyExclude, key ) ) ) {
+					nullValue = false;
+				}
+
+				// Is value nullable (e.g., simple, empty string)? If so, set null...
+				// short circuit evaluation of IsNull added, so it won't break IsSimpleValue with Real null values. Real nulls are already set.
+				if (
+					!isNull( local.propertyValue ) && isSimpleValue( propertyValue ) && !len(
+						trim( propertyValue )
+					) && nullValue
+				) {
+					propertyValue = javacast( "null", "" );
 				}
 
 				// Scope Injection?
 				if ( scopeInjection ) {
 					arguments.target.injectPropertyMixin(
 						propertyName  = key,
-						propertyValue = propertyValue,
+						propertyValue = isNull( propertyValue ) ? javacast( "null", "" ) : propertyValue,
 						scope         = arguments.scope
 					);
 					continue;
@@ -340,31 +364,6 @@ component accessors="true" singleton {
 
 				// Check if setter exists, evaluate is used, so it can call on java/groovy objects
 				if ( structKeyExists( arguments.target, "set" & key ) or arguments.trustedSetter ) {
-					// top-level null settings
-					if ( arguments.nullEmptyInclude == "*" ) {
-						nullValue = true;
-					}
-					if ( arguments.nullEmptyExclude == "*" ) {
-						nullValue = false;
-					}
-					// Is property in empty-to-null include list?
-					if ( ( len( arguments.nullEmptyInclude ) && listFindNoCase( arguments.nullEmptyInclude, key ) ) ) {
-						nullValue = true;
-					}
-					// Is property in empty-to-null exclude list, or is exclude list "*"?
-					if ( ( len( arguments.nullEmptyExclude ) AND listFindNoCase( arguments.nullEmptyExclude, key ) ) ) {
-						nullValue = false;
-					}
-					// Is value nullable (e.g., simple, empty string)? If so, set null...
-					// short circuit evaluation of IsNull added, so it won't break IsSimpleValue with Real null values. Real nulls are already set.
-					if (
-						!isNull( local.propertyValue ) && isSimpleValue( propertyValue ) && !len(
-							trim( propertyValue )
-						) && nullValue
-					) {
-						propertyValue = javacast( "null", "" );
-					}
-
 					// If property isn't null, try to compose the relationship
 					if (
 						!isNull( local.propertyValue ) && composeRelationships && structKeyExists(
@@ -490,17 +489,24 @@ component accessors="true" singleton {
 		}
 	}
 
+	private function composeProperty(){
+	}
+
 	/**
 	 * Get the ORM entity map for the application
 	 */
-	private function getORMEntityMap(){
-		if ( listFirst( variables.util.getHibernateVersion(), "." ) >= 5 ) {
-			// Double array functions to convert from native java to cf java
-			return arrayToList( ormGetSessionFactory().getMetaModel().getAllEntityNames() ).listToArray();
-		} else {
-			// Hibernate v4 and older
-			return structKeyArray( ormGetSessionFactory().getAllClassMetadata() );
+	private array function getORMEntityMap(){
+		if ( variables.ormEntityMap.isEmpty() ) {
+			if ( listFirst( variables.util.getHibernateVersion(), "." ) >= 5 ) {
+				// Double array functions to convert from native java to cf java
+				variables.ormEntityMap = arrayToList( ormGetSessionFactory().getMetaModel().getAllEntityNames() ).listToArray();
+			} else {
+				// Hibernate v4 and older
+				variables.ormEntityMap = structKeyArray( ormGetSessionFactory().getAllClassMetadata() );
+			}
 		}
+
+		return variables.ormEntityMap;
 	}
 
 
