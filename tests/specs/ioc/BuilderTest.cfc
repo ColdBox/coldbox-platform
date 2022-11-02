@@ -291,7 +291,7 @@
 
 		// wirebox:populator
 		data      = { name : "luis", dsl : "wirebox:populator" };
-		populator = createEmptyMock( "coldbox.system.core.dynamic.BeanPopulator" );
+		populator = createEmptyMock( "coldbox.system.core.dynamic.ObjectPopulator" );
 		mockInjector.$( "getObjectPopulator", populator );
 		p = builder.getWireBoxDSL( definition: data, targetID: targetID );
 		assertEquals( populator, p );

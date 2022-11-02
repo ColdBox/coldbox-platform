@@ -903,10 +903,10 @@ component serializable="false" accessors="true" {
 	/**
 	 * Get an object populator useful for populating objects from JSON,XML, etc.
 	 *
-	 * @doc_generic coldbox.system.core.dynamic.BeanPopulator
+	 * @return coldbox.system.core.dynamic.ObjectPopulator
 	 */
 	function getObjectPopulator(){
-		return new coldbox.system.core.dynamic.BeanPopulator();
+		return getInstance( "coldbox.system.core.dynamic.ObjectPopulator" );
 	}
 
 	/**

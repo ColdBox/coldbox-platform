@@ -188,7 +188,7 @@
 
 	function testGetObjectPopulator(){
 		pop = injector.getObjectPopulator();
-		assertTrue( isInstanceOf( pop, "coldbox.system.core.dynamic.BeanPopulator" ) );
+		assertTrue( isInstanceOf( pop, "coldbox.system.core.dynamic.ObjectPopulator" ) );
 	}
 
 	function testParenInjector(){
