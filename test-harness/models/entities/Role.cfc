@@ -1,9 +1,13 @@
 ﻿component persistent = "true" table = "roles"{
+
+	this.population = { exclude : ["roleId"] };
+
 	property
 		name     ="roleID"
 		column   ="roleID"
 		fieldType="id"
 		generator="native";
+
 	property name="role";
 
 	// O2M -> Users

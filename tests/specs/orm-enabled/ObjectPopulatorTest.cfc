@@ -34,6 +34,20 @@
 			} );
 
 			describe( "Population using structs", function(){
+				it( "can populate from a struct and use an object's population metadata to exclude", function(){
+					var role     = entityNew( "Role" );
+					var myStruct = { roleId : 123 };
+					populator.populateFromStruct( target = role, memento = mystruct );
+					expect( role.getRoleId() ).toBeNull();
+				} );
+
+				it( "can populate from a struct and use an object's population metadata to include", function(){
+					var user     = entityNew( "User" );
+					var myStruct = { id : 123, password : "test", lastLogin : now() };
+					populator.populateFromStruct( target = user, memento = mystruct );
+					expect( isNull( user.getId() ) ).toBeTrue();
+				} );
+
 				it( "can populate from a struct and compose many to one relationships", function(){
 					var obj      = entityNew( "User" );
 					var role     = entityNew( "Role" );
@@ -73,8 +87,7 @@
 						id        : "",
 						firstName : "Luis",
 						lastName  : "Majano",
-						username  : "",
-						password  : ""
+						username  : ""
 					};
 
 					var user = populator.populateFromStruct(
@@ -85,7 +98,6 @@
 
 					expect( myStruct.firstName ).toBe( user.getFirstName() );
 					expect( isNull( user.getUsername() ) ).toBeFalse();
-					expect( isNull( user.getPassword() ) ).toBeFalse();
 
 					/* Populate From Struct - One column null*/
 					var user = populator.populateFromStruct(
@@ -96,9 +108,14 @@
 
 					expect( myStruct.firstName ).toBe( user.getFirstName() );
 					expect( isNull( user.getUsername() ) ).toBeTrue();
-					expect( isNull( user.getPassword() ) ).toBeFalse();
 
 					/* Populate From Struct - All columns null*/
+					var myStruct = {
+						id        : "",
+						firstName : "Luis",
+						lastName  : "",
+						username  : ""
+					};
 					user = populator.populateFromStruct(
 						target           = obj,
 						memento          = myStruct,
@@ -107,7 +124,7 @@
 
 					expect( myStruct.firstName ).toBe( user.getFirstName() );
 					expect( isNull( user.getUsername() ) ).toBeTrue();
-					expect( isNull( user.getPassword() ) ).toBeTrue();
+					expect( isNull( user.getLastName() ) ).toBeTrue();
 				} );
 
 				it( "can populate from struct with empty null excludes", function(){
@@ -116,8 +133,7 @@
 						id        : "",
 						firstName : "Luis",
 						lastName  : "Majano",
-						username  : "",
-						password  : ""
+						username  : ""
 					};
 
 					var user = populator.populateFromStruct(
@@ -129,7 +145,6 @@
 
 					expect( myStruct.firstName ).toBe( user.getFirstName() );
 					expect( isNull( user.getUsername() ) ).toBeFalse();
-					expect( isNull( user.getPassword() ) ).toBeTrue();
 
 					/* Populate From Struct - One column null*/
 					var user = populator.populateFromStruct(
@@ -140,7 +155,6 @@
 
 					expect( myStruct.firstName ).toBe( user.getFirstName() );
 					expect( isNull( user.getUsername() ) ).toBeFalse();
-					expect( isNull( user.getPassword() ) ).toBeFalse();
 				} );
 
 				it( "can populate from struct and ignore empty values", function(){

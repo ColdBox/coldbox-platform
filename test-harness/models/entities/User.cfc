@@ -1,15 +1,23 @@
 ﻿component persistent = "true" table = "users"{
+
+	this.population = {
+		include : [ "firstName", "lastName", "username", "role" ],
+		exclude : ["id", "password", "lastLogin" ]
+	};
+
 	property
 		name     ="id"
 		column   ="user_id"
 		fieldType="id"
 		generator="uuid";
+
 	/**
 	 * @display First Name
 	 * @message Please provide firstname
 	 * @NotEmpty
 	 */
 	property name="firstName";
+
 	/**
 	 * @display Last Name
 	 * @message Please provide lastname
