@@ -11,12 +11,24 @@ component accessors="true" singleton {
 	property name="mixerUtil" inject="provider:coldbox.system.core.dynamic.MixerUtil";
 	property name="util"      inject="coldbox.system.core.util.Util";
 
+	// Properties
+	property name="ormEntityMap";
+	property name="entityMetadataMap";
+
 	/**
 	 * Constructor
 	 */
 	function init(){
-		// ORM Entity map. Lazy loaded if used.
-		variables.ormEntityMap = [];
+		flushMetadataCaches();
+		return this;
+	}
+
+	/**
+	 * Recreate the metadata caches for orm and entity metadata lookups
+	 */
+	function flushMetadataCaches(){
+		variables.ormEntityMap      = [];
+		variables.entityMetadataMap = createObject( "java", "java.util.concurrent.ConcurrentHashMap" ).init();
 		return this;
 	}
 
@@ -352,7 +364,22 @@ component accessors="true" singleton {
 					propertyValue = javacast( "null", "" );
 				}
 
-				// Scope Injection?
+				// Is this a composable property?
+				if (
+					!isNull( propertyValue ) && arguments.composeRelationships && structKeyExists(
+						relationalMeta.properties,
+						key
+					)
+				) {
+					propertyValue = composeProperty(
+						key           : key,
+						relationalMeta: relationalMeta,
+						target        : arguments.target,
+						propertyValue : propertyValue
+					);
+				}
+
+				// Scope Injection
 				if ( scopeInjection ) {
 					arguments.target.injectPropertyMixin(
 						propertyName  = key,
@@ -362,116 +389,17 @@ component accessors="true" singleton {
 					continue;
 				}
 
-				// Check if setter exists, evaluate is used, so it can call on java/groovy objects
+				// Setter Injection
 				if ( structKeyExists( arguments.target, "set" & key ) or arguments.trustedSetter ) {
-					// If property isn't null, try to compose the relationship
-					if (
-						!isNull( local.propertyValue ) && composeRelationships && structKeyExists(
-							relationalMeta,
-							key
-						)
-					) {
-						// get valid, known entity name list
-						var validEntityNames = getORMEntityMap();
-						var targetEntityName = "";
-						/**
-						 * The only info we know about the relationships are the property names and the cfcs
-						 * CFC setting can be relative, so can't assume that component lookup will work
-						 * APPROACH
-						 * 1.) Easy: If property name of relationship is a valid entity name, use that
-						 * 2.) Harder: If property name is not a valid entity name (e.g., one-to-many, many-to-many), use cfc name
-						 * 3.) Nuclear: If neither above works, try by component meta data lookup. Won't work if using relative paths!!!!
-						 */
-
-						// 1.) name match
-						if ( validEntityNames.findNoCase( key ) ) {
-							targetEntityName = key;
-						}
-						// 2.) attempt match on CFC metadata
-						else if ( validEntityNames.findNoCase( listLast( relationalMeta[ key ].cfc, "." ) ) ) {
-							targetEntityName = listLast( relationalMeta[ key ].cfc, "." );
-						}
-						// 3.) component lookup
-						else {
-							try {
-								targetEntityName = getComponentMetadata( relationalMeta[ key ].cfc ).entityName;
-							} catch ( any e ) {
-								throw(
-									type    = "ObjectPopulator.PopulateBeanException",
-									message = "Error populating bean #getMetadata( arguments.target ).name# relationship of #key#. The component #relationalMeta[ key ].cfc# could not be found.",
-									detail  = "#e.Detail#<br>#e.message#<br>#e.tagContext.toString()#"
-								);
-							}
-						}
-						// if targetEntityName was successfully found
-						if ( len( targetEntityName ) ) {
-							// array or struct type (one-to-many, many-to-many)
-							if ( listContainsNoCase( "one-to-many,many-to-many", relationalMeta[ key ].fieldtype ) ) {
-								// Support straight-up lists and convert to array
-								if ( isSimpleValue( propertyValue ) ) {
-									propertyValue = listToArray( propertyValue );
-								}
-								var relType = structKeyExists( relationalMeta[ key ], "type" ) && relationalMeta[ key ].type != "any" ? relationalMeta[
-									key
-								].type : "array";
-								var manyMap = reltype == "struct" ? {} : [];
-								// loop over array
-								for ( var relValue in propertyValue ) {
-									// for type of array
-									if ( relType == "array" ) {
-										k
-										arrayAppend( manyMap, entityLoadByPK( targetEntityName, relValue ) );
-									}
-									// for type of struct
-									else {
-										// make sure structKeyColumn is defined in meta
-										if ( structKeyExists( relationalMeta[ key ], "structKeyColumn" ) ) {
-											// load the value
-											var item            = entityLoadByPK( targetEntityName, relValue );
-											var structKeyColumn = relationalMeta[ key ].structKeyColumn;
-											var keyValue        = "";
-											// try to get struct key value from entity
-											if ( !isNull( local.item ) ) {
-												try {
-													keyValue = invoke( item, "get#structKeyColumn#" );
-												} catch ( Any e ) {
-													throw(
-														type    = "ObjectPopulator.PopulateBeanException",
-														message = "Error populating bean #getMetadata( arguments.target ).name# relationship of #key#. The structKeyColumn #structKeyColumn# could not be resolved.",
-														detail  = "#e.Detail#<br>#e.message#<br>#e.tagContext.toString()#"
-													);
-												}
-											}
-											// if the structKeyColumn value was found...
-											if ( len( keyValue ) ) {
-												manyMap[ keyValue ] = item;
-											}
-										}
-									}
-								}
-								// set main property value to the full array of entities
-								propertyValue = manyMap;
-							}
-							// otherwise, simple value; load relationship (one-to-one, many-to-one)
-							else {
-								if ( isSimpleValue( propertyValue ) && trim( propertyValue ) != "" ) {
-									propertyValue = entityLoadByPK( targetEntityName, propertyValue );
-								}
-							}
-						}
-						// if target entity name found
-					}
-
-					// Inject it via the setter
 					invoke(
 						arguments.target,
 						"set#key#",
-						[ isNull( local.propertyValue ) ? javacast( "null", "" ) : propertyValue ]
+						[ isNull( propertyValue ) ? javacast( "null", "" ) : propertyValue ]
 					);
 				}
 				// end if setter or scope injection
 			}
-			// end for loop
+			// end of all memento keys
 			return arguments.target;
 		} catch ( Any e ) {
 			if ( isNull( local.propertyValue ) ) {
@@ -482,14 +410,143 @@ component accessors="true" singleton {
 				arguments.keyTypeAsString = propertyValue.getClass().toString();
 			}
 			throw(
-				type    = "ObjectPopulator.PopulateBeanException",
+				type    = "ObjectPopulator.PopulateObjectException",
 				message = "Error populating bean #getMetadata( arguments.target ).name# with argument #key# of type #arguments.keyTypeAsString#.",
 				detail  = "#e.Detail#<br>#e.message#<br>#e.tagContext.toString()#"
 			);
 		}
 	}
 
-	private function composeProperty(){
+	/**
+	 * Compose a related property
+	 *
+	 * @key            The incoming population key
+	 * @relationalMeta The relational metadata being used for population
+	 * @target         The target object
+	 * @propertyValue  The property value to compose from
+	 *
+	 * @return The composed property or null if not found
+	 */
+	private function composeProperty(
+		required key,
+		required relationalMeta,
+		required target,
+		required propertyValue
+	){
+		var targetEntityName = discoverEntityName( argumentCollection = arguments );
+		if ( len( targetEntityName ) ) {
+			// array or struct type (one-to-many, many-to-many)
+			if (
+				listContainsNoCase(
+					"one-to-many,many-to-many",
+					arguments.relationalMeta.properties[ arguments.key ].fieldtype
+				)
+			) {
+				// Support straight-up lists and convert to array
+				if ( isSimpleValue( arguments.propertyValue ) ) {
+					arguments.propertyValue = listToArray( arguments.propertyValue );
+				}
+				var relType = structKeyExists( arguments.relationalMeta.properties[ arguments.key ], "type" ) && arguments.relationalMeta.properties[
+					key
+				].type != "any" ? arguments.relationalMeta.properties[ arguments.key ].type : "array";
+				var manyMap = reltype == "struct" ? {} : [];
+				// loop over array
+				for ( var relValue in arguments.propertyValue ) {
+					// for type of array
+					if ( relType == "array" ) {
+						arrayAppend( manyMap, entityLoadByPK( targetEntityName, relValue ) );
+					}
+					// for type of struct
+					else {
+						// make sure structKeyColumn is defined in meta
+						if ( structKeyExists( arguments.relationalMeta.properties[ key ], "structKeyColumn" ) ) {
+							// load the value
+							var item            = entityLoadByPK( targetEntityName, relValue );
+							var structKeyColumn = arguments.relationalMeta.properties[ arguments.key ].structKeyColumn;
+							var keyValue        = "";
+							// try to get struct key value from entity
+							if ( !isNull( local.item ) ) {
+								try {
+									keyValue = invoke( item, "get#structKeyColumn#" );
+								} catch ( Any e ) {
+									throw(
+										type    = "ObjectPopulator.PopulateObjectException",
+										message = "Error populating bean #getMetadata( arguments.target ).name# relationship of #arguments.key#. The structKeyColumn #structKeyColumn# could not be resolved.",
+										detail  = "#e.Detail#<br>#e.message#<br>#e.tagContext.toString()#"
+									);
+								}
+							}
+							// if the structKeyColumn value was found...
+							if ( len( keyValue ) ) {
+								manyMap[ keyValue ] = item;
+							}
+						}
+					}
+				}
+
+				arguments.propertyValue = manyMap;
+			}
+			// otherwise, simple value; load relationship (one-to-one, many-to-one)
+			else {
+				if ( isSimpleValue( arguments.propertyValue ) && trim( arguments.propertyValue ) != "" ) {
+					arguments.propertyValue = entityLoadByPK( targetEntityName, arguments.propertyValue );
+				}
+			}
+		}
+		return arguments.propertyValue;
+	}
+
+	/**
+	 * Discover the actual entity name for an orm relationship
+	 *
+	 * @key            The incoming population key
+	 * @relationalMeta The relational metadata being used for population
+	 * @target         The target object
+	 *
+	 * @return The discovered ORM Entity name or if not, then an empty string
+	 */
+	private string function discoverEntityName(
+		required key,
+		required relationalMeta,
+		required target
+	){
+		var validEntityNames = getORMEntityMap();
+		var targetEntityName = "";
+		/**
+		 * The only info we know about the relationships are the property names and the cfcs
+		 * CFC setting can be relative, so can't assume that component lookup will work
+		 * APPROACH
+		 * 1.) Easy: If property name of relationship is a valid entity name, use that: ex: setRole() and Role is the entity name
+		 * 2.) Harder: Use the `cfc` attribute on the property (e.g., one-to-many, many-to-many)
+		 * 3.) Nuclear: If neither above works, try by component meta data lookup. Won't work if using relative paths!!!!
+		 */
+
+		// 1.) name match
+		if ( validEntityNames.findNoCase( arguments.key ) ) {
+			targetEntityName = arguments.key;
+		}
+		// 2.) attempt match on CFC metadata on the property:
+		// property name="role" cfc="security.Role"
+		else if (
+			validEntityNames.findNoCase(
+				listLast( arguments.relationalMeta.properties[ arguments.key ].cfc, "." )
+			)
+		) {
+			targetEntityName = listLast( arguments.relationalMeta.properties[ key ].cfc, "." );
+		}
+		// 3.) component lookup
+		else {
+			try {
+				targetEntityName = getComponentMetadata( arguments.relationalMeta.properties[ key ].cfc ).entityName;
+			} catch ( any e ) {
+				throw(
+					type    = "ObjectPopulator.PopulateObjectException",
+					message = "Error populating object #getMetadata( arguments.target ).name# relationship of #arguments.key#. The component #arguments.relationalMeta.properties[ arguments.key ].cfc# could not be found.",
+					detail  = "#e.Detail#<br>#e.message#"
+				);
+			}
+		}
+		return targetEntityName;
 	}
 
 	/**
@@ -511,30 +568,45 @@ component accessors="true" singleton {
 
 
 	/**
-	 * Prepares a structure of target relational meta data
+	 * Prepares a structure of target relational metadata
 	 *
 	 * @target The target to work on
+	 *
+	 * @return The metadata map of composable properties keyed by entity name: { cfc, path, entityname, persistent, properties }
 	 */
 	private struct function getRelationshipMetaData( required target ){
-		var meta           = {};
+		if ( variables.entityMetadataMap.containsKey( arguments.target ) ) {
+			return variables.entityMetadataMap.get( arguments.target );
+		}
+
 		// get array of properties
 		var stopRecursions = [ "lucee.Component", "WEB-INF.cftags.component" ];
+		var md             = variables.util.getInheritedMetaData( arguments.target, stopRecursions );
+		var results        = {
+			"cfc"        : md.name,
+			"path"       : md.path,
+			"entityName" : md.keyExists( "entityName" ) ? md.entityName : listLast( md.name, "." ),
+			"persistent" : md.keyExists( "persistent" ) ? md.persistent : false,
+			"properties" : {}
+		};
+
 		// Collect property metadata
-		variables.util
-			.getInheritedMetaData( arguments.target, stopRecursions )
-			.properties
+		results.properties = md.properties
+			// Only relationships, no id's or columns
 			.filter( function( item ){
 				return (
-					item.keyExists( "fieldType" ) &&
-					item.keyExists( "name" ) &&
-					!listFindNoCase( "id,column", item.fieldtype )
+					arguments.item.keyExists( "name" ) &&
+					arguments.item.keyExists( "fieldType" ) &&
+					!listFindNoCase( "id,column", arguments.item.fieldtype )
 				);
 			} )
-			.each( function( item ){
-				meta[ item.name ] = item;
-			} );
+			.reduce( function( result, item ){
+				result[ arguments.item.name ] = arguments.item;
+				return result;
+			}, {} );
 
-		return meta;
+		variables.entityMetadataMap.put( arguments.target, results );
+		return results;
 	}
 
 }

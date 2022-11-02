@@ -21,15 +21,16 @@
 				var obj = entityNew( "User" );
 				makePublic( populator, "getRelationshipMetaData" );
 				var meta = populator.getRelationshipMetaData( obj );
-				expect( meta ).toBeStruct().toHaveKey( "role" );
-				expect( meta.role ).toHaveKey( "cfc" );
+				expect( meta.properties ).toBeStruct().toHaveKey( "role" );
+				expect( meta.properties.role ).toHaveKey( "cfc" );
 			} );
 
 			it( "can get non related relationship metadata", function(){
 				var obj = new cbtestharness.models.Photos();
 				makePublic( populator, "getRelationshipMetaData" );
 				var meta = populator.getRelationshipMetaData( obj );
-				expect( meta ).toBeStruct().toBeEmpty();
+				expect( meta.persistent ).toBeFalse();
+				expect( meta.properties ).toBeStruct().toBeEmpty();
 			} );
 
 			describe( "Population using structs", function(){
@@ -44,6 +45,7 @@
 						composeRelationships = true
 					);
 					expect( user.getRole() ).toBeComponent();
+					expect( user.getRole().getRoleId() ).toBe( 1 );
 				} );
 
 				it( "can populate from a struct and compose one to many relationships", function(){
@@ -60,6 +62,9 @@
 						composeRelationships = true
 					);
 					expect( role.getUsers() ).toBeArray().toHaveLength( 2 );
+					for ( var thisUser in role.getUsers() ) {
+						expect( thisUser ).toBeComponent();
+					}
 				} );
 
 				it( "can populate from struct with empty null includes", function(){
