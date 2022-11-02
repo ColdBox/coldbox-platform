@@ -32,4 +32,8 @@ component{
 		return this;
 	}
 
+	function getOutput(){
+		return "Hola Computadora!";
+	}
+
 }

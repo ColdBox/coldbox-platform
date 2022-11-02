@@ -1155,6 +1155,9 @@ component serializable="false" accessors="true" {
 		param arguments.target.$wbDelegateMap   = {};
 		param arguments.DIData.delegateExcludes = "";
 
+		// Inject target into the delegate as $parent
+		arguments.delegate.injectPropertyMixin( "$parent", arguments.target );
+
 		// Process if the delegation has inclusivity
 		// No length : all methods
 		// With length : use the declared methods
