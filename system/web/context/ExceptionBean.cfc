@@ -282,7 +282,9 @@ component accessors="true" {
 		if ( isSimpleValue( getExtraInfo() ) ) {
 			buffer.append( "CFExtraInfo=" & getExtraInfo() & chr( 13 ) );
 		} else {
-			buffer.append( "CFExtraInfo=" & new coldbox.system.core.util.Util().toJson( getExtraInfo() ) & chr( 13 ) );
+			buffer.append(
+				"CFExtraInfo=" & new coldbox.system.core.util.Util().toJson( getExtraInfo() ) & chr( 13 )
+			);
 		}
 		return buffer.toString();
 	}
