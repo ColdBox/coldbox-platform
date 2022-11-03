@@ -1,10 +1,5 @@
 ﻿component persistent = "true" table = "users"{
 
-	this.population = {
-		include : [ "firstName", "lastName", "username", "role" ],
-		exclude : ["id", "password", "lastLogin" ]
-	};
-
 	property
 		name     ="id"
 		column   ="user_id"
@@ -43,5 +38,11 @@
 		inject    ="model:testService"
 		persistent="false"
 		required  ="false";
+
 	// property name="controller" inject="coldbox" persistent="false" required="false";
+
+	this.population = {
+		include : [ "firstName", "lastName", "username", "role" ],
+		exclude : ["id", "password", "lastLogin" ]
+	};
 }
