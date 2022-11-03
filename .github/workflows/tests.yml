@@ -67,7 +67,7 @@ jobs:
           # API Docs dependencies
           cd apidocs && box install
 
-      - name: Configure Null Support (Enabled: ${{ matrix.fullNull }})
+      - name: Configure Null Support ( Enabled - ${{ matrix.fullNull }})
         run: echo 'FULL_NULL=${{ matrix.fullNull }}' >> .env
 
       - name: Start ${{ matrix.cfengine }} Server
