@@ -1,11 +1,34 @@
 ﻿/**
- * The main ColdBox utility library, it is built with tags to allow for dumb ACF10 compatibility
+ * The main ColdBox utility library.
  */
 component {
 
 	/****************************************************************
 	 * SERVER/USER/CFML ENGINE HELPERS *
 	 ****************************************************************/
+
+	private function getEngineMappingHelper(){
+		// Lazy load the helper
+		if( isNull( variables.engineMappingHelper ) ){
+			// Detect server
+			if ( listFindNoCase( "Lucee", server.coldfusion.productname ) ) {
+				variables.engineMappingHelper = new LuceeMappingHelper();
+			} else {
+				variables.engineMappingHelper = new CFMappingHelper();
+			}
+		}
+		return variables.engineMappingHelper;
+	}
+
+	/**
+	 * Add a path to the application's custom tag path
+	 *
+	 * @path The absolute path to the directory containing tags
+	 */
+	Util function addCustomTagPath( required path ){
+		getEngineMappingHelper().addCustomTagPath( arguments.path );
+		return this;
+	}
 
 	/**
 	 * Add a CFML Mapping to the running engine
@@ -15,17 +38,10 @@ component {
 	 * @mappings A struct of mappings to incorporate instead of one-offs
 	 */
 	Util function addMapping( string name, string path, struct mappings ){
-		var mappingHelper = "";
-
-		// Detect server
-		if ( listFindNoCase( "Lucee", server.coldfusion.productname ) ) {
-			mappingHelper = new LuceeMappingHelper();
-		} else {
-			mappingHelper = new CFMappingHelper();
-		}
+		var engineMappingHelper = getEngineMappingHelper();
 
 		if ( !isNull( arguments.mappings ) ) {
-			mappingHelper.addMappings( arguments.mappings );
+			engineMappingHelper.addMappings( arguments.mappings );
 		} else {
 			// Add / registration
 			if ( left( arguments.name, 1 ) != "/" ) {
@@ -33,7 +49,7 @@ component {
 			}
 
 			// Add mapping
-			mappingHelper.addMapping( arguments.name, arguments.path );
+			engineMappingHelper.addMapping( arguments.name, arguments.path );
 		}
 
 		return this;
