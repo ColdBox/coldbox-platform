@@ -822,16 +822,6 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	}
 
 	/**
-	 * @deprecated
-	 */
-	function getModel(){
-		throw(
-			message = "getModel() is now fully deprecated in favor of getInstance().",
-			type    = "DeprecationException"
-		);
-	}
-
-	/**
 	 * Locates, Creates, Injects and Configures an object model instance
 	 *
 	 * @name          The mapping name or CFC instance path to try to build up

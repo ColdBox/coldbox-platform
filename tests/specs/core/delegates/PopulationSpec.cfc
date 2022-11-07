@@ -2,7 +2,7 @@ component
 	extends="tests.resources.BaseIntegrationTest"
 	autowire
 	accessors="true"
-	delegates="Population@cbDelegates"
+	delegates="Population@coreDelegates"
 {
 
 	property name="popTest";
