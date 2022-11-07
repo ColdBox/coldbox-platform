@@ -9,23 +9,11 @@
 component
 	serializable="false"
 	accessors   ="true"
-	delegates   ="Flow@cbDelegates"
+	delegates   ="Flow@coreDelegates,Env@coreDelegates,JsonUtil@coreDelegates,Population@cbDelegates,Rendering@cbDelegates"
 {
 
-	/**
-	 * App Controller
-	 */
+	// DI
 	property name="controller";
-
-	/**
-	 * @deprecated
-	 */
-	function getModel() cbMethod{
-		throw(
-			message = "getModel() is now fully deprecated in favor of getInstance().",
-			type    = "DeprecationException"
-		);
-	}
 
 	/**
 	 * Locates, Creates, Injects and Configures an object model instance
@@ -49,79 +37,6 @@ component
 		injector
 	) cbMethod{
 		return variables.controller.getWirebox().getInstance( argumentCollection = arguments );
-	}
-
-	/**
-	 * Populate a model object from the request Collection or a passed in memento structure
-	 *
-	 * @model                The name of the model to get and populate or the acutal model object. If you already have an instance of a model, then use the populateBean() method
-	 * @scope                Use scope injection instead of setters population. Ex: scope=variables.instance.
-	 * @trustedSetter        If set to true, the setter method will be called even if it does not exist in the object
-	 * @include              A list of keys to include in the population
-	 * @exclude              A list of keys to exclude in the population
-	 * @ignoreEmpty          Ignore empty values on populations, great for ORM population
-	 * @nullEmptyInclude     A list of keys to NULL when empty
-	 * @nullEmptyExclude     A list of keys to NOT NULL when empty
-	 * @composeRelationships Automatically attempt to compose relationships from memento
-	 * @memento              A structure to populate the model, if not passed it defaults to the request collection
-	 * @jsonstring           If you pass a json string, we will populate your model with it
-	 * @xml                  If you pass an xml string, we will populate your model with it
-	 * @qry                  If you pass a query, we will populate your model with it
-	 * @rowNumber            The row of the qry parameter to populate your model with
-	 *
-	 * @return The instance populated
-	 */
-	function populateModel(
-		required model,
-		scope                        = "",
-		boolean trustedSetter        = false,
-		include                      = "",
-		exclude                      = "",
-		boolean ignoreEmpty          = false,
-		nullEmptyInclude             = "",
-		nullEmptyExclude             = "",
-		boolean composeRelationships = false,
-		struct memento               = getRequestCollection(),
-		string jsonstring,
-		string xml,
-		query qry
-	) cbMethod{
-		// Do we have a model or name
-		if ( isSimpleValue( arguments.model ) ) {
-			arguments.target = getInstance( model );
-		} else {
-			arguments.target = arguments.model;
-		}
-
-		// json?
-		if ( structKeyExists( arguments, "jsonstring" ) ) {
-			return variables.controller
-				.getWirebox()
-				.getObjectPopulator()
-				.populateFromJSON( argumentCollection = arguments );
-		}
-		// XML
-		else if ( structKeyExists( arguments, "xml" ) ) {
-			return variables.controller
-				.getWirebox()
-				.getObjectPopulator()
-				.populateFromXML( argumentCollection = arguments );
-		}
-		// Query
-		else if ( structKeyExists( arguments, "qry" ) ) {
-			return variables.controller
-				.getWirebox()
-				.getObjectPopulator()
-				.populateFromQuery( argumentCollection = arguments );
-		}
-		// Mementos
-		else {
-			// populate
-			return variables.controller
-				.getWirebox()
-				.getObjectPopulator()
-				.populateFromStruct( argumentCollection = arguments );
-		}
 	}
 
 	/**
@@ -151,187 +66,6 @@ component
 	 */
 	struct function getRequestCollection( boolean private = false ) cbMethod{
 		return getRequestContext().getCollection( private = arguments.private );
-	}
-
-	/**
-	 * Render out a view
-	 *
-	 * @deprecated             Use view() instead
-	 * @view                   The the view to render, if not passed, then we look in the request context for the current set view.
-	 * @args                   A struct of arguments to pass into the view for rendering, will be available as 'args' in the view.
-	 * @module                 The module to render the view from explicitly
-	 * @cache                  Cached the view output or not, defaults to false
-	 * @cacheTimeout           The time in minutes to cache the view
-	 * @cacheLastAccessTimeout The time in minutes the view will be removed from cache if idle or requested
-	 * @cacheSuffix            The suffix to add into the cache entry for this view rendering
-	 * @cacheProvider          The provider to cache this view in, defaults to 'template'
-	 * @collection             A collection to use by this Renderer to render the view as many times as the items in the collection (Array or Query)
-	 * @collectionAs           The name of the collection variable in the partial rendering.  If not passed, we will use the name of the view by convention
-	 * @collectionStartRow     The start row to limit the collection rendering with
-	 * @collectionMaxRows      The max rows to iterate over the collection rendering with
-	 * @collectionDelim        A string to delimit the collection renderings by
-	 * @prePostExempt          If true, pre/post view interceptors will not be fired. By default they do fire
-	 * @name                   The name of the rendering region to render out, Usually all arguments are coming from the stored region but you override them using this function's arguments.
-	 *
-	 * @return The rendered view
-	 */
-	function renderView(
-		view                   = "",
-		struct args            = {},
-		module                 = "",
-		boolean cache          = false,
-		cacheTimeout           = "",
-		cacheLastAccessTimeout = "",
-		cacheSuffix            = "",
-		cacheProvider          = "template",
-		collection,
-		collectionAs               = "",
-		numeric collectionStartRow = "1",
-		numeric collectionMaxRows  = 0,
-		collectionDelim            = "",
-		boolean prePostExempt      = false,
-		name
-	) cbMethod{
-		return variables.controller.getRenderer().renderView( argumentCollection = arguments );
-	}
-
-	/**
-	 * Render out a view
-	 *
-	 * @view                   The the view to render, if not passed, then we look in the request context for the current set view.
-	 * @args                   A struct of arguments to pass into the view for rendering, will be available as 'args' in the view.
-	 * @module                 The module to render the view from explicitly
-	 * @cache                  Cached the view output or not, defaults to false
-	 * @cacheTimeout           The time in minutes to cache the view
-	 * @cacheLastAccessTimeout The time in minutes the view will be removed from cache if idle or requested
-	 * @cacheSuffix            The suffix to add into the cache entry for this view rendering
-	 * @cacheProvider          The provider to cache this view in, defaults to 'template'
-	 * @collection             A collection to use by this Renderer to render the view as many times as the items in the collection (Array or Query)
-	 * @collectionAs           The name of the collection variable in the partial rendering.  If not passed, we will use the name of the view by convention
-	 * @collectionStartRow     The start row to limit the collection rendering with
-	 * @collectionMaxRows      The max rows to iterate over the collection rendering with
-	 * @collectionDelim        A string to delimit the collection renderings by
-	 * @prePostExempt          If true, pre/post view interceptors will not be fired. By default they do fire
-	 * @name                   The name of the rendering region to render out, Usually all arguments are coming from the stored region but you override them using this function's arguments.
-	 *
-	 * @return The rendered view
-	 */
-	function view(
-		view                   = "",
-		struct args            = {},
-		module                 = "",
-		boolean cache          = false,
-		cacheTimeout           = "",
-		cacheLastAccessTimeout = "",
-		cacheSuffix            = "",
-		cacheProvider          = "template",
-		collection,
-		collectionAs               = "",
-		numeric collectionStartRow = "1",
-		numeric collectionMaxRows  = 0,
-		collectionDelim            = "",
-		boolean prePostExempt      = false,
-		name
-	) cbMethod{
-		return variables.controller.getRenderer().renderView( argumentCollection = arguments );
-	}
-
-	/**
-	 * Renders an external view anywhere that cfinclude works.
-	 *
-	 * @deprecated             Use `externalView()` instead
-	 * @view                   The the view to render
-	 * @args                   A struct of arguments to pass into the view for rendering, will be available as 'args' in the view.
-	 * @cache                  Cached the view output or not, defaults to false
-	 * @cacheTimeout           The time in minutes to cache the view
-	 * @cacheLastAccessTimeout The time in minutes the view will be removed from cache if idle or requested
-	 * @cacheSuffix            The suffix to add into the cache entry for this view rendering
-	 * @cacheProvider          The provider to cache this view in, defaults to 'template'
-	 *
-	 * @return The rendered view
-	 */
-	function renderExternalView(
-		required view,
-		struct args            = {},
-		boolean cache          = false,
-		cacheTimeout           = "",
-		cacheLastAccessTimeout = "",
-		cacheSuffix            = "",
-		cacheProvider          = "template"
-	) cbMethod{
-		return variables.controller.getRenderer().renderExternalView( argumentCollection = arguments );
-	}
-
-	/**
-	 * Renders an external view anywhere that cfinclude works.
-	 *
-	 * @view                   The the view to render
-	 * @args                   A struct of arguments to pass into the view for rendering, will be available as 'args' in the view.
-	 * @cache                  Cached the view output or not, defaults to false
-	 * @cacheTimeout           The time in minutes to cache the view
-	 * @cacheLastAccessTimeout The time in minutes the view will be removed from cache if idle or requested
-	 * @cacheSuffix            The suffix to add into the cache entry for this view rendering
-	 * @cacheProvider          The provider to cache this view in, defaults to 'template'
-	 *
-	 * @return The rendered view
-	 */
-	function externalView(
-		required view,
-		struct args            = {},
-		boolean cache          = false,
-		cacheTimeout           = "",
-		cacheLastAccessTimeout = "",
-		cacheSuffix            = "",
-		cacheProvider          = "template"
-	) cbMethod{
-		return variables.controller.getRenderer().renderExternalView( argumentCollection = arguments );
-	}
-
-	/**
-	 * Render a layout or a layout + view combo
-	 *
-	 * @deprecated    Use `layout()` instead
-	 * @layout        The layout to render out
-	 * @module        The module to explicitly render this layout from
-	 * @view          The view to render within this layout
-	 * @args          An optional set of arguments that will be available to this layouts/view rendering ONLY
-	 * @viewModule    The module to explicitly render the view from
-	 * @prePostExempt If true, pre/post layout interceptors will not be fired. By default they do fire
-	 *
-	 * @return The rendered layout
-	 */
-	function renderLayout(
-		layout,
-		module                = "",
-		view                  = "",
-		struct args           = {},
-		viewModule            = "",
-		boolean prePostExempt = false
-	) cbMethod{
-		return variables.controller.getRenderer().renderLayout( argumentCollection = arguments );
-	}
-
-	/**
-	 * Render a layout or a layout + view combo
-	 *
-	 * @layout        The layout to render out
-	 * @module        The module to explicitly render this layout from
-	 * @view          The view to render within this layout
-	 * @args          An optional set of arguments that will be available to this layouts/view rendering ONLY
-	 * @viewModule    The module to explicitly render the view from
-	 * @prePostExempt If true, pre/post layout interceptors will not be fired. By default they do fire
-	 *
-	 * @return The rendered layout
-	 */
-	function layout(
-		layout,
-		module                = "",
-		view                  = "",
-		struct args           = {},
-		viewModule            = "",
-		boolean prePostExempt = false
-	) cbMethod{
-		return variables.controller.getRenderer().renderLayout( argumentCollection = arguments );
 	}
 
 	/**
@@ -624,36 +358,6 @@ component
 	/****************************************** UTILITY METHODS ******************************************/
 
 	/**
-	 * Retrieve a Java System property or env value by name. It looks at properties first then environment variables
-	 *
-	 * @key          The name of the setting to look up.
-	 * @defaultValue The default value to use if the key does not exist in the system properties or the env
-	 */
-	function getSystemSetting( required key, defaultValue ) cbMethod{
-		return variables.controller.getUtil().getSystemSetting( argumentCollection = arguments );
-	}
-
-	/**
-	 * Retrieve a Java System property only!
-	 *
-	 * @key          The name of the setting to look up.
-	 * @defaultValue The default value to use if the key does not exist in the system properties or the env
-	 */
-	function getSystemProperty( required key, defaultValue ) cbMethod{
-		return variables.controller.getUtil().getSystemProperty( argumentCollection = arguments );
-	}
-
-	/**
-	 * Retrieve a environment variable only
-	 *
-	 * @key          The name of the setting to look up.
-	 * @defaultValue The default value to use if the key does not exist in the system properties or the env
-	 */
-	function getEnv( required key, defaultValue ) cbMethod{
-		return variables.controller.getUtil().getEnv( argumentCollection = arguments );
-	}
-
-	/**
 	 * Resolve a file to be either relative or absolute in your application
 	 *
 	 * @pathToCheck The file path to check
@@ -771,31 +475,6 @@ component
 			variables.asyncManager = variables.controller.getWireBox().getInstance( "asyncManager@coldbox" );
 		}
 		return variables.asyncManager;
-	}
-
-	/**
-	 * This function allows you to serialize simple or complex data so it can be used within HTML Attributes.
-	 *
-	 * @data The simple or complex data to bind to an HTML Attribute
-	 */
-	function forAttribute( required data ) cbMethod{
-		arguments.data = (
-			isSimpleValue( arguments.data ) ? arguments.data : variables.controller
-				.getUtil()
-				.toJson( arguments.data )
-		);
-		return encodeForHTMLAttribute( arguments.data );
-	}
-
-	/**
-	 * Opinionated method that serializes json in a more digetstible way:
-	 * - queries as array of structs
-	 * - no dumb secure prefixes
-	 *
-	 * @obj The object to be serialized
-	 */
-	string function toJson( any obj ){
-		return variables.controller.getUtil().toJson( arguments.obj );
 	}
 
 }

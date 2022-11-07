@@ -24,6 +24,7 @@
 	variables.rc 	= attributes.rc;
 	variables.prc 	= attributes.prc;
 	variables.args  = attributes.args;
+	variables.html = attributes.html;
 
 	// Spoof the arguments scope for backwards compat.  i.e. arguments.args, arguments.view
 	variables.arguments = {

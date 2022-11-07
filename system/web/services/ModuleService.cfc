@@ -989,7 +989,7 @@ component extends="coldbox.system.web.services.BaseService" {
 		var mConfig     = arguments.config;
 		var oConfig     = variables.wirebox.getInstance( mConfig.invocationPath & ".ModuleConfig" );
 		var appSettings = controller.getConfigSettings();
-		var envUtil     = variables.wirebox.getInstance( "Env@cbDelegates" );
+		var envUtil     = variables.wirebox.getInstance( "Env@coreDelegates" );
 
 		// Build a new router for this module so we can track its routes
 		arguments.config.router = variables.wirebox.getInstance( "coldbox.system.web.routing.Router" );

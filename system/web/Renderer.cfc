@@ -41,8 +41,6 @@ component
 	// Discovery caching is tied to handlers for discovery.
 	property name="isDiscoveryCaching";
 
-	property name="html";
-
 	/************************************** CONSTRUCTOR *********************************************/
 
 	/**
@@ -93,9 +91,6 @@ component
 
 		// Discovery caching
 		variables.isDiscoveryCaching = controller.getSetting( "viewCaching" );
-
-		// HTML Helper
-		variables.html = variables.wirebox.getInstance( dsl = "@HTMLHelper" );
 
 		// Load global UDF Libraries into target
 		loadApplicationHelpers();
@@ -466,7 +461,8 @@ component
 				rendererVariables = ( isNull( attributes.rendererVariables ) ? variables : attributes.rendererVariables ),
 				event             = event,
 				rc                = event.getCollection(),
-				prc               = event.getPrivateCollection()
+				prc               = event.getPrivateCollection(),
+				html              = variables.wirebox.getInstance( "@HTMLHelper" )
 			);
 		}
 
@@ -486,7 +482,7 @@ component
 	 * Renders an external view anywhere that cfinclude works.
 	 *
 	 * @view                   The the view to render
-	 * @args                   A struct of arguments to pass into the view for rendering, will be available as 'args' in the view.
+	 * @args                   A struct of arguments to pass into the view for rendering, will be available as 'args' iview.
 	 * @cache                  Cached the view output or not, defaults to false
 	 * @cacheTimeout           The time in minutes to cache the view
 	 * @cacheLastAccessTimeout The time in minutes the view will be removed from cache if idle or requested

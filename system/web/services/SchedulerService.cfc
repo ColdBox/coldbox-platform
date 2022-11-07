@@ -116,7 +116,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		variables.controller.getInterceptorService().registerInterceptor( interceptorObject = oScheduler );
 
 		// Inject useful global properties
-		var envUtil = wirebox.getInstance( "Env@cbDelegates" );
+		var envUtil = wirebox.getInstance( "Env@coreDelegates" );
 		oScheduler
 			.injectPropertyMixin( "coldboxVersion", variables.controller.getColdBoxSettings().version )
 			.injectPropertyMixin( "appMapping", variables.controller.getSetting( "appMapping" ) )
