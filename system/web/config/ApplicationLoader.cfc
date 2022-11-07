@@ -81,6 +81,7 @@ component accessors="true" {
 
 		// Decorate It
 		var mixerUtil               = variables.util.getMixerUtil();
+		var envUtil                 = new coldbox.system.core.delegates.Env();
 		oConfig.injectPropertyMixin = mixerUtil.injectPropertyMixin;
 		oConfig.getPropertyMixin    = mixerUtil.getPropertyMixin;
 
@@ -91,16 +92,20 @@ component accessors="true" {
 			.injectPropertyMixin( "appMapping", configStruct.appMapping )
 			.injectPropertyMixin( "webMapping", configStruct.webMapping )
 			.injectPropertyMixin( "coldboxVersion", coldboxSettings.version )
-			.injectPropertyMixin( "getJavaSystem", variables.util.getJavaSystem )
-			.injectPropertyMixin( "getSystemSetting", variables.util.getSystemSetting )
-			.injectPropertyMixin( "getSystemProperty", variables.util.getSystemProperty )
-			.injectPropertyMixin( "getEnv", variables.util.getEnv );
+			.injectPropertyMixin( "getJavaSystem", envUtil.getJavaSystem )
+			.injectPropertyMixin( "getSystemSetting", envUtil.getSystemSetting )
+			.injectPropertyMixin( "getSystemProperty", envUtil.getSystemProperty )
+			.injectPropertyMixin( "getEnv", envUtil.getEnv );
 
 		// Configure it
 		oConfig.configure();
 
 		// Environment detection
-		detectEnvironment( oConfig, configStruct );
+		detectEnvironment(
+			oConfig,
+			configStruct,
+			envUtil.getSystemSetting( "ENVIRONMENT", "" )
+		);
 
 		/* ::::::::::::::::::::::::::::::::::::::::: APP LOCATION OVERRIDES :::::::::::::::::::::::::::::::::::::::::::: */
 
@@ -752,7 +757,11 @@ component accessors="true" {
 	/**
 	 * Detect the running environment and return the name
 	 */
-	private function detectEnvironment( required oConfig, required config ){
+	private function detectEnvironment(
+		required oConfig,
+		required config,
+		environment = ""
+	){
 		var environments = arguments.oConfig.getPropertyMixin( "environments", "variables", {} );
 		var configStruct = arguments.config;
 
@@ -765,8 +774,8 @@ component accessors="true" {
 			configStruct.environment = arguments.oConfig.detectEnvironment();
 		}
 		// Check Environment Settings
-		else if ( len( util.getSystemSetting( "ENVIRONMENT", "" ) ) ) {
-			configStruct.environment = util.getSystemSetting( "ENVIRONMENT", "" );
+		else if ( len( arguments.environment ) ) {
+			configStruct.environment = arguments.environment;
 		}
 		// loop over environment struct and do coldbox environment detection via cgi scope.
 		else {

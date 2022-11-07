@@ -194,7 +194,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				return variables.controller.getAsyncManager();
 			} );
 		// Map Delegates
-		binder.mapDirectory( packagePath = "coldbox.system.core.delegates", namespace = "@delegates" );
+		binder.mapDirectory( packagePath = "coldbox.system.core.delegates", namespace = "@cbDelegates" );
 
 		variables.log.info( "+ ColdBox Global Classes registered" );
 

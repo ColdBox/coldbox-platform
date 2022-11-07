@@ -9,7 +9,7 @@
 component
 	serializable="false"
 	accessors   ="true"
-	delegates   ="coldbox.system.core.util.Flow"
+	delegates   ="Flow@cbDelegates"
 {
 
 	/**

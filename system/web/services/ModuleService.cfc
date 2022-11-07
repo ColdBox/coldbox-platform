@@ -989,6 +989,7 @@ component extends="coldbox.system.web.services.BaseService" {
 		var mConfig     = arguments.config;
 		var oConfig     = variables.wirebox.getInstance( mConfig.invocationPath & ".ModuleConfig" );
 		var appSettings = controller.getConfigSettings();
+		var envUtil     = variables.wirebox.getInstance( "Env@cbDelegates" );
 
 		// Build a new router for this module so we can track its routes
 		arguments.config.router = variables.wirebox.getInstance( "coldbox.system.web.routing.Router" );
@@ -1009,10 +1010,10 @@ component extends="coldbox.system.web.services.BaseService" {
 			.injectPropertyMixin( "wirebox", variables.wireBox )
 			.injectPropertyMixin( "binder", variables.wireBox.getBinder() )
 			.injectPropertyMixin( "cachebox", controller.getCacheBox() )
-			.injectPropertyMixin( "getJavaSystem", controller.getUtil().getJavaSystem )
-			.injectPropertyMixin( "getSystemSetting", controller.getUtil().getSystemSetting )
-			.injectPropertyMixin( "getSystemProperty", controller.getUtil().getSystemProperty )
-			.injectPropertyMixin( "getEnv", controller.getUtil().getEnv )
+			.injectPropertyMixin( "getJavaSystem", envUtil.getJavaSystem )
+			.injectPropertyMixin( "getSystemSetting", envUtil.getSystemSetting )
+			.injectPropertyMixin( "getSystemProperty", envUtil.getSystemProperty )
+			.injectPropertyMixin( "getEnv", envUtil.getEnv )
 			.injectPropertyMixin( "appRouter", variables.wireBox.getInstance( "router@coldbox" ) )
 			.injectPropertyMixin( "router", arguments.config.router );
 

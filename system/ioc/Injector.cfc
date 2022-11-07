@@ -1475,9 +1475,10 @@ component serializable="false" accessors="true" {
 		}
 
 		// Inject Environment Support
-		arguments.binder[ "getSystemSetting" ]  = variables.utility.getSystemSetting;
-		arguments.binder[ "getSystemProperty" ] = variables.utility.getSystemProperty;
-		arguments.binder[ "getEnv" ]            = variables.utility.getEnv;
+		var envUtil                             = new coldbox.system.core.delegates.Env();
+		arguments.binder[ "getSystemSetting" ]  = envUtil.getSystemSetting;
+		arguments.binder[ "getSystemProperty" ] = envUtil.getSystemProperty;
+		arguments.binder[ "getEnv" ]            = envUtil.getEnv;
 
 		// Check if data CFC or binder family
 		if ( !structKeyExists( arguments.binder, "$wbBinder" ) ) {

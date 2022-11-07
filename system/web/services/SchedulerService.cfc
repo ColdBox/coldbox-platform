@@ -116,14 +116,14 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		variables.controller.getInterceptorService().registerInterceptor( interceptorObject = oScheduler );
 
 		// Inject useful global properties
-		var oUtil = variables.controller.getUtil();
+		var envUtil = wirebox.getInstance( "Env@cbDelegates" );
 		oScheduler
 			.injectPropertyMixin( "coldboxVersion", variables.controller.getColdBoxSettings().version )
 			.injectPropertyMixin( "appMapping", variables.controller.getSetting( "appMapping" ) )
-			.injectPropertyMixin( "getJavaSystem", oUtil.getJavaSystem )
-			.injectPropertyMixin( "getSystemSetting", oUtil.getSystemSetting )
-			.injectPropertyMixin( "getSystemProperty", oUtil.getSystemProperty )
-			.injectPropertyMixin( "getEnv", oUtil.getEnv );
+			.injectPropertyMixin( "getJavaSystem", envUtil.getJavaSystem )
+			.injectPropertyMixin( "getSystemSetting", envUtil.getSystemSetting )
+			.injectPropertyMixin( "getSystemProperty", envUtil.getSystemProperty )
+			.injectPropertyMixin( "getEnv", envUtil.getEnv );
 
 		// Is this a module scheduler?
 		if ( len( arguments.module ) ) {
