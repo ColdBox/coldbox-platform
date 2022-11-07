@@ -1,4 +1,8 @@
 ﻿<cfoutput>
+
+<!--- Custom Tags by Convention  --->
+<cf_hello></cf_hello>
+
 <div class="jumbotron">
 	<img src="includes/images/ColdBoxLogoSquare_125.png" class="pull-left margin10" alt="logo"/>
 	<h1>#prc.welcomeMessage#</h1>

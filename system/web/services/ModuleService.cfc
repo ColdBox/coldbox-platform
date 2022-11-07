@@ -401,6 +401,9 @@ component extends="coldbox.system.web.services.BaseService" {
 				variables.cfmappingRegistry[ "/#mConfig.cfMapping#" ] = mConfig.path;
 			}
 
+			// Register tags by convention: /tags in the module
+			variables.controller.getUtil().addCustomTagPath( mConfig.path & "/tags" );
+
 			// Register Custom Interception Points
 			controller
 				.getInterceptorService()
