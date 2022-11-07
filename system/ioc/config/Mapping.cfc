@@ -725,7 +725,7 @@ component accessors="true" {
 					"all"
 				);
 				return {
-					"name"     : "wbDelegate_#listLast( model, "." )#_#hash( arguments.item )#",
+					"name"     : "wbDelegate_#listLast( model, "." ).replace( "@", "_" )#_#hash( arguments.item )#",
 					"ref"      : model,
 					"delegate" : getToken( arguments.item, 2, "=" ),
 					"raw"      : arguments.item
