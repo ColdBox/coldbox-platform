@@ -161,7 +161,7 @@
 
 	function testbuildfeed(){
 		var mapping = createMock( "coldbox.system.ioc.config.Mapping" ).init( "GoogleNews" );
-		mapping.setPath( "http://news.google.com/?output=rss" );
+		mapping.setPath( "https://www.nytimes.com/svc/collections/v1/publish/https://www.nytimes.com/section/world/rss.xml" );
 		var r = builder.buildfeed( mapping );
 		// debug(r);
 		expect( r.metadata ).toBeStruct();
