@@ -1,7 +1,12 @@
 ﻿<cfoutput>
 
-<!--- Custom Tags by Convention  --->
-<cf_hello></cf_hello>
+<!---
+	Custom Tags by Convention
+	- Test removed for Adobe. Not working on Unix.  Test it later
+--->
+<cfif server.keyExists( "lucee" )>
+	<cf_hello></cf_hello>
+</cfif>
 
 <div class="jumbotron">
 	<img src="includes/images/ColdBoxLogoSquare_125.png" class="pull-left margin10" alt="logo"/>
