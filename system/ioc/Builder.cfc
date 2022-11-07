@@ -237,7 +237,7 @@ component serializable="false" accessors="true" {
 					type    = "Builder.BuildCFCDependencyException",
 					message = "Error building: #arguments.mapping.getName()# -> #e.message#
 					#e.detail#.",
-					detail = "DSL: #arguments.mapping.getDSL()#, Path: #arguments.mapping.getPath()#,
+					detail = "DSL: #len( arguments.mapping.getDSL() ) ? arguments.mapping.getDSL() : "none"#, Path: #arguments.mapping.getPath()#,
 					Error Location:
 					#reducedTagContext#"
 				);
