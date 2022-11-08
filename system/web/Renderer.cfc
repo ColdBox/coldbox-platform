@@ -92,9 +92,6 @@ component
 		// Discovery caching
 		variables.isDiscoveryCaching = controller.getSetting( "viewCaching" );
 
-		// Load global UDF Libraries into target
-		loadApplicationHelpers();
-
 		// Announce interception
 		announce( "afterRendererInit", { variables : variables, this : this } );
 

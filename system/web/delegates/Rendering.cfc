@@ -11,6 +11,6 @@ component accessors="true" singleton {
 	property
 		name    ="renderer"
 		inject  ="Renderer@coldbox"
-		delegate="view,renderView,layout,renderLayout,externalView,renderExternalView";
+		delegate="view,layout,externalView";
 
 }

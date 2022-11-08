@@ -97,6 +97,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		variables.controller.getRequestService().rebuildFlashScope();
 		// Internal event for interceptors to load global UDF Helpers
 		variables.controller.getInterceptorService().announce( "cbLoadInterceptorHelpers" );
+		// Load Renderer Helpers now that all modules are loaded and active
+		variables.controller.getRenderer().loadApplicationHelpers();
 		// Execute afterAspectsLoad: all module interceptions are registered and flash rebuilt if needed
 		variables.controller.getInterceptorService().announce( "afterAspectsLoad" );
 		// Customg Tags by convention

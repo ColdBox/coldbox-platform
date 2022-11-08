@@ -15,6 +15,32 @@ component
 	// DI
 	property name="controller";
 
+	// Removed Deprecated Methods
+	function renderview() cbMethod{
+		throw(
+			type    = "DeprecatedMethod",
+			message = "This method has been deprecated, please use 'view()` instead"
+		);
+	}
+	function renderLayout() cbMethod{
+		throw(
+			type    = "DeprecatedMethod",
+			message = "This method has been deprecated, please use 'layout()` instead"
+		);
+	}
+	function renderExternalView() cbMethod{
+		throw(
+			type    = "DeprecatedMethod",
+			message = "This method has been deprecated, please use 'externalView()` instead"
+		);
+	}
+	function announceInterception() cbMethod{
+		throw(
+			type    = "DeprecatedMethod",
+			message = "This method has been deprecated, please use 'announce()` instead"
+		);
+	}
+
 	/**
 	 * Locates, Creates, Injects and Configures an object model instance
 	 *
@@ -37,15 +63,6 @@ component
 		injector
 	) cbMethod{
 		return variables.controller.getWirebox().getInstance( argumentCollection = arguments );
-	}
-
-	/**
-	 * Retrieve the system web renderer
-	 *
-	 * @return coldbox.system.web.Renderer
-	 */
-	function getRenderer() cbMethod{
-		return variables.controller.getRenderer();
 	}
 
 	/**
@@ -119,22 +136,6 @@ component
 			arguments.data = arguments.interceptData;
 		}
 		return variables.controller.getInterceptorService().announce( argumentCollection = arguments );
-	}
-
-	/**
-	 * @deprecated Please use the new `announce()` function
-	 */
-	function announceInterception(
-		required state,
-		struct interceptData     = {},
-		boolean async            = false,
-		boolean asyncAll         = false,
-		boolean asyncAllJoin     = true,
-		asyncPriority            = "NORMAL",
-		numeric asyncJoinTimeout = 0
-	) cbMethod{
-		arguments.data = arguments.interceptData;
-		return announce( argumentCollection = arguments );
 	}
 
 	/**
