@@ -7,6 +7,7 @@
 component singleton {
 
 	property name="controller" inject="coldbox";
+	property name="populator"  inject="wirebox:populator";
 	property name="wirebox"    inject="wirebox";
 
 	/**
@@ -56,11 +57,11 @@ component singleton {
 			return variables.populator.populateFromJSON( argumentCollection = arguments );
 		}
 		// XML
-		else if ( !isNull( variables.xml ) ) {
+		else if ( !isNull( arguments.xml ) ) {
 			return variables.populator.populateFromXML( argumentCollection = arguments );
 		}
 		// Query
-		else if ( !isNull( variables.qry ) ) {
+		else if ( !isNull( arguments.qry ) ) {
 			return variables.populator.populateFromQuery( argumentCollection = arguments );
 		}
 		// Mementos
@@ -68,8 +69,8 @@ component singleton {
 			// Param the memento to the request collection
 			param arguments.memento = variables.controller
 				.getRequestService()
-				.getRequestContext()
-				.getRequestCollection();
+				.getContext()
+				.getCollection();
 			// populate
 			return variables.populator.populateFromStruct( argumentCollection = arguments );
 		}
