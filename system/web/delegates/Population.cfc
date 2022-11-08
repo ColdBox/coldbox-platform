@@ -4,7 +4,7 @@
  * ---
  * Extends the core population delegate so it can provide ColdBox integration
  */
-component extends="coldbox.system.core.delegates.Population" singleton {
+component singleton {
 
 	property name="controller" inject="coldbox";
 	property name="wirebox"    inject="wirebox";

@@ -4,7 +4,7 @@
  * ---
  * A delegate that can be used to gain population techniques on the injected $parent delegator
  */
-component singleton {
+component {
 
 	// DI
 	property name="populator" inject="wirebox:populator";
