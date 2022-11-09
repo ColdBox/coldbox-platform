@@ -1140,7 +1140,7 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
-	 * Process a target objecte dependency delegation
+	 * Process a target object dependency delegation
 	 *
 	 * @target     The targeted object injected with the dependency
 	 * @dependency The dependency object
@@ -1154,6 +1154,9 @@ component serializable="false" accessors="true" {
 		// Init lookup map in the target
 		param arguments.target.$wbDelegateMap   = {};
 		param arguments.DIData.delegateExcludes = "";
+
+		// Verify property mixin injection on delegete
+		param arguments.delegate.injectPropertyMixin = variables.mixerUtil.injectPropertyMixin;
 
 		// Inject target into the delegate as $parent
 		arguments.delegate.injectPropertyMixin( "$parent", arguments.target );
