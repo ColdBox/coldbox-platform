@@ -9,7 +9,7 @@
 component
 	serializable="false"
 	accessors   ="true"
-	delegates   ="Flow@coreDelegates,Env@coreDelegates,JsonUtil@coreDelegates,Population@cbDelegates,Rendering@cbDelegates"
+	delegates   ="Async@coreDelegates,Interceptor@cbDelegates,Flow@coreDelegates,Env@coreDelegates,JsonUtil@coreDelegates,Population@cbDelegates,Rendering@cbDelegates"
 {
 
 	// DI
@@ -94,48 +94,6 @@ component
 	 */
 	function getInterceptor( required interceptorName ) cbMethod{
 		return variables.controller.getInterceptorService().getInterceptor( argumentCollection = arguments );
-	}
-
-	/**
-	 * Register a closure listener as an interceptor on a specific point
-	 *
-	 * @target The closure/lambda to register
-	 * @point  The interception point to register the listener to
-	 *
-	 * @return FrameworkSuperType
-	 */
-	function listen( required target, required point ) cbMethod{
-		variables.controller.getInterceptorService().listen( argumentCollection = arguments );
-		return this;
-	}
-
-	/**
-	 * Announce an interception
-	 *
-	 * @state            The interception state to announce
-	 * @data             A data structure used to pass intercepted information.
-	 * @async            If true, the entire interception chain will be ran in a separate thread.
-	 * @asyncAll         If true, each interceptor in the interception chain will be ran in a separate thread and then joined together at the end.
-	 * @asyncAllJoin     If true, each interceptor in the interception chain will be ran in a separate thread and joined together at the end by default.  If you set this flag to false then there will be no joining and waiting for the threads to finalize.
-	 * @asyncPriority    The thread priority to be used. Either LOW, NORMAL or HIGH. The default value is NORMAL
-	 * @asyncJoinTimeout The timeout in milliseconds for the join thread to wait for interceptor threads to finish.  By default there is no timeout.
-	 *
-	 * @return struct of thread information or void
-	 */
-	any function announce(
-		required state,
-		struct data              = {},
-		boolean async            = false,
-		boolean asyncAll         = false,
-		boolean asyncAllJoin     = true,
-		asyncPriority            = "NORMAL",
-		numeric asyncJoinTimeout = 0
-	) cbMethod{
-		// Backwards Compat: Remove by ColdBox 7
-		if ( !isNull( arguments.interceptData ) ) {
-			arguments.data = arguments.interceptData;
-		}
-		return variables.controller.getInterceptorService().announce( argumentCollection = arguments );
 	}
 
 	/**
@@ -464,18 +422,6 @@ component
 		}
 
 		return this;
-	}
-
-	/**
-	 * Return the ColdBox Async Manager instance so you can do some async or parallel programming
-	 *
-	 * @return coldbox.system.async.AsyncManager
-	 */
-	any function async() cbMethod{
-		if ( isNull( variables.asyncManager ) ) {
-			variables.asyncManager = variables.controller.getWireBox().getInstance( "asyncManager@coldbox" );
-		}
-		return variables.asyncManager;
 	}
 
 }
