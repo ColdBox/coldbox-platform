@@ -75,7 +75,7 @@
 	</nav> <!---end navbar --->
 
 	<!---Container And Views --->
-	<div class="container">#renderView()#</div>
+	<div class="container">#view()#</div>
 
 	<footer class="footer">
 		<p class="pull-right">

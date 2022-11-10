@@ -3,8 +3,8 @@
 <hr>
 
 <h2>Region 'Hola'</h2>
-#renderView( name="hola" )#
+#view( name="hola" )#
 
 <h2>Region 'module'</h2>
-#renderView( name="module" )#
+#view( name="module" )#
 </cfoutput>

@@ -42,12 +42,12 @@ a:hover {
   <tr>
     <td width="77" height="30" align="center" bgcolor="#eeeeee" valign="top">
     <cfoutput>
-    #renderView("navigation")#
+    #view("navigation")#
     </cfoutput>
     </td>
     <td width="610" valign="top">
 	<!--- Render the View Here --->
-	<cfoutput>#renderView()#</cfoutput>
+	<cfoutput>#view()#</cfoutput>
 	</td>
   </tr>
 </table>
