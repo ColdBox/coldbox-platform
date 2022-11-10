@@ -10,20 +10,23 @@ component
 	extends     ="coldbox.system.FrameworkSupertype"
 	serializable="false"
 	accessors   ="true"
+	threadSafe
 {
 
-	// Controller Reference
-	property name="controller";
-	// LogBox reference
-	property name="logBox";
-	// Pre-Configured Log Object
-	property name="log";
-	// Flash Reference
-	property name="flash";
-	// CacheBox Reference
-	property name="cachebox";
-	// WireBox Reference
-	property name="wirebox";
+	/****************************************************************
+	 * DI *
+	 ****************************************************************/
+
+	property name="cachebox"      inject="cachebox";
+	property name="controller"    inject="coldbox";
+	property name="flash"         inject="coldbox:flash";
+	property name="logBox"        inject="logbox";
+	property name="log"           inject="logbox:logger:{this}";
+	property name="wirebox"       inject="wirebox";
+
+	/****************************************************************
+	 * Handler Properties *
+	 ****************************************************************/
 
 	// event cache suffix
 	this.event_cache_suffix   = "";
@@ -37,32 +40,22 @@ component
 	this.aroundhandler_only   = "";
 	this.aroundHandler_except = "";
 	// HTTP allowed methods
-	this.allowedMethods       = structNew();
+	this.allowedMethods       = {};
 
 	/**
 	 * Constructor
-	 *
-	 * @controller The ColdBox controller
-	 *
-	 * @return EventHandler
 	 */
-	function init( required controller ) cbMethod{
-		// Register Controller
-		variables.controller = arguments.controller;
-		// Register LogBox
-		variables.logBox     = arguments.controller.getLogBox();
-		// Register Log object
-		variables.log        = variables.logBox.getLogger( this );
-		// Register Flash RAM
-		variables.flash      = arguments.controller.getRequestService().getFlashScope();
-		// Register CacheBox
-		variables.cacheBox   = arguments.controller.getCacheBox();
-		// Register WireBox
-		variables.wireBox    = arguments.controller.getWireBox();
+	function init() cbMethod{
+		super.init();
+		return this;
+	}
+
+	/**
+	 * Fires when all DI has been completed
+	 */
+	function onDIComplete(){
 		// Load global UDF Libraries into target
 		loadApplicationHelpers();
-
-		return this;
 	}
 
 	/**

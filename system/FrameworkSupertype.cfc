@@ -3,6 +3,7 @@
  * www.ortussolutions.com
  * ---
  * Base class for all things Box
+ * The Majority of contributions comes from its delegations
  *
  * @author Luis Majano <lmajano@ortussolutions.com>
  */
@@ -12,10 +13,23 @@ component
 	delegates   ="Async@coreDelegates,Interceptor@cbDelegates,Flow@coreDelegates,Env@coreDelegates,JsonUtil@coreDelegates,Population@cbDelegates,Rendering@cbDelegates"
 {
 
-	// DI
+	/****************************************************************
+	 * DI *
+	 ****************************************************************/
+
 	property name="controller";
 
-	// Removed Deprecated Methods
+	/**
+	 * Constructor
+	 */
+	function init(){
+		return this;
+	}
+
+	/****************************************************************
+	 * Deprecated/Removed Methods *
+	 ****************************************************************/
+
 	function renderview() cbMethod{
 		throw(
 			type    = "DeprecatedMethod",

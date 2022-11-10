@@ -2,7 +2,7 @@
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * The system web renderer
+ * The system web renderer. In charge of location views/layouts and rendering them.
  *
  * @author Luis Majano <lmajano@ortussolutions.com>
  */
@@ -10,17 +10,25 @@ component
 	accessors   ="true"
 	serializable="false"
 	extends     ="coldbox.system.FrameworkSupertype"
+	threadSafe
 	singleton
 {
 
-	/************************************** DI *********************************************/
+	/****************************************************************
+	 * DI *
+	 ****************************************************************/
 
-	/**
-	 * Template cache provider
-	 */
+	property name="cachebox"      inject="cachebox";
+	property name="controller"    inject="coldbox";
+	property name="flash"         inject="coldbox:flash";
+	property name="logBox"        inject="logbox";
+	property name="log"           inject="logbox:logger:{this}";
 	property name="templateCache" inject="cachebox:template";
+	property name="wirebox"       inject="wirebox";
 
-	/************************************** PROPERTIES *********************************************/
+	/****************************************************************
+	 * Rendering Properties *
+	 ****************************************************************/
 
 	// Location of layouts
 	property name="layoutsConvention";
@@ -41,28 +49,22 @@ component
 	// Discovery caching is tied to handlers for discovery.
 	property name="isDiscoveryCaching";
 
-	/************************************** CONSTRUCTOR *********************************************/
-
 	/**
 	 * Constructor
-	 *
-	 * @controller        The ColdBox main controller
-	 * @controller.inject coldbox
 	 */
-	function init( required controller ){
-		// Register the Controller
-		variables.controller = arguments.controller;
-		// Register LogBox
-		variables.logBox     = arguments.controller.getLogBox();
-		// Register Log object
-		variables.log        = variables.logBox.getLogger( this );
-		// Register Flash RAM
-		variables.flash      = arguments.controller.getRequestService().getFlashScope();
-		// Register CacheBox
-		variables.cacheBox   = arguments.controller.getCacheBox();
-		// Register WireBox
-		variables.wireBox    = arguments.controller.getWireBox();
+	function init(){
+		// Layouts + Views Reference Maps
+		variables.layoutsRefMap = {};
+		variables.viewsRefMap   = {};
+		super.init();
+		return this;
+	}
 
+	/**
+	 * This is the startup procedures for the renderer. This is called after all modules, interceptions and contributions have been done
+	 * in order to allow for all chicken and the egg issues are not relevant.
+	 */
+	function startup(){
 		// Set Conventions, Settings and Properties
 		variables.layoutsConvention       = variables.controller.getColdBoxSetting( "layoutsConvention" );
 		variables.viewsConvention         = variables.controller.getColdBoxSetting( "viewsConvention" );
@@ -72,9 +74,6 @@ component
 		variables.modulesConfig           = variables.controller.getSetting( "modules" );
 		variables.viewsHelper             = variables.controller.getSetting( "viewsHelper" );
 		variables.viewCaching             = variables.controller.getSetting( "viewCaching" );
-		// Layouts + Views Reference Maps
-		variables.layoutsRefMap           = {};
-		variables.viewsRefMap             = {};
 
 		// Verify View Helper Template extension + location
 		if ( len( variables.viewsHelper ) ) {
@@ -90,12 +89,13 @@ component
 		variables.lockName = "rendering.#variables.controller.getAppHash()#";
 
 		// Discovery caching
-		variables.isDiscoveryCaching = controller.getSetting( "viewCaching" );
+		variables.isDiscoveryCaching = variables.controller.getSetting( "viewCaching" );
+
+		// Load Application helpers
+		loadApplicationHelpers();
 
 		// Announce interception
 		announce( "afterRendererInit", { variables : variables, this : this } );
-
-		return this;
 	}
 
 	/************************************** VIEW METHODS *********************************************/
