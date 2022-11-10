@@ -37,7 +37,15 @@ component extends="coldbox.system.testing.BaseModelTest" {
 			.$results( "/coldbox/testing" );
 
 		mockCache.$( "getOrSet" ).$results( "/tests/resources/mixins.cfm", "/tests/resources/mixins2.cfm" );
-		handler.init( mockController );
+		handler
+			.init()
+			.setCacheBox( mockCacheBox )
+			.setController( mockController )
+			.setFlash( flashScope )
+			.setLogBox( mockLogBox )
+			.setLog( mockLogger )
+			.setWireBox( mockWirebox );
+		handler.onDIComplete();
 	}
 
 	/**
