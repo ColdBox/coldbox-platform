@@ -14,17 +14,6 @@ component
 {
 
 	/****************************************************************
-	 * DI *
-	 ****************************************************************/
-
-	property name="cachebox"      inject="cachebox";
-	property name="controller"    inject="coldbox";
-	property name="flash"         inject="coldbox:flash";
-	property name="logBox"        inject="logbox";
-	property name="log"           inject="logbox:logger:{this}";
-	property name="wirebox"       inject="wirebox";
-
-	/****************************************************************
 	 * Handler Properties *
 	 ****************************************************************/
 
@@ -51,9 +40,11 @@ component
 	}
 
 	/**
-	 * Fires when all DI has been completed
+	 * Fires when all DI has been completed. We use a different name so we don't collide with onDIComplete()
+	 *
+	 * @onDIComplete
 	 */
-	function onDIComplete(){
+	function onHandlerDIComplete(){
 		// Load global UDF Libraries into target
 		loadApplicationHelpers();
 	}

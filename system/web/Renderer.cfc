@@ -18,13 +18,7 @@ component
 	 * DI *
 	 ****************************************************************/
 
-	property name="cachebox"      inject="cachebox";
-	property name="controller"    inject="coldbox";
-	property name="flash"         inject="coldbox:flash";
-	property name="logBox"        inject="logbox";
-	property name="log"           inject="logbox:logger:{this}";
 	property name="templateCache" inject="cachebox:template";
-	property name="wirebox"       inject="wirebox";
 
 	/****************************************************************
 	 * Rendering Properties *
@@ -41,7 +35,7 @@ component
 	// Location of application
 	property name="appMapping";
 	// Modules configuration
-	property name="moduleConfig" type="struct";
+	property name="modulesConfig" type="struct";
 	// Views Helper Setting
 	property name="viewsHelper";
 	// Internal locking name

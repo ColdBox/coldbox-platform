@@ -5,31 +5,23 @@
  * A cool utility that helps you when working with HTML so it is less verbose, more consistency,
  * ORM data binding, auto escaping and much more.
  */
-component
-	extends  ="coldbox.system.FrameworkSupertype"
-	accessors=true
-	singleton
-{
+component accessors=true threadSafe singleton delegates="JsonUtil@coreDelegates"{
 
-	/**
-	 * Module Settings
-	 */
-	property name="settings";
+	/****************************************************************
+	 * DI *
+	 ****************************************************************/
+
+	property name="settings"   inject="coldbox:moduleSettings:htmlhelper";
+	property name="controller" inject="coldbox";
+	property name="requestService" inject="coldbox:requestService";
 
 	/**
 	 * Constructor
-	 *
-	 * @controller        The ColdBox Controller
-	 * @controller.inject coldbox
 	 */
-	function init( required controller ){
-		variables.controller = arguments.controller;
-		variables.settings   = getModuleSettings( "htmlhelper" );
-
+	function init(){
 		// Used for elixir discovery paths
 		variables.cachedPaths     = {};
 		variables.elixirManifests = {};
-
 		return this;
 	}
 
@@ -87,7 +79,7 @@ component
 		boolean defer        = false
 	){
 		var sb    = createObject( "java", "java.lang.StringBuilder" ).init( "" );
-		var event = controller.getRequestService().getContext();
+		var event = requestService.getContext();
 
 		// Global location settings
 		var jsPath  = getSetting( name = "htmlhelper_js_path", defaultValue = variables.settings.js_path );
@@ -262,7 +254,7 @@ component
 		boolean noBaseURL = false,
 		struct data       = {}
 	){
-		var event = controller.getRequestService().getContext();
+		var event = requestService.getContext();
 
 		// self-link?
 		if ( NOT len( arguments.href ) ) {
@@ -831,7 +823,7 @@ component
 		struct data       = {}
 	){
 		var formBuffer    = createObject( "java", "java.lang.StringBuilder" ).init( "<form" );
-		var event         = controller.getRequestService().getContext();
+		var event         = requestService.getContext();
 		var desiredMethod = "";
 
 		// Browsers can't support all the HTTP verbs, so if we passed in something
@@ -2535,7 +2527,7 @@ component
 		numeric version       = 3,
 		manifestRoot          = ""
 	){
-		var argumentsHash  = hash( controller.getUtil().toJson( arguments ) );
+		var argumentsHash  = hash( toJson( arguments ) );
 		// Incoming Cleanup
 		arguments.fileName = reReplace( arguments.fileName, "^//?", "" );
 
@@ -2546,7 +2538,7 @@ component
 
 		// Prepare state checks
 		var includesLocation    = controller.getColdBoxSetting( "IncludesConvention" );
-		var event               = getRequestContext();
+		var event               = requestService.getContext();
 		arguments.currentModule = event.getCurrentModule();
 
 		// Get the manifest location
@@ -2975,9 +2967,7 @@ component
 	 */
 	private string function prepareBaseLink( boolean noBaseURL = false, src ){
 		var baseURL = replaceNoCase(
-			controller
-				.getRequestService()
-				.getContext()
+				requestService.getContext()
 				.getSESbaseURL(),
 			"index.cfm",
 			""

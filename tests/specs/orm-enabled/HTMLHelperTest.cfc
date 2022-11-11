@@ -10,13 +10,12 @@
 		mockController = createEmptyMock( "coldbox.system.testing.mock.web.MockController" )
 			.$( "getRequestService", mockRequestService )
 			.$( "getSetting", "path" );
-
+		moduleSettings = { js_path : "", css_path : "", encodeValues : false };
 		model
-			.$( "getModuleSettings" )
-			.$args( "HTMLHelper" )
-			.$results( { js_path : "", css_path : "", encodeValues : false } );
-
-		model.init( mockController );
+			.init()
+			.setSettings( moduleSettings )
+			.setController( mockController )
+			.setRequestService( mockRequestService );
 	}
 
 	function testaddAssetJS(){

@@ -10,14 +10,25 @@
 component
 	serializable="false"
 	accessors   ="true"
-	delegates   ="Async@coreDelegates,Interceptor@cbDelegates,Flow@coreDelegates,Env@coreDelegates,JsonUtil@coreDelegates,Population@cbDelegates,Rendering@cbDelegates"
+	delegates   ="Async@coreDelegates,Interceptor@cbDelegates,Settings@cbDelegates,Flow@coreDelegates,Env@coreDelegates,JsonUtil@coreDelegates,Population@cbDelegates,Rendering@cbDelegates"
 {
 
 	/****************************************************************
 	 * DI *
 	 ****************************************************************/
 
-	property name="controller";
+	property
+		name    ="cachebox"
+		inject  ="cachebox"
+		delegate="getCache";
+	property name="controller" inject="coldbox";
+	property name="flash"      inject="coldbox:flash";
+	property name="logBox"     inject="logbox";
+	property name="log"        inject="logbox:logger:{this}";
+	property
+		name    ="wirebox"
+		inject  ="wirebox"
+		delegate="getInstance";
 
 	/**
 	 * Constructor
@@ -56,30 +67,6 @@ component
 	}
 
 	/**
-	 * Locates, Creates, Injects and Configures an object model instance
-	 *
-	 * @name          The mapping name or CFC instance path to try to build up
-	 * @initArguments The constructor structure of arguments to passthrough when initializing the instance
-	 * @dsl           The dsl string to use to retrieve the instance model object, mutually exclusive with 'name
-	 * @targetObject  The object requesting the dependency, usually only used by DSL lookups
-	 * @injector      The child injector to use when retrieving the instance
-	 *
-	 * @return The requested instance
-	 *
-	 * @throws InstanceNotFoundException - When the requested instance cannot be found
-	 * @throws InvalidChildInjector      - When you request an instance from an invalid child injector name
-	 **/
-	function getInstance(
-		name,
-		struct initArguments = {},
-		dsl,
-		targetObject = "",
-		injector
-	) cbMethod{
-		return variables.controller.getWirebox().getInstance( argumentCollection = arguments );
-	}
-
-	/**
 	 * Retrieve the request context object
 	 *
 	 * @return coldbox.system.web.context.RequestContext
@@ -108,108 +95,6 @@ component
 	 */
 	function getInterceptor( required interceptorName ) cbMethod{
 		return variables.controller.getInterceptorService().getInterceptor( argumentCollection = arguments );
-	}
-
-	/**
-	 * Get a named CacheBox Cache
-	 *
-	 * @name The name of the cache to retrieve, if not passed, it used the 'default' cache.
-	 *
-	 * @return coldbox.system.cache.providers.IColdBoxProvider
-	 */
-	function getCache( name = "default" ) cbMethod{
-		return variables.controller.getCache( arguments.name );
-	}
-
-	/**
-	 * Get a setting from the system
-	 *
-	 * @name         The key of the setting
-	 * @defaultValue If not found in config, default return value
-	 *
-	 * @return The requested setting
-	 *
-	 * @throws SettingNotFoundException
-	 */
-	function getSetting( required name, defaultValue ) cbMethod{
-		return variables.controller.getSetting( argumentCollection = arguments );
-	}
-
-	/**
-	 * Get a ColdBox setting
-	 *
-	 * @name         The key to get
-	 * @defaultValue The default value if it doesn't exist
-	 *
-	 * @return The framework setting value
-	 *
-	 * @throws SettingNotFoundException
-	 */
-	function getColdBoxSetting( required name, defaultValue ) cbMethod{
-		return variables.controller.getColdBoxSetting( argumentCollection = arguments );
-	}
-
-	/**
-	 * Check if the setting exists in the application
-	 *
-	 * @name The key of the setting
-	 */
-	boolean function settingExists( required name ) cbMethod{
-		return variables.controller.settingExists( argumentCollection = arguments );
-	}
-
-	/**
-	 * Set a new setting in the system
-	 *
-	 * @name  The key of the setting
-	 * @value The value of the setting
-	 *
-	 * @return FrameworkSuperType
-	 */
-	any function setSetting( required name, required value ) cbMethod{
-		controller.setSetting( argumentCollection = arguments );
-		return this;
-	}
-
-	/**
-	 * Get a module's settings structure or a specific setting if the setting key is passed
-	 *
-	 * @module       The module to retrieve the configuration settings from
-	 * @setting      The setting to retrieve if passed
-	 * @defaultValue The default value to return if setting does not exist
-	 *
-	 * @return struct or any
-	 */
-	any function getModuleSettings( required module, setting, defaultValue ) cbMethod{
-		var moduleSettings = getModuleConfig( arguments.module ).settings;
-		// return specific setting?
-		if ( !isNull( arguments.setting ) ) {
-			return (
-				structKeyExists( moduleSettings, arguments.setting ) ? moduleSettings[ arguments.setting ] : arguments.defaultValue
-			);
-		}
-		return moduleSettings;
-	}
-
-	/**
-	 * Get a module's configuration structure
-	 *
-	 * @module The module to retrieve the configuration structure from
-	 *
-	 * @return The struct requested
-	 *
-	 * @throws InvalidModuleException - The module passed is invalid
-	 */
-	struct function getModuleConfig( required module ) cbMethod{
-		var mConfig = variables.controller.getSetting( "modules" );
-		if ( structKeyExists( mConfig, arguments.module ) ) {
-			return mConfig[ arguments.module ];
-		}
-		throw(
-			message = "The module you passed #arguments.module# is invalid.",
-			detail  = "The loaded modules are #structKeyList( mConfig )#",
-			type    = "InvalidModuleException"
-		);
 	}
 
 	/**
