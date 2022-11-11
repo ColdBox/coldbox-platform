@@ -202,6 +202,10 @@ component extends="coldbox.system.testing.BaseModelTest" {
 			} );
 
 			it( "can handle onError", function(){
+				handler
+					.$( "getSetting" )
+					.$args( "environment" )
+					.$results( "production" );
 				handler.onError(
 					mockRequestContext,
 					mockRequestContext.getCollection(),
