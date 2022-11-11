@@ -45,7 +45,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 			.setLogBox( mockLogBox )
 			.setLog( mockLogger )
 			.setWireBox( mockWirebox );
-		handler.onDIComplete();
+		handler.onHandlerDIComplete();
 	}
 
 	/**
