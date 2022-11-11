@@ -4,15 +4,15 @@
 component {
 
 	// Module Properties
-	this.title          = "HTML Helper";
+	this.title             = "HTML Helper";
 	// Model Namespace
-	this.modelNamespace = "HTMLHelper";
+	this.modelNamespace    = "HTMLHelper";
 	// CF Mapping
-	this.cfmapping      = "HTMLHelper";
+	this.cfmapping         = "HTMLHelper";
 	// Auto-map models
-	this.autoMapModels  = true;
-	// Module Dependencies
-	this.dependencies   = [];
+	this.autoMapModels     = true;
+	// Helpers
+	this.applicationHelper = [ "helpers/Mixins.cfm" ];
 
 	function configure(){
 		// module settings - stored in modules.name.settings
@@ -24,12 +24,6 @@ component {
 			// Encode values on all dynamically generated tags in the HTML Helper
 			encodeValues : false
 		};
-
-		// Custom Declared Points
-		interceptorSettings = { customInterceptionPoints : "" };
-
-		// Custom Declared Interceptors
-		interceptors = [];
 
 		// Map HTML Helper to provide continuity from previous ColdBox apps
 		binder.map( "HTMLHelper@coldbox" ).to( "#moduleMapping#.models.HTMLHelper" );

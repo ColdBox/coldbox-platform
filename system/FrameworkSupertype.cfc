@@ -121,16 +121,6 @@ component
 	/****************************************** UTILITY METHODS ******************************************/
 
 	/**
-	 * Add a js/css asset(s) to the html head section. You can also pass in a list of assets. This method
-	 * keeps track of the loaded assets so they are only loaded once
-	 *
-	 * @asset The asset(s) to load, only js or css files. This can also be a comma delimited list.
-	 */
-	string function addAsset( required asset ) cbMethod{
-		return getInstance( "@HTMLHelper" ).addAsset( argumentCollection = arguments );
-	}
-
-	/**
 	 * Injects a UDF Library (*.cfc or *.cfm) into the target object.  It does not however, put the mixins on any of the cfc scopes. Therefore they can only be called internally
 	 *
 	 * @udflibrary The UDF library to inject
