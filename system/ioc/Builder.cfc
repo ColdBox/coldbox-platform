@@ -185,6 +185,34 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
+	 * Dynamic function injected into the targets to provide lazy functions
+	 */
+	function observedPropertySetter( value ){
+		var propertyName = getFunctionCalledName().reReplaceNoCase( "^set", "" );
+
+		// Previous value
+		var oldValue = variables.keyExists( propertyName ) && !isNull( variables[ propertyName ] ) ? variables[
+			propertyName
+		] : javacast( "null", "" );
+
+		// Set the value now
+		variables[ propertyName ] = !isNull( arguments.value ) ? arguments.value : javacast( "null", "" );
+
+		// Call the observer
+		invoke(
+			variables,
+			this.$wbObservedProperties[ propertyName ].observer,
+			{
+				newValue : !isNull( arguments.value ) ? arguments.value : javacast( "null", "" ), // new value
+				oldValue : !isNull( oldValue ) ? oldValue : javacast( "null", "" ), // previous value
+				property : propertyName // property name
+			}
+		);
+
+		return this;
+	}
+
+	/**
 	 * Build a cfc class via mappings
 	 *
 	 * @mapping                   The mapping to construct

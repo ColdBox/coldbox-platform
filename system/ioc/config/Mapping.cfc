@@ -41,6 +41,7 @@ component accessors="true" {
 	property name="value";
 	property name="virtualInheritance";
 	property name="lazyProperties";
+	property name="observedProperties";
 
 	/**
 	 * Constructor
@@ -83,8 +84,6 @@ component accessors="true" {
 		variables.DIConstructorArguments = [];
 		// Explicit Properties
 		variables.DIProperties           = [];
-		// Lazy Properties
-		variables.lazyProperties         = [];
 		// Explicit Setters
 		variables.DISetters              = [];
 		// Explicit method arguments
@@ -113,6 +112,10 @@ component accessors="true" {
 		variables.influenceClosure       = "";
 		// Delegates syntax
 		variables.delegates              = "";
+		// Lazy Properties
+		variables.lazyProperties         = [];
+		// Observed Properties
+		variables.observedProperties     = [];
 
 		return this;
 	}
@@ -950,6 +953,15 @@ component accessors="true" {
 				"useLock" : isLazyUnlocked ? false : true
 			} );
 		}
+
+		// Observer Properties
+		if ( arguments.metadata.keyExists( "observed" ) ) {
+			// Register it
+			variables.observedProperties.append( {
+				"name"     : arguments.metadata.name,
+				"observer" : len( arguments.metadata.observed ) ? arguments.metadata.observed : "#arguments.metadata.name#Observer"
+			} );
+		}
 	}
 
 	/**
@@ -1021,7 +1033,8 @@ component accessors="true" {
 			.filter( function( thisProperty ){
 				return arguments.thisProperty.keyExists( "inject" ) ||
 				arguments.thisProperty.keyExists( "lazy" ) ||
-				arguments.thisProperty.keyExists( "lazyNoLock" )
+				arguments.thisProperty.keyExists( "lazyNoLock" ) ||
+				arguments.thisProperty.keyExists( "observed" )
 			} )
 			// Process each property
 			.each( processPropertyMetadata );

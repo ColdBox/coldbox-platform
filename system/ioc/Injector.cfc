@@ -867,6 +867,11 @@ component serializable="false" accessors="true" {
 				processLazyProperties( targetObject, arguments.mapping );
 			}
 
+			// Process Observer Properties
+			if ( arguments.mapping.getObservedProperties().len() ) {
+				processObservedProperties( targetObject, arguments.mapping );
+			}
+
 			// Process After DI Complete
 			processAfterCompleteDI( targetObject, arguments.mapping.getOnDIComplete() );
 
@@ -1023,6 +1028,33 @@ component serializable="false" accessors="true" {
 			.getLazyProperties()
 			.each( function( thisProperty ){
 				targetObject.injectMixin( "get#thisProperty.name#", variables.objectBuilder.lazyPropertyGetter );
+			} );
+
+		return this;
+	}
+
+	/**
+	 * Process observed properties on the target object
+	 *
+	 * @targetObject The target object to do some goodness on
+	 * @mapping      The target mapping
+	 */
+	private Injector function processObservedProperties( required targetObject, required mapping ){
+		// Store lookup map on the target
+		arguments.targetObject.$wbObservedProperties = arguments.mapping
+			.getObservedProperties()
+			.reduce( function( result, item ){
+				arguments.result[ arguments.item.name ] = arguments.item;
+				return arguments.result;
+			}, {} );
+		// Create the getter/builder methods
+		arguments.mapping
+			.getObservedProperties()
+			.each( function( thisProperty ){
+				targetObject.injectMixin(
+					"set#thisProperty.name#",
+					variables.objectBuilder.observedPropertySetter
+				);
 			} );
 
 		return this;
