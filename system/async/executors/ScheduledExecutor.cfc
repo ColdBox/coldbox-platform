@@ -44,7 +44,7 @@ component extends="Executor" accessors="true" singleton {
 	){
 		// build out the java callable
 		var jCallable = createDynamicProxy(
-			new coldbox.system.async.proxies.Callable(
+			new coldbox.system.async.cbproxies.models.Callable(
 				supplier       = arguments.task,
 				method         = arguments.method,
 				debug          = variables.debug,
@@ -189,7 +189,7 @@ component extends="Executor" accessors="true" singleton {
 	 */
 	function buildJavaRunnable( required task, required method ){
 		return createDynamicProxy(
-			new coldbox.system.async.proxies.Runnable(
+			new coldbox.system.async.cbproxies.models.Runnable(
 				target         = arguments.task,
 				method         = arguments.method,
 				debug          = variables.debug,

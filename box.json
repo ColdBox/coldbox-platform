@@ -44,9 +44,6 @@
         "commandbox-cfconfig":"*",
         "commandbox-cfformat":"*"
     },
-    "installPaths":{
-        "testbox":"testbox/"
-    },
     "scripts":{
         "release":"recipe build/release.boxr",
         "format":"cfformat run system/**/*.cfc,tests/specs/**/*.cfc --overwrite",
@@ -61,5 +58,12 @@
         "cfpm":"echo '\".engine/acf2021/WEB-INF/cfusion/bin/cfpm.sh\"' | run",
         "cfpm:install":"echo '\".engine/adobe2021/WEB-INF/cfusion/bin/cfpm.sh\" install ${1}' | run",
         "install:2021":"run-script cfpm:install zip,orm,mysql,postgresql,sqlserver,document,feed,mail,debugger"
+    },
+    "dependencies":{
+        "cbproxies":"^1.0.1+13"
+    },
+	"installPaths":{
+        "testbox":"testbox/",
+        "cbproxies":"system/async/cbproxies/"
     }
 }
