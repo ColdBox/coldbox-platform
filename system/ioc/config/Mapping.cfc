@@ -40,6 +40,7 @@ component accessors="true" {
 	property name="type";
 	property name="value";
 	property name="virtualInheritance";
+	property name="lazyProperties";
 
 	/**
 	 * Constructor
@@ -82,6 +83,8 @@ component accessors="true" {
 		variables.DIConstructorArguments = [];
 		// Explicit Properties
 		variables.DIProperties           = [];
+		// Lazy Properties
+		variables.lazyProperties         = [];
 		// Explicit Setters
 		variables.DISetters              = [];
 		// Explicit method arguments
@@ -885,6 +888,119 @@ component accessors="true" {
 	}
 
 	/**
+	 * Process a property metadata for use in WireBox
+	 *
+	 * @property The property metadata to process
+	 */
+	private function processPropertyMetadata( required metadata ){
+		// Injection
+		if ( arguments.metadata.keyExists( "inject" ) ) {
+			addDIProperty(
+				name    : arguments.metadata.name,
+				dsl     : ( len( arguments.metadata.inject ) ? arguments.metadata.inject : "model" ),
+				scope   : ( structKeyExists( arguments.metadata, "scope" ) ? arguments.metadata.scope : "variables" ),
+				required: ( structKeyExists( arguments.metadata, "required" ) ? arguments.metadata.required : true ),
+				type    : ( structKeyExists( arguments.metadata, "type" ) ? arguments.metadata.type : "any" ),
+				delegate: (
+					structKeyExists( arguments.metadata, "delegate" ) ? arguments.metadata.delegate : javacast(
+						"null",
+						""
+					)
+				),
+				delegatePrefix: (
+					structKeyExists( arguments.metadata, "delegatePrefix" ) ? arguments.metadata.delegatePrefix : javacast(
+						"null",
+						""
+					)
+				),
+				delegateSuffix: (
+					structKeyExists( arguments.metadata, "delegateSuffix" ) ? arguments.metadata.delegateSuffix : javacast(
+						"null",
+						""
+					)
+				),
+				delegateExcludes: (
+					structKeyExists( arguments.metadata, "delegateExcludes" ) ? arguments.metadata.delegateExcludes : javacast(
+						"null",
+						""
+					)
+				)
+			);
+		}
+		// end injection processing
+
+		// Lazy processes
+		var isLazy         = arguments.metadata.keyExists( "lazy" );
+		var isLazyUnlocked = arguments.metadata.keyExists( "lazyNoLock" )
+		if ( isLazy || isLazyUnlocked ) {
+			// Detect Builder Name
+			var builderName = "";
+			if ( isLazy && len( arguments.metadata.lazy ) ) {
+				builderName &= arguments.metadata.lazy;
+			} else if ( isLazyUnlocked && len( arguments.metadata.lazyNoLock ) ) {
+				builderName &= arguments.metadata.lazyNoLock;
+			} else {
+				// By convention build{propertyName}
+				builderName &= "build#arguments.metadata.name#";
+			}
+			// Register it
+			variables.lazyProperties.append( {
+				"name"    : arguments.metadata.name,
+				"builder" : builderName,
+				"useLock" : isLazyUnlocked ? false : true
+			} );
+		}
+	}
+
+	/**
+	 * Process a function's metadata for DI Injection
+	 *
+	 * @metadata The Function metadata to process
+	 */
+	function processFunctionMetadata( required metadata ){
+		// Constructor Processing if found
+		if ( arguments.metadata.name eq variables.constructor ) {
+			// Process parameters for constructor injection
+			for ( var thisParam in arguments.metadata.parameters ) {
+				// Check injection annotation, if not found then no injection
+				if ( structKeyExists( thisParam, "inject" ) ) {
+					// ADD Constructor argument
+					addDIConstructorArgument(
+						name    : thisParam.name,
+						dsl     : ( len( thisParam.inject ) ? thisParam.inject : "model" ),
+						required: ( structKeyExists( thisParam, "required" ) ? thisParam.required : false ),
+						type    : ( structKeyExists( thisParam, "type" ) ? thisParam.type : "any" )
+					);
+				}
+			}
+			// add constructor to found list, so it is processed only once in recursions
+			dependencies[ arguments.metadata.name ] = "constructor";
+		}
+
+		// Setter discovery, MUST be inject annotation marked to be processed.
+		if ( left( arguments.metadata.name, 3 ) eq "set" AND structKeyExists( arguments.metadata, "inject" ) ) {
+			// Add to setter to mappings and recursion lookup
+			addDISetter(
+				name: right( arguments.metadata.name, len( arguments.metadata.name ) - 3 ),
+				dsl : ( len( arguments.metadata.inject ) ? arguments.metadata.inject : "model" )
+			);
+			dependencies[ arguments.metadata.name ] = "setter";
+		}
+
+		// Provider Methods Discovery
+		if ( structKeyExists( arguments.metadata, "provider" ) AND len( arguments.metadata.provider ) ) {
+			addProviderMethod( arguments.metadata.name, arguments.metadata.provider );
+			dependencies[ arguments.metadata.name ] = "provider";
+		}
+
+		// onDIComplete Method Discovery
+		if ( structKeyExists( arguments.metadata, "onDIComplete" ) ) {
+			arrayAppend( variables.onDIComplete, arguments.metadata.name );
+			dependencies[ arguments.metadata.name ] = "onDIComplete";
+		}
+	}
+
+	/**
 	 * Process methods/properties for dependency injection
 	 *
 	 * @binder       The binder requesting the processing
@@ -898,105 +1014,27 @@ component accessors="true" {
 		required metadata,
 		dependencies = {}
 	){
-		// Shortcut
-		var md = arguments.metadata;
-
 		// Look For properties for annotation injections and register them with the mapping
-		param md.properties = [];
-		md.properties
-			// Only process injectable properties
+		param arguments.metadata.properties = [];
+		arguments.metadata.properties
+			// Only process wirebox properties
 			.filter( function( thisProperty ){
-				return structKeyExists( arguments.thisProperty, "inject" );
+				return arguments.thisProperty.keyExists( "inject" ) ||
+				arguments.thisProperty.keyExists( "lazy" ) ||
+				arguments.thisProperty.keyExists( "lazyNoLock" )
 			} )
 			// Process each property
-			.each( function( thisProperty ){
-				addDIProperty(
-					name : arguments.thisProperty.name,
-					dsl  : ( len( arguments.thisProperty.inject ) ? arguments.thisProperty.inject : "model" ),
-					scope: (
-						structKeyExists( arguments.thisProperty, "scope" ) ? arguments.thisProperty.scope : "variables"
-					),
-					required: (
-						structKeyExists( arguments.thisProperty, "required" ) ? arguments.thisProperty.required : true
-					),
-					type    : ( structKeyExists( arguments.thisProperty, "type" ) ? arguments.thisProperty.type : "any" ),
-					delegate: (
-						structKeyExists( arguments.thisProperty, "delegate" ) ? arguments.thisProperty.delegate : javacast(
-							"null",
-							""
-						)
-					),
-					delegatePrefix: (
-						structKeyExists( arguments.thisProperty, "delegatePrefix" ) ? arguments.thisProperty.delegatePrefix : javacast(
-							"null",
-							""
-						)
-					),
-					delegateSuffix: (
-						structKeyExists( arguments.thisProperty, "delegateSuffix" ) ? arguments.thisProperty.delegateSuffix : javacast(
-							"null",
-							""
-						)
-					),
-					delegateExcludes: (
-						structKeyExists( arguments.thisProperty, "delegateExcludes" ) ? arguments.thisProperty.delegateExcludes : javacast(
-							"null",
-							""
-						)
-					)
-				);
-			} );
+			.each( processPropertyMetadata );
 
 		// Look For functions for setter injections and more and register them with the mapping
-		param md.functions = [];
-		md.functions
+		param arguments.metadata.functions = [];
+		arguments.metadata.functions
 			// Verify Processing or do we continue to next iteration for processing
 			// This is to avoid overriding by parent trees in inheritance chains
 			.filter( function( thisFunction ){
 				return !structKeyExists( dependencies, thisFunction.name );
 			} )
-			.each( function( thisFunction ){
-				// Constructor Processing if found
-				if ( thisFunction.name eq variables.constructor ) {
-					// Process parameters for constructor injection
-					for ( var thisParam in thisFunction.parameters ) {
-						// Check injection annotation, if not found then no injection
-						if ( structKeyExists( thisParam, "inject" ) ) {
-							// ADD Constructor argument
-							addDIConstructorArgument(
-								name    : thisParam.name,
-								dsl     : ( len( thisParam.inject ) ? thisParam.inject : "model" ),
-								required: ( structKeyExists( thisParam, "required" ) ? thisParam.required : false ),
-								type    : ( structKeyExists( thisParam, "type" ) ? thisParam.type : "any" )
-							);
-						}
-					}
-					// add constructor to found list, so it is processed only once in recursions
-					dependencies[ thisFunction.name ] = "constructor";
-				}
-
-				// Setter discovery, MUST be inject annotation marked to be processed.
-				if ( left( thisFunction.name, 3 ) eq "set" AND structKeyExists( thisFunction, "inject" ) ) {
-					// Add to setter to mappings and recursion lookup
-					addDISetter(
-						name: right( thisFunction.name, len( thisFunction.name ) - 3 ),
-						dsl : ( len( thisFunction.inject ) ? thisFunction.inject : "model" )
-					);
-					dependencies[ thisFunction.name ] = "setter";
-				}
-
-				// Provider Methods Discovery
-				if ( structKeyExists( thisFunction, "provider" ) AND len( thisFunction.provider ) ) {
-					addProviderMethod( thisFunction.name, thisFunction.provider );
-					dependencies[ thisFunction.name ] = "provider";
-				}
-
-				// onDIComplete Method Discovery
-				if ( structKeyExists( thisFunction, "onDIComplete" ) ) {
-					arrayAppend( variables.onDIComplete, thisFunction.name );
-					dependencies[ thisFunction.name ] = "onDIComplete";
-				}
-			} ); // End function processing
+			.each( processFunctionMetadata );
 
 		return this;
 	}

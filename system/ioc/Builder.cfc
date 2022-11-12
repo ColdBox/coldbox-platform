@@ -154,6 +154,37 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
+	 * Dynamic function injected into the targets to provide lazy functions
+	 */
+	function lazyPropertyGetter(){
+		var propertyName = getFunctionCalledName().reReplaceNoCase( "^get", "" );
+
+		var withLock = function( propertyName, builder ){
+			lock name="wb-lazy-#arguments.propertyName#" type="exclusive" timeout=10 throwOnTimeout=true {
+				return arguments.builder( arguments.propertyName );
+			}
+		};
+		var buildProperty = function( propertyName ){
+			// Build it out
+			variables[ arguments.propertyName ] = invoke(
+				variables,
+				this.$wbLazyProperties[ arguments.propertyName ].builder
+			);
+			return variables[ arguments.propertyName ];
+		};
+
+		// Verify if built
+		if ( variables.keyExists( propertyName ) && !isNull( variables[ propertyName ] ) ) {
+			return variables[ propertyName ];
+		}
+
+		// Else build it
+		return this.$wbLazyProperties[ propertyName ].useLock ? withLock( propertyName, buildProperty ) : buildProperty(
+			propertyName
+		);
+	}
+
+	/**
 	 * Build a cfc class via mappings
 	 *
 	 * @mapping                   The mapping to construct

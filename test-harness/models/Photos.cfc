@@ -3,9 +3,6 @@
  */
 component accessors="true" {
 
-	// Properties
-
-
 	/**
 	 * Constructor
 	 */

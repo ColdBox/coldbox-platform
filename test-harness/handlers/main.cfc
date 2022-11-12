@@ -36,6 +36,11 @@ component{
 	function index( event, rc, prc, name = "ColdBox" ){
 		prc.welcomeMessage = "Welcome to #arguments.name#!";
 
+		getInstance( "LazyModel" ).getUtil();
+		getInstance( "LazyModel" ).getUtil2();
+		getInstance( "LazyModel" ).getLazyData();
+		getInstance( "LazyModel" ).getLazyData2();
+
 		unless( false, function(){
 			prc.whenFalse = true;
 		})

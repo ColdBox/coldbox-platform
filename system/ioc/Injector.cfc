@@ -862,6 +862,11 @@ component serializable="false" accessors="true" {
 				processMixins( targetObject, arguments.mapping );
 			}
 
+			// Process Lazy Properties
+			if ( arguments.mapping.getLazyProperties().len() ) {
+				processLazyProperties( targetObject, arguments.mapping );
+			}
+
 			// Process After DI Complete
 			processAfterCompleteDI( targetObject, arguments.mapping.getOnDIComplete() );
 
@@ -998,6 +1003,30 @@ component serializable="false" accessors="true" {
 	}
 
 	/****************************************** PRIVATE ************************************************/
+
+	/**
+	 * Process lazy properties on the target object
+	 *
+	 * @targetObject The target object to do some goodness on
+	 * @mapping      The target mapping
+	 */
+	private Injector function processLazyProperties( required targetObject, required mapping ){
+		// Store lookup map on the target
+		arguments.targetObject.$wbLazyProperties = arguments.mapping
+			.getLazyProperties()
+			.reduce( function( result, item ){
+				arguments.result[ arguments.item.name ] = arguments.item;
+				return arguments.result;
+			}, {} );
+		// Create the getter/builder methods
+		arguments.mapping
+			.getLazyProperties()
+			.each( function( thisProperty ){
+				targetObject.injectMixin( "get#thisProperty.name#", variables.objectBuilder.lazyPropertyGetter );
+			} );
+
+		return this;
+	}
 
 	/**
 	 * Process mixins on the selected target
