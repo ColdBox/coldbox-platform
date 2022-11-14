@@ -627,14 +627,21 @@ component accessors="true" threadsafe {
 		);
 
 		if ( !structIsEmpty( actionSet ) ) {
-			addRoute(
-				pattern  : "#thisPattern#/:#arguments.parameterName#/edit",
-				handler  : isNull( arguments.handler ) ? arguments.resource : arguments.handler,
-				action   : actionSet,
-				module   : arguments.module,
-				namespace: arguments.namespace,
-				meta     : arguments.meta
-			);
+			var routeArgs = {
+				pattern   : "#thisPattern#/:#arguments.parameterName#/edit",
+				handler   : isNull( arguments.handler ) ? arguments.resource : arguments.handler,
+				action    : actionSet,
+				module    : arguments.module,
+				namespace : arguments.namespace,
+				meta      : arguments.meta
+			};
+
+			// process a with closure if not empty
+			if ( !variables.withClosure.isEmpty() ) {
+				processWith( routeArgs );
+			}
+
+			addRoute( argumentCollection = routeArgs );
 		}
 
 		// New
@@ -644,14 +651,21 @@ component accessors="true" threadsafe {
 			arguments.except
 		);
 		if ( !structIsEmpty( actionSet ) ) {
-			addRoute(
-				pattern  : "#thisPattern#/new",
-				handler  : isNull( arguments.handler ) ? arguments.resource : arguments.handler,
-				action   : actionSet,
-				module   : arguments.module,
-				namespace: arguments.namespace,
-				meta     : arguments.meta
-			);
+			var routeArgs = {
+				pattern   : "#thisPattern#/new",
+				handler   : isNull( arguments.handler ) ? arguments.resource : arguments.handler,
+				action    : actionSet,
+				module    : arguments.module,
+				namespace : arguments.namespace,
+				meta      : arguments.meta
+			};
+
+			// process a with closure if not empty
+			if ( !variables.withClosure.isEmpty() ) {
+				processWith( routeArgs );
+			}
+
+			addRoute( argumentCollection = routeArgs );
 		}
 
 		// Update, Delete, Show
@@ -666,14 +680,21 @@ component accessors="true" threadsafe {
 			arguments.except
 		);
 		if ( !structIsEmpty( actionSet ) ) {
-			addRoute(
-				pattern  : "#thisPattern#/:#arguments.parameterName#",
-				handler  : isNull( arguments.handler ) ? arguments.resource : arguments.handler,
-				action   : actionSet,
-				module   : arguments.module,
-				namespace: arguments.namespace,
-				meta     : arguments.meta
-			);
+			var routeArgs = {
+				pattern   : "#thisPattern#/:#arguments.parameterName#",
+				handler   : isNull( arguments.handler ) ? arguments.resource : arguments.handler,
+				action    : actionSet,
+				module    : arguments.module,
+				namespace : arguments.namespace,
+				meta      : arguments.meta
+			};
+
+			// process a with closure if not empty
+			if ( !variables.withClosure.isEmpty() ) {
+				processWith( routeArgs );
+			}
+
+			addRoute( argumentCollection = routeArgs );
 		}
 
 		// Index + Create
@@ -683,14 +704,21 @@ component accessors="true" threadsafe {
 			arguments.except
 		);
 		if ( !structIsEmpty( actionSet ) ) {
-			addRoute(
-				pattern  : "#thisPattern#",
-				handler  : isNull( arguments.handler ) ? arguments.resource : arguments.handler,
-				action   : actionSet,
-				module   : arguments.module,
-				namespace: arguments.namespace,
-				meta     : arguments.meta
-			);
+			var routeArgs = {
+				pattern   : "#thisPattern#",
+				handler   : isNull( arguments.handler ) ? arguments.resource : arguments.handler,
+				action    : actionSet,
+				module    : arguments.module,
+				namespace : arguments.namespace,
+				meta      : arguments.meta
+			};
+
+			// process a with closure if not empty
+			if ( !variables.withClosure.isEmpty() ) {
+				processWith( routeArgs );
+			}
+
+			addRoute( argumentCollection = routeArgs );
 		}
 
 		return this;
