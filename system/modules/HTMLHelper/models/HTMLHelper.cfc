@@ -5,14 +5,19 @@
  * A cool utility that helps you when working with HTML so it is less verbose, more consistency,
  * ORM data binding, auto escaping and much more.
  */
-component accessors=true threadSafe singleton delegates="JsonUtil@coreDelegates"{
+component
+	accessors=true
+	threadSafe
+	singleton
+	delegates="JsonUtil@coreDelegates"
+{
 
 	/****************************************************************
 	 * DI *
 	 ****************************************************************/
 
-	property name="settings"   inject="coldbox:moduleSettings:htmlhelper";
-	property name="controller" inject="coldbox";
+	property name="settings"       inject="coldbox:moduleSettings:htmlhelper";
+	property name="controller"     inject="coldbox";
 	property name="requestService" inject="coldbox:requestService";
 
 	/**
@@ -2967,8 +2972,7 @@ component accessors=true threadSafe singleton delegates="JsonUtil@coreDelegates"
 	 */
 	private string function prepareBaseLink( boolean noBaseURL = false, src ){
 		var baseURL = replaceNoCase(
-				requestService.getContext()
-				.getSESbaseURL(),
+			requestService.getContext().getSESbaseURL(),
 			"index.cfm",
 			""
 		);
