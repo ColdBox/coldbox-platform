@@ -44,9 +44,6 @@
         "commandbox-cfconfig":"*",
         "commandbox-cfformat":"*"
     },
-    "installPaths":{
-        "testbox":"testbox/"
-    },
     "scripts":{
         "release":"recipe build/release.boxr",
         "format":"cfformat run system/**/*.cfc,tests/specs/**/*.cfc --overwrite",
@@ -59,6 +56,16 @@
         "start:2021":"server start serverConfigFile='server-adobe@2021.json' --force",
         "log:lucee":"server log coldbox-lucee@5 --follow",
         "log:2018":"server log coldbox-adobe@2018 --follow",
-        "log:2021":"server log coldbox-adobe@2021 --follow"
+        "log:2021":"server log coldbox-adobe@2021 --follow",
+        "cfpm":"echo '\".engine/acf2021/WEB-INF/cfusion/bin/cfpm.sh\"' | run",
+        "cfpm:install":"echo '\".engine/adobe2021/WEB-INF/cfusion/bin/cfpm.sh\" install ${1}' | run",
+        "install:2021":"run-script cfpm:install zip,orm,mysql,postgresql,sqlserver,document,feed,mail,debugger"
+    },
+    "dependencies":{
+        "cbproxies":"^1.0.1+13"
+    },
+	"installPaths":{
+        "testbox":"testbox/",
+        "cbproxies":"system/async/cbproxies/"
     }
 }

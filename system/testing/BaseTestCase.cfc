@@ -505,7 +505,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 						if ( isSimpleValue( handlerResults ) ) {
 							renderedContent = handlerResults;
 						} else {
-							renderedContent = serializeJSON( handlerResults );
+							renderedContent = getUtil().toJson( handlerResults );
 						}
 					}
 					// Skip rendering if event.noRender is set
@@ -819,16 +819,6 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 */
 	function getInterceptor( required interceptorName ){
 		return getController().getInterceptorService().getInterceptor( argumentCollection = arguments );
-	}
-
-	/**
-	 * @deprecated
-	 */
-	function getModel(){
-		throw(
-			message = "getModel() is now fully deprecated in favor of getInstance().",
-			type    = "DeprecationException"
-		);
 	}
 
 	/**

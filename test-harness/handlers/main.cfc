@@ -36,6 +36,17 @@ component{
 	function index( event, rc, prc, name = "ColdBox" ){
 		prc.welcomeMessage = "Welcome to #arguments.name#!";
 
+		var om = getInstance( "ObserverModel" );
+		om.setData( 'first' );
+		om.setData( 'second' );
+		om.setData2( 'first' );
+		om.setData2( 'second' );
+
+		getInstance( "LazyModel" ).getUtil();
+		getInstance( "LazyModel" ).getUtil2();
+		getInstance( "LazyModel" ).getLazyData();
+		getInstance( "LazyModel" ).getLazyData2();
+
 		unless( false, function(){
 			prc.whenFalse = true;
 		})

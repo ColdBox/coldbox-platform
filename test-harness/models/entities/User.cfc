@@ -1,15 +1,18 @@
 ﻿component persistent = "true" table = "users"{
+
 	property
 		name     ="id"
 		column   ="user_id"
 		fieldType="id"
 		generator="uuid";
+
 	/**
 	 * @display First Name
 	 * @message Please provide firstname
 	 * @NotEmpty
 	 */
 	property name="firstName";
+
 	/**
 	 * @display Last Name
 	 * @message Please provide lastname
@@ -35,5 +38,11 @@
 		inject    ="model:testService"
 		persistent="false"
 		required  ="false";
+
 	// property name="controller" inject="coldbox" persistent="false" required="false";
+
+	this.population = {
+		include : [ "firstName", "lastName", "username", "role" ],
+		exclude : ["id", "password", "lastLogin" ]
+	};
 }

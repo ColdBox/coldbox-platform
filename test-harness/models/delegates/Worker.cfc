@@ -17,4 +17,8 @@ component{
 		return this;
 	}
 
+	function sayHello(){
+		return $parent.getOutput();
+	}
+
 }

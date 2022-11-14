@@ -510,19 +510,8 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		rd = event.getRenderData();
 		assertEquals( rd.contenttype, "application/json" );
 		assertEquals( rd.type, "json" );
-		assertEquals( rd.jsonQueryFormat, true );
 		assertEquals( rd.statusCode, "200" );
 		assertEquals( rd.statusText, "" );
-
-
-		event.renderData(
-			type            = "JSON",
-			data            = "[1,2,3,4]",
-			jsonQueryFormat = "array",
-			jsonCase        = "upper"
-		);
-		rd = event.getRenderData();
-		assertEquals( rd.jsonQueryFormat, false );
 
 		// JSONP
 		event.renderData(

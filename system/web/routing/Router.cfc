@@ -2,17 +2,12 @@
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * Manages all the routing definitions for the application and exposes the
- * ColdBox Routing DSL
+ * Manages all the routing definitions for the application and exposes the ColdBox Routing DSL
  */
-component
-	accessors="true"
-	extends  ="coldbox.system.FrameworkSupertype"
-	threadsafe
-{
+component accessors="true" threadsafe {
 
 	/**
-	 * The routing table
+	 * The routing tableamazon
 	 */
 	property name="routes" type="array";
 

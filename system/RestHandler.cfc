@@ -1,10 +1,10 @@
 /**
- * ********************************************************************************
- * Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
- * ********************************************************************************
- * This specialized handler is to be used for Restful applications.
- * It wraps around functions to provide consistency and an opinionated approach to RESTing!
+ * ---
+ * Base class for all RESTFul event handlers
+ *
+ * @author Luis Majano <lmajano@ortussolutions.com>
  */
 component extends="EventHandler" {
 
@@ -126,15 +126,14 @@ component extends="EventHandler" {
 
 			// Magical renderings
 			event.renderData(
-				type            = arguments.prc.response.getFormat(),
-				data            = responseData,
-				contentType     = arguments.prc.response.getContentType(),
-				statusCode      = arguments.prc.response.getStatusCode(),
-				statusText      = arguments.prc.response.getStatusText(),
-				location        = arguments.prc.response.getLocation(),
-				isBinary        = arguments.prc.response.getBinary(),
-				jsonCallback    = arguments.prc.response.getJsonCallback(),
-				jsonQueryFormat = arguments.prc.response.getJsonQueryFormat()
+				type         = arguments.prc.response.getFormat(),
+				data         = responseData,
+				contentType  = arguments.prc.response.getContentType(),
+				statusCode   = arguments.prc.response.getStatusCode(),
+				statusText   = arguments.prc.response.getStatusText(),
+				location     = arguments.prc.response.getLocation(),
+				isBinary     = arguments.prc.response.getBinary(),
+				jsonCallback = arguments.prc.response.getJsonCallback()
 			);
 		}
 
@@ -439,7 +438,7 @@ component extends="EventHandler" {
 				statusText = "Invalid or Missing Credentials"
 			);
 
-			writeOutput( serializeJSON( prc.response.getDataPacket( reset = this.resetDataOnError ) ) );
+			writeOutput( toJson( prc.response.getDataPacket( reset = this.resetDataOnError ) ) );
 
 			flush;
 			abort;

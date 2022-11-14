@@ -458,7 +458,6 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				.setScope( variables.wirebox.getBinder().SCOPES.SINGLETON )
 				.setThreadSafe( true )
 				.setVirtualInheritance( "coldbox.system.Interceptor" )
-				.addDIConstructorArgument( name = "controller", value = controller )
 				.addDIConstructorArgument( name = "properties", value = arguments.interceptorProperties );
 		}
 
@@ -597,14 +596,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// Check if handler mapped?
 		if ( NOT variables.wirebox.getBinder().mappingExists( variables.INTERCEPTOR_BASE_CLASS ) ) {
 			// feed the base class
-			variables.wirebox
-				.registerNewInstance(
-					name         = variables.INTERCEPTOR_BASE_CLASS,
-					instancePath = variables.INTERCEPTOR_BASE_CLASS
-				)
-				.addDIConstructorArgument( name = "controller", value = controller )
-				.addDIConstructorArgument( name = "properties", value = {} )
-				.setAutowire( false );
+			variables.wirebox.registerNewInstance(
+				name         = variables.INTERCEPTOR_BASE_CLASS,
+				instancePath = variables.INTERCEPTOR_BASE_CLASS
+			);
 		}
 
 		return this;

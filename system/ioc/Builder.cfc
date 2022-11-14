@@ -154,6 +154,65 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
+	 * Dynamic function injected into the targets to provide lazy functions
+	 */
+	function lazyPropertyGetter(){
+		var propertyName = getFunctionCalledName().reReplaceNoCase( "^get", "" );
+
+		var withLock = function( propertyName, builder ){
+			lock name="wb-lazy-#arguments.propertyName#" type="exclusive" timeout=10 throwOnTimeout=true {
+				return arguments.builder( arguments.propertyName );
+			}
+		};
+		var buildProperty = function( propertyName ){
+			// Build it out
+			variables[ arguments.propertyName ] = invoke(
+				variables,
+				this.$wbLazyProperties[ arguments.propertyName ].builder
+			);
+			return variables[ arguments.propertyName ];
+		};
+
+		// Verify if built
+		if ( variables.keyExists( propertyName ) && !isNull( variables[ propertyName ] ) ) {
+			return variables[ propertyName ];
+		}
+
+		// Else build it
+		return this.$wbLazyProperties[ propertyName ].useLock ? withLock( propertyName, buildProperty ) : buildProperty(
+			propertyName
+		);
+	}
+
+	/**
+	 * Dynamic function injected into the targets to provide lazy functions
+	 */
+	function observedPropertySetter( value ){
+		var propertyName = getFunctionCalledName().reReplaceNoCase( "^set", "" );
+
+		// Previous value
+		var oldValue = variables.keyExists( propertyName ) && !isNull( variables[ propertyName ] ) ? variables[
+			propertyName
+		] : javacast( "null", "" );
+
+		// Set the value now
+		variables[ propertyName ] = !isNull( arguments.value ) ? arguments.value : javacast( "null", "" );
+
+		// Call the observer
+		invoke(
+			variables,
+			this.$wbObservedProperties[ propertyName ].observer,
+			{
+				newValue : !isNull( arguments.value ) ? arguments.value : javacast( "null", "" ), // new value
+				oldValue : !isNull( oldValue ) ? oldValue : javacast( "null", "" ), // previous value
+				property : propertyName // property name
+			}
+		);
+
+		return this;
+	}
+
+	/**
 	 * Build a cfc class via mappings
 	 *
 	 * @mapping                   The mapping to construct
@@ -237,7 +296,7 @@ component serializable="false" accessors="true" {
 					type    = "Builder.BuildCFCDependencyException",
 					message = "Error building: #arguments.mapping.getName()# -> #e.message#
 					#e.detail#.",
-					detail = "DSL: #arguments.mapping.getDSL()#, Path: #arguments.mapping.getPath()#,
+					detail = "DSL: #len( arguments.mapping.getDSL() ) ? arguments.mapping.getDSL() : "none"#, Path: #arguments.mapping.getPath()#,
 					Error Location:
 					#reducedTagContext#"
 				);
@@ -539,9 +598,14 @@ component serializable="false" accessors="true" {
 			case "coldbox":
 			case "box": {
 				if ( !variables.injector.isColdBoxLinked() ) {
+					var targetName = "";
+					if ( isObject( targetObject ) ) {
+						targetName = getMetadata( targetObject ).name;
+					}
 					throw(
-						message = "The DSLNamespace: #DSLNamespace# cannot be used as it requires a ColdBox Context",
-						type    = "Builder.IllegalDSLException"
+						message = "The DSLNamespace: [#DSLNamespace#] cannot be used as it requires a ColdBox Context",
+						type    = "Builder.IllegalDSLException",
+						detail  = "DSL: [#arguments.definition.dsl#], target: [#targetName#]"
 					);
 				}
 				refLocal.dependency = getColdBoxDSL().process( argumentCollection = arguments );

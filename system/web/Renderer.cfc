@@ -2,7 +2,7 @@
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * The system web renderer
+ * The system web renderer. In charge of location views/layouts and rendering them.
  *
  * @author Luis Majano <lmajano@ortussolutions.com>
  */
@@ -10,17 +10,19 @@ component
 	accessors   ="true"
 	serializable="false"
 	extends     ="coldbox.system.FrameworkSupertype"
+	threadSafe
 	singleton
 {
 
-	/************************************** DI *********************************************/
+	/****************************************************************
+	 * DI *
+	 ****************************************************************/
 
-	/**
-	 * Template cache provider
-	 */
 	property name="templateCache" inject="cachebox:template";
 
-	/************************************** PROPERTIES *********************************************/
+	/****************************************************************
+	 * Rendering Properties *
+	 ****************************************************************/
 
 	// Location of layouts
 	property name="layoutsConvention";
@@ -33,7 +35,7 @@ component
 	// Location of application
 	property name="appMapping";
 	// Modules configuration
-	property name="moduleConfig" type="struct";
+	property name="modulesConfig" type="struct";
 	// Views Helper Setting
 	property name="viewsHelper";
 	// Internal locking name
@@ -41,30 +43,22 @@ component
 	// Discovery caching is tied to handlers for discovery.
 	property name="isDiscoveryCaching";
 
-	property name="html";
-
-	/************************************** CONSTRUCTOR *********************************************/
-
 	/**
 	 * Constructor
-	 *
-	 * @controller        The ColdBox main controller
-	 * @controller.inject coldbox
 	 */
-	function init( required controller ){
-		// Register the Controller
-		variables.controller = arguments.controller;
-		// Register LogBox
-		variables.logBox     = arguments.controller.getLogBox();
-		// Register Log object
-		variables.log        = variables.logBox.getLogger( this );
-		// Register Flash RAM
-		variables.flash      = arguments.controller.getRequestService().getFlashScope();
-		// Register CacheBox
-		variables.cacheBox   = arguments.controller.getCacheBox();
-		// Register WireBox
-		variables.wireBox    = arguments.controller.getWireBox();
+	function init(){
+		// Layouts + Views Reference Maps
+		variables.layoutsRefMap = {};
+		variables.viewsRefMap   = {};
+		super.init();
+		return this;
+	}
 
+	/**
+	 * This is the startup procedures for the renderer. This is called after all modules, interceptions and contributions have been done
+	 * in order to allow for all chicken and the egg issues are not relevant.
+	 */
+	function startup(){
 		// Set Conventions, Settings and Properties
 		variables.layoutsConvention       = variables.controller.getColdBoxSetting( "layoutsConvention" );
 		variables.viewsConvention         = variables.controller.getColdBoxSetting( "viewsConvention" );
@@ -74,9 +68,6 @@ component
 		variables.modulesConfig           = variables.controller.getSetting( "modules" );
 		variables.viewsHelper             = variables.controller.getSetting( "viewsHelper" );
 		variables.viewCaching             = variables.controller.getSetting( "viewCaching" );
-		// Layouts + Views Reference Maps
-		variables.layoutsRefMap           = {};
-		variables.viewsRefMap             = {};
 
 		// Verify View Helper Template extension + location
 		if ( len( variables.viewsHelper ) ) {
@@ -92,18 +83,13 @@ component
 		variables.lockName = "rendering.#variables.controller.getAppHash()#";
 
 		// Discovery caching
-		variables.isDiscoveryCaching = controller.getSetting( "viewCaching" );
+		variables.isDiscoveryCaching = variables.controller.getSetting( "viewCaching" );
 
-		// HTML Helper
-		variables.html = variables.wirebox.getInstance( dsl = "@HTMLHelper" );
-
-		// Load global UDF Libraries into target
+		// Load Application helpers
 		loadApplicationHelpers();
 
 		// Announce interception
 		announce( "afterRendererInit", { variables : variables, this : this } );
-
-		return this;
 	}
 
 	/************************************** VIEW METHODS *********************************************/
@@ -466,7 +452,8 @@ component
 				rendererVariables = ( isNull( attributes.rendererVariables ) ? variables : attributes.rendererVariables ),
 				event             = event,
 				rc                = event.getCollection(),
-				prc               = event.getPrivateCollection()
+				prc               = event.getPrivateCollection(),
+				html              = variables.wirebox.getInstance( "@HTMLHelper" )
 			);
 		}
 
@@ -486,7 +473,7 @@ component
 	 * Renders an external view anywhere that cfinclude works.
 	 *
 	 * @view                   The the view to render
-	 * @args                   A struct of arguments to pass into the view for rendering, will be available as 'args' in the view.
+	 * @args                   A struct of arguments to pass into the view for rendering, will be available as 'args' iview.
 	 * @cache                  Cached the view output or not, defaults to false
 	 * @cacheTimeout           The time in minutes to cache the view
 	 * @cacheLastAccessTimeout The time in minutes the view will be removed from cache if idle or requested

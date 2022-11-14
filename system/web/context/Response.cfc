@@ -67,14 +67,6 @@ component accessors="true" {
 		default="";
 
 	/**
-	 * JSON Only: This parameter can be a Boolean value that specifies how to serialize ColdFusion queries or a string with possible values row, column, or struct
-	 */
-	property
-		name   ="jsonQueryFormat"
-		type   ="string"
-		default="true";
-
-	/**
 	 * The content type of the response
 	 */
 	property
@@ -185,19 +177,18 @@ component accessors="true" {
 	 */
 	Response function init(){
 		// Init properties
-		variables.format          = "json";
-		variables.data            = {};
-		variables.error           = false;
-		variables.binary          = false;
-		variables.messages        = [];
-		variables.location        = "";
-		variables.jsonCallBack    = "";
-		variables.jsonQueryFormat = "query";
-		variables.contentType     = "";
-		variables.statusCode      = 200;
-		variables.statusText      = "OK";
-		variables.responsetime    = 0;
-		variables.headers         = [];
+		variables.format       = "json";
+		variables.data         = {};
+		variables.error        = false;
+		variables.binary       = false;
+		variables.messages     = [];
+		variables.location     = "";
+		variables.jsonCallBack = "";
+		variables.contentType  = "";
+		variables.statusCode   = 200;
+		variables.statusText   = "OK";
+		variables.responsetime = 0;
+		variables.headers      = [];
 
 		variables.pagination = {
 			"offset"       : 0,

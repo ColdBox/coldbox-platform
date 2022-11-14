@@ -7,6 +7,6 @@
 </head>
 <body>
 <h1>An Awesome Test1 Module Layout</h1>
-<cfoutput>#renderView(view=arguments.view,module="test1")#</cfoutput>
+<cfoutput>#view(view=arguments.view,module="test1")#</cfoutput>
 </body>
 </html>

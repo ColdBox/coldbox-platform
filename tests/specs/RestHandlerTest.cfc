@@ -40,13 +40,11 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				mockCacheBox = createEmptyMock( "coldbox.system.cache.CacheFactory" );
 				mockWireBox  = createEmptyMock( "coldbox.system.ioc.Injector" );
 
-				mockController.$( "getRequestService", mockRS );
-
-				mockController.setLogBox( mockLogBox );
-				mockController.setWireBox( mockWireBox );
-				mockController.setCacheBox( mockCacheBox );
-
 				mockController
+					.$( "getRequestService", mockRS )
+					.setLogBox( mockLogBox )
+					.setWireBox( mockWireBox )
+					.setCacheBox( mockCacheBox )
 					.$( "getSetting" )
 					.$args( "applicationHelper" )
 					.$results( [] )
@@ -54,7 +52,15 @@ component extends="coldbox.system.testing.BaseModelTest" {
 					.$args( "AppMapping" )
 					.$results( "/coldbox/testing" );
 
-				handler.init( mockController );
+				handler
+					.init()
+					.setCacheBox( mockCacheBox )
+					.setController( mockController )
+					.setFlash( flashScope )
+					.setLogBox( mockLogBox )
+					.setLog( mockLogger )
+					.setWireBox( mockWirebox );
+				handler.onHandlerDIComplete();
 			} );
 
 			it( "can be created", function(){
@@ -196,6 +202,10 @@ component extends="coldbox.system.testing.BaseModelTest" {
 			} );
 
 			it( "can handle onError", function(){
+				handler
+					.$( "getSetting" )
+					.$args( "environment" )
+					.$results( "production" );
 				handler.onError(
 					mockRequestContext,
 					mockRequestContext.getCollection(),

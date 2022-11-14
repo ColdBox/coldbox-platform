@@ -9,7 +9,7 @@ component extends="testbox.system.BaseSpec" {
 	 * executes before all suites+specs in the run() method
 	 */
 	function beforeAll(){
-		flow = createMock( "coldbox.system.core.util.Flow" );
+		flow = createMock( "coldbox.system.core.delegates.Flow" );
 	}
 
 	/*********************************** BDD SUITES ***********************************/
