@@ -720,14 +720,14 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		var javaUrl = createObject( "java", "java.net.URL" ).init( event.getFullUrl() );
 	}
 
-	function testGetFullUrlDoesntDoubleEncode() {
-		var event = getRequestContext();
-		var javaBaseUrl = createObject( "java", "java.net.URI" ).create( event.getSESBaseURL() );
+	function testGetFullUrlDoesntDoubleEncode(){
+		var event          = getRequestContext();
+		var javaBaseUrl    = createObject( "java", "java.net.URI" ).create( event.getSESBaseURL() );
 		var correctFullUrl = javaBaseUrl.getScheme() &
-			"://" &
-			javaBaseUrl.getAuthority() &
-			( CGI.PATH_INFO != "" ? "/#CGI.PATH_INFO#" : "" ) &
-			( CGI.QUERY_STRING != "" ? "?#CGI.QUERY_STRING#" : "" );
+		"://" &
+		javaBaseUrl.getAuthority() &
+		( CGI.PATH_INFO != "" ? "/#CGI.PATH_INFO#" : "" ) &
+		( CGI.QUERY_STRING != "" ? "?#CGI.QUERY_STRING#" : "" );
 		debug( var = correctFullUrl );
 		debug( var = event.getFullUrl() );
 		expect( event.getFullUrl() ).toBeTypeOf( "url", "Not an URL" );
