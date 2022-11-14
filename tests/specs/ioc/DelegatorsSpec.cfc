@@ -28,7 +28,6 @@ component extends="tests.resources.BaseIntegrationTest" {
 
 	function run( testResults, testBox ){
 		feature( "WireBox Delegators", function(){
-
 			story( "A delegate will receive it's parent target injected into the variables scope as $parent", function(){
 				given( "A computer target and a worker delegate", function(){
 					then( "it will delegate and add the $parent (computer) into the worker", function(){
@@ -37,7 +36,7 @@ component extends="tests.resources.BaseIntegrationTest" {
 						expect( computer.sayHello() ).toBe( "Hola Computadora!" );
 					} );
 				} );
-			})
+			} )
 
 			story( "I can inject delegators with the 'delegate' annotation", function(){
 				given( "A computer target and a worker delegate", function(){
