@@ -1113,15 +1113,21 @@ component serializable="false" accessors="true" {
 	string function getFullURL(){
 		var javaURI = createObject( "java", "java.net.URI" );
 		var baseUrl = javaURI.create( getSESBaseURL() );
-		return javaURI
+		var fullUrl = javaURI
 			.init(
 				baseUrl.getScheme(),
 				baseUrl.getAuthority(),
 				CGI.PATH_INFO != "" ? CGI.PATH_INFO : javacast( "null", "" ),
-				CGI.QUERY_STRING != "" ? CGI.QUERY_STRING : javacast( "null", "" ),
+				javacast( "null", "" ),
 				javacast( "null", "" )
 			)
 			.toString();
+
+		if ( CGI.QUERY_STRING == "" ) {
+			return fullUrl;
+		}
+
+		return fullUrl & "?" & CGI.QUERY_STRING;
 	}
 
 	/**
