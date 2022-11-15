@@ -15,11 +15,16 @@ jobs:
     env:
       DB_USER: root
       DB_PASSWORD: root
+    continue-on-error: ${{ matrix.experimental }}
     strategy:
       fail-fast: false
       matrix:
         cfengine: [ "lucee@5", "adobe@2018", "adobe@2021" ]
         fullNull: [ "true", "false" ]
+        experimental: [false]
+        include:
+          - cfengine: "lucee@5rc"
+            experimental: true
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
@@ -70,10 +75,6 @@ jobs:
       - name: Start ${{ matrix.cfengine }} Server
         run: |
           box server start serverConfigFile="server-${{ matrix.cfengine }}.json" --noSaveSettings --debug
-          # Install Adobe 2021 cfpm modules
-          if [[ "${{ matrix.cfengine }}" == "adobe@2021" ]] ; then
-            box run-script install:2021
-          fi
           # Test the harness
           curl http://127.0.0.1:8599/test-harness
 
