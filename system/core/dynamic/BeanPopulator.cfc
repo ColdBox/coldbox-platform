@@ -1,4 +1,7 @@
 /**
  * @deprecated DO NOT USE
  */
-component extends="ObjectPopulator"{}
+component extends="ObjectPopulator" {
+
+
+}

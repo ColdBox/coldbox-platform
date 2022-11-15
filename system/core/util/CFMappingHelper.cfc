@@ -13,12 +13,14 @@ component {
 	 */
 	CFMappingHelper function addCustomTagPath( required path ){
 		var appMetadata = getApplicationMetadata();
-		if( isNull( appMetadata.customTagPaths ) ){
+		if ( isNull( appMetadata.customTagPaths ) ) {
 			appMetadata.customTagPaths = "";
 		}
-		getPageContext().getFusionContext().getAppHelper().getAppScope().setApplicationCustomTagPaths(
-			appMetadata.customTagPaths.listAppend( arguments.path )
-		);
+		getPageContext()
+			.getFusionContext()
+			.getAppHelper()
+			.getAppScope()
+			.setApplicationCustomTagPaths( appMetadata.customTagPaths.listAppend( arguments.path ) );
 		return this;
 	}
 

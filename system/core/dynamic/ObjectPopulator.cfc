@@ -60,7 +60,7 @@ component accessors="true" singleton {
 		string nullEmptyInclude      = "",
 		string nullEmptyExclude      = "",
 		boolean composeRelationships = false,
-		boolean ignoreTargetLists = false
+		boolean ignoreTargetLists    = false
 	){
 		// Inflate JSON
 		arguments.memento = deserializeJSON( arguments.JSONString );
@@ -99,7 +99,7 @@ component accessors="true" singleton {
 		string nullEmptyInclude      = "",
 		string nullEmptyExclude      = "",
 		boolean composeRelationships = false,
-		boolean ignoreTargetLists = false
+		boolean ignoreTargetLists    = false
 	){
 		// determine XML object or string?
 		if ( isSimpleValue( arguments.xml ) ) {
@@ -157,7 +157,7 @@ component accessors="true" singleton {
 		string nullEmptyInclude      = "",
 		string nullEmptyExclude      = "",
 		boolean composeRelationships = false,
-		boolean ignoreTargetLists = false
+		boolean ignoreTargetLists    = false
 	){
 		if ( arguments.qry.recordcount >= arguments.rowNumber ) {
 			arguments.memento = structNew();
@@ -204,7 +204,7 @@ component accessors="true" singleton {
 		string nullEmptyInclude      = "",
 		string nullEmptyExclude      = "",
 		boolean composeRelationships = false,
-		boolean ignoreTargetLists = false
+		boolean ignoreTargetLists    = false
 	){
 		var prefixLength = len( arguments.prefix );
 
@@ -252,7 +252,7 @@ component accessors="true" singleton {
 		string nullEmptyInclude      = "",
 		string nullEmptyExclude      = "",
 		boolean composeRelationships = false,
-		boolean ignoreTargetLists = false
+		boolean ignoreTargetLists    = false
 	){
 		var prefixLength = len( arguments.prefix );
 		var newMemento   = {};

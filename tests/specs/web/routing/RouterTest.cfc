@@ -74,6 +74,38 @@ component extends="coldbox.system.testing.BaseModelTest" {
 					} );
 				} );
 
+				given( "a grouped route with handler and pattern only and resources call inside", function(){
+					then( "it should correctly prefix the resources generated", function(){
+						router.group( { pattern : "/api", handler : "api." }, function( options ){
+							router.resources( "users" );
+						} );
+
+						var routes = router.getRoutes();
+						expect( routes ).toHaveLength( 4 );
+
+						expect( routes[ 1 ].handler ).toBe( "api.users" );
+						expect( routes[ 1 ].pattern ).toBe( "api/users/:id/edit/" );
+						expect( routes[ 1 ].action ).toBe( { get : "edit" } )
+
+						expect( routes[ 2 ].handler ).toBe( "api.users" );
+						expect( routes[ 2 ].pattern ).toBe( "api/users/new/" );
+						expect( routes[ 2 ].action ).toBe( { get : "new" } )
+
+						expect( routes[ 3 ].handler ).toBe( "api.users" );
+						expect( routes[ 3 ].pattern ).toBe( "api/users/:id/" );
+						expect( routes[ 3 ].action ).toBe( {
+							get    : "show",
+							put    : "update",
+							patch  : "update",
+							delete : "delete"
+						} );
+
+						expect( routes[ 4 ].handler ).toBe( "api.users" );
+						expect( routes[ 4 ].pattern ).toBe( "api/users/" );
+						expect( routes[ 4 ].action ).toBe( { get : "index", post : "create" } );
+					} );
+				} );
+
 				given( "a grouped route with valid options", function(){
 					then( "it should store the route with common options", function(){
 						router.group( { target : "api.", handler : "api.", pattern : "/api" }, function( options ){

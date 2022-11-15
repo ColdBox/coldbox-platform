@@ -19,7 +19,7 @@ component {
 		appSettings.cgiReadOnly    = appSettings.cgiReadOnly ?: true;
 		application
 			action        ="update"
-			customTagPaths      ="#getApplicationSettings().customTagPaths.append( arguments.path )#"
+			customTagPaths="#getApplicationSettings().customTagPaths.append( arguments.path )#"
 			sessionCluster="#appSettings.sessionCluster#"
 			clientCluster ="#appSettings.clientCluster#"
 			cgiReadOnly   ="#appSettings.cgiReadOnly#";
