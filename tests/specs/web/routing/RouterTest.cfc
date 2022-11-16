@@ -46,7 +46,13 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		describe( "Routing Router", function(){
 			beforeEach( function( currentSpec ){
 				// Create Router
-				router = createMock( "coldbox.system.web.routing.Router" ).init( controller );
+				router = createMock( "coldbox.system.web.routing.Router" )
+					.init()
+					.setController( controller )
+					.setLogBox( controller.getLogBox() )
+					.setLog( controller.getLogBox().getLogger( this ) )
+					.setCacheBox( controller.getCacheBox() )
+					.setWireBox( controller.getWireBox() );
 			} );
 
 			story( "I want to group routes with common options", function(){
