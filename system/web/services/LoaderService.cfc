@@ -102,7 +102,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// Execute afterAspectsLoad: all module interceptions are registered and flash rebuilt if needed
 		variables.controller.getInterceptorService().announce( "afterAspectsLoad" );
 		// Customg Tags by convention
-		variables.controller.getUtil().addCustomTagPath( variables.controller.getAppRootPath() & "includes/tags" );
+		loadAppTags();
 		// Flag the initiation, Framework is ready to serve requests. Praise be to GOD.
 		variables.controller.setColdboxInitiated( true );
 		// Startup the schedulers now that the entire application has been loaded and runnning
@@ -111,6 +111,14 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		variables.log.info( "+++ ColdBox is ready to serve requests" );
 
 		// We are now done, rock and roll!!
+		return this;
+	}
+
+	/**
+	 * Load Application tags by convention
+	 */
+	function loadAppTags(){
+		variables.controller.getUtil().addCustomTagPath( variables.controller.getAppRootPath() & "includes/tags" );
 		return this;
 	}
 

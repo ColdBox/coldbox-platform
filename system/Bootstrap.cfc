@@ -225,7 +225,9 @@ component serializable="false" accessors="true" {
 		try {
 			// set request time, for info purposes
 			request.fwExecTime = getTickCount();
-			// Load Module CF Mappings
+			// Load App Tags
+			cbController.getLoaderService().loadAppTags();
+			// Load Module Mappings
 			cbController.getModuleService().loadMappings();
 			// Create Request Context & Capture Request
 			var event = cbController.getRequestService().requestCapture();
