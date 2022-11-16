@@ -19,6 +19,7 @@ component
 	 ****************************************************************/
 
 	property name="templateCache" inject="cachebox:template";
+	property name="htmlHelper" inject="provider:@HTMLHelper";
 
 	/****************************************************************
 	 * Rendering Properties *
@@ -52,6 +53,29 @@ component
 		variables.viewsRefMap   = {};
 		super.init();
 		return this;
+	}
+
+	/****************************************************************
+	 * Deprecated/Removed Methods *
+	 ****************************************************************/
+
+	function renderview() cbMethod{
+		throw(
+			type    = "DeprecatedMethod",
+			message = "This method has been deprecated, please use 'view()` instead"
+		);
+	}
+	function renderLayout() cbMethod{
+		throw(
+			type    = "DeprecatedMethod",
+			message = "This method has been deprecated, please use 'layout()` instead"
+		);
+	}
+	function renderExternalView() cbMethod{
+		throw(
+			type    = "DeprecatedMethod",
+			message = "This method has been deprecated, please use 'externalView()` instead"
+		);
 	}
 
 	/**
@@ -124,15 +148,6 @@ component
 	 */
 	function getExplicitView(){
 		return getRequestContext().getPrivateValue( "_explicitView", {} );
-	}
-
-	/**
-	 * Render out a view
-	 *
-	 * @deprecated Use `view()` instead
-	 */
-	function renderView(){
-		return this.view( argumentCollection = arguments );
 	}
 
 	/**
@@ -453,20 +468,11 @@ component
 				event             = event,
 				rc                = event.getCollection(),
 				prc               = event.getPrivateCollection(),
-				html              = variables.wirebox.getInstance( "@HTMLHelper" )
+				html              = variables.htmlHelper
 			);
 		}
 
 		return cbox_renderedView;
-	}
-
-	/**
-	 * Render an external view
-	 *
-	 * @deprecated Use `externalView()` instead
-	 */
-	function renderExternalView(){
-		return this.externalView( argumentCollection = arguments );
 	}
 
 	/**
@@ -537,15 +543,6 @@ component
 	/************************************** LAYOUT METHODS *********************************************/
 
 	/**
-	 * Render a layout
-	 *
-	 * @deprecated Use `layout()` instead
-	 */
-	function renderLayout(){
-		return this.layout( argumentCollection = arguments );
-	}
-
-	/**
 	 * Render a layout or a layout + view combo
 	 *
 	 * @layout        The layout to render out
@@ -595,7 +592,7 @@ component
 					arguments.viewModule,
 					arguments.args
 				)
-				.renderLayout( argumentCollection = arguments );
+				.layout( argumentCollection = arguments );
 		}
 
 		// If no passed layout, then get it from implicit values
@@ -639,7 +636,7 @@ component
 
 		// If Layout is blank, then just delegate to the view
 		if ( len( cbox_currentLayout ) eq 0 ) {
-			iData.renderedLayout = renderView();
+			iData.renderedLayout = view();
 		} else {
 			// Layout location key
 			cbox_layoutLocationKey = cbox_currentLayout & arguments.module & cbox_explicitModule;
@@ -675,7 +672,7 @@ component
 				explicitModule = cbox_explicitModule
 			);
 
-			// RenderLayout
+			// layout
 			iData.renderedLayout = renderViewComposite(
 				view           = cbox_currentLayout,
 				viewPath       = viewLocations.viewPath,

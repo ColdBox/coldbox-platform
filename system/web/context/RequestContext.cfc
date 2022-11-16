@@ -828,7 +828,7 @@ component serializable="false" accessors="true" {
 	 * @cacheLastAccessTimeout The last access timeout in minutes
 	 * @cacheSuffix            Add a cache suffix to the view cache entry. Great for multi-domain caching or i18n caching.
 	 * @cacheProvider          The cache provider you want to use for storing the rendered view. By default we use the 'template' cache provider
-	 * @name                   This triggers a rendering region.  This will be the unique name in the request for specifying a rendering region, you can then render it by passing the unique name to renderView();
+	 * @name                   This triggers a rendering region.  This will be the unique name in the request for specifying a rendering region, you can then render it by passing the unique name to the view();
 	 *
 	 * @return RequestContext
 	 */
@@ -1831,7 +1831,7 @@ component serializable="false" accessors="true" {
 				}
 				case "pdf": {
 					arguments.type = "pdf";
-					arguments.data = variables.controller.getRenderer().renderView( view = viewToRender );
+					arguments.data = variables.controller.getRenderer().view( view = viewToRender );
 					return renderData( argumentCollection = arguments );
 				}
 				case "html":

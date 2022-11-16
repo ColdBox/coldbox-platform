@@ -323,7 +323,7 @@ component serializable="false" accessors="true" {
 					else {
 						renderedContent = cbcontroller
 							.getRenderer()
-							.renderLayout(
+							.layout(
 								module     = event.getCurrentLayoutModule(),
 								viewModule = event.getCurrentViewModule()
 							);

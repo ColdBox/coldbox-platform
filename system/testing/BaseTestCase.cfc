@@ -517,7 +517,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 						requestContext.setValue( "cbox_statusCode", getNativeStatusCode() );
 						renderedContent = cbcontroller
 							.getRenderer()
-							.renderLayout(
+							.layout(
 								module     = requestContext.getCurrentLayoutModule(),
 								viewModule = requestContext.getCurrentViewModule()
 							);
