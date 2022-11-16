@@ -4,7 +4,42 @@
  * ---
  * Manages all the routing definitions for the application and exposes the ColdBox Routing DSL
  */
-component accessors="true" threadsafe {
+component
+	threadsafe
+	serializable="false"
+	accessors   ="true"
+	delegates   ="Async@coreDelegates,
+				Interceptor@cbDelegates,
+				Settings@cbDelegates,
+				Flow@coreDelegates,
+				Env@coreDelegates,
+				Population@cbDelegates,
+				Rendering@cbDelegates"
+{
+
+	/****************************************************************
+	 * DI *
+	 ****************************************************************/
+
+	property
+		name    ="cachebox"  
+		inject  ="cachebox"
+		delegate="getCache";
+	property
+		name    ="controller"
+		inject  ="coldbox" 
+		delegate="relocate,runEvent,runRoute";
+	property name="flash"  inject="coldbox:flash";
+	property name="logBox" inject="logbox";
+	property name="log"    inject="logbox:logger:{this}";
+	property
+		name    ="wirebox"
+		inject  ="wirebox"
+		delegate="getInstance";
+
+	/****************************************************************
+	 * Properties *
+	 ****************************************************************/
 
 	/**
 	 * The routing tableamazon
@@ -92,12 +127,6 @@ component accessors="true" threadsafe {
 		type   ="boolean"
 		default="true";
 
-
-	/**
-	 * ColdBox Controller
-	 */
-	property name="controller";
-
 	/**
 	 * Fluent route construct
 	 */
@@ -115,19 +144,8 @@ component accessors="true" threadsafe {
 
 	/**
 	 * Constructor
-	 *
-	 * @controller        The ColdBox controller linkage
-	 * @controller.inject coldbox
 	 */
-	function init( required controller ){
-		// Setup Internal Work Objects
-		variables.controller = arguments.controller;
-		variables.wirebox    = arguments.controller.getWireBox();
-		variables.cachebox   = arguments.controller.getCacheBox();
-		variables.logBox     = arguments.controller.getLogBox();
-		variables.log        = variables.logBox.getLogger( this );
-		variables.flash      = arguments.controller.getRequestService().getFlashScope();
-
+	function init(){
 		/************************************** FLUENT CONSTRUCTS *********************************************/
 
 		// With closure
