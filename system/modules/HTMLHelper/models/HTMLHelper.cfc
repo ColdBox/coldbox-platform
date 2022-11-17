@@ -9,7 +9,7 @@ component
 	accessors=true
 	threadSafe
 	singleton
-	delegates="JsonUtil@coreDelegates"
+	delegates="JsonUtil@coreDelegates,Settings@cbDelegates"
 {
 
 	/****************************************************************
