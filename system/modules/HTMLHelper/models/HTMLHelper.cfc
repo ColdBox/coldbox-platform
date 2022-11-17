@@ -2548,6 +2548,12 @@ component
 
 		// Get the manifest location
 		var manifestPath = discoverElixirManifest( argumentCollection = arguments );
+		if ( !len( manifestPath ) ) {
+			throw(
+				message: "The manifest file path is empty, cannot continue to use the elixir path. Make sure you have ran your build.",
+				type   : "InvalidManifestPath"
+			);
+		}
 
 		// Calculate mapping for the asset in question
 		var mapping = ( arguments.useModuleRoot && len( arguments.currentModule ) ) ? event.getModuleRoot() : controller.getSetting(
