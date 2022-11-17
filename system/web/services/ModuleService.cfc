@@ -1298,7 +1298,11 @@ component extends="coldbox.system.web.services.BaseService" {
 		*/
 		// Get parent environment settings and if same convention of 'environment'() found, execute it.
 		if ( structKeyExists( oConfig, appSettings.environment ) ) {
-			mConfig.settings.append( invoke( oConfig, "#appSettings.environment#" ), true );
+			invoke(
+				oConfig,
+				"#appSettings.environment#",
+				[ mConfig.settings ]
+			);
 		}
 	};
 
