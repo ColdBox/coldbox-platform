@@ -19,7 +19,7 @@ component
 	 ****************************************************************/
 
 	property name="templateCache" inject="cachebox:template";
-	property name="htmlHelper" inject="provider:@HTMLHelper";
+	property name="htmlHelper"    inject="provider:@HTMLHelper";
 
 	/****************************************************************
 	 * Rendering Properties *

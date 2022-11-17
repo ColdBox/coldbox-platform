@@ -935,7 +935,9 @@ component accessors="true" {
 		// Lazy processes
 		var isLazy         = arguments.metadata.keyExists( "lazy" );
 		var isLazyUnlocked = arguments.metadata.keyExists( "lazyNoLock" );
-		var isORMProperty  = ( arguments.metadata.keyExists( "persistent" ) && arguments.metadata.persistent ) || arguments.metadata.keyExists( "fieldtype" );
+		var isORMProperty  = ( arguments.metadata.keyExists( "persistent" ) && arguments.metadata.persistent ) || arguments.metadata.keyExists(
+			"fieldtype"
+		);
 		if ( ( isLazy || isLazyUnlocked ) && !isORMProperty ) {
 			// Detect Builder Name
 			var builderName = "";
