@@ -1152,8 +1152,12 @@ component serializable="false" accessors="true" {
 		required DIData
 	){
 		// Init lookup map in the target
-		param arguments.target.$wbDelegateMap   = {};
-		param arguments.DIData.delegateExcludes = "";
+		if ( !structKeyExists( arguments.target, "$wbDelegateMap" ) || isNull( arguments.target.$wbDelegateMap) ){
+			arguments.target.$wbDelegateMap = {};
+		}
+		if ( !structKeyExists( arguments.DIData, "delegateExcludes" ) || isNull( arguments.DIData.delegateExcludes) ){
+			arguments.DIData.delegateExcludes = "";
+		}
 
 		// Inject target into the delegate as $parent
 		arguments.delegate.injectPropertyMixin( "$parent", arguments.target );

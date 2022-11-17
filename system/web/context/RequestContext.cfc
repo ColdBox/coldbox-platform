@@ -846,7 +846,7 @@ component serializable="false" accessors="true" {
 		name
 	){
 		// Do we have an incoming rendering region definition? If we do, store it and return
-		if ( !isNull( arguments.name ) ) {
+		if ( structKeyExists( arguments, "name" ) && !isNull( arguments.name ) ) {
 			variables.renderingRegions[ arguments.name ] = arguments;
 			return this;
 		}
@@ -855,7 +855,7 @@ component serializable="false" accessors="true" {
 		variables.privateContext[ "viewModule" ] = arguments.module;
 
 		// Direct Layout Usage
-		if ( !isNull( arguments.layout ) && len( arguments.layout ) ) {
+		if ( structKeyExists( arguments, "layout" ) && !isNull( arguments.layout ) && len( arguments.layout ) ) {
 			setLayout( arguments.layout );
 		}
 		// else try to discover it.
@@ -1185,7 +1185,7 @@ component serializable="false" accessors="true" {
 				to  : entryPoint & foundRoute[ 1 ].pattern,
 				ssl : javacast( "null", "" )
 			};
-			if ( !isNull( arguments.ssl ) ) {
+			if ( structKeyExists( arguments, "ssl" ) && !isNull( arguments.ssl ) ) {
 				args.ssl = arguments.ssl;
 			}
 
@@ -1249,12 +1249,12 @@ component serializable="false" accessors="true" {
 		}
 
 		// SSL ON OR TURN IT ON
-		if ( isSSL() OR ( !isNull( arguments.ssl ) and arguments.ssl ) ) {
+		if ( isSSL() OR ( structKeyExists( arguments, "ssl" ) && !isNull( arguments.ssl ) and arguments.ssl ) ) {
 			variables.SESBaseURL = replaceNoCase( variables.SESBaseURL, "http:", "https:" );
 		}
 
 		// SSL Turn Off
-		if ( !isNull( arguments.ssl ) and arguments.ssl eq false ) {
+		if ( structKeyExists( arguments, "ssl" ) && !isNull( arguments.ssl ) and arguments.ssl eq false ) {
 			variables.SESBaseURL = replaceNoCase( variables.SESBaseURL, "https:", "http:" );
 		}
 
@@ -1361,7 +1361,7 @@ component serializable="false" accessors="true" {
 	 * @return coldbox.system.web.context.Response
 	 */
 	function getResponse(){
-		if ( isNull( variables.privateContext.response ) ) {
+		if ( !structKeyExists( variables.privateContext, "response" ) || isNull( variables.privateContext.response ) ) {
 			variables.privateContext.response = new coldbox.system.web.context.Response();
 		}
 		return variables.privateContext.response;
@@ -1671,13 +1671,13 @@ component serializable="false" accessors="true" {
 	 */
 	function setHTTPHeader( statusCode, statusText = "", name, value = "" ){
 		// status code? We do not add to response headers as this is a separate marker identifier to the response
-		if ( !isNull( arguments.statusCode ) ) {
+		if ( structKeyExists( arguments, "statusCode" ) && !isNull( arguments.statusCode ) ) {
 			getPageContext()
 				.getResponse()
 				.setStatus( javacast( "int", arguments.statusCode ), javacast( "string", arguments.statusText ) );
 		}
 		// Name Exists
-		else if ( !isNull( arguments.name ) ) {
+		else if ( structKeyExists( arguments, "name" ) && !isNull( arguments.name ) ) {
 			getPageContext()
 				.getResponse()
 				.addHeader( javacast( "string", arguments.name ), javacast( "string", arguments.value ) );

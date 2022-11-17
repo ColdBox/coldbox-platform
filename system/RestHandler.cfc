@@ -51,7 +51,7 @@ component extends="EventHandler" {
 			};
 			structAppend( actionArgs, arguments.eventArguments );
 			// Incoming Format Detection
-			if ( !isNull( arguments.rc.format ) ) {
+			if ( structKeyExists( arguments.rc, "format" ) && !isNull( arguments.rc.format ) ) {
 				arguments.prc.response.setFormat( arguments.rc.format );
 			}
 			// Execute action
@@ -111,7 +111,7 @@ component extends="EventHandler" {
 
 		// Did the controllers set a view to be rendered? If not use renderdata, else just delegate to view.
 		if (
-			isNull( local.actionResults )
+			( !structKeyExists( local, "actionResults" ) || isNull( local.actionResults ) )
 			AND
 			!arguments.event.getCurrentView().len()
 			AND
@@ -146,7 +146,7 @@ component extends="EventHandler" {
 		}
 
 		// If results detected, just return them, controllers requesting to return results
-		if ( !isNull( local.actionResults ) ) {
+		if ( structKeyExists( local, "actionResults" ) && !isNull( local.actionResults ) ) {
 			return local.actionResults;
 		}
 	}
@@ -171,7 +171,7 @@ component extends="EventHandler" {
 	){
 		// Try to discover exception, if not, hard error
 		if (
-			!isNull( arguments.prc.exception ) && ( isNull( arguments.exception ) || isEmpty( arguments.exception ) )
+			structKeyExists( arguments.prc, "exception" ) && !isNull( arguments.prc.exception ) && ( isNull( arguments.exception ) || isEmpty( arguments.exception ) )
 		) {
 			arguments.exception = arguments.prc.exception.getExceptionStruct();
 		}
@@ -409,6 +409,7 @@ component extends="EventHandler" {
 
 		// case when the a jwt token was valid, but expired
 		if (
+			structKeyExists( arguments.prc, "cbSecurity_validatorResults" ) && 
 			!isNull( arguments.prc.cbSecurity_validatorResults ) &&
 			arguments.prc.cbSecurity_validatorResults.messages CONTAINS "expired"
 		) {
@@ -475,7 +476,7 @@ component extends="EventHandler" {
 			.addMessage( "You are not allowed to access this resource" );
 
 		// Check for validator results
-		if ( !isNull( arguments.prc.cbSecurity_validatorResults ) ) {
+		if ( structKeyExists( arguments.prc, "cbSecurity_validatorResults" ) && !isNull( arguments.prc.cbSecurity_validatorResults ) ) {
 			arguments.prc.response.addMessage( arguments.prc.cbSecurity_validatorResults.messages );
 		}
 

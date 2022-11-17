@@ -381,7 +381,7 @@ component
 		numeric asyncJoinTimeout = 0
 	) cbMethod{
 		// Backwards Compat: Remove by ColdBox 7
-		if ( !isNull( arguments.interceptData ) ) {
+		if ( structKeyExists( arguments, "interceptData" ) && !isNull( arguments.interceptData ) ) {
 			arguments.data = arguments.interceptData;
 		}
 		return variables.controller.getInterceptorService().announce( argumentCollection = arguments );
@@ -476,7 +476,7 @@ component
 	any function getModuleSettings( required module, setting, defaultValue ) cbMethod{
 		var moduleSettings = getModuleConfig( arguments.module ).settings;
 		// return specific setting?
-		if ( !isNull( arguments.setting ) ) {
+		if ( structKeyExists( arguments, "setting" ) && !isNull( arguments.setting ) ) {
 			return (
 				structKeyExists( moduleSettings, arguments.setting ) ? moduleSettings[ arguments.setting ] : arguments.defaultValue
 			);
@@ -767,7 +767,7 @@ component
 	 * @return coldbox.system.async.AsyncManager
 	 */
 	any function async() cbMethod{
-		if ( isNull( variables.asyncManager ) ) {
+		if ( !structKeyExists( variables, "asyncManager" ) || isNull( variables.asyncManager ) ) {
 			variables.asyncManager = variables.controller.getWireBox().getInstance( "asyncManager@coldbox" );
 		}
 		return variables.asyncManager;

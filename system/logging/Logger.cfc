@@ -393,7 +393,7 @@ component accessors="true" {
 						thisAppender.logMessage( thread.logEvent );
 					}
 				} else {
-					if ( isNull( local.logEvent ) ) {
+					if ( !structKeyExists( local, "logEvent" ) || isNull( local.logEvent ) ) {
 						var logEvent = new coldbox.system.logging.LogEvent( argumentCollection = arguments );
 					}
 					thisAppender.logMessage( local.logEvent );

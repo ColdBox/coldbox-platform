@@ -24,7 +24,7 @@ component {
 			mappingHelper = new CFMappingHelper();
 		}
 
-		if ( !isNull( arguments.mappings ) ) {
+		if ( structKeyExists( arguments, "mappings" ) && !isNull( arguments.mappings ) ) {
 			mappingHelper.addMappings( arguments.mappings );
 		} else {
 			// Add / registration
@@ -101,7 +101,7 @@ component {
 	 * @return java.net.InetAddress
 	 */
 	private function getInetAddress(){
-		if ( isNull( variables.inetAddress ) ) {
+		if ( !structKeyExists( variables, "inetAddress" ) || isNull( variables.inetAddress ) ) {
 			variables.inetAddress = createObject( "java", "java.net.InetAddress" );
 		}
 		return variables.inetAddress;
@@ -237,16 +237,16 @@ component {
 	 */
 	function getSystemSetting( required key, defaultValue ){
 		var value = getJavaSystem().getProperty( arguments.key );
-		if ( !isNull( local.value ) ) {
+		if ( structKeyExists( local, "value" ) && !isNull( local.value ) ) {
 			return value;
 		}
 
 		value = getJavaSystem().getEnv( arguments.key );
-		if ( !isNull( local.value ) ) {
+		if ( structKeyExists( local, "value" ) && !isNull( local.value ) ) {
 			return value;
 		}
 
-		if ( !isNull( arguments.defaultValue ) ) {
+		if ( structKeyExists( arguments, "defaultValue" ) && !isNull( arguments.defaultValue ) ) {
 			return arguments.defaultValue;
 		}
 
@@ -308,7 +308,7 @@ component {
 	 * Retrieve an instance of Java System
 	 */
 	function getJavaSystem(){
-		if ( isNull( variables.javaSystem ) ) {
+		if ( !structKeyExists( variables, "javaSystem" ) || isNull( variables.javaSystem ) ) {
 			variables.javaSystem = createObject( "java", "java.lang.System" );
 		}
 		return variables.javaSystem;
@@ -320,7 +320,7 @@ component {
 	 * @return coldbox.system.core.dynamic.MixerUtil
 	 */
 	function getMixerUtil(){
-		if ( isNull( variables.mixerUtil ) ) {
+		if ( !structKeyExists( variables, "mixerUtil" ) || isNull( variables.mixerUtil ) ) {
 			variables.mixerUtil = new coldbox.system.core.dynamic.MixerUtil();
 		}
 		return variables.mixerUtil;

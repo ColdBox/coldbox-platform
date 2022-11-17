@@ -92,7 +92,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * Get or construct a ColdBox Virtual Application
 	 */
 	function getColdBoxVirtualApp(){
-		if ( isNull( request.coldBoxVirtualApp ) ) {
+		if ( !structKeyExists( request, "coldBoxVirtualApp" ) || isNull( request.coldBoxVirtualApp ) ) {
 			request.coldBoxVirtualApp = new coldbox.system.testing.VirtualApp(
 				appMapping = variables.appMapping,
 				configPath = variables.configMapping,
@@ -154,7 +154,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * BDD: The main setup method for running ColdBox Integration enabled tests
 	 */
 	function beforeAll(){
-		if ( isNull( variables._ranBeforeAll ) ) {
+		if ( !structKeyExists( variables, "_ranBeforeAll" ) || isNull( variables._ranBeforeAll ) ) {
 			beforeTests();
 			variables._ranBeforeAll = true;
 		}
@@ -164,7 +164,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * BDD: The main teardown for ColdBox enabled applications after all tests execute
 	 */
 	function afterAll(){
-		if ( isNull( variables._ranAfterAll ) ) {
+		if ( !structKeyExists( variables, "_ranAfterAll" ) || isNull( variables._ranAfterAll ) ) {
 			afterTests();
 			variables._ranAfterAll = true;
 		}
@@ -251,7 +251,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 		mockRC.init( properties = rcProps, controller = mockController );
 
 		// return decorator context
-		if ( structKeyExists( arguments, "decorator" ) ) {
+		if ( structKeyExists( arguments, "decorator" ) && !isNull( arguments.decorator ) ) {
 			return getMockBox().createMock( arguments.decorator ).init( mockRC, mockController );
 		}
 
@@ -498,7 +498,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 							.marshallData( argumentCollection = renderData );
 					}
 					// If we have handler results save them in our context for assertions
-					else if ( !isNull( local.handlerResults ) ) {
+					else if ( structKeyExists( local, "handlerResults" ) && !isNull( local.handlerResults ) ) {
 						// Store raw results
 						requestContext.setValue( "cbox_handler_results", handlerResults );
 						requestContext.setValue( "cbox_statusCode", getNativeStatusCode() );
@@ -788,7 +788,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 		numeric asyncJoinTimeout = 0
 	){
 		// Backwards Compat: Remove by ColdBox 7
-		if ( !isNull( arguments.interceptData ) ) {
+		if ( structKeyExists( arguments, "interceptData" ) && !isNull( arguments.interceptData ) ) {
 			arguments.data = arguments.interceptData;
 		}
 		return getController().getInterceptorService().announce( argumentCollection = arguments );
