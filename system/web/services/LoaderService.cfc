@@ -97,8 +97,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		variables.controller.getRequestService().rebuildFlashScope();
 		// Internal event for interceptors to load global UDF Helpers
 		variables.controller.getInterceptorService().announce( "cbLoadInterceptorHelpers" );
+		// Startup the renderer for operation
+		variables.controller.getRenderer().startup();
 		// Execute afterAspectsLoad: all module interceptions are registered and flash rebuilt if needed
 		variables.controller.getInterceptorService().announce( "afterAspectsLoad" );
+		// Customg Tags by convention
+		loadAppTags();
 		// Flag the initiation, Framework is ready to serve requests. Praise be to GOD.
 		variables.controller.setColdboxInitiated( true );
 		// Startup the schedulers now that the entire application has been loaded and runnning
@@ -107,6 +111,14 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		variables.log.info( "+++ ColdBox is ready to serve requests" );
 
 		// We are now done, rock and roll!!
+		return this;
+	}
+
+	/**
+	 * Load Application tags by convention
+	 */
+	function loadAppTags(){
+		variables.controller.getUtil().addCustomTagPath( variables.controller.getAppRootPath() & "includes/tags" );
 		return this;
 	}
 
@@ -191,6 +203,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			.toProvider( function(){
 				return variables.controller.getAsyncManager();
 			} );
+		// Map Delegates: core and ColdBox based delegates
+		binder.mapDirectory( packagePath = "coldbox.system.core.delegates", namespace = "@coreDelegates" );
+		binder.mapDirectory( packagePath = "coldbox.system.web.delegates", namespace = "@cbDelegates" );
 
 		variables.log.info( "+ ColdBox Global Classes registered" );
 

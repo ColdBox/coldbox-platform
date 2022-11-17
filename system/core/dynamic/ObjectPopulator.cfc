@@ -45,6 +45,7 @@ component accessors="true" singleton {
 	 * @nullEmptyInclude     A list of keys to NULL when empty
 	 * @nullEmptyExclude     A list of keys to NOT NULL when empty
 	 * @composeRelationships Automatically attempt to compose relationships from memento
+	 * @ignoreTargetLists    If this is true, then the populator will ignore the target's population include/exclude metadata lists. By default this is false.
 	 *
 	 * @return The target populated with the packet
 	 */
@@ -58,7 +59,8 @@ component accessors="true" singleton {
 		boolean ignoreEmpty          = false,
 		string nullEmptyInclude      = "",
 		string nullEmptyExclude      = "",
-		boolean composeRelationships = false
+		boolean composeRelationships = false,
+		boolean ignoreTargetLists    = false
 	){
 		// Inflate JSON
 		arguments.memento = deserializeJSON( arguments.JSONString );
@@ -81,6 +83,7 @@ component accessors="true" singleton {
 	 * @nullEmptyInclude     A list of keys to NULL when empty
 	 * @nullEmptyExclude     A list of keys to NOT NULL when empty
 	 * @composeRelationships Automatically attempt to compose relationships from memento
+	 * @ignoreTargetLists    If this is true, then the populator will ignore the target's population include/exclude metadata lists. By default this is false.
 	 *
 	 * @return The target populated with the packet
 	 */
@@ -95,7 +98,8 @@ component accessors="true" singleton {
 		boolean ignoreEmpty          = false,
 		string nullEmptyInclude      = "",
 		string nullEmptyExclude      = "",
-		boolean composeRelationships = false
+		boolean composeRelationships = false,
+		boolean ignoreTargetLists    = false
 	){
 		// determine XML object or string?
 		if ( isSimpleValue( arguments.xml ) ) {
@@ -137,6 +141,7 @@ component accessors="true" singleton {
 	 * @nullEmptyInclude     A list of keys to NULL when empty
 	 * @nullEmptyExclude     A list of keys to NOT NULL when empty
 	 * @composeRelationships Automatically attempt to compose relationships from memento
+	 * @ignoreTargetLists    If this is true, then the populator will ignore the target's population include/exclude metadata lists. By default this is false.
 	 *
 	 * @return The target populated with the packet
 	 */
@@ -151,7 +156,8 @@ component accessors="true" singleton {
 		boolean ignoreEmpty          = false,
 		string nullEmptyInclude      = "",
 		string nullEmptyExclude      = "",
-		boolean composeRelationships = false
+		boolean composeRelationships = false,
+		boolean ignoreTargetLists    = false
 	){
 		if ( arguments.qry.recordcount >= arguments.rowNumber ) {
 			arguments.memento = structNew();
@@ -181,6 +187,7 @@ component accessors="true" singleton {
 	 * @nullEmptyInclude     A list of keys to NULL when empty
 	 * @nullEmptyExclude     A list of keys to NOT NULL when empty
 	 * @composeRelationships Automatically attempt to compose relationships from memento
+	 * @ignoreTargetLists    If this is true, then the populator will ignore the target's population include/exclude metadata lists. By default this is false.
 	 *
 	 * @return The target populated with the packet
 	 */
@@ -196,7 +203,8 @@ component accessors="true" singleton {
 		boolean ignoreEmpty          = false,
 		string nullEmptyInclude      = "",
 		string nullEmptyExclude      = "",
-		boolean composeRelationships = false
+		boolean composeRelationships = false,
+		boolean ignoreTargetLists    = false
 	){
 		var prefixLength = len( arguments.prefix );
 
@@ -228,6 +236,7 @@ component accessors="true" singleton {
 	 * @nullEmptyInclude     A list of keys to NULL when empty
 	 * @nullEmptyExclude     A list of keys to NOT NULL when empty
 	 * @composeRelationships Automatically attempt to compose relationships from memento
+	 * @ignoreTargetLists    If this is true, then the populator will ignore the target's population include/exclude metadata lists. By default this is false.
 	 *
 	 * @return The target populated with the packet
 	 */
@@ -242,7 +251,8 @@ component accessors="true" singleton {
 		boolean ignoreEmpty          = false,
 		string nullEmptyInclude      = "",
 		string nullEmptyExclude      = "",
-		boolean composeRelationships = false
+		boolean composeRelationships = false,
+		boolean ignoreTargetLists    = false
 	){
 		var prefixLength = len( arguments.prefix );
 		var newMemento   = {};
@@ -273,6 +283,7 @@ component accessors="true" singleton {
 	 * @nullEmptyInclude     A list of keys to NULL when empty
 	 * @nullEmptyExclude     A list of keys to NOT NULL when empty
 	 * @composeRelationships Automatically attempt to compose relationships from memento
+	 * @ignoreTargetLists    If this is true, then the populator will ignore the target's population include/exclude metadata lists. By default this is false.
 	 *
 	 * @return The target populated with the packet
 	 */
@@ -286,7 +297,8 @@ component accessors="true" singleton {
 		boolean ignoreEmpty          = false,
 		string nullEmptyInclude      = "",
 		string nullEmptyExclude      = "",
-		boolean composeRelationships = false
+		boolean composeRelationships = false,
+		boolean ignoreTargetLists    = false
 	){
 		var scopeInjection = false;
 
@@ -315,13 +327,20 @@ component accessors="true" singleton {
 					propertyValue = javacast( "null", "" );
 				}
 
-				// Incorporate Target Population Metadata
+				// Incorporate Target Population Metadata only if not ignored.
+				// We usually ignore when we are using this with ORMs to do all column populations
 				// this.population = { include : "", exclude : ""  }
-				param arguments.target.population         = {};
-				param arguments.target.population.include = [];
-				param arguments.target.population.exclude = [];
-				arguments.include                         = arguments.include.listAppend( arguments.target.population.include.toList() );
-				arguments.exclude                         = arguments.exclude.listAppend( arguments.target.population.exclude.toList() );
+				if ( !arguments.ignoreTargetLists ) {
+					param arguments.target.population         = {};
+					param arguments.target.population.include = [];
+					param arguments.target.population.exclude = [];
+					arguments.include                         = arguments.include.listAppend(
+						arguments.target.population.include.toList()
+					);
+					arguments.exclude = arguments.exclude.listAppend(
+						arguments.target.population.exclude.toList()
+					);
+				}
 
 				// Include List?
 				if ( len( arguments.include ) AND NOT listFindNoCase( arguments.include, key ) ) {

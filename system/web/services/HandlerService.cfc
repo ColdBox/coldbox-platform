@@ -93,7 +93,6 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			var mapping = wirebox
 				.registerNewInstance( name = arguments.invocationPath, instancePath = arguments.invocationPath )
 				.setVirtualInheritance( "coldbox.system.EventHandler" )
-				.addDIConstructorArgument( name = "controller", value = controller )
 				.setThreadSafe( true )
 				.setScope(
 					variables.handlerCaching ? wirebox.getBinder().SCOPES.SINGLETON : wirebox.getBinder().SCOPES.NOSCOPE
@@ -613,20 +612,16 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 */
 	private function wireboxSetup(){
 		if ( NOT wirebox.getBinder().mappingExists( "coldbox.system.EventHandler" ) ) {
-			wirebox
-				.registerNewInstance(
-					name         = "coldbox.system.EventHandler",
-					instancePath = "coldbox.system.EventHandler"
-				)
-				.addDIConstructorArgument( name = "controller", value = controller );
+			wirebox.registerNewInstance(
+				name         = "coldbox.system.EventHandler",
+				instancePath = "coldbox.system.EventHandler"
+			);
 		}
 		if ( NOT wirebox.getBinder().mappingExists( "coldbox.system.RestHandler" ) ) {
-			wirebox
-				.registerNewInstance(
-					name         = "coldbox.system.RestHandler",
-					instancePath = "coldbox.system.RestHandler"
-				)
-				.addDIConstructorArgument( name = "controller", value = controller );
+			wirebox.registerNewInstance(
+				name         = "coldbox.system.RestHandler",
+				instancePath = "coldbox.system.RestHandler"
+			);
 		}
 		return this;
 	}

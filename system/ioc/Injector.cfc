@@ -862,6 +862,16 @@ component serializable="false" accessors="true" {
 				processMixins( targetObject, arguments.mapping );
 			}
 
+			// Process Lazy Properties
+			if ( arguments.mapping.getLazyProperties().len() ) {
+				processLazyProperties( targetObject, arguments.mapping );
+			}
+
+			// Process Observer Properties
+			if ( arguments.mapping.getObservedProperties().len() ) {
+				processObservedProperties( targetObject, arguments.mapping );
+			}
+
 			// Process After DI Complete
 			processAfterCompleteDI( targetObject, arguments.mapping.getOnDIComplete() );
 
@@ -998,6 +1008,57 @@ component serializable="false" accessors="true" {
 	}
 
 	/****************************************** PRIVATE ************************************************/
+
+	/**
+	 * Process lazy properties on the target object
+	 *
+	 * @targetObject The target object to do some goodness on
+	 * @mapping      The target mapping
+	 */
+	private Injector function processLazyProperties( required targetObject, required mapping ){
+		// Store lookup map on the target
+		arguments.targetObject.$wbLazyProperties = arguments.mapping
+			.getLazyProperties()
+			.reduce( function( result, item ){
+				arguments.result[ arguments.item.name ] = arguments.item;
+				return arguments.result;
+			}, {} );
+		// Create the getter/builder methods
+		arguments.mapping
+			.getLazyProperties()
+			.each( function( thisProperty ){
+				targetObject.injectMixin( "get#thisProperty.name#", variables.objectBuilder.lazyPropertyGetter );
+			} );
+
+		return this;
+	}
+
+	/**
+	 * Process observed properties on the target object
+	 *
+	 * @targetObject The target object to do some goodness on
+	 * @mapping      The target mapping
+	 */
+	private Injector function processObservedProperties( required targetObject, required mapping ){
+		// Store lookup map on the target
+		arguments.targetObject.$wbObservedProperties = arguments.mapping
+			.getObservedProperties()
+			.reduce( function( result, item ){
+				arguments.result[ arguments.item.name ] = arguments.item;
+				return arguments.result;
+			}, {} );
+		// Create the getter/builder methods
+		arguments.mapping
+			.getObservedProperties()
+			.each( function( thisProperty ){
+				targetObject.injectMixin(
+					"set#thisProperty.name#",
+					variables.objectBuilder.observedPropertySetter
+				);
+			} );
+
+		return this;
+	}
 
 	/**
 	 * Process mixins on the selected target
@@ -1140,7 +1201,7 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
-	 * Process a target objecte dependency delegation
+	 * Process a target object dependency delegation
 	 *
 	 * @target     The targeted object injected with the dependency
 	 * @dependency The dependency object
@@ -1158,6 +1219,9 @@ component serializable="false" accessors="true" {
 		if ( !structKeyExists( arguments.DIData, "delegateExcludes" ) || isNull( arguments.DIData.delegateExcludes) ){
 			arguments.DIData.delegateExcludes = "";
 		}
+
+		// Verify property mixin injection on delegete
+		param arguments.delegate.injectPropertyMixin = variables.mixerUtil.injectPropertyMixin;
 
 		// Inject target into the delegate as $parent
 		arguments.delegate.injectPropertyMixin( "$parent", arguments.target );
@@ -1479,9 +1543,10 @@ component serializable="false" accessors="true" {
 		}
 
 		// Inject Environment Support
-		arguments.binder[ "getSystemSetting" ]  = variables.utility.getSystemSetting;
-		arguments.binder[ "getSystemProperty" ] = variables.utility.getSystemProperty;
-		arguments.binder[ "getEnv" ]            = variables.utility.getEnv;
+		var envUtil                             = new coldbox.system.core.delegates.Env();
+		arguments.binder[ "getSystemSetting" ]  = envUtil.getSystemSetting;
+		arguments.binder[ "getSystemProperty" ] = envUtil.getSystemProperty;
+		arguments.binder[ "getEnv" ]            = envUtil.getEnv;
 
 		// Check if data CFC or binder family
 		if ( !structKeyExists( arguments.binder, "$wbBinder" ) ) {

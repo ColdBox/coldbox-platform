@@ -2,17 +2,47 @@
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * Manages all the routing definitions for the application and exposes the
- * ColdBox Routing DSL
+ * Manages all the routing definitions for the application and exposes the ColdBox Routing DSL
  */
 component
-	accessors="true"
-	extends  ="coldbox.system.FrameworkSupertype"
 	threadsafe
+	serializable="false"
+	accessors   ="true"
+	delegates   ="Async@coreDelegates,
+				Interceptor@cbDelegates,
+				Settings@cbDelegates,
+				Flow@coreDelegates,
+				Env@coreDelegates,
+				Population@cbDelegates,
+				Rendering@cbDelegates"
 {
 
+	/****************************************************************
+	 * DI *
+	 ****************************************************************/
+
+	property
+		name    ="cachebox"  
+		inject  ="cachebox"
+		delegate="getCache";
+	property
+		name    ="controller"
+		inject  ="coldbox" 
+		delegate="relocate,runEvent,runRoute";
+	property name="flash"  inject="coldbox:flash";
+	property name="logBox" inject="logbox";
+	property name="log"    inject="logbox:logger:{this}";
+	property
+		name    ="wirebox"
+		inject  ="wirebox"
+		delegate="getInstance";
+
+	/****************************************************************
+	 * Properties *
+	 ****************************************************************/
+
 	/**
-	 * The routing table
+	 * The routing tableamazon
 	 */
 	property name="routes" type="array";
 
@@ -97,12 +127,6 @@ component
 		type   ="boolean"
 		default="true";
 
-
-	/**
-	 * ColdBox Controller
-	 */
-	property name="controller";
-
 	/**
 	 * Fluent route construct
 	 */
@@ -120,19 +144,8 @@ component
 
 	/**
 	 * Constructor
-	 *
-	 * @controller        The ColdBox controller linkage
-	 * @controller.inject coldbox
 	 */
-	function init( required controller ){
-		// Setup Internal Work Objects
-		variables.controller = arguments.controller;
-		variables.wirebox    = arguments.controller.getWireBox();
-		variables.cachebox   = arguments.controller.getCacheBox();
-		variables.logBox     = arguments.controller.getLogBox();
-		variables.log        = variables.logBox.getLogger( this );
-		variables.flash      = arguments.controller.getRequestService().getFlashScope();
-
+	function init(){
 		/************************************** FLUENT CONSTRUCTS *********************************************/
 
 		// With closure
@@ -632,14 +645,21 @@ component
 		);
 
 		if ( !structIsEmpty( actionSet ) ) {
-			addRoute(
-				pattern  : "#thisPattern#/:#arguments.parameterName#/edit",
-				handler  : isNull( arguments.handler ) ? arguments.resource : arguments.handler,
-				action   : actionSet,
-				module   : arguments.module,
-				namespace: arguments.namespace,
-				meta     : arguments.meta
-			);
+			var routeArgs = {
+				pattern   : "#thisPattern#/:#arguments.parameterName#/edit",
+				handler   : isNull( arguments.handler ) ? arguments.resource : arguments.handler,
+				action    : actionSet,
+				module    : arguments.module,
+				namespace : arguments.namespace,
+				meta      : arguments.meta
+			};
+
+			// process a with closure if not empty
+			if ( !variables.withClosure.isEmpty() ) {
+				processWith( routeArgs );
+			}
+
+			addRoute( argumentCollection = routeArgs );
 		}
 
 		// New
@@ -649,14 +669,21 @@ component
 			arguments.except
 		);
 		if ( !structIsEmpty( actionSet ) ) {
-			addRoute(
-				pattern  : "#thisPattern#/new",
-				handler  : isNull( arguments.handler ) ? arguments.resource : arguments.handler,
-				action   : actionSet,
-				module   : arguments.module,
-				namespace: arguments.namespace,
-				meta     : arguments.meta
-			);
+			var routeArgs = {
+				pattern   : "#thisPattern#/new",
+				handler   : isNull( arguments.handler ) ? arguments.resource : arguments.handler,
+				action    : actionSet,
+				module    : arguments.module,
+				namespace : arguments.namespace,
+				meta      : arguments.meta
+			};
+
+			// process a with closure if not empty
+			if ( !variables.withClosure.isEmpty() ) {
+				processWith( routeArgs );
+			}
+
+			addRoute( argumentCollection = routeArgs );
 		}
 
 		// Update, Delete, Show
@@ -671,14 +698,21 @@ component
 			arguments.except
 		);
 		if ( !structIsEmpty( actionSet ) ) {
-			addRoute(
-				pattern  : "#thisPattern#/:#arguments.parameterName#",
-				handler  : isNull( arguments.handler ) ? arguments.resource : arguments.handler,
-				action   : actionSet,
-				module   : arguments.module,
-				namespace: arguments.namespace,
-				meta     : arguments.meta
-			);
+			var routeArgs = {
+				pattern   : "#thisPattern#/:#arguments.parameterName#",
+				handler   : isNull( arguments.handler ) ? arguments.resource : arguments.handler,
+				action    : actionSet,
+				module    : arguments.module,
+				namespace : arguments.namespace,
+				meta      : arguments.meta
+			};
+
+			// process a with closure if not empty
+			if ( !variables.withClosure.isEmpty() ) {
+				processWith( routeArgs );
+			}
+
+			addRoute( argumentCollection = routeArgs );
 		}
 
 		// Index + Create
@@ -688,14 +722,21 @@ component
 			arguments.except
 		);
 		if ( !structIsEmpty( actionSet ) ) {
-			addRoute(
-				pattern  : "#thisPattern#",
-				handler  : isNull( arguments.handler ) ? arguments.resource : arguments.handler,
-				action   : actionSet,
-				module   : arguments.module,
-				namespace: arguments.namespace,
-				meta     : arguments.meta
-			);
+			var routeArgs = {
+				pattern   : "#thisPattern#",
+				handler   : isNull( arguments.handler ) ? arguments.resource : arguments.handler,
+				action    : actionSet,
+				module    : arguments.module,
+				namespace : arguments.namespace,
+				meta      : arguments.meta
+			};
+
+			// process a with closure if not empty
+			if ( !variables.withClosure.isEmpty() ) {
+				processWith( routeArgs );
+			}
+
+			addRoute( argumentCollection = routeArgs );
 		}
 
 		return this;

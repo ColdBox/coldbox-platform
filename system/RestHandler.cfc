@@ -1,10 +1,10 @@
 /**
- * ********************************************************************************
- * Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
- * ********************************************************************************
- * This specialized handler is to be used for Restful applications.
- * It wraps around functions to provide consistency and an opinionated approach to RESTing!
+ * ---
+ * Base class for all RESTFul event handlers
+ *
+ * @author Luis Majano <lmajano@ortussolutions.com>
  */
 component extends="EventHandler" {
 

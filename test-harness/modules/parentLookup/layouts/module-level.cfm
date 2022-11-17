@@ -8,7 +8,7 @@
 	</head>
 	<body>
 		<h1>This is a module level layout (module-level)</h1>
-		#renderView()#
+		#view()#
 	</body>
 </html>
 </cfoutput>

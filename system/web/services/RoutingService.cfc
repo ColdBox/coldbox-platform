@@ -1,4 +1,5 @@
 /**
+/**
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
@@ -78,22 +79,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 */
 	private function loadRouter(){
 		// Declare types of routers to discover
-		var legacyRouter = "config/Routes.cfm"; // TODO: Decpreated, remove by ColdBox 7
 		var modernRouter = "config.Router";
 		var baseRouter   = "coldbox.system.web.routing.Router";
 
-		// Modern Router?
+		// Discover router: app or base
 		var configFilePath = variables.routingAppMapping & modernRouter.replace( ".", "/", "all" ) & ".cfc";
-		var routerType     = "modern";
-		if ( !fileExists( expandPath( configFilePath ) ) ) {
-			// Legacy Router?
-			configFilePath = variables.routingAppMapping & legacyRouter;
-			routerType     = "legacy";
-			if ( !fileExists( expandPath( configFilePath ) ) ) {
-				// Base Router?
-				routerType = "base";
-			}
-		}
+		var routerType     = fileExists( expandPath( configFilePath ) ) ? "modern" : "base";
 
 		// Check if base router mapped?
 		if ( NOT wirebox.getBinder().mappingExists( baseRouter ) ) {
@@ -114,8 +105,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 					.registerNewInstance( name = "router@coldbox", instancePath = modernRouterPath )
 					.setVirtualInheritance( baseRouter )
 					.setThreadSafe( true )
-					.setScope( wirebox.getBinder().SCOPES.SINGLETON )
-					.addDIConstructorArgument( name = "controller", value = controller );
+					.setScope( wirebox.getBinder().SCOPES.SINGLETON );
 				// Create the Router
 				variables.router = wirebox.getInstance( "router@coldbox" );
 				// Register the Router as an Interceptor as well.
@@ -124,20 +114,6 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 					.registerInterceptor( interceptorObject = variables.router );
 				// Process it
 				variables.router.configure();
-				break;
-			}
-			case "legacy": {
-				// Log it
-				variables.log.info( "Loading Legacy Router at: #legacyRouter#" );
-				// Register basic router
-				wirebox
-					.registerNewInstance( name = "router@coldbox", instancePath = baseRouter )
-					.setScope( wirebox.getBinder().SCOPES.SINGLETON );
-				// Process legacy Routes.cfm. Create a basic Router
-				variables.router = wirebox
-					.getInstance( "router@coldbox" )
-					// Load up legacy template
-					.includeRoutes( configFilePath );
 				break;
 			}
 			default: {

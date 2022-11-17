@@ -240,10 +240,10 @@
 	</div>
 </div>
 
-#renderView( "partials/p1" )#
-#renderView( "partials/p2" )#
-#renderView( "partials/p3" )#
-#renderView( "partials/p1" )#
-#renderView( "partials/p2" )#
-#renderView( "partials/p3" )#
+#view( "partials/p1" )#
+#view( "partials/p2" )#
+#view( "partials/p3" )#
+#view( "partials/p1" )#
+#view( "partials/p2" )#
+#view( "partials/p3" )#
 </cfoutput>

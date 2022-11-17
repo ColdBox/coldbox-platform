@@ -12,6 +12,6 @@
 </head>
 <body>
 <h1>Module 'Layout Test' Layout</h1>
-<cfoutput>#renderView(view=arguments.view)#</cfoutput>
+<cfoutput>#view(view=arguments.view)#</cfoutput>
 </body>
 </html>

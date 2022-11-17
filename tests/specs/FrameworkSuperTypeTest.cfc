@@ -7,7 +7,9 @@ component extends="tests.resources.BaseIntegrationTest" {
 			beforeEach( function( currentSpec ){
 				setup();
 
-				target = prepareMock( new coldbox.system.FrameworkSupertype() ).setController( getController() );
+				target = prepareMock( getInstance( "coldbox.system.FrameworkSupertype" ) ).setController(
+					getController()
+				);
 			} );
 
 			it( "can retrieve the async manager", function(){

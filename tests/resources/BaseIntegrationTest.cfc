@@ -36,11 +36,6 @@ component
 		// Super size me!
 		super.beforeAll();
 
-		// Wire up the test object with dependencies
-		if( this.loadColdBox && structKeyExists( application, "wirebox" ) ){
-			application.wirebox.autowire( this );
-		}
-
 		// add custom matchers
 		addMatchers( {
 			toHavePartialKey : function( expectation, args = {} ){

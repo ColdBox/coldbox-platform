@@ -517,7 +517,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 						requestContext.setValue( "cbox_statusCode", getNativeStatusCode() );
 						renderedContent = cbcontroller
 							.getRenderer()
-							.renderLayout(
+							.layout(
 								module     = requestContext.getCurrentLayoutModule(),
 								viewModule = requestContext.getCurrentViewModule()
 							);
@@ -819,16 +819,6 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 */
 	function getInterceptor( required interceptorName ){
 		return getController().getInterceptorService().getInterceptor( argumentCollection = arguments );
-	}
-
-	/**
-	 * @deprecated
-	 */
-	function getModel(){
-		throw(
-			message = "getModel() is now fully deprecated in favor of getInstance().",
-			type    = "DeprecationException"
-		);
 	}
 
 	/**

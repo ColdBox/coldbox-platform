@@ -34,6 +34,8 @@ component{
 	// Core Application.cfc mixins - ORM Settings, etc
 	include "../test-harness/config/ApplicationMixins.cfm";
 
+	//applicationstop();abort;
+
 	public boolean function onRequestStart( targetPage ){
 		// Set a high timeout for long running tests
 		setting requestTimeout="9999";

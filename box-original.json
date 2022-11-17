@@ -33,12 +33,11 @@
         "*/.md"
     ],
     "devDependencies": {
-        "testbox": "^3.0.0"
     },
-    "installPaths": {
-        "testbox": "testbox"
+	"dependencies":{
+        "cbproxies":"^1.0.1+13"
     },
-    "scripts": {
-
+	"installPaths":{
+        "cbproxies":"system/async/cbproxies/"
     }
 }

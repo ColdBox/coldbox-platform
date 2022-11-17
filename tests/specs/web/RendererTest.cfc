@@ -27,14 +27,14 @@ component extends="tests.resources.BaseIntegrationTest" {
 			} );
 
 			it( "can render views with caching parameters", function(){
-				var results = renderer.renderView(
+				var results = renderer.view(
 					view         = "simpleview",
 					cache        = true,
 					cacheTimeout = "5"
 				);
 				// debug( results );
 
-				var results2 = renderer.renderView(
+				var results2 = renderer.view(
 					view        = "simpleview",
 					cache       = true,
 					acheTimeout = "5"
@@ -43,13 +43,13 @@ component extends="tests.resources.BaseIntegrationTest" {
 			} );
 
 			it( "can render views with different caching providers", function(){
-				var results = renderer.renderView(
+				var results = renderer.view(
 					view          = "simpleview",
 					cache         = true,
 					cacheTimeout  = "5",
 					cacheProvider = "default"
 				);
-				var results2 = renderer.renderView(
+				var results2 = renderer.view(
 					view          = "simpleview",
 					cache         = true,
 					cacheTimeout  = "5",
@@ -59,17 +59,17 @@ component extends="tests.resources.BaseIntegrationTest" {
 			} );
 
 			it( "can render external views", function(){
-				var results = renderer.renderExternalView( "/cbtestharness/external/testViews/externalview" );
+				var results = renderer.externalView( "/cbtestharness/external/testViews/externalview" );
 				expect( results ).toInclude( "external" );
 			} );
 
 			it( "can render external views with caching parameters", function(){
-				var results = renderer.renderExternalView(
+				var results = renderer.externalView(
 					view         = "/cbtestharness/external/testViews/externalview",
 					cache        = "true",
 					cacheTimeout = "5"
 				);
-				var results2 = renderer.renderExternalView(
+				var results2 = renderer.externalView(
 					view         = "/cbtestharness/external/testViews/externalview",
 					cache        = "true",
 					cacheTimeout = "5"
@@ -78,13 +78,13 @@ component extends="tests.resources.BaseIntegrationTest" {
 			} );
 
 			it( "can render external views with different caching parameters", function(){
-				results = renderer.renderExternalView(
+				results = renderer.externalView(
 					view          = "/cbtestharness/external/testViews/externalview",
 					cache         = "true",
 					cacheTimeout  = "5",
 					cacheProvider = "default"
 				);
-				results2 = renderer.renderExternalView(
+				results2 = renderer.externalView(
 					view          = "/cbtestharness/external/testViews/externalview",
 					cache         = "true",
 					cacheTimeout  = "5",
@@ -96,12 +96,12 @@ component extends="tests.resources.BaseIntegrationTest" {
 			it( "can render external views with view caching turned off", function(){
 				renderer.$property( "viewCaching", "variables", false );
 				renderer.getTemplateCache().clearAllViews();
-				var results = renderer.renderExternalView(
+				var results = renderer.externalView(
 					view         = "/cbtestharness/external/testViews/externalview",
 					cache        = "true",
 					cacheTimeout = "5"
 				);
-				var results2 = renderer.renderExternalView(
+				var results2 = renderer.externalView(
 					view         = "/cbtestharness/external/testViews/externalview",
 					cache        = "true",
 					cacheTimeout = "5"
@@ -112,13 +112,13 @@ component extends="tests.resources.BaseIntegrationTest" {
 			it( "can render views with view caching turned off", function(){
 				renderer.$property( "viewCaching", "variables", false );
 				renderer.getTemplateCache().clearAllViews();
-				var results = renderer.renderView(
+				var results = renderer.view(
 					view          = "simpleview",
 					cache         = true,
 					cacheTimeout  = "5",
 					cacheProvider = "default"
 				);
-				var results2 = renderer.renderView(
+				var results2 = renderer.view(
 					view          = "simpleview",
 					cache         = true,
 					cacheTimeout  = "5",

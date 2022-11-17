@@ -4,6 +4,6 @@
 <body>
 	<h1>Simple Layout</h1>
 	<hr>
-	#renderView()#
+	#view()#
 </body>
 </cfoutput>

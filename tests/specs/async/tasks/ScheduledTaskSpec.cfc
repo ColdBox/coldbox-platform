@@ -375,7 +375,7 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 					} );
 				} );
 
-				fstory( "can restrict tasks via a end on constraint", function(){
+				story( "can restrict tasks via a end on constraint", function(){
 					given( "a valid end on constraint", function(){
 						then( "it should run the task", function(){
 							var targetDate = dateFormat( dateAdd( "d", 5, now() ), "yyyy-mm-dd" );

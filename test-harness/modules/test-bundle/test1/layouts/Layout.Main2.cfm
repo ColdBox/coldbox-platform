@@ -8,6 +8,6 @@
 </head>
 <body>
 <h1>Module Layout</h1>
-<cfoutput>#renderView()#</cfoutput>
+<cfoutput>#view()#</cfoutput>
 </body>
 </html>
