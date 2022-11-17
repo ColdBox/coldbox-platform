@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
@@ -934,8 +934,9 @@ component accessors="true" {
 
 		// Lazy processes
 		var isLazy         = arguments.metadata.keyExists( "lazy" );
-		var isLazyUnlocked = arguments.metadata.keyExists( "lazyNoLock" )
-		if ( isLazy || isLazyUnlocked ) {
+		var isLazyUnlocked = arguments.metadata.keyExists( "lazyNoLock" );
+		var isORMProperty  = ( arguments.metadata.keyExists( "persistent" ) && arguments.metadata.persistent ) || arguments.metadata.keyExists( "fieldtype" );
+		if ( ( isLazy || isLazyUnlocked ) && !isORMProperty ) {
 			// Detect Builder Name
 			var builderName = "";
 			if ( isLazy && len( arguments.metadata.lazy ) ) {
