@@ -1032,9 +1032,9 @@ component accessors="true" {
 			// Only process wirebox properties
 			.filter( function( thisProperty ){
 				return arguments.thisProperty.keyExists( "inject" ) ||
-				arguments.thisProperty.keyExists( "lazy" ) ||
 				arguments.thisProperty.keyExists( "lazyNoLock" ) ||
-				arguments.thisProperty.keyExists( "observed" )
+				arguments.thisProperty.keyExists( "observed" ) ||
+				( arguments.thisProperty.keyExists( "lazy" ) && !arguments.thisProperty.keyExists( "fieldType" ) )
 			} )
 			// Process each property
 			.each( processPropertyMetadata );
