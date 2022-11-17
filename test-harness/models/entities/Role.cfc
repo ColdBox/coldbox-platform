@@ -1,7 +1,5 @@
 ﻿component persistent = "true" table = "roles"{
 
-	this.population = { exclude : ["roleId"] };
-
 	property
 		name     ="roleID"
 		column   ="roleID"
@@ -21,4 +19,6 @@
 		fkcolumn    ="FKRoleID"
 		inverse     ="true"
 		cascade     ="all-delete-orphan";
+
+	this.population = { exclude : ["roleId"] };
 }
