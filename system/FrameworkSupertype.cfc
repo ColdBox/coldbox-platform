@@ -52,28 +52,20 @@ component
 	 ****************************************************************/
 
 	function renderview() cbMethod{
-		throw(
-			type    = "DeprecatedMethod",
-			message = "This method has been deprecated, please use 'view()` instead"
-		);
+		getRenderer().renderView( argumentCollection = arguments );
 	}
 	function renderLayout() cbMethod{
-		throw(
-			type    = "DeprecatedMethod",
-			message = "This method has been deprecated, please use 'layout()` instead"
-		);
+		getRenderer().renderLayout( argumentCollection = arguments );
 	}
 	function renderExternalView() cbMethod{
-		throw(
-			type    = "DeprecatedMethod",
-			message = "This method has been deprecated, please use 'externalView()` instead"
-		);
+		getRenderer().renderExternalView( argumentCollection = arguments );
 	}
 	function announceInterception() cbMethod{
-		throw(
-			type    = "DeprecatedMethod",
-			message = "This method has been deprecated, please use 'announce()` instead"
+		variables.log.warn(
+			"announceInterception() has been deprecated, please update your code to announce()",
+			callStackGet()
 		);
+		variables.controller.getInterceptorService().announce( argumentCollection = arguments );
 	}
 
 	/**

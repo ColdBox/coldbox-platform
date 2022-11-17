@@ -19,7 +19,7 @@ component
 	 ****************************************************************/
 
 	property name="templateCache" inject="cachebox:template";
-	property name="htmlHelper" inject="provider:@HTMLHelper";
+	property name="htmlHelper"    inject="provider:@HTMLHelper";
 
 	/****************************************************************
 	 * Rendering Properties *
@@ -59,23 +59,23 @@ component
 	 * Deprecated/Removed Methods *
 	 ****************************************************************/
 
-	function renderview() cbMethod{
-		throw(
-			type    = "DeprecatedMethod",
-			message = "This method has been deprecated, please use 'view()` instead"
-		);
+	function renderview(){
+		variables.log.warn( "renderview() has been deprecated, please update your code to view()", callStackGet() );
+		return view( argumentCollection = arguments );
 	}
-	function renderLayout() cbMethod{
-		throw(
-			type    = "DeprecatedMethod",
-			message = "This method has been deprecated, please use 'layout()` instead"
+	function renderLayout(){
+		variables.log.warn(
+			"renderLayout() has been deprecated, please update your code to layout()",
+			callStackGet()
 		);
+		return layout( argumentCollection = arguments );
 	}
-	function renderExternalView() cbMethod{
-		throw(
-			type    = "DeprecatedMethod",
-			message = "This method has been deprecated, please use 'externalView()` instead"
+	function renderExternalView(){
+		variables.log.warn(
+			"renderExternalView() has been deprecated, please update your code to externalView()",
+			callStackGet()
 		);
+		return externalView( argumentCollection = arguments );
 	}
 
 	/**
