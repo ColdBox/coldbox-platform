@@ -64,6 +64,7 @@ component{
 	private boolean function shouldEnableFullNullSupport() {
         var system = createObject( "java", "java.lang.System" );
         var value = system.getEnv( "FULL_NULL" );
+		writedump( var = "FULL NULL enabled: #yesNoFormat( isNull( value ) ? false : !!value )#", output = "console" );
         return isNull( value ) ? false : !!value;
     }
 
