@@ -54,7 +54,7 @@ component serializable="false" accessors="true" {
 			"populateModel() has been deprecated, please update your code to populate()",
 			callStackGet()
 		);
-		populate( argumentCollection = arguments );
+		return populate( argumentCollection = arguments );
 	}
 
 	/****************************************************************
