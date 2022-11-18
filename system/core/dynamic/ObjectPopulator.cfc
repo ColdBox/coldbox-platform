@@ -301,7 +301,7 @@ component accessors="true" singleton {
 		boolean ignoreTargetLists    = false
 	){
 		var scopeInjection = false;
-		var propertyName = "";
+		var propertyName   = "";
 
 		try {
 			// Scope injection detection
@@ -319,7 +319,7 @@ component accessors="true" singleton {
 				var pop           = true;
 				var propertyValue = "";
 				var nullValue     = false;
-				propertyName = key;
+				propertyName      = key;
 
 				// conditional with StructKeyExist, to prevent language issues with Null value checking of struct keys in ACF
 				if ( structKeyExists( arguments.memento, key ) ) {
