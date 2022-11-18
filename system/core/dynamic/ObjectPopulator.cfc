@@ -301,6 +301,7 @@ component accessors="true" singleton {
 		boolean ignoreTargetLists    = false
 	){
 		var scopeInjection = false;
+		var propertyName   = "";
 
 		try {
 			// Scope injection detection
@@ -318,6 +319,7 @@ component accessors="true" singleton {
 				var pop           = true;
 				var propertyValue = "";
 				var nullValue     = false;
+				propertyName      = key;
 
 				// conditional with StructKeyExist, to prevent language issues with Null value checking of struct keys in ACF
 				if ( structKeyExists( arguments.memento, key ) ) {
@@ -438,7 +440,7 @@ component accessors="true" singleton {
 			}
 			throw(
 				type    = "ObjectPopulator.PopulateObjectException",
-				message = "Error populating bean #getMetadata( arguments.target ).name# with argument #key# of type #arguments.keyTypeAsString#.",
+				message = "Error populating bean #getMetadata( arguments.target ).name# with argument #propertyName# of type #arguments.keyTypeAsString#.",
 				detail  = "#e.Detail#<br>#e.message#<br>#e.tagContext.toString()#"
 			);
 		}
