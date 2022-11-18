@@ -708,7 +708,7 @@ component serializable="false" accessors="true" {
 				local.results.data = local.results.data.$renderdata();
 			}
 			// Check if request context and ignore
-			else if ( isInstanceOf( local.results.data, "coldbox.system.web.context.RequestContext" ) ) {
+			else if ( structKeyExists( local.results.data, "cbRequestContext" ) ) {
 				local.results.delete( "data" );
 			}
 		}
