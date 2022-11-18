@@ -37,7 +37,7 @@
 			customErrorTemplate		= "",
 
 			//Application Aspects
-			handlerCaching 			= false,
+			handlerCaching 			= true,
 			eventCaching			= false
 		};
 
