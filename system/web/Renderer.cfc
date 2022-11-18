@@ -19,7 +19,6 @@ component
 	 ****************************************************************/
 
 	property name="templateCache" inject="cachebox:template";
-	property name="htmlHelper"    inject="provider:@HTMLHelper";
 
 	/****************************************************************
 	 * Rendering Properties *
@@ -61,21 +60,21 @@ component
 
 	function renderview(){
 		variables.log.warn( "renderview() has been deprecated, please update your code to view()", callStackGet() );
-		return view( argumentCollection = arguments );
+		return this.view( argumentCollection = arguments );
 	}
 	function renderLayout(){
 		variables.log.warn(
 			"renderLayout() has been deprecated, please update your code to layout()",
 			callStackGet()
 		);
-		return layout( argumentCollection = arguments );
+		return this.layout( argumentCollection = arguments );
 	}
 	function renderExternalView(){
 		variables.log.warn(
 			"renderExternalView() has been deprecated, please update your code to externalView()",
 			callStackGet()
 		);
-		return externalView( argumentCollection = arguments );
+		return this.externalView( argumentCollection = arguments );
 	}
 
 	/**
@@ -467,8 +466,7 @@ component
 				rendererVariables = ( isNull( attributes.rendererVariables ) ? variables : attributes.rendererVariables ),
 				event             = event,
 				rc                = event.getCollection(),
-				prc               = event.getPrivateCollection(),
-				html              = variables.htmlHelper
+				prc               = event.getPrivateCollection()
 			);
 		}
 

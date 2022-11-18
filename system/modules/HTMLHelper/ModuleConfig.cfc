@@ -41,4 +41,11 @@ component {
 	function onUnload(){
 	}
 
+	/**
+	 * Listen when the renderer is ready
+	 */
+	function afterRendererInit( event, data ){
+		arguments.data.variables.html = variables.wireBox.getInstance( "HTMLHelper@HTMLHelper" );
+	}
+
 }

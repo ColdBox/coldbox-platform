@@ -6,10 +6,7 @@ component extends="tests.resources.BaseIntegrationTest" {
 		describe( "Framework Super Type", function(){
 			beforeEach( function( currentSpec ){
 				setup();
-
-				target = prepareMock( getInstance( "coldbox.system.FrameworkSupertype" ) ).setController(
-					getController()
-				);
+				target = prepareMock( getInstance( "coldbox.system.FrameworkSupertype" ) );
 			} );
 
 			it( "can retrieve the async manager", function(){

@@ -14,14 +14,14 @@ component serializable="false" accessors="true" {
 	 ****************************************************************/
 
 	property name="controller" inject="coldbox";
-	property name="cachebox"   inject="provider:cachebox";
-	property name="flash"      inject="provider:coldbox:flash";
-	property name="logBox"     inject="provider:logbox";
-	property name="log"        inject="provider:logbox:logger:{this}";
-	property name="wirebox"    inject="provider:wirebox";
-	property name="env"        inject="provider:env@coreDelegates";
-	property name="jsonUtil"   inject="provider:JsonUtil@coreDelegates";
-	property name="flow"       inject="provider:Flow@coreDelegates";
+	property name="cachebox"   inject="cachebox";
+	property name="flash"      inject="coldbox:flash";
+	property name="logBox"     inject="logbox";
+	property name="log"        inject="logbox:logger:{this}";
+	property name="wirebox"    inject="wirebox";
+	property name="env"        inject="env@coreDelegates";
+	property name="jsonUtil"   inject="JsonUtil@coreDelegates";
+	property name="flow"       inject="Flow@coreDelegates";
 
 	/**
 	 * Constructor
