@@ -10,7 +10,7 @@
 
 			//Development Settings
 			reinitPassword			= "",
-			handlersIndexAutoReload = true,
+			handlersIndexAutoReload = false,
 
 			//Implicit Events
 			defaultEvent			= "Main.index",
