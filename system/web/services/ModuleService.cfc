@@ -31,6 +31,7 @@ component extends="coldbox.system.web.services.BaseService" {
 	 */
 	function init( required controller ){
 		variables.controller         = arguments.controller;
+		variables.util               = arguments.controller.getUtil();
 		variables.interceptorService = controller.getInterceptorService();
 
 		// service properties
@@ -397,12 +398,9 @@ component extends="coldbox.system.web.services.BaseService" {
 
 			// Register CFML Mapping if it exists, for loading purposes
 			if ( len( trim( mConfig.cfMapping ) ) ) {
-				controller.getUtil().addMapping( name = mConfig.cfMapping, path = mConfig.path );
+				variables.util.addMapping( name = mConfig.cfMapping, path = mConfig.path );
 				variables.cfmappingRegistry[ "/#mConfig.cfMapping#" ] = mConfig.path;
 			}
-
-			// Register tags by convention: /tags in the module
-			variables.controller.getUtil().addCustomTagPath( mConfig.path & "/tags" );
 
 			// Register Custom Interception Points
 			controller
@@ -471,7 +469,7 @@ component extends="coldbox.system.web.services.BaseService" {
 	 * Load all module mappings
 	 */
 	function loadMappings(){
-		controller.getUtil().addMapping( mappings = variables.cfmappingRegistry );
+		variables.util.addMapping( mappings = variables.cfmappingRegistry );
 		return this;
 	}
 
