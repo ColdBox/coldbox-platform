@@ -46,7 +46,7 @@ component singleton {
 		string jsonstring,
 		string xml,
 		query qry,
-		boolean ignoreTargetLists    = false
+		boolean ignoreTargetLists = false
 	) cbMethod{
 		// Do we have a model or name
 		if ( isSimpleValue( arguments.model ) ) {
