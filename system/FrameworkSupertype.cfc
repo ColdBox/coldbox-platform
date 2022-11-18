@@ -18,9 +18,10 @@ component serializable="false" accessors="true" {
 	property name="flash"      inject="provider:coldbox:flash";
 	property name="logBox"     inject="provider:logbox";
 	property name="log"        inject="provider:logbox:logger:{this}";
-	property name="wirebox"    inject="wirebox";
+	property name="wirebox"    inject="provider:wirebox";
 	property name="env"        inject="provider:env@coreDelegates";
 	property name="jsonUtil"   inject="provider:JsonUtil@coreDelegates";
+	property name="flow"       inject="provider:Flow@coreDelegates";
 
 	/**
 	 * Constructor
@@ -82,7 +83,7 @@ component serializable="false" accessors="true" {
 		targetObject = "",
 		injector
 	) cbMethod{
-		return variables.controller.getWirebox().getInstance( argumentCollection = arguments );
+		return variables.wirebox.getInstance( argumentCollection = arguments );
 	}
 
 	/**
@@ -555,35 +556,103 @@ component serializable="false" accessors="true" {
 	 */
 	any function async() cbMethod{
 		if ( isNull( variables.asyncManager ) ) {
-			variables.asyncManager = variables.controller.getWireBox().getInstance( "asyncManager@coldbox" );
+			variables.asyncManager = variables.wirebox.getInstance( "asyncManager@coldbox" );
 		}
 		return variables.asyncManager;
 	}
 
 	/****************************************************************
-	 * Fluent Methods *
+	 * Flow Methods *
 	 ****************************************************************/
 
 	/**
-	 * Functional construct for if statements
+	 * This function evaluates the target boolean expression and if `true` it will execute the `success` closure
+	 * else, if the `failure` closure is passed, it will execute it.
 	 *
 	 * @target  The boolean evaluator, this can be a boolean value
 	 * @success The closure/lambda to execute if the boolean value is true
 	 * @failure The closure/lambda to execute if the boolean value is false
 	 *
-	 * @return Returns the SuperType object for chaining
+	 * @return Returns itself
 	 */
 	function when(
 		required boolean target,
 		required success,
 		failure
-	) cbMethod{
-		if ( arguments.target ) {
-			arguments.success();
-		} else if ( !isNull( arguments.failure ) ) {
-			arguments.failure();
-		}
-		return this;
+	) cbmethod{
+		return variables.flow.when( argumentCollection = arguments );
+	}
+
+	/**
+	 * This function evaluates the target boolean expression and if `false` it will execute the `success` closure
+	 * else, if the `failure` closure is passed, it will execute it.
+	 *
+	 * @target  The boolean evaluator, this can be a boolean value
+	 * @success The closure/lambda to execute if the boolean value is true
+	 * @failure The closure/lambda to execute if the boolean value is false
+	 *
+	 * @return Returns itself
+	 */
+	function unless(
+		required boolean target,
+		required success,
+		failure
+	) cbmethod{
+		return variables.flow.unless( argumentCollection = arguments );
+	}
+
+	/**
+	 * This function evaluates the target boolean expression and if `true` it will throw the controlled exception
+	 *
+	 * @target  The boolean evaluator, this can be a boolean value
+	 * @type    The exception type
+	 * @message The exception message
+	 * @detail  The exception detail
+	 *
+	 * @return Returns itself
+	 */
+	function throwIf(
+		required boolean target,
+		required type,
+		message = "",
+		detail  = ""
+	) cbmethod{
+		return variables.flow.throwIf( argumentCollection = arguments );
+	}
+
+	/**
+	 * This function evaluates the target boolean expression and if `false` it will throw the controlled exception
+	 *
+	 * @target  The boolean evaluator, this can be a boolean value
+	 * @type    The exception type
+	 * @message The exception message
+	 * @detail  The exception detail
+	 *
+	 * @return Returns itself
+	 */
+	function throwUnless(
+		required boolean target,
+		required type,
+		message = "",
+		detail  = ""
+	) cbmethod{
+		return variables.flow.throwUnless( argumentCollection = arguments );
+	}
+
+	/**
+	 * Verify if the target argument is `null` and if it is, then execute the `success` closure, else if passed
+	 * execute the `failure` closure.
+	 */
+	function ifNull( target, required success, failure ) cbmethod{
+		return variables.flow.ifNull( argumentCollection = arguments );
+	}
+
+	/**
+	 * Verify if the target argument is not `null` and if it is, then execute the `success` closure, else if passed
+	 * execute the `failure` closure.
+	 */
+	function ifPresent( target, required success, failure ) cbmethod{
+		return variables.flow.ifPresent( argumentCollection = arguments );
 	}
 
 	/****************************************************************
