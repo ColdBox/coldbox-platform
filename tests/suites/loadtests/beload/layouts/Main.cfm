@@ -157,7 +157,7 @@
 
 		<!---Container And Views --->
 		<main class="flex-shrink-0">
-			#renderView()#
+			#view()#
 		</main>
 
 		<!--- Footer --->

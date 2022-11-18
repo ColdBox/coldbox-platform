@@ -18,10 +18,8 @@
     "ignore":[],
     "devDependencies":{},
     "installPaths":{
-        "coldbox":"coldbox/"
     },
     "dependencies":{
-        "coldbox":"^6"
     },
     "scripts":{
         "onServerInstall":"cfpm install zip,debugger"

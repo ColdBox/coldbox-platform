@@ -1,0 +1,7 @@
+{
+	"scripts" : {
+		"start" : "server start 6load-lucee5 && server start beload-lucee5",
+		"stop" : "server stop 6load-lucee5 && server stop beload-lucee5",
+		"restart" : "server restart 6load-lucee5 && server restart beload-lucee5"
+	}
+}
