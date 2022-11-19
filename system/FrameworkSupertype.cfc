@@ -27,6 +27,7 @@ component serializable="false" accessors="true" {
 	 * Constructor
 	 */
 	function init(){
+		variables.cbInjectedHelpers = {};
 		return this;
 	}
 
@@ -777,9 +778,11 @@ component serializable="false" accessors="true" {
 
 		// Inject global helpers
 		var helpers = variables.controller.getSetting( "applicationHelper" );
-
 		for ( var thisHelper in helpers ) {
-			includeUDF( thisHelper );
+			if ( !variables.cbInjectedHelpers.keyExists( thisHelper ) ) {
+				includeUDF( thisHelper );
+				variables.cbInjectedHelpers[ thisHelper ] = true;
+			}
 		}
 
 		return this;

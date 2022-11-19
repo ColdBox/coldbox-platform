@@ -29,6 +29,7 @@ component
 	 */
 	function init( struct properties = {} ){
 		variables.properties = arguments.properties;
+		super.init();
 		return this;
 	}
 
