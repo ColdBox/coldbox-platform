@@ -226,7 +226,7 @@ component serializable="false" accessors="true" {
 		viewModule            = "",
 		boolean prePostExempt = false
 	) cbMethod{
-		return variables.controller.getRenderer().renderLayout( argumentCollection = arguments );
+		return variables.controller.getRenderer().layout( argumentCollection = arguments );
 	}
 
 	/****************************************************************

@@ -215,7 +215,7 @@ component serializable="false" accessors="true" {
 	 */
 	function processColdBoxRequest() output="true"{
 		// Get Controller Reference
-		var cbController = application[ locateAppKey() ];
+		var cbController       = application[ locateAppKey() ];
 		// Local references
 		var interceptorService = cbController.getInterceptorService();
 		var cacheBox           = cbController.getCacheBox();

@@ -39,7 +39,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// Prep services
 		var coldBoxSettings = variables.controller.getColdBoxSettings();
 		var services        = variables.controller.getServices();
-		var configSettings = variables.controller.getConfigSettings();
+		var configSettings  = variables.controller.getConfigSettings();
 
 		// Do we need to create a controller decorator?
 		if ( len( configSettings.controllerDecorator ) ) {
@@ -73,9 +73,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		}
 
 		// Auto Map Root Models
-		if (
-			configSettings.autoMapModels && directoryExists( configSettings.modelsPath )
-		) {
+		if ( configSettings.autoMapModels && directoryExists( configSettings.modelsPath ) ) {
 			variables.controller
 				.getWireBox()
 				.getBinder()
