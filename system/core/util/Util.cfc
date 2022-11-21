@@ -211,10 +211,22 @@ component {
 	 * Opinionated method that serializes json in a more digetstible way:
 	 * - queries as array of structs
 	 * - no dumb secure prefixes
+	 * And it also prettifies the output
+	 *
+	 * @obj The object to be serialized and prettified
+	 */
+	string function toPrettyJson( required any obj ){
+		return prettyJson( toJson( arguments.obj ) );
+	}
+
+	/**
+	 * Opinionated method that serializes json in a more digetstible way:
+	 * - queries as array of structs
+	 * - no dumb secure prefixes
 	 *
 	 * @obj The object to be serialized
 	 */
-	string function toJson( any obj ){
+	string function toJson( required any obj ){
 		// https://cfdocs.org/serializejson
 		// We default to "struct" serialization for queries.  The CFML defaults are dumb and just nasty!
 		return serializeJSON(
