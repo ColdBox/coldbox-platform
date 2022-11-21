@@ -6,10 +6,7 @@ component extends="tests.resources.BaseIntegrationTest" {
 		describe( "Framework Super Type", function(){
 			beforeEach( function( currentSpec ){
 				setup();
-
-				target = prepareMock( getInstance( "coldbox.system.FrameworkSupertype" ) ).setController(
-					getController()
-				);
+				target = prepareMock( getInstance( "coldbox.system.FrameworkSupertype" ) );
 			} );
 
 			it( "can retrieve the async manager", function(){
@@ -69,7 +66,7 @@ component extends="tests.resources.BaseIntegrationTest" {
 					rc.lname = "majano";
 
 					var target = getInterceptor( "Test1" );
-					var oBean  = target.populateModel( "formBean" );
+					var oBean  = target.populate( "formBean" );
 					expect( oBean.getFname() ).toBe( "luis" );
 					expect( oBean.getLname() ).toBe( "majano" );
 				} );
@@ -78,7 +75,7 @@ component extends="tests.resources.BaseIntegrationTest" {
 					var test = { fname : "luis", lname : "majano" };
 
 					var target = getInterceptor( "Test1" );
-					var oBean  = target.populateModel( model = "formBean", memento = test );
+					var oBean  = target.populate( model = "formBean", memento = test );
 					expect( oBean.getFname() ).toBe( "luis" );
 					expect( oBean.getLname() ).toBe( "majano" );
 				} );
@@ -87,7 +84,7 @@ component extends="tests.resources.BaseIntegrationTest" {
 					var test = serializeJSON( { "fname" : "luis", "lname" : "majano" } );
 
 					var target = getInterceptor( "Test1" );
-					var oBean  = target.populateModel( model = "formBean", jsonstring = test );
+					var oBean  = target.populate( model = "formBean", jsonstring = test );
 					expect( oBean.getFname() ).toBe( "luis" );
 					expect( oBean.getLname() ).toBe( "majano" );
 				} );
@@ -96,7 +93,7 @@ component extends="tests.resources.BaseIntegrationTest" {
 					var test = "<root><fname>luis</fname><lname>majano</lname></root>";
 
 					var target = getInterceptor( "Test1" );
-					var oBean  = target.populateModel( model = "formBean", xml = test );
+					var oBean  = target.populate( model = "formBean", xml = test );
 					expect( oBean.getFname() ).toBe( "luis" );
 					expect( oBean.getLname() ).toBe( "majano" );
 				} );
@@ -108,7 +105,7 @@ component extends="tests.resources.BaseIntegrationTest" {
 					);
 
 					var target = getInterceptor( "Test1" );
-					var oBean  = target.populateModel( model = "formBean", qry = test );
+					var oBean  = target.populate( model = "formBean", qry = test );
 					expect( oBean.getFname() ).toBe( "luis" );
 					expect( oBean.getLname() ).toBe( "majano" );
 				} );

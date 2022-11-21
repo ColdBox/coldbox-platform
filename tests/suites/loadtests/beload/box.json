@@ -21,7 +21,7 @@
         "coldbox":"coldbox/"
     },
     "dependencies":{
-        "coldbox":"^6"
+        "coldbox":"be"
     },
     "scripts":{
         "onServerInstall":"cfpm install zip,debugger"

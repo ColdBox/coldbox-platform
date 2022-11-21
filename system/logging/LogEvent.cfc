@@ -91,7 +91,7 @@ component accessors="true" {
 		}
 
 		// Complex values, return serialized in json
-		return getUtil().toJson( variables.extraInfo );
+		return getUtil().toPrettyJson( variables.extraInfo );
 	}
 
 }
