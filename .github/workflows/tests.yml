@@ -84,12 +84,15 @@ jobs:
         run: |
           ant -f build/build.xml run-tests
 
+      - name: Set cfengine version env
+        run: echo "CFENGINE_VERSION=$(box echo ${serverInfo.engineName@coldbox-${{ matrix.cfengine }}}@${serverInfo.engineVersion@coldbox-${{ matrix.cfengine }}})" >> $GITHUB_ENV
+
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v1
         if: always()
         with:
           files: tests/results/**/*.xml
-          check_name: "${{ matrix.cfengine }} Test Results"
+          check_name: "${{ env.CFENGINE_VERSION }} Test Results"
 
       - name: Upload Test Results Artifacts
         if: always()
