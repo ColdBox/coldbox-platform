@@ -50,7 +50,6 @@
         "format:watch":"cfformat watch system/**/*.cfc,tests/specs/**/*.cfc ./.cfformat.json",
         "format:check":"cfformat check system/**/*.cfc,tests/specs/**/*.cfc",
         "log":"server log --follow",
-        "onServerInstall":"cfpm install zip,orm,mysql,postgresql,sqlserver,document,feed,mail,debugger",
         "start:lucee":"server start serverConfigFile='server-lucee@5.json' --force",
         "start:2018":"server start serverConfigFile='server-adobe@2018.json' --force",
         "start:2021":"server start serverConfigFile='server-adobe@2021.json' --force",
