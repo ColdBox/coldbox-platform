@@ -6,7 +6,7 @@ component singleton {
 	property
 		name    ="util"
 		inject  ="coldbox.system.core.util.Util"
-		delegate="toJson";
+		delegate="toJson,prettyJson";
 
 	/**
 	 * This function allows you to serialize simple or complex data so it can be used within HTML Attributes.

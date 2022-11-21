@@ -178,6 +178,36 @@ component {
 	 ****************************************************************/
 
 	/**
+	 * Format an incoming json string to a pretty version
+	 *
+	 * @target The target json to prettify
+	 */
+	string function prettyJson( string target ){
+		var newLine = chr( 13 ) & chr( 10 );
+		var tab     = chr( 9 );
+		var padding = 0;
+		return arguments.target
+			.reReplace(
+				"([\{|\}|\[|\]|\(|\)|,])",
+				"\1#newLine#",
+				"all"
+			)
+			.reReplace( "(\]|\})#newLine#", "#newLine#\1", "all" )
+			.listToArray( newLine )
+			.map( ( token ) => {
+				if ( token.reFind( "[\}|\)|\]]" ) ) {
+					padding--
+				};
+				var newToken = repeatString( tab, padding ) & token.trim();
+				if ( token.reFind( "[\{|\(|\[]" ) ) {
+					padding++
+				};
+				return newToken;
+			} )
+			.toList( newLine );
+	}
+
+	/**
 	 * Opinionated method that serializes json in a more digetstible way:
 	 * - queries as array of structs
 	 * - no dumb secure prefixes
