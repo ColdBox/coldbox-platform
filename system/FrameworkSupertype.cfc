@@ -178,7 +178,7 @@ component serializable="false" accessors="true" {
 		boolean prePostExempt      = false,
 		name
 	) cbMethod{
-		return variables.controller.getRenderer().renderView( argumentCollection = arguments );
+		return variables.controller.getRenderer().view( argumentCollection = arguments );
 	}
 
 	/**
@@ -203,7 +203,7 @@ component serializable="false" accessors="true" {
 		cacheSuffix            = "",
 		cacheProvider          = "template"
 	) cbMethod{
-		return variables.controller.getRenderer().renderExternalView( argumentCollection = arguments );
+		return variables.controller.getRenderer().externalView( argumentCollection = arguments );
 	}
 
 	/**
