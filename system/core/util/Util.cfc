@@ -195,7 +195,7 @@ component {
 			.reReplace( "(\]|\})#newLine#", "#newLine#\1", "all" )
 			.listToArray( newLine )
 			.map( ( token ) => {
-				if ( token.reFind( "[\}|\)|\]]" ) ) && padding > 0 {
+				if ( token.reFind( "[\}|\)|\]]" ) && padding > 0 ) {
 					padding--;
 				};
 				var newToken = repeatString( tab, padding ) & token.trim();
