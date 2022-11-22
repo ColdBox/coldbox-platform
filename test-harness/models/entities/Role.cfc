@@ -1,7 +1,5 @@
 ﻿component persistent = "true" table = "roles"{
 
-	this.population = { exclude : ["roleId"] };
-
 	property
 		name     ="roleID"
 		column   ="roleID"
