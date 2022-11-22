@@ -224,7 +224,11 @@ component accessors="true" {
 		arguments.category = trim( arguments.category );
 
 		// Is logger by category name created already?
-		if ( structKeyExists( variables.loggerRegistry, arguments.category ) && !isNull( variables.loggerRegistry[ arguments.category ] ) ) {
+		if (
+			structKeyExists( variables.loggerRegistry, arguments.category ) && !isNull(
+				variables.loggerRegistry[ arguments.category ]
+			)
+		) {
 			return variables.loggerRegistry[ arguments.category ];
 		}
 

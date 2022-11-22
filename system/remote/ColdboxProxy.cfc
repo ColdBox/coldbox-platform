@@ -28,7 +28,7 @@ component serializable="false" accessors="true" {
 	 * Get the ColdBox app key used in the application scope.
 	 */
 	private function getColdboxAppKey(){
-		if ( structKeyExists( application, "cbBootstrap") && !isNull( application.cbBootstrap ) ) {
+		if ( structKeyExists( application, "cbBootstrap" ) && !isNull( application.cbBootstrap ) ) {
 			return application.cbBootstrap.getCOLDBOX_APP_KEY();
 		}
 		return "cbController";

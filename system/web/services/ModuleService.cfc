@@ -966,7 +966,11 @@ component extends="coldbox.system.web.services.BaseService" {
 	 */
 	ModuleService function unloadAll(){
 		// Verify registered modules
-		if ( variables.keyExists( "registeredModules" ) && !isNull( variables.registeredModules ) && isStruct( variables.registeredModules ) ) {
+		if (
+			variables.keyExists( "registeredModules" ) && !isNull( variables.registeredModules ) && isStruct(
+				variables.registeredModules
+			)
+		) {
 			// Unload all modules
 			variables.registeredModules.each( function( key, module ){
 				unload( arguments.key );

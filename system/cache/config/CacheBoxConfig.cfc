@@ -61,7 +61,11 @@ component accessors="true" {
 		}
 
 		// Test and load via Data CFC
-		if ( arguments.keyExists( "CFCConfig" ) && !isNull( arguments.CFCConfig ) and isObject( arguments.CFCConfig ) ) {
+		if (
+			arguments.keyExists( "CFCConfig" ) && !isNull( arguments.CFCConfig ) and isObject(
+				arguments.CFCConfig
+			)
+		) {
 			// Decorate our data CFC
 			arguments.CFCConfig.getPropertyMixin = utility.getMixerUtil().getPropertyMixin;
 			// Execute the configuration
