@@ -52,7 +52,8 @@ component serializable="false" accessors="true" {
 		variables.controller.getInterceptorService().announce( argumentCollection = arguments );
 	}
 	function populateModel() cbMethod{
-		variables.log.warn(
+		// TODO: Change to warn() by version 8 release
+		variables.log.debug(
 			"populateModel() has been deprecated, please update your code to populate()",
 			callStackGet()
 		);
