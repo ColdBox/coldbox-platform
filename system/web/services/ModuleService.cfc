@@ -511,7 +511,7 @@ component extends="coldbox.system.web.services.BaseService" {
 		var modules = variables.registeredModules;
 
 		// If module not registered, throw exception
-		if ( isNull( modules[ arguments.moduleName ] ) ) {
+		if ( !modules.keyExists( arguments.moduleName ) || isNull( modules[ arguments.moduleName ] ) ) {
 			throw(
 				message: "Cannot activate module: #arguments.moduleName#. Already processed #structKeyList( modules )#",
 				detail : "The module has not been registered, register the module first and then activate it.",
@@ -966,7 +966,7 @@ component extends="coldbox.system.web.services.BaseService" {
 	 */
 	ModuleService function unloadAll(){
 		// Verify registered modules
-		if ( !isNull( variables.registeredModules ) && isStruct( variables.registeredModules ) ) {
+		if ( variables.keyExists( "registeredModules" ) && !isNull( variables.registeredModules ) && isStruct( variables.registeredModules ) ) {
 			// Unload all modules
 			variables.registeredModules.each( function( key, module ){
 				unload( arguments.key );

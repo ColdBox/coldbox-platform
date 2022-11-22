@@ -9,7 +9,7 @@ component {
 
 	private function getEngineMappingHelper(){
 		// Lazy load the helper
-		if ( isNull( variables.engineMappingHelper ) ) {
+		if ( !variables.keyExists( "engineMappingHelper" ) || isNull( variables.engineMappingHelper ) ) {
 			// Detect server
 			if ( listFindNoCase( "Lucee", server.coldfusion.productname ) ) {
 				variables.engineMappingHelper = new LuceeMappingHelper();

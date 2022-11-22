@@ -519,7 +519,7 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 			variables.log.debug( "Interception ended for: '#getState()#', key: #arguments.interceptorKey#" );
 		}
 
-		if ( !isNull( local.results ) and isBoolean( results ) ) {
+		if ( structKeyExists( local, "results") && !isNull( local.results ) and isBoolean( results ) ) {
 			return results;
 		} else {
 			return false;

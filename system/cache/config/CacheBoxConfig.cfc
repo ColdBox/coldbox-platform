@@ -56,12 +56,12 @@ component accessors="true" {
 	 */
 	function init( CFCConfig, string CFCConfigPath ){
 		// Test and load via Data CFC Path
-		if ( !isNull( arguments.CFCConfigPath ) ) {
+		if ( arguments.keyExists( "CFCConfigPath" ) && !isNull( arguments.CFCConfigPath ) ) {
 			arguments.CFCConfig = createObject( "component", arguments.CFCConfigPath );
 		}
 
 		// Test and load via Data CFC
-		if ( !isNull( arguments.CFCConfig ) and isObject( arguments.CFCConfig ) ) {
+		if ( arguments.keyExists( "CFCConfig" ) && !isNull( arguments.CFCConfig ) and isObject( arguments.CFCConfig ) ) {
 			// Decorate our data CFC
 			arguments.CFCConfig.getPropertyMixin = utility.getMixerUtil().getPropertyMixin;
 			// Execute the configuration
@@ -104,12 +104,12 @@ component accessors="true" {
 
 		// Register LogBox Configuration
 		this.logBoxConfig( variables.DEFAULTS.logBoxConfig );
-		if ( !isNull( cacheBoxDSL.logBoxConfig ) ) {
+		if ( structKeyExists( cacheBoxDSL, "logBoxConfig" ) && !isNull( cacheBoxDSL.logBoxConfig ) ) {
 			this.logBoxConfig( cacheBoxDSL.logBoxConfig );
 		}
 
 		// Register Server Scope Registration
-		if ( !isNull( cacheBoxDSL.scopeRegistration ) ) {
+		if ( structKeyExists( cacheBoxDSL, "scopeRegistration" ) && !isNull( cacheBoxDSL.scopeRegistration ) ) {
 			this.scopeRegistration( argumentCollection = cacheBoxDSL.scopeRegistration );
 		}
 

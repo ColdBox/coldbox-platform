@@ -124,7 +124,7 @@ component accessors=true serializable=false {
 		variables.lockName = "CacheFactory.#variables.factoryID#";
 
 		// Passed in configuration?
-		if ( isNull( arguments.config ) ) {
+		if ( !arguments.keyExists( "config" ) || isNull( arguments.config ) ) {
 			// Create default configuration
 			arguments.config = new coldbox.system.cache.config.CacheBoxConfig( CFCConfigPath = defaultConfigPath );
 		} else if ( isSimpleValue( arguments.config ) ) {
@@ -132,7 +132,7 @@ component accessors=true serializable=false {
 		}
 
 		// Check if linking ColdBox
-		if ( !isNull( arguments.coldbox ) ) {
+		if ( arguments.keyExists( "coldbox" ) && !isNull( arguments.coldbox ) ) {
 			// Link ColdBox
 			variables.coldbox      = arguments.coldbox;
 			// Link to WireBox
@@ -147,7 +147,7 @@ component accessors=true serializable=false {
 			variables.asyncManager  = variables.coldbox.getAsyncManager();
 			variables.taskScheduler = variables.asyncManager.getExecutor( "coldbox-tasks" );
 		} else {
-			if ( !isNull( arguments.wirebox ) ) {
+			if ( !arguments.keyExists( "wirebox" ) || !isNull( arguments.wirebox ) ) {
 				// Link to WireBox
 				variables.wirebox       = arguments.wirebox;
 				// If WireBox linked, get LogBox and EventManager, and asyncmanager from it

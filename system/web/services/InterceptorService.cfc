@@ -186,7 +186,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		numeric asyncJoinTimeout = 0
 	){
 		// Backwards Compat: Remove by ColdBox 7
-		if ( !isNull( arguments.interceptData ) ) {
+		if ( structKeyExists( arguments, "interceptData" ) && !isNull( arguments.interceptData ) ) {
 			arguments.data = arguments.interceptData;
 		}
 

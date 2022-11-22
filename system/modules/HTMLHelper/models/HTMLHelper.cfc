@@ -269,7 +269,7 @@ component
 		// Check if we have a base URL and if we need to build our link
 		if ( arguments.noBaseURL eq FALSE and NOT find( "://", arguments.href ) ) {
 			// Verify SSL Bit
-			if ( isNull( arguments.ssl ) ) {
+			if ( !structKeyExists( arguments, "ssl" ) || isNull( arguments.ssl ) ) {
 				arguments.ssl = event.isSSL();
 			}
 			// Build it

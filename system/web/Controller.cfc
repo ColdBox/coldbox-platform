@@ -269,7 +269,7 @@ component serializable="false" accessors="true" {
 		}
 
 		// Default value
-		if ( !isNull( arguments.defaultValue ) ) {
+		if ( arguments.keyExists( "defaultValue" ) && !isNull( arguments.defaultValue ) ) {
 			return arguments.defaultValue;
 		}
 
@@ -421,10 +421,10 @@ component serializable="false" accessors="true" {
 		var routeString     = 0;
 
 		// Determine relocation type
-		if ( !isNull( arguments.url ) && len( arguments.url ) ) {
+		if ( arguments.keyExists( "url" ) && !isNull( arguments.url ) && len( arguments.url ) ) {
 			relocationType = "URL";
 		}
-		if ( !isNull( arguments.URI ) && len( arguments.URI ) ) {
+		if ( arguments.keyExists( "URI" ) && !isNull( arguments.URI ) && len( arguments.URI ) ) {
 			relocationType = "URI";
 		}
 
@@ -454,7 +454,7 @@ component serializable="false" accessors="true" {
 			case "URL": {
 				relocationURL = arguments.URL;
 				// Check SSL?
-				if ( !isNull( arguments.ssl ) ) {
+				if ( arguments.keyExists( "ssl" ) && !isNull( arguments.ssl ) ) {
 					relocationURL = updateSSL( relocationURL, arguments.ssl );
 				}
 				// Query String?
@@ -512,7 +512,7 @@ component serializable="false" accessors="true" {
 					relocationURL = relocationURL & "/";
 				}
 				// Check SSL?
-				if ( !isNull( arguments.ssl ) ) {
+				if ( arguments.keyExists( "ssl" ) && !isNull( arguments.ssl ) ) {
 					relocationURL = updateSSL( relocationURL, arguments.ssl );
 				}
 

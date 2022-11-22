@@ -28,7 +28,7 @@ component serializable="false" accessors="true" {
 	 * Get the ColdBox app key used in the application scope.
 	 */
 	private function getColdboxAppKey(){
-		if ( !isNull( application.cbBootstrap ) ) {
+		if ( structKeyExists( application, "cbBootstrap") && !isNull( application.cbBootstrap ) ) {
 			return application.cbBootstrap.getCOLDBOX_APP_KEY();
 		}
 		return "cbController";
@@ -117,7 +117,7 @@ component serializable="false" accessors="true" {
 		}
 
 		// Return results from handler only if found, else method will produce a null result
-		if ( !isNull( local.refLocal.results ) ) {
+		if ( structKeyExists( local.refLocal, "results" ) && !isNull( local.refLocal.results ) ) {
 			// preProxyResults interception call
 			cbController.getInterceptorService().announce( "preProxyResults", { "proxyResults" : local.refLocal } );
 
@@ -135,7 +135,7 @@ component serializable="false" accessors="true" {
 	private boolean function announce( required state, struct data = {} ){
 		try {
 			// Backwards Compat: Remove by ColdBox 7
-			if ( !isNull( arguments.interceptData ) ) {
+			if ( structKeyExists( arguments, "interceptData" ) && !isNull( arguments.interceptData ) ) {
 				arguments.data = arguments.interceptData;
 			}
 			getController().getInterceptorService().announce( arguments.state, arguments.data );
@@ -339,7 +339,7 @@ component serializable="false" accessors="true" {
 	 * @return coldbox.system.core.util.Util
 	 */
 	private any function getUtil(){
-		if ( isNull( variables.util ) ) {
+		if ( !structKeyExists( variables, "util" ) || isNull( variables.util ) ) {
 			variables.util = new coldbox.system.core.util.Util();
 		}
 		return variables.util;
@@ -351,7 +351,7 @@ component serializable="false" accessors="true" {
 	 * @return coldbox.system.remote.RemotingUtil
 	 */
 	private function getRemotingUtil(){
-		if ( isNull( variables.remotingUtil ) ) {
+		if ( !structKeyExists( variables, "remotingUtil" ) || isNull( variables.remotingUtil ) ) {
 			variables.remotingUtil = new coldbox.system.remote.RemotingUtil();
 		}
 		return variables.remotingUtil;

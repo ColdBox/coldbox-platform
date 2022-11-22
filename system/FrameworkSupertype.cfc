@@ -556,7 +556,7 @@ component serializable="false" accessors="true" {
 	 * @return coldbox.system.async.AsyncManager
 	 */
 	any function async() cbMethod{
-		if ( isNull( variables.asyncManager ) ) {
+		if ( !variables.keyExists( "asyncManager" ) || isNull( variables.asyncManager ) ) {
 			variables.asyncManager = variables.wirebox.getInstance( "asyncManager@coldbox" );
 		}
 		return variables.asyncManager;

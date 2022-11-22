@@ -58,14 +58,14 @@ component accessors="true" {
 	}
 
 	function getXmlConverter(){
-		if ( isNull( variables.xmlConverter ) ) {
+		if ( !variables.keyExists( "xmlConverter" ) || isNull( variables.xmlConverter ) ) {
 			variables.xmlConverter = new coldbox.system.core.conversion.XMLConverter();
 		}
 		return variables.xmlConverter;
 	}
 
 	function getUtil(){
-		if ( isNull( variables.util ) ) {
+		if ( !variables.keyExists( "util" ) || isNull( variables.util ) ) {
 			variables.util = new coldbox.system.core.util.Util();
 		}
 		return variables.util;
