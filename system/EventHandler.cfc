@@ -44,7 +44,7 @@ component
 	 *
 	 * @onDIComplete
 	 */
-	function onHandlerDIComplete(){
+	function onHandlerDIComplete() cbMethod{
 		// Load global UDF Libraries into target
 		loadApplicationHelpers();
 	}

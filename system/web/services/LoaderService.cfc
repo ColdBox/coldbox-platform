@@ -31,22 +31,23 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		overrideAppMapping = "",
 		overrideWebMapping = ""
 	){
-		var coldBoxSettings = variables.controller.getColdBoxSettings();
-		var services        = variables.controller.getServices();
-
 		// Load application configuration file
 		createAppLoader( arguments.overrideConfigFile ).loadConfiguration(
 			arguments.overrideAppMapping,
 			arguments.overrideWebMapping
 		);
+		// Prep services
+		var coldBoxSettings = variables.controller.getColdBoxSettings();
+		var services        = variables.controller.getServices();
+		var configSettings  = variables.controller.getConfigSettings();
 
 		// Do we need to create a controller decorator?
-		if ( len( variables.controller.getSetting( "ControllerDecorator" ) ) ) {
+		if ( len( configSettings.controllerDecorator ) ) {
 			createControllerDecorator();
 		}
 
 		// Check if application has loaded logbox settings so we can reconfigure, else using defaults.
-		if ( NOT structIsEmpty( variables.controller.getSetting( "LogBoxConfig" ) ) ) {
+		if ( NOT structIsEmpty( configSettings.logBoxConfig ) ) {
 			// reconfigure LogBox with user configurations
 			variables.controller.getLogBox().configure( variables.controller.getLogBox().getConfig() );
 			// Reset the controller main logger
@@ -56,9 +57,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// Seed a local logger
 		variables.log = variables.controller.getLogBox().getLogger( this );
 		// Clear the Cache Dictionaries, just to make sure, we are in reload mode.
-		variables.controller.getHandlerService().clearDictionaries();
+		services.handlerService.clearDictionaries();
 		// Configure interceptors for operation from the configuration file
-		variables.controller.getInterceptorService().configure();
+		services.interceptorService.configure();
 
 		// Create WireBox Container
 		createWireBox();
@@ -72,15 +73,11 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		}
 
 		// Auto Map Root Models
-		if (
-			variables.controller.getSetting( "autoMapModels" )
-			&&
-			directoryExists( variables.controller.getSetting( "ModelsPath" ) )
-		) {
+		if ( configSettings.autoMapModels && directoryExists( configSettings.modelsPath ) ) {
 			variables.controller
 				.getWireBox()
 				.getBinder()
-				.mapDirectory( variables.controller.getSetting( "ModelsInvocationPath" ) );
+				.mapDirectory( configSettings.ModelsInvocationPath );
 			variables.log.info( "+ Automatically mapped all root models" );
 		}
 
@@ -88,37 +85,27 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		createAppExecutors();
 
 		// Activate All Modules
-		variables.controller.getModuleService().activateAllModules();
+		services.moduleService.activateAllModules();
 		// Execute afterConfigurationLoad
-		variables.controller.getInterceptorService().announce( "afterConfigurationLoad" );
+		services.interceptorService.announce( "afterConfigurationLoad" );
 		// Rescan interceptors in case modules had interception poitns to register
-		variables.controller.getInterceptorService().rescanInterceptors();
+		services.interceptorService.rescanInterceptors();
 		// Rebuild flash here just in case modules or afterConfigurationLoad changes settings.
-		variables.controller.getRequestService().rebuildFlashScope();
+		services.requestService.rebuildFlashScope();
 		// Internal event for interceptors to load global UDF Helpers
-		variables.controller.getInterceptorService().announce( "cbLoadInterceptorHelpers" );
+		services.interceptorService.announce( "cbLoadInterceptorHelpers" );
 		// Startup the renderer for operation
 		variables.controller.getRenderer().startup();
 		// Execute afterAspectsLoad: all module interceptions are registered and flash rebuilt if needed
-		variables.controller.getInterceptorService().announce( "afterAspectsLoad" );
-		// Customg Tags by convention
-		loadAppTags();
+		services.interceptorService.announce( "afterAspectsLoad" );
 		// Flag the initiation, Framework is ready to serve requests. Praise be to GOD.
 		variables.controller.setColdboxInitiated( true );
 		// Startup the schedulers now that the entire application has been loaded and runnning
-		variables.controller.getSchedulerService().startupSchedulers();
+		services.schedulerService.startupSchedulers();
 		// Log it
 		variables.log.info( "+++ ColdBox is ready to serve requests" );
 
 		// We are now done, rock and roll!!
-		return this;
-	}
-
-	/**
-	 * Load Application tags by convention
-	 */
-	function loadAppTags(){
-		variables.controller.getUtil().addCustomTagPath( variables.controller.getAppRootPath() & "includes/tags" );
 		return this;
 	}
 

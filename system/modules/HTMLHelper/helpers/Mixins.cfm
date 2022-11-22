@@ -6,18 +6,6 @@
 	 * @asset The asset(s) to load, only js or css files. This can also be a comma delimited list.
 	 */
 	string function addAsset( required asset ){
-		return html().addAsset( argumentCollection = arguments );
-	}
-
-	/**
-	 * Get the HTML Helper model
-	 *
-	 * @return HTMLHelper.models.HTMLHelper
-	 */
-	function html(){
-		if( isNull( variableas.htmlHelper ) ){
-			variables.htmlHelper = getInstance( "@HTMLHelper" );
-		}
-		return variables.htmlHelper;
+		return getInstance( "@HTMLHelper" ).addAsset( argumentCollection = arguments );
 	}
 </cfscript>

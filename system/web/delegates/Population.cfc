@@ -2,16 +2,17 @@
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * Extends the core population delegate so it can provide ColdBox integration
+ * Population Delegation with ColdBox integration
  */
 component singleton {
 
+	// DI
 	property name="controller" inject="coldbox";
 	property name="populator"  inject="wirebox:populator";
 	property name="wirebox"    inject="wirebox";
 
 	/**
-	 * Populate a model object from the request Collection or a passed in memento structure
+	 * Populate an object from the incoming request collection
 	 *
 	 * @model                The name of the model to get and populate or the acutal model object. If you already have an instance of a model, then use the populateBean() method
 	 * @scope                Use scope injection instead of setters population. Ex: scope=variables.instance.
@@ -27,10 +28,11 @@ component singleton {
 	 * @xml                  If you pass an xml string, we will populate your model with it
 	 * @qry                  If you pass a query, we will populate your model with it
 	 * @rowNumber            The row of the qry parameter to populate your model with
+	 * @ignoreTargetLists    If this is true, then the populator will ignore the target's population include/exclude metadata lists. By default this is false.
 	 *
 	 * @return The instance populated
 	 */
-	function populateModel(
+	function populate(
 		required model,
 		scope                        = "",
 		boolean trustedSetter        = false,
@@ -43,7 +45,8 @@ component singleton {
 		struct memento,
 		string jsonstring,
 		string xml,
-		query qry
+		query qry,
+		boolean ignoreTargetLists = false
 	) cbMethod{
 		// Do we have a model or name
 		if ( isSimpleValue( arguments.model ) ) {

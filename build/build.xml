@@ -85,16 +85,17 @@
 
 	<!-- Run Tests For Platform -->
     <target name="run-tests" description="Runs the tests for entire suite" depends="init" if="tests.execute">
-    	<!-- Run for Core -->
-		<mkdir dir="tests/results/core" />
-		<exec executable="box" dir="${basedir}" failonerror="true">
-			<arg line="testbox run runner='http://localhost:${server.port}/tests/runner.cfm' verbose=false outputFile='tests/results/core/test-results' outputFormats='json,antjunit'" />
-		</exec>
 
 		<!-- Run for Integration -->
 		<mkdir dir="tests/results/integration" />
 		<exec executable="box" dir="${basedir}" failonerror="true">
 			<arg line="testbox run runner='http://localhost:${server.port}/tests/runner-integration.cfm' verbose=false outputFile='tests/results/integration/test-results' outputFormats='json,antjunit'" />
+		</exec>
+
+		<!-- Run for mvc -->
+		<mkdir dir="tests/results/mvc" />
+		<exec executable="box" dir="${basedir}" failonerror="true">
+			<arg line="testbox run runner='http://localhost:${server.port}/tests/runner.cfm' verbose=false outputFile='tests/results/mvc/test-results' outputFormats='json,antjunit'" />
 		</exec>
 
     	<!-- Run for CacheBox -->
@@ -113,6 +114,12 @@
 		<mkdir dir="tests/results/wirebox" />
     	<exec executable="box" dir="${basedir}" failonerror="true">
 			<arg line="testbox run runner='http://localhost:${server.port}/tests/runner-wirebox.cfm' verbose=false outputFile='tests/results/wirebox/test-results' outputFormats='json,antjunit'" />
+		</exec>
+
+		<!-- Run for Core -->
+		<mkdir dir="tests/results/core" />
+		<exec executable="box" dir="${basedir}" failonerror="true">
+			<arg line="testbox run runner='http://localhost:${server.port}/tests/runner-core.cfm' verbose=false outputFile='tests/results/core/test-results' outputFormats='json,antjunit'" />
 		</exec>
 
 		<!-- Run for Async -->

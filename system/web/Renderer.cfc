@@ -19,7 +19,6 @@ component
 	 ****************************************************************/
 
 	property name="templateCache" inject="cachebox:template";
-	property name="htmlHelper" inject="provider:@HTMLHelper";
 
 	/****************************************************************
 	 * Rendering Properties *
@@ -59,23 +58,23 @@ component
 	 * Deprecated/Removed Methods *
 	 ****************************************************************/
 
-	function renderview() cbMethod{
-		throw(
-			type    = "DeprecatedMethod",
-			message = "This method has been deprecated, please use 'view()` instead"
-		);
+	function renderview(){
+		variables.log.warn( "renderview() has been deprecated, please update your code to view()", callStackGet() );
+		return this.view( argumentCollection = arguments );
 	}
-	function renderLayout() cbMethod{
-		throw(
-			type    = "DeprecatedMethod",
-			message = "This method has been deprecated, please use 'layout()` instead"
+	function renderLayout(){
+		variables.log.warn(
+			"renderLayout() has been deprecated, please update your code to layout()",
+			callStackGet()
 		);
+		return this.layout( argumentCollection = arguments );
 	}
-	function renderExternalView() cbMethod{
-		throw(
-			type    = "DeprecatedMethod",
-			message = "This method has been deprecated, please use 'externalView()` instead"
+	function renderExternalView(){
+		variables.log.warn(
+			"renderExternalView() has been deprecated, please update your code to externalView()",
+			callStackGet()
 		);
+		return this.externalView( argumentCollection = arguments );
 	}
 
 	/**
@@ -467,8 +466,7 @@ component
 				rendererVariables = ( isNull( attributes.rendererVariables ) ? variables : attributes.rendererVariables ),
 				event             = event,
 				rc                = event.getCollection(),
-				prc               = event.getPrivateCollection(),
-				html              = variables.htmlHelper
+				prc               = event.getPrivateCollection()
 			);
 		}
 

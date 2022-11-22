@@ -182,6 +182,9 @@ component serializable="false" accessors="true" {
 		"599" : "Network Connect Timeout Error"
 	};
 
+	// Family Marker
+	this.cbRequestContext = true;
+
 	/************************************** CONSTRUCTOR *********************************************/
 
 	/**
