@@ -171,7 +171,9 @@ component extends="EventHandler" {
 	){
 		// Try to discover exception, if not, hard error
 		if (
-			structKeyExists( arguments.prc, "exception" ) && !isNull( arguments.prc.exception ) && ( isNull( arguments.exception ) || isEmpty( arguments.exception ) )
+			structKeyExists( arguments.prc, "exception" ) && !isNull( arguments.prc.exception ) && (
+				isNull( arguments.exception ) || isEmpty( arguments.exception )
+			)
 		) {
 			arguments.exception = arguments.prc.exception.getExceptionStruct();
 		}
@@ -409,7 +411,7 @@ component extends="EventHandler" {
 
 		// case when the a jwt token was valid, but expired
 		if (
-			structKeyExists( arguments.prc, "cbSecurity_validatorResults" ) && 
+			structKeyExists( arguments.prc, "cbSecurity_validatorResults" ) &&
 			!isNull( arguments.prc.cbSecurity_validatorResults ) &&
 			arguments.prc.cbSecurity_validatorResults.messages CONTAINS "expired"
 		) {
@@ -476,7 +478,11 @@ component extends="EventHandler" {
 			.addMessage( "You are not allowed to access this resource" );
 
 		// Check for validator results
-		if ( structKeyExists( arguments.prc, "cbSecurity_validatorResults" ) && !isNull( arguments.prc.cbSecurity_validatorResults ) ) {
+		if (
+			structKeyExists( arguments.prc, "cbSecurity_validatorResults" ) && !isNull(
+				arguments.prc.cbSecurity_validatorResults
+			)
+		) {
 			arguments.prc.response.addMessage( arguments.prc.cbSecurity_validatorResults.messages );
 		}
 
