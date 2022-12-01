@@ -851,10 +851,10 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * @return coldbox.system.core.util.Util
 	 */
 	function getUtil(){
-		if ( isNull( variables.util ) ) {
-			variables.util = new coldbox.system.core.util.Util();
+		if ( isNull( variables.cbUtil ) ) {
+			variables.cbUtil = new coldbox.system.core.util.Util();
 		}
-		return variables.util;
+		return variables.cbUtil;
 	}
 
 	/**
