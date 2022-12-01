@@ -858,6 +858,18 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	}
 
 	/**
+	 * Get the ColdBox Env Class
+	 *
+	 * @return coldbox.system.core.delegates.Env
+	 */
+	function getEnv(){
+		if ( isNull( variables.env ) ) {
+			variables.env = new coldbox.system.core.delegates.Env();
+		}
+		return variables.env;
+	}
+
+	/**
 	 * Separate a route into two parts: the base route, and a query string collection
 	 *
 	 * @route a string containing the route with an optional query string (e.g. '/posts?recent=true')
