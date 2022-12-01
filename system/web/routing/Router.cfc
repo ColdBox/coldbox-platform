@@ -2041,7 +2041,7 @@ component
 				.getContext()
 				.isSSL() ? "https://" : "http://"
 		) &
-		headers.keyExists( "x-forwarded-host" ) ? headers[ "x-forwarded-host" ] : CGI.HTTP_HOST & // multi-host
+		( headers.keyExists( "x-forwarded-host" ) && len( headers[ "x-forwarded-host" ] ) ? headers[ "x-forwarded-host" ] : CGI.HTTP_HOST ) & // multi-host
 		composeRoutingPath(); // Routing Path
 	}
 
