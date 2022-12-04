@@ -634,7 +634,7 @@ component
 
 		// If Layout is blank, then just delegate to the view
 		if ( len( cbox_currentLayout ) eq 0 ) {
-			iData.renderedLayout = view();
+			iData.renderedLayout = this.view();
 		} else {
 			// Layout location key
 			cbox_layoutLocationKey = cbox_currentLayout & arguments.module & cbox_explicitModule;
