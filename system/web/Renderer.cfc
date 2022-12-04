@@ -191,7 +191,7 @@ component
 		var viewCacheProvider = variables.templateCache;
 		var iData             = arguments;
 		var explicitModule    = false;
-		var viewLocations     = "";
+		var viewLocations     = { "viewPath" : "", "viewHelperPath" : "" };
 
 		// Rendering Region call?
 		if ( !isNull( arguments.name ) and len( arguments.name ) ) {
