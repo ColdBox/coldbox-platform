@@ -498,7 +498,7 @@ component
 		var cbox_cacheKey      = "";
 		var cbox_cacheEntry    = "";
 		var cbox_cacheProvider = variables.templateCache;
-		var viewLocations      = "";
+		var viewLocations      = { "viewPath" : "", "viewHelperPath" : "" };
 
 		// Setup the cache key
 		cbox_cacheKey = variables.templateCache.VIEW_CACHEKEY_PREFIX & "external-" & arguments.view & arguments.cacheSuffix;
@@ -564,7 +564,7 @@ component
 		var cbox_layoutLocationKey = "";
 		var cbox_layoutLocation    = "";
 		var iData                  = arguments;
-		var viewLocations          = "";
+		var viewLocations          = { "viewPath" : "", "viewHelperPath" : "" };
 		var explicitView           = getExplicitView();
 
 		// Are we discovering implicit views: setting must be on and no view set.
@@ -664,7 +664,7 @@ component
 				}
 			}
 			// Get the view locations
-			var viewLocations = discoverViewPaths(
+			viewLocations = discoverViewPaths(
 				view           = reverse( listRest( reverse( cbox_layoutLocation ), "." ) ),
 				module         = arguments.module,
 				explicitModule = cbox_explicitModule
