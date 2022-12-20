@@ -22,12 +22,12 @@ component
 	 ****************************************************************/
 
 	property
-		name    ="cachebox"
+		name    ="cachebox"  
 		inject  ="cachebox"
 		delegate="getCache";
 	property
 		name    ="controller"
-		inject  ="coldbox"
+		inject  ="coldbox" 
 		delegate="relocate,runEvent,runRoute";
 	property name="flash"  inject="coldbox:flash";
 	property name="logBox" inject="logbox";
@@ -2041,7 +2041,11 @@ component
 				.getContext()
 				.isSSL() ? "https://" : "http://"
 		) &
-		( headers.keyExists( "x-forwarded-host" ) && len( headers[ "x-forwarded-host" ] ) ? headers[ "x-forwarded-host" ] : CGI.HTTP_HOST ) & // multi-host
+		(
+			headers.keyExists( "x-forwarded-host" ) && len( headers[ "x-forwarded-host" ] ) ? headers[
+				"x-forwarded-host"
+			] : CGI.HTTP_HOST
+		) & // multi-host
 		composeRoutingPath(); // Routing Path
 	}
 
