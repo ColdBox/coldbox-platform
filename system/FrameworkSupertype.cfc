@@ -682,6 +682,32 @@ component serializable="false" accessors="true" {
 	}
 
 	/****************************************************************
+	 * Date Time Methods *
+	 ****************************************************************/
+
+	/**
+	 * Get the ColdBox date/time helper class
+	 *
+	 * @return coldbox.system.async.time.DateTimeHelper
+	 */
+	DateTimeHelper function getDateTimeHelper(){
+		if ( isNull( variables.cbDateTimeHelper ) ) {
+			variables.cbDateTimeHelper = variables.wirebox.getInstance( "coldbox.system.async.time.DateTimeHelper" );
+		}
+		return cbDateTimeHelper;
+	}
+
+	/**
+	 * Generate an iso8601 formatted string from an incoming date/time object or none for the current time in ISO time
+	 *
+	 * @dateTime The input datetime or if not passed, the current date/time
+	 * @toUTC    By default, we convert all times to UTC for standardization
+	 */
+	string function getIsoTime( dateTime = now(), boolean toUTC = true ){
+		return getDateTimeHelper().getIsoTime( argumentCollection = arguments );
+	}
+
+	/****************************************************************
 	 * Request Context Methods *
 	 ****************************************************************/
 
@@ -705,7 +731,9 @@ component serializable="false" accessors="true" {
 		return getRequestContext().getCollection( private = arguments.private );
 	}
 
-	/****************************************** UTILITY METHODS ******************************************/
+	/****************************************************************
+	 * Mixin and Helper Methods *
+	 ****************************************************************/
 
 	/**
 	 * Injects a UDF Library (*.cfc or *.cfm) into the target object.  It does not however, put the mixins on any of the cfc scopes. Therefore they can only be called internally

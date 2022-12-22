@@ -18,7 +18,7 @@ component accessors="true" {
 	// The static java class we represent
 	variables.jPeriod = createObject( "java", "java.time.Period" );
 	// A standard set of date periods units.
-	this.CHRONO_UNIT  = new ChronoUnit();
+	this.CHRONO_UNIT  = new DateTimeHelper();
 
 	/**
 	 * Initialize to zero date base period
