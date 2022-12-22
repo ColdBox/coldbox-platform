@@ -545,7 +545,21 @@ component extends="EventHandler" {
 		// Setup General Error Response
 		arguments.prc.response
 			.setError( true )
-			.addMessage( "General application error: #arguments.exception.message#" )
+			.setData( {
+				"environment" : {
+					"currentRoute"     : arguments.event.getCurrentRoute(),
+					"currentRoutedUrl" : arguments.event.getCurrentRoutedUrl(),
+					"currentEvent"     : arguments.event.getCurrentEvent(),
+					"timestamp"        : getIsoTime()
+				},
+				"exception" : {
+					"stack"        : arguments.exception.tagContext.map( ( item ) => item.template & ":" & item.line ),
+					"type"         : arguments.exception.type,
+					"detail"       : arguments.exception.detail,
+					"extendedInfo" : arguments.exception.extendedInfo
+				}
+			} )
+			.addMessage( "An exception ocurred: #arguments.exception.message#" )
 			.setStatusCode( arguments.event.STATUS.INTERNAL_ERROR )
 			.setStatusText( "General application error" );
 	}

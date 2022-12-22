@@ -262,7 +262,7 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 				} );
 
 				it( "can have a last business day of the month constraint", function(){
-					var nowDate = new coldbox.system.async.time.ChronoUnit().toLocalDateTime( now(), "UTC" );
+					var nowDate = new coldbox.system.async.time.DateTimeHelper().toLocalDateTime( now(), "UTC" );
 
 					var t = prepareMock( scheduler.task( "test" ) ).setLastBusinessDay( true );
 
