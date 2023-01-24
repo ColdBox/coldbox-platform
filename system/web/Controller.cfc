@@ -1260,6 +1260,11 @@ component serializable="false" accessors="true" {
 		return this;
 	}
 
+	// Encapsulate a cfsettings requesttimeout. Encapsulated so we can ignore it for tests so it does not change the timeout of the test runner
+	function setRequestTimeout( numberOfSeconds ){
+		setting requesttimeout=numberOfSeconds;
+	}
+
 	/**
 	 * Update SSL or not on a request string
 	 */

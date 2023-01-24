@@ -62,4 +62,8 @@ component extends="coldbox.system.web.Controller" accessors="true" {
 		throw( message = "Relocating via relocate", type = "TestController.relocate" );
 	}
 
+	// Encapsulate a cfsettings requesttimeout. Encapsulated so we can ignore it for tests so it does not change the timeout of the test runner
+	function setRequestTimeout( numberOfSeconds ){
+		// Ignore timeouts while running tests
+	}
 }
