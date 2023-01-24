@@ -66,4 +66,5 @@ component extends="coldbox.system.web.Controller" accessors="true" {
 	function setRequestTimeout( numberOfSeconds ){
 		// Ignore timeouts while running tests
 	}
+
 }
