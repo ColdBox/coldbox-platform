@@ -2561,7 +2561,8 @@ component
 		);
 
 		// Calculate href for asset delivery via Browser
-		var href = "/#includesLocation#/#arguments.fileName#";
+		// if the filename begins with modules_app they want an asset from a module, not the includes dir
+		var href = "/" & ( left( arguments.fileName , 12 ) != 'modules_app/' ? includesLocation & '/' : '' ) & arguments.fileName;
 		var key  = reReplace( href, "^//?", "" );
 		if ( mapping.len() ) {
 			var href = "/#mapping#/#includesLocation#/#arguments.fileName#";
