@@ -370,6 +370,27 @@ component serializable="false" accessors="true" {
 		);
 	}
 
+	/**
+	 * Determine if the application is in the `development|local` environment
+	 */
+	boolean function isDevelopment(){
+		return listFindNoCase( "development,local", getSetting( "environment", "production" ) );
+	}
+
+	/**
+	 * Determine if the application is in the `production` environment
+	 */
+	boolean function isProduction(){
+		return getSetting( "environment", "production" ) == "production";
+	}
+
+	/**
+	 * Determine if the application is in the `testing` environment
+	 */
+	boolean function isTesting(){
+		return getSetting( "environment", "production" ) == "testing";
+	}
+
 	/****************************************************************
 	 * Deprecated Methods *
 	 ****************************************************************/
