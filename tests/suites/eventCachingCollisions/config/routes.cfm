@@ -23,26 +23,6 @@ NOTE: The interceptor will create a new setting called: sesBaseURL with this val
 <cfset setEnabled(true)>
 
 <!---
-	This determines if non-ses urls should be routed back to ses.
-	In other words, if someone goes to http://localhost/index.cfm?event=home.main
-	should we redirect (301, permanently moved) to the ses url:
-	http://localhost/index.cfm/home/main ?
-
-	This will also make sure that any trailing index pages get redirected as well, so
-	if you go to http://localhost/home/index it would redirect to http://localhost/home
-	if index is your framework action default.
-
-	For SEO purposes it's always best to have one URL for everything, not 3!
---->
-<cfset setUniqueURLs(false)>
-
-<!---
-	The Base URL for your site. This will only be used for forwarding requests if
-	UniqueURLs is enabled and for creating the new Application settings:
-
-	- sesBaseURL
-	- htmlBaseURL
-
     If you want your URLs to look like http://localhost/handler/action then you should
     put "http://localhost" here. For this option you'll need .htaccess or isapi rewrite support.
 

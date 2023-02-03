@@ -157,15 +157,6 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			arguments.event.setSESBaseURL( variables.router.composeRoutingUrl() );
 		}
 
-		// Check for invalid URLs if in strict mode via unique URLs
-		if ( variables.router.getUniqueURLs() ) {
-			checkForInvalidURL(
-				cleanedPaths[ "pathInfo" ],
-				cleanedPaths[ "scriptName" ],
-				arguments.event
-			);
-		}
-
 		// Extension detection if enabled, so we can do cool extension formats
 		if ( variables.router.getExtensionDetection() ) {
 			cleanedPaths[ "pathInfo" ] = detectExtension( cleanedPaths[ "pathInfo" ], arguments.event );
@@ -886,98 +877,6 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		}
 
 		return returnString;
-	}
-
-	/**
-	 * Check for invalid URL's
-	 *
-	 * @route       The incoming route
-	 * @script_name The cgi script name
-	 * @event       The event object
-	 */
-	private function checkForInvalidURL(
-		required route,
-		required script_name,
-		required event
-	){
-		var handler = "";
-		var action  = "";
-		var newpath = "";
-		var rc      = event.getCollection();
-
-		/**
-		Verify we have uniqueURLs ON, the event var exists, route is empty or index.cfm
-		AND
-		if the incoming event is not the default OR it is the default via the URL.
-		**/
-		if (
-			structKeyExists( rc, variables.eventName )
-			AND
-			( arguments.route EQ "/index.cfm" or arguments.route eq "" )
-			AND
-			(
-				rc[ variables.eventName ] NEQ variables.defaultEvent
-				OR
-				( structKeyExists( url, variables.eventName ) AND rc[ variables.eventName ] EQ variables.defaultEvent )
-			)
-		) {
-			//  New Pathing Calculations if not the default event. If default, relocate to the domain.
-			if ( rc[ variables.eventName ] != variables.defaultEvent ) {
-				//  Clean for handler & Action
-				if ( structKeyExists( rc, variables.eventName ) ) {
-					handler = reReplace( rc[ variables.eventName ], "\.[^.]*$", "" );
-					action  = listLast( rc[ variables.eventName ], "." );
-				}
-				//  route a handler
-				if ( len( handler ) ) {
-					newpath = "/" & handler;
-				}
-				//  route path with handler + action if not the default event action
-				if ( len( handler ) && len( action ) ) {
-					newpath = newpath & "/" & action;
-				}
-			}
-
-			// Debugging
-			if ( variables.log.canDebug() ) {
-				variables.log.debug(
-					"SES Invalid URL detected. Route: #arguments.route#, script_name: #arguments.script_name#"
-				);
-			}
-
-			// Setup Relocation
-			var httpRequestData = getHTTPRequestData();
-			var relocationUrl   = "#arguments.event.getSESbaseURL()##newpath##serializeURL( httpRequestData.content, arguments.event )#";
-
-			if ( httpRequestData.method eq "GET" ) {
-				cflocation( url = relocationUrl, statusCode = 301 );
-			} else {
-				cflocation( url = relocationUrl, statusCode = 303 );
-			}
-		}
-	}
-
-	/**
-	 * Serialize a URL when invalid
-	 *
-	 * @formVars The incoming form variables
-	 * @event    The event object
-	 */
-	private function serializeURL( formVars = "", required event ){
-		var vars = arguments.formVars;
-		var rc   = arguments.event.getCollection();
-
-		for ( var key in rc ) {
-			if ( NOT listFindNoCase( "route,handler,action,#variables.eventName#", key ) ) {
-				vars = listAppend( vars, "#lCase( key )#=#rc[ key ]#", "&" );
-			}
-		}
-
-		if ( len( vars ) eq 0 ) {
-			return "";
-		}
-
-		return "?" & vars;
 	}
 
 	/**

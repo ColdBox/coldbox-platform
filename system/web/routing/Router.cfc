@@ -22,12 +22,12 @@ component
 	 ****************************************************************/
 
 	property
-		name    ="cachebox"  
+		name    ="cachebox"
 		inject  ="cachebox"
 		delegate="getCache";
 	property
 		name    ="controller"
-		inject  ="coldbox" 
+		inject  ="coldbox"
 		delegate="relocate,runEvent,runRoute";
 	property name="flash"  inject="coldbox:flash";
 	property name="logBox" inject="logbox";
@@ -55,14 +55,6 @@ component
 	 * Namespace routing tables
 	 */
 	property name="namespaceRoutingTable" type="struct";
-
-	/**
-	 * Flag to enable unique or not URLs
-	 */
-	property
-		name   ="uniqueURLS"
-		type   ="boolean"
-		default="false";
 
 	/**
 	 * Flag to enable/disable routing
@@ -172,8 +164,6 @@ component
 		variables.namespaceRoutingTable   = {};
 		// Loose matching flag for regex matches
 		variables.looseMatching           = false;
-		// Flag to enable unique or not URLs
-		variables.uniqueURLs              = false;
 		// Enable the interceptor by default
 		variables.enabled                 = true;
 		// Detect extensions flag, so it can place a 'format' variable on the rc
