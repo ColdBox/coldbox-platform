@@ -1147,8 +1147,9 @@ component serializable="false" accessors="true" {
 	){
 		// Transient request cache
 		param request.cbTransientDICache = {};
+		var transientCacheEnabled        = arguments.mapping.isTransient() && !arguments.mapping.isVirtualInheritance();
 		// Verify if we have seen this transient in this request
-		if ( arguments.mapping.isTransient() && request.cbTransientDICache.keyExists( arguments.targetID ) ) {
+		if ( transientCacheEnabled && request.cbTransientDICache.keyExists( arguments.targetID ) ) {
 			// Injections Injection :)
 			arguments.targetObject
 				.getVariablesMixin()
@@ -1206,7 +1207,7 @@ component serializable="false" accessors="true" {
 				}
 
 				// Store in transient cache
-				if ( arguments.mapping.isTransient() ) {
+				if ( transientCacheEnabled ) {
 					request.cbTransientDICache[ arguments.targetId ] = {
 						"injections"  : { "#thisDIData.name#" : refLocal.dependency },
 						"delegations" : arguments.targetObject?.$wbDelegateMap ?: {}

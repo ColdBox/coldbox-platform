@@ -29,7 +29,7 @@ component
 	function beforeAll(){
 
 		// Cleanup
-		structDelete( request, "_lastInvalidEvent" );
+		cleanupColdBoxRequestData();
 		structDelete( url, "event" );
 		structDelete( url, "format" );
 
@@ -59,8 +59,9 @@ component
 	 * Cleanup for invalid handler on all tests
 	 * @beforeEach
 	 */
-	function cleanupInvalidHandler(){
+	function cleanupColdBoxRequestData(){
 		structDelete( request, "_lastInvalidEvent" );
+		structDelete( request, "cbTransientDICache" )
 	}
 
 	function isAdobe(){

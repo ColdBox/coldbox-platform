@@ -1029,8 +1029,10 @@ component serializable="false" accessors="true" {
 			// process inspection of instance
 			arguments.mapping.process( binder = variables.injector.getBinder(), injector = variables.injector );
 		}
+
 		// Build it out the base object and wire it
 		var baseObject = variables.injector.buildInstance( arguments.mapping );
+		variables.mixerUtil.start( baseObject );
 		variables.injector.autowire(
 			target  = baseObject,
 			mapping = arguments.mapping,
@@ -1039,7 +1041,6 @@ component serializable="false" accessors="true" {
 
 		// Mix them up baby!
 		variables.mixerUtil.start( arguments.target );
-		variables.mixerUtil.start( baseObject );
 
 		// Check if init already exists in target and base? If so, then inject it as $superInit
 		if ( structKeyExists( arguments.target, "init" ) AND structKeyExists( baseObject, "init" ) ) {
@@ -1108,6 +1109,7 @@ component serializable="false" accessors="true" {
 				if ( !isNull( arguments.propertyValue ) ) {
 					args.target.injectPropertyMixin( propertyName, propertyValue );
 				}
+
 				// Do we need to do automatic generic getter/setters
 				if ( generateAccessors and baseProperties.keyExists( propertyName ) ) {
 					if ( !structKeyExists( args.target, "get#propertyName#" ) ) {

@@ -436,11 +436,13 @@ component accessors="true" {
 		}
 
 		// Add core delegation exclusions
-		arrayAppend(
-			arguments.delegateExcludes,
-			variables.CORE_DELEGATE_EXCLUSIONS,
-			true
-		);
+		if ( arguments.delegate ) {
+			arrayAppend(
+				arguments.delegateExcludes,
+				variables.CORE_DELEGATE_EXCLUSIONS,
+				true
+			);
+		}
 
 		// store it
 		arrayAppend( variables.DIProperties, getNewDIDefinition().append( arguments, true ) );
