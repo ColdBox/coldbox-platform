@@ -612,16 +612,20 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 */
 	private function wireboxSetup(){
 		if ( NOT wirebox.getBinder().mappingExists( "coldbox.system.EventHandler" ) ) {
-			wirebox.registerNewInstance(
-				name         = "coldbox.system.EventHandler",
-				instancePath = "coldbox.system.EventHandler"
-			);
+			wirebox
+				.registerNewInstance(
+					name         = "coldbox.system.EventHandler",
+					instancePath = "coldbox.system.EventHandler"
+				)
+				.setScope( "singleton" );
 		}
 		if ( NOT wirebox.getBinder().mappingExists( "coldbox.system.RestHandler" ) ) {
-			wirebox.registerNewInstance(
-				name         = "coldbox.system.RestHandler",
-				instancePath = "coldbox.system.RestHandler"
-			);
+			wirebox
+				.registerNewInstance(
+					name         = "coldbox.system.RestHandler",
+					instancePath = "coldbox.system.RestHandler"
+				)
+				.setScope( "singleton" );
 		}
 		return this;
 	}

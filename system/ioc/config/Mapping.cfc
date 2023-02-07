@@ -126,6 +126,7 @@ component accessors="true" {
 			"setBeanFactory",
 			"setColdBox",
 			"$wbMixer",
+			"$wbDelegateMap",
 			"removeMixin",
 			"injectMixin",
 			"invokerMixin",
@@ -139,6 +140,13 @@ component accessors="true" {
 		];
 
 		return this;
+	}
+
+	/**
+	 * Verify if this is a transient object
+	 */
+	boolean function isTransient(){
+		return getScope() == "noscope";
 	}
 
 	/**
@@ -939,13 +947,18 @@ component accessors="true" {
 				type          : ( arguments.metadata.keyExists( "type" ) ? arguments.metadata.type : "any" ),
 				delegate      : arguments.metadata.keyExists( "delegate" ),
 				delegatePrefix: (
-					arguments.metadata.keyExists( "delegatePrefix" ) ? arguments.metadata.delegatePrefix : javacast(
-						"null",
-						""
+					// Verify it exists, if it does and no length then use the property name by convention
+					arguments.metadata.keyExists( "delegatePrefix" ) ? (
+						len( arguments.metadata.delegatePrefix ) ? arguments.metadata.delegatePrefix : arguments.metadata.name
 					)
+					 : ""
 				),
 				delegateSuffix: (
-					arguments.metadata.keyExists( "delegateSuffix" ) ? arguments.metadata.delegateSuffix : ""
+					// Verify it exists, if it does and no length then use the property name by convention
+					arguments.metadata.keyExists( "delegateSuffix" ) ? (
+						len( arguments.metadata.delegateSuffix ) ? arguments.metadata.delegateSuffix : arguments.metadata.name
+					)
+					 : ""
 				),
 				delegateExcludes: (
 					arguments.metadata.keyExists( "delegateExcludes" ) ? arguments.metadata.delegateExcludes.listToArray() : []

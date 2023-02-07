@@ -1,4 +1,4 @@
-﻿component persistent = "true" table = "users"{
+﻿component persistent = "true" table = "users" delegates="Versionable,ram>Memory,FlowHelpers"{
 
 	property
 		name     ="id"
