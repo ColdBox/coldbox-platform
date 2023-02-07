@@ -1175,7 +1175,7 @@ component serializable="false" accessors="true" {
 				);
 
 				// Is this injection a delegation also?
-				if ( !isNull( thisDIData.delegate ) ) {
+				if ( thisDIData.delegate ) {
 					processDelegation(
 						target  : targetObject,
 						delegate: refLocal.dependency,
@@ -1203,61 +1203,35 @@ component serializable="false" accessors="true" {
 	/**
 	 * Process a target object dependency delegation
 	 *
-	 * @target     The targeted object injected with the dependency
-	 * @dependency The dependency object
-	 * @DIData     The DI information about the delegation/injection
+	 * @target   The target object being injected with dependencies/delegations
+	 * @delegate The delegation object that was injected
+	 * @DIData   The DI information about the delegation/injection
 	 */
 	private function processDelegation(
 		required target,
 		required delegate,
 		required DIData
 	){
-		// Init lookup map in the target
-		param arguments.target.$wbDelegateMap   = {};
-		param arguments.DIData.delegateExcludes = "";
-
-		// Verify property mixin injection on delegete
+		// systemOutput( "Processing Delegation for #getMetadata( target ).name#", true );
+		// Init lookup maps and injection mixins
+		param arguments.target.$wbDelegateMap        = {};
+		param arguments.DIData.delegateExcludes      = [];
+		param arguments.DIData.delegateIncludes      = [];
 		param arguments.delegate.injectPropertyMixin = variables.mixerUtil.injectPropertyMixin;
 
 		// Inject target into the delegate as $parent
 		arguments.delegate.injectPropertyMixin( "$parent", arguments.target );
 
-		// Process if the delegation has inclusivity
-		// No length : all methods
-		// With length : use the declared methods
-		var delegateIncludes = len( arguments.DIData.delegate ) ? arguments.DIData.delegate.listToArray() : [];
-		// Delegation Exclusions : Core
-		var delegateExcludes = [
-			"init",
-			"$init",
-			"onDIComplete",
-			"setInjector",
-			"setBeanFactory",
-			"setColdBox"
-		];
-		// Exclude core mixins
-		arrayAppend(
-			delegateExcludes,
-			variables.mixerUtil.getMixins().keyArray(),
-			true
-		);
-		// Exclude targeted excludes
-		arrayAppend(
-			delegateExcludes,
-			arguments.DIData.delegateExcludes.listToArray(),
-			true
-		);
+		// Include/Exclude lists
+		var delegateIncludes = arguments.DIData.delegateIncludes;
+		var delegateExcludes = arguments.DIData.delegateExcludes;
 
 		// Process the right delegate prefix and suffixes
 		// Null : empty
 		// No length : use the property name
 		// With length : use it
-		var delegateSuffix = isNull( arguments.DIData.delegateSuffix ) ? "" : len(
-			arguments.DIData.delegateSuffix
-		) ? arguments.DIData.delegateSuffix : arguments.DIData.name;
-		var delegatePrefix = isNull( arguments.DIData.delegatePrefix ) ? "" : len(
-			arguments.DIData.delegatePrefix
-		) ? arguments.DIData.delegatePrefix : arguments.DIData.name;
+		var delegateSuffix = len( arguments.DIData.delegateSuffix ) ? arguments.DIData.delegateSuffix : arguments.DIData.name;
+		var delegatePrefix = len( arguments.DIData.delegatePrefix ) ? arguments.DIData.delegatePrefix : arguments.DIData.name;
 
 		// Process all public methods on the delegate
 		structKeyArray( arguments.delegate )

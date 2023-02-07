@@ -117,6 +117,27 @@ component accessors="true" {
 		// Observed Properties
 		variables.observedProperties     = [];
 
+		// Core Delegation Exclusions
+		variables.CORE_DELEGATE_EXCLUSIONS = [
+			"init",
+			"$init",
+			"onDIComplete",
+			"setInjector",
+			"setBeanFactory",
+			"setColdBox",
+			"$wbMixer",
+			"removeMixin",
+			"injectMixin",
+			"invokerMixin",
+			"injectPropertyMixin",
+			"removePropertyMixin",
+			"includeitMixin",
+			"getPropertyMixin",
+			"exposeMixin",
+			"methodProxy",
+			"getVariablesMixin"
+		];
+
 		return this;
 	}
 
@@ -378,10 +399,11 @@ component accessors="true" {
 	 * @scope            The scope in the CFC to inject the property to. By default it will inject it to the variables scope
 	 * @required         If the property is required or not, by default we assume required DI
 	 * @type             The type of the property
-	 * @delegate         If the property is an object delegate it will be empty or the list of methods to delegate to, else null
-	 * @delegatePrefix   If the property has a delegate prefix, else null
-	 * @delegateSuffix   If the property has a delegate suffix, else null
-	 * @delegateExcludes If the property has a delegate exclusion list, else null
+	 * @delegate         If the property is an object delegate
+	 * @delegatePrefix   If the property has a delegate prefix
+	 * @delegateSuffix   If the property has a delegate suffix
+	 * @delegateExcludes If the property has a delegate exclusion list
+	 * @delegateIncludes If the property has a delegate inclusion list
 	 */
 	Mapping function addDIProperty(
 		required name,
@@ -392,10 +414,11 @@ component accessors="true" {
 		scope            = "variables",
 		boolean required = true,
 		type             = "any",
-		delegate,
-		delegatePrefix,
-		delegateSuffix,
-		delegateExcludes
+		boolean delegate = false,
+		delegatePrefix   = "",
+		delegateSuffix   = "",
+		delegateExcludes = [],
+		delegateIncludes = []
 	){
 		// check if already registered, if it is, just return
 		for ( var thisProperty in variables.DIProperties ) {
@@ -404,6 +427,14 @@ component accessors="true" {
 			}
 		}
 
+		// Add core delegation exclusions
+		arrayAppend(
+			arguments.delegateExcludes,
+			variables.CORE_DELEGATE_EXCLUSIONS,
+			true
+		);
+
+		// store it
 		arrayAppend( variables.DIProperties, getNewDIDefinition().append( arguments, true ) );
 
 		return this;
@@ -722,6 +753,7 @@ component accessors="true" {
 	private function processComponentDelegates( required expression ){
 		arguments.expression
 			.listToArray()
+			// Parse the delegate expression into a struct of raw data
 			.map( function( item ){
 				arguments.item = arguments.item.trim();
 				var model      = reReplaceNoCase(
@@ -731,10 +763,11 @@ component accessors="true" {
 					"all"
 				);
 				return {
-					"name"     : "wbDelegate_#listLast( model, "." ).replace( "@", "_" )#_#hash( arguments.item )#",
-					"ref"      : model,
-					"delegate" : getToken( arguments.item, 2, "=" ),
-					"raw"      : arguments.item
+					"name"             : "wbDelegate_#listLast( model, "." ).replace( "@", "_" )#_#hash( arguments.item )#",
+					"ref"              : model,
+					"delegate"         : true,
+					"delegateIncludes" : getToken( arguments.item, 2, "=" ).listToArray(),
+					"raw"              : arguments.item
 				};
 			} )
 			// Map Prefixes
@@ -896,38 +929,28 @@ component accessors="true" {
 	 * @property The property metadata to process
 	 */
 	private function processPropertyMetadata( required metadata ){
-		// Injection
+		// Injection / Delegation Definition
 		if ( arguments.metadata.keyExists( "inject" ) ) {
 			addDIProperty(
-				name    : arguments.metadata.name,
-				dsl     : ( len( arguments.metadata.inject ) ? arguments.metadata.inject : "model" ),
-				scope   : ( structKeyExists( arguments.metadata, "scope" ) ? arguments.metadata.scope : "variables" ),
-				required: ( structKeyExists( arguments.metadata, "required" ) ? arguments.metadata.required : true ),
-				type    : ( structKeyExists( arguments.metadata, "type" ) ? arguments.metadata.type : "any" ),
-				delegate: (
-					structKeyExists( arguments.metadata, "delegate" ) ? arguments.metadata.delegate : javacast(
-						"null",
-						""
-					)
-				),
+				name          : arguments.metadata.name,
+				dsl           : ( len( arguments.metadata.inject ) ? arguments.metadata.inject : "model" ),
+				scope         : ( arguments.metadata.keyExists( "scope" ) ? arguments.metadata.scope : "variables" ),
+				required      : ( arguments.metadata.keyExists( "required" ) ? arguments.metadata.required : true ),
+				type          : ( arguments.metadata.keyExists( "type" ) ? arguments.metadata.type : "any" ),
+				delegate      : arguments.metadata.keyExists( "delegate" ),
 				delegatePrefix: (
-					structKeyExists( arguments.metadata, "delegatePrefix" ) ? arguments.metadata.delegatePrefix : javacast(
+					arguments.metadata.keyExists( "delegatePrefix" ) ? arguments.metadata.delegatePrefix : javacast(
 						"null",
 						""
 					)
 				),
 				delegateSuffix: (
-					structKeyExists( arguments.metadata, "delegateSuffix" ) ? arguments.metadata.delegateSuffix : javacast(
-						"null",
-						""
-					)
+					arguments.metadata.keyExists( "delegateSuffix" ) ? arguments.metadata.delegateSuffix : ""
 				),
 				delegateExcludes: (
-					structKeyExists( arguments.metadata, "delegateExcludes" ) ? arguments.metadata.delegateExcludes : javacast(
-						"null",
-						""
-					)
-				)
+					arguments.metadata.keyExists( "delegateExcludes" ) ? arguments.metadata.delegateExcludes.listToArray() : []
+				),
+				delegateIncludes: arguments.metadata.keyExists( "delegate" ) ? arguments.metadata.delegate.listToArray() : []
 			);
 		}
 		// end injection processing
@@ -1066,10 +1089,11 @@ component accessors="true" {
 			"required"         : false,
 			"argName"          : "",
 			"type"             : "any",
-			"delegate"         : javacast( "null", "" ),
-			"delegatePrefix"   : javacast( "null", "" ),
-			"delegateSuffix"   : javacast( "null", "" ),
-			"delegateExcludes" : javacast( "null", "" )
+			"delegate"         : false,
+			"delegatePrefix"   : "",
+			"delegateSuffix"   : "",
+			"delegateExcludes" : [],
+			"delegateIncludes" : []
 		};
 	}
 
