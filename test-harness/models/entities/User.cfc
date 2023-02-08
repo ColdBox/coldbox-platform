@@ -43,6 +43,6 @@
 
 	this.population = {
 		include : [ "firstName", "lastName", "username", "role" ],
-		exclude : ["id", "password", "lastLogin" ]
+		exclude : [ "id", "password", "lastLogin" ]
 	};
 }
