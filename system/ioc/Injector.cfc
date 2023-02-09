@@ -1208,10 +1208,16 @@ component serializable="false" accessors="true" {
 
 				// Store in transient cache
 				if ( transientCacheEnabled ) {
-					request.cbTransientDICache[ arguments.targetId ] = {
-						"injections"  : { "#thisDIData.name#" : refLocal.dependency },
-						"delegations" : arguments.targetObject?.$wbDelegateMap ?: {}
-					};
+					// Init storage if not found
+					if ( !request.cbTransientDICache.keyExists( arguments.targetID ) ) {
+						request.cbTransientDICache[ arguments.targetID ] = { injections : {}, delegations : {} };
+					}
+
+					// store dependency
+					request.cbTransientDICache[ arguments.targetId ].injections[ thisDIData.name ] = refLocal.dependency;
+					if ( structKeyExists( arguments.targetObject, "$wbDelegateMap" ) ) {
+						request.cbTransientDICache[ arguments.targetID ].delegations = arguments.targetObject.$wbDelegateMap;
+					}
 				}
 
 				// some debugging goodness
