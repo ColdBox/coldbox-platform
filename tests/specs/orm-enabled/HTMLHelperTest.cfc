@@ -744,6 +744,58 @@
 				// debug(str);
 				assertEquals( "</fieldset>", str );
 			} );
+
+			it( "cand do xss escaping", function(){
+				var str = htmlhelper.textField(
+					name  = "luis",
+					value = """><img src=x onerror=prompt(1)> or ""><script>alert(/xss/)</script>"
+				);
+				// if it parses, then it is escaped, else it fails.
+				var xml = xmlParse( str );
+			} );
+
+
+			it( "can do complex wrapper tags", function(){
+				var str = htmlhelper.textField(
+					name         = "luis",
+					value        = "luis",
+					wrapper      = "div class='form-control'",
+					groupWrapper = "div class='form-group'"
+				);
+				expect( str )
+					.toInclude( "<div class='form-group'><div class='form-control'>" )
+					.toInclude( "</div></div>" );
+			} );
+
+
+			it( "can write label attributes ", function(){
+				var str = htmlhelper.checkbox(
+					name       = "luis",
+					value      = 1,
+					label      = "luis?",
+					labelAttrs = { title : "Check this box for luis" }
+				);
+				expect( xmlParse( "<root>#str#</root>" ) ).toBe(
+					xmlParse(
+						"<root><label for=""luis"" title=""Check this box for luis"">luis?</label><input type=""checkbox"" name=""luis"" value=""1"" id=""luis""/></root>"
+					)
+				);
+			} );
+
+			it( "can create inputs inside label tags", function(){
+				var str = htmlhelper.checkbox(
+					name             = "luis",
+					value            = 1,
+					label            = "luis?",
+					labelAttrs       = { title : "Check this box for luis" },
+					inputInsideLabel = 1
+				);
+				expect( xmlParse( "<root>#str#</root>" ) ).toBe(
+					xmlParse(
+						"<root><label for=""luis"" title=""Check&##x20;this&##x20;box&##x20;for&##x20;luis""><input value=""1"" name=""luis"" id=""luis"" type=""checkbox""/>luis&##x3f;</label></root>"
+					)
+				);
+			} );
 		} );
 	}
 
