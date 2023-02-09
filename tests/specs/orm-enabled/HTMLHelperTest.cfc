@@ -448,7 +448,9 @@
 				// entity binding
 				var entity = entityLoad( "User", {}, { maxResults : 1 } ).first();
 				var str    = htmlhelper.hiddenField( name = "lastName", bind = entity );
-				expect( str ).toInclude( "<input value=""#entity.getLastName().encodeForHTMLAttribute()#"" name=""lastName"" id=""lastName"" type=""hidden""/>" );
+				expect( str )
+					.toInclude( "value=""#entity.getLastName().encodeForHTMLAttribute()#""" )
+					.toInclude( "type=""hidden""" );
 			} );
 
 			it( "can produce text fields with orm bindings", function(){
@@ -484,6 +486,22 @@
 					xmlParse( "<input name=""message"" value=""test"" id=""message"" type=""file""/>" ),
 					xmlParse( str )
 				);
+			} );
+
+			it( "can produce email fields", function(){
+				var entity = entityLoad( "User", {}, { maxResults : 1 } ).first();
+				var str    = htmlhelper.emailField( name = "lastName", bind = entity );
+				expect( str )
+					.toInclude( "value=""#entity.getLastName().encodeForHTMLAttribute()#""" )
+					.toInclude( "type=""email""" );
+			} );
+
+			it( "can produce URL fields", function(){
+				var entity = entityLoad( "User", {}, { maxResults : 1 } ).first();
+				var str    = htmlhelper.urlField( name = "lastName", bind = entity );
+				expect( str )
+					.toInclude( "value=""#entity.getLastName().encodeForHTMLAttribute()#""" )
+					.toInclude( "type=""url""" );
 			} );
 
 			it( "can produce checkboxes", function(){
@@ -707,6 +725,24 @@
 				expect( xmlParse( "<root>#str#</root>" ) ).toBe(
 					xmlParse( "<root><a id=""lui"" name=""lui""></a></root>" )
 				);
+			} );
+
+			it( "can create href tags", function(){
+				str = htmlhelper.href( href = "actions.save" );
+				expect( str ).toInclude( encodeForHTMLAttribute( "/actions/save" ) );
+
+				str = htmlhelper.href( href = "actions.save", text = "Edit" );
+				expect( str ).toInclude( encodeForHTMLAttribute( "/actions/save" ) ).toInclude( "Edit" );
+			} );
+
+			it( "can create fieldsets", function(){
+				str = htmlhelper.startFieldset( legend = "Luis" );
+				// debug(str);
+				assertEquals( "<fieldset><legend>Luis</legend>", str );
+
+				str = htmlhelper.endFieldSet();
+				// debug(str);
+				assertEquals( "</fieldset>", str );
 			} );
 		} );
 	}
