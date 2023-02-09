@@ -22,6 +22,7 @@
 	property name="userName";
 	property name="password";
 	property name="lastLogin" ormtype="date";
+	property name="isActive" ormtype="boolean" default="false";
 
 	// M20 -> Role
 	property
