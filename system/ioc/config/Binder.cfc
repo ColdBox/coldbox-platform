@@ -877,10 +877,11 @@ component accessors="true" {
 	 * @scope            The scope in the CFC to inject the property to. By default it will inject it to the variables scope
 	 * @required         If the property is required or not, by default we assume required DI
 	 * @type             The type of the property
-	 * @delegate         If the property is an object delegate it will be empty or the list of methods to delegate to, else null
-	 * @delegatePrefix   If the property has a delegate prefix, else null
-	 * @delegateSuffix   If the property has a delegate suffix, else null
-	 * @delegateExcludes If the property has a delegate exclusion list, else null
+	 * @delegate         If the property is an object delegate
+	 * @delegatePrefix   If the property has a delegate prefix
+	 * @delegateSuffix   If the property has a delegate suffix
+	 * @delegateExcludes If the property has a delegate exclusion list
+	 * @delegateIncludes If the property has a delegate inclusion list
 	 */
 	Binder function property(
 		required name,
@@ -891,10 +892,11 @@ component accessors="true" {
 		scope            = "variables",
 		required required=true,
 		type             = "any",
-		delegate,
-		delegatePrefix,
-		delegateSuffix,
-		delegateExcludes
+		boolean delegate = false,
+		delegatePrefix   = "",
+		delegateSuffix   = "",
+		delegateExcludes = [],
+		delegateIncludes = []
 	){
 		for ( var mapping in variables.currentMapping ) {
 			mapping.addDIProperty( argumentCollection = arguments );
@@ -905,9 +907,12 @@ component accessors="true" {
 	/**
 	 * Set any delegates on the target mapping
 	 *
-	 * @expression The delegates expression to define for the mapping
+	 * @expression The delegates expression to define for the mapping or an array of expressions
 	 */
 	Binder function delegates( required expression ){
+		if ( isArray( arguments.expression ) ) {
+			arguments.expression = arrayToList( arguments.expression );
+		}
 		variables.currentMapping.setDelegates( arguments.expression );
 		return this;
 	}

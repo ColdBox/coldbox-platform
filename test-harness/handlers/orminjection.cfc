@@ -10,7 +10,8 @@ component extends="coldbox.system.EventHandler"{
 		var sTime = getTickCount();
 		var aUsers = entityLoad( "User", {}, { maxResults : 500 } );
 
-		writeOutput( aUsers[ 2 ].versionsGet() );
+		//writeOutput( aUsers[ 2 ].versionsGet() );
+		writeOutput( server.coldfusion.productVersion );
 
 		return "<Br>Loaded #aUsers.len()# entities in #getTickCount() - sTime#ms";
 	}
