@@ -40,6 +40,12 @@
 		persistent="false"
 		required  ="false";
 
+	property
+		name      ="photosService"
+		inject    ="model:PhotosService"
+		persistent="false"
+		required  ="false";
+
 	// property name="controller" inject="coldbox" persistent="false" required="false";
 
 	this.population = {

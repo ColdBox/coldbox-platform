@@ -8,12 +8,14 @@ component extends="coldbox.system.EventHandler"{
 	 */
 	any function index( event, rc, prc ){
 		var sTime = getTickCount();
-		var aUsers = entityLoad( "User", {}, { maxResults : 500 } );
+		prc.aUsers = entityLoad( "User", {}, { maxResults : 500 } );
 
-		//writeOutput( aUsers[ 2 ].versionsGet() );
-		writeOutput( server.coldfusion.productVersion );
+		// writeDump( prc.aUsers[ 2 ].versionsGet() );
+		// writeDump( prc.aUsers[ 2 ].getPhotosService() );
 
-		return "<Br>Loaded #aUsers.len()# entities in #getTickCount() - sTime#ms";
+		writeOutput( "#server.coldfusion.productName# - #server.coldfusion.productVersion#"  );
+
+		return "<Br>Loaded #prc.aUsers.len()# entities in #getTickCount() - sTime#ms";
 	}
 
 	function seed( event, rc, prc ){
