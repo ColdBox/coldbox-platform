@@ -82,6 +82,14 @@ component serializable="false" accessors="true" {
 	 */
 	property name="responseHeaders" type="struct";
 
+	/**
+	 * The request's timeout if set via the setRequestTimeout() method.
+	 */
+	property
+		name   ="requestTimeout"
+		type   ="numeric"
+		default="0";
+
 	/************************************** STATIC CONSTRUCTS *********************************************/
 
 	// HTTP VERB ALIASES
@@ -813,6 +821,18 @@ component serializable="false" accessors="true" {
 	 */
 	RequestContext function setIsInvalidHTTPMethod( boolean target = true ){
 		variables.invalidHTTPMethod = arguments.target;
+		return this;
+	}
+
+	/**
+	 * Set the request timeout for the request.
+	 *
+	 * @seconds The number of seconds as a time limit
+	 *
+	 * @return RequestContext
+	 */
+	RequestContext function setRequestTimeout( required numeric seconds ){
+		setting requesttimeout=arguments.seconds;
 		return this;
 	}
 
