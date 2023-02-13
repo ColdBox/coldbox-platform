@@ -264,26 +264,26 @@ component accessors="true" {
 		// Prepare String Buffer
 		buffer = createObject( "java", "java.lang.StringBuilder" ).init( getExtraMessage() & chr( 13 ) );
 
-		if ( getType() neq "" ) {
-			buffer.append( "CFErrorType=" & getType() & chr( 13 ) );
+		if ( getType().len() ) {
+			buffer.append( "ErrorType = " & getType() & chr( 13 ) );
 		}
-		if ( getDetail() neq "" ) {
-			buffer.append( "CFDetails=" & getDetail() & chr( 13 ) );
+		if ( getDetail().len() ) {
+			buffer.append( "Details = " & getDetail() & chr( 13 ) );
 		}
-		if ( getMessage() neq "" ) {
-			buffer.append( "CFMessage=" & getMessage() & chr( 13 ) );
+		if ( getMessage().len() ) {
+			buffer.append( "Message = " & getMessage() & chr( 13 ) );
 		}
-		if ( getStackTrace() neq "" ) {
-			buffer.append( "CFStackTrace=" & getStackTrace() & chr( 13 ) );
+		if ( getStackTrace().len() ) {
+			buffer.append( "StackTrace = " & getStackTrace() & chr( 13 ) );
 		}
-		if ( getTagContextAsString() neq "" ) {
-			buffer.append( "CFTagContext=" & getTagContextAsString() & chr( 13 ) );
+		if ( getTagContextAsString().len() ) {
+			buffer.append( "TagContext = " & getTagContextAsString() & chr( 13 ) );
 		}
-		if ( isSimpleValue( getExtraInfo() ) ) {
-			buffer.append( "CFExtraInfo=" & getExtraInfo() & chr( 13 ) );
+		if ( isSimpleValue( getExtraInfo() ) && len( getExtraInfo() ) ) {
+			buffer.append( "ExtraInfo = " & getExtraInfo() & chr( 13 ) );
 		} else {
 			buffer.append(
-				"CFExtraInfo=" & new coldbox.system.core.util.Util().toJson( getExtraInfo() ) & chr( 13 )
+				"ExtraInfo = " & new coldbox.system.core.util.Util().toJson( getExtraInfo() ) & chr( 13 )
 			);
 		}
 		return buffer.toString();
