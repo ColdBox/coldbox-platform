@@ -37,6 +37,11 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			"afterAspectsLoad",
 			"cbLoadInterceptorHelpers",
 			"preReinit",
+			// Rest Handler Exceptions
+			"onAuthenticationFailure",
+			"onAuthorizationFailure",
+			"onValidationException",
+			"onEntityNotFoundException",
 			// On Actions
 			"onException",
 			"onRequestCapture",

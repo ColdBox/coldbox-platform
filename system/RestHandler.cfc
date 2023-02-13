@@ -232,16 +232,13 @@ component extends="EventHandler" {
 	 * @exception      The thrown exception
 	 */
 	function onValidationException( event, rc, prc, eventArguments, exception = {} ){
-		// Log Locally
-		if ( log.canDebug() ) {
-			log.debug(
-				"ValidationException Execution of (#arguments.event.getCurrentEvent()#)",
-				arguments.exception.extendedInfo ?: ""
-			);
-		}
-
+		// Param Exceptions, just in case
+		param name="arguments.exception.message"      default="";
+		param name="arguments.exception.extendedInfo" default="";
 		// Announce exception
-		announce( "onException", { "exception" : arguments.exception } );
+		announce( "onValidationException", { "exception" : arguments.exception } );
+		// Log it
+		log.warn( "onValidationException of (#event.getCurrentEvent()#)", arguments.exception?.extendedInfo ?: "" );
 
 		// Setup Response
 		arguments.event
@@ -281,16 +278,13 @@ component extends="EventHandler" {
 		param name="arguments.exception.message"      default="";
 		param name="arguments.exception.extendedInfo" default="";
 
-		// Log Locally
-		if ( log.canDebug() ) {
-			log.debug(
-				"Record not found in execution of (#arguments.event.getCurrentEvent()#)",
-				arguments.exception.extendedInfo
-			);
-		}
-
 		// Announce exception
-		announce( "onException", { "exception" : arguments.exception } );
+		announce( "onEntityNotFoundException", { "exception" : arguments.exception } );
+		// Log it
+		log.warn(
+			"onEntityNotFoundException of (#event.getCurrentEvent()#)",
+			arguments.exception?.extendedInfo ?: ""
+		);
 
 		// Setup Response
 		arguments.event
@@ -405,7 +399,12 @@ component extends="EventHandler" {
 		exception = {}
 	){
 		// Announce exception
-		announce( "onException", { "exception" : arguments.exception } );
+		announce( "onAuthenticationFailure", { "exception" : arguments.exception } );
+		// Log it
+		log.warn(
+			"onAuthenticationFailure of (#event.getCurrentEvent()#)",
+			arguments.prc?.cbSecurity_validatorResults?.messages ?: ""
+		);
 
 		// case when the a jwt token was valid, but expired
 		if (
@@ -465,7 +464,12 @@ component extends="EventHandler" {
 		exception = {}
 	){
 		// Announce exception
-		announce( "onException", { "exception" : arguments.exception } );
+		announce( "onAuthorizationFailure", { "exception" : arguments.exception } );
+		// Log it
+		log.warn(
+			"onAuthorizationFailure of (#event.getCurrentEvent()#)",
+			arguments.prc?.cbSecurity_validatorResults?.messages ?: ""
+		);
 
 		arguments.event
 			.getResponse()
