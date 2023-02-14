@@ -97,8 +97,7 @@
 				assertEquals( 1, arrayLen( newAppender.$callLog().logMessage ) );
 			} );
 
-
-			fdescribe( "can do logging with closures and automated canX inclusions", function(){
+			describe( "can do logging with closures and automated canX inclusions", function(){
 				beforeEach( function( currentSpec ){
 					// MockAppender
 					mockAppender = createStub()
