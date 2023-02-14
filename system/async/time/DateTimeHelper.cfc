@@ -1,5 +1,5 @@
 /**
- * We represent a chrono unit class that assists with time units on date/time conversions
+ * We represent a static date/time helper class that assists with time units on date/time conversions
  * It doesn't hold any date/time information.
  *
  * @see https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/temporal/ChronoUnit.html
@@ -66,7 +66,7 @@ component singleton {
 	}
 
 	/**
-	 * Convert any ColdFUsion date/time or string date/time object to the new Java.time.LocalDateTime class so we can use them as Temporal objects
+	 * Convert any ColdFusion date/time or string date/time object to the new Java.time.LocalDateTime class so we can use them as Temporal objects
 	 *
 	 * @target   The cf date/time or string object representing the date/time
 	 * @timezone If passed, we will use this timezone to build the temporal object. Else we default to UTC
@@ -173,6 +173,19 @@ component singleton {
 	 */
 	Period function period(){
 		return new coldbox.system.async.time.Period( argumentCollection = arguments );
+	}
+
+	/**
+	 * Generate an iso8601 formatted string from an incoming date/time object
+	 *
+	 * @dateTime The input datetime or if not passed, the current date/time
+	 * @toUTC    By default, we convert all times to UTC for standardization
+	 */
+	string function getIsoTime( dateTime = now(), boolean toUTC = true ){
+		if ( arguments.toUTC ) {
+			arguments.dateTime = dateConvert( "local2utc", arguments.dateTime );
+		}
+		return dateTimeFormat( arguments.dateTime, "iso" );
 	}
 
 }

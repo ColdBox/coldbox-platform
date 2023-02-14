@@ -1,16 +1,23 @@
-﻿component extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.core.dynamic.ObjectPopulator" {
+﻿component extends="tests.resources.BaseIntegrationTest" {
 
-	/*********************************** BDD SUITES ***********************************/
+	/*********************************** LIFE CYCLE Methods ***********************************/
+
+	function beforeAll(){
+		super.beforeAll();
+		// do your own stuff here
+		setup();
+	}
+
+	function afterAll(){
+		// do your own stuff here
+		super.afterAll();
+	}
 
 	function run( testResults, testBox ){
 		// all your suites go here.
 		describe( "Object Populator", function(){
 			beforeEach( function( currentSpec ){
-				setup();
-				populator = model
-					.init()
-					.setUtil( new coldbox.system.core.util.Util() )
-					.setMixerUtil( new coldbox.system.core.dynamic.MixerUtil() );
+				populator = getInstance( "wirebox:populator" );
 			} );
 
 			it( "can create the populator", function(){

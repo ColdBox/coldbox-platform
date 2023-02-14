@@ -15,7 +15,7 @@ component accessors="true" {
 	// The static java class we represent
 	variables.jDuration = createObject( "java", "java.time.Duration" );
 	// A standard set of date periods units.
-	this.CHRONO_UNIT    = new ChronoUnit();
+	this.CHRONO_UNIT    = new DateTimeHelper();
 
 	/**
 	 * Initialize to zero

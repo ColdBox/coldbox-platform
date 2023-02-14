@@ -191,7 +191,7 @@ component
 		var viewCacheProvider = variables.templateCache;
 		var iData             = arguments;
 		var explicitModule    = false;
-		var viewLocations     = "";
+		var viewLocations     = { "viewPath" : "", "viewHelperPath" : "" };
 
 		// Rendering Region call?
 		if ( !isNull( arguments.name ) and len( arguments.name ) ) {
@@ -498,7 +498,7 @@ component
 		var cbox_cacheKey      = "";
 		var cbox_cacheEntry    = "";
 		var cbox_cacheProvider = variables.templateCache;
-		var viewLocations      = "";
+		var viewLocations      = { "viewPath" : "", "viewHelperPath" : "" };
 
 		// Setup the cache key
 		cbox_cacheKey = variables.templateCache.VIEW_CACHEKEY_PREFIX & "external-" & arguments.view & arguments.cacheSuffix;
@@ -564,7 +564,7 @@ component
 		var cbox_layoutLocationKey = "";
 		var cbox_layoutLocation    = "";
 		var iData                  = arguments;
-		var viewLocations          = "";
+		var viewLocations          = { "viewPath" : "", "viewHelperPath" : "" };
 		var explicitView           = getExplicitView();
 
 		// Are we discovering implicit views: setting must be on and no view set.
@@ -634,7 +634,7 @@ component
 
 		// If Layout is blank, then just delegate to the view
 		if ( len( cbox_currentLayout ) eq 0 ) {
-			iData.renderedLayout = view();
+			iData.renderedLayout = this.view();
 		} else {
 			// Layout location key
 			cbox_layoutLocationKey = cbox_currentLayout & arguments.module & cbox_explicitModule;
@@ -664,7 +664,7 @@ component
 				}
 			}
 			// Get the view locations
-			var viewLocations = discoverViewPaths(
+			viewLocations = discoverViewPaths(
 				view           = reverse( listRest( reverse( cbox_layoutLocation ), "." ) ),
 				module         = arguments.module,
 				explicitModule = cbox_explicitModule

@@ -10,6 +10,7 @@
 			reinitPassword          : "",
 			reinitKey 				: "fwreinit",
 			handlersIndexAutoReload : true,
+			debugMode : true,
 			// Implicit Events
 			defaultEvent            : "",
 			requestStartHandler     : "main.onRequestStart",

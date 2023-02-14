@@ -37,6 +37,11 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			"afterAspectsLoad",
 			"cbLoadInterceptorHelpers",
 			"preReinit",
+			// Rest Handler Exceptions
+			"onAuthenticationFailure",
+			"onAuthorizationFailure",
+			"onValidationException",
+			"onEntityNotFoundException",
 			// On Actions
 			"onException",
 			"onRequestCapture",
@@ -596,10 +601,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// Check if handler mapped?
 		if ( NOT variables.wirebox.getBinder().mappingExists( variables.INTERCEPTOR_BASE_CLASS ) ) {
 			// feed the base class
-			variables.wirebox.registerNewInstance(
-				name         = variables.INTERCEPTOR_BASE_CLASS,
-				instancePath = variables.INTERCEPTOR_BASE_CLASS
-			);
+			variables.wirebox
+				.registerNewInstance(
+					name         = variables.INTERCEPTOR_BASE_CLASS,
+					instancePath = variables.INTERCEPTOR_BASE_CLASS
+				)
+				.setScope( "singleton" );
 		}
 
 		return this;

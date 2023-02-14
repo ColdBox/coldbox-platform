@@ -19,7 +19,8 @@
     	logSQL 				= false,
     	flushAtRequestEnd 	= false,
     	autoManageSession 	= false,
-    	eventHandling 	  	=  false,
+    	eventHandling 	  	= true,
+		eventHandler 		= "cbtestharness.models.entities.EventHandler",
     	dialect				= 'MySQL'
     };
 

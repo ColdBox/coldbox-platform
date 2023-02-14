@@ -92,13 +92,13 @@ component extends="EventHandler" {
 			arguments.exception = e;
 			this.onAnyOtherException( argumentCollection = arguments );
 			// If in development, let's show the error template
-			if ( getSetting( "environment" ) eq "development" ) {
+			if ( inDebugMode() ) {
 				rethrow;
 			}
 		}
 
 		// Development additions
-		if ( getSetting( "environment" ) eq "development" ) {
+		if ( inDebugMode() ) {
 			arguments.prc.response
 				.addHeader( "x-current-route", arguments.event.getCurrentRoute() )
 				.addHeader( "x-current-routed-url", arguments.event.getCurrentRoutedURL() )
@@ -179,7 +179,7 @@ component extends="EventHandler" {
 		}
 
 		// If in development and not in testing mode, then show exception template, easier to debug
-		if ( getSetting( "environment" ) eq "development" && !isInstanceOf( variables.controller, "MockController" ) ) {
+		if ( inDebugMode() && !isInstanceOf( variables.controller, "MockController" ) ) {
 			throw( object = arguments.exception );
 		}
 
@@ -202,7 +202,7 @@ component extends="EventHandler" {
 			.setStatusText( "General application error" );
 
 		// Development additions Great for Testing
-		if ( getSetting( "environment" ) eq "development" ) {
+		if ( inDebugMode() ) {
 			prc.response
 				.setData(
 					structKeyExists( arguments.exception, "tagContext" ) ? arguments.exception.tagContext : {}
@@ -234,16 +234,13 @@ component extends="EventHandler" {
 	 * @exception      The thrown exception
 	 */
 	function onValidationException( event, rc, prc, eventArguments, exception = {} ){
-		// Log Locally
-		if ( log.canDebug() ) {
-			log.debug(
-				"ValidationException Execution of (#arguments.event.getCurrentEvent()#)",
-				arguments.exception.extendedInfo ?: ""
-			);
-		}
-
+		// Param Exceptions, just in case
+		param name="arguments.exception.message"      default="";
+		param name="arguments.exception.extendedInfo" default="";
 		// Announce exception
-		announce( "onException", { "exception" : arguments.exception } );
+		announce( "onValidationException", { "exception" : arguments.exception } );
+		// Log it
+		log.warn( "onValidationException of (#event.getCurrentEvent()#)", arguments.exception?.extendedInfo ?: "" );
 
 		// Setup Response
 		arguments.event
@@ -283,16 +280,13 @@ component extends="EventHandler" {
 		param name="arguments.exception.message"      default="";
 		param name="arguments.exception.extendedInfo" default="";
 
-		// Log Locally
-		if ( log.canDebug() ) {
-			log.debug(
-				"Record not found in execution of (#arguments.event.getCurrentEvent()#)",
-				arguments.exception.extendedInfo
-			);
-		}
-
 		// Announce exception
-		announce( "onException", { "exception" : arguments.exception } );
+		announce( "onEntityNotFoundException", { "exception" : arguments.exception } );
+		// Log it
+		log.warn(
+			"onEntityNotFoundException of (#event.getCurrentEvent()#)",
+			arguments.exception?.extendedInfo ?: ""
+		);
 
 		// Setup Response
 		arguments.event
@@ -407,7 +401,12 @@ component extends="EventHandler" {
 		exception = {}
 	){
 		// Announce exception
-		announce( "onException", { "exception" : arguments.exception } );
+		announce( "onAuthenticationFailure", { "exception" : arguments.exception } );
+		// Log it
+		log.warn(
+			"onAuthenticationFailure of (#event.getCurrentEvent()#)",
+			arguments.prc?.cbSecurity_validatorResults?.messages ?: ""
+		);
 
 		// case when the a jwt token was valid, but expired
 		if (
@@ -468,7 +467,12 @@ component extends="EventHandler" {
 		exception = {}
 	){
 		// Announce exception
-		announce( "onException", { "exception" : arguments.exception } );
+		announce( "onAuthorizationFailure", { "exception" : arguments.exception } );
+		// Log it
+		log.warn(
+			"onAuthorizationFailure of (#event.getCurrentEvent()#)",
+			arguments.prc?.cbSecurity_validatorResults?.messages ?: ""
+		);
 
 		arguments.event
 			.getResponse()
@@ -552,7 +556,21 @@ component extends="EventHandler" {
 		// Setup General Error Response
 		arguments.prc.response
 			.setError( true )
-			.addMessage( "General application error: #arguments.exception.message#" )
+			.setData( {
+				"environment" : {
+					"currentRoute"     : arguments.event.getCurrentRoute(),
+					"currentRoutedUrl" : arguments.event.getCurrentRoutedUrl(),
+					"currentEvent"     : arguments.event.getCurrentEvent(),
+					"timestamp"        : getIsoTime()
+				},
+				"exception" : {
+					"stack"        : arguments.exception.tagContext.map( ( item ) => item.template & ":" & item.line ),
+					"type"         : arguments.exception.type,
+					"detail"       : arguments.exception.detail,
+					"extendedInfo" : arguments.exception.extendedInfo
+				}
+			} )
+			.addMessage( "An exception ocurred: #arguments.exception.message#" )
 			.setStatusCode( arguments.event.STATUS.INTERNAL_ERROR )
 			.setStatusText( "General application error" );
 	}

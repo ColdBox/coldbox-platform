@@ -1716,13 +1716,7 @@ component
 		selectedIndex = 0,
 		selectedValue = ""
 	){
-		var buffer    = createObject( "java", "java.lang.StringBuilder" ).init( "" );
-		var val       = "";
-		var nameVal   = "";
-		var x         = 1;
-		var qColumns  = "";
-		var thisName  = "";
-		var thisValue = "";
+		var buffer = createObject( "java", "java.lang.StringBuilder" ).init( "" );
 
 		// check if an array? So we can do array of objects check
 		if ( isArray( arguments.values ) AND arrayLen( arguments.values ) ) {
@@ -1737,30 +1731,30 @@ component
 		}
 
 		// setup local variables
-		val     = arguments.values;
-		nameVal = arguments.values;
+		var val     = arguments.values;
+		var nameVal = arguments.values;
 
 		// query normalization?
 		if ( isQuery( val ) ) {
 			// check if column sent? Else select the first column
 			if ( NOT len( arguments.column ) ) {
 				// select the first one
-				qColumns         = listToArray( arguments.values.columnList );
+				var qColumns     = listToArray( arguments.values.columnList );
 				arguments.column = qColumns[ 1 ];
 			}
 			// column for values
-			val     = getColumnArray( arguments.values, arguments.column );
-			nameVal = val;
+			var val     = getColumnArray( arguments.values, arguments.column );
+			var nameVal = val;
 			// name column values
 			if ( len( arguments.nameColumn ) ) {
-				nameVal = getColumnArray( arguments.values, arguments.nameColumn );
+				var nameVal = getColumnArray( arguments.values, arguments.nameColumn );
 			}
 		}
 
 		// values
 		for ( var x = 1; x lte arrayLen( val ); x++ ) {
-			thisValue = val[ x ];
-			thisName  = nameVal[ x ];
+			var thisValue = val[ x ];
+			var thisName  = nameVal[ x ];
 
 			// struct normalizing
 			if ( isStruct( val[ x ] ) ) {

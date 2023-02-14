@@ -370,6 +370,34 @@ component serializable="false" accessors="true" {
 		);
 	}
 
+	/**
+	 * Determine if the application is in the `debugMode` or not
+	 */
+	boolean function inDebugMode(){
+		return getSetting( "debugMode", false );
+	}
+
+	/**
+	 * Determine if the application is in the `development|local` environment
+	 */
+	boolean function isDevelopment(){
+		return listFindNoCase( "development,local", getSetting( "environment", "production" ) );
+	}
+
+	/**
+	 * Determine if the application is in the `production` environment
+	 */
+	boolean function isProduction(){
+		return getSetting( "environment", "production" ) == "production";
+	}
+
+	/**
+	 * Determine if the application is in the `testing` environment or in a testing.MockController execution
+	 */
+	boolean function isTesting(){
+		return getSetting( "environment", "production" ) == "testing" || isInstanceOf( this, "MockController" );
+	}
+
 	/****************************************************************
 	 * Deprecated Methods *
 	 ****************************************************************/

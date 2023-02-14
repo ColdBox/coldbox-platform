@@ -1,4 +1,4 @@
-﻿component persistent = "true" table = "users"{
+﻿component persistent = "true" table = "users" delegates="Versionable,ram>Memory,FlowHelpers"{
 
 	property
 		name     ="id"
@@ -22,6 +22,7 @@
 	property name="userName";
 	property name="password";
 	property name="lastLogin" ormtype="date";
+	property name="isActive" ormtype="boolean" default="false";
 
 	// M20 -> Role
 	property
@@ -39,10 +40,16 @@
 		persistent="false"
 		required  ="false";
 
+	property
+		name      ="photosService"
+		inject    ="model:PhotosService"
+		persistent="false"
+		required  ="false";
+
 	// property name="controller" inject="coldbox" persistent="false" required="false";
 
 	this.population = {
 		include : [ "firstName", "lastName", "username", "role" ],
-		exclude : ["id", "password", "lastLogin" ]
+		exclude : [ "id", "password", "lastLogin" ]
 	};
 }

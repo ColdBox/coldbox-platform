@@ -18,9 +18,9 @@ component {
 		// module settings - stored in modules.name.settings
 		settings = {
 			// The base path of JS assets
-			js_path      : "",
+			js_path      : "/includes/js/",
 			// The base path of CSS assets
-			css_path     : "",
+			css_path     : "/includes/css/",
 			// Encode values on all dynamically generated tags in the HTML Helper
 			encodeValues : false
 		};

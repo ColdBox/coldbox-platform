@@ -146,37 +146,37 @@ component accessors="true" {
 		method   = "run"
 	){
 		// Utility class
-		variables.util             = new coldbox.system.core.util.Util();
+		variables.util            = new coldbox.system.core.util.Util();
 		// Link up the executor and name
-		variables.executor         = arguments.executor;
-		variables.name             = arguments.name;
+		variables.executor        = arguments.executor;
+		variables.name            = arguments.name;
 		// time unit helper
-		variables.chronoUnitHelper = new coldbox.system.async.time.ChronoUnit();
-		variables.timeUnitHelper   = new coldbox.system.async.time.TimeUnit();
+		variables.dateTimeHelper  = new coldbox.system.async.time.DateTimeHelper();
+		variables.timeUnitHelper  = new coldbox.system.async.time.TimeUnit();
 		// Init Properties
-		variables.task             = arguments.task;
-		variables.method           = arguments.method;
+		variables.task            = arguments.task;
+		variables.method          = arguments.method;
 		// Default Frequencies
-		variables.period           = 0;
-		variables.delay            = 0;
-		variables.spacedDelay      = 0;
-		variables.timeUnit         = "milliseconds";
-		variables.noOverlap        = false;
+		variables.period          = 0;
+		variables.delay           = 0;
+		variables.spacedDelay     = 0;
+		variables.timeUnit        = "milliseconds";
+		variables.noOverlap       = false;
 		// Constraints
-		variables.disabled         = false;
-		variables.whenClosure      = "";
-		variables.dayOfTheMonth    = 0;
-		variables.dayOfTheWeek     = 0;
-		variables.weekends         = false;
-		variables.weekdays         = false;
-		variables.lastBusinessDay  = false;
-		variables.noOverlaps       = false;
-		variables.startOnDateTime  = "";
-		variables.endOnDateTime    = "";
+		variables.disabled        = false;
+		variables.whenClosure     = "";
+		variables.dayOfTheMonth   = 0;
+		variables.dayOfTheWeek    = 0;
+		variables.weekends        = false;
+		variables.weekdays        = false;
+		variables.lastBusinessDay = false;
+		variables.noOverlaps      = false;
+		variables.startOnDateTime = "";
+		variables.endOnDateTime   = "";
 		// Probable Scheduler or not
-		variables.scheduler        = "";
+		variables.scheduler       = "";
 		// Prepare execution tracking stats
-		variables.stats            = {
+		variables.stats           = {
 			// Save name just in case
 			"name"              : arguments.name,
 			// When task got created
@@ -691,7 +691,7 @@ component accessors="true" {
 		}
 		// Get the duration time for the next run and delay accordingly
 		this.delay(
-			variables.chronoUnitHelper
+			variables.dateTimeHelper
 				.duration()
 				.getNative()
 				.between( now, nextRun )
@@ -721,7 +721,7 @@ component accessors="true" {
 		}
 		// Get the duration time for the next run and delay accordingly
 		this.delay(
-			variables.chronoUnitHelper
+			variables.dateTimeHelper
 				.duration()
 				.getNative()
 				.between( now, nextRun )
@@ -760,7 +760,7 @@ component accessors="true" {
 		}
 		// Get the duration time for the next run and delay accordingly
 		this.delay(
-			variables.chronoUnitHelper
+			variables.dateTimeHelper
 				.duration()
 				.getNative()
 				.between( now, nextRun )
@@ -782,7 +782,7 @@ component accessors="true" {
 		// Set at midnight
 		var nextRun = now
 			// Sunday
-			.with( variables.chronoUnitHelper.ChronoField.DAY_OF_WEEK, javacast( "int", 7 ) )
+			.with( variables.dateTimeHelper.ChronoField.DAY_OF_WEEK, javacast( "int", 7 ) )
 			// Midnight
 			.withHour( javacast( "int", 0 ) )
 			.withMinute( javacast( "int", 0 ) )
@@ -793,7 +793,7 @@ component accessors="true" {
 		}
 		// Get the duration time for the next run and delay accordingly
 		this.delay(
-			variables.chronoUnitHelper
+			variables.dateTimeHelper
 				.duration()
 				.getNative()
 				.between( now, nextRun )
@@ -823,7 +823,7 @@ component accessors="true" {
 		validateTime( arguments.time );
 		var nextRun = now
 			// Given day
-			.with( variables.chronoUnitHelper.ChronoField.DAY_OF_WEEK, javacast( "int", arguments.dayOfWeek ) )
+			.with( variables.dateTimeHelper.ChronoField.DAY_OF_WEEK, javacast( "int", arguments.dayOfWeek ) )
 			// Given time
 			.withHour( javacast( "int", getToken( arguments.time, 1, ":" ) ) )
 			.withMinute( javacast( "int", getToken( arguments.time, 2, ":" ) ) )
@@ -834,7 +834,7 @@ component accessors="true" {
 		}
 		// Get the duration time for the next run and delay accordingly
 		this.delay(
-			variables.chronoUnitHelper
+			variables.dateTimeHelper
 				.duration()
 				.getNative()
 				.between( now, nextRun )
@@ -856,7 +856,7 @@ component accessors="true" {
 		// Set at midnight
 		var nextRun = now
 			// First day of the month
-			.with( variables.chronoUnitHelper.ChronoField.DAY_OF_MONTH, javacast( "int", 1 ) )
+			.with( variables.dateTimeHelper.ChronoField.DAY_OF_MONTH, javacast( "int", 1 ) )
 			// Midnight
 			.withHour( javacast( "int", 0 ) )
 			.withMinute( javacast( "int", 0 ) )
@@ -867,7 +867,7 @@ component accessors="true" {
 		}
 		// Get the duration time for the next run and delay accordingly
 		this.delay(
-			variables.chronoUnitHelper
+			variables.dateTimeHelper
 				.duration()
 				.getNative()
 				.between( now, nextRun )
@@ -899,7 +899,7 @@ component accessors="true" {
 		// Get new time
 		var nextRun = now
 			// First day of the month
-			.with( variables.chronoUnitHelper.ChronoField.DAY_OF_MONTH, javacast( "int", arguments.day ) )
+			.with( variables.dateTimeHelper.ChronoField.DAY_OF_MONTH, javacast( "int", arguments.day ) )
 			// Specific Time
 			.withHour( javacast( "int", getToken( arguments.time, 1, ":" ) ) )
 			.withMinute( javacast( "int", getToken( arguments.time, 2, ":" ) ) )
@@ -910,7 +910,7 @@ component accessors="true" {
 		}
 		// Get the duration time for the next run and delay accordingly
 		this.delay(
-			variables.chronoUnitHelper
+			variables.dateTimeHelper
 				.duration()
 				.getNative()
 				.between( now, nextRun )
@@ -956,7 +956,7 @@ component accessors="true" {
 		}
 		// Get the duration time for the next run and delay accordingly
 		this.delay(
-			variables.chronoUnitHelper
+			variables.dateTimeHelper
 				.duration()
 				.getNative()
 				.between( now, nextRun )
@@ -976,7 +976,7 @@ component accessors="true" {
 	 */
 	private function getLastDayOfTheMonth(){
 		// Get the last day of the month
-		var lastDay = variables.chronoUnitHelper
+		var lastDay = variables.dateTimeHelper
 			.toLocalDateTime( now(), this.getTimezone() )
 			.with( createObject( "java", "java.time.temporal.TemporalAdjusters" ).lastDayOfMonth() );
 		// Verify if on weekend
@@ -1021,7 +1021,7 @@ component accessors="true" {
 		}
 		// Get the duration time for the next run and delay accordingly
 		this.delay(
-			variables.chronoUnitHelper
+			variables.dateTimeHelper
 				.duration()
 				.getNative()
 				.between( now, nextRun )
@@ -1044,7 +1044,7 @@ component accessors="true" {
 		// Set at midnight
 		var nextRun = now
 			// First day of the month
-			.with( variables.chronoUnitHelper.ChronoField.DAY_OF_YEAR, javacast( "int", 1 ) )
+			.with( variables.dateTimeHelper.ChronoField.DAY_OF_YEAR, javacast( "int", 1 ) )
 			// Midnight
 			.withHour( javacast( "int", 0 ) )
 			.withMinute( javacast( "int", 0 ) )
@@ -1055,7 +1055,7 @@ component accessors="true" {
 		}
 		// Get the duration time for the next run and delay accordingly
 		this.delay(
-			variables.chronoUnitHelper
+			variables.dateTimeHelper
 				.duration()
 				.getNative()
 				.between( now, nextRun )
@@ -1089,9 +1089,9 @@ component accessors="true" {
 		validateTime( arguments.time );
 		var nextRun = now
 			// Specific month
-			.with( variables.chronoUnitHelper.ChronoField.MONTH_OF_YEAR, javacast( "int", arguments.month ) )
+			.with( variables.dateTimeHelper.ChronoField.MONTH_OF_YEAR, javacast( "int", arguments.month ) )
 			// Specific day of the month
-			.with( variables.chronoUnitHelper.ChronoField.DAY_OF_MONTH, javacast( "int", arguments.day ) )
+			.with( variables.dateTimeHelper.ChronoField.DAY_OF_MONTH, javacast( "int", arguments.day ) )
 			// Midnight
 			.withHour( javacast( "int", getToken( arguments.time, 1, ":" ) ) )
 			.withMinute( javacast( "int", getToken( arguments.time, 2, ":" ) ) )
@@ -1102,7 +1102,7 @@ component accessors="true" {
 		}
 		// Get the duration time for the next run and delay accordingly
 		this.delay(
-			variables.chronoUnitHelper
+			variables.dateTimeHelper
 				.duration()
 				.getNative()
 				.between( now, nextRun )
@@ -1139,7 +1139,7 @@ component accessors="true" {
 		}
 		// Get the duration time for the next run and delay accordingly
 		this.delay(
-			variables.chronoUnitHelper
+			variables.dateTimeHelper
 				.duration()
 				.getNative()
 				.between( now, nextRun )
@@ -1180,7 +1180,7 @@ component accessors="true" {
 		}
 		// Get the duration time for the next run and delay accordingly
 		this.delay(
-			variables.chronoUnitHelper
+			variables.dateTimeHelper
 				.duration()
 				.getNative()
 				.between( now, nextRun )
@@ -1266,7 +1266,7 @@ component accessors="true" {
 	 * @time The specific time using 24 hour format => HH:mm, defaults to 00:00
 	 */
 	ScheduledTask function startOn( required date, string time = "00:00" ){
-		variables.startOnDateTime = variables.chronoUnitHelper.parse(
+		variables.startOnDateTime = variables.dateTimeHelper.parse(
 			"#dateFormat( arguments.date, "yyyy-mm-dd" )#T#arguments.time#"
 		);
 		return this;
@@ -1279,7 +1279,7 @@ component accessors="true" {
 	 * @time The specific time using 24 hour format => HH:mm, defaults to 00:00
 	 */
 	ScheduledTask function endOn( required date, string time = "00:00" ){
-		variables.endOnDateTime = variables.chronoUnitHelper.parse(
+		variables.endOnDateTime = variables.dateTimeHelper.parse(
 			"#dateFormat( arguments.date, "yyyy-mm-dd" )#T#arguments.time#"
 		);
 		return this;
@@ -1370,7 +1370,7 @@ component accessors="true" {
 	 * Get a Java localDateTime object using the current date/time and timezone
 	 */
 	function getJavaNow(){
-		return variables.chronoUnitHelper.toLocalDateTime( now(), this.getTimezone() );
+		return variables.dateTimeHelper.toLocalDateTime( now(), this.getTimezone() );
 	}
 
 	/**

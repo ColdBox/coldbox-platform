@@ -37,6 +37,11 @@ component extends="coldbox.system.RestHandler" {
 		event.setView( "simpleview" );
 	}
 
+
+	function anError( event, rc, prc ){
+		event.renderData( type = "dddd", data = [ "luis majano" ] );
+	}
+
 	function invalidCredentials( event, rc, prc ){
 		throw( type = "InvalidCredentials" );
 	}

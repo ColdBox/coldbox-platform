@@ -1,7 +1,7 @@
 <cfprocessingdirective pageEncoding="utf-8">
 <cfscript>
-	// Detect Session Scope
-	local.sessionScopeExists = getApplicationMetadata().sessionManagement;
+	// Local raw exception structure
+	local.exception = oException.getExceptionStruct();
 
 	// Detect host
 	try {
@@ -72,7 +72,8 @@
 		]
 	};
 
-	// Build ID
+	// Detect Session Scope
+	local.sessionScopeExists = getApplicationMetadata().sessionManagement;
 	if ( local.sessionScopeExists ) {
 		local.fwString = "";
 		if ( getApplicationMetadata().clientManagement  && isDefined( "client" ) ) {
@@ -91,20 +92,19 @@
 	local.databaseInfo = {};
 	if (
 		(
-			isStruct( oException.getExceptionStruct() )
-			OR findNoCase( "DatabaseQueryException", getMetadata( oException.getExceptionStruct() ).getName() )
+			isStruct( local.exception )
+			OR findNoCase( "DatabaseQueryException", getMetadata( local.exception ).getName() )
 		) AND findNoCase( "database", oException.getType() )
 	) {
-		local.exceptionInfo = oException.getExceptionStruct();
 		local.databaseInfo = {
 			"SQL State"            : oException.getSQLState(),
 			"NativeErrorCode"      : oException.getNativeErrorCode(),
 			"SQL Sent"             : oException.getSQL(),
 			"Driver Error Message" : oException.getqueryError(),
 			"Name-Value Pairs"     : oException.getWhere(),
-			"Exception Detail"     : local.exceptionInfo.Message,
-			"Datasource"     	   : structKeyExists( local.exceptionInfo, 'datasource' ) ? local.exceptionInfo.datasource : "",
-			"Additional Info"      : structKeyExists( local.exceptionInfo, 'additional' ) ? local.exceptionInfo.additional : "",
+			"Exception Detail"     : local.exception.message,
+			"Datasource"     	   : structKeyExists( local.exception, 'datasource' ) ? local.exception.datasource : "",
+			"Additional Info"      : structKeyExists( local.exception, 'additional' ) ? local.exception.additional : "",
 			"itemorder"      : [
 				"Datasource",
 				"Name-Value Pairs",
@@ -119,9 +119,8 @@
 	}
 
 	// Get exception information and mark the safe environment token
-	local.e = oException.getExceptionStruct();
-	stackFrames = arrayLen( local.e.TagContext );
-	local.safeEnvironment = "development";
+	local.stackFrames = arrayLen( local.exception.tagContext );
+	local.inDebugMode = controller.inDebugMode();
 
 	// Is this an Ajax Request? If so, present the plain exception templates
 	local.requestHeaders = getHTTPRequestData( false ).headers;
@@ -130,12 +129,13 @@
 		&&
 		local.requestHeaders[ "X-Requested-With" ] eq "XMLHttpRequest"
 	){
-		// Development report
-		if( local.eventDetails.environment eq local.safeEnvironment ){
+		// Debug mode report
+		if( local.inDebugMode ){
 			include "BugReport.cfm";
 		}
 		// Production Report
 		else {
+			writeOutput( "<h1>Whoops was not shown as ColdBox is not in <b>debugMode</b>!</h1>" );
 			include "BugReport-Public.cfm";
 		}
 		return;
@@ -206,7 +206,7 @@
 
 						<h1 class="exception__type" title="Error Code and Exception Type">
 							<i data-eva="close-circle-outline" fill="red"></i>
-							<span>#trim( eventDetails[ "Error Code" ] & " " & local.e.type )#</span>
+							<span>#trim( eventDetails[ "Error Code" ] & " " & local.exception.type )#</span>
 						</h1>
 
 						<div
@@ -221,7 +221,7 @@
 								data-eva-height="16"
 								style="cursor: pointer; float: right"></i>
 
-							#oException.processMessage( local.e.message )#
+							#oException.processMessage( local.exception.message )#
 						</div>
 
 					</div>
@@ -234,8 +234,8 @@
 					<div class="whoops__stacktrace_panel">
 						<ul class="stacktrace__list">
 							<cfset root = expandPath( "/" )/>
-							<cfloop from="1" to="#arrayLen( local.e.TagContext )#" index="i">
-								<cfset instance = local.e.TagContext[ i ]/>
+							<cfloop from="1" to="#arrayLen( local.exception.TagContext )#" index="i">
+								<cfset instance = local.exception.TagContext[ i ]/>
 								<!--- <cfdump var="#instance#"> --->
 								<li
 									id   ="stack#stackFrames - i + 1#"
@@ -247,7 +247,7 @@
 											#replace( instance.template, root, "" )#:<span class="stacktrace__line-number">#instance.line#</span>
 										</h3>
 
-										<cfif structKeyExists( instance, "codePrintPlain" ) && local.eventDetails.environment eq local.safeEnvironment>
+										<cfif structKeyExists( instance, "codePrintPlain" ) && local.inDebugMode>
 											<cfset codesnippet = instance.codePrintPlain>
 											<cfset codesnippet = reReplace( codesnippet, "\n\t", " ", "All" )>
 											<cfset codesnippet = htmlEditFormat( codesnippet )>
@@ -293,9 +293,9 @@
 					<!----------------------------------------------------------------------------------------->
 					<!--- Code Container --->
 					<!----------------------------------------------------------------------------------------->
-					<cfif stackFrames gt 0 AND local.eventDetails.environment eq local.safeEnvironment>
+					<cfif stackFrames gt 0 AND local.inDebugMode>
 						<div class="code-preview">
-							<cfset instance = local.e.TagContext[ 1 ]/>
+							<cfset instance = local.exception.TagContext[ 1 ]/>
 							<div id="code-container"></div>
 						</div>
 					</cfif>
@@ -309,7 +309,7 @@
 						<!--- Slide UP Button --->
 						<!----------------------------------------------------------------------------------------->
 
-						<cfif stackFrames gt 0 AND local.eventDetails.environment eq local.safeEnvironment>
+						<cfif stackFrames gt 0 AND local.inDebugMode>
 							<div class="slideup_row">
 								<a href="javascript:void(0);" onclick="toggleCodePreview()" class="button button-icononly">
 									<i id="codetoggle-up" data-eva="arrowhead-up-outline"></i>
@@ -421,9 +421,9 @@
 			<!----------------------------------------------------------------------------------------->
 
 			<!--- Make sure we are in Development only --->
-			<cfif local.eventDetails.environment eq local.safeEnvironment>
+			<cfif local.inDebugMode>
 				<cfset stackRenderings = {}>
-				<cfloop array="#local.e.tagContext#" item="thisTagContext" index="i">
+				<cfloop array="#local.exception.tagContext#" item="thisTagContext" index="i">
 					<!--- Verify if File Exists: Just in case it's a core CFML engine file, else don't add it --->
 					<cfif fileExists( thisTagContext.template )>
 						<!--- Determine Source Highlighter --->
@@ -481,7 +481,7 @@
 				eva.replace();
 
 				SyntaxHighlighter.highlight('brush:sql');
-				<cfif local.e.type == 'database'>
+				<cfif local.exception.type == 'database'>
 					var buttonEl = document.querySelector(".button.database_scope");
 					filterScopes( buttonEl, 'database_scope' );
 					toggleCodePreview();

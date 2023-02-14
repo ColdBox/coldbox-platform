@@ -85,6 +85,17 @@ component accessors="true" {
 			return variables.extraInfo.$toString();
 		}
 
+		// Is this a raw CFML Exception?
+		if (
+			( isObject( variables.extraInfo ) || isStruct( variables.extraInfo ) )
+			&&
+			structKeyExists( variables.extraInfo, "stacktrace" ) &&
+			structKeyExists( variables.extraInfo, "message" ) &&
+			structKeyExists( variables.extraInfo, "detail" )
+		) {
+			return new coldbox.system.web.context.ExceptionBean( variables.extraInfo ).$toString();
+		}
+
 		// Component XML conversion
 		if ( isObject( variables.extraInfo ) ) {
 			return getXmlConverter().toXML( variables.extraInfo );

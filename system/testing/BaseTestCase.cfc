@@ -60,7 +60,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * @return BaseTestCase
 	 */
 	function metadataInspection(){
-		variables.metadata = new coldbox.system.core.util.Util().getInheritedMetadata( this );
+		variables.metadata = getUtil().getInheritedMetadata( this );
 		// Inspect for appMapping annotation
 		if ( structKeyExists( variables.metadata, "appMapping" ) ) {
 			variables.appMapping = variables.metadata.appMapping;
@@ -851,7 +851,22 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * @return coldbox.system.core.util.Util
 	 */
 	function getUtil(){
-		return new coldbox.system.core.util.Util();
+		if ( isNull( variables.cbUtil ) ) {
+			variables.cbUtil = new coldbox.system.core.util.Util();
+		}
+		return variables.cbUtil;
+	}
+
+	/**
+	 * Get the ColdBox Env Class
+	 *
+	 * @return coldbox.system.core.delegates.Env
+	 */
+	function getEnv(){
+		if ( isNull( variables.env ) ) {
+			variables.env = new coldbox.system.core.delegates.Env();
+		}
+		return variables.env;
 	}
 
 	/**

@@ -49,10 +49,10 @@ component accessors="true" {
 			// AutoCalculate
 			calculateAppMapping( configStruct );
 		} else {
-			configStruct.appMapping = arguments.overrideAppMapping;
+			configStruct[ "appMapping" ] = arguments.overrideAppMapping;
 		}
 		// Store web mapping
-		configStruct.webMapping = arguments.overrideWebMapping;
+		configStruct[ "webMapping" ] = arguments.overrideWebMapping;
 
 		// Default Locations for ROOT based apps, which is the default
 		// Parse out the first / to create the invocation Path
@@ -110,7 +110,7 @@ component accessors="true" {
 		/* ::::::::::::::::::::::::::::::::::::::::: APP LOCATION OVERRIDES :::::::::::::::::::::::::::::::::::::::::::: */
 
 		// Setup Default Application Path from main controller
-		configStruct.applicationPath = variables.controller.getAppRootPath();
+		configStruct[ "applicationPath" ] = variables.controller.getAppRootPath();
 
 		// Check for Override of AppMapping
 		if ( len( trim( arguments.overrideAppMapping ) ) ) {
@@ -172,6 +172,8 @@ component accessors="true" {
 
 	/**
 	 * Calculate the AppMapping
+	 *
+	 * @configStruct The global settings structure
 	 */
 	function calculateAppMapping( required configStruct ){
 		// Get the web path from CGI.
@@ -186,25 +188,25 @@ component accessors="true" {
 		var pathLocation = findNoCase( webPath, localPath );
 
 		if ( pathLocation ) {
-			arguments.configStruct.appMapping = mid( localPath, pathLocation, len( webPath ) );
+			arguments.configStruct[ "appMapping" ] = mid( localPath, pathLocation, len( webPath ) );
 		} else {
-			arguments.configStruct.appMapping = webPath;
+			arguments.configStruct[ "appMapping" ] = webPath;
 		}
 
 		// Clean last /
-		if ( right( arguments.configStruct.AppMapping, 1 ) eq "/" ) {
-			if ( len( arguments.configStruct.AppMapping ) - 1 GT 0 )
-				arguments.configStruct.AppMapping = left(
-					arguments.configStruct.AppMapping,
-					len( arguments.configStruct.AppMapping ) - 1
+		if ( right( arguments.configStruct.appMapping, 1 ) eq "/" ) {
+			if ( len( arguments.configStruct.appMapping ) - 1 GT 0 )
+				arguments.configStruct.appMapping = left(
+					arguments.configStruct.appMapping,
+					len( arguments.configStruct.appMapping ) - 1
 				);
-			else arguments.configStruct.AppMapping = "";
+			else arguments.configStruct.appMapping = "";
 		}
 
 		// Clean j2ee context
 		if ( len( getContextRoot() ) ) {
-			arguments.configStruct.AppMapping = replaceNoCase(
-				arguments.configStruct.AppMapping,
+			arguments.configStruct.appMapping = replaceNoCase(
+				arguments.configStruct.appMapping,
 				getContextRoot(),
 				""
 			);
@@ -347,7 +349,7 @@ component accessors="true" {
 			".",
 			"all"
 		);
-		configStruct[ "HandlersPath" ]         = fwSettingsStruct.ApplicationPath & fwSettingsStruct.handlersConvention;
+		configStruct[ "HandlersPath" ]         = fwSettingsStruct.applicationPath & fwSettingsStruct.handlersConvention;
 		// Models Registration
 		configStruct[ "ModelsInvocationPath" ] = reReplace(
 			fwSettingsStruct.ModelsConvention,
@@ -355,7 +357,7 @@ component accessors="true" {
 			".",
 			"all"
 		);
-		configStruct[ "ModelsPath" ] = fwSettingsStruct.ApplicationPath & fwSettingsStruct.ModelsConvention;
+		configStruct[ "ModelsPath" ] = fwSettingsStruct.applicationPath & fwSettingsStruct.ModelsConvention;
 
 		// Set the Handlers, Models Invocation & Physical Path for this Application
 		if ( len( configStruct[ "AppMapping" ] ) ) {
@@ -372,7 +374,7 @@ component accessors="true" {
 				".",
 				"all"
 			)#";
-			configStruct[ "HandlersPath" ]         = "/" & configStruct.AppMapping & "/#fwSettingsStruct.handlersConvention#";
+			configStruct[ "HandlersPath" ]         = "/" & configStruct.appMapping & "/#fwSettingsStruct.handlersConvention#";
 			configStruct[ "HandlersPath" ]         = expandPath( configStruct[ "HandlersPath" ] );
 			// Model Registrations
 			configStruct[ "ModelsInvocationPath" ] = appMappingAsDots & ".#reReplace(
@@ -381,7 +383,7 @@ component accessors="true" {
 				".",
 				"all"
 			)#";
-			configStruct[ "ModelsPath" ] = "/" & configStruct.AppMapping & "/#fwSettingsStruct.ModelsConvention#";
+			configStruct[ "ModelsPath" ] = "/" & configStruct.appMapping & "/#fwSettingsStruct.ModelsConvention#";
 			configStruct[ "ModelsPath" ] = expandPath( configStruct[ "ModelsPath" ] );
 		}
 
@@ -400,8 +402,8 @@ component accessors="true" {
 		}
 
 		// Configure the modules locations for the conventions not the external ones.
-		if ( len( configStruct.AppMapping ) ) {
-			configStruct.ModulesLocation       = "/#configStruct.AppMapping#/#fwSettingsStruct.ModulesConvention#";
+		if ( len( configStruct.appMapping ) ) {
+			configStruct.ModulesLocation       = "/#configStruct.appMapping#/#fwSettingsStruct.ModulesConvention#";
 			configStruct.ModulesInvocationPath = appMappingAsDots & ".#reReplace(
 				fwSettingsStruct.ModulesConvention,
 				"(/|\\)",
@@ -417,7 +419,7 @@ component accessors="true" {
 				"all"
 			);
 		}
-		configStruct.ModulesPath = fwSettingsStruct.ApplicationPath & fwSettingsStruct.ModulesConvention;
+		configStruct.ModulesPath = fwSettingsStruct.applicationPath & fwSettingsStruct.ModulesConvention;
 	}
 
 	/**
@@ -434,7 +436,7 @@ component accessors="true" {
 			)
 		) {
 			// Verify the locations, do relative to the app mapping first
-			if ( directoryExists( fwSettingsStruct.ApplicationPath & configStruct[ "ViewsExternalLocation" ] ) ) {
+			if ( directoryExists( fwSettingsStruct.applicationPath & configStruct[ "ViewsExternalLocation" ] ) ) {
 				configStruct[ "ViewsExternalLocation" ] = "/" & configStruct[ "AppMapping" ] & "/" & configStruct[
 					"ViewsExternalLocation"
 				];
@@ -461,7 +463,7 @@ component accessors="true" {
 			structKeyExists( configStruct, "LayoutsExternalLocation" ) and configStruct[ "LayoutsExternalLocation" ] neq ""
 		) {
 			// Verify the locations, do relative to the app mapping first
-			if ( directoryExists( fwSettingsStruct.ApplicationPath & configStruct[ "LayoutsExternalLocation" ] ) ) {
+			if ( directoryExists( fwSettingsStruct.applicationPath & configStruct[ "LayoutsExternalLocation" ] ) ) {
 				configStruct[ "LayoutsExternalLocation" ] = "/" & configStruct[ "AppMapping" ] & "/" & configStruct[
 					"LayoutsExternalLocation"
 				];
@@ -681,7 +683,7 @@ component accessors="true" {
 		// Check if we have defined DSL first in application config
 		wireBoxDSL = arguments.oConfig.getPropertyMixin( "wireBox", "variables", {} );
 
-		// Get Binder Paths
+		// Get Binder Pa Binder Paths
 		if ( structKeyExists( wireBoxDSL, "binder" ) ) {
 			arguments.config.wirebox.binderPath = wireBoxDSL.binder;
 		}

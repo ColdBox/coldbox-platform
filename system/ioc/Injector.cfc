@@ -839,7 +839,8 @@ component serializable="false" accessors="true" {
 				processInjection(
 					targetObject: targetObject,
 					DIData      : arguments.mapping.getDIProperties(),
-					targetId    : arguments.targetID
+					targetId    : arguments.targetID,
+					mapping     : arguments.mapping
 				);
 			}
 
@@ -848,7 +849,8 @@ component serializable="false" accessors="true" {
 				processInjection(
 					targetObject: targetObject,
 					DIData      : arguments.mapping.getDISetters(),
-					targetId    : arguments.targetID
+					targetId    : arguments.targetID,
+					mapping     : arguments.mapping
 				);
 			}
 
@@ -1130,17 +1132,37 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
-	 * Process property and setter injection
+	 * Process property and setter injections
 	 *
 	 * @targetObject The target object to do some goodness on, usually a CFC
 	 * @DIData       The DI data array to use for injection
-	 * @targetID     The target ID to process injections
+	 * @targetID     The target Identifier of the target object
+	 * @mapping      The mapping of the target object
 	 */
 	private Injector function processInjection(
 		required targetObject,
 		required array DIData,
-		required string targetID
+		required string targetID,
+		required mapping
 	){
+		// Transient request cache
+		param request.cbTransientDICache = {};
+		var transientCacheEnabled        = arguments.mapping.isTransient() && !arguments.mapping.isVirtualInheritance();
+		// Verify if we have seen this transient in this request
+		if ( transientCacheEnabled && request.cbTransientDICache.keyExists( arguments.targetID ) ) {
+			// Injections Injection :)
+			arguments.targetObject
+				.getVariablesMixin()
+				.append( request.cbTransientDICache[ arguments.targetId ].injections );
+			// Delegations Injection
+			arguments.targetObject.$wbDelegateMap = request.cbTransientDICache[ arguments.targetId ].delegations;
+			// inject delegation into the target
+			for ( var delegationMethod in structKeyArray( arguments.targetObject.$wbDelegateMap ) ) {
+				arguments.targetObject.injectMixin( delegationMethod, variables.mixerUtil.getByDelegate );
+			}
+			return this;
+		}
+
 		for ( var thisDIData in arguments.DIData ) {
 			// Init the lookup structure
 			var refLocal = {};
@@ -1167,7 +1189,7 @@ component serializable="false" accessors="true" {
 			if ( structKeyExists( refLocal, "dependency" ) ) {
 				// Inject dependency
 				injectTarget(
-					target         = targetObject,
+					target         = arguments.targetObject,
 					propertyName   = thisDIData.name,
 					propertyObject = refLocal.dependency,
 					scope          = thisDIData.scope,
@@ -1175,12 +1197,27 @@ component serializable="false" accessors="true" {
 				);
 
 				// Is this injection a delegation also?
-				if ( !isNull( thisDIData.delegate ) ) {
+				if ( thisDIData.delegate ) {
 					processDelegation(
-						target  : targetObject,
+						target  : arguments.targetObject,
+						targetId: arguments.targetID,
 						delegate: refLocal.dependency,
 						DIData  : thisDIData
 					);
+				}
+
+				// Store in transient cache
+				if ( transientCacheEnabled ) {
+					// Init storage if not found
+					if ( !request.cbTransientDICache.keyExists( arguments.targetID ) ) {
+						request.cbTransientDICache[ arguments.targetID ] = { injections : {}, delegations : {} };
+					}
+
+					// store dependency
+					request.cbTransientDICache[ arguments.targetId ].injections[ thisDIData.name ] = refLocal.dependency;
+					if ( structKeyExists( arguments.targetObject, "$wbDelegateMap" ) ) {
+						request.cbTransientDICache[ arguments.targetID ].delegations = arguments.targetObject.$wbDelegateMap;
+					}
 				}
 
 				// some debugging goodness
@@ -1203,109 +1240,66 @@ component serializable="false" accessors="true" {
 	/**
 	 * Process a target object dependency delegation
 	 *
-	 * @target     The targeted object injected with the dependency
-	 * @dependency The dependency object
-	 * @DIData     The DI information about the delegation/injection
+	 * @target   The target object being injected with dependencies/delegations
+	 * @targetID The target ID to process injections
+	 * @delegate The delegation object that was injected
+	 * @DIData   The DI information about the delegation/injection
 	 */
 	private function processDelegation(
 		required target,
+		required string targetID,
 		required delegate,
 		required DIData
 	){
-		// Init lookup map in the target
-		if ( !structKeyExists( arguments.target, "$wbDelegateMap" ) || isNull( arguments.target.$wbDelegateMap ) ) {
-			arguments.target.$wbDelegateMap = {};
-		}
-		if ( !structKeyExists( arguments.DIData, "delegateExcludes" ) || isNull( arguments.DIData.delegateExcludes ) ) {
-			arguments.DIData.delegateExcludes = "";
-		}
-
-		// Verify property mixin injection on delegete
+		// systemOutput( "Processing Delegation for #getMetadata( target ).name#", true );
+		// Init lookup maps and injection mixins
+		param arguments.target.$wbDelegateMap        = {};
+		param arguments.DIData.delegateExcludes      = [];
+		param arguments.DIData.delegateIncludes      = [];
 		param arguments.delegate.injectPropertyMixin = variables.mixerUtil.injectPropertyMixin;
 
 		// Inject target into the delegate as $parent
 		arguments.delegate.injectPropertyMixin( "$parent", arguments.target );
 
-		// Process if the delegation has inclusivity
-		// No length : all methods
-		// With length : use the declared methods
-		var delegateIncludes = len( arguments.DIData.delegate ) ? arguments.DIData.delegate.listToArray() : [];
-		// Delegation Exclusions : Core
-		var delegateExcludes = [
-			"init",
-			"$init",
-			"onDIComplete",
-			"setInjector",
-			"setBeanFactory",
-			"setColdBox"
-		];
-		// Exclude core mixins
-		arrayAppend(
-			delegateExcludes,
-			variables.mixerUtil.getMixins().keyArray(),
-			true
-		);
-		// Exclude targeted excludes
-		arrayAppend(
-			delegateExcludes,
-			arguments.DIData.delegateExcludes.listToArray(),
-			true
-		);
+		// Defaults
+		var delegateIncludes = arguments.DIData.delegateIncludes;
+		var delegateExcludes = arguments.DIData.delegateExcludes;
+		var delegateSuffix   = arguments.DIData.delegateSuffix;
+		var delegatePrefix   = arguments.DIData.delegatePrefix;
 
-		// Process the right delegate prefix and suffixes
-		// Null : empty
-		// No length : use the property name
-		// With length : use it
-		var delegateSuffix = isNull( arguments.DIData.delegateSuffix ) ? "" : len(
-			arguments.DIData.delegateSuffix
-		) ? arguments.DIData.delegateSuffix : arguments.DIData.name;
-		var delegatePrefix = isNull( arguments.DIData.delegatePrefix ) ? "" : len(
-			arguments.DIData.delegatePrefix
-		) ? arguments.DIData.delegatePrefix : arguments.DIData.name;
-
-		// Process all public methods on the delegate
-		structKeyArray( arguments.delegate )
-			// Only functions or closures
-			.filter( function( thisMethod ){
-				return isCustomFunction( delegate[ arguments.thisMethod ] ) || isClosure(
-					delegate[ arguments.thisMethod ]
+		// Delegation Process
+		var processDelegateInjection = function( thisMethod ){
+			var delegationMethod = "#delegatePrefix##arguments.thisMethod##delegateSuffix#";
+			// Check if this method has been override by the user first
+			if ( !structKeyExists( target, delegationMethod ) ) {
+				// Lookup targets
+				target.$wbDelegateMap[ delegationMethod ] = { delegate : delegate, method : arguments.thisMethod };
+				// inject delegation into the target
+				target.injectMixin( delegationMethod, variables.mixerUtil.getByDelegate );
+			}
+			// Has it been injected by another delegate?
+			else if ( structKeyExists( target.$wbDelegateMap, delegationMethod ) ) {
+				throw(
+					type    = "DuplicateDelegateException",
+					message = "The method: (#delegationMethod#) from the (#getMetadata( delegate ).name#) delegate has already been injected by (#getMetadata( target.$wbDelegateMap[ delegationMethod ].delegate ).name#)",
+					detail  = "The target object is (#getMetadata( target ).name#)."
 				);
-			} )
-			// Exclusions
-			.filter( function( thisMethod ){
-				return !arrayContainsNoCase( delegateExcludes, arguments.thisMethod );
-			} )
-			// Inclusivity : No includes, just passthrough, else verify it
-			.filter( function( thisMethod ){
-				return !arrayLen( delegateIncludes ) || arrayContainsNoCase(
-					delegateIncludes,
-					arguments.thisMethod
-				);
-			} )
-			// Delegate it baby!
-			.each( function( thisMethod ){
-				var delegationMethod = "#delegatePrefix##arguments.thisMethod##delegateSuffix#";
+			}
+		};
 
-				// Check if this method has been override by the user first
-				if ( !structKeyExists( target, delegationMethod ) ) {
-					// Lookup targets
-					target.$wbDelegateMap[ delegationMethod ] = {
-						delegate : delegate,
-						method   : arguments.thisMethod
-					};
-					// inject delegation into the target
-					target.injectMixin( delegationMethod, variables.mixerUtil.getByDelegate );
-				}
-				// Has it been injected by another delegate?
-				else if ( structKeyExists( target.$wbDelegateMap, delegationMethod ) ) {
-					throw(
-						type    = "DuplicateDelegateException",
-						message = "The method: (#delegationMethod#) from the (#getMetadata( delegate ).name#) delegate has already been injected by (#getMetadata( target.$wbDelegateMap[ delegationMethod ].delegate ).name#)",
-						detail  = "The target object is (#getMetadata( target ).name#)."
-					);
-				}
-			} )
-		;
+		// Process includes Only
+		if ( delegateIncludes.len() ) {
+			for ( var thisInclude in delegateIncludes ) {
+				processDelegateInjection( thisInclude );
+			}
+			return;
+		}
+		// Process with exclusions now
+		for ( var thisMethod in structKeyArray( arguments.delegate ) ) {
+			if ( !arrayContainsNoCase( delegateExcludes, thisMethod ) ) {
+				processDelegateInjection( thisMethod );
+			}
+		}
 	}
 
 	/**
