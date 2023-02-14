@@ -110,7 +110,6 @@ component{
 		return "bad url";
 	}
 
-
 	/************************************** PRIVATE ACTIONS *********************************************/
 
 	private function privateInfo( event, rc, prc ){

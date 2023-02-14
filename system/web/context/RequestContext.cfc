@@ -1652,7 +1652,12 @@ component serializable="false" accessors="true" {
 	any function getHTTPContent( boolean json = false, boolean xml = false ){
 		// Only read the content once
 		if ( !structKeyExists( variables.privateContext, "_httpContent" ) ) {
-			variables.privateContext._httpContent = getHTTPRequestData().content;
+			try {
+				variables.privateContext._httpContent = getHTTPRequestData().content;
+			} catch ( "java.lang.NullPointerException" e ) {
+				// if an exception is thrown, it's most likely we are in a thread, default it to empty string
+				variables.privateContext._httpContent = "";
+			}
 		}
 
 		// leave translations NOT cached, as you could ask for different types of formats
@@ -1677,7 +1682,13 @@ component serializable="false" accessors="true" {
 	 * @defaultValue The default value, if not found
 	 */
 	function getHTTPHeader( required header, defaultValue = "" ){
-		var headers = getHTTPRequestData( false ).headers;
+		var headers = {};
+		try {
+			headers = getHTTPRequestData( false ).headers;
+		} catch ( "java.lang.NullPointerException" e ) {
+			// if an exception is thrown, it's most likely we are in a thread, default it to {}
+			headers = {};
+		}
 
 		// ADOBE FIX YOUR ISNULL BS
 		if ( headers.keyExists( arguments.header ) ) {
