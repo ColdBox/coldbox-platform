@@ -135,6 +135,7 @@
 		}
 		// Production Report
 		else {
+			writeOutput( "<h1>Whoops was not shown as ColdBox is not in <b>debugMode</b>!</h1>" );
 			include "BugReport-Public.cfm";
 		}
 		return;
