@@ -460,16 +460,16 @@ component serializable="false" accessors="true" {
 
 			// Try to discover it from the parent or child hierarchies if not found locally
 			if ( NOT len( instancePath ) ) {
-				// Verify parent first, parents know better :)
-				if ( isObject( variables.parent ) && variables.parent.containsInstance( arguments.name ) ) {
-					return variables.parent.getInstance( argumentCollection = arguments );
-				}
-
-				// Verify Children second in registration order
+				// Verify Children hierarchy first
 				for ( var thisChild in variables.childInjectors ) {
 					if ( variables.childInjectors[ thisChild ].containsInstance( arguments.name ) ) {
 						return variables.childInjectors[ thisChild ].getInstance( argumentCollection = arguments );
 					}
+				}
+
+				// Verify via ancestors
+				if ( isObject( variables.parent ) && variables.parent.containsInstance( arguments.name ) ) {
+					return variables.parent.getInstance( argumentCollection = arguments );
 				}
 
 				// We could not find it

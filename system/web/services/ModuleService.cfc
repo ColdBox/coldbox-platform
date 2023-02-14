@@ -166,6 +166,8 @@ component extends="coldbox.system.web.services.BaseService" {
 	 * @invocationPath The module's invocation path to its root from the webroot (the instantiation path,ex:myapp.myCustomModules), if empty we use registry locatioif not we are doing a explicit name+path registration. Do not include the module name, you passed that in the first argument right
 	 * @parent         The name of the parent module
 	 * @force          Force a registration
+	 * @bundle         If the module belongs to a bundle
+	 * @parentInjector The parent injector if used
 	 *
 	 * @return If the module registered or not
 	 *
@@ -175,14 +177,15 @@ component extends="coldbox.system.web.services.BaseService" {
 		required moduleName,
 		invocationPath = "",
 		parent         = "",
-		boolean force  = false
+		boolean force  = false,
+		bundle         = "",
+		parentInjector = ""
 	){
-		// Module To Load
 		var sTime                = getTickCount();
 		var modName              = arguments.moduleName;
-		var modulesConfiguration = controller.getSetting( "modules" );
-		var appSettings          = controller.getConfigSettings();
-		var interceptorService   = controller.getInterceptorService();
+		var modulesConfiguration = variables.controller.getSetting( "modules" );
+		var appSettings          = variables.controller.getConfigSettings();
+		var interceptorService   = variables.controller.getInterceptorService();
 
 		// Check if incoming invocation path is sent, if so, register as new module
 		if ( len( arguments.invocationPath ) ) {
@@ -237,7 +240,7 @@ component extends="coldbox.system.web.services.BaseService" {
 					registerModule(
 						moduleName     = bundleModuleName,
 						invocationPath = modulesInvocationPath & "." & modName,
-						parent         = modName,
+						bundle         = modName,
 						force          = true
 					);
 				} else {
@@ -252,7 +255,7 @@ component extends="coldbox.system.web.services.BaseService" {
 
 		// lock registration
 		lock
-			name          ="module#getController().getAppHash()#.registration.#arguments.modulename#"
+			name          ="module#variables.controller.getAppHash()#.registration.#modName#"
 			type          ="exclusive"
 			throwontimeout="true"
 			timeout       ="20" {
@@ -260,8 +263,8 @@ component extends="coldbox.system.web.services.BaseService" {
 			variables.interceptorService.announce(
 				"preModuleRegistration",
 				{
-					moduleRegistration : variables.moduleRegistry[ arguments.moduleName ],
-					moduleName         : arguments.moduleName
+					moduleRegistration : variables.moduleRegistry[ modName ],
+					moduleName         : modName
 				}
 			);
 
@@ -342,6 +345,8 @@ component extends="coldbox.system.web.services.BaseService" {
 				childModules            : [],
 				// My Daddy!
 				parent                  : arguments.parent,
+				// My Bundle!
+				bundle                  : arguments.bundle,
 				// Module Router
 				router                  : "",
 				routerInvocationPath    : modulesInvocationPath & "." & modName,
@@ -352,8 +357,13 @@ component extends="coldbox.system.web.services.BaseService" {
 				schedulerPhysicalpath   : modLocation
 			};
 
-			// Load Module configuration from cfc and store it in module Config Cache
-			var oConfig = loadModuleConfiguration( mConfig, arguments.moduleName );
+			// Load Module Configuration and Injector
+			var moduleConfigAndInjector = loadModuleConfiguration(
+				config        : mConfig,
+				moduleName    : arguments.moduleName,
+				parent        : isBundle ? "" : arguments.parent,
+				parentInjector: arguments.parentInjector
+			);
 
 			// Verify if module has been disabled
 			if ( mConfig.disabled ) {
@@ -362,7 +372,7 @@ component extends="coldbox.system.web.services.BaseService" {
 				}
 				return false;
 			} else {
-				variables.mConfigCache[ modName ] = oConfig;
+				variables.mConfigCache[ modName ] = moduleConfigAndInjector.config;
 			}
 
 			// Store module configuration in main modules configuration
@@ -427,11 +437,13 @@ component extends="coldbox.system.web.services.BaseService" {
 						if ( fileExists( thisChild & "/ModuleConfig.cfc" ) ) {
 							// add to parent children
 							arrayAppend( mConfig.childModules, childname );
-							// register it
+							// register child
 							registerModule(
-								moduleName     = childName,
-								invocationPath = mConfig.invocationPath & "." & thisInceptionPath,
-								parent         = modName
+								moduleName    : childName,
+								invocationPath: mConfig.invocationPath & "." & thisInceptionPath,
+								parent        : modName,
+								bundle        : arguments.bundle,
+								parentInjector: moduleConfigAndInjector.injector
 							);
 						} else if ( variables.logger.canInfo() ) {
 							variables.logger.info(
@@ -980,33 +992,69 @@ component extends="coldbox.system.web.services.BaseService" {
 	 *
 	 * @config     The config structure
 	 * @moduleName The module name
+	 * @parent     The parent that invoked the registration
+	 * @parent     The parent injector this module will be linked to
 	 *
-	 * @return The ModuleConfig.cfc
+	 * @return struct : { config:cfc, injector:cfc }
 	 */
-	function loadModuleConfiguration( required struct config, required moduleName ){
-		var mConfig     = arguments.config;
-		var oConfig     = variables.wirebox.getInstance( mConfig.invocationPath & ".ModuleConfig" );
+	struct function loadModuleConfiguration(
+		required struct config,
+		required moduleName,
+		parent         = "",
+		parentInjector = ""
+	){
 		var appSettings = controller.getConfigSettings();
 		var envUtil     = variables.wirebox.getInstance( "Env@coreDelegates" );
+		var mConfig     = arguments.config;
+		var results     = { config : "", injector : "" };
+
+		/*
+		|--------------------------------------------------------------------------
+		| Build the Module's Injector Hierarchy
+		|--------------------------------------------------------------------------
+		*/
+		results.injector = new coldbox.system.ioc.Injector(
+			binder    : "coldbox.system.web.config.ModuleBinder",
+			properties: appSettings,
+			coldbox   : controller
+		);
+
+		// Register the child injector via parent or root
+		if ( len( arguments.parent ) ) {
+			results.injector.setParent( arguments.parentInjector );
+			arguments.parentInjector.registerChildInjector( name: arguments.moduleName, child: results.injector );
+		} else {
+			// Set parent to the module's injector
+			results.injector.setParent( variables.wirebox );
+			// Register the module's injector in the parent
+			variables.wirebox.registerChildInjector( name: arguments.moduleName, child: results.injector );
+		}
+
+		/*
+		|--------------------------------------------------------------------------
+		| Build the Module Configuration
+		|--------------------------------------------------------------------------
+		*/
+		results.config = results.injector.getInstance( mConfig.invocationPath & ".ModuleConfig" );
 
 		// Build a new router for this module so we can track its routes
-		arguments.config.router = variables.wirebox.getInstance( "coldbox.system.web.routing.Router" );
+		arguments.config.router = results.injector.getInstance( "coldbox.system.web.routing.Router" );
 
 		/*
 		|--------------------------------------------------------------------------
 		| Module Injections
 		|--------------------------------------------------------------------------
 		*/
-		oConfig
+		results.config
 			.injectPropertyMixin( "controller", controller )
 			.injectPropertyMixin( "coldboxVersion", controller.getColdBoxSettings().version )
 			.injectPropertyMixin( "appMapping", controller.getSetting( "appMapping" ) )
 			.injectPropertyMixin( "moduleMapping", mConfig.mapping )
 			.injectPropertyMixin( "modulePath", mConfig.path )
 			.injectPropertyMixin( "logBox", controller.getLogBox() )
-			.injectPropertyMixin( "log", controller.getLogBox().getLogger( oConfig ) )
-			.injectPropertyMixin( "wirebox", variables.wireBox )
-			.injectPropertyMixin( "binder", variables.wireBox.getBinder() )
+			.injectPropertyMixin( "log", controller.getLogBox().getLogger( results.config ) )
+			.injectPropertyMixin( "wirebox", results.injector )
+			.injectPropertyMixin( "binder", results.injector.getBinder() )
 			.injectPropertyMixin( "cachebox", controller.getCacheBox() )
 			.injectPropertyMixin( "getJavaSystem", envUtil.getJavaSystem )
 			.injectPropertyMixin( "getSystemSetting", envUtil.getSystemSetting )
@@ -1020,7 +1068,7 @@ component extends="coldbox.system.web.services.BaseService" {
 		| Module Config Seeding
 		|--------------------------------------------------------------------------
 		*/
-		oConfig.configure();
+		results.config.configure();
 
 		/*
 		|--------------------------------------------------------------------------
@@ -1028,8 +1076,8 @@ component extends="coldbox.system.web.services.BaseService" {
 		|--------------------------------------------------------------------------
 		*/
 		// Get parent environment settings and if same convention of 'environment'() found, execute it.
-		if ( structKeyExists( oConfig, appSettings.environment ) ) {
-			invoke( oConfig, "#appSettings.environment#" );
+		if ( structKeyExists( results.config, appSettings.environment ) ) {
+			invoke( results.config, "#appSettings.environment#" );
 		}
 
 		/*
@@ -1039,100 +1087,89 @@ component extends="coldbox.system.web.services.BaseService" {
 		*/
 
 		// title
-		if ( !structKeyExists( oConfig, "title" ) ) {
-			oConfig.title = arguments.moduleName;
-		}
-		mConfig.title = oConfig.title;
+		param results.config.title = arguments.moduleName;
+		mConfig.title              = results.config.title;
 		// aliases
-		if ( structKeyExists( oConfig, "aliases" ) ) {
+		if ( structKeyExists( results.config, "aliases" ) ) {
 			// inflate list to array
-			if ( isSimpleValue( oConfig.aliases ) ) {
-				oConfig.aliases = listToArray( oConfig.aliases );
+			if ( isSimpleValue( results.config.aliases ) ) {
+				results.config.aliases = listToArray( results.config.aliases );
 			}
-			mConfig.aliases = oConfig.aliases;
+			mConfig.aliases = results.config.aliases;
 		}
 		// author
-		if ( !structKeyExists( oConfig, "author" ) ) {
-			oConfig.author = "";
-		}
-		mConfig.author = oConfig.author;
+		param results.config.author      = "";
+		mConfig.author                   = results.config.author;
 		// web url
-		if ( !structKeyExists( oConfig, "webURL" ) ) {
-			oConfig.webURL = "";
-		}
-		mConfig.webURL = oConfig.webURL;
+		param results.config.webURL      = "";
+		mConfig.webURL                   = results.config.webURL;
 		// description
-		if ( !structKeyExists( oConfig, "description" ) ) {
-			oConfig.description = "";
-		}
-		mConfig.description = oConfig.description;
+		param results.config.description = "";
+		mConfig.description              = results.config.description;
 		// version
-		if ( !structKeyExists( oConfig, "version" ) ) {
-			oConfig.version = "";
-		}
-		mConfig.version = oConfig.version;
+		param results.config.version     = "";
+		mConfig.version                  = results.config.version;
 		// cf mapping
-		if ( !structKeyExists( oConfig, "cfmapping" ) ) {
-			oConfig.cfmapping = "";
-		}
-		mConfig.cfmapping = oConfig.cfmapping;
+		param results.config.cfmapping   = "";
+		mConfig.cfmapping                = results.config.cfmapping;
 		// model namespace override
-		if ( structKeyExists( oConfig, "modelNamespace" ) ) {
-			mConfig.modelNamespace = oConfig.modelNamespace;
+		if ( structKeyExists( results.config, "modelNamespace" ) ) {
+			mConfig.modelNamespace = results.config.modelNamespace;
 		}
 		// Auto map models
-		if ( structKeyExists( oConfig, "autoMapModels" ) ) {
-			mConfig.autoMapModels = oConfig.autoMapModels;
+		if ( structKeyExists( results.config, "autoMapModels" ) ) {
+			mConfig.autoMapModels = results.config.autoMapModels;
 		}
 		// Dependencies
-		if ( structKeyExists( oConfig, "dependencies" ) ) {
+		if ( structKeyExists( results.config, "dependencies" ) ) {
 			// set it always as an array
-			mConfig.dependencies = isSimpleValue( oConfig.dependencies ) ? listToArray( oConfig.dependencies ) : oConfig.dependencies;
+			mConfig.dependencies = isSimpleValue( results.config.dependencies ) ? listToArray(
+				results.config.dependencies
+			) : results.config.dependencies;
 		}
 		// Application Helpers
-		if ( structKeyExists( oConfig, "applicationHelper" ) ) {
+		if ( structKeyExists( results.config, "applicationHelper" ) ) {
 			// set it always as an array
-			mConfig.applicationHelper = isSimpleValue( oConfig.applicationHelper ) ? listToArray(
-				oConfig.applicationHelper
-			) : oConfig.applicationHelper;
+			mConfig.applicationHelper = isSimpleValue( results.config.applicationHelper ) ? listToArray(
+				results.config.applicationHelper
+			) : results.config.applicationHelper;
 		}
 		// Parent Lookups
 		mConfig.viewParentLookup = true;
-		if ( structKeyExists( oConfig, "viewParentLookup" ) ) {
-			mConfig.viewParentLookup = oConfig.viewParentLookup;
+		if ( structKeyExists( results.config, "viewParentLookup" ) ) {
+			mConfig.viewParentLookup = results.config.viewParentLookup;
 		}
 		mConfig.layoutParentLookup = true;
-		if ( structKeyExists( oConfig, "layoutParentLookup" ) ) {
-			mConfig.layoutParentLookup = oConfig.layoutParentLookup;
+		if ( structKeyExists( results.config, "layoutParentLookup" ) ) {
+			mConfig.layoutParentLookup = results.config.layoutParentLookup;
 		}
 		// Entry Point
 		mConfig.entryPoint = "";
-		if ( structKeyExists( oConfig, "entryPoint" ) ) {
-			mConfig.entryPoint = oConfig.entryPoint;
+		if ( structKeyExists( results.config, "entryPoint" ) ) {
+			mConfig.entryPoint = results.config.entryPoint;
 		}
 		// Inherit Entry Point
 		mConfig.inheritEntryPoint = false;
-		if ( structKeyExists( oConfig, "inheritEntryPoint" ) ) {
-			mConfig.inheritEntryPoint = oConfig.inheritEntryPoint;
+		if ( structKeyExists( results.config, "inheritEntryPoint" ) ) {
+			mConfig.inheritEntryPoint = results.config.inheritEntryPoint;
 		}
 		// Disabled
 		mConfig.disabled = false;
-		if ( structKeyExists( oConfig, "disabled" ) ) {
-			mConfig.disabled = oConfig.disabled;
+		if ( structKeyExists( results.config, "disabled" ) ) {
+			mConfig.disabled = results.config.disabled;
 		}
 		// Activated
 		mConfig.activate = true;
-		if ( structKeyExists( oConfig, "activate" ) ) {
-			mConfig.activate = oConfig.activate;
+		if ( structKeyExists( results.config, "activate" ) ) {
+			mConfig.activate = results.config.activate;
 		}
-
 
 		/*
 		|--------------------------------------------------------------------------
 		| Module Parent Settings
 		|--------------------------------------------------------------------------
 		*/
-		mConfig.parentSettings = oConfig.getPropertyMixin( "parentSettings", "variables", {} );
+		mConfig.parentSettings = results.config.getPropertyMixin( "parentSettings", "variables", {} );
 
 		/*
 		|--------------------------------------------------------------------------
@@ -1140,9 +1177,9 @@ component extends="coldbox.system.web.services.BaseService" {
 		|--------------------------------------------------------------------------
 		*/
 
-		mConfig.settings = oConfig.getPropertyMixin( "settings", "variables", {} );
-		if ( structKeyExists( oConfig, "parseParentSettings" ) ) {
-			mConfig.parseParentSettings = oConfig.parseParentSettings;
+		mConfig.settings = results.config.getPropertyMixin( "settings", "variables", {} );
+		if ( structKeyExists( results.config, "parseParentSettings" ) ) {
+			mConfig.parseParentSettings = results.config.parseParentSettings;
 		}
 
 		// If true, then look into the global app and load the module config overrides
@@ -1167,7 +1204,7 @@ component extends="coldbox.system.web.services.BaseService" {
 		| Module Interceptor Normalizations and Custom Interception Points
 		|--------------------------------------------------------------------------
 		*/
-		mConfig.interceptors = oConfig.getPropertyMixin( "interceptors", "variables", [] );
+		mConfig.interceptors = results.config.getPropertyMixin( "interceptors", "variables", [] );
 		for ( var x = 1; x lte arrayLen( mConfig.interceptors ); x = x + 1 ) {
 			// Name check
 			if ( NOT structKeyExists( mConfig.interceptors[ x ], "name" ) ) {
@@ -1179,7 +1216,7 @@ component extends="coldbox.system.web.services.BaseService" {
 			}
 		}
 
-		mConfig.interceptorSettings = oConfig.getPropertyMixin(
+		mConfig.interceptorSettings = results.config.getPropertyMixin(
 			"interceptorSettings",
 			"variables",
 			structNew()
@@ -1193,15 +1230,15 @@ component extends="coldbox.system.web.services.BaseService" {
 		| Module Executors
 		|--------------------------------------------------------------------------
 		*/
-		mConfig.executors = oConfig.getPropertyMixin( "executors", "variables", {} );
+		mConfig.executors = results.config.getPropertyMixin( "executors", "variables", {} );
 
 		/*
 		|--------------------------------------------------------------------------
 		| Module Routing
 		|--------------------------------------------------------------------------
 		*/
-		mConfig.routes    = oConfig.getPropertyMixin( "routes", "variables", [] );
-		mConfig.resources = oConfig.getPropertyMixin( "resources", "variables", [] );
+		mConfig.routes    = results.config.getPropertyMixin( "routes", "variables", [] );
+		mConfig.resources = results.config.getPropertyMixin( "resources", "variables", [] );
 
 		/*
 		|--------------------------------------------------------------------------
@@ -1210,7 +1247,7 @@ component extends="coldbox.system.web.services.BaseService" {
 		*/
 		structAppend(
 			mConfig.conventions,
-			oConfig.getPropertyMixin( "conventions", "variables", {} ),
+			results.config.getPropertyMixin( "conventions", "variables", {} ),
 			true
 		);
 
@@ -1221,11 +1258,11 @@ component extends="coldbox.system.web.services.BaseService" {
 		*/
 		structAppend(
 			mConfig.layoutSettings,
-			oConfig.getPropertyMixin( "layoutSettings", "variables", {} ),
+			results.config.getPropertyMixin( "layoutSettings", "variables", {} ),
 			true
 		);
 
-		return oConfig;
+		return results;
 	}
 
 	/************************************ PRIVATE ****************************************/
