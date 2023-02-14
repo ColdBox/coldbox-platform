@@ -17,7 +17,7 @@ component {
 
 	// ColdBox Operational Defaults
 	this.coldbox = {
-		// Global Settings
+		// Global Operational Settings
 		"appName"                  : application.applicationName,
 		"eventName"                : "event",
 		"reinitPassword"           : hash( createUUID() ),
@@ -27,12 +27,14 @@ component {
 		"autoMapModels"            : true,
 		"environment"              : "production",
 		"identifierProvider"       : "",
-		// Caching
+		"debugMode"                : false,
+		"exceptionEditor"          : "vscode",
+		// Caching Settings
 		"handlersIndexAutoReload"  : false,
 		"handlerCaching"           : true,
 		"eventCaching"             : true,
 		"viewCaching"              : true,
-		// Default Operations
+		// Default Conventions Events + Views
 		"defaultEvent"             : "main.index",
 		"defaultLayout"            : "Main.cfm",
 		"defaultView"              : "",

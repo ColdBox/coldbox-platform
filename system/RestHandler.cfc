@@ -92,13 +92,13 @@ component extends="EventHandler" {
 			arguments.exception = e;
 			this.onAnyOtherException( argumentCollection = arguments );
 			// If in development, let's show the error template
-			if ( getSetting( "environment" ) eq "development" ) {
+			if ( inDebugMode() ) {
 				rethrow;
 			}
 		}
 
 		// Development additions
-		if ( getSetting( "environment" ) eq "development" ) {
+		if ( inDebugMode() ) {
 			arguments.prc.response
 				.addHeader( "x-current-route", arguments.event.getCurrentRoute() )
 				.addHeader( "x-current-routed-url", arguments.event.getCurrentRoutedURL() )
@@ -177,7 +177,7 @@ component extends="EventHandler" {
 		}
 
 		// If in development and not in testing mode, then show exception template, easier to debug
-		if ( getSetting( "environment" ) eq "development" && !isInstanceOf( variables.controller, "MockController" ) ) {
+		if ( inDebugMode() && !isInstanceOf( variables.controller, "MockController" ) ) {
 			throw( object = arguments.exception );
 		}
 
@@ -200,7 +200,7 @@ component extends="EventHandler" {
 			.setStatusText( "General application error" );
 
 		// Development additions Great for Testing
-		if ( getSetting( "environment" ) eq "development" ) {
+		if ( inDebugMode() ) {
 			prc.response
 				.setData(
 					structKeyExists( arguments.exception, "tagContext" ) ? arguments.exception.tagContext : {}

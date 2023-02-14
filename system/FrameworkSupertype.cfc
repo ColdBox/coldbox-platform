@@ -547,6 +547,38 @@ component serializable="false" accessors="true" {
 	}
 
 	/****************************************************************
+	 * Application Environment *
+	 ****************************************************************/
+
+	/**
+	 * Determine if the application is in the `debugMode` or not
+	 */
+	boolean function inDebugMode(){
+		return variables.controller.inDebugMode();
+	}
+
+	/**
+	 * Determine if the application is in the `development|local` environment
+	 */
+	boolean function isDevelopment(){
+		return variables.controller.isDevelopment();
+	}
+
+	/**
+	 * Determine if the application is in the `production` environment
+	 */
+	boolean function isProduction(){
+		return variables.controller.isProduction();
+	}
+
+	/**
+	 * Determine if the application is in the `testing` environment
+	 */
+	boolean function isTesting(){
+		return variables.controller.isTesting();
+	}
+
+	/****************************************************************
 	 * Location Methods *
 	 ****************************************************************/
 

@@ -371,6 +371,13 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
+	 * Determine if the application is in the `debugMode` or not
+	 */
+	boolean function inDebugMode(){
+		return getSetting( "debugMode", false );
+	}
+
+	/**
 	 * Determine if the application is in the `development|local` environment
 	 */
 	boolean function isDevelopment(){
@@ -385,10 +392,10 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
-	 * Determine if the application is in the `testing` environment
+	 * Determine if the application is in the `testing` environment or in a testing.MockController execution
 	 */
 	boolean function isTesting(){
-		return getSetting( "environment", "production" ) == "testing";
+		return getSetting( "environment", "production" ) == "testing" || isInstanceOf( this, "MockController" );
 	}
 
 	/****************************************************************
