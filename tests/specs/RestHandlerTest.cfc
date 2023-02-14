@@ -50,7 +50,10 @@ component extends="coldbox.system.testing.BaseModelTest" {
 					.$results( [] )
 					.$( "getSetting" )
 					.$args( "AppMapping" )
-					.$results( "/coldbox/testing" );
+					.$results( "/coldbox/testing" )
+					.$( "getSetting" )
+					.$args( "debugMode", false )
+					.$results( false );
 
 				handler
 					.init()
