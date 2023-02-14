@@ -362,11 +362,6 @@ component serializable="false" accessors="true" {
 			variables.binder.onShutdown( this );
 		}
 
-		// Is parent linked
-		if ( isObject( variables.parent ) ) {
-			variables.parent.shutdown( this );
-		}
-
 		// Do we have children?
 		if ( structCount( variables.childInjectors ) ) {
 			variables.childInjectors.each( function( childName, childInstance ){
