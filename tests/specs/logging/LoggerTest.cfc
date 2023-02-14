@@ -111,14 +111,18 @@
 
 				it( "can log with a valid severity", function(){
 					// Test closure in logger
-					logger.logMessage( () => "This is a closure message", "info" );
-					expect( mockAppender.$callLog().logMessage.first().1.getMessage() ).toBe( "This is a closure message" );
+					logger.logMessage( function(){
+						return "This is a closure message";
+					}, "info" );
+					expect( mockAppender.$callLog().logMessage.first()[ "1" ].getMessage() ).toBe( "This is a closure message" );
 				} );
 
 				it( "won't log with a non-loggable severity", function(){
 					logger.setLevelMax( 1 );
 					// Test closure in logger
-					logger.logMessage( () => "This is a closure message", "debug" );
+					logger.logMessage( function(){
+						return "This is a closure message";
+					}, "debug" );
 					expect( mockAppender.$callLog().logmessage ).toBeEmpty();
 				} );
 			} );
