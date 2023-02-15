@@ -356,7 +356,7 @@ component extends="coldbox.system.web.services.BaseService" {
 				schedulerInvocationPath : modulesInvocationPath & "." & modName,
 				schedulerPhysicalpath   : modLocation,
 				// The module's injector reference
-				injector : ""
+				injector                : ""
 			};
 
 			// Load Module Configuration and Injector
@@ -620,7 +620,7 @@ component extends="coldbox.system.web.services.BaseService" {
 					len( mConfig.cfmapping ) ? mConfig.cfmapping & ".#mConfig.conventions.modelsLocation#" : mConfig.modelsInvocationPath
 				);
 				// module injector binder
-				//var binder = variables.wirebox.getBinder();
+				// var binder = variables.wirebox.getBinder();
 				var binder = mConfig.injector.getBinder();
 
 				if ( len( mConfig.modelNamespace ) ) {
@@ -1022,7 +1022,7 @@ component extends="coldbox.system.web.services.BaseService" {
 			binder    : "coldbox.system.web.config.ModuleBinder",
 			properties: appSettings,
 			coldbox   : controller,
-			name : arguments.moduleName
+			name      : arguments.moduleName
 		);
 
 		// Register the child injector via parent or root

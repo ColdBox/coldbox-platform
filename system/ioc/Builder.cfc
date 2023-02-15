@@ -132,7 +132,7 @@ component serializable="false" accessors="true" {
 		variables.customDSL[ arguments.namespace ] = new "#arguments.path#"( variables.injector );
 		// Debugging
 		if ( variables.log.canDebug() ) {
-			variables.log.debug( "Registered custom DSL Builder with namespace: #arguments.namespace#" );
+			variables.log.debug( "Registered custom DSL Builder with namespace: #arguments.namespace# by (#variables.injector.getName()#) injector" );
 		}
 		return this;
 	}
@@ -293,12 +293,10 @@ component serializable="false" accessors="true" {
 					.toList( chr( 13 ) & chr( 10 ) );
 
 				throw(
-					type    = "Builder.BuildCFCDependencyException",
-					message = "Error building: #arguments.mapping.getName()# -> #e.message#
-					#e.detail#.",
-					detail = "DSL: #len( arguments.mapping.getDSL() ) ? arguments.mapping.getDSL() : "none"#, Path: #arguments.mapping.getPath()#,
-					Error Location:
-					#reducedTagContext#"
+					type        : "Builder.BuildCFCDependencyException",
+					message     : "Error building: #arguments.mapping.getName()# -> #e.message# #e.detail#.",
+					detail      : "DSL: #len( arguments.mapping.getDSL() ) ? arguments.mapping.getDSL() : "none"#; Path: #arguments.mapping.getPath()#; Error Location: #reducedTagContext#",
+					extendedInfo: "Current Injector -> #variables.injector.getName()#"
 				);
 			}
 		}
@@ -321,8 +319,9 @@ component serializable="false" accessors="true" {
 		// check if factory exists, else throw exception
 		if ( NOT variables.injector.containsInstance( factoryName ) ) {
 			throw(
-				message = "The factory mapping: #factoryName# is not registered with the injector",
-				type    = "Builder.InvalidFactoryMappingException"
+				message     : "The factory mapping: #factoryName# is not registered with the injector",
+				type        : "Builder.InvalidFactoryMappingException",
+				extendedInfo: "Current Injector -> #variables.injector.getName()#"
 			);
 		}
 
@@ -434,15 +433,16 @@ component serializable="false" accessors="true" {
 				);
 				// not found but required, then throw exception
 				throw(
-					message = "Argument reference not located: #local.thisArg.name#",
-					detail  = "Injecting: #thisMap.getName()#. The argument details are: #local.thisArg.toString()#.",
-					type    = "Injector.ArgumentNotFoundException"
+					message     : "Argument reference not located: #local.thisArg.name#",
+					detail      : "Injecting: #thisMap.getName()#. The argument details are: #local.thisArg.toString()#.",
+					type        : "Injector.ArgumentNotFoundException",
+					extendedInfo: "Current Injector -> #variables.injector.getName()#"
 				);
 			}
 			// else just log it via debug
 			else if ( variables.log.canDebug() ) {
 				variables.log.debug(
-					"Target: #thisMap.getName()# -> Argument reference not located: #local.thisArg.name#",
+					"Target: #thisMap.getName()# -> Argument reference not located: #local.thisArg.name# by (#variables.injector.getName()#) injector",
 					local.thisArg
 				);
 			}
@@ -585,8 +585,9 @@ component serializable="false" accessors="true" {
 				// check if linked
 				if ( !variables.injector.isCacheBoxLinked() AND !variables.injector.isColdBoxLinked() ) {
 					throw(
-						message = "The DSLNamespace: #DSLNamespace# cannot be used as it requires a ColdBox/CacheBox Context",
-						type    = "Builder.IllegalDSLException"
+						message     : "The DSLNamespace: #DSLNamespace# cannot be used as it requires a ColdBox/CacheBox Context",
+						type        : "Builder.IllegalDSLException",
+						extendedInfo: "Current Injector -> #variables.injector.getName()#"
 					);
 				}
 				// retrieve it
@@ -603,9 +604,10 @@ component serializable="false" accessors="true" {
 						targetName = getMetadata( targetObject ).name;
 					}
 					throw(
-						message = "The DSLNamespace: [#DSLNamespace#] cannot be used as it requires a ColdBox Context",
-						type    = "Builder.IllegalDSLException",
-						detail  = "DSL: [#arguments.definition.dsl#], target: [#targetName#]"
+						message     : "The DSLNamespace: [#DSLNamespace#] cannot be used as it requires a ColdBox Context",
+						type        : "Builder.IllegalDSLException",
+						detail      : "DSL: [#arguments.definition.dsl#], target: [#targetName#]",
+						extendedInfo: "Current Injector -> #variables.injector.getName()#"
 					);
 				}
 				refLocal.dependency = getColdBoxDSL().process( argumentCollection = arguments );
@@ -684,7 +686,7 @@ component serializable="false" accessors="true" {
 				depDesc.append( "REF of '#arguments.definition.REF#'" );
 			}
 
-			var injectMessage = "The target '#arguments.targetID#' requested a missing dependency with a #depDesc.toList( " and " )#";
+			var injectMessage = "The target '#arguments.targetID#' requested a missing dependency with a #depDesc.toList( " and " )# by (#variables.injector.getName()#) injector";
 
 			// Logging
 			if ( variables.log.canError() ) {
@@ -693,9 +695,9 @@ component serializable="false" accessors="true" {
 
 			// Throw exception as DSL Dependency requested was not located
 			throw(
-				message = injectMessage,
+				message: injectMessage,
 				// safe serialization that won't blow uo on complex values or do weird things with nulls (looking at you, Adobe)
-				detail  = serializeJSON(
+				detail : serializeJSON(
 					arguments.definition.map( function( k, v ){
 						if ( isNull( v ) ) {
 							return;
@@ -706,7 +708,8 @@ component serializable="false" accessors="true" {
 						}
 					} )
 				),
-				type = "Builder.DSLDependencyNotFoundException"
+				type        : "Builder.DSLDependencyNotFoundException",
+				extendedInfo: "Current Injector -> #variables.injector.getName()#"
 			);
 		}
 		// else return void, no dependency found that was required
@@ -869,7 +872,7 @@ component serializable="false" accessors="true" {
 			return asyncManager.getExecutor( executorName );
 		} else if ( variables.log.canDebug() ) {
 			variables.log.debug(
-				"X getExecutorDsl() cannot find executor #executorName# using definition #arguments.definition.toString()#"
+				"X getExecutorDsl() cannot find executor #executorName# using definition #arguments.definition.toString()# by (#variables.injector.getName()#) injector"
 			);
 		}
 	}
@@ -934,7 +937,7 @@ component serializable="false" accessors="true" {
 			return oModel;
 		} else if ( variables.log.canDebug() ) {
 			variables.log.debug(
-				"getModelDSL() cannot find model object #modelName# using definition #arguments.definition.toString()#"
+				"getModelDSL() cannot find model object #modelName# using definition #arguments.definition.toString()# by (#variables.injector.getName()#) injector"
 			);
 		}
 	}

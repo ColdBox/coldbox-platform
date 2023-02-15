@@ -125,23 +125,23 @@ component serializable="false" accessors="true" {
 	 * @properties          A structure of binding properties to passthrough to the Binder Configuration CFC
 	 * @coldbox             A coldbox application context that this instance of WireBox can be linked to, if not using it, we just ignore it.
 	 * @coldbox.doc_generic coldbox.system.web.Controller
-	 * @name The internal name of the injector, defaults to 'root' if not passed
+	 * @name                The internal name of the injector, defaults to 'root' if not passed
 	 **/
 	Injector function init(
 		binder            = "coldbox.system.ioc.config.DefaultBinder",
 		struct properties = structNew(),
 		coldbox           = "",
-		name = "root"
+		name              = "root"
 	){
 		// Setup Available public scopes
-		this.SCOPES         = new coldbox.system.ioc.Scopes();
+		this.SCOPES                 = new coldbox.system.ioc.Scopes();
 		// Setup Available public types
-		this.TYPES          = new coldbox.system.ioc.Types();
+		this.TYPES                  = new coldbox.system.ioc.Types();
 		// Build out the utilities
-		variables.utility   = new coldbox.system.core.util.Util();
-		variables.mixerUtil = variables.utility.getMixerUtil();
+		variables.utility           = new coldbox.system.core.util.Util();
+		variables.mixerUtil         = variables.utility.getMixerUtil();
 		// Store name
-		variables.name = arguments.name;
+		variables.name              = arguments.name;
 		// Instance contains lookup
 		variables.containsLookupMap = createObject( "java", "java.util.concurrent.ConcurrentHashMap" ).init();
 		// Do we have a binder?
@@ -191,11 +191,11 @@ component serializable="false" accessors="true" {
 		// Child Injectors
 		variables.childInjectors = structNew( "ordered" );
 		// Prepare instance ID
-		variables.injectorID = createUUID();
+		variables.injectorID     = createUUID();
 		// Prepare Lock Info
-		variables.lockName   = "WireBox.Injector.#variables.injectorID#";
+		variables.lockName       = "WireBox.Injector.#variables.injectorID#";
 		// Link ColdBox Context if passed
-		variables.coldbox    = arguments.coldbox;
+		variables.coldbox        = arguments.coldbox;
 		// Register the task scheduler according to operating mode
 		if ( !isObject( variables.coldbox ) ) {
 			variables.asyncManager  = new coldbox.system.async.AsyncManager();
@@ -433,9 +433,10 @@ component serializable="false" accessors="true" {
 				return childInjector.getInstance( argumentCollection = arguments );
 			}
 			throw(
-				type   : "InvalidChildInjector",
-				message: "The child injector you requested (#arguments.injector#) has not been registered",
-				detail : "The registered child injectors are [#structKeyList( variables.childInjectors )#]"
+				type        : "InvalidChildInjector",
+				message     : "The child injector you requested (#arguments.injector#) has not been registered",
+				detail      : "The registered child injectors are [#structKeyList( variables.childInjectors )#]",
+				extendedInfo: "Current Injector -> #getName()#"
 			);
 		}
 
@@ -477,9 +478,10 @@ component serializable="false" accessors="true" {
 					"Requested instance:#arguments.name# was not located in any declared scan location(s): #structKeyList( variables.binder.getScanLocations() )#, or by path or by hierarchy."
 				);
 				throw(
-					message = "Injector (#getName()#) => instance not found: '#arguments.name#'",
-					detail  = "The instance could not be located in any declared scan location(s) (#structKeyList( variables.binder.getScanLocations() )#) or full path location or parent or children",
-					type    = "Injector.InstanceNotFoundException"
+					message     = "Instance not found: '#arguments.name#'",
+					detail      = "The instance could not be located in any declared scan location(s) (#structKeyList( variables.binder.getScanLocations() )#) or full path location or parent or children",
+					type        = "Injector.InstanceNotFoundException",
+					extendedInfo: "Current Injector -> #getName()#"
 				);
 			}
 
@@ -576,8 +578,9 @@ component serializable="false" accessors="true" {
 			}
 			default: {
 				throw(
-					message = "Invalid Construction Type: #arguments.mapping.getType()#",
-					type    = "Injector.InvalidConstructionType"
+					message     = "Invalid Construction Type: #arguments.mapping.getType()#",
+					type        = "Injector.InvalidConstructionType",
+					extendedInfo: "Current Injector -> #getName()#"
 				);
 			}
 		}
@@ -596,7 +599,7 @@ component serializable="false" accessors="true" {
 		// log data
 		if ( variables.log.canDebug() ) {
 			variables.log.debug(
-				"Instance object built: #arguments.mapping.getName()#:#arguments.mapping.getPath().toString()#"
+				"Instance object built: #arguments.mapping.getName()#:#arguments.mapping.getPath().toString()# by (#getName()#) injector"
 			);
 		}
 
@@ -712,7 +715,7 @@ component serializable="false" accessors="true" {
 			// Check if located? If so, return instantiation path
 			if ( fileExists( scanLocations[ thisScanPath ] & CFCName ) ) {
 				if ( variables.log.canDebug() ) {
-					variables.log.debug( "Instance: #arguments.name# located in #thisScanPath#" );
+					variables.log.debug( "Instance: #arguments.name# located in #thisScanPath# by (#getName()#) injector" );
 				}
 				return thisScanPath & "." & arguments.name;
 			}
@@ -721,14 +724,14 @@ component serializable="false" accessors="true" {
 		// Not found, so let's do full namespace location
 		if ( fileExists( expandPath( "/" & CFCName ) ) ) {
 			if ( variables.log.canDebug() ) {
-				variables.log.debug( "Instance: #arguments.name# located as is." );
+				variables.log.debug( "Instance: #arguments.name# located as is by (#getName()#) injector" );
 			}
 			return arguments.name;
 		}
 
 		// debug info, NADA found!
 		if ( variables.log.canDebug() ) {
-			variables.log.debug( "Instance: #arguments.name# was not located anywhere" );
+			variables.log.debug( "Instance: #arguments.name# was not located anywhere by (#getName()#) injector" );
 		}
 
 		return "";
@@ -879,7 +882,7 @@ component serializable="false" accessors="true" {
 			// Debug Data
 			if ( variables.log.canDebug() ) {
 				variables.log.debug(
-					"Finalized Autowire for: #arguments.targetID#",
+					"Finalized Autowire for: #arguments.targetID# by (#getName()#) injector",
 					arguments.mapping.getMemento().toString()
 				);
 			}
@@ -946,7 +949,7 @@ component serializable="false" accessors="true" {
 
 			// Log info
 			if ( variables.log.canDebug() ) {
-				variables.log.debug( "Injector removed from scope: #scopeInfo.toString()#" );
+				variables.log.debug( "Injector (#getName()#) removed from scope: #scopeInfo.toString()#" );
 			}
 		}
 		return this;
@@ -962,9 +965,10 @@ component serializable="false" accessors="true" {
 	function getScope( required any scope ){
 		if ( !variables.scopes.keyExists( arguments.scope ) ) {
 			throw(
-				message: "The scope requested (#arguments.scope#) has not been registered in WireBox",
-				detail : "The valid registered scopes are: #variables.scopes.keyList()#",
-				type   : "InvalidScopeException"
+				message     : "The scope requested (#arguments.scope#) has not been registered in WireBox",
+				detail      : "The valid registered scopes are: #variables.scopes.keyList()#",
+				type        : "InvalidScopeException",
+				extendedInfo: "Current Injector -> #getName()#"
 			);
 		}
 		return variables.scopes[ arguments.scope ];
@@ -992,9 +996,10 @@ component serializable="false" accessors="true" {
 		}
 
 		throw(
-			message = "The injector has not be registered in any scope",
-			detail  = "The scope info is: #scopeInfo.toString()#",
-			type    = "Injector.InvalidScopeRegistration"
+			message     = "The injector has not be registered in any scope",
+			detail      = "The scope info is: #scopeInfo.toString()#",
+			type        = "Injector.InvalidScopeRegistration",
+			extendedInfo: "Current Injector -> #getName()#"
 		);
 	}
 
@@ -1219,12 +1224,12 @@ component serializable="false" accessors="true" {
 				// some debugging goodness
 				if ( variables.log.canDebug() ) {
 					variables.log.debug(
-						"Dependency: #thisDIData.toString()# --> injected into #arguments.targetID#"
+						"Dependency: #thisDIData.toString()# --> injected into #arguments.targetID# by (#getName()#) injector"
 					);
 				}
 			} else if ( variables.log.canDebug() ) {
 				variables.log.debug(
-					"Dependency: #thisDIData.toString()# Not Found when wiring #arguments.targetID#. Registered mappings are: #structKeyList( variables.binder.getMappings() )#"
+					"Dependency: #thisDIData.toString()# Not Found when wiring #arguments.targetID#. Registered mappings are: #structKeyList( variables.binder.getMappings() )# by (#getName()#) injector"
 				);
 			}
 		}
@@ -1276,9 +1281,10 @@ component serializable="false" accessors="true" {
 			// Has it been injected by another delegate?
 			else if ( structKeyExists( target.$wbDelegateMap, delegationMethod ) ) {
 				throw(
-					type    = "DuplicateDelegateException",
-					message = "The method: (#delegationMethod#) from the (#getMetadata( delegate ).name#) delegate has already been injected by (#getMetadata( target.$wbDelegateMap[ delegationMethod ].delegate ).name#)",
-					detail  = "The target object is (#getMetadata( target ).name#)."
+					type        : "DuplicateDelegateException",
+					message     : "The method: (#delegationMethod#) from the (#getMetadata( delegate ).name#) delegate has already been injected by (#getMetadata( target.$wbDelegateMap[ delegationMethod ].delegate ).name#)",
+					detail      : "The target object is (#getMetadata( target ).name#).",
+					extendedInfo: "Current Injector -> #getName()#"
 				);
 			}
 		};
@@ -1386,9 +1392,10 @@ component serializable="false" accessors="true" {
 		} catch ( Any e ) {
 			variables.log.error( "Error creating listener: #listener.toString()#", e );
 			throw(
-				message = "Error creating listener: #listener.toString()#",
-				detail  = "#e.message# #e.detail# #e.stackTrace#",
-				type    = "Injector.ListenerCreationException"
+				message     : "Error creating listener: #listener.toString()#",
+				detail      : "#e.message# #e.detail# #e.stackTrace#",
+				type        : "Injector.ListenerCreationException",
+				extendedInfo: "Current Injector -> #getName()#"
 			);
 		}
 
@@ -1404,7 +1411,7 @@ component serializable="false" accessors="true" {
 
 		// debugging
 		if ( variables.log.canDebug() ) {
-			variables.log.debug( "Injector has just registered a new listener: #listener.toString()#" );
+			variables.log.debug( "Injector (#getName()#) has just registered a new listener: #listener.toString()#" );
 		}
 
 		return this;
@@ -1427,7 +1434,7 @@ component serializable="false" accessors="true" {
 		// Log info
 		if ( variables.log.canDebug() ) {
 			variables.log.debug(
-				"Scope Registration enabled and Injector scoped to: #arguments.scopeInfo.toString()#"
+				"Scope Registration enabled and Injector (#getName()#) scoped to: #arguments.scopeInfo.toString()#"
 			);
 		}
 
@@ -1451,7 +1458,7 @@ component serializable="false" accessors="true" {
 			// debugging
 			if ( variables.log.canDebug() ) {
 				variables.log.debug(
-					"Configured Injector #getInjectorID()# with direct CacheBox instance: #variables.cacheBox.getFactoryID()#"
+					"Configured Injector #getName()# with direct CacheBox instance: #variables.cacheBox.getFactoryID()#"
 				);
 			}
 			return this;
@@ -1471,7 +1478,7 @@ component serializable="false" accessors="true" {
 			// debugging
 			if ( variables.log.canDebug() ) {
 				variables.log.debug(
-					"Configured Injector #getInjectorID()# with CacheBox instance: #variables.cacheBox.getFactoryID()# and configuration file: #arguments.config.configFile#"
+					"Configured Injector #getName()# with CacheBox instance: #variables.cacheBox.getFactoryID()# and configuration file: #arguments.config.configFile#"
 				);
 			}
 			return this;
@@ -1482,7 +1489,7 @@ component serializable="false" accessors="true" {
 		// debugging
 		if ( variables.log.canDebug() ) {
 			variables.log.debug(
-				"Configured Injector #getInjectorID()# with vanilla CacheBox instance: #variables.cacheBox.getFactoryID()#"
+				"Configured Injector #getName()# with vanilla CacheBox instance: #variables.cacheBox.getFactoryID()#"
 			);
 		}
 

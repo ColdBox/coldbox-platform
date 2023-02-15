@@ -61,7 +61,7 @@ component accessors="true" {
 					// some nice debug info.
 					if ( variables.log.canDebug() ) {
 						variables.log.debug(
-							"Object: (#cacheKey#) not found in singleton cache, beginning construction."
+							"Object: (#cacheKey#) not found in singleton cache, beginning construction by (#variables.injector.getName()#) injector"
 						);
 					}
 
@@ -92,7 +92,7 @@ component accessors="true" {
 					// log it
 					if ( variables.log.canDebug() ) {
 						variables.log.debug(
-							"Object: (#cacheKey#) constructed and stored in singleton cache. ThreadSafe=#arguments.mapping.getThreadSafe()#"
+							"Object: (#cacheKey#) constructed and stored in singleton cache. ThreadSafe=#arguments.mapping.getThreadSafe()# by (#variables.injector.getName()#) injector"
 						);
 					}
 
