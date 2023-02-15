@@ -448,12 +448,12 @@ component serializable="false" accessors="true" {
 			);
 		}
 
-		// Check if Mapping Exists?
+		// Check if Mapping Exists in local binder
 		if ( NOT variables.binder.mappingExists( arguments.name ) ) {
-			// Find the instance locally from this injector
+			// Try to discover it locally
 			var instancePath = locateInstance( arguments.name );
 
-			// Try to discover it from the parent or child hierarchies if not found locally
+			// If not found, then lookup in hierarchy
 			if ( NOT len( instancePath ) ) {
 				// Verify Children hierarchy first
 				for ( var thisChild in variables.childInjectors ) {
@@ -667,10 +667,6 @@ component serializable="false" accessors="true" {
 		}
 		// check if we can locate it?
 		else if ( locateInstance( arguments.name ).len() ) {
-			isFound = true;
-		}
-		// Ask parent hierarchy if set
-		else if ( isObject( variables.parent ) && variables.parent.containsInstance( arguments.name ) ) {
 			isFound = true;
 		}
 		// Ask child hierarchy if set

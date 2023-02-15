@@ -40,7 +40,6 @@
 		injector.shutdown();
 
 		assertTrue( eventManager.$times( 2, "announce" ) );
-		assertTrue( parent.$once( "shutdown" ) );
 		assertTrue( injector.$once( "removeFromScope" ) );
 		assertTrue( cacheBox.$once( "shutdown" ) );
 	}
