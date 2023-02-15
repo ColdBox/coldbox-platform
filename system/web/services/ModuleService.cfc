@@ -1113,7 +1113,7 @@ component extends="coldbox.system.web.services.BaseService" {
 		param results.config.description = "";
 		mConfig.description              = results.config.description;
 		// version
-		param results.config.version     = "";
+		param results.config.version     = "1.0.0";
 		mConfig.version                  = results.config.version;
 		// cf mapping
 		param results.config.cfmapping   = "";
