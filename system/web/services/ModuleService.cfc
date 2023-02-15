@@ -32,7 +32,7 @@ component extends="coldbox.system.web.services.BaseService" {
 	function init( required controller ){
 		variables.controller         = arguments.controller;
 		variables.util               = arguments.controller.getUtil();
-		variables.interceptorService = controller.getInterceptorService();
+		variables.interceptorService = arguments.controller.getInterceptorService();
 
 		// service properties
 		variables.logger            = "";
@@ -50,15 +50,15 @@ component extends="coldbox.system.web.services.BaseService" {
 	 */
 	ModuleService function onConfigurationLoad(){
 		// Get Local Logger Now Configured
-		variables.logger  = controller.getLogBox().getLogger( this );
-		variables.wirebox = controller.getWireBox();
+		variables.logger  = variables.controller.getLogBox().getLogger( this );
+		variables.wirebox = variables.controller.getWireBox();
+
+		// Setup more properties for usage
+		variables.registeredModules = variables.controller.getSetting( "modules" );
+		variables.appRouter         = variables.wirebox.getInstance( "router@coldbox" );
 
 		// Register All Modules
 		registerAllModules();
-
-		// Setup more properties for usage
-		variables.registeredModules = controller.getSetting( "modules" );
-		variables.appRouter         = variables.wirebox.getInstance( "router@coldbox" );
 
 		return this;
 	}
@@ -93,9 +93,9 @@ component extends="coldbox.system.web.services.BaseService" {
 	 */
 	ModuleService function rebuildModuleRegistry(){
 		// Add the application's module's location and the system core modules
-		var modLocations = [ controller.getSetting( "ModulesLocation" ) ];
+		var modLocations = [ variables.controller.getSetting( "ModulesLocation" ) ];
 		// Add the application's external locations array.
-		modLocations.addAll( controller.getSetting( "ModulesExternalLocation" ) );
+		modLocations.addAll( variables.controller.getSetting( "ModulesExternalLocation" ) );
 		// Add the ColdBox Core Modules Location
 		arrayPrepend( modLocations, "/coldbox/system/modules" );
 		// iterate through locations and build the module registry in order
@@ -108,11 +108,11 @@ component extends="coldbox.system.web.services.BaseService" {
 	 */
 	ModuleService function registerAllModules(){
 		var foundModules   = "";
-		var includeModules = controller.getSetting( "modulesInclude" );
+		var includeModules = variables.controller.getSetting( "modulesInclude" );
 		var totalTime      = getTickCount();
 
 		// Register the initial empty module configuration holder structure
-		structClear( controller.getSetting( "modules" ) );
+		structClear( variables.controller.getSetting( "modules" ) );
 		// clean the registry as we are registering all modules
 		variables.moduleRegistry = structNew( "ordered" );
 		// Now rebuild it
@@ -183,7 +183,7 @@ component extends="coldbox.system.web.services.BaseService" {
 	){
 		var sTime                = getTickCount();
 		var modName              = arguments.moduleName;
-		var modulesConfiguration = variables.controller.getSetting( "modules" );
+		var modulesConfiguration = variables.registeredModules;
 		var appSettings          = variables.controller.getConfigSettings();
 		var interceptorService   = variables.controller.getInterceptorService();
 
@@ -354,7 +354,9 @@ component extends="coldbox.system.web.services.BaseService" {
 				// Task Scheduler
 				scheduler               : "",
 				schedulerInvocationPath : modulesInvocationPath & "." & modName,
-				schedulerPhysicalpath   : modLocation
+				schedulerPhysicalpath   : modLocation,
+				// The module's injector reference
+				injector : ""
 			};
 
 			// Load Module Configuration and Injector
@@ -364,6 +366,7 @@ component extends="coldbox.system.web.services.BaseService" {
 				parent        : isBundle ? "" : arguments.parent,
 				parentInjector: arguments.parentInjector
 			);
+			mConfig.injector = moduleConfigAndInjector.injector;
 
 			// Verify if module has been disabled
 			if ( mConfig.disabled ) {
@@ -525,16 +528,15 @@ component extends="coldbox.system.web.services.BaseService" {
 		// If module not registered, throw exception
 		if ( isNull( modules[ arguments.moduleName ] ) ) {
 			throw(
-				message: "Cannot activate module: #arguments.moduleName#. Already processed #structKeyList( modules )#",
-				detail : "The module has not been registered, register the module first and then activate it.",
+				message: "Cannot activate module (#arguments.moduleName#) as it has not been registered.",
+				detail : "Registered modules are #modules.keyList()#",
 				type   : "IllegalModuleState"
 			);
 		}
 
 		// Check if module already activated
 		if ( modules[ arguments.moduleName ].activated ) {
-			// Log it
-			variables.logger.debug( "==> Module '#arguments.moduleName#' already activated, skipping activation." );
+			variables.logger.warn( "==> Module '#arguments.moduleName#' already activated, skipping activation." );
 			return this;
 		}
 
@@ -554,16 +556,15 @@ component extends="coldbox.system.web.services.BaseService" {
 		| Module Dependencies Activation
 		|--------------------------------------------------------------------------
 		*/
+		// Activate dependencies first
 		mConfig.dependencies.each( function( thisDependency ){
-			variables.logger.debug( "==> Activating '#moduleName#' dependency: #thisDependency#" );
-			// Activate dependency first
-			activateModule( thisDependency );
+			variables.logger.debug( "==> Activating '#moduleName#' dependency: #arguments.thisDependency#" );
+			activateModule( arguments.thisDependency );
 		} );
 
-		// Check if activating one of this module's dependencies already activated this module
+		// Check if activating one of this module's dependencies already activated this module, hey it can happen!
 		if ( modules[ arguments.moduleName ].activated ) {
-			// Log it
-			variables.logger.info(
+			variables.logger.warn(
 				"==> Module '#arguments.moduleName#' already activated during dependency activation, skipping activation."
 			);
 			return this;
@@ -571,13 +572,13 @@ component extends="coldbox.system.web.services.BaseService" {
 
 		// lock and load baby
 		lock
-			name          ="module#getController().getAppHash()#.activation.#arguments.moduleName#"
+			name          ="module#variables.controller.getAppHash()#.activation.#arguments.moduleName#"
 			type          ="exclusive"
 			timeout       ="20"
 			throwontimeout="true" {
 			/*
 			|--------------------------------------------------------------------------
-			| Module Load Event
+			| Announce Module Load Event
 			|--------------------------------------------------------------------------
 			*/
 			variables.interceptorService.announce(
@@ -590,13 +591,13 @@ component extends="coldbox.system.web.services.BaseService" {
 
 			/*
 			|--------------------------------------------------------------------------
-			| Module Handlers
+			| Register Module Handlers
 			|--------------------------------------------------------------------------
 			*/
 			mConfig.registeredHandlers = controller
 				.getHandlerService()
-				.getHandlerListing( mconfig.handlerPhysicalPath );
-			mConfig.registeredHandlers = arrayToList( mConfig.registeredHandlers );
+				.getHandlerListing( mconfig.handlerPhysicalPath )
+				.toList();
 
 			/*
 			|--------------------------------------------------------------------------
@@ -618,7 +619,9 @@ component extends="coldbox.system.web.services.BaseService" {
 				var packagePath = (
 					len( mConfig.cfmapping ) ? mConfig.cfmapping & ".#mConfig.conventions.modelsLocation#" : mConfig.modelsInvocationPath
 				);
-				var binder = variables.wirebox.getBinder();
+				// module injector binder
+				//var binder = variables.wirebox.getBinder();
+				var binder = mConfig.injector.getBinder();
 
 				if ( len( mConfig.modelNamespace ) ) {
 					binder.mapDirectory(
@@ -650,6 +653,7 @@ component extends="coldbox.system.web.services.BaseService" {
 			| Module Interceptors
 			|--------------------------------------------------------------------------
 			*/
+			// TODO : See how to use module injector here
 			mConfig.interceptors.each( function( thisInterceptor ){
 				variables.interceptorService.registerInterceptor(
 					interceptorClass      = thisInterceptor.class,
@@ -693,16 +697,17 @@ component extends="coldbox.system.web.services.BaseService" {
 				// config/Router.cfc Conventions
 				if ( fileExists( mConfig.routerPhysicalPath ) ) {
 					// Process as a Router.cfc with virtual inheritance
-					wirebox
+					mConfig.injector
 						.registerNewInstance(
 							name         = mConfig.routerInvocationPath,
 							instancePath = mConfig.routerInvocationPath
 						)
 						.setVirtualInheritance( "coldbox.system.web.routing.Router" )
 						.setThreadSafe( true )
-						.addDIConstructorArgument( name = "controller", value = controller );
+						.setScope( "singleton" )
+						.addDIConstructorArgument( name = "controller", value = variables.controller );
 					// Create the Router back into the config
-					mConfig.router = wirebox.getInstance( mConfig.routerInvocationPath );
+					mConfig.router = mConfig.injector.getInstance( mConfig.routerInvocationPath );
 					// Register the Config as an observable also.
 					variables.interceptorService.registerInterceptor(
 						interceptorObject = mConfig.router,
@@ -743,7 +748,7 @@ component extends="coldbox.system.web.services.BaseService" {
 				} );
 
 				// Incorporate into global helpers
-				controller.getSetting( "applicationHelper" ).addAll( mConfig.applicationHelper );
+				variables.controller.getSetting( "applicationHelper" ).addAll( mConfig.applicationHelper );
 			}
 
 			/*
@@ -888,7 +893,7 @@ component extends="coldbox.system.web.services.BaseService" {
 		}
 
 		lock
-			name          ="module#getController().getAppHash()#.unload.#arguments.moduleName#"
+			name          ="module#variables.controller.getAppHash()#.unload.#arguments.moduleName#"
 			type          ="exclusive"
 			timeout       ="20"
 			throwontimeout="true" {
@@ -1016,7 +1021,8 @@ component extends="coldbox.system.web.services.BaseService" {
 		results.injector = new coldbox.system.ioc.Injector(
 			binder    : "coldbox.system.web.config.ModuleBinder",
 			properties: appSettings,
-			coldbox   : controller
+			coldbox   : controller,
+			name : arguments.moduleName
 		);
 
 		// Register the child injector via parent or root

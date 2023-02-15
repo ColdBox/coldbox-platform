@@ -114,17 +114,24 @@ component serializable="false" accessors="true" {
 	property name="childInjectors" type="struct";
 
 	/**
+	 * The name of the injector
+	 */
+	property name="name" type="string";
+
+	/**
 	 * Constructor. If called without a configuration binder, then WireBox will instantiate the default configuration binder found in: coldbox.system.ioc.config.DefaultBinder
 	 *
 	 * @binder              The WireBox binder or data CFC instance or instantiation path to configure this injector with
 	 * @properties          A structure of binding properties to passthrough to the Binder Configuration CFC
 	 * @coldbox             A coldbox application context that this instance of WireBox can be linked to, if not using it, we just ignore it.
 	 * @coldbox.doc_generic coldbox.system.web.Controller
+	 * @name The internal name of the injector, defaults to 'root' if not passed
 	 **/
 	Injector function init(
 		binder            = "coldbox.system.ioc.config.DefaultBinder",
 		struct properties = structNew(),
-		coldbox           = ""
+		coldbox           = "",
+		name = "root"
 	){
 		// Setup Available public scopes
 		this.SCOPES         = new coldbox.system.ioc.Scopes();
@@ -133,10 +140,10 @@ component serializable="false" accessors="true" {
 		// Build out the utilities
 		variables.utility   = new coldbox.system.core.util.Util();
 		variables.mixerUtil = variables.utility.getMixerUtil();
-
+		// Store name
+		variables.name = arguments.name;
 		// Instance contains lookup
 		variables.containsLookupMap = createObject( "java", "java.util.concurrent.ConcurrentHashMap" ).init();
-
 		// Do we have a binder?
 		if ( isSimpleValue( arguments.binder ) AND NOT len( trim( arguments.binder ) ) ) {
 			arguments.binder = "coldbox.system.ioc.config.DefaultBinder";
@@ -183,14 +190,12 @@ component serializable="false" accessors="true" {
 		};
 		// Child Injectors
 		variables.childInjectors = structNew( "ordered" );
-
 		// Prepare instance ID
 		variables.injectorID = createUUID();
 		// Prepare Lock Info
 		variables.lockName   = "WireBox.Injector.#variables.injectorID#";
 		// Link ColdBox Context if passed
 		variables.coldbox    = arguments.coldbox;
-
 		// Register the task scheduler according to operating mode
 		if ( !isObject( variables.coldbox ) ) {
 			variables.asyncManager  = new coldbox.system.async.AsyncManager();
@@ -469,10 +474,10 @@ component serializable="false" accessors="true" {
 
 				// We could not find it
 				variables.log.error(
-					"Requested instance:#arguments.name# was not located in any declared scan location(s): #structKeyList( variables.binder.getScanLocations() )#, or path, or parent or children"
+					"Requested instance:#arguments.name# was not located in any declared scan location(s): #structKeyList( variables.binder.getScanLocations() )#, or by path or by hierarchy."
 				);
 				throw(
-					message = "Requested instance not found: '#arguments.name#'",
+					message = "Injector (#getName()#) => instance not found: '#arguments.name#'",
 					detail  = "The instance could not be located in any declared scan location(s) (#structKeyList( variables.binder.getScanLocations() )#) or full path location or parent or children",
 					type    = "Injector.InstanceNotFoundException"
 				);
