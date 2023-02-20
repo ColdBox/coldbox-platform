@@ -295,7 +295,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		if ( isStruct( routeResults.route.action ) ) {
 			// Verify HTTP method used is valid
 			if ( structKeyExists( routeResults.route.action, httpMethod ) ) {
-				discoveredEvent &= ( discoveredEvent == "" ? "" : "." ) & "#routeResults.route.action[ httpMethod ]#";
+				discoveredEvent &= ( discoveredEvent == "" ? "" : "." );
+				// Do we have a module? If so, prefix it
+				if ( routeResults.route.module.len() ) {
+					discoveredEvent = routeResults.route.module & ":" & discoveredEvent;
+				}
+				discoveredEvent &= "#routeResults.route.action[ httpMethod ]#";
 				// Send for logging in debug mode
 				if ( variables.log.canDebug() ) {
 					variables.log.debug(
@@ -303,6 +308,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 					);
 				}
 			} else {
+				// Do we have a module? If so, prefix it
+				if ( routeResults.route.module.len() ) {
+					discoveredEvent = routeResults.route.module & ":" & discoveredEvent;
+				}
 				// Mark as invalid HTTP Exception
 				discoveredEvent &= ".onInvalidHTTPMethod";
 				arguments.event.setIsInvalidHTTPMethod( true );
@@ -313,7 +322,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		}
 		// Simple value action
 		else if ( !isStruct( routeREsults.route.action ) && routeResults.route.action.len() ) {
-			discoveredEvent &= ( discoveredEvent == "" ? "" : "." ) & "#routeResults.route.action#";
+			discoveredEvent &= ( discoveredEvent == "" ? "" : "." );
+			// Do we have a module? If so, prefix it
+			if ( routeResults.route.module.len() ) {
+				discoveredEvent = routeResults.route.module & ":" & discoveredEvent;
+			}
+			discoveredEvent &= "#routeResults.route.action#";
 		}
 		// end if action exists
 
