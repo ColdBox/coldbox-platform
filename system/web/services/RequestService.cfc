@@ -50,7 +50,7 @@ component extends="coldbox.system.web.services.BaseService" {
 	 *
 	 * @return coldbox.system.web.context.RequestContext
 	 */
-	any function requestCapture( event, boolean proxyCall : false ){
+	any function requestCapture( event, boolean proxyCall = false ){
 		var context = getContext();
 		var rc      = context.getCollection();
 		var prc     = context.getCollection( private = true );
