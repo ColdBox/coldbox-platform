@@ -52,14 +52,14 @@ component serializable="false" accessors="true" {
 			// Load Module CF Mappings
 			cbController.getModuleService().loadMappings();
 			// Create the request context
-			var event = cbController.getRequestService().requestCapture();
+			var event = cbController.getRequestService().requestCapture( proxyCall : true );
 
 			// Test event Name in the arguments.
 			if ( not structKeyExists( arguments, event.getEventName() ) ) {
 				throw(
-					message = "Event not detected",
-					detail  = "The #event.geteventName()# variable does not exist in the arguments.",
-					type    = "ColdBoxProxy.NoEventDetected"
+					message : "Event not detected!",
+					detail  : "The #event.getEventName()# variable does not exist in the incoming arguments.",
+					type    : "ColdBoxProxy.NoEventDetected"
 				);
 			}
 
