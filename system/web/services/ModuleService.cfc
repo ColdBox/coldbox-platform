@@ -1060,6 +1060,7 @@ component extends="coldbox.system.web.services.BaseService" {
 			.injectPropertyMixin( "logBox", controller.getLogBox() )
 			.injectPropertyMixin( "log", controller.getLogBox().getLogger( results.config ) )
 			.injectPropertyMixin( "wirebox", results.injector )
+			.injectPropertyMixin( "rootWirebox", variables.wirebox )
 			.injectPropertyMixin( "binder", results.injector.getBinder() )
 			.injectPropertyMixin( "cachebox", controller.getCacheBox() )
 			.injectPropertyMixin( "getJavaSystem", envUtil.getJavaSystem )
