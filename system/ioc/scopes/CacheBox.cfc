@@ -71,7 +71,7 @@ component accessors="true" {
 				// some nice debug info.
 				if ( variables.log.canDebug() ) {
 					variables.log.debug(
-						"Object: (#cacheProperties.toString()#) not found in cacheBox, beginning construction."
+						"Object: (#cacheProperties.toString()#) not found in cacheBox, beginning construction by (#variables.injector.getName()#) injector"
 					);
 				}
 
@@ -112,7 +112,7 @@ component accessors="true" {
 				// log it
 				if ( variables.log.canDebug() ) {
 					variables.log.debug(
-						"Object: (#cacheProperties.toString()#) constructed and stored in cacheBox. ThreadSafe=#arguments.mapping.getThreadSafe()#"
+						"Object: (#cacheProperties.toString()#) constructed and stored in cacheBox. ThreadSafe=#arguments.mapping.getThreadSafe()# by (#variables.injector.getName()#) injector"
 					);
 				}
 

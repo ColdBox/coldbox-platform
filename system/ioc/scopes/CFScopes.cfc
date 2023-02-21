@@ -55,7 +55,7 @@ component accessors="true" {
 					// some nice debug info.
 					if ( variables.log.canDebug() ) {
 						variables.log.debug(
-							"Object: (#arguments.mapping.getName()#) not found in CFScope (#CFScope#), beginning construction."
+							"Object: (#arguments.mapping.getName()#) not found in CFScope (#CFScope#), beginning construction by (#variables.injector.getName()#) injector"
 						);
 					}
 
@@ -83,7 +83,7 @@ component accessors="true" {
 					// log it
 					if ( variables.log.canDebug() ) {
 						variables.log.debug(
-							"Object: (#arguments.mapping.getName()#) constructed and stored in CFScope (#CFScope#), threadSafe=#arguments.mapping.getThreadSafe()#."
+							"Object: (#arguments.mapping.getName()#) constructed and stored in CFScope (#CFScope#), threadSafe=#arguments.mapping.getThreadSafe()# by (#variables.injector.getName()#) injector"
 						);
 					}
 
