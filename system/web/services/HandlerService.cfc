@@ -77,45 +77,46 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	}
 
 	/**
-	 * Asks wirebox for an instance of a handler.  It verifies that there is a mapping in Wirebox for the handler
-	 * if it does not exist, it maps it first and then retrieves it.
+	 * Builds a handler according to the passed handler bean modeling data via WireBox.
 	 *
-	 * @invocationPath The handler invocation path
+	 * @ehBean The handler bean that simulates the executions
 	 *
-	 * @return Handler Instance
+	 * @return EventHandler - A handler Instance matching the ehBean signature
 	 */
-	function newHandler( required invocationPath ){
-		// Check if handler already mapped?
-		if ( NOT wirebox.getBinder().mappingExists( arguments.invocationPath ) ) {
+	function newHandler( required ehBean ){
+		// If it's a module, then use the module's injector, else the root injector
+		var injector    = arguments.ehBean.isModule() ? variables.modules[ arguments.ehBean.getModule() ].injector : variables.wirebox;
+		var handlerPath = arguments.ehBean.getRunnable();
+
+		// Check if handler already mapped in the injector
+		if ( NOT injector.getBinder().mappingExists( handlerPath ) ) {
 			// lazy load checks for wirebox
-			wireboxSetup();
+			injectorSeedBaseClasses( injector );
 			// feed this handler to wirebox with virtual inheritance just in case, use registerNewInstance so its thread safe
-			var mapping = wirebox
-				.registerNewInstance( name = arguments.invocationPath, instancePath = arguments.invocationPath )
+			var mapping = injector
+				.registerNewInstance( name = handlerPath, instancePath = handlerPath )
 				.setVirtualInheritance( "coldbox.system.EventHandler" )
 				.setThreadSafe( true )
-				.setScope(
-					variables.handlerCaching ? wirebox.getBinder().SCOPES.SINGLETON : wirebox.getBinder().SCOPES.NOSCOPE
-				)
-				.setCacheProperties( key = "handlers-#arguments.invocationPath#" )
+				.setScope( variables.handlerCaching ? "singleton" : "NoScope" )
+				.setCacheProperties( key = "handlers-#handlerPath#" )
 				// extra attributes added to mapping so they are relayed by events
-				.setExtraAttributes( { handlerPath : arguments.invocationPath, isHandler : true } );
+				.setExtraAttributes( { handlerPath : handlerPath, isHandler : true } );
 		}
 
 		// retrieve, build and wire from wirebox
-		var handler = wirebox.getInstance( arguments.invocationPath );
+		var handler = injector.getInstance( handlerPath );
 
 		// Is this a rest handler by annotation? If so, incorporate it's methods
 		if (
-			wirebox
+			injector
 				.getBinder()
-				.getMapping( arguments.invocationPath )
+				.getMapping( handlerPath )
 				.getObjectMetadata()
 				.keyExists( "restHandler" )
 			&&
 			!structKeyExists( handler, "restHandler" )
 		) {
-			structEach( wirebox.getInstance( "coldbox.system.RestHandler" ), function( functionName, functionTarget ){
+			structEach( variables.wirebox.getInstance( "coldbox.system.RestHandler" ), function( functionName, functionTarget ){
 				if ( !structKeyExists( handler, functionName ) ) {
 					handler[ functionName ] = functionTarget;
 				}
@@ -140,8 +141,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		var oEventURLFacade = variables.templateCache.getEventURLFacade();
 
 		// Create Runnable Object via WireBox
-		var oEventHandler       = newHandler( arguments.ehBean.getRunnable() );
-		// Process An Invalid Event
+		var oEventHandler       = newHandler( arguments.ehBean );
+		// Process An Invalid Event logic, which is reused
 		var processInvalidEvent = function(){
 			// The handler exists but the action requested does not, let's go into invalid execution mode
 			var targetInvalidEvent = invalidEvent( ehBean.getFullEvent(), ehBean );
@@ -522,8 +523,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * @throws HandlersDirectoryNotFoundException
 	 */
 	function registerHandlers(){
-		var handlersPath                 = controller.getSetting( "handlersPath" );
-		var handlersExternalLocationPath = controller.getSetting( "handlersExternalLocationPath" );
+		var handlersPath                 = variables.controller.getSetting( "handlersPath" );
+		var handlersExternalLocationPath = variables.controller.getSetting( "handlersExternalLocationPath" );
 		var handlersExternalArray        = [];
 
 		/* ::::::::::::::::::::::::::::::::::::::::: HANDLERS BY CONVENTION :::::::::::::::::::::::::::::::::::::::::::: */
@@ -533,7 +534,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 		// Set registered Handlers
 		variables.registeredHandlers = arrayToList( handlerArray );
-		controller.setSetting( name = "registeredHandlers", value = variables.registeredHandlers );
+		variables.controller.setSetting( name = "registeredHandlers", value = variables.registeredHandlers );
 
 		/* ::::::::::::::::::::::::::::::::::::::::: EXTERNAL HANDLERS :::::::::::::::::::::::::::::::::::::::::::: */
 
@@ -552,7 +553,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 		// Set registered External Handlers
 		variables.registeredExternalHandlers = arrayToList( handlersExternalArray );
-		controller.setSetting( name = "registeredExternalHandlers", value = variables.registeredExternalHandlers );
+		variables.controller.setSetting(
+			name  = "registeredExternalHandlers",
+			value = variables.registeredExternalHandlers
+		);
 
 		return this;
 	}
@@ -599,7 +603,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				1
 			);
 			// Clean Extension
-			return controller.getUtil().ripExtension( cleanhandler );
+			return variables.controller.getUtil().ripExtension( cleanhandler );
 		} );
 	}
 
@@ -608,25 +612,28 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	/**
 	 * Verifies setup of base handler classes in WireBox
 	 *
+	 * @injector The injector to seed and verify
+	 *
 	 * @return HandlerService
 	 */
-	private function wireboxSetup(){
-		if ( NOT wirebox.getBinder().mappingExists( "coldbox.system.EventHandler" ) ) {
-			wirebox
+	private function injectorSeedBaseClasses( required injector ){
+		if ( NOT arguments.injector.getBinder().mappingExists( "coldbox.system.EventHandler" ) ) {
+			arguments.injector
 				.registerNewInstance(
-					name         = "coldbox.system.EventHandler",
-					instancePath = "coldbox.system.EventHandler"
+					name        : "coldbox.system.EventHandler",
+					instancePath: "coldbox.system.EventHandler"
 				)
 				.setScope( "singleton" );
 		}
-		if ( NOT wirebox.getBinder().mappingExists( "coldbox.system.RestHandler" ) ) {
-			wirebox
+		if ( NOT arguments.injector.getBinder().mappingExists( "coldbox.system.RestHandler" ) ) {
+			arguments.injector
 				.registerNewInstance(
-					name         = "coldbox.system.RestHandler",
-					instancePath = "coldbox.system.RestHandler"
+					name        : "coldbox.system.RestHandler",
+					instancePath: "coldbox.system.RestHandler"
 				)
 				.setScope( "singleton" );
 		}
+
 		return this;
 	}
 

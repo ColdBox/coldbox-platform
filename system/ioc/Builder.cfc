@@ -926,20 +926,13 @@ component serializable="false" accessors="true" {
 			}
 		}
 
-		// Check if model Exists
-		if ( variables.injector.containsInstance( modelName ) ) {
-			// Get Model object
-			var oModel = variables.injector.getInstance( modelName );
-			// Factories: TODO: Add arguments with 'ref()' parsing for argument references or 'dsl()'
-			if ( len( methodCall ) ) {
-				return invoke( oModel, methodCall );
-			}
-			return oModel;
-		} else if ( variables.log.canDebug() ) {
-			variables.log.debug(
-				"getModelDSL() cannot find model object #modelName# using definition #arguments.definition.toString()# by (#variables.injector.getName()#) injector"
-			);
+		// Get Model object
+		var oModel = variables.injector.getInstance( modelName );
+		// Factories: TODO: Add arguments with 'ref()' parsing for argument references or 'dsl()'
+		if ( len( methodCall ) ) {
+			return invoke( oModel, methodCall );
 		}
+		return oModel;
 	}
 
 	/**

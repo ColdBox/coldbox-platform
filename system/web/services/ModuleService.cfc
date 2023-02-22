@@ -629,6 +629,7 @@ component extends="coldbox.system.web.services.BaseService" {
 						namespace   = "@#mConfig.modelNamespace#",
 						process     = mConfig.autoProcessModels
 					);
+					// binder.mapDirectory( packagePath = packagePath, process = mConfig.autoProcessModels );
 				} else {
 					// just register with no namespace
 					binder.mapDirectory( packagePath = packagePath, process = mConfig.autoProcessModels );

@@ -5,6 +5,7 @@
 component extends="coldbox.system.EventHandler" {
 
 	// DI
+	property name="photosService" inject="photosService@resourcesTest";
 
 	// HTTP Method Security
 	this.allowedMethods = {
@@ -28,7 +29,7 @@ component extends="coldbox.system.EventHandler" {
 	 * Display a list of photos
 	 */
 	function index( event, rc, prc ){
-		// Get resources here
+		prc.photos = photosService.list();
 		event.setView( "photos/index" );
 	}
 
