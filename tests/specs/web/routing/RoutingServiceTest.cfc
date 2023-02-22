@@ -234,6 +234,53 @@
 
 				expect( discoveredEventPOST ).toBe( "MyHandler.update" );
 			} );
+
+			it( "appends the module to the action struct if needed", function(){
+				var mockEvent = createMock( "coldbox.system.web.context.RequestContext" ).init(
+					controller = getController(),
+					properties = {
+						defaultLayout : "Main.cfm",
+						defaultView   : "",
+						eventName     : "event",
+						modules       : {}
+					}
+				);
+
+				var routeResults = {
+					"route" : initRouteDefinition(
+						overrides = {
+							"handler" : "",
+							"event"   : "",
+							"module"  : "api-v1",
+							"action"  : {
+								"GET"  : "MyHandler.index",
+								"POST" : "MyOtherHandler.create"
+							}
+						}
+					),
+					"params" : {}
+				};
+
+				var discoveredEventGET = variables.routingService.processRoute(
+					routeResults = routeResults,
+					event        = mockEvent,
+					rc           = mockEvent.getCollection(),
+					prc          = mockEvent.getPrivateCollection()
+				);
+
+				expect( discoveredEventGET ).toBe( "api-v1:MyHandler.index" );
+
+				mockEvent.$( "getHTTPMethod", "POST" );
+
+				var discoveredEventPOST = variables.routingService.processRoute(
+					routeResults = routeResults,
+					event        = mockEvent,
+					rc           = mockEvent.getCollection(),
+					prc          = mockEvent.getPrivateCollection()
+				);
+
+				expect( discoveredEventPOST ).toBe( "api-v1:MyOtherHandler.create" );
+			} );
 		} );
 	}
 

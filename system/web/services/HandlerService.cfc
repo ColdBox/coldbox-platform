@@ -55,25 +55,25 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 */
 	function onConfigurationLoad(){
 		// local logger
-		variables.log = controller.getLogBox().getLogger( this );
+		variables.log = variables.controller.getLogBox().getLogger( this );
 
 		// execute the handler registrations after configurations loaded
 		registerHandlers();
 
 		// Configuration data and dependencies
-		variables.eventAction                = controller.getColdBoxSetting( "EventAction" );
-		variables.registeredHandlers         = controller.getSetting( "RegisteredHandlers" );
-		variables.registeredExternalHandlers = controller.getSetting( "RegisteredExternalHandlers" );
-		variables.eventName                  = controller.getSetting( "EventName" );
-		variables.invalidEventHandler        = controller.getSetting( "invalidEventHandler" );
-		variables.handlerCaching             = controller.getSetting( "HandlerCaching" );
-		variables.eventCaching               = controller.getSetting( "EventCaching" );
-		variables.handlersInvocationPath     = controller.getSetting( "HandlersInvocationPath" );
-		variables.handlersExternalLocation   = controller.getSetting( "HandlersExternalLocation" );
-		variables.templateCache              = controller.getCache( "template" );
-		variables.modules                    = controller.getSetting( "modules" );
-		variables.interceptorService         = controller.getInterceptorService();
-		variables.wirebox                    = controller.getWireBox();
+		variables.eventAction                = variables.controller.getColdBoxSetting( "EventAction" );
+		variables.registeredHandlers         = variables.controller.getSetting( "RegisteredHandlers" );
+		variables.registeredExternalHandlers = variables.controller.getSetting( "RegisteredExternalHandlers" );
+		variables.eventName                  = variables.controller.getSetting( "EventName" );
+		variables.invalidEventHandler        = variables.controller.getSetting( "invalidEventHandler" );
+		variables.handlerCaching             = variables.controller.getSetting( "HandlerCaching" );
+		variables.eventCaching               = variables.controller.getSetting( "EventCaching" );
+		variables.handlersInvocationPath     = variables.controller.getSetting( "HandlersInvocationPath" );
+		variables.handlersExternalLocation   = variables.controller.getSetting( "HandlersExternalLocation" );
+		variables.templateCache              = variables.controller.getCache( "template" );
+		variables.modules                    = variables.controller.getSetting( "modules" );
+		variables.interceptorService         = variables.controller.getInterceptorService();
+		variables.wirebox                    = variables.controller.getWireBox();
 	}
 
 	/**
