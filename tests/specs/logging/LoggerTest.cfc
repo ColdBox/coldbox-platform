@@ -114,7 +114,9 @@
 					logger.logMessage( function(){
 						return "This is a closure message";
 					}, "info" );
-					expect( mockAppender.$callLog().logMessage.first()[ "1" ].getMessage() ).toBe( "This is a closure message" );
+					expect( mockAppender.$callLog().logMessage.first()[ "1" ].getMessage() ).toBe(
+						"This is a closure message"
+					);
 				} );
 
 				it( "won't log with a non-loggable severity", function(){

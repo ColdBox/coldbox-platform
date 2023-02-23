@@ -45,7 +45,7 @@ component extends="coldbox.system.web.services.BaseService" {
 	/**
 	 * I capture an incoming request. Returns: coldbox.system.web.context.RequestContext
 	 *
-	 * @event Override to instead use this as the main event instead of looking for it in form/url
+	 * @event     Override to instead use this as the main event instead of looking for it in form/url
 	 * @proxyCall If true, we ignore routing, since this is a proxy remote call
 	 *
 	 * @return coldbox.system.web.context.RequestContext
@@ -81,7 +81,7 @@ component extends="coldbox.system.web.services.BaseService" {
 		}
 
 		// First, process the request through the RoutingService
-		if( !arguments.proxyCall ){
+		if ( !arguments.proxyCall ) {
 			variables.routingService.requestCapture( context );
 		}
 
