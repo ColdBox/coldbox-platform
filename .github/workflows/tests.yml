@@ -25,6 +25,8 @@ jobs:
         include:
           - cfengine: "lucee@5rc"
             experimental: true
+          - cfengine: "lucee@6"
+            experimental: true
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
