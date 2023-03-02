@@ -1,5 +1,6 @@
 {
     "dependencies":{
+        "cbvalidation":"^4.1.0+30",
         "route-visualizer":"^1.2.0+4"
     },
     "devDependencies":{
@@ -7,6 +8,7 @@
     },
     "installPaths":{
         "cbdebugger":"modules/cbdebugger/",
+        "cbvalidation":"modules/cbvalidation/",
         "route-visualizer":"modules/route-visualizer/"
     },
     "scripts":{

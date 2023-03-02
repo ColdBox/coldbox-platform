@@ -1,4 +1,5 @@
 # Dependencies
 modules/route-visualizer/
 modules/cbdebugger
+modules/cbvalidation
 logs/

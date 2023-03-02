@@ -37,7 +37,6 @@ component accessors="true" {
 	 * Constructor
 	 *
 	 * @scopeRegistration             The injector scope registration structure
-	 * @scopeRegistration.doc_generic struct
 	 * @scopeStorage                  The scope storage utility
 	 * @scopeStorage.doc_generic      coldbox.system.core.collections.ScopeStorage
 	 * @name                          The name of the mapping this provider is binded to, MUTEX with name
@@ -45,7 +44,7 @@ component accessors="true" {
 	 * @targetObject                  The target object that requested the provider.
 	 */
 	Provider function init(
-		required scopeRegistration,
+		required struct scopeRegistration,
 		required scopeStorage,
 		name,
 		dsl,
@@ -58,10 +57,10 @@ component accessors="true" {
 		variables.targetObject      = arguments.targetObject;
 
 		// Verify incoming name or DSL
-		if ( structKeyExists( arguments, "name" ) ) {
+		if ( !isNull( arguments.name ) ) {
 			variables.name = arguments.name;
 		}
-		if ( structKeyExists( arguments, "dsl" ) ) {
+		if ( !isNull( arguments.dsl ) ) {
 			variables.dsl = arguments.dsl;
 		}
 
