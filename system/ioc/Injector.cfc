@@ -996,9 +996,9 @@ component serializable="false" accessors="true" {
 		}
 
 		throw(
-			message     = "The injector has not be registered in any scope",
-			detail      = "The scope info is: #scopeInfo.toString()#",
-			type        = "Injector.InvalidScopeRegistration",
+			message     : "The injector has not be registered in any scope",
+			detail      : "The scope info is: #scopeInfo.toString()#",
+			type        : "Injector.InvalidScopeRegistration",
 			extendedInfo: "Current Injector -> #getName()#"
 		);
 	}
@@ -1076,7 +1076,6 @@ component serializable="false" accessors="true" {
 		// iterate and mixin baby!
 		for ( var key in mixin ) {
 			if ( key NEQ "$init" ) {
-				// add the provided method to the providers structure.
 				arguments.targetObject.injectMixin( name = key, UDF = mixin[ key ] );
 			}
 		}

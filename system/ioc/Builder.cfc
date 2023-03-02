@@ -138,19 +138,14 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
-	 * Used to provider providers via mixers on targeted objects
+	 * Used to provider providers via mixers on targeted objects.
+	 * This method is the one used to replace the provided methods.
 	 */
 	function buildProviderMixer(){
 		var targetInjector = this.$wbScopeStorage.get( this.$wbScopeInfo.key, this.$wbScopeInfo.scope );
 		var targetProvider = this.$wbProviders[ getFunctionCalledName() ];
 
-		// Verify if this is a mapping first?
-		if ( targetInjector.containsInstance( targetProvider ) ) {
-			return targetInjector.getInstance( name = targetProvider, targetObject = this );
-		}
-
-		// else treat as full DSL
-		return targetInjector.getInstance( dsl = targetProvider, targetObject = this );
+		return targetInjector.getInstance( name = targetProvider, targetObject = this );
 	}
 
 	/**
