@@ -497,8 +497,8 @@ component serializable="false" accessors="true" {
 					}
 				}
 
-				// Verify via ancestors
-				if ( isObject( variables.parent ) && variables.parent.containsInstance( arguments.name ) ) {
+				// Verify via ancestor if set
+				if ( hasParent() ) {
 					return variables.parent.getInstance( argumentCollection = arguments );
 				}
 
@@ -507,9 +507,9 @@ component serializable="false" accessors="true" {
 					"Requested instance:#arguments.name# was not located in any declared scan location(s): #structKeyList( variables.binder.getScanLocations() )#, or by path or by hierarchy."
 				);
 				throw(
-					message     = "Instance not found: '#arguments.name#'",
-					detail      = "The instance could not be located in any declared scan location(s) (#structKeyList( variables.binder.getScanLocations() )#) or full path location or parent or children",
-					type        = "Injector.InstanceNotFoundException",
+					message     : "Instance not found: '#arguments.name#'",
+					detail      : "The instance could not be located in any declared scan location(s) (#structKeyList( variables.binder.getScanLocations() )#) or full path location or parent or children",
+					type        : "Injector.InstanceNotFoundException",
 					extendedInfo: "Current Injector -> #getName()#"
 				);
 			}
