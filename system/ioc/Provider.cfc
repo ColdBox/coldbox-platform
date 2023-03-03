@@ -36,33 +36,22 @@ component accessors="true" {
 	/**
 	 * Constructor
 	 *
-	 * @scopeRegistration             The injector scope registration structure
-	 * @scopeStorage                  The scope storage utility
-	 * @scopeStorage.doc_generic      coldbox.system.core.collections.ScopeStorage
-	 * @name                          The name of the mapping this provider is binded to, MUTEX with name
-	 * @dsl                           The DSL string this provider is binded to, MUTEX with name
-	 * @targetObject                  The target object that requested the provider.
+	 * @scopeRegistration The injector scope registration structure
+	 * @name              The name of the mapping this provider is binded to
+	 * @targetObject      The target object that requested the provider.
+	 * @injectorName      The name of the injector requesting the dependency
 	 */
 	Provider function init(
 		required struct scopeRegistration,
-		required scopeStorage,
 		name,
-		dsl,
-		required targetObject
+		required targetObject,
+		required injectorName
 	){
-		variables.name              = "";
-		variables.dsl               = "";
+		variables.scopeStorage      = new coldbox.system.core.collections.ScopeStorage();
 		variables.scopeRegistration = arguments.scopeRegistration;
-		variables.scopeStorage      = arguments.scopeStorage;
 		variables.targetObject      = arguments.targetObject;
-
-		// Verify incoming name or DSL
-		if ( !isNull( arguments.name ) ) {
-			variables.name = arguments.name;
-		}
-		if ( !isNull( arguments.dsl ) ) {
-			variables.dsl = arguments.dsl;
-		}
+		variables.injectorName      = arguments.injectorName;
+		variables.name              = arguments.name;
 
 		return this;
 	}
@@ -75,18 +64,14 @@ component accessors="true" {
 
 		// Return if scope exists, else throw exception
 		if ( variables.scopeStorage.exists( scopeInfo.key, scopeInfo.scope ) ) {
-			// retrieve by name or DSL
-			if ( len( variables.name ) ) {
-				return variables.scopeStorage
-					.get( scopeInfo.key, scopeInfo.scope )
-					.getInstance( name = variables.name, targetObject = variables.targetObject );
+			// Get root injector
+			var injector = variables.scopeStorage.get( scopeInfo.key, scopeInfo.scope );
+			// Do we need a specific injector
+			if ( variables.injectorName != "root" ) {
+				injector = injector.getInjectorReference( variables.injectorName );
 			}
 
-			if ( len( variables.dsl ) ) {
-				return variables.scopeStorage
-					.get( scopeInfo.key, scopeInfo.scope )
-					.getInstance( dsl = variables.dsl, targetObject = variables.targetObject );
-			}
+			return injector.getInstance( name = variables.name, targetObject = variables.targetObject );
 		}
 
 		throw(

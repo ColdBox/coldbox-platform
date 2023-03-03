@@ -189,13 +189,16 @@ component serializable="false" accessors="true" {
 			"SINGLETON"   : ""
 		};
 		// Child Injectors
-		variables.childInjectors = structNew( "ordered" );
+		variables.childInjectors       = structNew( "ordered" );
+		// Injector Reference Map for quick location via named injectors
+		variables.injectorReferenceMap = {};
+
 		// Prepare instance ID
-		variables.injectorID     = createUUID();
+		variables.injectorID = createUUID();
 		// Prepare Lock Info
-		variables.lockName       = "WireBox.Injector.#variables.injectorID#";
+		variables.lockName   = "WireBox.Injector.#variables.injectorID#";
 		// Link ColdBox Context if passed
-		variables.coldbox        = arguments.coldbox;
+		variables.coldbox    = arguments.coldbox;
 		// Register the task scheduler according to operating mode
 		if ( !isObject( variables.coldbox ) ) {
 			variables.asyncManager  = new coldbox.system.async.AsyncManager();
@@ -279,6 +282,32 @@ component serializable="false" accessors="true" {
 	 */
 	array function getChildInjectorNames(){
 		return variables.childInjectors.keyArray();
+	}
+
+	/**
+	 * Register an injector to be tracked in the lookup reference map. Used for providers mostly.
+	 *
+	 * @injector The injector to track
+	 */
+	Injector function registerInjectorReference( required injector ){
+		variables.injectorReferenceMap[ arguments.injector.getName() ] = arguments.injector;
+		return this;
+	}
+
+	/**
+	 * Get an injector reference by unique name
+	 *
+	 * @name The unique injector reference name
+	 */
+	Injector function getInjectorReference( required name ){
+		return variables.injectorReferenceMap[ arguments.name ];
+	}
+
+	/**
+	 * Get an array of registered injector references
+	 */
+	array function getInjectorReferenceNames(){
+		return variables.injectorReferenceMap.keyArray();
 	}
 
 	/**
@@ -903,6 +932,13 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
+	 * Has a parent injector
+	 */
+	boolean function hasParent(){
+		return isObject( variables.parent );
+	}
+
+	/**
 	 * Get a reference to the parent injector instance, else an empty simple string meaning nothing is set
 	 *
 	 * @doc_generic coldbox.system.ioc.Injector
@@ -1007,7 +1043,13 @@ component serializable="false" accessors="true" {
 	 * Get the structure of scope registration information
 	 */
 	struct function getScopeRegistration(){
-		return variables.binder.getScopeRegistration();
+		var info = variables.binder.getScopeRegistration();
+
+		if ( info.enabled ) {
+			return info;
+		}
+
+		return hasParent() ? getParent().getScopeRegistration() : info;
 	}
 
 	/****************************************** PRIVATE ************************************************/
@@ -1093,9 +1135,10 @@ component serializable="false" accessors="true" {
 		var providerMethods = arguments.mapping.getProviderMethods();
 
 		// Decorate the target if provider methods found, in preparation for replacements
-		arguments.targetObject.$wbScopeInfo    = variables.binder.getScopeRegistration();
+		arguments.targetObject.$wbScopeInfo    = getScopeRegistration();
 		arguments.targetObject.$wbScopeStorage = variables.scopeStorage;
 		arguments.targetObject.$wbProviders    = {};
+		arguments.targetObject.$wbInjectorName = getName();
 
 		// iterate and provide baby!
 		for ( var thisProvider in providerMethods ) {

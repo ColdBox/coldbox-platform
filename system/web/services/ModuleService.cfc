@@ -213,7 +213,11 @@ component extends="coldbox.system.web.services.BaseService" {
 			);
 		}
 
-		// Setup module metadata info
+		/*
+		|--------------------------------------------------------------------------
+		| Setup Module metadata
+		|--------------------------------------------------------------------------
+		*/
 		var modulesLocation       = variables.moduleRegistry[ modName ].locationPath;
 		var modulesPath           = variables.moduleRegistry[ modName ].physicalPath;
 		var modulesInvocationPath = variables.moduleRegistry[ modName ].invocationPath;
@@ -228,7 +232,11 @@ component extends="coldbox.system.web.services.BaseService" {
 			return false;
 		}
 
-		// Module Bundle Registration
+		/*
+		|--------------------------------------------------------------------------
+		| Module Bundle Registration
+		|--------------------------------------------------------------------------
+		*/
 		if ( isBundle ) {
 			// Bundle Loading
 			var aBundleModules = directoryList( modLocation, false, "array" );
@@ -253,7 +261,11 @@ component extends="coldbox.system.web.services.BaseService" {
 			return true;
 		}
 
-		// lock registration
+		/*
+		|--------------------------------------------------------------------------
+		| Module Registration
+		|--------------------------------------------------------------------------
+		*/
 		lock
 			name          ="module#variables.controller.getAppHash()#.registration.#modName#"
 			type          ="exclusive"
@@ -268,71 +280,34 @@ component extends="coldbox.system.web.services.BaseService" {
 				}
 			);
 
-			// Setup Vanilla Config information for module
+			/*
+			|--------------------------------------------------------------------------
+			| Module Config Struct
+			|--------------------------------------------------------------------------
+			*/
 			var mConfig = {
-				// Module MetaData and Directives
-				title                 : "",
-				// execution aliases
-				aliases               : [],
-				author                : "",
-				webURL                : "",
-				description           : "",
-				version               : "",
-				// view check in parent first
-				viewParentLookup      : "true",
-				// layout check in parent first
-				layoutParentLookup    : "true",
-				// SES entry point
-				entryPoint            : "",
-				// Inherit Entry Point
-				inheritEntryPoint     : false,
-				// Inherited Entry Point
-				inheritedEntryPoint   : "",
-				// ColdFusion mapping
-				cfmapping             : "",
-				// Models namespsace
-				modelNamespace        : modName,
-				// Auto map models flag
-				autoMapModels         : true,
-				// Auto process models for metadata and annotations, default is lazy loading now due to performance
-				autoProcessModels     : false,
-				// when this registration occurred
-				loadTime              : now(),
-				// Flag that denotes if the module has been activated or not
-				activated             : false,
-				// Any dependencies this module requires to be loaded first
-				dependencies          : [],
-				// Flag that says if this module should NOT be loaded
-				disabled              : false,
 				// flag that says if this module can be activated or not
-				activate              : true,
+				activate          : true,
+				// Flag that denotes if the module has been activated or not
+				activated         : false,
+				// execution aliases
+				aliases           : [],
 				// Application Helpers
-				applicationHelper     : [],
-				// View Helpers
-				// flag that determines if the module settings overrides any
-				// module settings in the parent config (ColdBox.cfc) or
-				// if the parent settings get merged (and overwrite the defaults).
-				parseParentSettings   : true,
-				// Module Configurations
-				path                  : modLocation,
-				invocationPath        : modulesInvocationPath & "." & modName,
-				mapping               : modulesLocation & "/" & modName,
-				handlerInvocationPath : modulesInvocationPath & "." & modName,
-				handlerPhysicalPath   : modLocation,
-				modelsInvocationPath  : modulesInvocationPath & "." & modName,
-				modelsPhysicalPath    : modLocation,
-				registeredHandlers    : "",
-				parentSettings        : {},
-				settings              : {},
-				executors             : {},
-				interceptors          : [],
-				interceptorSettings   : { customInterceptionPoints : "" },
-				layoutSettings        : { defaultLayout : "" },
-				// Routing + resources
-				routes                : [],
-				resources             : [],
+				applicationHelper : [],
+				// Author Metadata
+				author            : "",
+				// Automatically map the models folder
+				autoMapModels     : true,
+				// Auto process models for metadata and annotations, default is lazy loading now due to performance
+				autoProcessModels : false,
+				// Does the module belong to a bundle or not
+				bundle            : arguments.bundle,
+				// ColdFusion mapping
+				cfmapping         : "",
+				// Child modules
+				childModules      : [],
 				// Module Conventions
-				conventions           : {
+				conventions       : {
 					handlersLocation  : "handlers",
 					layoutsLocation   : "layouts",
 					viewsLocation     : "views",
@@ -341,25 +316,84 @@ component extends="coldbox.system.web.services.BaseService" {
 					routerLocation    : "config.Router",
 					schedulerLocation : "config.Scheduler"
 				},
-				// My Children
-				childModules            : [],
+				// Any dependencies this module requires to be loaded first
+				dependencies            : [],
+				// Module human description
+				description             : "",
+				// Flag that says if this module should NOT be loaded
+				disabled                : false,
+				// SES entry point
+				entryPoint              : "",
+				// Module Custom executors
+				executors               : {},
+				// Handlers pathing
+				handlerInvocationPath   : modulesInvocationPath & "." & modName,
+				handlerPhysicalPath     : modLocation,
+				// Inherit Entry Point from parent hierarchies
+				inheritEntryPoint       : false,
+				// The actual inherited entry point slug
+				inheritedEntryPoint     : "",
+				// Invocation path
+				invocationPath          : modulesInvocationPath & "." & modName,
+				// The module's injector reference and name
+				injector                : "",
+				injectorName            : modName & "-" & hash( modulesLocation ),
+				// Module interceptors
+				interceptors            : [],
+				interceptorSettings     : { customInterceptionPoints : "" },
+				// layout check in parent first
+				layoutParentLookup      : "true",
+				// when this registration occurred
+				loadTime                : now(),
+				// Layout settings
+				layoutSettings          : { defaultLayout : "" },
+				// Module mapping
+				mapping                 : modulesLocation & "/" & modName,
+				// Module namespace
+				modelNamespace          : modName,
+				// Models pathing
+				modelsInvocationPath    : modulesInvocationPath & "." & modName,
+				modelsPhysicalPath      : modLocation,
+				// Module Awareness
+				moduleAwareness         : false,
+				// Module Routes
+				routes                  : [],
+				// Registered handlers
+				registeredHandlers      : "",
+				// Routing resources
+				resources               : [],
 				// My Daddy!
 				parent                  : arguments.parent,
-				// My Bundle!
-				bundle                  : arguments.bundle,
+				// Settings to incorporate into the root
+				parentSettings          : {},
+				parseParentSettings     : true,
+				// Module location
+				path                    : modLocation,
 				// Module Router
 				router                  : "",
 				routerInvocationPath    : modulesInvocationPath & "." & modName,
 				routerPhysicalPath      : modLocation,
+				// Module Settings
+				settings                : {},
 				// Task Scheduler
 				scheduler               : "",
 				schedulerInvocationPath : modulesInvocationPath & "." & modName,
 				schedulerPhysicalpath   : modLocation,
-				// The module's injector reference
-				injector                : ""
+				// Module human title
+				title                   : "",
+				// View check in parent first
+				viewParentLookup        : true,
+				// Module version
+				version                 : "",
+				// Web url metadata
+				webURL                  : ""
 			};
 
-			// Load Module Configuration and Injector
+			/*
+			|--------------------------------------------------------------------------
+			| Load ModuleConfig.cfc and Injector
+			|--------------------------------------------------------------------------
+			*/
 			var moduleConfigAndInjector = loadModuleConfiguration(
 				config        : mConfig,
 				moduleName    : arguments.moduleName,
@@ -368,7 +402,11 @@ component extends="coldbox.system.web.services.BaseService" {
 			);
 			mConfig.injector = moduleConfigAndInjector.injector;
 
-			// Verify if module has been disabled
+			/*
+			|--------------------------------------------------------------------------
+			| Disable Checks + Config object storage
+			|--------------------------------------------------------------------------
+			*/
 			if ( mConfig.disabled ) {
 				if ( variables.logger.canInfo() ) {
 					variables.logger.info( "> Skipping module: #arguments.moduleName# as it has been disabled!" );
@@ -410,6 +448,7 @@ component extends="coldbox.system.web.services.BaseService" {
 			mConfig.schedulerPhysicalPath &= "/#mConfig.conventions.schedulerLocation.replace( ".", "/", "all" )#.cfc";
 
 			// Register CFML Mapping if it exists, for loading purposes
+			// TODO: If a duplicate mapping is detected, warn it to logs
 			if ( len( trim( mConfig.cfMapping ) ) ) {
 				variables.util.addMapping( name = mConfig.cfMapping, path = mConfig.path );
 				variables.cfmappingRegistry[ "/#mConfig.cfMapping#" ] = mConfig.path;
@@ -423,7 +462,11 @@ component extends="coldbox.system.web.services.BaseService" {
 			// Register Parent Settings
 			structAppend( appSettings, mConfig.parentSettings, true );
 
-			// Inception?
+			/*
+			|--------------------------------------------------------------------------
+			| Register inception
+			|--------------------------------------------------------------------------
+			*/
 			var inceptionPaths = [ "modules", "modules_app" ];
 			for ( var thisInceptionPath in inceptionPaths ) {
 				if ( directoryExists( mConfig.path & "/" & thisInceptionPath ) ) {
@@ -499,7 +542,7 @@ component extends="coldbox.system.web.services.BaseService" {
 		for ( var moduleName in aModules ) {
 			// Can we load module and has it been registered?
 			if ( structKeyExists( variables.registeredModules, moduleName ) && canLoad( moduleName ) ) {
-				this.activateModule( moduleName );
+				activateModule( moduleName );
 			}
 		}
 
@@ -515,9 +558,9 @@ component extends="coldbox.system.web.services.BaseService" {
 	/**
 	 * Activate a module
 	 *
-	 * @moduleName The name of the module to load. It must exist and be valid. Else we ignore it by logging a warning
+	 * @moduleName The name of the module to activate. It must exist and be valid. Else we ignore it by logging a warning
 	 *
-	 * @return The Service
+	 * @return The Module Service
 	 *
 	 * @throws IllegalModuleState - When the requested module to active is not registered
 	 */
@@ -615,38 +658,57 @@ component extends="coldbox.system.web.services.BaseService" {
 			|--------------------------------------------------------------------------
 			*/
 			if ( mConfig.autoMapModels AND directoryExists( mconfig.modelsPhysicalPath ) ) {
-				// Add as a mapped directory with module name as the namespace with correct mapping path
-				var packagePath = (
-					len( mConfig.cfmapping ) ? mConfig.cfmapping & ".#mConfig.conventions.modelsLocation#" : mConfig.modelsInvocationPath
-				);
-				// module injector binder
-				// var binder = variables.wirebox.getBinder();
 				var binder = mConfig.injector.getBinder();
 
-				if ( len( mConfig.modelNamespace ) ) {
+				// Module Awareness : Map with no namespace in the local injector
+				if ( mConfig.moduleAwareness ) {
 					binder.mapDirectory(
-						packagePath = packagePath,
-						namespace   = "@#mConfig.modelNamespace#",
+						packagePath = mConfig.modelsInvocationPath,
 						process     = mConfig.autoProcessModels
 					);
-					// binder.mapDirectory( packagePath = packagePath, process = mConfig.autoProcessModels );
 				} else {
-					// just register with no namespace
-					binder.mapDirectory( packagePath = packagePath, process = mConfig.autoProcessModels );
+					// No awareness map with @name
+					if ( len( mConfig.modelNamespace ) ) {
+						binder.mapDirectory(
+							packagePath: mConfig.modelsInvocationPath,
+							namespace  : "@#mConfig.modelNamespace#",
+							process    : mConfig.autoProcessModels
+						);
+					} else {
+						// just register with no namespace
+						binder.mapDirectory(
+							packagePath = mConfig.modelsInvocationPath,
+							process     = mConfig.autoProcessModels
+						);
+					}
 				}
+
+				// Map in parent injector with @name for visibility
+				mConfig.injector
+					.getParent()
+					.getBinder()
+					.mapDirectory(
+						packagePath: mConfig.modelsInvocationPath,
+						namespace  : "@#mConfig.modelNamespace#",
+						process    : mConfig.autoProcessModels
+					);
 
 				// Register Default Module Export if it exists as @moduleName, so you can do getInstance( "@moduleName" )
 				if ( fileExists( mconfig.modelsPhysicalPath & "/#arguments.moduleName#.cfc" ) ) {
-					binder
+					mConfig.injector
+						.getParent()
+						.getBinder()
 						.map( [
 							"@#arguments.moduleName#",
 							"@#mConfig.modelNamespace#"
 						] )
-						.to( packagePath & ".#arguments.moduleName#" );
+						.to( mConfig.modelsInvocationPath & ".#arguments.moduleName#" );
 				}
 
-				// Process mapped data
-				// binder.processMappings();
+				// Process mapped data if true
+				if ( mConfig.autoProcessModels ) {
+					binder.processMappings();
+				}
 			}
 
 			/*
@@ -654,12 +716,12 @@ component extends="coldbox.system.web.services.BaseService" {
 			| Module Interceptors
 			|--------------------------------------------------------------------------
 			*/
-			// TODO : See how to use module injector here
 			mConfig.interceptors.each( function( thisInterceptor ){
 				variables.interceptorService.registerInterceptor(
-					interceptorClass      = thisInterceptor.class,
-					interceptorProperties = thisInterceptor.properties,
-					interceptorName       = thisInterceptor.name & "@" & moduleName
+					interceptorClass     : thisInterceptor.class,
+					interceptorProperties: thisInterceptor.properties,
+					interceptorName      : thisInterceptor.name & "@" & moduleName,
+					injector             : mConfig.injector
 				);
 			} );
 
@@ -1023,19 +1085,27 @@ component extends="coldbox.system.web.services.BaseService" {
 			binder    : "coldbox.system.web.config.ModuleBinder",
 			properties: appSettings,
 			coldbox   : controller,
-			name      : arguments.moduleName
+			name      : mConfig.injectorName
 		);
 
 		// Register the child injector via parent or root
 		if ( len( arguments.parent ) ) {
 			results.injector.setParent( arguments.parentInjector );
-			arguments.parentInjector.registerChildInjector( name: arguments.moduleName, child: results.injector );
+			arguments.parentInjector.registerChildInjector( name: mConfig.injectorName, child: results.injector );
 		} else {
 			// Set parent to the module's injector
 			results.injector.setParent( variables.wirebox );
 			// Register the module's injector in the parent
-			variables.wirebox.registerChildInjector( name: arguments.moduleName, child: results.injector );
+			variables.wirebox.registerChildInjector( name: mConfig.injectorName, child: results.injector );
 		}
+
+		/*
+		|--------------------------------------------------------------------------
+		| Register the module injector in the root reference map
+		| This is used for providers, so specific injectors can be located
+		|--------------------------------------------------------------------------
+		*/
+		variables.wirebox.registerInjectorReference( results.injector );
 
 		/*
 		|--------------------------------------------------------------------------

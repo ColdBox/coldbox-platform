@@ -143,6 +143,9 @@ component serializable="false" accessors="true" {
 	 */
 	function buildProviderMixer(){
 		var targetInjector = this.$wbScopeStorage.get( this.$wbScopeInfo.key, this.$wbScopeInfo.scope );
+		if ( targetInjector.getName() != "root" ) {
+			targetInjector = targetInjector.getInjectorReference( this.$wbInjectorName );
+		}
 		var targetProvider = this.$wbProviders[ getFunctionCalledName() ];
 
 		return targetInjector.getInstance( name = targetProvider, targetObject = this );
@@ -964,24 +967,12 @@ component serializable="false" accessors="true" {
 			}
 		}
 
-		// Build provider arguments
-		var args = {
-			scopeRegistration : variables.injector.getScopeRegistration(),
-			scopeStorage      : variables.injector.getScopeStorage(),
-			targetObject      : arguments.targetObject
-		};
-
-		// Check if the passed in provider is an ID directly
-		if ( variables.injector.containsInstance( providerName ) ) {
-			args.name = providerName;
-		}
-		// Else try to tag it by FULL DSL
-		else {
-			args.dsl = providerName;
-		}
-
-		// Build provider and return it.
-		return createObject( "component", "coldbox.system.ioc.Provider" ).init( argumentCollection = args );
+		return new coldbox.system.ioc.Provider(
+			scopeRegistration: variables.injector.getScopeRegistration(),
+			targetObject     : arguments.targetObject,
+			name             : providerName,
+			injectorName     : variables.injector.getName()
+		);
 	}
 
 	/**
