@@ -354,9 +354,7 @@
 		scopeStorage = createStub().$( "exists", true ).$( "get", mockInjector );
 
 		// inject mocks on target
-		mockTarget.$wbscopeInfo       = scopeInfo;
-		mockTarget.$wbScopeStorage    = scopeStorage;
-		mockTarget.$wbInjectorName    = "root";
+		mockTarget.$wbInjector        = mockInjector;
 		mockTarget.$wbProviders       = { buildProviderMixer : "luis" };
 		mockTarget.buildProviderMixer = builder.buildProviderMixer;
 
