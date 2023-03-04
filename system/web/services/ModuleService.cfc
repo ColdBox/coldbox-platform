@@ -1176,20 +1176,23 @@ component extends="coldbox.system.web.services.BaseService" {
 			mConfig.aliases = results.config.aliases;
 		}
 		// author
-		param results.config.author      = "";
-		mConfig.author                   = results.config.author;
+		param results.config.author          = "";
+		mConfig.author                       = results.config.author;
 		// web url
-		param results.config.webURL      = "";
-		mConfig.webURL                   = results.config.webURL;
+		param results.config.webURL          = "";
+		mConfig.webURL                       = results.config.webURL;
 		// description
-		param results.config.description = "";
-		mConfig.description              = results.config.description;
+		param results.config.description     = "";
+		mConfig.description                  = results.config.description;
 		// version
-		param results.config.version     = "1.0.0";
-		mConfig.version                  = results.config.version;
+		param results.config.version         = "1.0.0";
+		mConfig.version                      = results.config.version;
 		// cf mapping
-		param results.config.cfmapping   = "";
-		mConfig.cfmapping                = results.config.cfmapping;
+		param results.config.cfmapping       = "";
+		mConfig.cfmapping                    = results.config.cfmapping;
+		// Module Awareness
+		param results.config.moduleAwareness = false;
+		mConfig.moduleAwareness              = results.config.moduleAwareness;
 		// model namespace override
 		if ( structKeyExists( results.config, "modelNamespace" ) ) {
 			mConfig.modelNamespace = results.config.modelNamespace;

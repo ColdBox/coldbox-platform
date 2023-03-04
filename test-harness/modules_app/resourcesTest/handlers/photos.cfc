@@ -5,7 +5,7 @@
 component extends="coldbox.system.EventHandler" {
 
 	// DI
-	property name="photosService" inject="photosService@resourcesTest";
+	property name="photosService" inject="photosService";
 	property name="moduleSettings" inject="coldbox:moduleSettings:{this}";
 	property name="moduleConfig" inject="coldbox:moduleConfig:{this}";
 
