@@ -19,6 +19,9 @@
 		}
 	}
 
+	// Incorporate viewVariables into the variables scope
+	variables.append( attributes.viewVariables );
+
 	// Localize context
 	variables.event = attributes.event;
 	variables.rc 	= attributes.rc;

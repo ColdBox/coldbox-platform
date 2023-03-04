@@ -120,23 +120,26 @@ component
 	/**
 	 * set the explicit view bit, used mostly internally
 	 *
-	 * @view   The name of the view to render
-	 * @module The name of the module this view comes from
-	 * @args   The view/layout passthrough arguments
+	 * @view          The name of the view to render
+	 * @module        The name of the module this view comes from
+	 * @args          The view/layout passthrough arguments
+	 * @viewVariables The view variables in the variables scope
 	 *
 	 * @return Renderer
 	 */
 	function setExplicitView(
 		required string view,
-		module      = "",
-		struct args = {}
+		module               = "",
+		struct args          = {},
+		struct viewVariables = {}
 	){
 		getRequestContext().setPrivateValue(
 			"_explicitView",
 			{
-				"view"   : arguments.view,
-				"module" : arguments.module,
-				"args"   : arguments.args
+				"view"          : arguments.view,
+				"module"        : arguments.module,
+				"args"          : arguments.args,
+				"viewVariables" : arguments.viewVariables
 			}
 		);
 		return this;
@@ -167,6 +170,7 @@ component
 	 * @collectionDelim        A string to delimit the collection renderings by
 	 * @prePostExempt          If true, pre/post view interceptors will not be fired. By default they do fire
 	 * @name                   The name of the rendering region to render out, Usually all arguments are coming from the stored region but you override them using this function's arguments.
+	 * @viewVariables          A struct of variables to incorporate into the view's variables scope.
 	 */
 	function view(
 		view                   = "",
@@ -183,7 +187,8 @@ component
 		numeric collectionMaxRows  = 0,
 		collectionDelim            = "",
 		boolean prePostExempt      = false,
-		name
+		name,
+		viewVariables = {}
 	){
 		var event             = getRequestContext();
 		var viewCacheKey      = "";
@@ -219,6 +224,7 @@ component
 				arguments.view   = explicitView.view;
 				arguments.module = explicitView.module;
 				arguments.args.append( explicitView.args, false );
+				arguments.viewVariables.append( explicitView.viewVariables, false );
 
 				// clear the explicit view now that it has been used
 				getRequestContext().removePrivateValue( "_explicitView" );
@@ -308,7 +314,7 @@ component
 		// Render collection views
 		if ( !isNull( arguments.collection ) ) {
 			// render collection in next context
-			iData.renderedView = getRenderer().renderViewCollection(
+			iData.renderedView = renderViewCollection(
 				arguments.view,
 				viewLocations.viewPath,
 				viewLocations.viewHelperPath,
@@ -317,7 +323,8 @@ component
 				arguments.collectionAs,
 				arguments.collectionStartRow,
 				arguments.collectionMaxRows,
-				arguments.collectionDelim
+				arguments.collectionDelim,
+				arguments.viewVariables
 			);
 		}
 		// Render simple composite view
@@ -326,7 +333,8 @@ component
 				arguments.view,
 				viewLocations.viewPath,
 				viewLocations.viewHelperPath,
-				arguments.args
+				arguments.args,
+				arguments.viewVariables
 			);
 		}
 
@@ -361,98 +369,72 @@ component
 		collectionAs,
 		numeric collectionStartRow = 1,
 		numeric collectionMaxRows  = 0,
-		collectionDelim            = ""
+		collectionDelim            = "",
+		viewVariables              = {}
 	){
 		var buffer = createObject( "java", "java.lang.StringBuilder" ).init();
-		var x      = 1;
-		var recLen = 0;
 
 		// Determine the collectionAs key
 		if ( NOT len( arguments.collectionAs ) ) {
 			arguments.collectionAs = listLast( arguments.view, "/" );
 		}
 
-		// Array Rendering
-		if ( isArray( arguments.collection ) ) {
-			recLen = arrayLen( arguments.collection );
-			// is max rows passed?
-			if ( arguments.collectionMaxRows NEQ 0 AND arguments.collectionMaxRows LTE recLen ) {
-				recLen = arguments.collectionMaxRows;
-			}
-			// Create local marker
-			variables._items = recLen;
-			// iterate and present
-			for ( x = arguments.collectionStartRow; x lte recLen; x++ ) {
-				// setup local variables
-				variables._counter                  = x;
-				variables[ arguments.collectionAs ] = arguments.collection[ x ];
-				// prepend the delim
-				if ( x NEQ arguments.collectionStartRow ) {
-					buffer.append( arguments.collectionDelim );
-				}
-				// render item composite
-				buffer.append(
-					renderViewComposite(
-						arguments.view,
-						arguments.viewPath,
-						arguments.viewHelperPath,
-						arguments.args
-					)
-				);
-			}
-			return buffer.toString();
+		// Is this a query?
+		if ( isQuery( arguments.collection ) ) {
+			arguments.collection = arguments.collection.reduce( function( result, row ){
+				arguments.result.append( arguments.row );
+				return arguments.result;
+			}, [] );
 		}
 
-		// Query Rendering
-		variables._items = arguments.collection.recordCount;
-
-		// Max Rows
-		if ( arguments.collectionMaxRows NEQ 0 AND arguments.collectionMaxRows LTE arguments.collection.recordCount ) {
-			variables._items = arguments.collectionMaxRows;
+		var records = arrayLen( arguments.collection );
+		// is max rows passed?
+		if ( arguments.collectionMaxRows NEQ 0 AND arguments.collectionMaxRows LTE records ) {
+			records = arguments.collectionMaxRows;
 		}
-
-		// local counter when using startrow is greater than one and x values is reletive to lookup
-		var _localCounter = 1;
-		for ( x = arguments.collectionStartRow; x lte ( arguments.collectionStartRow + variables._items ) - 1; x++ ) {
-			// setup local cvariables
-			variables._counter = _localCounter;
-
-			var columnList = arguments.collection.columnList;
-			for ( var j = 1; j <= listLen( columnList ); j++ ) {
-				variables[ arguments.collectionAs ][ listGetAt( columnList, j ) ] = arguments.collection[
-					listGetAt( columnList, j )
-				][ x ];
-			}
-
+		// iterate and present
+		for ( var x = arguments.collectionStartRow; x lte records; x++ ) {
 			// prepend the delim
-			if ( variables._counter NEQ 1 ) {
+			if ( x NEQ arguments.collectionStartRow ) {
 				buffer.append( arguments.collectionDelim );
 			}
 
 			// render item composite
 			buffer.append(
 				renderViewComposite(
-					arguments.view,
-					arguments.viewPath,
-					arguments.viewHelperPath,
-					arguments.args
+					view          : arguments.view,
+					viewPath      : arguments.viewPath,
+					viewHelperPath: arguments.viewHelperPath,
+					args          : arguments.args,
+					variables     : arguments.viewVariables.append( {
+						"_items"                   : records,
+						"_counter"                 : x,
+						"#arguments.collectionAs#" : arguments.collection[ x ]
+					} )
 				)
 			);
-			_localCounter++;
 		}
-
 		return buffer.toString();
 	}
 
 	/**
 	 * Render a view alongside its helpers, used mostly internally, use at your own risk.
 	 *
-	 * @view           The view to render
+	 * @view           The view name to render
 	 * @viewPath       The path of the view to render
 	 * @viewHelperPath The helpers for the view to load before it
-	 * @args           The view arguments
+	 * @args           The view arguments structure
+	 * @variables      The struct of variables to incorporate into the view's `variables` scope
+	 *
+	 * @return The rendered view string
 	 */
-	private function renderViewComposite( view, viewPath, viewHelperPath, args ){
+	private function renderViewComposite(
+		view,
+		viewPath,
+		viewHelperPath,
+		args,
+		variables = {}
+	){
 		var cbox_renderedView = "";
 		var event             = getRequestContext();
 
@@ -466,7 +448,8 @@ component
 				rendererVariables = ( isNull( attributes.rendererVariables ) ? variables : attributes.rendererVariables ),
 				event             = event,
 				rc                = event.getCollection(),
-				prc               = event.getPrivateCollection()
+				prc               = event.getPrivateCollection(),
+				viewVariables     = arguments.variables
 			);
 		}
 
@@ -483,6 +466,7 @@ component
 	 * @cacheLastAccessTimeout The time in minutes the view will be removed from cache if idle or requested
 	 * @cacheSuffix            The suffix to add into the cache entry for this view rendering
 	 * @cacheProvider          The provider to cache this view in, defaults to 'template'
+	 * @viewVariables          A struct of variables to incorporate into the view's variables scope.
 	 */
 	function externalView(
 		required view,
@@ -491,7 +475,8 @@ component
 		cacheTimeout           = "",
 		cacheLastAccessTimeout = "",
 		cacheSuffix            = "",
-		cacheProvider          = "template"
+		cacheProvider          = "template",
+		viewVariables          = {}
 	){
 		var cbox_renderedView  = "";
 		// Cache Entries
@@ -524,7 +509,8 @@ component
 			viewPath       = viewLocations.viewPath,
 			viewHelperPath = viewLocations.viewHelperPath,
 			args           = args,
-			renderer       = this
+			renderer       = this,
+			viewVariables  = arguments.viewVariables
 		);
 		// Are we caching it
 		if ( arguments.cache && variables.viewCaching ) {
@@ -549,6 +535,7 @@ component
 	 * @args          An optional set of arguments that will be available to this layouts/view rendering ONLY
 	 * @viewModule    The module to explicitly render the view from
 	 * @prePostExempt If true, pre/post layout interceptors will not be fired. By default they do fire
+	 * @viewVariables A struct of variables to incorporate into the view's variables scope.
 	 */
 	function layout(
 		layout,
@@ -556,7 +543,8 @@ component
 		view                  = "",
 		struct args           = getRequestContext().getCurrentViewArgs(),
 		viewModule            = "",
-		boolean prePostExempt = false
+		boolean prePostExempt = false,
+		viewVariables         = {}
 	){
 		var event                  = getRequestContext();
 		var cbox_locateUDF         = variables.locateLayout;
@@ -586,9 +574,10 @@ component
 			return controller
 				.getRenderer()
 				.setExplicitView(
-					arguments.view,
-					arguments.viewModule,
-					arguments.args
+					view         : arguments.view,
+					module       : arguments.viewModule,
+					args         : arguments.args,
+					viewVariables: arguments.viewVariables
 				)
 				.layout( argumentCollection = arguments );
 		}
@@ -675,7 +664,8 @@ component
 				view           = cbox_currentLayout,
 				viewPath       = viewLocations.viewPath,
 				viewHelperPath = viewLocations.viewHelperPath,
-				args           = args
+				args           = args,
+				viewVariables  = arguments.viewVariables
 			);
 		}
 
