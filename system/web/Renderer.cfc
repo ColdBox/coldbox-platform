@@ -406,7 +406,7 @@ component
 					viewPath      : arguments.viewPath,
 					viewHelperPath: arguments.viewHelperPath,
 					args          : arguments.args,
-					variables     : arguments.viewVariables.append( {
+					viewVariables : arguments.viewVariables.append( {
 						"_items"                   : records,
 						"_counter"                 : x,
 						"#arguments.collectionAs#" : arguments.collection[ x ]
@@ -433,7 +433,7 @@ component
 		viewPath,
 		viewHelperPath,
 		args,
-		variables = {}
+		viewVariables = {}
 	){
 		var cbox_renderedView = "";
 		var event             = getRequestContext();
@@ -449,7 +449,7 @@ component
 				event             = event,
 				rc                = event.getCollection(),
 				prc               = event.getPrivateCollection(),
-				viewVariables     = arguments.variables
+				viewVariables     = arguments.viewVariables
 			);
 		}
 
