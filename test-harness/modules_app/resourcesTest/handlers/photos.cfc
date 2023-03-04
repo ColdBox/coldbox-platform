@@ -6,6 +6,8 @@ component extends="coldbox.system.EventHandler" {
 
 	// DI
 	property name="photosService" inject="photosService@resourcesTest";
+	property name="moduleSettings" inject="coldbox:moduleSettings:{this}";
+	property name="moduleConfig" inject="coldbox:moduleConfig:{this}";
 
 	// HTTP Method Security
 	this.allowedMethods = {
@@ -30,6 +32,8 @@ component extends="coldbox.system.EventHandler" {
 	 */
 	function index( event, rc, prc ){
 		prc.photos = photosService.list();
+		prc.settings = variables.moduleSettings;
+		prc.moduleConfig = variables.moduleConfig;
 		event.setView( "photos/index" );
 	}
 
