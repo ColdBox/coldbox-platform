@@ -173,7 +173,8 @@ component serializable="false" accessors="true" {
 			"beforeInjectorShutdown", // X right before the shutdown procedures start
 			"afterInjectorShutdown", // X right after the injector is shutdown
 			"beforeInstanceAutowire", // X right before an instance is autowired
-			"afterInstanceAutowire" // X right after an instance is autowired
+			"afterInstanceAutowire", // X right after an instance is autowired
+			"onInjectorMissingDependency" // when a dependency can't be located, last chance to provide it.
 		];
 		// LogBox and Class Logger
 		variables.logBox = "";
@@ -502,6 +503,19 @@ component serializable="false" accessors="true" {
 				// Verify via ancestor if set
 				if ( hasParent() ) {
 					return variables.parent.getInstance( argumentCollection = arguments );
+				}
+
+				// Announce missing dependency event
+				var iData = {
+					name          : arguments.name,
+					initArguments : arguments.initArgument,
+					targetObject  : arguments.targetObject,
+					injector      : this
+				};
+				variables.eventManager.announce( "onInjectorMissingDependency", iData );
+				// Verify if an instance was built?
+				if ( !isNull( iData.instance ) ) {
+					return iData.instance;
 				}
 
 				// We could not find it
