@@ -1190,7 +1190,7 @@ component serializable="false" accessors="true" {
 	){
 		// Transient request cache
 		param request.cbTransientDICache = {};
-		var transientCacheEnabled        = arguments.mapping.isTransient() && !arguments.mapping.isVirtualInheritance();
+		var transientCacheEnabled        = getBinder().getTransientInjectionCache() && arguments.mapping.isTransient() && !arguments.mapping.isVirtualInheritance();
 		// Verify if we have seen this transient in this request
 		if ( transientCacheEnabled && request.cbTransientDICache.keyExists( arguments.targetID ) ) {
 			// Injections Injection :)
