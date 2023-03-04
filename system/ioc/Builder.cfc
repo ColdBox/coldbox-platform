@@ -142,13 +142,10 @@ component serializable="false" accessors="true" {
 	 * This method is the one used to replace the provided methods.
 	 */
 	function buildProviderMixer(){
-		var targetInjector = this.$wbScopeStorage.get( this.$wbScopeInfo.key, this.$wbScopeInfo.scope );
-		if ( targetInjector.getName() != "root" ) {
-			targetInjector = targetInjector.getInjectorReference( this.$wbInjectorName );
-		}
-		var targetProvider = this.$wbProviders[ getFunctionCalledName() ];
-
-		return targetInjector.getInstance( name = targetProvider, targetObject = this );
+		return this.$wbInjector.getInstance(
+			name         = this.$wbProviders[ getFunctionCalledName() ],
+			targetObject = this
+		);
 	}
 
 	/**

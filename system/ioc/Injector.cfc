@@ -144,6 +144,8 @@ component serializable="false" accessors="true" {
 		variables.name              = arguments.name;
 		// Instance contains lookup
 		variables.containsLookupMap = createObject( "java", "java.util.concurrent.ConcurrentHashMap" ).init();
+		// Scope Storage
+		variables.scopeStorage      = new coldbox.system.core.collections.ScopeStorage();
 		// Do we have a binder?
 		if ( isSimpleValue( arguments.binder ) AND NOT len( trim( arguments.binder ) ) ) {
 			arguments.binder = "coldbox.system.ioc.config.DefaultBinder";
@@ -1135,10 +1137,8 @@ component serializable="false" accessors="true" {
 		var providerMethods = arguments.mapping.getProviderMethods();
 
 		// Decorate the target if provider methods found, in preparation for replacements
-		arguments.targetObject.$wbScopeInfo    = getScopeRegistration();
-		arguments.targetObject.$wbScopeStorage = variables.scopeStorage;
-		arguments.targetObject.$wbProviders    = {};
-		arguments.targetObject.$wbInjectorName = getName();
+		arguments.targetObject.$wbProviders = {};
+		arguments.targetObject.$wbInjector  = this;
 
 		// iterate and provide baby!
 		for ( var thisProvider in providerMethods ) {
@@ -1465,7 +1465,6 @@ component serializable="false" accessors="true" {
 	 * @scopeInfo The scope info struct: key, scope
 	 */
 	private Injector function doScopeRegistration( scopeInfo = variables.binder.getScopeRegistration() ){
-		variables.scopeStorage = new coldbox.system.core.collections.ScopeStorage();
 		// register injector with scope
 		variables.scopeStorage.put(
 			arguments.scopeInfo.key,
