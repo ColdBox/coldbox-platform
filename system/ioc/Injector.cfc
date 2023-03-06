@@ -508,7 +508,7 @@ component serializable="false" accessors="true" {
 				// Announce missing dependency event
 				var iData = {
 					name          : arguments.name,
-					initArguments : arguments.initArgument,
+					initArguments : arguments.initArguments,
 					targetObject  : arguments.targetObject,
 					injector      : this
 				};
@@ -760,7 +760,9 @@ component serializable="false" accessors="true" {
 			// Check if located? If so, return instantiation path
 			if ( fileExists( scanLocations[ thisScanPath ] & CFCName ) ) {
 				if ( variables.log.canDebug() ) {
-					variables.log.debug( "Instance: #arguments.name# located in #thisScanPath# by (#getName()#) injector" );
+					variables.log.debug(
+						"Instance: #arguments.name# located in #thisScanPath# by (#getName()#) injector"
+					);
 				}
 				return thisScanPath & "." & arguments.name;
 			}
@@ -1467,7 +1469,9 @@ component serializable="false" accessors="true" {
 
 		// debugging
 		if ( variables.log.canDebug() ) {
-			variables.log.debug( "Injector (#getName()#) has just registered a new listener: #listener.toString()#" );
+			variables.log.debug(
+				"Injector (#getName()#) has just registered a new listener: #listener.toString()#"
+			);
 		}
 
 		return this;

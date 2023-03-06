@@ -132,7 +132,9 @@ component serializable="false" accessors="true" {
 		variables.customDSL[ arguments.namespace ] = new "#arguments.path#"( variables.injector );
 		// Debugging
 		if ( variables.log.canDebug() ) {
-			variables.log.debug( "Registered custom DSL Builder with namespace: #arguments.namespace# by (#variables.injector.getName()#) injector" );
+			variables.log.debug(
+				"Registered custom DSL Builder with namespace: #arguments.namespace# by (#variables.injector.getName()#) injector"
+			);
 		}
 		return this;
 	}
