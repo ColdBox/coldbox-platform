@@ -20,7 +20,6 @@ jobs:
       fail-fast: false
       matrix:
         cfengine: [ "lucee@5", "adobe@2018", "adobe@2021" ]
-        fullNull: [ "true", "false" ]
         experimental: [false]
         include:
           - cfengine: "lucee@5rc"
@@ -78,9 +77,7 @@ jobs:
           # Test the harness
           curl http://127.0.0.1:8599/test-harness
 
-      - name: Run Tests Full Null (${{ matrix.fullNull }})
-        env:
-          FULL_NULL: ${{ matrix.fullNull }}
+      - name: Run Tests
         run: |
           ant -f build/build.xml run-tests
 
