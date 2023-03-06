@@ -508,7 +508,7 @@ component serializable="false" accessors="true" {
 				// Announce missing dependency event
 				var iData = {
 					name          : arguments.name,
-					initArguments : arguments.initArgument,
+					initArguments : arguments.initArguments,
 					targetObject  : arguments.targetObject,
 					injector      : this
 				};
