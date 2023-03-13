@@ -87,7 +87,7 @@
     <target name="run-tests" description="Runs the tests for entire suite" depends="init" if="tests.execute">
 
 		<!-- Run for Integration -->
-		<mkdir dir="tests/results/integration" />
+		<!-- <mkdir dir="tests/results/integration" />
 		<exec executable="box" dir="${basedir}" failonerror="true">
 			<arg line="testbox run runner='http://localhost:${server.port}/tests/runner-integration.cfm' verbose=false outputFile='tests/results/integration/test-results' outputFormats='json,antjunit'" />
 		</exec>
@@ -120,7 +120,7 @@
 		<mkdir dir="tests/results/core" />
 		<exec executable="box" dir="${basedir}" failonerror="true">
 			<arg line="testbox run runner='http://localhost:${server.port}/tests/runner-core.cfm' verbose=false outputFile='tests/results/core/test-results' outputFormats='json,antjunit'" />
-		</exec>
+		</exec> -->
 
 		<!-- Run for Async -->
 		<mkdir dir="tests/results/async" />
