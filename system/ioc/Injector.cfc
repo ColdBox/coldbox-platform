@@ -506,17 +506,17 @@ component serializable="false" accessors="true" {
 				}
 
 				// Announce missing dependency event
-				var iData = {
-					name          : arguments.name,
-					initArguments : arguments.initArguments,
-					targetObject  : arguments.targetObject,
-					injector      : this
-				};
-				variables.eventManager.announce( "onInjectorMissingDependency", iData );
-				// Verify if an instance was built?
-				if ( !isNull( iData.instance ) ) {
-					return iData.instance;
-				}
+				// var iData = {
+				// 	name          : arguments.name,
+				// 	initArguments : arguments.initArguments,
+				// 	targetObject  : arguments.targetObject,
+				// 	injector      : this
+				// };
+				// variables.eventManager.announce( "onInjectorMissingDependency", iData );
+				// // Verify if an instance was built?
+				// if ( !isNull( iData.instance ) ) {
+				// 	return iData.instance;
+				// }
 
 				// We could not find it
 				variables.log.error(
