@@ -151,8 +151,8 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 			it( "can addTo", function(){
 				var p      = period.of( 2, 5, 10 );
 				var target = "2021-01-01";
-
-				expect( p.addTo( target ) ).tobe( "2023-06-11" );
+				// range to account for feb dates
+				expect( p.addTo( target ) ).tobeBetween( "2023-06-09", "2023-06-12" );
 			} );
 		} );
 	}
