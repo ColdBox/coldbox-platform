@@ -46,7 +46,7 @@ jobs:
       - name: Setup CommandBox CLI
         uses: Ortus-Solutions/setup-commandbox@v2.0.1
         with:
-          version: 5.7.0
+          version: 5.6.1
 
       - name: Setup .env For Runner
         run: |
