@@ -512,7 +512,7 @@ component serializable="false" accessors="true" {
 					targetObject  : arguments.targetObject,
 					injector      : this
 				};
-				variables.eventManager.announce( "onInjectorMissingDependency", iData );
+				//variables.eventManager.announce( "onInjectorMissingDependency", iData );
 				// Verify if an instance was built?
 				if ( !isNull( iData.instance ) ) {
 					return iData.instance;
