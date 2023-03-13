@@ -22,11 +22,11 @@ jobs:
         #cfengine: [ "lucee@5", "adobe@2018", "adobe@2021" ]
         cfengine: [ "adobe@2018", "adobe@2021" ]
         experimental: [false]
-        include:
-          - cfengine: "lucee@5rc"
-            experimental: true
-          - cfengine: "lucee@6"
-            experimental: true
+        #include:
+        #  - cfengine: "lucee@5rc"
+        #    experimental: true
+        #  - cfengine: "lucee@6"
+        #    experimental: true
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
