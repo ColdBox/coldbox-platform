@@ -20,6 +20,11 @@
 		server.luis = "cool";
 		assertTrue( scope.delete( "luis", "server" ) );
 
+		// https://luceeserver.atlassian.net/browse/LDEV-4423
+		if ( isLucee6() ){
+			writeOutput( "--- SKIPPED for Lucee 6 --- " );
+			return;
+		}
 		assertFalse( scope.delete( "luis", "server" ) );
 		</cfscript>
 	</cffunction>
@@ -61,6 +66,12 @@
 		scope.getScope( "server" );
 		scope.getScope( "client" );
 		scope.getScope( "cookie" );
+		</cfscript>
+	</cffunction>
+
+	<cffunction name="isLucee6">
+		<cfscript>
+			return server.keyExists( "lucee" ) && left( server.lucee.version, 1 ) == 6;
 		</cfscript>
 	</cffunction>
 </cfcomponent>
