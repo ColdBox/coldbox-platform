@@ -432,6 +432,8 @@ component {
 
 		// Override ourselves into parent
 		for ( var thisKey in arguments.md ) {
+			// https://luceeserver.atlassian.net/browse/LDEV-4421
+			if ( arrayContains( ["sub", "subname" ], thisKey ) ){ continue; }
 			// Functions and properties are an array of structs keyed on name, so I can treat them the same
 			if ( listFindNoCase( "functions,properties", thisKey ) ) {
 				if ( !structKeyExists( loc.parent, thisKey ) ) {
