@@ -21,7 +21,7 @@
 		assertTrue( scope.delete( "luis", "server" ) );
 
 		// https://luceeserver.atlassian.net/browse/LDEV-4423
-		if ( isLucee6() ){
+		if ( isLucee6() ) {
 			writeOutput( "--- SKIPPED for Lucee 6 --- " );
 			return;
 		}
@@ -71,7 +71,7 @@
 
 	<cffunction name="isLucee6">
 		<cfscript>
-			return server.keyExists( "lucee" ) && left( server.lucee.version, 1 ) == 6;
+		return server.keyExists( "lucee" ) && left( server.lucee.version, 1 ) == 6;
 		</cfscript>
 	</cffunction>
 </cfcomponent>
