@@ -604,8 +604,9 @@ component accessors="true" singleton {
 	 * @return The metadata map of composable properties keyed by entity name: { cfc, path, entityname, persistent, properties }
 	 */
 	private struct function getRelationshipMetaData( required target ){
-		if ( variables.entityMetadataMap.containsKey( arguments.target ) ) {
-			return variables.entityMetadataMap.get( arguments.target );
+		var targetName = getTargetName( arguments.target );
+		if ( variables.entityMetadataMap.containsKey( targetName ) ) {
+			return variables.entityMetadataMap.get( targetName );
 		}
 
 		// get array of properties
@@ -634,8 +635,17 @@ component accessors="true" singleton {
 				return result;
 			}, {} );
 
-		variables.entityMetadataMap.put( arguments.target, results );
+		variables.entityMetadataMap.put( targetName, results );
 		return results;
+	}
+
+	/**
+	 * Convenience method to get name from target CFC
+	 *
+	 * @target The target to work on
+	 */
+	private string function getTargetName( required any target ) {
+		return getMetadata( target ).name;
 	}
 
 }
