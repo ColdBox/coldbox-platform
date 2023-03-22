@@ -139,7 +139,7 @@
 		assertTrue( len( prop ) );
 	}
 
-	function testWebService() skip="isAdobe"{
+	function testWebService() skip="noWSDLSupport"{
 		ws = injector.getInstance( "coldboxWS" );
 
 		//
