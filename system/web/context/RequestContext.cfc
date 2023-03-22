@@ -678,6 +678,15 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
+	 * Verify if the passed name is the same as the current route name
+	 *
+	 * @name The name to test against the current route
+	 */
+	boolean function routeIs( required name ){
+		return getCurrentRouteName() == arguments.name;
+	}
+
+	/**
 	 * Tests that a given path exists in the currently routed URL.
 	 * If the exact flag is passed, the path must match exactly.
 	 * Using the `urlMatchesExact` is preferred.
@@ -1133,7 +1142,7 @@ component serializable="false" accessors="true" {
 	 * Returns the full url including the protocol, host, mapping, path info, and query string.
 	 * Handles SES urls gracefully.
 	 */
-	string function getFullURL(){
+	string function getUrl(){
 		var javaURI = createObject( "java", "java.net.URI" );
 		var baseUrl = javaURI.create( getSESBaseURL() );
 		var fullUrl = javaURI
@@ -1154,9 +1163,16 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
+	 * @deprecated Use `getUrl()` instead
+	 */
+	string function getFullUrl(){
+		return getUrl();
+	}
+
+	/**
 	 * Returns the full relative path to the requested event: does not include protocol and host
 	 */
-	string function getFullPath(){
+	string function getPath(){
 		return arrayToList(
 			[
 				variables.controller
@@ -1170,6 +1186,13 @@ component serializable="false" accessors="true" {
 			],
 			""
 		);
+	}
+
+	/**
+	 * @Deprecated Use `getPath()` instead
+	 */
+	string function getFullPath(){
+		return getPath();
 	}
 
 	/**

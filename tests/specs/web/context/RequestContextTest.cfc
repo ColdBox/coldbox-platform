@@ -699,14 +699,14 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		expect( event.getPrivateExcept( [ "hackedField", "key-that-does-not-exist" ] ) ).toBe( { "name" : "Jane" } );
 	}
 
-	function testGetFullUrl(){
+	function testGetUrl(){
 		var event = getRequestContext();
-		debug( event.getFullUrl() );
-		expect( event.getFullUrl() ).toBeTypeOf( "url", "Not an URL" );
-		var javaUrl = createObject( "java", "java.net.URL" ).init( event.getFullUrl() );
+		debug( event.getUrl() );
+		expect( event.getUrl() ).toBeTypeOf( "url", "Not an URL" );
+		var javaUrl = createObject( "java", "java.net.URL" ).init( event.getUrl() );
 	}
 
-	function testGetFullUrlWithAppMapping(){
+	function testgetUrlWithAppMapping(){
 		mockController
 			.$( "getSetting" )
 			.$args( "AppMapping" )
@@ -714,13 +714,13 @@ component extends="coldbox.system.testing.BaseModelTest" {
 
 		var event = getRequestContext();
 
-		debug( event.getFullUrl() );
-		expect( event.getFullUrl() ).toBeTypeOf( "url" );
+		debug( event.getUrl() );
+		expect( event.getUrl() ).toBeTypeOf( "url" );
 
-		var javaUrl = createObject( "java", "java.net.URL" ).init( event.getFullUrl() );
+		var javaUrl = createObject( "java", "java.net.URL" ).init( event.getUrl() );
 	}
 
-	function testGetFullUrlDoesntDoubleEncode(){
+	function testgetUrlDoesntDoubleEncode(){
 		var event          = getRequestContext();
 		var javaBaseUrl    = createObject( "java", "java.net.URI" ).create( event.getSESBaseURL() );
 		var correctFullUrl = javaBaseUrl.getScheme() &
@@ -729,9 +729,9 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		( CGI.PATH_INFO != "" ? "/#CGI.PATH_INFO#" : "" ) &
 		( CGI.QUERY_STRING != "" ? "?#CGI.QUERY_STRING#" : "" );
 		debug( var = correctFullUrl );
-		debug( var = event.getFullUrl() );
-		expect( event.getFullUrl() ).toBeTypeOf( "url", "Not an URL" );
-		expect( event.getFullUrl() ).toBe( correctFullUrl );
+		debug( var = event.getUrl() );
+		expect( event.getUrl() ).toBeTypeOf( "url", "Not an URL" );
+		expect( event.getUrl() ).toBe( correctFullUrl );
 	}
 
 	function testUrlMatches(){
@@ -746,6 +746,15 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		expect( event.urlMatches( "/" ) ).toBeTrue();
 		expect( event.urlMatches( path = "/foo/bar", exact = true ) ).toBeFalse();
 		expect( event.urlMatchesExact( "/foo/bar" ) ).toBeFalse();
+	}
+
+	function testRouteIs(){
+		var event = getRequestContext();
+		expect( event.routeIs( "" ) ).toBeTrue();
+
+		event.setPrivateValue( "currentRouteName", "luis" );
+		expect( event.routeIs( "test" ) ).toBeFalse();
+		expect( event.routeIs( "luis" ) ).toBeTrue();
 	}
 
 }
