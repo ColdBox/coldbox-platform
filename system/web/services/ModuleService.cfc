@@ -660,24 +660,29 @@ component extends="coldbox.system.web.services.BaseService" {
 			if ( mConfig.autoMapModels AND directoryExists( mconfig.modelsPhysicalPath ) ) {
 				var binder = mConfig.injector.getBinder();
 
+				// Add as a mapped directory with module name as the namespace with correct mapping path
+				var packagePath = (
+					len( mConfig.cfmapping ) ? mConfig.cfmapping & ".#mConfig.conventions.modelsLocation#" : mConfig.modelsInvocationPath
+				);
+
 				// Module Awareness : Map with no namespace in the local injector
 				if ( mConfig.moduleAwareness ) {
 					binder.mapDirectory(
-						packagePath = mConfig.modelsInvocationPath,
+						packagePath = packagePath,
 						process     = mConfig.autoProcessModels
 					);
 				} else {
 					// No awareness map with @name
 					if ( len( mConfig.modelNamespace ) ) {
 						binder.mapDirectory(
-							packagePath: mConfig.modelsInvocationPath,
+							packagePath: packagePath,
 							namespace  : "@#mConfig.modelNamespace#",
 							process    : mConfig.autoProcessModels
 						);
 					} else {
 						// just register with no namespace
 						binder.mapDirectory(
-							packagePath = mConfig.modelsInvocationPath,
+							packagePath = packagePath,
 							process     = mConfig.autoProcessModels
 						);
 					}
@@ -688,7 +693,7 @@ component extends="coldbox.system.web.services.BaseService" {
 					.getParent()
 					.getBinder()
 					.mapDirectory(
-						packagePath: mConfig.modelsInvocationPath,
+						packagePath: packagePath,
 						namespace  : "@#mConfig.modelNamespace#",
 						process    : mConfig.autoProcessModels
 					);
@@ -702,7 +707,7 @@ component extends="coldbox.system.web.services.BaseService" {
 							"@#arguments.moduleName#",
 							"@#mConfig.modelNamespace#"
 						] )
-						.to( mConfig.modelsInvocationPath & ".#arguments.moduleName#" );
+						.to( packagePath & ".#arguments.moduleName#" );
 				}
 
 				// Process mapped data if true
