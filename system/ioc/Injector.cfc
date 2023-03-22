@@ -144,6 +144,8 @@ component serializable="false" accessors="true" {
 		variables.name              = arguments.name;
 		// Instance contains lookup
 		variables.containsLookupMap = createObject( "java", "java.util.concurrent.ConcurrentHashMap" ).init();
+		// Scope Storage
+		variables.scopeStorage      = new coldbox.system.core.collections.ScopeStorage();
 		// Do we have a binder?
 		if ( isSimpleValue( arguments.binder ) AND NOT len( trim( arguments.binder ) ) ) {
 			arguments.binder = "coldbox.system.ioc.config.DefaultBinder";
@@ -171,7 +173,8 @@ component serializable="false" accessors="true" {
 			"beforeInjectorShutdown", // X right before the shutdown procedures start
 			"afterInjectorShutdown", // X right after the injector is shutdown
 			"beforeInstanceAutowire", // X right before an instance is autowired
-			"afterInstanceAutowire" // X right after an instance is autowired
+			"afterInstanceAutowire", // X right after an instance is autowired
+			"onInjectorMissingDependency" // when a dependency can't be located, last chance to provide it.
 		];
 		// LogBox and Class Logger
 		variables.logBox = "";
@@ -189,13 +192,16 @@ component serializable="false" accessors="true" {
 			"SINGLETON"   : ""
 		};
 		// Child Injectors
-		variables.childInjectors = structNew( "ordered" );
+		variables.childInjectors       = structNew( "ordered" );
+		// Injector Reference Map for quick location via named injectors
+		variables.injectorReferenceMap = {};
+
 		// Prepare instance ID
-		variables.injectorID     = createUUID();
+		variables.injectorID = createUUID();
 		// Prepare Lock Info
-		variables.lockName       = "WireBox.Injector.#variables.injectorID#";
+		variables.lockName   = "WireBox.Injector.#variables.injectorID#";
 		// Link ColdBox Context if passed
-		variables.coldbox        = arguments.coldbox;
+		variables.coldbox    = arguments.coldbox;
 		// Register the task scheduler according to operating mode
 		if ( !isObject( variables.coldbox ) ) {
 			variables.asyncManager  = new coldbox.system.async.AsyncManager();
@@ -279,6 +285,32 @@ component serializable="false" accessors="true" {
 	 */
 	array function getChildInjectorNames(){
 		return variables.childInjectors.keyArray();
+	}
+
+	/**
+	 * Register an injector to be tracked in the lookup reference map. Used for providers mostly.
+	 *
+	 * @injector The injector to track
+	 */
+	Injector function registerInjectorReference( required injector ){
+		variables.injectorReferenceMap[ arguments.injector.getName() ] = arguments.injector;
+		return this;
+	}
+
+	/**
+	 * Get an injector reference by unique name
+	 *
+	 * @name The unique injector reference name
+	 */
+	Injector function getInjectorReference( required name ){
+		return variables.injectorReferenceMap[ arguments.name ];
+	}
+
+	/**
+	 * Get an array of registered injector references
+	 */
+	array function getInjectorReferenceNames(){
+		return variables.injectorReferenceMap.keyArray();
 	}
 
 	/**
@@ -468,9 +500,22 @@ component serializable="false" accessors="true" {
 					}
 				}
 
-				// Verify via ancestors
-				if ( isObject( variables.parent ) && variables.parent.containsInstance( arguments.name ) ) {
+				// Verify via ancestor if set
+				if ( hasParent() ) {
 					return variables.parent.getInstance( argumentCollection = arguments );
+				}
+
+				// Announce missing dependency event
+				var iData = {
+					name          : arguments.name,
+					initArguments : arguments.initArguments,
+					targetObject  : arguments.targetObject,
+					injector      : this
+				};
+				variables.eventManager.announce( "onInjectorMissingDependency", iData );
+				// Verify if an instance was built?
+				if ( !isNull( iData.instance ) ) {
+					return iData.instance;
 				}
 
 				// We could not find it
@@ -478,9 +523,9 @@ component serializable="false" accessors="true" {
 					"Requested instance:#arguments.name# was not located in any declared scan location(s): #structKeyList( variables.binder.getScanLocations() )#, or by path or by hierarchy."
 				);
 				throw(
-					message     = "Instance not found: '#arguments.name#'",
-					detail      = "The instance could not be located in any declared scan location(s) (#structKeyList( variables.binder.getScanLocations() )#) or full path location or parent or children",
-					type        = "Injector.InstanceNotFoundException",
+					message     : "Instance not found: '#arguments.name#'",
+					detail      : "The instance could not be located in any declared scan location(s) (#structKeyList( variables.binder.getScanLocations() )#) or full path location or parent or children",
+					type        : "Injector.InstanceNotFoundException",
 					extendedInfo: "Current Injector -> #getName()#"
 				);
 			}
@@ -715,7 +760,9 @@ component serializable="false" accessors="true" {
 			// Check if located? If so, return instantiation path
 			if ( fileExists( scanLocations[ thisScanPath ] & CFCName ) ) {
 				if ( variables.log.canDebug() ) {
-					variables.log.debug( "Instance: #arguments.name# located in #thisScanPath# by (#getName()#) injector" );
+					variables.log.debug(
+						"Instance: #arguments.name# located in #thisScanPath# by (#getName()#) injector"
+					);
 				}
 				return thisScanPath & "." & arguments.name;
 			}
@@ -903,6 +950,13 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
+	 * Has a parent injector
+	 */
+	boolean function hasParent(){
+		return isObject( variables.parent );
+	}
+
+	/**
 	 * Get a reference to the parent injector instance, else an empty simple string meaning nothing is set
 	 *
 	 * @doc_generic coldbox.system.ioc.Injector
@@ -996,9 +1050,9 @@ component serializable="false" accessors="true" {
 		}
 
 		throw(
-			message     = "The injector has not be registered in any scope",
-			detail      = "The scope info is: #scopeInfo.toString()#",
-			type        = "Injector.InvalidScopeRegistration",
+			message     : "The injector has not be registered in any scope",
+			detail      : "The scope info is: #scopeInfo.toString()#",
+			type        : "Injector.InvalidScopeRegistration",
 			extendedInfo: "Current Injector -> #getName()#"
 		);
 	}
@@ -1007,7 +1061,13 @@ component serializable="false" accessors="true" {
 	 * Get the structure of scope registration information
 	 */
 	struct function getScopeRegistration(){
-		return variables.binder.getScopeRegistration();
+		var info = variables.binder.getScopeRegistration();
+
+		if ( info.enabled ) {
+			return info;
+		}
+
+		return hasParent() ? getParent().getScopeRegistration() : info;
 	}
 
 	/****************************************** PRIVATE ************************************************/
@@ -1076,7 +1136,6 @@ component serializable="false" accessors="true" {
 		// iterate and mixin baby!
 		for ( var key in mixin ) {
 			if ( key NEQ "$init" ) {
-				// add the provided method to the providers structure.
 				arguments.targetObject.injectMixin( name = key, UDF = mixin[ key ] );
 			}
 		}
@@ -1094,9 +1153,8 @@ component serializable="false" accessors="true" {
 		var providerMethods = arguments.mapping.getProviderMethods();
 
 		// Decorate the target if provider methods found, in preparation for replacements
-		arguments.targetObject.$wbScopeInfo    = variables.binder.getScopeRegistration();
-		arguments.targetObject.$wbScopeStorage = variables.scopeStorage;
-		arguments.targetObject.$wbProviders    = {};
+		arguments.targetObject.$wbProviders = {};
+		arguments.targetObject.$wbInjector  = this;
 
 		// iterate and provide baby!
 		for ( var thisProvider in providerMethods ) {
@@ -1148,7 +1206,7 @@ component serializable="false" accessors="true" {
 	){
 		// Transient request cache
 		param request.cbTransientDICache = {};
-		var transientCacheEnabled        = arguments.mapping.isTransient() && !arguments.mapping.isVirtualInheritance();
+		var transientCacheEnabled        = getBinder().getTransientInjectionCache() && arguments.mapping.isTransient() && !arguments.mapping.isVirtualInheritance();
 		// Verify if we have seen this transient in this request
 		if ( transientCacheEnabled && request.cbTransientDICache.keyExists( arguments.targetID ) ) {
 			// Injections Injection :)
@@ -1411,7 +1469,9 @@ component serializable="false" accessors="true" {
 
 		// debugging
 		if ( variables.log.canDebug() ) {
-			variables.log.debug( "Injector (#getName()#) has just registered a new listener: #listener.toString()#" );
+			variables.log.debug(
+				"Injector (#getName()#) has just registered a new listener: #listener.toString()#"
+			);
 		}
 
 		return this;
@@ -1423,7 +1483,6 @@ component serializable="false" accessors="true" {
 	 * @scopeInfo The scope info struct: key, scope
 	 */
 	private Injector function doScopeRegistration( scopeInfo = variables.binder.getScopeRegistration() ){
-		variables.scopeStorage = new coldbox.system.core.collections.ScopeStorage();
 		// register injector with scope
 		variables.scopeStorage.put(
 			arguments.scopeInfo.key,

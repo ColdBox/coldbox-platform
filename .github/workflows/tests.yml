@@ -20,10 +20,11 @@ jobs:
       fail-fast: false
       matrix:
         cfengine: [ "lucee@5", "adobe@2018", "adobe@2021" ]
-        fullNull: [ "true", "false" ]
         experimental: [false]
         include:
           - cfengine: "lucee@5rc"
+            experimental: true
+          - cfengine: "lucee@6"
             experimental: true
     steps:
       - name: Checkout Repository
@@ -42,7 +43,7 @@ jobs:
           java-version: "11"
 
       - name: Setup CommandBox CLI
-        uses: Ortus-Solutions/setup-commandbox@main
+        uses: Ortus-Solutions/setup-commandbox@v2.0.1
 
       - name: Setup .env For Runner
         run: |
@@ -78,9 +79,7 @@ jobs:
           # Test the harness
           curl http://127.0.0.1:8599/test-harness
 
-      - name: Run Tests Full Null (${{ matrix.fullNull }})
-        env:
-          FULL_NULL: ${{ matrix.fullNull }}
+      - name: Run Tests
         run: |
           ant -f build/build.xml run-tests
 

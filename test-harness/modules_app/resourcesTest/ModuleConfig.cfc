@@ -20,6 +20,8 @@ component {
 	this.autoMapModels      = true;
 	// Module Dependencies
 	this.dependencies       = [];
+	// Models mapped locally with no @resourcesTest
+	this.moduleAwareness = true;
 
 	function configure(){
 		// Custom Declared Points

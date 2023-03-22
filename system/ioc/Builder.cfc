@@ -132,25 +132,22 @@ component serializable="false" accessors="true" {
 		variables.customDSL[ arguments.namespace ] = new "#arguments.path#"( variables.injector );
 		// Debugging
 		if ( variables.log.canDebug() ) {
-			variables.log.debug( "Registered custom DSL Builder with namespace: #arguments.namespace# by (#variables.injector.getName()#) injector" );
+			variables.log.debug(
+				"Registered custom DSL Builder with namespace: #arguments.namespace# by (#variables.injector.getName()#) injector"
+			);
 		}
 		return this;
 	}
 
 	/**
-	 * Used to provider providers via mixers on targeted objects
+	 * Used to provider providers via mixers on targeted objects.
+	 * This method is the one used to replace the provided methods.
 	 */
 	function buildProviderMixer(){
-		var targetInjector = this.$wbScopeStorage.get( this.$wbScopeInfo.key, this.$wbScopeInfo.scope );
-		var targetProvider = this.$wbProviders[ getFunctionCalledName() ];
-
-		// Verify if this is a mapping first?
-		if ( targetInjector.containsInstance( targetProvider ) ) {
-			return targetInjector.getInstance( name = targetProvider, targetObject = this );
-		}
-
-		// else treat as full DSL
-		return targetInjector.getInstance( dsl = targetProvider, targetObject = this );
+		return this.$wbInjector.getInstance(
+			name         = this.$wbProviders[ getFunctionCalledName() ],
+			targetObject = this
+		);
 	}
 
 	/**
@@ -969,24 +966,12 @@ component serializable="false" accessors="true" {
 			}
 		}
 
-		// Build provider arguments
-		var args = {
-			scopeRegistration : variables.injector.getScopeRegistration(),
-			scopeStorage      : variables.injector.getScopeStorage(),
-			targetObject      : arguments.targetObject
-		};
-
-		// Check if the passed in provider is an ID directly
-		if ( variables.injector.containsInstance( providerName ) ) {
-			args.name = providerName;
-		}
-		// Else try to tag it by FULL DSL
-		else {
-			args.dsl = providerName;
-		}
-
-		// Build provider and return it.
-		return createObject( "component", "coldbox.system.ioc.Provider" ).init( argumentCollection = args );
+		return new coldbox.system.ioc.Provider(
+			scopeRegistration: variables.injector.getScopeRegistration(),
+			targetObject     : arguments.targetObject,
+			name             : providerName,
+			injectorName     : variables.injector.getName()
+		);
 	}
 
 	/**

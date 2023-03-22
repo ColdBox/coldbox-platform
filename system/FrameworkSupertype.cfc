@@ -724,7 +724,9 @@ component serializable="false" accessors="true" {
 	 */
 	DateTimeHelper function getDateTimeHelper(){
 		if ( isNull( variables.cbDateTimeHelper ) ) {
-			variables.cbDateTimeHelper = variables.wirebox.getInstance( "coldbox.system.async.time.DateTimeHelper" );
+			variables.cbDateTimeHelper = variables.wirebox.getInstance(
+				"coldbox.system.async.time.DateTimeHelper"
+			);
 		}
 		return cbDateTimeHelper;
 	}

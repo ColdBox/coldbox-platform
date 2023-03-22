@@ -402,7 +402,9 @@
 				// entity binding
 				var entity = entityLoad( "User", {}, { maxResults : 1 } ).first();
 				var str    = htmlhelper.textarea( name = "lastName", bind = entity );
-				expect( str ).toBe( "<textarea name=""lastName"" id=""lastName"">#entity.getLastName()#</textarea>" );
+				expect( str ).toBe(
+					"<textarea name=""lastName"" id=""lastName"">#entity.getLastName()#</textarea>"
+				);
 			} );
 
 			it( "can produce password fields", function(){
@@ -418,7 +420,9 @@
 					wrapper = "div"
 				);
 				assertEquals(
-					xmlParse( "<div><input name=""message"" value=""test"" id=""message"" type=""password""/></div>" ),
+					xmlParse(
+						"<div><input name=""message"" value=""test"" id=""message"" type=""password""/></div>"
+					),
 					xmlParse( str )
 				);
 

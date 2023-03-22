@@ -24,8 +24,7 @@ component extends="coldbox.system.ioc.config.Binder" {
 			// Name of a CacheBox cache to store metadata in to speed up start time.
 			// Since metadata is already stored in memory, this is only useful for a disk, etc cache that persists across restarts.
 			metadataCache     : "",
-			// Scope registration, automatically register a wirebox injector instance on any CF scope
-			// By default it registers itself on application scope
+			// Modules are scoped via it's parent, so it's disabled here
 			scopeRegistration : { enabled : false },
 			// DSL Namespace registrations
 			customDSL         : {

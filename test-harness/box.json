@@ -1,5 +1,7 @@
 {
     "dependencies":{
+        "cborm":"^4.3.2+75",
+        "cbvalidation":"^4.1.0+30",
         "route-visualizer":"^1.2.0+4"
     },
     "devDependencies":{
@@ -7,6 +9,8 @@
     },
     "installPaths":{
         "cbdebugger":"modules/cbdebugger/",
+        "cborm":"modules/cborm/",
+        "cbvalidation":"modules/cbvalidation/",
         "route-visualizer":"modules/route-visualizer/"
     },
     "scripts":{

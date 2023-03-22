@@ -109,6 +109,14 @@ component accessors="true" {
 	property name="autoProcessMappings" type="boolean";
 
 	/**
+	 * Enable/disable transient injetion cache
+	 */
+	property
+		name   ="transientInjectionCache"
+		type   ="boolean"
+		default="true";
+
+	/**
 	 * The configuration DEFAULTS struct
 	 */
 	property
@@ -205,37 +213,39 @@ component accessors="true" {
 	 */
 	Binder function reset(){
 		// Contains the mappings currently being affected by the DSL.
-		variables.currentMapping      = [];
+		variables.currentMapping          = [];
 		// Main wirebox structure
-		variables.wirebox             = {};
+		variables.wirebox                 = {};
 		// logBox File
-		variables.logBoxConfig        = variables.DEFAULTS.logBoxConfig;
+		variables.logBoxConfig            = variables.DEFAULTS.logBoxConfig;
 		// CacheBox integration
-		variables.cacheBox            = variables.DEFAULTS.cacheBox;
+		variables.cacheBox                = variables.DEFAULTS.cacheBox;
 		// Scope Registration
-		variables.scopeRegistration   = variables.DEFAULTS.scopeRegistration;
+		variables.scopeRegistration       = variables.DEFAULTS.scopeRegistration;
 		// Custom DSL namespaces
-		variables.customDSL           = {};
+		variables.customDSL               = {};
 		// Custom Storage Scopes
-		variables.customScopes        = {};
+		variables.customScopes            = {};
 		// Package Scan Locations
-		variables.scanLocations       = structNew( "ordered" );
+		variables.scanLocations           = structNew( "ordered" );
 		// Parent Injector Mapping
-		variables.oParentInjector     = "";
+		variables.oParentInjector         = "";
 		// Stop Recursion classes
-		variables.aStopRecursions     = [];
+		variables.aStopRecursions         = [];
 		// Listeners
-		variables.listeners           = [];
+		variables.listeners               = [];
 		// Object Mappings
-		variables.mappings            = {};
+		variables.mappings                = {};
 		// Aspect Bindings
-		variables.aspectBindings      = [];
+		variables.aspectBindings          = [];
 		// Binding Properties
-		variables.properties          = {};
+		variables.properties              = {};
 		// Metadata cache
-		variables.metadataCache       = "";
+		variables.metadataCache           = "";
 		// Auto Process Mappings
-		variables.autoProcessMappings = variables.DEFAULTS.autoProcessMappings;
+		variables.autoProcessMappings     = variables.DEFAULTS.autoProcessMappings;
+		// Transient injection cache
+		variables.transientInjectionCache = true;
 
 		return this;
 	}
@@ -1051,6 +1061,16 @@ component accessors="true" {
 	}
 
 	/**
+	 * Enable/Disable Transient injection cache
+	 *
+	 * @enable On/off
+	 */
+	Binder function transientInjectionCache( boolean enable = true ){
+		variables.transientInjectionCache = arguments.enable;
+		return this;
+	}
+
+	/**
 	 * Configure the stop recursion classes
 	 *
 	 * @classes A list or array of classes to use so the injector can stop when looking for dependencies in inheritance chains
@@ -1304,6 +1324,11 @@ component accessors="true" {
 				map( key );
 				variables.mappings[ key ].processMemento( wireBoxDSL.mappings[ key ] );
 			}
+		}
+
+		// Transient Injection cache
+		if ( structKeyExists( wireboxDSL, "transientInjectionCache" ) ) {
+			this.transientInjectionCache( wireboxDSL.transientInjectionCache );
 		}
 
 		return this;

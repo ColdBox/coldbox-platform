@@ -27,7 +27,10 @@
 		mockRequestService.$( "getFlashScope", mockFlash );
 		mockLogBox.$( "getLogger", mockLogger );
 
-		iService = model.init( mockController ).$( "getCache", mockCache );
+		iService = model
+			.init( mockController )
+			.$( "getCache", mockCache )
+			.$property( "wirebox", "variables", mockWireBox );
 	}
 
 	function testonConfigurationLoad(){

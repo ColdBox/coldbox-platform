@@ -72,6 +72,14 @@ component
 		return server.keyExists( "lucee" );
 	}
 
+	function isLucee6(){
+		return server.keyExists( "lucee" ) && left( server.lucee.version, 1 ) == 6;
+	}
+
+	function noWSDLSupport(){
+		return isAdobe() || isLucee6();
+	}
+
 	function shutdownColdBox(){
 		getColdBoxVirtualApp().shutdown();
 	}

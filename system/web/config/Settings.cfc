@@ -7,13 +7,13 @@
 component {
 
 	// Release Metadata
-	this.codename      = "ColdBox Perseverance";
+	this.codename      = "ColdBox Restore";
 	this.author        = "Ortus Solutions";
 	this.authorEmail   = "info@ortussolutions.com";
 	this.authorWebsite = "https://www.ortussolutions.com";
-	this.suffix        = "Isaiah 40:29";
+	this.suffix        = "Psalm 23:3";
 	this.version       = "@build.version@+@build.number@";
-	this.description   = "This is the ColdBox Platform for ColdFusion Powered Web Applications.";
+	this.description   = "The Human Way to Build ColdFusion CFML apps!";
 
 	// ColdBox Operational Defaults
 	this.coldbox = {

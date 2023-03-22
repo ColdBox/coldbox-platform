@@ -144,6 +144,85 @@ component extends="tests.resources.BaseIntegrationTest" {
 				var results = renderer.layout();
 				expect( event.getCurrentView() ).toBe( "main/index" );
 			} );
+
+
+			feature( "ColdBox can render view collections", function(){
+				beforeEach( function( currentSpec ){
+					aUsers = [
+						{ id : createUUID(), name : "luis" },
+						{ id : createUUID(), name : "alexia" },
+						{ id : createUUID(), name : "lucas" }
+					];
+				} );
+
+				given( "Default options", function(){
+					then( "it can render the template with the collection", function(){
+						var results = renderer.view( view: "tags/user", collection: aUsers );
+						var htmlDoc = xmlParse( "<root>#results#</root>" );
+						expect( htmlDoc.root.xmlChildren ).toHaveLength( 3 );
+
+						expect( htmlDoc.root.xmlChildren[ 1 ].xmlattributes[ "data-total" ] ).toBe( 3 );
+						expect( htmlDoc.root.xmlChildren[ 1 ].xmlattributes[ "data-row" ] ).toBe( 1 );
+
+						expect( results )
+							.toInclude( "luis" )
+							.toInclude( "alexia" )
+							.toInclude( "lucas" );
+					} );
+				} );
+
+				given( "a collection delimiter", function(){
+					then( "it can render the template with the collection", function(){
+						var results = renderer.view(
+							view           : "tags/user",
+							collection     : aUsers,
+							collectionDelim= "<hr/>"
+						);
+						var htmlDoc = xmlParse( "<root>#results#</root>" );
+						expect( htmlDoc.root.xmlChildren ).toHaveLength( 5 );
+						expect( results )
+							.toInclude( "luis" )
+							.toInclude( "alexia" )
+							.toInclude( "lucas" );
+					} );
+				} );
+
+				given( "max rows of 1", function(){
+					then( "it can render the template with the collection", function(){
+						var results = renderer.view(
+							view             : "tags/user",
+							collection       : aUsers,
+							collectionMaxRows: 1
+						);
+						var htmlDoc = xmlParse( "<root>#results#</root>" );
+
+						expect( htmlDoc.root.xmlChildren[ 1 ].xmlattributes[ "data-total" ] ).toBe( 1 );
+						expect( htmlDoc.root.xmlChildren[ 1 ].xmlattributes[ "data-row" ] ).toBe( 1 );
+						expect( htmlDoc.root.xmlChildren ).toHaveLength( 1 );
+						expect( results ).toInclude( "luis" );
+					} );
+				} );
+
+				given( "a collection alias", function(){
+					then( "it can render the template with the collection", function(){
+						var results = renderer.view(
+							view        : "tags/member",
+							collection  : aUsers,
+							collectionAs: "member"
+						);
+						var htmlDoc = xmlParse( "<root>#results#</root>" );
+						expect( htmlDoc.root.xmlChildren ).toHaveLength( 3 );
+
+						expect( htmlDoc.root.xmlChildren[ 1 ].xmlattributes[ "data-total" ] ).toBe( 3 );
+						expect( htmlDoc.root.xmlChildren[ 1 ].xmlattributes[ "data-row" ] ).toBe( 1 );
+
+						expect( results )
+							.toInclude( "luis" )
+							.toInclude( "alexia" )
+							.toInclude( "lucas" );
+					} );
+				} );
+			} );
 		} );
 	}
 
