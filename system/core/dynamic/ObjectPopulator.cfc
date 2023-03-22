@@ -640,12 +640,27 @@ component accessors="true" singleton {
 	}
 
 	/**
-	 * Convenience method to get name from target CFC
+	 * Convenience method to get name from target CFC (Entity)
 	 *
 	 * @target The target to work on
 	 */
 	private string function getTargetName( required any target ) {
-		return getMetadata( target ).name;
+
+		// Short-cut discovery via ActiveEntity
+		if ( structKeyExists( arguments.target, "getEntityName" ) ) {
+			return arguments.target.getEntityName();
+		}
+
+		// Try Hibernate Discovery
+		try{
+			return ormGetSession().getEntityName( arguments.target );
+		} catch ( org.hibernate.TransientObjectException e ) {
+			// This was a transient and not in session
+		}
+
+		// Long - Discovery
+
+		return getMetadata( arguments.target ).name;
 	}
 
 }
