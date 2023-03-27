@@ -688,15 +688,18 @@ component extends="coldbox.system.web.services.BaseService" {
 					}
 				}
 
-				// Map in parent injector with @name for visibility
-				mConfig.injector
-					.getParent()
-					.getBinder()
-					.mapDirectory(
-						packagePath: packagePath,
-						namespace  : "@#mConfig.modelNamespace#",
-						process    : mConfig.autoProcessModels
-					);
+				// // Map in parent injector with @name for visibility
+				// This does not work when modules override their binder
+				// Leaving this here to brainstorm on solutions, but
+				// commenting to make this work.
+				// mConfig.injector
+				// 	.getParent()
+				// 	.getBinder()
+				// 	.mapDirectory(
+				// 		packagePath: packagePath,
+				// 		namespace  : "@#mConfig.modelNamespace#",
+				// 		process    : mConfig.autoProcessModels
+				// 	);
 
 				// Register Default Module Export if it exists as @moduleName, so you can do getInstance( "@moduleName" )
 				if ( fileExists( mconfig.modelsPhysicalPath & "/#arguments.moduleName#.cfc" ) ) {
