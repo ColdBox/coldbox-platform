@@ -697,10 +697,19 @@ component serializable="false" accessors="true" {
 	 * @return Boolean
 	 */
 	boolean function urlMatches( required string path, boolean exact = false ){
+		// Cleanup, routed url never has a `/` in front
+		arguments.path       = reReplace( arguments.path, "^/", "" );
 		var currentRoutedURL = getCurrentRoutedURL();
+
 		if ( arguments.exact ) {
 			return arguments.path == currentRoutedURL;
 		}
+
+		// if the incoming path to look for is greater than the current routed url, bail out
+		if( arguments.path.len() > currentRoutedURL.len() ){
+			return false;
+		}
+
 		var replaced = replace( currentRoutedURL, arguments.path, "" );
 		var sliced   = mid(
 			currentRoutedURL,

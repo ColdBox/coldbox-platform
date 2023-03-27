@@ -736,8 +736,10 @@ component extends="coldbox.system.testing.BaseModelTest" {
 
 	function testUrlMatches(){
 		var event = getRequestContext();
-		event.setPrivateValue( "currentRoutedURL", "/foo/bar/baz" );
-		expect( event.getCurrentRoutedURL() ).toBe( "/foo/bar/baz" );
+		event.setPrivateValue( "currentRoutedURL", "foo/bar/baz/" );
+
+		expect( event.getCurrentRoutedURL() ).toBe( "foo/bar/baz/" );
+
 		expect( event.urlMatches( "/foo/bar/baz" ) ).toBeTrue();
 		expect( event.urlMatches( "/foo/baz/bar" ) ).toBeFalse();
 		expect( event.urlMatches( "/bar/baz" ) ).toBeFalse();
@@ -746,6 +748,14 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		expect( event.urlMatches( "/" ) ).toBeTrue();
 		expect( event.urlMatches( path = "/foo/bar", exact = true ) ).toBeFalse();
 		expect( event.urlMatchesExact( "/foo/bar" ) ).toBeFalse();
+	}
+	function testUrlMatchesWithLongerInput(){
+		var event = getRequestContext();
+		event.setPrivateValue( "currentRoutedURL", "main/" );
+		expect( event.getCurrentRoutedURL() ).toBe( "main/" );
+		expect( event.urlMatches( "main" ) ).toBeTrue();
+		expect( event.urlMatches( "/main" ) ).toBeTrue();
+		expect( event.urlMatches( "registration/new" ) ).toBeFalse();
 	}
 
 	function testRouteIs(){
