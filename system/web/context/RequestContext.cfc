@@ -706,7 +706,7 @@ component serializable="false" accessors="true" {
 		}
 
 		// if the incoming path to look for is greater than the current routed url, bail out
-		if( arguments.path.len() > currentRoutedURL.len() ){
+		if ( arguments.path.len() > currentRoutedURL.len() ) {
 			return false;
 		}
 
@@ -1050,7 +1050,7 @@ component serializable="false" accessors="true" {
 	function overrideEvent( required event ){
 		setValue( variables.eventName, arguments.event );
 		// Clear out any previous caching influences
-		setEventCacheableEntry({});
+		setEventCacheableEntry( {} );
 		return this;
 	}
 
