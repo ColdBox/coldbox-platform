@@ -1049,6 +1049,8 @@ component serializable="false" accessors="true" {
 	 */
 	function overrideEvent( required event ){
 		setValue( variables.eventName, arguments.event );
+		// Clear out any previous caching influences
+		setEventCacheableEntry({});
 		return this;
 	}
 
