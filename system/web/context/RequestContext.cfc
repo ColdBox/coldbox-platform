@@ -1185,7 +1185,9 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
-	 * Returns the full relative path to the requested event: does not include protocol and host
+	 * Return the relative path of the current request
+	 *
+	 * @return the full relative path to the requested event: does not include protocol and host
 	 */
 	string function getPath(){
 		return arrayToList(
