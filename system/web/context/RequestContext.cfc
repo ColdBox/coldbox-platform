@@ -1152,8 +1152,12 @@ component serializable="false" accessors="true" {
 	/**
 	 * Returns the full url including the protocol, host, mapping, path info, and query string.
 	 * Handles SES urls gracefully.
+	 *
+	 * @withQuery Add the query string or not, by default it adds it
+	 *
+	 * @return The full url including the protocol, host, mapping, path info, and query string (maybe).
 	 */
-	string function getUrl(){
+	string function getUrl( boolean withQuery = true ){
 		var javaURI = createObject( "java", "java.net.URI" );
 		var baseUrl = javaURI.create( getSESBaseURL() );
 		var fullUrl = javaURI
@@ -1166,7 +1170,7 @@ component serializable="false" accessors="true" {
 			)
 			.toString();
 
-		if ( CGI.QUERY_STRING == "" ) {
+		if ( !arguments.withQuery || CGI.QUERY_STRING == "" ) {
 			return fullUrl;
 		}
 
