@@ -55,7 +55,7 @@ component accessors="true" {
 	 */
 	function startup( boolean force = false ){
 		// Return back if it's already running and not forcing
-		if( isRunning() && !arguments.force ){
+		if ( isRunning() && !arguments.force ) {
 			return application.cbController;
 		}
 
@@ -99,7 +99,7 @@ component accessors="true" {
 	 *
 	 */
 	function getController(){
-		return isRunning() ? application.cbController : javaCast( "null", "" );
+		return isRunning() ? application.cbController : javacast( "null", "" );
 	}
 
 	/**
