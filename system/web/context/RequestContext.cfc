@@ -1187,9 +1187,11 @@ component serializable="false" accessors="true" {
 	/**
 	 * Return the relative path of the current request
 	 *
+	 * @withQuery Add the query string or not, by default it adds it
+	 *
 	 * @return the full relative path to the requested event: does not include protocol and host
 	 */
-	string function getPath(){
+	string function getPath( boolean withQuery = true ){
 		return arrayToList(
 			[
 				variables.controller
@@ -1197,9 +1199,9 @@ component serializable="false" accessors="true" {
 					.getRouter()
 					.composeRoutingPath(),
 				left( CGI.PATH_INFO, 1 ) == "/" ? right( CGI.PATH_INFO, -1 ) : CGI.PATH_INFO,
-				CGI.QUERY_STRING != "" && CGI.PATH_INFO == "" ? "/" : "",
-				CGI.QUERY_STRING != "" ? "?" : "",
-				CGI.QUERY_STRING
+				arguments.withQuery && CGI.QUERY_STRING != "" && CGI.PATH_INFO == "" ? "/" : "",
+				arguments.withQuery && CGI.QUERY_STRING != "" ? "?" : "",
+				arguments.withQuery ? CGI.QUERY_STRING : ""
 			],
 			""
 		);
