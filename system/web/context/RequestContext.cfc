@@ -1215,6 +1215,38 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
+	 * Get all of the url path segments from the requested path
+	 */
+	array function getPathSegments(){
+		return getPath( withQuery: false ).listToArray( "/" );
+	}
+
+	/**
+	 * Get the segment from the incoming path at the specified index location
+	 *
+	 * @index        The index location
+	 * @defaultValue If the index doesn't exist, return the default value
+	 *
+	 * @throws InvalidSegmentIndex - When the passed index doesn't exist
+	 */
+	function getPathSegment( required numeric index, defaultValue ){
+		var segments = getPathSegments();
+		// Verify it exists
+		if ( segments.indexExists( arguments.index ) ) {
+			return segments[ arguments.index ];
+		}
+		// Do we have a default value
+		if ( !isNull( arguments.defaultValue ) ) {
+			return arguments.defaultValue;
+		}
+		// Kick it!
+		throw(
+			type   : "InvalidSegmentIndex",
+			message: "The segment index (#arguments.index#) does not exist in the current segments (#segments.len()#)"
+		);
+	}
+
+	/**
 	 * Builds links to named routes with or without parameters. If the named route is not found, this method will throw an `InvalidArgumentException`.
 	 * If you need a route from a module then append the module address: `@moduleName` or prefix it like in run event calls `moduleName:routenName` in order to find the right route.
 	 *

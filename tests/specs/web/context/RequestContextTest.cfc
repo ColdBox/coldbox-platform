@@ -734,6 +734,22 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		expect( event.getUrl() ).toBe( correctFullUrl );
 	}
 
+	function testGetPathSegments(){
+		var event = getRequestContext();
+		event.setPrivateValue( "currentRoutedURL", "foo/bar/baz/" ).$( "getPath", "/hello/luis/lastname/majano" );
+		expect( event.getPathSegments() ).toBeArray().toHaveLength( 4 );
+	}
+
+	function testGetPathSegment(){
+		var event = getRequestContext();
+		event.setPrivateValue( "currentRoutedURL", "foo/bar/baz/" ).$( "getPath", "/hello/luis/lastname/majano" );
+		expect( event.getPathSegment( 4 ) ).toBe( "majano" );
+		expect( event.getPathSegment( 5, "none" ) ).toBe( "none" );
+		expect( function(){
+			event.getPathSegment( 5 );
+		} ).toThrow();
+	}
+
 	function testUrlMatches(){
 		var event = getRequestContext();
 		event.setPrivateValue( "currentRoutedURL", "foo/bar/baz/" );
