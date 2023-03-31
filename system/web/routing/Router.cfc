@@ -627,16 +627,16 @@ component
 		// Default pattern or look at the incoming pattern sent?
 		var thisPattern = ( len( arguments.pattern ) ? arguments.pattern : "/#arguments.resource#" );
 
-		// Edit
+		// Edit Route: /:pattern/:id/edit
 		actionSet = filterRouteActions(
 			{ GET : "edit" },
 			arguments.only,
 			arguments.except
 		);
-
 		if ( !structIsEmpty( actionSet ) ) {
 			var routeArgs = {
 				pattern   : "#thisPattern#/:#arguments.parameterName#/edit",
+				name      : "#isNull( arguments.handler ) ? arguments.resource : arguments.handler#.edit",
 				handler   : isNull( arguments.handler ) ? arguments.resource : arguments.handler,
 				action    : actionSet,
 				module    : arguments.module,
@@ -652,7 +652,7 @@ component
 			addRoute( argumentCollection = routeArgs );
 		}
 
-		// New
+		// New Route: /:pattern/new
 		actionSet = filterRouteActions(
 			{ GET : "new" },
 			arguments.only,
@@ -661,6 +661,7 @@ component
 		if ( !structIsEmpty( actionSet ) ) {
 			var routeArgs = {
 				pattern   : "#thisPattern#/new",
+				name      : "#isNull( arguments.handler ) ? arguments.resource : arguments.handler#.new",
 				handler   : isNull( arguments.handler ) ? arguments.resource : arguments.handler,
 				action    : actionSet,
 				module    : arguments.module,
@@ -676,7 +677,7 @@ component
 			addRoute( argumentCollection = routeArgs );
 		}
 
-		// Update, Delete, Show
+		// Update, Delete, Show Routes: /:pattern/:id
 		actionSet = filterRouteActions(
 			{
 				PUT    : "update",
@@ -690,6 +691,7 @@ component
 		if ( !structIsEmpty( actionSet ) ) {
 			var routeArgs = {
 				pattern   : "#thisPattern#/:#arguments.parameterName#",
+				name      : "#isNull( arguments.handler ) ? arguments.resource : arguments.handler#.process",
 				handler   : isNull( arguments.handler ) ? arguments.resource : arguments.handler,
 				action    : actionSet,
 				module    : arguments.module,
@@ -714,6 +716,7 @@ component
 		if ( !structIsEmpty( actionSet ) ) {
 			var routeArgs = {
 				pattern   : "#thisPattern#",
+				name      : "#isNull( arguments.handler ) ? arguments.resource : arguments.handler#",
 				handler   : isNull( arguments.handler ) ? arguments.resource : arguments.handler,
 				action    : actionSet,
 				module    : arguments.module,
