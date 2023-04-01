@@ -51,9 +51,8 @@ component extends="coldbox.system.testing.BaseModelTest" {
 
 	function testValidRoutes(){
 		// Mocks
-		var mockRouter = createStub().$( "getRoutes", [ { name : "contactus", pattern : "contactus/" } ] );
+		var mockRouter = createStub().$( "findRouteByName", { name : "contactus", pattern : "contactus/" } );
 		mockController.getWireBox().$( "getInstance", mockRouter );
-
 		var r = getRequestContext().route( "contactus" );
 		// debug( r );
 		expect( r ).toBe( "http://jfetmac/applications/coldbox/test-harness/index.cfm/contactus/" );
@@ -64,7 +63,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		// https://ortussolutions.atlassian.net/browse/COLDBOX-1136
 
 		// Mocks
-		var mockRouter = createStub().$( "getRoutes", [ { name : "contactus", pattern : "contactus/" } ] );
+		var mockRouter = createStub().$( "findRouteByName", { name : "contactus", pattern : "contactus/" } );
 		mockController.getWireBox().$( "getInstance", mockRouter );
 
 		var myQry = queryNew(
@@ -84,7 +83,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 
 	function testNamedRoutesWithBuildLink(){
 		// Mocks
-		var mockRouter = createStub().$( "getRoutes", [ { name : "contactus", pattern : "contactus/" } ] );
+		var mockRouter = createStub().$( "findRouteByName", { name : "contactus", pattern : "contactus/" } );
 		mockController.getWireBox().$( "getInstance", mockRouter );
 
 		var r = getRequestContext().buildLink( { name : "contactus" } );
@@ -95,7 +94,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 
 	function testNamedRoutesWithParamsWithBuildLink(){
 		// Mocks
-		var mockRouter = createStub().$( "getRoutes", [ { name : "contactus", pattern : "contactus/:id" } ] );
+		var mockRouter = createStub().$( "findRouteByName", { name : "contactus", pattern : "contactus/:id" } );
 		mockController.getWireBox().$( "getInstance", mockRouter );
 
 		var r = getRequestContext().buildLink( { name : "contactus", params : { id : 3 } } );
@@ -116,9 +115,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 
 	function testValidModuleRoutes(){
 		// Mocks
-		var mockRouter = createStub()
-			.$( "getModuleRoutes", [ { name : "home", pattern : "home/" } ] )
-			.$( "getRoutes", [] );
+		var mockRouter = createStub().$( "findRouteByName", { name : "home", pattern : "home/" } );
 		mockController.getWireBox().$( "getInstance", mockRouter );
 
 		var event = getRequestContext().$property(

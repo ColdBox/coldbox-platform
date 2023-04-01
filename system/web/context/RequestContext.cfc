@@ -1283,14 +1283,14 @@ component serializable="false" accessors="true" {
 
 			// Process Params
 			arguments.params.each( function( key, value ){
-				args.to = encodeForURL(
-					reReplaceNoCase(
-						args.to,
-						":#arguments.key#-?[^/]*",
-						arguments.value,
-						"all"
-					)
-				);
+				args.to =
+				reReplaceNoCase(
+					args.to,
+					":#arguments.key#-?[^/]*",
+					encodeForURL( arguments.value ),
+					"all"
+				)
+				;
 			} );
 
 			return buildLink( argumentCollection = args );
