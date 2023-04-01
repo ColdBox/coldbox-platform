@@ -1232,7 +1232,7 @@ component serializable="false" accessors="true" {
 	function getPathSegment( required numeric index, defaultValue ){
 		var segments = getPathSegments();
 		// Verify it exists
-		if ( segments.indexExists( arguments.index ) ) {
+		if ( segments.isDefined( arguments.index ) ) {
 			return segments[ arguments.index ];
 		}
 		// Do we have a default value
