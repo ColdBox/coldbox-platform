@@ -42,7 +42,7 @@ component
 	 ****************************************************************/
 
 	/**
-	 * The routing tableamazon
+	 * The routing table
 	 */
 	property name="routes" type="array";
 
@@ -280,6 +280,38 @@ component
 	/****************************************************************************************************************************/
 	/* 											ROUTING TABLE METHODS															*/
 	/****************************************************************************************************************************/
+
+	/**
+	 * This function tries to find a specifc route by incoming name.
+	 * If you need a route from a module then append the module address: `@moduleName` or prefix it like in run event calls `moduleName:routeName` in order to find the right route.
+	 *
+	 * @name The name of the route
+	 */
+	struct function findRouteByName( required name ){
+		var targetRoutes = variables.routes;
+		var routeName    = arguments.name;
+
+		// Module Routes Check
+		if ( find( "@", arguments.name ) ) {
+			var targetModule = getToken( arguments.name, 2, "@" );
+			targetRoutes     = getModuleRoutes( targetModule );
+			routeName        = getToken( arguments.name, 1, "@" );
+		}
+		if ( find( ":", arguments.name ) ) {
+			var targetModule = getToken( arguments.name, 1, ":" );
+			targetRoutes     = getModuleRoutes( targetModule );
+			routeName        = getToken( arguments.name, 2, ":" );
+		}
+
+		// Find the named route or return an empty struct
+		return foundRoute = targetRoutes
+			.filter( function( item ){
+				return ( arguments.item.name == routeName ? true : false );
+			} )
+			.reduce( function( results, item ){
+				return item;
+			}, {} );
+	}
 
 	/**
 	 * Register modules routes in the specified position in the main routing table, and returns itself

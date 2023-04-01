@@ -1248,53 +1248,49 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * Builds links to named routes with or without parameters. If the named route is not found, this method will throw an `InvalidArgumentException`.
-	 * If you need a route from a module then append the module address: `@moduleName` or prefix it like in run event calls `moduleName:routenName` in order to find the right route.
+	 * If you need a route from a module then append the module address: `@moduleName` or prefix it like in run event calls `moduleName:routeName` in order to find the right route.
 	 *
 	 * @name   The name of the route
 	 * @params The parameters of the route to replace
 	 * @ssl    Turn SSL on/off or detect it by default
 	 *
-	 * @throws InvalidArgumentException
+	 * @throws InvalidArgumentException - If thre requested route name is not registered
 	 */
 	string function route( required name, struct params = {}, boolean ssl ){
 		// Get routing service and default routes
-		var router       = variables.controller.getWirebox().getInstance( "router@coldbox" );
-		var targetRoutes = router.getRoutes();
-		var entryPoint   = "";
-		var routeName    = arguments.name;
+		var router = variables.controller.getWirebox().getInstance( "router@coldbox" );
 
-		// Module Routes?
+		// Module Route?
+		var targetModule = "";
 		if ( find( "@", arguments.name ) ) {
-			var targetModule = getToken( arguments.name, 2, "@" );
-			targetRoutes     = router.getModuleRoutes( targetModule );
-			routeName        = getToken( arguments.name, 1, "@" );
-			entryPoint       = variables.modules[ targetmodule ].inheritedEntryPoint;
+			targetModule = getToken( arguments.name, 2, "@" );
 		}
 		if ( find( ":", arguments.name ) ) {
-			var targetModule = getToken( arguments.name, 1, ":" );
-			targetRoutes     = router.getModuleRoutes( targetModule );
-			routeName        = getToken( arguments.name, 2, ":" );
-			entryPoint       = variables.modules[ targetmodule ].inheritedEntryPoint;
+			targetModule = getToken( arguments.name, 1, ":" );
 		}
+		// Discover route entry point
+		var entryPoint = len( targetModule ) ? variables.modules[ targetmodule ].inheritedEntryPoint : "";
 
 		// Find the named route
-		var foundRoute = targetRoutes.filter( function( item ){
-			return ( arguments.item.name == routeName ? true : false );
-		} );
+		var foundRoute = router.findRouteByName( arguments.name );
 
 		// Did we find it?
-		if ( arrayLen( foundRoute ) ) {
+		if ( !foundRoute.isEmpty() ) {
 			var args = {
-				to  : entryPoint & foundRoute[ 1 ].pattern,
-				ssl : javacast( "null", "" )
+				to  : entryPoint & foundRoute.pattern,
+				ssl : !isNull( arguments.ssl ) ? arguments.ssl : javacast( "null", "" )
 			};
-			if ( !isNull( arguments.ssl ) ) {
-				args.ssl = arguments.ssl;
-			}
 
 			// Process Params
 			arguments.params.each( function( key, value ){
-				args.to = reReplaceNoCase( args.to, ":#key#-?[^/]*", value, "all" );
+				args.to = encodeForURL(
+					reReplaceNoCase(
+						args.to,
+						":#arguments.key#-?[^/]*",
+						arguments.value,
+						"all"
+					)
+				);
 			} );
 
 			return buildLink( argumentCollection = args );

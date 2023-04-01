@@ -604,31 +604,17 @@ component serializable="false" accessors="true" {
 		cacheProvider          = "template",
 		boolean prePostExempt  = false
 	){
-		// Get routing service and default routes
-		var router       = getWirebox().getInstance( "router@coldbox" );
-		var targetRoutes = router.getRoutes();
-		var targetModule = "";
-
 		// Module Route?
+		var targetModule = "";
 		if ( find( "@", arguments.name ) ) {
-			targetModule   = getToken( arguments.name, 2, "@" );
-			targetRoutes   = router.getModuleRoutes( targetModule );
-			arguments.name = getToken( arguments.name, 1, "@" );
+			targetModule = getToken( arguments.name, 2, "@" );
 		}
 		if ( find( ":", arguments.name ) ) {
-			targetModule   = getToken( arguments.name, 1, ":" );
-			targetRoutes   = router.getModuleRoutes( targetModule );
-			arguments.name = getToken( arguments.name, 2, ":" );
+			targetModule = getToken( arguments.name, 1, ":" );
 		}
 
 		// Find the named route
-		var foundRoute = targetRoutes
-			.filter( function( item ){
-				return ( arguments.item.name == name ? true : false );
-			} )
-			.reduce( function( results, item ){
-				return item;
-			}, {} );
+		var foundRoute = getWirebox().getInstance( "router@coldbox" ).findRouteByName( arguments.name );
 
 		// Did we find it?
 		if ( !foundRoute.isEmpty() ) {
