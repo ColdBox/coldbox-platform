@@ -405,11 +405,14 @@ component serializable="false" accessors="true" {
 	/**
 	 * Redirect back to the previous URL via the referrer header, else use the fallback
 	 *
-	 * @fallback The fallback event or uri if the referrer is empty, defaults to `/`
+	 * @fallback      The fallback event or uri if the referrer is empty, defaults to `/`
+	 * @persist       What request collection keys to persist in flash ram
+	 * @persistStruct A structure key-value pairs to persist in flash ram
 	 */
-	function back( fallback = "/" ) cbMethod{
-		var event = getRequestContext();
-		relocate( URL = event.getHTTPHeader( "referer", event.buildLink( arguments.fallback ) ) );
+	function back( fallback = "/", persist, struct persistStruct ) cbMethod{
+		var event     = getRequestContext();
+		arguments.URL = event.getHTTPHeader( "referer", event.buildLink( arguments.fallback ) );
+		relocate( argumentCollection = arguments );
 	}
 
 	/****************************************************************

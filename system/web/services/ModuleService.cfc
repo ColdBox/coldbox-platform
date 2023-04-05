@@ -660,38 +660,46 @@ component extends="coldbox.system.web.services.BaseService" {
 			if ( mConfig.autoMapModels AND directoryExists( mconfig.modelsPhysicalPath ) ) {
 				var binder = mConfig.injector.getBinder();
 
+				// Add as a mapped directory with module name as the namespace with correct mapping path
+				var packagePath = (
+					len( mConfig.cfmapping ) ? mConfig.cfmapping & ".#mConfig.conventions.modelsLocation#" : mConfig.modelsInvocationPath
+				);
+
 				// Module Awareness : Map with no namespace in the local injector
 				if ( mConfig.moduleAwareness ) {
 					binder.mapDirectory(
-						packagePath = mConfig.modelsInvocationPath,
+						packagePath = packagePath,
 						process     = mConfig.autoProcessModels
 					);
 				} else {
 					// No awareness map with @name
 					if ( len( mConfig.modelNamespace ) ) {
 						binder.mapDirectory(
-							packagePath: mConfig.modelsInvocationPath,
+							packagePath: packagePath,
 							namespace  : "@#mConfig.modelNamespace#",
 							process    : mConfig.autoProcessModels
 						);
 					} else {
 						// just register with no namespace
 						binder.mapDirectory(
-							packagePath = mConfig.modelsInvocationPath,
+							packagePath = packagePath,
 							process     = mConfig.autoProcessModels
 						);
 					}
 				}
 
-				// Map in parent injector with @name for visibility
-				mConfig.injector
-					.getParent()
-					.getBinder()
-					.mapDirectory(
-						packagePath: mConfig.modelsInvocationPath,
-						namespace  : "@#mConfig.modelNamespace#",
-						process    : mConfig.autoProcessModels
-					);
+				// // Map in parent injector with @name for visibility
+				// This does not work when modules override their binder
+				// Leaving this here to brainstorm on solutions, but
+				// commenting to make this work.
+				// mConfig.injector
+				// 	.getParent()
+				// 	.getBinder()
+				// 	.mapDirectory(
+				// 		packagePath: packagePath,
+				// 		namespace  : "@#mConfig.modelNamespace#",
+				// 		process    : mConfig.autoProcessModels
+				// 	);
 
 				// Register Default Module Export if it exists as @moduleName, so you can do getInstance( "@moduleName" )
 				if ( fileExists( mconfig.modelsPhysicalPath & "/#arguments.moduleName#.cfc" ) ) {
@@ -702,7 +710,7 @@ component extends="coldbox.system.web.services.BaseService" {
 							"@#arguments.moduleName#",
 							"@#mConfig.modelNamespace#"
 						] )
-						.to( mConfig.modelsInvocationPath & ".#arguments.moduleName#" );
+						.to( packagePath & ".#arguments.moduleName#" );
 				}
 
 				// Process mapped data if true

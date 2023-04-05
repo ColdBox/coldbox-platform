@@ -678,6 +678,15 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
+	 * Verify if the passed name is the same as the current route name
+	 *
+	 * @name The name to test against the current route
+	 */
+	boolean function routeIs( required name ){
+		return getCurrentRouteName() == arguments.name;
+	}
+
+	/**
 	 * Tests that a given path exists in the currently routed URL.
 	 * If the exact flag is passed, the path must match exactly.
 	 * Using the `urlMatchesExact` is preferred.
@@ -688,10 +697,19 @@ component serializable="false" accessors="true" {
 	 * @return Boolean
 	 */
 	boolean function urlMatches( required string path, boolean exact = false ){
+		// Cleanup, routed url never has a `/` in front
+		arguments.path       = reReplace( arguments.path, "^/", "" );
 		var currentRoutedURL = getCurrentRoutedURL();
+
 		if ( arguments.exact ) {
 			return arguments.path == currentRoutedURL;
 		}
+
+		// if the incoming path to look for is greater than the current routed url, bail out
+		if ( arguments.path.len() > currentRoutedURL.len() ) {
+			return false;
+		}
+
 		var replaced = replace( currentRoutedURL, arguments.path, "" );
 		var sliced   = mid(
 			currentRoutedURL,
@@ -1031,6 +1049,8 @@ component serializable="false" accessors="true" {
 	 */
 	function overrideEvent( required event ){
 		setValue( variables.eventName, arguments.event );
+		// Clear out any previous caching influences
+		setEventCacheableEntry( {} );
 		return this;
 	}
 
@@ -1132,8 +1152,12 @@ component serializable="false" accessors="true" {
 	/**
 	 * Returns the full url including the protocol, host, mapping, path info, and query string.
 	 * Handles SES urls gracefully.
+	 *
+	 * @withQuery Add the query string or not, by default it adds it
+	 *
+	 * @return The full url including the protocol, host, mapping, path info, and query string (maybe).
 	 */
-	string function getFullURL(){
+	string function getUrl( boolean withQuery = true ){
 		var javaURI = createObject( "java", "java.net.URI" );
 		var baseUrl = javaURI.create( getSESBaseURL() );
 		var fullUrl = javaURI
@@ -1146,7 +1170,7 @@ component serializable="false" accessors="true" {
 			)
 			.toString();
 
-		if ( CGI.QUERY_STRING == "" ) {
+		if ( !arguments.withQuery || CGI.QUERY_STRING == "" ) {
 			return fullUrl;
 		}
 
@@ -1154,9 +1178,20 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
-	 * Returns the full relative path to the requested event: does not include protocol and host
+	 * @deprecated Use `getUrl()` instead
 	 */
-	string function getFullPath(){
+	string function getFullUrl(){
+		return getUrl();
+	}
+
+	/**
+	 * Return the relative path of the current request
+	 *
+	 * @withQuery Add the query string or not, by default it adds it
+	 *
+	 * @return the full relative path to the requested event: does not include protocol and host
+	 */
+	string function getPath( boolean withQuery = true ){
 		return arrayToList(
 			[
 				variables.controller
@@ -1164,63 +1199,98 @@ component serializable="false" accessors="true" {
 					.getRouter()
 					.composeRoutingPath(),
 				left( CGI.PATH_INFO, 1 ) == "/" ? right( CGI.PATH_INFO, -1 ) : CGI.PATH_INFO,
-				CGI.QUERY_STRING != "" && CGI.PATH_INFO == "" ? "/" : "",
-				CGI.QUERY_STRING != "" ? "?" : "",
-				CGI.QUERY_STRING
+				arguments.withQuery && CGI.QUERY_STRING != "" && CGI.PATH_INFO == "" ? "/" : "",
+				arguments.withQuery && CGI.QUERY_STRING != "" ? "?" : "",
+				arguments.withQuery ? CGI.QUERY_STRING : ""
 			],
 			""
 		);
 	}
 
 	/**
+	 * @Deprecated Use `getPath()` instead
+	 */
+	string function getFullPath(){
+		return getPath();
+	}
+
+	/**
+	 * Get all of the url path segments from the requested path
+	 */
+	array function getPathSegments(){
+		return getPath( withQuery: false ).listToArray( "/" );
+	}
+
+	/**
+	 * Get the segment from the incoming path at the specified index location
+	 *
+	 * @index        The index location
+	 * @defaultValue If the index doesn't exist, return the default value
+	 *
+	 * @throws InvalidSegmentIndex - When the passed index doesn't exist
+	 */
+	function getPathSegment( required numeric index, defaultValue ){
+		var segments = getPathSegments();
+		// Verify it exists
+		if ( segments.isDefined( arguments.index ) ) {
+			return segments[ arguments.index ];
+		}
+		// Do we have a default value
+		if ( !isNull( arguments.defaultValue ) ) {
+			return arguments.defaultValue;
+		}
+		// Kick it!
+		throw(
+			type   : "InvalidSegmentIndex",
+			message: "The segment index (#arguments.index#) does not exist in the current segments (#segments.len()#)"
+		);
+	}
+
+	/**
 	 * Builds links to named routes with or without parameters. If the named route is not found, this method will throw an `InvalidArgumentException`.
-	 * If you need a route from a module then append the module address: `@moduleName` or prefix it like in run event calls `moduleName:routenName` in order to find the right route.
+	 * If you need a route from a module then append the module address: `@moduleName` or prefix it like in run event calls `moduleName:routeName` in order to find the right route.
 	 *
 	 * @name   The name of the route
 	 * @params The parameters of the route to replace
 	 * @ssl    Turn SSL on/off or detect it by default
 	 *
-	 * @throws InvalidArgumentException
+	 * @throws InvalidArgumentException - If thre requested route name is not registered
 	 */
 	string function route( required name, struct params = {}, boolean ssl ){
 		// Get routing service and default routes
-		var router       = variables.controller.getWirebox().getInstance( "router@coldbox" );
-		var targetRoutes = router.getRoutes();
-		var entryPoint   = "";
-		var __RouteName  = arguments.name;
+		var router = variables.controller.getWirebox().getInstance( "router@coldbox" );
 
 		// Module Route?
+		var targetModule = "";
 		if ( find( "@", arguments.name ) ) {
-			var targetModule = getToken( arguments.name, 2, "@" );
-			targetRoutes     = router.getModuleRoutes( targetModule );
-			__RouteName      = getToken( arguments.name, 1, "@" );
-			entryPoint       = variables.modules[ targetmodule ].inheritedEntryPoint;
+			targetModule = getToken( arguments.name, 2, "@" );
 		}
 		if ( find( ":", arguments.name ) ) {
-			var targetModule = getToken( arguments.name, 1, ":" );
-			targetRoutes     = router.getModuleRoutes( targetModule );
-			__RouteName      = getToken( arguments.name, 2, ":" );
-			entryPoint       = variables.modules[ targetmodule ].inheritedEntryPoint;
+			targetModule = getToken( arguments.name, 1, ":" );
 		}
+		// Discover route entry point
+		var entryPoint = len( targetModule ) ? variables.modules[ targetmodule ].inheritedEntryPoint : "";
 
 		// Find the named route
-		var foundRoute = targetRoutes.filter( function( item ){
-			return ( arguments.item.name == __RouteName ? true : false );
-		} );
+		var foundRoute = router.findRouteByName( arguments.name );
 
 		// Did we find it?
-		if ( arrayLen( foundRoute ) ) {
+		if ( !foundRoute.isEmpty() ) {
 			var args = {
-				to  : entryPoint & foundRoute[ 1 ].pattern,
-				ssl : javacast( "null", "" )
+				to  : entryPoint & foundRoute.pattern,
+				ssl : !isNull( arguments.ssl ) ? arguments.ssl : javacast( "null", "" )
 			};
-			if ( !isNull( arguments.ssl ) ) {
-				args.ssl = arguments.ssl;
-			}
 
 			// Process Params
 			arguments.params.each( function( key, value ){
-				args.to = reReplaceNoCase( args.to, ":#key#-?[^/]*", value, "all" );
+				args.to =
+				reReplaceNoCase(
+					args.to,
+					":#arguments.key#-?[^/]*",
+					encodeForURL( arguments.value ),
+					"all"
+				)
+				;
 			} );
 
 			return buildLink( argumentCollection = args );

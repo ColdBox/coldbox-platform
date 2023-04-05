@@ -51,9 +51,8 @@ component extends="coldbox.system.testing.BaseModelTest" {
 
 	function testValidRoutes(){
 		// Mocks
-		var mockRouter = createStub().$( "getRoutes", [ { name : "contactus", pattern : "contactus/" } ] );
+		var mockRouter = createStub().$( "findRouteByName", { name : "contactus", pattern : "contactus/" } );
 		mockController.getWireBox().$( "getInstance", mockRouter );
-
 		var r = getRequestContext().route( "contactus" );
 		// debug( r );
 		expect( r ).toBe( "http://jfetmac/applications/coldbox/test-harness/index.cfm/contactus/" );
@@ -64,7 +63,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		// https://ortussolutions.atlassian.net/browse/COLDBOX-1136
 
 		// Mocks
-		var mockRouter = createStub().$( "getRoutes", [ { name : "contactus", pattern : "contactus/" } ] );
+		var mockRouter = createStub().$( "findRouteByName", { name : "contactus", pattern : "contactus/" } );
 		mockController.getWireBox().$( "getInstance", mockRouter );
 
 		var myQry = queryNew(
@@ -84,7 +83,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 
 	function testNamedRoutesWithBuildLink(){
 		// Mocks
-		var mockRouter = createStub().$( "getRoutes", [ { name : "contactus", pattern : "contactus/" } ] );
+		var mockRouter = createStub().$( "findRouteByName", { name : "contactus", pattern : "contactus/" } );
 		mockController.getWireBox().$( "getInstance", mockRouter );
 
 		var r = getRequestContext().buildLink( { name : "contactus" } );
@@ -95,7 +94,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 
 	function testNamedRoutesWithParamsWithBuildLink(){
 		// Mocks
-		var mockRouter = createStub().$( "getRoutes", [ { name : "contactus", pattern : "contactus/:id" } ] );
+		var mockRouter = createStub().$( "findRouteByName", { name : "contactus", pattern : "contactus/:id" } );
 		mockController.getWireBox().$( "getInstance", mockRouter );
 
 		var r = getRequestContext().buildLink( { name : "contactus", params : { id : 3 } } );
@@ -116,9 +115,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 
 	function testValidModuleRoutes(){
 		// Mocks
-		var mockRouter = createStub()
-			.$( "getModuleRoutes", [ { name : "home", pattern : "home/" } ] )
-			.$( "getRoutes", [] );
+		var mockRouter = createStub().$( "findRouteByName", { name : "home", pattern : "home/" } );
 		mockController.getWireBox().$( "getInstance", mockRouter );
 
 		var event = getRequestContext().$property(
@@ -699,14 +696,14 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		expect( event.getPrivateExcept( [ "hackedField", "key-that-does-not-exist" ] ) ).toBe( { "name" : "Jane" } );
 	}
 
-	function testGetFullUrl(){
+	function testGetUrl(){
 		var event = getRequestContext();
-		debug( event.getFullUrl() );
-		expect( event.getFullUrl() ).toBeTypeOf( "url", "Not an URL" );
-		var javaUrl = createObject( "java", "java.net.URL" ).init( event.getFullUrl() );
+		debug( event.getUrl() );
+		expect( event.getUrl() ).toBeTypeOf( "url", "Not an URL" );
+		var javaUrl = createObject( "java", "java.net.URL" ).init( event.getUrl() );
 	}
 
-	function testGetFullUrlWithAppMapping(){
+	function testgetUrlWithAppMapping(){
 		mockController
 			.$( "getSetting" )
 			.$args( "AppMapping" )
@@ -714,13 +711,13 @@ component extends="coldbox.system.testing.BaseModelTest" {
 
 		var event = getRequestContext();
 
-		debug( event.getFullUrl() );
-		expect( event.getFullUrl() ).toBeTypeOf( "url" );
+		debug( event.getUrl() );
+		expect( event.getUrl() ).toBeTypeOf( "url" );
 
-		var javaUrl = createObject( "java", "java.net.URL" ).init( event.getFullUrl() );
+		var javaUrl = createObject( "java", "java.net.URL" ).init( event.getUrl() );
 	}
 
-	function testGetFullUrlDoesntDoubleEncode(){
+	function testgetUrlDoesntDoubleEncode(){
 		var event          = getRequestContext();
 		var javaBaseUrl    = createObject( "java", "java.net.URI" ).create( event.getSESBaseURL() );
 		var correctFullUrl = javaBaseUrl.getScheme() &
@@ -729,15 +726,33 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		( CGI.PATH_INFO != "" ? "/#CGI.PATH_INFO#" : "" ) &
 		( CGI.QUERY_STRING != "" ? "?#CGI.QUERY_STRING#" : "" );
 		debug( var = correctFullUrl );
-		debug( var = event.getFullUrl() );
-		expect( event.getFullUrl() ).toBeTypeOf( "url", "Not an URL" );
-		expect( event.getFullUrl() ).toBe( correctFullUrl );
+		debug( var = event.getUrl() );
+		expect( event.getUrl() ).toBeTypeOf( "url", "Not an URL" );
+		expect( event.getUrl() ).toBe( correctFullUrl );
+	}
+
+	function testGetPathSegments(){
+		var event = getRequestContext();
+		event.setPrivateValue( "currentRoutedURL", "foo/bar/baz/" ).$( "getPath", "/hello/luis/lastname/majano" );
+		expect( event.getPathSegments() ).toBeArray().toHaveLength( 4 );
+	}
+
+	function testGetPathSegment(){
+		var event = getRequestContext();
+		event.setPrivateValue( "currentRoutedURL", "foo/bar/baz/" ).$( "getPath", "/hello/luis/lastname/majano" );
+		expect( event.getPathSegment( 4 ) ).toBe( "majano" );
+		expect( event.getPathSegment( 5, "none" ) ).toBe( "none" );
+		expect( function(){
+			event.getPathSegment( 5 );
+		} ).toThrow();
 	}
 
 	function testUrlMatches(){
 		var event = getRequestContext();
-		event.setPrivateValue( "currentRoutedURL", "/foo/bar/baz" );
-		expect( event.getCurrentRoutedURL() ).toBe( "/foo/bar/baz" );
+		event.setPrivateValue( "currentRoutedURL", "foo/bar/baz/" );
+
+		expect( event.getCurrentRoutedURL() ).toBe( "foo/bar/baz/" );
+
 		expect( event.urlMatches( "/foo/bar/baz" ) ).toBeTrue();
 		expect( event.urlMatches( "/foo/baz/bar" ) ).toBeFalse();
 		expect( event.urlMatches( "/bar/baz" ) ).toBeFalse();
@@ -746,6 +761,23 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		expect( event.urlMatches( "/" ) ).toBeTrue();
 		expect( event.urlMatches( path = "/foo/bar", exact = true ) ).toBeFalse();
 		expect( event.urlMatchesExact( "/foo/bar" ) ).toBeFalse();
+	}
+	function testUrlMatchesWithLongerInput(){
+		var event = getRequestContext();
+		event.setPrivateValue( "currentRoutedURL", "main/" );
+		expect( event.getCurrentRoutedURL() ).toBe( "main/" );
+		expect( event.urlMatches( "main" ) ).toBeTrue();
+		expect( event.urlMatches( "/main" ) ).toBeTrue();
+		expect( event.urlMatches( "registration/new" ) ).toBeFalse();
+	}
+
+	function testRouteIs(){
+		var event = getRequestContext();
+		expect( event.routeIs( "" ) ).toBeTrue();
+
+		event.setPrivateValue( "currentRouteName", "luis" );
+		expect( event.routeIs( "test" ) ).toBeFalse();
+		expect( event.routeIs( "luis" ) ).toBeTrue();
 	}
 
 }
