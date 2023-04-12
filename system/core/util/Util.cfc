@@ -139,6 +139,62 @@ component {
 		}, {} );
 	}
 
+	/**
+	 * Convert a plural word to a singular word
+	 *
+	 * @word The word to convert
+	 */
+	function singularize( required word ){
+		var result = arguments.word;
+
+		if ( result.endsWith( "s" ) ) {
+			if ( result.endsWith( "ss" ) || result.endsWith( "us" ) ) {
+				result &= "es";
+			} else if ( result.endsWith( "is" ) ) {
+				result = left( result, len( result ) - 2 ) & "is";
+			} else if ( result.endsWith( "es" ) ) {
+				if ( len( result ) > 3 && right( result, 2 ) in [ "sh", "ch" ] ) {
+					result = left( result, len( result ) - 2 );
+				} else {
+					result = left( result, len( result ) - 1 );
+				}
+			} else {
+				result = left( result, len( result ) - 1 );
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * Convert a singular word to a plural word
+	 *
+	 * @word The word to convert
+	 */
+	function pluralize( required word ){
+		var result = arguments.word;
+
+		if ( result.endsWith( "s" ) ) {
+			if ( result.endsWith( "ss" ) || result.endsWith( "us" ) ) {
+				result &= "es";
+			} else {
+				result &= "s";
+			}
+		} else if ( result.endsWith( "y" ) ) {
+			if ( right( result, 2 ) in [ "ay", "ey", "iy", "oy", "uy" ] ) {
+				result &= "s";
+			} else {
+				result = left( result, len( result ) - 1 ) & "ies";
+			}
+		} else if ( right( result, 1 ) in [ "x", "s", "z", "ch", "sh" ] ) {
+			result &= "es";
+		} else {
+			result &= "s";
+		}
+
+		return result;
+	}
+
 	/****************************************************************
 	 * FILE HELPERS *
 	 ****************************************************************/
