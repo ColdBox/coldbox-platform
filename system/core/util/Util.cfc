@@ -153,7 +153,7 @@ component {
 			} else if ( result.endsWith( "is" ) ) {
 				result = left( result, len( result ) - 2 ) & "is";
 			} else if ( result.endsWith( "es" ) ) {
-				if ( len( result ) > 3 && right( result, 2 ) in [ "sh", "ch" ] ) {
+				if ( len( result ) > 3 && arrayFindNoCase( [ "sh", "ch" ], right( result, 2 ) ) ) {
 					result = left( result, len( result ) - 2 );
 				} else {
 					result = left( result, len( result ) - 1 );
@@ -181,12 +181,12 @@ component {
 				result &= "s";
 			}
 		} else if ( result.endsWith( "y" ) ) {
-			if ( right( result, 2 ) in [ "ay", "ey", "iy", "oy", "uy" ] ) {
+			if ( arrayFindNoCase( [ "ay", "ey", "iy", "oy", "uy" ], right( result, 2 ) ) ) {
 				result &= "s";
 			} else {
 				result = left( result, len( result ) - 1 ) & "ies";
 			}
-		} else if ( right( result, 1 ) in [ "x", "s", "z", "ch", "sh" ] ) {
+		} else if ( arrayFindNoCase( [ "x", "s", "z", "ch", "sh" ], right( result, 1 ) ) ) {
 			result &= "es";
 		} else {
 			result &= "s";
