@@ -1090,7 +1090,9 @@ component extends="coldbox.system.web.services.BaseService" {
 		|--------------------------------------------------------------------------
 		*/
 		results.injector = new coldbox.system.ioc.Injector(
-			binder    : "coldbox.system.web.config.ModuleBinder",
+			binder    : {
+				scopeRegistration : { enabled: false }
+			},
 			properties: appSettings,
 			coldbox   : controller,
 			name      : mConfig.injectorName
