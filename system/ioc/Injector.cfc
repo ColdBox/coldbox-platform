@@ -119,9 +119,15 @@ component serializable="false" accessors="true" {
 	property name="name" type="string";
 
 	/**
-	 * Constructor. If called without a configuration binder, then WireBox will instantiate the default configuration binder found in: coldbox.system.ioc.config.DefaultBinder
+	 * WireBox can be constructed with no parameters and it will use the default binder: `coldbox.system.ioc.config.DefaultBinder` for configuration
+	 * and place the instance in `application.wirebox` scope for easy access.
 	 *
-	 * @binder              The WireBox binder or data CFC instance or instantiation path to configure this injector with
+	 * However you can also instantiate Wirebox with:
+	 * - A binder instance
+	 * - A binder path
+	 * - A WireBox configuration DSL structure
+	 *
+	 * @binder              A binder instance, path, or DSL structure to configure WireBox with
 	 * @properties          A structure of binding properties to passthrough to the Binder Configuration CFC
 	 * @coldbox             A coldbox application context that this instance of WireBox can be linked to, if not using it, we just ignore it.
 	 * @coldbox.doc_generic coldbox.system.web.Controller
@@ -316,10 +322,8 @@ component serializable="false" accessors="true" {
 	/**
 	 * Configure this injector for operation, called by the init(). You can also re-configure this injector programmatically, but it is not recommended.
 	 *
-	 * @binder                 The configuration binder object or path to configure this Injector instance with
-	 * @binder.doc_generic     coldbox.system.ioc.config.Binder
-	 * @properties             A structure of binding properties to passthrough to the Configuration CFC
-	 * @properties.doc_generic struct
+	 * @binder     The configuration binder object or path or dsl structure to configure this Injector instance with
+	 * @properties A structure of binding properties to passthrough to the Configuration CFC
 	 **/
 	Injector function configure( required binder, required struct properties ){
 		// Create and Configure Event Manager
