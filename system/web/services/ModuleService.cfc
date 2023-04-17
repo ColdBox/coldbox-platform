@@ -667,10 +667,7 @@ component extends="coldbox.system.web.services.BaseService" {
 
 				// Module Awareness : Map with no namespace in the local injector
 				if ( mConfig.moduleAwareness ) {
-					binder.mapDirectory(
-						packagePath = packagePath,
-						process     = mConfig.autoProcessModels
-					);
+					binder.mapDirectory( packagePath = packagePath, process = mConfig.autoProcessModels );
 				} else {
 					// No awareness map with @name
 					if ( len( mConfig.modelNamespace ) ) {
@@ -681,10 +678,7 @@ component extends="coldbox.system.web.services.BaseService" {
 						);
 					} else {
 						// just register with no namespace
-						binder.mapDirectory(
-							packagePath = packagePath,
-							process     = mConfig.autoProcessModels
-						);
+						binder.mapDirectory( packagePath = packagePath, process = mConfig.autoProcessModels );
 					}
 				}
 
@@ -1090,9 +1084,7 @@ component extends="coldbox.system.web.services.BaseService" {
 		|--------------------------------------------------------------------------
 		*/
 		results.injector = new coldbox.system.ioc.Injector(
-			binder    : {
-				scopeRegistration : { enabled: false }
-			},
+			binder    : { scopeRegistration : { enabled : false } },
 			properties: appSettings,
 			coldbox   : controller,
 			name      : mConfig.injectorName
