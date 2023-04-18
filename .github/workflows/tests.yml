@@ -26,6 +26,8 @@ jobs:
             experimental: true
           - cfengine: "lucee@6"
             experimental: true
+          - cfengine: "adobe@2023"
+            experimental: true
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
