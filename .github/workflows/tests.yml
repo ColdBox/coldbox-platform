@@ -19,16 +19,26 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        commandbox_version: [ "5.8.0", "5.8.0", "5.8.0" ]
+        commandbox_version: [ "5.8.0" ]
         cfengine: [ "lucee@5", "adobe@2018", "adobe@2021" ]
-        jdkVersion: [ "11", "11", "11" ]
-        experimental: [false, false, false]
+        jdkVersion: [ "11" ]
+        experimental: [false]
         include:
           - cfengine: "lucee@5rc"
+            commandbox_version: "6.0.0-alpha"
+            jdkVersion: "11"
             experimental: true
           - cfengine: "lucee@6"
+            commandbox_version: "6.0.0-alpha"
+            jdkVersion: "11"
+            experimental: true
+          - cfengine: "lucee@6"
+            commandbox_version: "6.0.0-alpha"
+            jdkVersion: "17"
             experimental: true
           - cfengine: "adobe@2023"
+            commandbox_version: "6.0.0-alpha"
+            jdkVersion: "11"
             experimental: true
           - cfengine: "adobe@2023"
             commandbox_version: "6.0.0-alpha"
