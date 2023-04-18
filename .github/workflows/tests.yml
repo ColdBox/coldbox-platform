@@ -19,6 +19,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        jdk: [ "11" ]
+        commandbox_version: ["5.8.0"]
         cfengine: [ "lucee@5", "adobe@2018", "adobe@2021" ]
         experimental: [false]
         include:
@@ -27,6 +29,10 @@ jobs:
           - cfengine: "lucee@6"
             experimental: true
           - cfengine: "adobe@2023"
+            experimental: true
+          - cfengine: "adobe@2023"
+            commandbox_version: "6.0.0-alpha"
+            jdk: "17"
             experimental: true
     steps:
       - name: Checkout Repository
@@ -42,10 +48,12 @@ jobs:
         uses: actions/setup-java@v2
         with:
           distribution: "adopt"
-          java-version: "11"
+          java-version: ${{ matrix.jdk}}
 
       - name: Setup CommandBox CLI
         uses: Ortus-Solutions/setup-commandbox@v2.0.1
+        with:
+          version: ${{ matrix.commandbox_version }}
 
       - name: Setup .env For Runner
         run: |
