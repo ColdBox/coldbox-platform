@@ -48,7 +48,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           distribution: "adopt"
-          java-version: ${{ matrix.jdk}}
+          java-version: ${{ matrix.jdk }}
 
       - name: Setup CommandBox CLI
         uses: Ortus-Solutions/setup-commandbox@v2.0.1
