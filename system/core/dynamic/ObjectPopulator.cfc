@@ -8,7 +8,7 @@
 component accessors="true" singleton {
 
 	// DI
-	property name="mixerUtil" inject="provider:coldbox.system.core.dynamic.MixerUtil";
+	property name="mixerUtil" inject="coldbox.system.core.dynamic.MixerUtil";
 	property name="util"      inject="coldbox.system.core.util.Util";
 
 	// Properties
