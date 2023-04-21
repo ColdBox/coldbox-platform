@@ -23,7 +23,8 @@
 			.$( "isCacheBoxLinked", true )
 			.setColdBox( mockColdbox )
 			.setLogBox( mockLogBox )
-			.setCacheBox( mockCacheBox );
+			.setCacheBox( mockCacheBox )
+			.setChildInjectors( {} );
 
 		builder  = createMock( "coldbox.system.ioc.Builder" ).init( mockInjector );
 		mockStub = createStub();
