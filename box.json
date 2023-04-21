@@ -38,6 +38,9 @@
             }
         ]
     },
+    "dependencies":{
+        "cbproxies":"^1.0.1+13"
+    },
     "devDependencies":{
         "testbox":"be",
         "commandbox-dotenv":"*",
@@ -48,20 +51,21 @@
         "release":"recipe build/release.boxr",
         "format":"cfformat run system/**/*.cfc,tests/specs/**/*.cfc --overwrite",
         "format:watch":"cfformat watch system/**/*.cfc,tests/specs/**/*.cfc ./.cfformat.json",
-        "format:check":"cfformat check system/**/*.cfc,tests/specs/**/*.cfc",
-        "log":"server log --follow",
+        "format:check":"cfformat check system/**/*.cfc,tests/specs/**/*.cfc ./.cfformat.json",
         "start:lucee":"server start serverConfigFile='server-lucee@5.json' --force",
         "start:2018":"server start serverConfigFile='server-adobe@2018.json' --force",
         "start:2021":"server start serverConfigFile='server-adobe@2021.json' --force",
+		"start:2023":"server start serverConfigFile='server-adobe@2023.json' --force",
+		"stop:lucee":"server stop serverConfigFile='server-lucee@5.json' --force",
+        "stop:2018":"server stop serverConfigFile='server-adobe@2018.json' --force",
+        "stop:2021":"server stop serverConfigFile='server-adobe@2021.json' --force",
+		"stop:2023":"server stop serverConfigFile='server-adobe@2023.json' --force",
         "log:lucee":"server log coldbox-lucee@5 --follow",
         "log:2018":"server log coldbox-adobe@2018 --follow",
         "log:2021":"server log coldbox-adobe@2021 --follow",
+		"log:2023":"server log coldbox-adobe@2023 --follow",
         "cfpm":"echo '\".engine/acf2021/WEB-INF/cfusion/bin/cfpm.sh\"' | run",
-        "cfpm:install":"echo '\".engine/adobe2021/WEB-INF/cfusion/bin/cfpm.sh\" install ${1}' | run",
-        "install:2021":"run-script cfpm:install zip,orm,mysql,postgresql,sqlserver,document,feed,mail,debugger"
-    },
-    "dependencies":{
-        "cbproxies":"^1.0.1+13"
+        "cfpm:install":"echo '\".engine/adobe2021/WEB-INF/cfusion/bin/cfpm.sh\" install ${1}' | run"
     },
 	"installPaths":{
         "testbox":"testbox/",
