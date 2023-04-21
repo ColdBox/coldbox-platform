@@ -119,6 +119,11 @@ component serializable="false" accessors="true" {
 	property name="name" type="string";
 
 	/**
+	 * The object builder
+	 */
+	property name="objectBuilder";
+
+	/**
 	 * WireBox can be constructed with no parameters and it will use the default binder: `coldbox.system.ioc.config.DefaultBinder` for configuration
 	 * and place the instance in `application.wirebox` scope for easy access.
 	 *

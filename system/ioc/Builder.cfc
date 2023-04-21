@@ -79,7 +79,7 @@ component serializable="false" accessors="true" {
 	 * @return coldbox.system.ioc.dsl.ColdBoxDSL
 	 */
 	function getColdBoxDSL(){
-		if ( isNull( coldboxDSL ) ) {
+		if ( isNull( variables.coldboxDSL ) ) {
 			variables.coldboxDSL = new coldbox.system.ioc.dsl.ColdBoxDSL( variables.injector );
 		}
 		return variables.coldboxDSL;
@@ -114,10 +114,12 @@ component serializable="false" accessors="true" {
 	 */
 	Builder function registerCustomBuilders(){
 		var customDSL = variables.injector.getBinder().getCustomDSL();
+
 		// Register Custom DSL Builders
 		for ( var key in customDSL ) {
 			registerDSL( namespace = key, path = customDSL[ key ] );
 		}
+
 		return this;
 	}
 
@@ -515,9 +517,8 @@ component serializable="false" accessors="true" {
 		required targetID,
 		required targetObject = ""
 	){
-		var definition = { required : true, name : "", dsl : arguments.dsl };
 		return buildDSLDependency(
-			definition   = definition,
+			definition   = { "required" : true, "name" : "", "dsl" : arguments.dsl },
 			targetID     = arguments.targetID,
 			targetObject = arguments.targetObject
 		);
@@ -550,6 +551,27 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
+	 * Try to get the DSL object from the custom registered DSLs locally an in the child hierarchy.  If not found, returns null
+	 *
+	 * @namespace The namespace to look for
+	 * @args      The arguments to pass to the DSL
+	 */
+	any function getObjectFromCustomDSL( required namespace, args = {} ){
+		// Check local first
+		if ( structKeyExists( variables.customDSL, arguments.namespace ) ) {
+			return variables.customDSL[ arguments.namespace ].process( argumentCollection: arguments.args );
+		}
+
+		// Verify Children hierarchy
+		for ( var thisChild in variables.injector.getChildInjectors() ) {
+			var childBuilder = variables.injector.getChildInjector( thisChild ).getObjectBuilder();
+			if ( childBuilder.isDSLNamespace( arguments.namespace ) ) {
+				return childBuilder.getObjectFromCustomDSL( arguments.namespace, arguments.args );
+			}
+		}
+	}
+
+	/**
 	 * Build a DSL Dependency, if not found, returns null
 	 *
 	 * @definition   The dependency definition structure: name, dsl as keys
@@ -569,9 +591,11 @@ component serializable="false" accessors="true" {
 		var refLocal     = {};
 		var DSLNamespace = listFirst( arguments.definition.dsl, ":" );
 
-		// Check if Custom DSL exists, if it does, execute it
-		if ( structKeyExists( variables.customDSL, DSLNamespace ) ) {
-			return variables.customDSL[ DSLNamespace ].process( argumentCollection = arguments );
+		// Custom DSL Lookups
+		refLocal.dependency = getObjectFromCustomDSL( namespace: DSLNamespace, args: arguments );
+		// return only if found
+		if ( !isNull( refLocal.dependency ) ) {
+			return refLocal.dependency;
 		}
 
 		// Determine Type of Injection according to type
@@ -722,9 +746,7 @@ component serializable="false" accessors="true" {
 	 * @targetID     The target ID we are building this dependency for
 	 */
 	private any function getJavaDSL( required definition, targetObject, targetID ){
-		var javaClass = getToken( arguments.definition.dsl, 2, ":" );
-
-		return createObject( "java", javaClass );
+		return createObject( "java", getToken( arguments.definition.dsl, 2, ":" ) );
 	}
 
 	/**
