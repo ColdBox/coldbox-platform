@@ -782,11 +782,8 @@ component serializable="false" accessors="true" {
 	 * @throws UDFLibraryNotFoundException - When the requested library cannot be found
 	 */
 	any function includeUDF( required udflibrary ) cbMethod{
-		// Init the mixin location and caches reference
-		var defaultCache     = getCache( "default" );
 		var mixinLocationKey = hash( variables.controller.getAppHash() & arguments.udfLibrary );
-
-		var targetLocation = defaultCache.getOrSet(
+		var targetLocation   = getCache( "default" ).getOrSet(
 			// Key
 			"includeUDFLocation-#mixinLocationKey#",
 			// Producer
@@ -794,22 +791,23 @@ component serializable="false" accessors="true" {
 				var appMapping      = variables.controller.getSetting( "AppMapping" );
 				var UDFFullPath     = expandPath( udflibrary );
 				var UDFRelativePath = expandPath( "/" & appMapping & "/" & udflibrary );
+				var locatedPath     = "";
 
 				// Relative Checks First
 				if ( fileExists( UDFRelativePath ) ) {
-					targetLocation = "/" & appMapping & "/" & udflibrary;
+					locatedPath = "/" & appMapping & "/" & udflibrary;
 				}
 				// checks if no .cfc or .cfm where sent
 				else if ( fileExists( UDFRelativePath & ".cfc" ) ) {
-					targetLocation = "/" & appMapping & "/" & udflibrary & ".cfc";
+					locatedPath = "/" & appMapping & "/" & udflibrary & ".cfc";
 				} else if ( fileExists( UDFRelativePath & ".cfm" ) ) {
-					targetLocation = "/" & appMapping & "/" & udflibrary & ".cfm";
+					locatedPath = "/" & appMapping & "/" & udflibrary & ".cfm";
 				} else if ( fileExists( UDFFullPath ) ) {
-					targetLocation = "#udflibrary#";
+					locatedPath = "#udflibrary#";
 				} else if ( fileExists( UDFFullPath & ".cfc" ) ) {
-					targetLocation = "#udflibrary#.cfc";
+					locatedPath = "#udflibrary#.cfc";
 				} else if ( fileExists( UDFFullPath & ".cfm" ) ) {
-					targetLocation = "#udflibrary#.cfm";
+					locatedPath = "#udflibrary#.cfm";
 				} else {
 					throw(
 						message = "Error loading UDF library: #udflibrary#",
@@ -817,7 +815,7 @@ component serializable="false" accessors="true" {
 						type    = "UDFLibraryNotFoundException"
 					);
 				}
-				return targetLocation;
+				return locatedPath;
 			},
 			// Timeout: 1 week
 			10080
