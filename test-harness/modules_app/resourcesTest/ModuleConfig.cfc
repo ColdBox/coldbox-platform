@@ -21,7 +21,7 @@ component {
 	// Module Dependencies
 	this.dependencies       = [];
 	// Models mapped locally with no @resourcesTest
-	this.moduleAwareness = true;
+	this.moduleInjector = true;
 
 	function configure(){
 		// Custom Declared Points

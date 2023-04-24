@@ -354,8 +354,9 @@ component extends="coldbox.system.web.services.BaseService" {
 				// Models pathing
 				modelsInvocationPath    : modulesInvocationPath & "." & modName,
 				modelsPhysicalPath      : modLocation,
-				// Module Awareness
-				moduleAwareness         : false,
+				// Module Injector : If enabled, we use the new cb7 injector, else previous behavior
+				// TODO: This will be true in cb8+
+				moduleInjector          : false,
 				// Module Routes
 				routes                  : [],
 				// Registered handlers
@@ -665,40 +666,25 @@ component extends="coldbox.system.web.services.BaseService" {
 					len( mConfig.cfmapping ) ? mConfig.cfmapping & ".#mConfig.conventions.modelsLocation#" : mConfig.modelsInvocationPath
 				);
 
-				// Module Awareness : Map with no namespace in the local injector
-				if ( mConfig.moduleAwareness ) {
+				// Module Injector : Map with no namespace in the local injector
+				if ( mConfig.moduleInjector ) {
 					binder.mapDirectory( packagePath = packagePath, process = mConfig.autoProcessModels );
-				} else {
-					// No awareness map with @name
-					if ( len( mConfig.modelNamespace ) ) {
-						binder.mapDirectory(
-							packagePath: packagePath,
-							namespace  : "@#mConfig.modelNamespace#",
-							process    : mConfig.autoProcessModels
-						);
-					} else {
-						// just register with no namespace
-						binder.mapDirectory( packagePath = packagePath, process = mConfig.autoProcessModels );
-					}
 				}
 
-				// // Map in parent injector with @name for visibility
-				// This does not work when modules override their binder
-				// Leaving this here to brainstorm on solutions, but
-				// commenting to make this work.
-				// mConfig.injector
-				// 	.getParent()
-				// 	.getBinder()
-				// 	.mapDirectory(
-				// 		packagePath: packagePath,
-				// 		namespace  : "@#mConfig.modelNamespace#",
-				// 		process    : mConfig.autoProcessModels
-				// 	);
+				// Map with namespace
+				if ( len( mConfig.modelNamespace ) ) {
+					binder.mapDirectory(
+						packagePath: packagePath,
+						namespace  : "@#mConfig.modelNamespace#",
+						process    : mConfig.autoProcessModels
+					);
+				} else {
+					binder.mapDirectory( packagePath = packagePath, process = mConfig.autoProcessModels );
+				}
 
 				// Register Default Module Export if it exists as @moduleName, so you can do getInstance( "@moduleName" )
 				if ( fileExists( mconfig.modelsPhysicalPath & "/#arguments.moduleName#.cfc" ) ) {
 					mConfig.injector
-						.getParent()
 						.getBinder()
 						.map( [
 							"@#arguments.moduleName#",
@@ -1076,89 +1062,14 @@ component extends="coldbox.system.web.services.BaseService" {
 		var appSettings = controller.getConfigSettings();
 		var envUtil     = variables.wirebox.getInstance( "Env@coreDelegates" );
 		var mConfig     = arguments.config;
-		var results     = { config : "", injector : "" };
-
-		/*
-		|--------------------------------------------------------------------------
-		| Build the Module's Injector Hierarchy
-		|--------------------------------------------------------------------------
-		*/
-		results.injector = new coldbox.system.ioc.Injector(
-			binder    : { scopeRegistration : { enabled : false } },
-			properties: appSettings,
-			coldbox   : controller,
-			name      : mConfig.injectorName
-		);
-
-		// Register the child injector via parent or root
-		if ( len( arguments.parent ) ) {
-			results.injector.setParent( arguments.parentInjector );
-			arguments.parentInjector.registerChildInjector( name: mConfig.injectorName, child: results.injector );
-		} else {
-			// Set parent to the module's injector
-			results.injector.setParent( variables.wirebox );
-			// Register the module's injector in the parent
-			variables.wirebox.registerChildInjector( name: mConfig.injectorName, child: results.injector );
-		}
-
-		/*
-		|--------------------------------------------------------------------------
-		| Register the module injector in the root reference map
-		| This is used for providers, so specific injectors can be located
-		|--------------------------------------------------------------------------
-		*/
-		variables.wirebox.registerInjectorReference( results.injector );
+		var results     = { "config" : "", "injector" : "" };
 
 		/*
 		|--------------------------------------------------------------------------
 		| Build the Module Configuration
 		|--------------------------------------------------------------------------
 		*/
-		results.config = results.injector.getInstance( mConfig.invocationPath & ".ModuleConfig" );
-
-		// Build a new router for this module so we can track its routes
-		arguments.config.router = results.injector.getInstance( "coldbox.system.web.routing.Router" );
-
-		/*
-		|--------------------------------------------------------------------------
-		| Module Injections
-		|--------------------------------------------------------------------------
-		*/
-		results.config
-			.injectPropertyMixin( "controller", controller )
-			.injectPropertyMixin( "coldboxVersion", controller.getColdBoxSettings().version )
-			.injectPropertyMixin( "appMapping", controller.getSetting( "appMapping" ) )
-			.injectPropertyMixin( "moduleMapping", mConfig.mapping )
-			.injectPropertyMixin( "modulePath", mConfig.path )
-			.injectPropertyMixin( "logBox", controller.getLogBox() )
-			.injectPropertyMixin( "log", controller.getLogBox().getLogger( results.config ) )
-			.injectPropertyMixin( "wirebox", results.injector )
-			.injectPropertyMixin( "rootWirebox", variables.wirebox )
-			.injectPropertyMixin( "binder", results.injector.getBinder() )
-			.injectPropertyMixin( "cachebox", controller.getCacheBox() )
-			.injectPropertyMixin( "getJavaSystem", envUtil.getJavaSystem )
-			.injectPropertyMixin( "getSystemSetting", envUtil.getSystemSetting )
-			.injectPropertyMixin( "getSystemProperty", envUtil.getSystemProperty )
-			.injectPropertyMixin( "getEnv", envUtil.getEnv )
-			.injectPropertyMixin( "appRouter", variables.wireBox.getInstance( "router@coldbox" ) )
-			.injectPropertyMixin( "router", arguments.config.router );
-
-		/*
-		|--------------------------------------------------------------------------
-		| Module Config Seeding
-		|--------------------------------------------------------------------------
-		*/
-		results.config.configure();
-
-		/*
-		|--------------------------------------------------------------------------
-		| Module Environment Control
-		|--------------------------------------------------------------------------
-		*/
-		// Get parent environment settings and if same convention of 'environment'() found, execute it.
-		if ( structKeyExists( results.config, appSettings.environment ) ) {
-			invoke( results.config, "#appSettings.environment#" );
-		}
+		results.config = variables.wirebox.getInstance( mConfig.invocationPath & ".ModuleConfig" );
 
 		/*
 		|--------------------------------------------------------------------------
@@ -1178,23 +1089,23 @@ component extends="coldbox.system.web.services.BaseService" {
 			mConfig.aliases = results.config.aliases;
 		}
 		// author
-		param results.config.author          = "";
-		mConfig.author                       = results.config.author;
+		param results.config.author         = "";
+		mConfig.author                      = results.config.author;
 		// web url
-		param results.config.webURL          = "";
-		mConfig.webURL                       = results.config.webURL;
+		param results.config.webURL         = "";
+		mConfig.webURL                      = results.config.webURL;
 		// description
-		param results.config.description     = "";
-		mConfig.description                  = results.config.description;
+		param results.config.description    = "";
+		mConfig.description                 = results.config.description;
 		// version
-		param results.config.version         = "1.0.0";
-		mConfig.version                      = results.config.version;
+		param results.config.version        = "1.0.0";
+		mConfig.version                     = results.config.version;
 		// cf mapping
-		param results.config.cfmapping       = "";
-		mConfig.cfmapping                    = results.config.cfmapping;
-		// Module Awareness
-		param results.config.moduleAwareness = false;
-		mConfig.moduleAwareness              = results.config.moduleAwareness;
+		param results.config.cfmapping      = "";
+		mConfig.cfmapping                   = results.config.cfmapping;
+		// Module Injector
+		param results.config.moduleInjector = false;
+		mConfig.moduleInjector              = results.config.moduleInjector;
 		// model namespace override
 		if ( structKeyExists( results.config, "modelNamespace" ) ) {
 			mConfig.modelNamespace = results.config.modelNamespace;
@@ -1245,6 +1156,93 @@ component extends="coldbox.system.web.services.BaseService" {
 		mConfig.activate = true;
 		if ( structKeyExists( results.config, "activate" ) ) {
 			mConfig.activate = results.config.activate;
+		}
+
+		/**
+		 *--------------------------------------------------------------------------
+		 * Build the Module's Injector Hierarchy
+		 *--------------------------------------------------------------------------
+		 * Only build it if we are in moduleInjector = true mode.
+		 */
+		if ( mConfig.moduleInjector ) {
+			results.injector = new coldbox.system.ioc.Injector(
+				binder    : { scopeRegistration : { enabled : false } },
+				properties: appSettings,
+				coldbox   : controller,
+				name      : mConfig.injectorName
+			);
+
+			// Register the child injector via parent or root
+			if ( len( arguments.parent ) ) {
+				results.injector.setParent( arguments.parentInjector );
+				arguments.parentInjector.registerChildInjector(
+					name : mConfig.injectorName,
+					child: results.injector
+				);
+			} else {
+				// Set parent to the module's injector
+				results.injector.setParent( variables.wirebox );
+				// Register the module's injector in the parent
+				variables.wirebox.registerChildInjector( name: mConfig.injectorName, child: results.injector );
+			}
+
+			/*
+			|--------------------------------------------------------------------------
+			| Register the module injector in the root reference map
+			| This is used for providers, so specific injectors can be located
+			|--------------------------------------------------------------------------
+			*/
+			variables.wirebox.registerInjectorReference( results.injector );
+		} else {
+			results.injector = variables.wirebox;
+		}
+
+		/*
+		|--------------------------------------------------------------------------
+		| Module Router Creation
+		|--------------------------------------------------------------------------
+		*/
+
+		arguments.config.router = results.injector.getInstance( "coldbox.system.web.routing.Router" );
+
+		/*
+		|--------------------------------------------------------------------------
+		| Module Injections
+		|--------------------------------------------------------------------------
+		*/
+		results.config
+			.injectPropertyMixin( "controller", controller )
+			.injectPropertyMixin( "coldboxVersion", controller.getColdBoxSettings().version )
+			.injectPropertyMixin( "appMapping", controller.getSetting( "appMapping" ) )
+			.injectPropertyMixin( "moduleMapping", mConfig.mapping )
+			.injectPropertyMixin( "modulePath", mConfig.path )
+			.injectPropertyMixin( "logBox", controller.getLogBox() )
+			.injectPropertyMixin( "log", controller.getLogBox().getLogger( results.config ) )
+			.injectPropertyMixin( "wirebox", results.injector )
+			.injectPropertyMixin( "rootWirebox", variables.wirebox )
+			.injectPropertyMixin( "binder", results.injector.getBinder() )
+			.injectPropertyMixin( "cachebox", controller.getCacheBox() )
+			.injectPropertyMixin( "getJavaSystem", envUtil.getJavaSystem )
+			.injectPropertyMixin( "getSystemSetting", envUtil.getSystemSetting )
+			.injectPropertyMixin( "getSystemProperty", envUtil.getSystemProperty )
+			.injectPropertyMixin( "getEnv", envUtil.getEnv )
+			.injectPropertyMixin( "appRouter", variables.wireBox.getInstance( "router@coldbox" ) )
+			.injectPropertyMixin( "router", arguments.config.router );
+
+		/*
+		|--------------------------------------------------------------------------
+		| Execute the configuration for the module
+		|--------------------------------------------------------------------------
+		*/
+		results.config.configure();
+
+		/*
+		|--------------------------------------------------------------------------
+		| Module Environment Control
+		|--------------------------------------------------------------------------
+		*/
+		if ( structKeyExists( results.config, appSettings.environment ) ) {
+			invoke( results.config, "#appSettings.environment#" );
 		}
 
 		/*
