@@ -13,8 +13,8 @@ env:
     - COLDBOX_PRERELEASE=false
   matrix:
     - ENGINE=lucee@5 # Build Entire Frameworks
-    - ENGINE=adobe@2016	ANT_TARGET=run-tests #just run tests
     - ENGINE=adobe@2018	ANT_TARGET=run-tests #just run tests
+    - ENGINE=adobe@2021	ANT_TARGET=run-tests #just run tests
 
 branches:
   only:

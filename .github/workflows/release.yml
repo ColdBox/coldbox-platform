@@ -1,5 +1,5 @@
-# This workflow is used to release master releases and also by the snapshot workflow
-# to release snapshots.
+# This workflow is used to build releases
+# It can also be called by other workflows to reuse the release flow.
 name: ColdBox Release
 
 on:
@@ -39,20 +39,10 @@ jobs:
           distribution: "adopt"
           java-version: "11"
 
-      - name: Cache CommandBox Dependencies
-        uses: actions/cache@v1
-        if: ${{ true }}
-        with:
-          path: ~/.CommandBox/artifacts
-          key: ${{ runner.OS }}-commandbox-cache-${{ hashFiles( 'box.json' ) }}
-          restore-keys: |
-            ${{ runner.OS }}-commandbox-cache-${{ hashFiles( 'box.json' ) }}
-
       - name: Setup CommandBox
-        uses: Ortus-Solutions/setup-commandbox@v2.0.0
+        uses: Ortus-Solutions/setup-commandbox@v2.0.1
         with:
           forgeboxAPIKey: ${{ secrets.FORGEBOX_API_TOKEN }}
-          version: 5.4.2
 
       - name: Setup Environment Variables For Build Process
         id: current_version
