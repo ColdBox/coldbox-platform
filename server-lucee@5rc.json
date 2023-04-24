@@ -1,9 +1,9 @@
 {
     "app":{
-        "cfengine":"adobe@2018",
-        "serverHomeDirectory":".engine/adobe2018"
+        "cfengine":"lucee@5.3-rc",
+        "serverHomeDirectory":".engine/luceerc"
     },
-    "name":"coldbox-adobe@2018",
+    "name":"coldbox-lucee@5rc",
     "force":true,
     "openBrowser":false,
     "web":{

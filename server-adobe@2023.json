@@ -1,9 +1,9 @@
 {
     "app":{
-        "cfengine":"adobe@2018",
-        "serverHomeDirectory":".engine/adobe2018"
+        "cfengine":"adobe@2023.0.0-beta.1",
+        "serverHomeDirectory":".engine/adobe2023"
     },
-    "name":"coldbox-adobe@2018",
+    "name":"coldbox-adobe@2023",
     "force":true,
     "openBrowser":false,
     "web":{
@@ -21,7 +21,10 @@
     "JVM":{
         "heapSize":"1024"
     },
-    "cfconfig":{
-        "file":".cfconfig.json"
-    }
+	"cfconfig": {
+		"file" : ".cfconfig.json"
+	},
+	"scripts" : {
+		"onServerInstall":"cfpm install caching,zip,orm,mysql,postgresql,sqlserver,document,feed,mail,debugger"
+	}
 }
