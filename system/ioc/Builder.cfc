@@ -569,20 +569,6 @@ component serializable="false" accessors="true" {
 				return childBuilder.getObjectFromCustomDSL( arguments.namespace, arguments.args );
 			}
 		}
-
-		// Verify via ancestor if set
-		// TODO: Enter compat flag for this
-		if (
-			variables.injector.hasParent() && variables.injector
-				.getParent()
-				.getObjectBuilder()
-				.isDSLNamespace( arguments.namespace )
-		) {
-			return variables.injector
-				.getParent()
-				.getObjectBuilder()
-				.getObjectFromCustomDSL( arguments.namespace, arguments.args );
-		}
 	}
 
 	/**
