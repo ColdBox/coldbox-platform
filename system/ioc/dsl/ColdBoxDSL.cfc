@@ -146,6 +146,9 @@ component accessors="true" {
 					case "requestService": {
 						return variables.coldbox.getRequestService();
 					}
+					case "rootWireBox": {
+						return variables.coldbox.getWireBox();
+					}
 					case "router": {
 						return variables.injector.getInstance( "router@coldbox" );
 					}
