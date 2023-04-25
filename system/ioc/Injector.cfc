@@ -15,12 +15,17 @@
  * injector = new coldbox.system.ioc.Injector();
  * </pre>
  *
- *	Binder Startup
+ * Inline Config:
+ * <pre class='brush: cf'>
+ * injector = new coldbox.system.ioc.Injector( { scopeRegistration : { enabled : false } } );
+ * </pre>
+ *
+ * Binder Startup
  * <pre class='brush: cf'>
  * injector = new coldbox.system.ioc.Injector(new MyBinder());
  * </pre>
  *
- *	Binder Path Startup
+ * Binder Path Startup
  * <pre class='brush: cf'>
  * injector = new coldbox.system.ioc.Injector( "config.MyBinder" );
  * </pre>
@@ -85,6 +90,11 @@ component serializable="false" accessors="true" {
 	property name="parent";
 
 	/**
+	 * Root Injector instance
+	 */
+	property name="root";
+
+	/**
 	 * LifeCycle Scopes
 	 */
 	property name="scopes";
@@ -119,7 +129,7 @@ component serializable="false" accessors="true" {
 	property name="name" type="string";
 
 	/**
-	 * The object builder
+	 * The object builder for this injector
 	 */
 	property name="objectBuilder";
 
@@ -192,6 +202,8 @@ component serializable="false" accessors="true" {
 		variables.log    = "";
 		// Parent Injector
 		variables.parent = "";
+		// Root Injector
+		variables.root   = "";
 		// LifeCycle Scopes
 		variables.scopes = {
 			"APPLICATION" : "",
@@ -963,6 +975,13 @@ component serializable="false" accessors="true" {
 	 */
 	boolean function hasParent(){
 		return isObject( variables.parent );
+	}
+
+	/**
+	 * Has a root injector
+	 */
+	boolean function hasRoot(){
+		return isObject( variables.root );
 	}
 
 	/**

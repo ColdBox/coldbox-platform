@@ -1170,7 +1170,7 @@ component extends="coldbox.system.web.services.BaseService" {
 				properties: appSettings,
 				coldbox   : controller,
 				name      : mConfig.injectorName
-			);
+			).setRoot( variables.wirebox );
 
 			// Register the child injector via parent or root
 			if ( len( arguments.parent ) ) {
