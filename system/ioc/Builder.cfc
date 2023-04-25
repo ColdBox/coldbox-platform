@@ -791,6 +791,9 @@ component serializable="false" accessors="true" {
 					case "properties": {
 						return variables.injector.getBinder().getProperties();
 					}
+					case "root": {
+						return variables.injector.getName() == "root" ? variables.injector : variables.injector.getRoot();
+					}
 					case "targetID": {
 						return arguments.targetID;
 					}
