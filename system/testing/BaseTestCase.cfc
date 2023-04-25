@@ -286,7 +286,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * @return coldbox.system.ioc.Injector
 	 */
 	function getWireBox(){
-		return variables.controller.getwireBox();
+		return variables.controller.getWireBox();
 	}
 
 	/**

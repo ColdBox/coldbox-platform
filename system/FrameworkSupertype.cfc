@@ -65,6 +65,13 @@ component serializable="false" accessors="true" {
 	 ****************************************************************/
 
 	/**
+	 * Get The root wirebox instance
+	 */
+	function getRootWireBox() cbMethod{
+		return variables.controller.getWireBox();
+	}
+
+	/**
 	 * Locates, Creates, Injects and Configures an object model instance
 	 *
 	 * @name          The mapping name or CFC instance path to try to build up
