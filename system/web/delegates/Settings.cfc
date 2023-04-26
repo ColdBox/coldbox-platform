@@ -10,6 +10,6 @@ component accessors="true" singleton {
 	property
 		name    ="controller"
 		inject  ="coldbox"
-		delegate="getSetting,getColdBoxSetting,settingExists,setSetting,getModuleSettings,getModuleConfig";
+		delegate="getSetting,getColdBoxSetting,settingExists,setSetting,getModuleSettings,getModuleConfig,getUserSessionIdentifier";
 
 }

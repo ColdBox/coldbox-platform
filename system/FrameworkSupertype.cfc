@@ -374,6 +374,19 @@ component serializable="false" accessors="true" {
 		return variables.controller.getModuleConfig( argumentCollection = arguments );
 	}
 
+	/**
+	 * This method will return the unique user's request tracking identifier according to our discovery algoritm:
+	 *
+	 * 1. If we have an identifierProvider closure/lambda/udf, then call it and use it
+	 * 2. If we have session enabled, use the jessionId or session URL Token
+	 * 3. If we have cookies enabled, use the cfid/cftoken
+	 * 4. If we have in the URL the cfid/cftoken
+	 * 5. Create a request based tracking identifier: cbUserTrackingId
+	 */
+	function getUserSessionIdentifier(){
+		return variables.controller.getUserSessionIdentifier();
+	}
+
 	/****************************************************************
 	 * Relocation Methods *
 	 ****************************************************************/
