@@ -212,7 +212,7 @@ component serializable="false" accessors="true" {
 		cacheTimeout           = "",
 		cacheLastAccessTimeout = "",
 		cacheSuffix            = "",
-		cacheProvider          = "template"
+		cacheProvider          = "template",
 		viewVariables          = {}
 	) cbMethod{
 		return variables.controller.getRenderer().externalView( argumentCollection = arguments );
