@@ -67,7 +67,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [COLDBOX-1158](https://ortussolutions.atlassian.net/browse/COLDBOX-1158) New \`back\(\)\` function in super type that you can use to redirect back to your referer or a fallback
 - [COLDBOX-1161](https://ortussolutions.atlassian.net/browse/COLDBOX-1161) new toJson\(\) helper in the Util class which is delegated in many locations around the framework to add struct based query serialization and no dubm security prefixes
 - [COLDBOX-1162](https://ortussolutions.atlassian.net/browse/COLDBOX-1162) Add in functionality to exclude patterns via router's findRoute\(\)
-- [COLDBOX-1164](https://ortussolutions.atlassian.net/browse/COLDBOX-1164) New convention for coldfusion tags: includes/tags. Every ColdBox app will register that location as a repository for custom tags for your application
 - [COLDBOX-1165](https://ortussolutions.atlassian.net/browse/COLDBOX-1165) New convention for modules for storing and using coldfusion tags: \`/tags\`
 - [COLDBOX-1166](https://ortussolutions.atlassian.net/browse/COLDBOX-1166) Lazy loading and persistence of engine helper to assist in continued performance and initial load speed
 - [COLDBOX-1167](https://ortussolutions.atlassian.net/browse/COLDBOX-1167) New core delegates for smaller building blocks, which leverages the \`@coreDelegates\` namespace

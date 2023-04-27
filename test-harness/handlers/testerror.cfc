@@ -19,6 +19,7 @@
 				"/coldbox/system/exceptions/Whoops.cfm"
 			);
 		}
+		//queryExecute( "select test from users where id = :id", { id :  0} );
 		// testing coldbox exception bean, this line will throw error
 		event.getValuesss( "random" );
 		return;
