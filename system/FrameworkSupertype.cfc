@@ -166,6 +166,7 @@ component serializable="false" accessors="true" {
 	 * @collectionDelim        A string to delimit the collection renderings by
 	 * @prePostExempt          If true, pre/post view interceptors will not be fired. By default they do fire
 	 * @name                   The name of the rendering region to render out, Usually all arguments are coming from the stored region but you override them using this function's arguments.
+	 * @viewVariables          A struct of variables to incorporate into the view's variables scope.
 	 *
 	 * @return The rendered view
 	 */
@@ -184,7 +185,8 @@ component serializable="false" accessors="true" {
 		numeric collectionMaxRows  = 0,
 		collectionDelim            = "",
 		boolean prePostExempt      = false,
-		name
+		name,
+		viewVariables = {}
 	) cbMethod{
 		return variables.controller.getRenderer().view( argumentCollection = arguments );
 	}
@@ -199,6 +201,7 @@ component serializable="false" accessors="true" {
 	 * @cacheLastAccessTimeout The time in minutes the view will be removed from cache if idle or requested
 	 * @cacheSuffix            The suffix to add into the cache entry for this view rendering
 	 * @cacheProvider          The provider to cache this view in, defaults to 'template'
+	 * @viewVariables          A struct of variables to incorporate into the view's variables scope.
 	 *
 	 * @return The rendered view
 	 */
@@ -210,6 +213,7 @@ component serializable="false" accessors="true" {
 		cacheLastAccessTimeout = "",
 		cacheSuffix            = "",
 		cacheProvider          = "template"
+		viewVariables          = {}
 	) cbMethod{
 		return variables.controller.getRenderer().externalView( argumentCollection = arguments );
 	}
@@ -223,6 +227,7 @@ component serializable="false" accessors="true" {
 	 * @args          An optional set of arguments that will be available to this layouts/view rendering ONLY
 	 * @viewModule    The module to explicitly render the view from
 	 * @prePostExempt If true, pre/post layout interceptors will not be fired. By default they do fire
+	 * @viewVariables A struct of variables to incorporate into the view's variables scope.
 	 *
 	 * @return The rendered layout
 	 */
@@ -232,7 +237,8 @@ component serializable="false" accessors="true" {
 		view                  = "",
 		struct args           = {},
 		viewModule            = "",
-		boolean prePostExempt = false
+		boolean prePostExempt = false,
+		viewVariables         = {}
 	) cbMethod{
 		return variables.controller.getRenderer().layout( argumentCollection = arguments );
 	}
