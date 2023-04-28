@@ -56,6 +56,18 @@ component singleton {
 	}
 
 	/**
+	 * Lowercase the first letter of the string
+	 *
+	 * @target The incoming string
+	 */
+	function lcFirst( required target ){
+		return lcase( left( arguments.target, 1 ) ) & right(
+			arguments.target,
+			len( arguments.target ) - 1
+		);
+	}
+
+	/**
 	 * Create kebab-case from a string.
 	 *
 	 * @target The string to convert to kebab-case.
