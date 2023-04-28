@@ -299,7 +299,7 @@ component
 	 */
 	function getQuiet( required objectKey ){
 		// Don't touch the casing on 2018+
-		if ( listFind( "2018,2021", server.coldfusion.productVersion.listFirst() ) ) {
+		if ( listFind( "2018,2021,2023", server.coldfusion.productVersion.listFirst() ) ) {
 			var element = getObjectStore().getQuiet( arguments.objectKey );
 		} else {
 			var element = getObjectStore().getQuiet( uCase( arguments.objectKey ) );
@@ -492,7 +492,7 @@ component
 	 * @objectKey The object cache key
 	 */
 	boolean function clearQuiet( required objectKey ){
-		if ( listFind( "2018,2021", server.coldfusion.productVersion.listFirst() ) ) {
+		if ( listFind( "2018,2021,2023", server.coldfusion.productVersion.listFirst() ) ) {
 			return getObjectStore().removeQuiet( arguments.objectKey );
 		} else {
 			return getObjectStore().removeQuiet( uCase( arguments.objectKey ) );
