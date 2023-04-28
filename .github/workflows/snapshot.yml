@@ -7,26 +7,39 @@ on:
     branches:
       - development
 
-env:
-  COLDBOX_PRERELEASE: false
-
 jobs:
   #############################################
   # Tests First baby! We fail, no build :(
   #############################################
   tests:
     uses: ./.github/workflows/tests.yml
-    secrets:
-      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+    secrets: inherit
+
+  ##########################################################################################
+  # Format Source Code
+  ##########################################################################################
+  format:
+    name: Code Auto-Formatting
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Auto-format
+        uses: Ortus-Solutions/commandbox-action@v1.0.2
+        with:
+          cmd: run-script format
+
+      - name: Commit Format Changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Apply cfformat changes
 
   #############################################
   # Build Snapshot Release
   #############################################
   build:
-    needs: tests
     uses: ./.github/workflows/release.yml
-    secrets:
-      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-      FORGEBOX_API_TOKEN: ${{ secrets.FORGEBOX_API_TOKEN }}
-      AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
-      AWS_ACCESS_SECRET: ${{ secrets.AWS_ACCESS_SECRET }}
+    needs: [ tests, format ]
+    secrets: inherit
+    with:
+      snapshot: true
