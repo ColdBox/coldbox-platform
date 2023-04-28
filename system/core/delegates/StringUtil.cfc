@@ -51,15 +51,15 @@ component singleton {
 	 */
 	function camelCase( required target ){
 		return arguments.target
-			.replace( "_", " " )
+		    .replace( "_", " ", "all" )
+			.replace( "-", " ", "all" )
 			.listToArray( " " )
-			.filter( ( word ) => returnlen( trim( arguments.word ) ) > 0 )
+			.filter( ( word ) => len( trim( arguments.word ) ) > 0 )
 			.map( ( word, index ) => {
-				return ( arguments.index === 0 ) ? lCase( arguments.word ) : uCase( left( arguments.word, 1 ) ) & lCase(
-					mid( arguments.word, 2 )
-				);
+			    return ( arguments.index === 1 ) ? lcase( arguments.word ) :
+				    _ucFirst( arguments.word );
 			} )
-			.toList();
+			.toList( "" );
 	}
 
 	/**
@@ -69,10 +69,10 @@ component singleton {
 	 */
 	function headline( required target ){
 		return snakeCase( arguments.target )
-			.replace( "_", " " )
-			.replace( "-", " " )
+			.replace( "_", " ", "all" )
+			.replace( "-", " ", "all" )
 			.listToArray( " " )
-			.filter( ( word ) => returnlen( trim( arguments.word ) ) > 0 )
+			.filter( ( word ) => len( trim( arguments.word ) ) > 0 )
 			.map( ( word, index ) => {
 				return this.ucFirst( arguments.word );
 			} )
@@ -85,6 +85,9 @@ component singleton {
 	 * @target The target string
 	 */
 	function ucFirst( required target ){
+		if( len( arguments.target ) == 1 ){
+			return ucase( arguments.target );
+		}
 		return server.keyExists( "lucee" ) ? ucFirst( arguments.target ) : uCase( left( arguments.target, 1 ) ) & right(
 			arguments.target,
 			len( arguments.target ) - 1
