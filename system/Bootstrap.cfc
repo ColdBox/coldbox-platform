@@ -266,7 +266,9 @@ component serializable="false" accessors="true" {
 				} );
 
 				// Cached Status Code
-				if ( isNumeric( local.refResults.eventCaching.statusCode ) && local.refResults.eventCaching.statusCode > 0 ) {
+				if (
+					isNumeric( local.refResults.eventCaching.statusCode ) && local.refResults.eventCaching.statusCode > 0
+				) {
 					event.setHTTPHeader( statusCode = local.refResults.eventCaching.statusCode );
 				}
 
