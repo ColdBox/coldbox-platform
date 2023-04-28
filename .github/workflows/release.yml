@@ -43,7 +43,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Setup Java
-        uses: actions/setup-java@v3.9.0
+        uses: actions/setup-java@v3
         with:
           distribution: "temurin"
           java-version: "11"
@@ -171,12 +171,12 @@ jobs:
     runs-on: ubuntu-20.04
     needs: [ build ]
     steps:
-      # Checkout Target Branch
       - name: Checkout Development Repository
         uses: actions/checkout@v3
         if: env.LTS == 'false'
         with:
           ref: development
+
       - name: Checkout LTS Repository
         uses: actions/checkout@v3
         if: env.LTS == 'true'
