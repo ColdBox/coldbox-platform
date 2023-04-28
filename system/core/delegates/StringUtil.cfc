@@ -7,6 +7,42 @@
 component singleton {
 
 	/**
+	 * Slugify a string for URL Safety
+	 *
+	 * @str       Target to slugify
+	 * @maxLength The maximum number of characters for the slug
+	 * @allow     a regex safe list of additional characters to allow
+	 */
+	function slugify(
+		required str,
+		numeric maxLength = 0,
+		allow             = ""
+	){
+		// Cleanup and slugify the string
+		var slug = lCase( trim( arguments.str ) );
+		slug     = replaceList(
+			slug,
+			"#chr( 228 )#,#chr( 252 )#,#chr( 246 )#,#chr( 223 )#",
+			"ae,ue,oe,ss"
+		);
+		slug = reReplace(
+			slug,
+			"[^a-z0-9-\s#arguments.allow#]",
+			"",
+			"all"
+		);
+		slug = trim( reReplace( slug, "[\s-]+", " ", "all" ) );
+		slug = reReplace( slug, "\s", "-", "all" );
+
+		// is there a max length restriction
+		if ( arguments.maxlength ) {
+			slug = left( slug, arguments.maxlength );
+		}
+
+		return slug;
+	}
+
+	/**
 	 * Convert a string to camel case using a functional approach.
 	 *
 	 * @target The string to convert to camel case.
@@ -61,10 +97,7 @@ component singleton {
 	 * @target The incoming string
 	 */
 	function lcFirst( required target ){
-		return lcase( left( arguments.target, 1 ) ) & right(
-			arguments.target,
-			len( arguments.target ) - 1
-		);
+		return lCase( left( arguments.target, 1 ) ) & right( arguments.target, len( arguments.target ) - 1 );
 	}
 
 	/**

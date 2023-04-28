@@ -15,6 +15,8 @@
 <div class="row">
 	<div class="col-md-9">
 
+		<h2>#html.slugify( "html helper ' can slugify via the string util" )#</h2>
+
 		<section id="eventHandlers">
 		<div class="page-header">
 			<h2>

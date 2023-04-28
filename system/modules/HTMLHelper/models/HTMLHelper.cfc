@@ -9,7 +9,7 @@ component
 	accessors=true
 	threadSafe
 	singleton
-	delegates="JsonUtil@coreDelegates,Settings@cbDelegates"
+	delegates="JsonUtil@coreDelegates,Settings@cbDelegates,StringUtil@coreDelegates"
 {
 
 	/****************************************************************
@@ -544,42 +544,6 @@ component
 				return "<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 4.01 Frameset//EN"" ""http://www.w3.org/TR/html4/frameset.dtd"">";
 			}
 		}
-	}
-
-	/**
-	 * Slugify a string for URL Safety
-	 *
-	 * @str       Target to slugify
-	 * @maxLength The maximum number of characters for the slug
-	 * @allow     a regex safe list of additional characters to allow
-	 */
-	function slugify(
-		required str,
-		numeric maxLength = 0,
-		allow             = ""
-	){
-		// Cleanup and slugify the string
-		var slug = lCase( trim( arguments.str ) );
-		slug     = replaceList(
-			slug,
-			"#chr( 228 )#,#chr( 252 )#,#chr( 246 )#,#chr( 223 )#",
-			"ae,ue,oe,ss"
-		);
-		slug = reReplace(
-			slug,
-			"[^a-z0-9-\s#arguments.allow#]",
-			"",
-			"all"
-		);
-		slug = trim( reReplace( slug, "[\s-]+", " ", "all" ) );
-		slug = reReplace( slug, "\s", "-", "all" );
-
-		// is there a max length restriction
-		if ( arguments.maxlength ) {
-			slug = left( slug, arguments.maxlength );
-		}
-
-		return slug;
 	}
 
 	/**
