@@ -51,13 +51,12 @@ component singleton {
 	 */
 	function camelCase( required target ){
 		return arguments.target
-		    .replace( "_", " ", "all" )
+			.replace( "_", " ", "all" )
 			.replace( "-", " ", "all" )
 			.listToArray( " " )
 			.filter( ( word ) => len( trim( arguments.word ) ) > 0 )
 			.map( ( word, index ) => {
-			    return ( arguments.index === 1 ) ? lcase( arguments.word ) :
-				    _ucFirst( arguments.word );
+				return ( arguments.index === 1 ) ? lCase( arguments.word ) : _ucFirst( arguments.word );
 			} )
 			.toList( "" );
 	}
@@ -85,8 +84,8 @@ component singleton {
 	 * @target The target string
 	 */
 	function ucFirst( required target ){
-		if( len( arguments.target ) == 1 ){
-			return ucase( arguments.target );
+		if ( len( arguments.target ) == 1 ) {
+			return uCase( arguments.target );
 		}
 		return server.keyExists( "lucee" ) ? ucFirst( arguments.target ) : uCase( left( arguments.target, 1 ) ) & right(
 			arguments.target,

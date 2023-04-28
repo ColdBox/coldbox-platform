@@ -644,15 +644,14 @@ component accessors="true" singleton {
 	 *
 	 * @target The target to work on
 	 */
-	private string function getTargetName( required any target ) {
-
+	private string function getTargetName( required any target ){
 		// Short-cut discovery via ActiveEntity
 		if ( structKeyExists( arguments.target, "getEntityName" ) ) {
 			return arguments.target.getEntityName();
 		}
 
 		// Try Hibernate Discovery
-		try{
+		try {
 			return ormGetSession().getEntityName( arguments.target );
 		} catch ( org.hibernate.TransientObjectException e ) {
 			// This was a transient and not in session

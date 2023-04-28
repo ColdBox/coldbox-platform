@@ -53,11 +53,9 @@ component extends="coldbox.system.testing.BaseTestCase" {
 		variables.mockLogger   = mockBox.createEmptyMock( "coldbox.system.logging.Logger" );
 		variables.mockFlash    = mockBox.createMock( "coldbox.system.web.flash.MockFlash" ).init( mockController );
 		variables.mockCacheBox = mockBox.createEmptyMock( "coldbox.system.cache.CacheFactory" );
-		variables.mockWireBox  = mockBox.createMock( "coldbox.system.ioc.Injector" ).init( {
-			scopeRegistration : {
-				enabled : false
-			}
-		});
+		variables.mockWireBox  = mockBox
+			.createMock( "coldbox.system.ioc.Injector" )
+			.init( { scopeRegistration : { enabled : false } } );
 
 		// Mock interceptor Dependencies
 		variables.mockController
