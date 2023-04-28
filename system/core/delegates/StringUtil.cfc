@@ -56,6 +56,21 @@ component singleton {
 	}
 
 	/**
+	 * Create kebab-case from a string.
+	 *
+	 * @target The string to convert to kebab-case.
+	 *
+	 * @return The kebab-case string.
+	 */
+	function kebabCase( required target ){
+		return arguments.target
+			.replaceAll( "[^A-Za-z0-9']+", " " )
+			.listToArray( " " )
+			.map( ( word ) => lCase( word ) )
+			.toList( "-" );
+	}
+
+	/**
 	 * Convert a string to snake case.
 	 *
 	 * @target    The string to convert to snake case.
