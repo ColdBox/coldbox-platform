@@ -18,8 +18,18 @@ on:
         default: false
         type: boolean
 
+  # Manual Trigger for LTS Releases
+  workflow_dispatch:
+    inputs:
+      lts:
+        description: 'The LTS marker'
+        required: false
+        default: true
+        type: boolean
+
 env:
   SNAPSHOT: ${{ inputs.snapshot || false }}
+  LTS: ${{ inputs.lts || false }}
 
 jobs:
   #############################################
@@ -74,7 +84,7 @@ jobs:
           box server start serverConfigFile="server-lucee@5.json" --debug
           ant -DisPreRelease=${{ env.COLDBOX_PRERELEASE }} -Dcoldbox.version=${{ env.COLDBOX_VERSION }} -Dbuild.branch=${{ env.BRANCH }} -Dbuild.number=${{ github.run_number }} -f build/build.xml
 
-      - name: Commit Changelog To Master
+      - name: Commit Changelog [unreleased] with latest version
         uses: EndBug/add-and-commit@v9.1.1
         if: env.SNAPSHOT == 'false'
         with:
@@ -157,15 +167,19 @@ jobs:
   ##########################################################################################
   prep_next_release:
     name: Prep Next Release
-    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+    if: github.ref != 'refs/heads/development'
     runs-on: ubuntu-20.04
     needs: [ build ]
     steps:
-      # Checkout development
-      - name: Checkout Repository
+      # Checkout Target Branch
+      - name: Checkout Development Repository
         uses: actions/checkout@v3
+        if: env.LTS == 'false'
         with:
           ref: development
+      - name: Checkout LTS Repository
+        uses: actions/checkout@v3
+        if: env.LTS == 'true'
 
       - name: Setup CommandBox
         uses: Ortus-Solutions/setup-commandbox@v2.0.1
@@ -178,17 +192,14 @@ jobs:
           name: coldbox-variants
           path: .tmp
 
-      # Copy the changelog to the development branch
       - name: Copy Changelog
         run: |
           cp .tmp/changelog.md changelog.md
 
-      # Bump to next version
       - name: Bump Version
         run: |
           box bump --minor --!TagVersion
 
-      # Commit it back to development
       - name: Commit Version Bump
         uses: EndBug/add-and-commit@v9.1.1
         with:
