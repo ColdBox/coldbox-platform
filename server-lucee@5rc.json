@@ -1,9 +1,9 @@
 {
     "app":{
-        "cfengine":"adobe@2021",
-        "serverHomeDirectory":".engine/adobe2021"
+        "cfengine":"lucee@5.3-rc",
+        "serverHomeDirectory":".engine/luceerc"
     },
-    "name":"coldbox-adobe@2021",
+    "name":"coldbox-lucee@5rc",
     "force":true,
     "openBrowser":false,
     "web":{
@@ -21,10 +21,7 @@
     "JVM":{
         "heapSize":"1024"
     },
-	"cfconfig": {
-		"file" : ".cfconfig.json"
-	},
-	"scripts" : {
-		"onServerInstall":"cfpm install caching,zip,orm,mysql,postgresql,sqlserver,document,feed,mail,debugger"
-	}
+    "cfconfig":{
+        "file":".cfconfig.json"
+    }
 }
