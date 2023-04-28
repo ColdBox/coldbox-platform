@@ -1,11 +1,9 @@
-# This workflow tests the ColdBox code using many permutations in the matrix.
-# If successful, then it creates the bleeding edge artifact and publishes it to S3 and ForgeBox
-name: ColdBox Snapshots
+name: ColdBox LTS Flow
 
 on:
   push:
     branches:
-      - development
+      - "releases/**"
 
 jobs:
   #############################################
@@ -34,13 +32,3 @@ jobs:
         with:
           commit_message: Apply cfformat changes
           push_options: --force
-
-  #############################################
-  # Build Snapshot Release
-  #############################################
-  build:
-    uses: ./.github/workflows/release.yml
-    needs: [ tests, format ]
-    secrets: inherit
-    with:
-      snapshot: true

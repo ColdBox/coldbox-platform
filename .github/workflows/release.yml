@@ -1,24 +1,35 @@
-# This workflow is used to release master releases and also by the snapshot workflow
-# to release snapshots.
+# This workflow is used to build releases
+# It can also be called by other workflows to reuse the release flow.
 name: ColdBox Release
 
 on:
+  # If you push to master|main this will trigger a stable release
   push:
     branches:
       - master
+      - main
+
+  # Reusable workflow : Usually called by a `snapshot` workflow
   workflow_call:
-    secrets:
-      SLACK_WEBHOOK_URL:
-        required: true
-      FORGEBOX_API_TOKEN:
-        required: true
-      AWS_ACCESS_KEY:
-        required: true
-      AWS_ACCESS_SECRET:
-        required: true
+    inputs:
+      snapshot:
+        description: 'Is this a snapshot build?'
+        required: false
+        default: false
+        type: boolean
+
+  # Manual Trigger for LTS Releases
+  workflow_dispatch:
+    inputs:
+      lts:
+        description: 'The LTS marker'
+        required: false
+        default: true
+        type: boolean
 
 env:
-  COLDBOX_PRERELEASE: false
+  SNAPSHOT: ${{ inputs.snapshot || false }}
+  LTS: ${{ inputs.lts || false }}
 
 jobs:
   #############################################
@@ -29,30 +40,18 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
+        uses: actions/checkout@v3
 
       - name: Setup Java
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
-          distribution: "adopt"
+          distribution: "temurin"
           java-version: "11"
 
-      - name: Cache CommandBox Dependencies
-        uses: actions/cache@v1
-        if: ${{ true }}
-        with:
-          path: ~/.CommandBox/artifacts
-          key: ${{ runner.OS }}-commandbox-cache-${{ hashFiles( 'box.json' ) }}
-          restore-keys: |
-            ${{ runner.OS }}-commandbox-cache-${{ hashFiles( 'box.json' ) }}
-
       - name: Setup CommandBox
-        uses: Ortus-Solutions/setup-commandbox@v2.0.0
+        uses: Ortus-Solutions/setup-commandbox@v2.0.1
         with:
           forgeboxAPIKey: ${{ secrets.FORGEBOX_API_TOKEN }}
-          version: 5.4.2
 
       - name: Setup Environment Variables For Build Process
         id: current_version
@@ -60,6 +59,7 @@ jobs:
           echo "COLDBOX_VERSION=`cat box.json | jq '.version' -r`" >> $GITHUB_ENV
           box package set version=@build.version@+@build.number@
           # master or snapshot
+          echo "Github Ref is $GITHUB_REF"
           echo "BRANCH=master" >> $GITHUB_ENV
           if [ $GITHUB_REF == 'refs/heads/development' ]
           then
@@ -70,10 +70,36 @@ jobs:
         run: |
           cd apidocs && box install
 
+      - name: Update changelog [unreleased] with latest version
+        uses: thomaseizinger/keep-a-changelog-new-release@1.3.0
+        if: env.SNAPSHOT == 'false'
+        with:
+          changelogPath: ./changelog.md
+          tag: v${{ env.COLDBOX_VERSION }}
+
       - name: Build ColdBox Variants for ${{ env.BRANCH }} v${{ env.COLDBOX_VERSION }}
         run: |
+          npm install -g markdownlint-cli
+          markdownlint changelog.md --fix
           box server start serverConfigFile="server-lucee@5.json" --debug
           ant -DisPreRelease=${{ env.COLDBOX_PRERELEASE }} -Dcoldbox.version=${{ env.COLDBOX_VERSION }} -Dbuild.branch=${{ env.BRANCH }} -Dbuild.number=${{ github.run_number }} -f build/build.xml
+
+      - name: Commit Changelog [unreleased] with latest version
+        uses: EndBug/add-and-commit@v9.1.1
+        if: env.SNAPSHOT == 'false'
+        with:
+          author_name: Github Actions
+          author_email: info@ortussolutions.com
+          message: 'Finalized changelog for v${{ env.COLDBOX_VERSION }}'
+          add: changelog.md
+
+      - name: Tag Version
+        uses: rickstaa/action-create-tag@v1.6.1
+        if: env.SNAPSHOT == 'false'
+        with:
+          tag: "v${{ env.COLDBOX_VERSION }}"
+          force_push_tag: true
+          message: "Latest Release v${{ env.COLDBOX_VERSION }}"
 
       - name: Upload Build Artifacts
         if: success()
@@ -82,6 +108,7 @@ jobs:
           name: coldbox-variants
           path: |
             artifacts/**/*
+            changelog.md
 
       - name: Upload Binaries to S3
         uses: jakejarvis/s3-sync-action@master
@@ -113,6 +140,16 @@ jobs:
           cd $ROOT_DIR/artifacts/wirebox/${{ env.COLDBOX_VERSION }} && box forgebox publish
           cd $ROOT_DIR/artifacts/logbox/${{ env.COLDBOX_VERSION }} && box forgebox publish
 
+      - name: Create Github Release
+        uses: taiki-e/create-gh-release-action@v1.6.2
+        continue-on-error: true
+        if: env.SNAPSHOT == 'false'
+        with:
+          title: ${{ env.COLDBOX_VERSION }}
+          changelog: changelog.md
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: refs/tags/v${{ env.COLDBOX_VERSION }}
+
       - name: Inform Slack
         if: ${{ always() }}
         uses: rtCamp/action-slack-notify@v2
@@ -124,3 +161,51 @@ jobs:
           SLACK_TITLE: "ColdBox Build"
           SLACK_USERNAME: CI
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  ##########################################################################################
+  # Prep Next Release
+  ##########################################################################################
+  prep_next_release:
+    name: Prep Next Release
+    if: github.ref != 'refs/heads/development'
+    runs-on: ubuntu-20.04
+    needs: [ build ]
+    steps:
+      - name: Checkout Development Repository
+        uses: actions/checkout@v3
+        if: env.LTS == 'false'
+        with:
+          ref: development
+
+      - name: Checkout LTS Repository
+        uses: actions/checkout@v3
+        if: env.LTS == 'true'
+
+      - name: Setup CommandBox
+        uses: Ortus-Solutions/setup-commandbox@v2.0.1
+        with:
+          forgeboxAPIKey: ${{ secrets.FORGEBOX_TOKEN }}
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: coldbox-variants
+          path: .tmp
+
+      - name: Copy Changelog
+        run: |
+          cp .tmp/changelog.md changelog.md
+
+      - name: Bump Version
+        run: |
+          box bump --minor --!TagVersion
+
+      - name: Commit Version Bump
+        uses: EndBug/add-and-commit@v9.1.1
+        with:
+          author_name: Github Actions
+          author_email: info@ortussolutions.com
+          message: 'Version bump'
+          add: |
+            box.json
+            changelog.md
