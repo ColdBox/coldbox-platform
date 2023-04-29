@@ -180,6 +180,7 @@ component
 
 	/**
 	 * Clear the cache statistics
+	 * NOT IMPLEMENTED FOR ACF 2016+
 	 *
 	 * @return ICacheProvider
 	 */
@@ -297,7 +298,7 @@ component
 	 * @objectKey The key to retrieve
 	 */
 	function getQuiet( required objectKey ){
-		return getObjectStore().getQuiet( uCase( arguments.objectKey ) );
+		return getObjectStore().getQuiet( arguments.objectKey );
 	}
 
 	/**
@@ -482,7 +483,7 @@ component
 	 * @objectKey The object cache key
 	 */
 	boolean function clearQuiet( required objectKey ){
-		if ( listFind( "2018,2021", server.coldfusion.productVersion.listFirst() ) ) {
+		if ( listFind( "2018,2021,2023", server.coldfusion.productVersion.listFirst() ) ) {
 			return getObjectStore().removeQuiet( arguments.objectKey );
 		} else {
 			return getObjectStore().removeQuiet( uCase( arguments.objectKey ) );
@@ -537,3 +538,4 @@ component
 	}
 
 }
+
