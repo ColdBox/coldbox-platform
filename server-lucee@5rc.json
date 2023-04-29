@@ -1,8 +1,9 @@
 {
     "app":{
-        "cfengine":"lucee@5"
+        "cfengine":"lucee@5.3-rc",
+        "serverHomeDirectory":".engine/luceerc"
     },
-    "name":"coldbox-lucee@5",
+    "name":"coldbox-lucee@5rc",
     "force":true,
     "openBrowser":false,
     "web":{
@@ -12,15 +13,15 @@
         },
         "rewrites":{
             "enable":true
-		},
-		"aliases":{
+        },
+        "aliases":{
             "/coldbox":"./"
         }
     },
     "JVM":{
         "heapSize":"1024"
     },
-	"cfconfig": {
-		"file" : ".cfconfig.json"
-	}
+    "cfconfig":{
+        "file":".cfconfig.json"
+    }
 }
