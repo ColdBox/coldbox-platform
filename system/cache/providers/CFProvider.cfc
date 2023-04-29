@@ -297,7 +297,8 @@ component
 	 * @objectKey The key to retrieve
 	 */
 	function getQuiet( required objectKey ){
-		return getObjectStore().getQuiet( arguments.objectKey );
+		var element = getObjectStore().getQuiet( arguments.objectKey );
+		return !isNull( local.element ) ? local.element.getValue() : javacast( "null", 0 );
 	}
 
 	/**
