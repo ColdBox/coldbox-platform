@@ -483,11 +483,7 @@ component
 	 * @objectKey The object cache key
 	 */
 	boolean function clearQuiet( required objectKey ){
-		if ( listFind( "2018,2021,2023", server.coldfusion.productVersion.listFirst() ) ) {
-			return getObjectStore().removeQuiet( arguments.objectKey );
-		} else {
-			return getObjectStore().removeQuiet( uCase( arguments.objectKey ) );
-		}
+		return getObjectStore().removeQuiet( arguments.objectKey );
 	}
 
 	/**
