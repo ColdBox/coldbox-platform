@@ -1,13 +1,15 @@
 # Changelog
 
-All notable changes to this project will be documented here: https://coldbox.ortusbooks.com/intro/release-history and summarized in this file.
+All notable changes to this project will be documented here: <https://coldbox.ortusbooks.com/intro/release-history> and summarized in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-----
+* * *
 
 ## [Unreleased]
+
+## [6.8.2] - 2023-05-01
 
 ### Added
 
@@ -28,7 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [COLDBOX-1139](https://ortussolutions.atlassian.net/browse/COLDBOX-1139) make event caching cache keys lower cased to avoid case issues when clearing keys
 - [COLDBOX-1138](https://ortussolutions.atlassian.net/browse/COLDBOX-1138) Event Cache Response Has Status Code of 0 or `null`
 
-----
+* * *
 
 ## [6.8.0] => 2022-JUL-23
 
@@ -53,7 +55,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - [COLDBOX-1135](https://ortussolutions.atlassian.net/browse/COLDBOX-1135) Remove HandlerTestCase as it is no longer in usage.
 
-----
+* * *
 
 ## [6.7.0] => 2022-JUN-22
 
@@ -66,17 +68,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [COLDBOX-1109](https://ortussolutions.atlassian.net/browse/COLDBOX-1109) Exceptions in async interceptors are missing onException announcement
 - [COLDBOX-1105](https://ortussolutions.atlassian.net/browse/COLDBOX-1105) Interception with `async` annotation causes InterceptorState Exception on Reinit
 - [COLDBOX-1104](https://ortussolutions.atlassian.net/browse/COLDBOX-1104) A view not set exception is thrown when trying to execution handler ColdBox methods that are not concrete actions when they should be invalid events.
-- [COLDBOX-1103](https://ortussolutions.atlassian.net/browse/COLDBOX-1103) Update getServerIP\(\) so it avoids looking at the cgi scope as it can cause issues on ACF
+- [COLDBOX-1103](https://ortussolutions.atlassian.net/browse/COLDBOX-1103) Update getServerIP() so it avoids looking at the cgi scope as it can cause issues on ACF
 - [COLDBOX-1100](https://ortussolutions.atlassian.net/browse/COLDBOX-1100) Event Caching Does Not Preserve HTTP Response Codes
 - [COLDBOX-1099](https://ortussolutions.atlassian.net/browse/COLDBOX-1099) Regression on ColdBox v6.6.1 around usage of statusCode = 0 on relocates
 - [COLDBOX-1098](https://ortussolutions.atlassian.net/browse/COLDBOX-1098) RequestService context creation not thread safe
-- [COLDBOX-1097](https://ortussolutions.atlassian.net/browse/COLDBOX-1097) Missing scopes on isNull\(\) checks
-- [COLDBOX-1092](https://ortussolutions.atlassian.net/browse/COLDBOX-1092) RestHandler Try/Catches Break In Testbox When RunEvent\(\) is Called
+- [COLDBOX-1097](https://ortussolutions.atlassian.net/browse/COLDBOX-1097) Missing scopes on isNull() checks
+- [COLDBOX-1092](https://ortussolutions.atlassian.net/browse/COLDBOX-1092) RestHandler Try/Catches Break In Testbox When RunEvent() is Called
 - [COLDBOX-1045](https://ortussolutions.atlassian.net/browse/COLDBOX-1045) Scheduled tasks have no default error handling
 - [COLDBOX-1043](https://ortussolutions.atlassian.net/browse/COLDBOX-1043) Creating scheduled task with unrecognized timeUnit throws null pointer
-- [COLDBOX-1042](https://ortussolutions.atlassian.net/browse/COLDBOX-1042) afterAnyTask\(\) and task.after\(\) don't run after failing task
-- [COLDBOX-1040](https://ortussolutions.atlassian.net/browse/COLDBOX-1040) Error in onAnyTaskError\(\) or after\(\) tasks not handled and executor dies.
-- [COLDBOX-966](https://ortussolutions.atlassian.net/browse/COLDBOX-966) Coldbox Renderer.RenderLayout\(\) Overwrites Event's Current View
+- [COLDBOX-1042](https://ortussolutions.atlassian.net/browse/COLDBOX-1042) afterAnyTask() and task.after() don't run after failing task
+- [COLDBOX-1040](https://ortussolutions.atlassian.net/browse/COLDBOX-1040) Error in onAnyTaskError() or after() tasks not handled and executor dies.
+- [COLDBOX-966](https://ortussolutions.atlassian.net/browse/COLDBOX-966) Coldbox Renderer.RenderLayout() Overwrites Event's Current View
 
 #### Improvement
 
@@ -89,9 +91,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### New Feature
 
-- [COLDBOX-1123](https://ortussolutions.atlassian.net/browse/COLDBOX-1123) New xTask\(\) method in the schedulers that will automatically disable the task but still register it. Great for debugging!
+- [COLDBOX-1123](https://ortussolutions.atlassian.net/browse/COLDBOX-1123) New xTask() method in the schedulers that will automatically disable the task but still register it. Great for debugging!
 - [COLDBOX-1121](https://ortussolutions.atlassian.net/browse/COLDBOX-1121) Log schedule task failures to console so errors are not ignored
-- [COLDBOX-1120](https://ortussolutions.atlassian.net/browse/COLDBOX-1120) Scheduler's onShutdown\(\) callback now receives the boolean force and numeric timeout arguments
+- [COLDBOX-1120](https://ortussolutions.atlassian.net/browse/COLDBOX-1120) Scheduler's onShutdown() callback now receives the boolean force and numeric timeout arguments
 - [COLDBOX-1119](https://ortussolutions.atlassian.net/browse/COLDBOX-1119) The Scheduler's shutdown method now has two arguments: boolean force, numeric timeout
 - [COLDBOX-1118](https://ortussolutions.atlassian.net/browse/COLDBOX-1118) All schedulers have a new property: shutdownTimeout which defaults to 30 that can be used to control how long to wait for tasks to gracefully complete when shutting down.
 - [COLDBOX-1113](https://ortussolutions.atlassian.net/browse/COLDBOX-1113) New coldobx.system.testing.VirtualApp object that can startup,restart and shutdown Virtual Testing Applications
@@ -137,7 +139,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [WIREBOX-127](https://ortussolutions.atlassian.net/browse/WIREBOX-127) Lazy load all constructs on the Injector to improve performance
 - [WIREBOX-125](https://ortussolutions.atlassian.net/browse/WIREBOX-125) Remove the usage of identity hash codes, they are no longer relevant and can cause contention under load
 
-----
+* * *
 
 ## [6.6.1] => 2022-FEB-17
 
@@ -151,7 +153,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Improvement
 
 - [COLDBOX-1095](https://ortussolutions.atlassian.net/browse/COLDBOX-1095) Update Response Pagination Properties for Case-Sensitive Engines
-- [COLDBOX-1091](https://ortussolutions.atlassian.net/browse/COLDBOX-1091) default status code to 302 in the internal relocate\(\) just like CFML does instead of 0 and eliminate source
+- [COLDBOX-1091](https://ortussolutions.atlassian.net/browse/COLDBOX-1091) default status code to 302 in the internal relocate() just like CFML does instead of 0 and eliminate source
 - [COLDBOX-1089](https://ortussolutions.atlassian.net/browse/COLDBOX-1089) Update the internal cfml engine checker to have more engine based feature checkers
 - [COLDBOX-1088](https://ortussolutions.atlassian.net/browse/COLDBOX-1088) Switch isInstance check on renderdata in controller to secondary of $renderdata check to optimize speed
 
@@ -159,13 +161,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Bug
 
-- [CACHEBOX-80](https://ortussolutions.atlassian.net/browse/CACHEBOX-80) Bug in JDBCMetadataIndexer sortedKeys\(\) using non-existent variable `arguments.objectKey`
+- [CACHEBOX-80](https://ortussolutions.atlassian.net/browse/CACHEBOX-80) Bug in JDBCMetadataIndexer sortedKeys() using non-existent variable `arguments.objectKey`
 
 #### Improvement
 
-- [CACHEBOX-81](https://ortussolutions.atlassian.net/browse/CACHEBOX-81) JDBCStore Dynamically generate queryExecute options \+ new config to always include DSN due to ACF issues
+- [CACHEBOX-81](https://ortussolutions.atlassian.net/browse/CACHEBOX-81) JDBCStore Dynamically generate queryExecute options + new config to always include DSN due to ACF issues
 
-----
+* * *
 
 ## [6.6.0] => 2022-JAN-31
 
@@ -206,7 +208,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [COLDBOX-1033](https://ortussolutions.atlassian.net/browse/COLDBOX-1033) New controller method: `getUserSessionIdentifier`() which gives you the unique request tracking identifier according to our algorithms
 - [COLDBOX-1032](https://ortussolutions.atlassian.net/browse/COLDBOX-1032) New coldbox setting `identifierProvider` which can be a closure/udf/lambda that provides a unique tracking identifier for user requests
 
-----
+* * *
 
 ### CacheBox
 
@@ -221,7 +223,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [CACHEBOX-73](https://ortussolutions.atlassian.net/browse/CACHEBOX-73) Replace IIF and urlEncodedFormat on cache content reports
 - [CACHEBOX-79](https://ortussolutions.atlassian.net/browse/CACHEBOX-79) Lower logging verbosity of cache reaping from info to debug messages
 
-----
+* * *
 
 ### WireBox
 
@@ -244,3 +246,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Task
 
 - [WIREBOX-123](https://ortussolutions.atlassian.net/browse/WIREBOX-123) Removal of usage of Injector dsl interface due to so many issues with multiple engines
+
+[Unreleased]: https://github.com/ColdBox/coldbox-platform/compare/v6.8.2...HEAD
+
+[6.8.2]: https://github.com/ColdBox/coldbox-platform/compare/e0aa96ff743adb860834194715729198ecb051bd...v6.8.2
