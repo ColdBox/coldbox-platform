@@ -31,5 +31,19 @@
 		var o = scope.getFromScope( mapping, {} );
 		assertEquals( request[ "wirebox:RequestTest" ], o );
 	}
+
+	function testInstancesThatErrorInAutowireAreRemoved(){
+		var mapping = createMock( "coldbox.system.ioc.config.Mapping" ).init( name = "RequestTest" );
+		mapping.setThreadSafe( true );
+		mockInjector.$( "buildInstance", mockStub );
+		mockInjector.$( "autowire" ).$throws( type = "CustomAutowireError", message = "Error in autowire" );
+		structDelete( request, "wirebox:RequestTest" );
+
+		expect( function(){
+			scope.getFromScope( mapping, {} );
+		} ).toThrow( "CustomAutowireError" );
+
+		expect( request ).notToHaveKey( "wirebox:RequestTest" );
+	}
 	</cfscript>
 </cfcomponent>

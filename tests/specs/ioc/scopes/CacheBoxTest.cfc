@@ -58,5 +58,28 @@
 		mockInjector.$( "buildInstance", mockStub ).$( "autowire", mockStub );
 		o = scope.getFromScope( mapping, {} );
 	}
+
+	function testInstancesThatErrorInAutowireAreRemoved(){
+		var mapping = createMock( "coldbox.system.ioc.config.Mapping" ).init( name = "CacheTest" );
+
+		mapping.setCacheProperties(
+			key      = "CacheTest",
+			timeout  = "",
+			provider = "default"
+		);
+		mapping.setThreadSafe( false );
+		mockCache
+			.$( "get" )
+			.$( "set", true )
+			.$( "clear", true );
+		mockInjector.$( "buildInstance", mockStub );
+		mockInjector.$( "autowire" ).$throws( type = "CustomAutowireError", message = "Error in autowire" );
+
+		expect( function(){
+			scope.getFromScope( mapping, {} );
+		} ).toThrow( "CustomAutowireError" );
+
+		expect( mockCache.$once( "clear" ) ).toBeTrue();
+	}
 	</cfscript>
 </cfcomponent>
