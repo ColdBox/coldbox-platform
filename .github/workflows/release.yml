@@ -204,6 +204,7 @@ jobs:
           else
             box bump --minor --!TagVersion
           fi
+          git pull
 
       - name: Commit Version Bump
         uses: EndBug/add-and-commit@v9.1.1
