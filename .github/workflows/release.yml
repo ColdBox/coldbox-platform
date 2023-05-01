@@ -198,7 +198,12 @@ jobs:
 
       - name: Bump Version
         run: |
-          box bump --minor --!TagVersion
+          if [ $LTS == 'true' ]
+          then
+            box bump --patch --!TagVersion
+          else
+            box bump --minor --!TagVersion
+          fi
 
       - name: Commit Version Bump
         uses: EndBug/add-and-commit@v9.1.1
