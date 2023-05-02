@@ -1137,7 +1137,7 @@ component serializable="false" accessors="true" {
 	 */
 	string function getHTMLBasePath(){
 		var javaURI = createObject( "java", "java.net.URI" );
-		return javaURI.create( getSESBaseURL() ).getPath();
+		return javaURI.create( getHTMLBaseURL() ).getPath();
 	}
 
 	/**

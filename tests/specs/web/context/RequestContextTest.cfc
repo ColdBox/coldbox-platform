@@ -151,7 +151,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 	function testGetHTMLBasePath(){
 		var event = getRequestContext();
 		event.$( "isSSL", false );
-		expect( event.getSESBaseURL() ).toInclude( event.getHTMLBasePath() );
+		expect( event.getHTMLBaseURL() ).toInclude( event.getHTMLBasePath() );
 	}
 
 	function testgetCollection(){
