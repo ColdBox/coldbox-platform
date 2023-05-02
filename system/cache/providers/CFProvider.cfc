@@ -297,16 +297,8 @@ component
 	 * @objectKey The key to retrieve
 	 */
 	function getQuiet( required objectKey ){
-		// Don't touch the casing on 2018+
-		if ( listFind( "2018,2021", server.coldfusion.productVersion.listFirst() ) ) {
-			var element = getObjectStore().getQuiet( arguments.objectKey );
-		} else {
-			var element = getObjectStore().getQuiet( uCase( arguments.objectKey ) );
-		}
-
-		if ( !isNull( local.element ) ) {
-			return element.getValue();
-		}
+		var element = getObjectStore().getQuiet( arguments.objectKey );
+		return !isNull( local.element ) ? local.element.getValue() : javacast( "null", 0 );
 	}
 
 	/**
@@ -491,11 +483,7 @@ component
 	 * @objectKey The object cache key
 	 */
 	boolean function clearQuiet( required objectKey ){
-		if ( listFind( "2018,2021", server.coldfusion.productVersion.listFirst() ) ) {
-			return getObjectStore().removeQuiet( arguments.objectKey );
-		} else {
-			return getObjectStore().removeQuiet( uCase( arguments.objectKey ) );
-		}
+		return getObjectStore().removeQuiet( arguments.objectKey );
 	}
 
 	/**
@@ -546,3 +534,4 @@ component
 	}
 
 }
+
