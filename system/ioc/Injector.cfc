@@ -1238,9 +1238,10 @@ component serializable="false" accessors="true" {
 		// Verify if we have seen this transient in this request
 		if ( transientCacheEnabled && request.cbTransientDICache.keyExists( arguments.targetID ) ) {
 			// Injections Injection :)
-			arguments.targetObject
-				.getVariablesMixin()
-				.append( request.cbTransientDICache[ arguments.targetId ].injections );
+			structAppend(
+				arguments.targetObject.getVariablesMixin(),
+				request.cbTransientDICache[ arguments.targetId ].injections
+			);
 			// Delegations Injection
 			arguments.targetObject.$wbDelegateMap = request.cbTransientDICache[ arguments.targetId ].delegations;
 			// inject delegation into the target
