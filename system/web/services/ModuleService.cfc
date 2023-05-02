@@ -4,7 +4,7 @@
  * ---
  * I oversee and manage ColdBox modules
  */
-component extends="coldbox.system.web.services.BaseService" {
+component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 	/**
 	 * Logger object
