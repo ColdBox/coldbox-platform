@@ -50,6 +50,21 @@ ColdBox *Hierarchical* MVC is the de-facto enterprise-level [HMVC](https://en.wi
 * [An extensive eco-system](https://forgebox.io)
 * Much More
 
+
+## LTS Support
+
+For all ColdBox releases, updates are provided for 12 months and security fixes are provided for 2 years after the next major release.
+
+**ColdBox 6.x will receive bug fixes until 2024 and security fixes until 2025.**
+
+| Version | Release | Updates 	| Security Fixes |
+| ------- | ------- | --------- | -------------- |
+| 6.x     | 2022    | 2023      | 2025           |
+| 7.x     | 2023    | 2024      | 2026           |
+| 8.x     | 2024    | 2025      | 2027           |
+| 9.x     | 2025    | 2026      | 2028           |
+
+
 ## License
 
 Apache License, Version 2.0.
