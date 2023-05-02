@@ -1133,6 +1133,14 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
+	 * Returns the HTML base path - minus the protocol and domain
+	 */
+	string function getHTMLBasePath(){
+		var javaURI = createObject( "java", "java.net.URI" );
+		return javaURI.create( getSESBaseURL() ).getPath();
+	}
+
+	/**
 	 * Set the ses base URL for this request
 	 *
 	 * @return RequestContext

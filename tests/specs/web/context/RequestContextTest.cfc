@@ -148,6 +148,12 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		expect( event.getHTMLBaseURL() ).toinclude( "https://jfetmac/applications/coldbox/test-harness" );
 	}
 
+	function testGetHTMLBasePath(){
+		var event = getRequestContext();
+		event.$( "isSSL", false );
+		expect( event.getHTMLBaseURL() ).toInclude( event.getHTMLBasePath() );
+	}
+
 	function testgetCollection(){
 		var event = getRequestContext();
 
