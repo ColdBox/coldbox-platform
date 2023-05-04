@@ -12,10 +12,10 @@ component extends="tests.resources.BaseIntegrationTest" {
 			} );
 
 			it( "can build the routable delegates", function(){
-				var result = controller.getWirebox().getInstance( "Routable" );
+				var result  = controller.getWirebox().getInstance( "Routable" );
 				var methods = "getHTMLBaseURL,getHTMLBasePath,getSESBasePath,getSESBaseURL,route,buildLink,getPath,getUrl";
 
-				for( var thisMethod in methods ){
+				for ( var thisMethod in methods ) {
 					expect( result ).toHaveKey( thisMethod );
 				}
 			} );

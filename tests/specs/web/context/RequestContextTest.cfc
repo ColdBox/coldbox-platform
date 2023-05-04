@@ -781,7 +781,8 @@ component extends="coldbox.system.testing.BaseModelTest" {
 	}
 
 	function testGetHTMLBasePath(){
-		mockController.$( "getSetting" )
+		mockController
+			.$( "getSetting" )
 			.$args( "HTMLBasePath" )
 			.$results( "/test-harness/" );
 		var event = getRequestContext().$( "isSSL", false );
@@ -793,7 +794,8 @@ component extends="coldbox.system.testing.BaseModelTest" {
 	}
 
 	function testGetSESBasePath(){
-		mockController.$( "getSetting" )
+		mockController
+			.$( "getSetting" )
 			.$args( "SESBasePath" )
 			.$results( "/test-harness/index.cfm" );
 		var event = getRequestContext().$( "isSSL", false );

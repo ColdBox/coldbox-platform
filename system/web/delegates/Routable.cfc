@@ -4,7 +4,7 @@
  * ---
  * Provides ColdBox routing capabilities
  */
-component{
+component {
 
 	// DI
 	property
