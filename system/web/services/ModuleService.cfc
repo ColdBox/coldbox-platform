@@ -770,10 +770,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				// Add convention based routing if it does not exist.
 				var conventionsRouteExists = mConfig.router
 					.getRoutes()
-					.find( function( item ){
-						return ( item.pattern == "/:handler/:action?" || item.pattern == ":handler/:action?" );
+					.findAll( function( item ){
+						return ( item.pattern == "/:handler/:action" || item.pattern == ":handler/:action" );
 					} );
-				if ( conventionsRouteExists == 0 ) {
+				if ( arrayLen( conventionsRouteExists ) == 0 ) {
 					mConfig.router.route( "/:handler/:action?" ).end();
 				};
 
@@ -1202,7 +1202,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		|--------------------------------------------------------------------------
 		*/
 
-		arguments.config.router = results.injector.getInstance( "coldbox.system.web.routing.Router" );
+		mConfig.router = results.injector.getInstance( "coldbox.system.web.routing.Router" );
 
 		/*
 		|--------------------------------------------------------------------------

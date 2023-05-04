@@ -371,7 +371,7 @@ component
 					includeRoutes( location = mConfig[ module ].mapping & "/" & item );
 					// Remove pivot
 					variables.thisModule = "";
-				} else {
+				} else if ( !reFindNoCase( "\/?\:handler\/\:action", item.pattern ) ) {
 					item.module = module;
 					addRoute( argumentCollection = item );
 				}
