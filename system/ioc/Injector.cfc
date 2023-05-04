@@ -1298,15 +1298,26 @@ component serializable="false" accessors="true" {
 				if ( transientCacheEnabled ) {
 					// Init storage if not found
 					if ( !request.cbTransientDICache.keyExists( arguments.targetID ) ) {
-						lock name="wirebox:transientcache:#arguments.targetId#" type="exclusive" throwontimeout="true" timeout="15" {
+						lock
+							name          ="wirebox:transientcache:#arguments.targetId#"
+							type          ="exclusive"
+							throwontimeout="true"
+							timeout       ="15" {
 							if ( !request.cbTransientDICache.keyExists( arguments.targetID ) ) {
-								request.cbTransientDICache[ arguments.targetID ] = { injections : {}, delegations : {} };
+								request.cbTransientDICache[ arguments.targetID ] = {
+									injections  : {},
+									delegations : {}
+								};
 							}
 						}
 					}
 
 					// Store delegations + injections
-					lock name="wirebox:transientcache:#arguments.targetId#.storage" type="exclusive" throwontimeout="true" timeout="15" {
+					lock
+						name          ="wirebox:transientcache:#arguments.targetId#.storage"
+						type          ="exclusive"
+						throwontimeout="true"
+						timeout       ="15" {
 						request.cbTransientDICache[ arguments.targetId ].injections[ thisDIData.name ] = refLocal.dependency;
 						if ( structKeyExists( arguments.targetObject, "$wbDelegateMap" ) ) {
 							request.cbTransientDICache[ arguments.targetID ].delegations = arguments.targetObject.$wbDelegateMap;
