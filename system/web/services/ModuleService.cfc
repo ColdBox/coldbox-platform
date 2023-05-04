@@ -755,7 +755,6 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 						)
 						.setVirtualInheritance( "coldbox.system.web.routing.Router" )
 						.setThreadSafe( true )
-						.setScope( "singleton" )
 						.addDIConstructorArgument( name = "controller", value = variables.controller );
 					// Create the Router back into the config
 					mConfig.router = mConfig.injector.getInstance( mConfig.routerInvocationPath );

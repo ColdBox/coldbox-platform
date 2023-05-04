@@ -89,7 +89,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// Check if base router mapped?
 		if ( NOT wirebox.getBinder().mappingExists( baseRouter ) ) {
 			// feed the base class
-			wirebox.registerNewInstance( name = baseRouter, instancePath = baseRouter ).setScope( "singleton" );
+			wirebox.registerNewInstance( name = baseRouter, instancePath = baseRouter );
 		}
 
 		// Load Router
