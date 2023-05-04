@@ -780,4 +780,28 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		expect( event.routeIs( "luis" ) ).toBeTrue();
 	}
 
+	function testGetHTMLBasePath(){
+		mockController.$( "getSetting" )
+			.$args( "HTMLBasePath" )
+			.$results( "/test-harness/" );
+		var event = getRequestContext().$( "isSSL", false );
+
+		// debug( event.getHTMLBasePath() );
+		// debug( event.getHTMLBaseURL() );
+
+		expect( event.getHTMLBaseURL() ).toInclude( event.getHTMLBasePath() );
+	}
+
+	function testGetSESBasePath(){
+		mockController.$( "getSetting" )
+			.$args( "SESBasePath" )
+			.$results( "/test-harness/index.cfm" );
+		var event = getRequestContext().$( "isSSL", false );
+
+		// debug( event.getHTMLBasePath() );
+		// debug( event.getHTMLBaseURL() );
+
+		expect( event.getSesBaseUrl() ).toInclude( event.getSESBasePath() );
+	}
+
 }

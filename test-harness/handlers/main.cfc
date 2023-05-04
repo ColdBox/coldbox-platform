@@ -36,6 +36,13 @@ component{
 	function index( event, rc, prc, name = "ColdBox" ){
 		prc.welcomeMessage = "Welcome to #arguments.name#!";
 
+		// writeDump( var={
+		// 	getSESBaseUrl : event.getSESBaseUrl(),
+		// 	getSESBasePath : event.getSESBasePath(),
+		// 	getHTMLBaseUrl : event.getHTMLBaseUrl(),
+		// 	getHtmlBasePath : event.getHtmlBasePath(),
+		// }, top = 5 );
+
 		log.info( "Executing index action", { name : "Test", when : now(), arcs = [1,2,3,4], test : "Message goes here" } );
 
 		var om = getInstance( "ObserverModel" );

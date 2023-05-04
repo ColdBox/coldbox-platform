@@ -1133,6 +1133,20 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
+	 * Returns the HTML base path - minus the protocol and domain
+	 */
+	string function getHTMLBasePath(){
+		return variables.controller.getSetting( "HTMLBasePath", "" );
+	}
+
+	/**
+	 * Returns the SES base path - minus the protocol and domain
+	 */
+	string function getSESBasePath(){
+		return variables.controller.getSetting( "SESBasePath", "" );
+	}
+
+	/**
 	 * Set the ses base URL for this request
 	 *
 	 * @return RequestContext
