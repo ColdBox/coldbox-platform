@@ -297,7 +297,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			if ( structKeyExists( routeResults.route.action, httpMethod ) ) {
 				discoveredEvent &= ( discoveredEvent == "" ? "" : "." );
 				// Do we have a module? If so, prefix it
-				if ( routeResults.route.module.len() ) {
+				if ( routeResults.route.module.len() && !discoveredEvent.findNoCase( routeResults.route.module ) ) {
 					discoveredEvent = routeResults.route.module & ":" & discoveredEvent;
 				}
 				discoveredEvent &= "#routeResults.route.action[ httpMethod ]#";
@@ -309,7 +309,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				}
 			} else {
 				// Do we have a module? If so, prefix it
-				if ( routeResults.route.module.len() ) {
+				if ( routeResults.route.module.len() && !discoveredEvent.findNoCase( routeResults.route.module ) ) {
 					discoveredEvent = routeResults.route.module & ":" & discoveredEvent;
 				}
 				// Mark as invalid HTTP Exception
@@ -324,7 +324,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		else if ( !isStruct( routeREsults.route.action ) && routeResults.route.action.len() ) {
 			discoveredEvent &= ( discoveredEvent == "" ? "" : "." );
 			// Do we have a module? If so, prefix it
-			if ( routeResults.route.module.len() ) {
+			if ( routeResults.route.module.len() && !discoveredEvent.findNoCase( routeResults.route.module ) ) {
 				discoveredEvent = routeResults.route.module & ":" & discoveredEvent;
 			}
 			discoveredEvent &= "#routeResults.route.action#";
