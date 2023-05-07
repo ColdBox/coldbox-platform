@@ -1234,7 +1234,19 @@ component serializable="false" accessors="true" {
 	){
 		// Transient request cache
 		param request.cbTransientDICache = {};
-		var transientCacheEnabled        = getBinder().getTransientInjectionCache() && arguments.mapping.isTransient() && !arguments.mapping.isVirtualInheritance();
+		// Transient Cache Enable
+		// - Global Flag
+		// - Has to be a transient
+		// - Has to be a non-virtual inheritance
+		// - Doesn't have a transientCache annotation
+		// cfformat-ignore-start
+		var transientCacheEnabled        = getBinder().getTransientInjectionCache() &&
+			arguments.mapping.isTransient() &&
+			!arguments.mapping.isVirtualInheritance() &&
+			arguments.mapping.getComponentAnnotation( "transientCache", true )
+		);
+		// cfformat-ignore-end
+
 		// Verify if we have seen this transient in this request
 		if ( transientCacheEnabled && request.cbTransientDICache.keyExists( arguments.targetID ) ) {
 			// Injections Injection :)
@@ -1268,7 +1280,7 @@ component serializable="false" accessors="true" {
 					targetObject = arguments.targetObject
 				);
 			}
-			// else we have to have a reference ID or a nasty bug has occurred
+			// else we have to have a reference ID
 			else {
 				refLocal.dependency = getInstance( thisDIData.ref );
 			}

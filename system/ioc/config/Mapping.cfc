@@ -804,6 +804,18 @@ component accessors="true" {
 	}
 
 	/**
+	 * Get the component annotation metadata by key
+	 *
+	 * @key          The annotation to look for in the component
+	 * @defaultValue Default value to return if not found
+	 *
+	 * @return any
+	 */
+	function getComponentAnnotation( required key, defaultValue = "" ){
+		return variables.objectMetadata.keyExists( arguments.key ) ? variables.objectMetadata[ arguments.key ] : arguments.defaultValue;
+	}
+
+	/**
 	 * ---------------------------------------------------
 	 * Private Methods
 	 * ---------------------------------------------------
