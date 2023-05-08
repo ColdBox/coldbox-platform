@@ -1240,7 +1240,7 @@ component serializable="false" accessors="true" {
 		// - Has to be a non-virtual inheritance
 		// - Doesn't have a transientCache annotation
 		// cfformat-ignore-start
-		var transientCacheEnabled = getBinder().getTransientInjectionCache() &&
+		var transientCacheEnabled        = getBinder().getTransientInjectionCache() &&
 			arguments.mapping.isTransient() &&
 			!arguments.mapping.isVirtualInheritance() &&
 			arguments.mapping.getComponentAnnotation( "transientCache", true )
