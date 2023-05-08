@@ -11,21 +11,19 @@ component extends="testbox.system.BaseSpec" {
 			story( "I want to create an Injector", function(){
 				given( "an instance of a binder", function(){
 					then( "I should create the injector successfully.", function(){
-						new coldbox.system.ioc.Injector(
-							createObject( "component", "coldbox.system.ioc.config.DefaultBinder" )
-						);
+						new coldbox.system.ioc.Injector( { scopeRegistration : { enabled : false } } );
 					} );
 				} );
 
 				given( "a path to a binder", function(){
 					then( "I should create the injector successfully", function(){
-						new coldbox.system.ioc.Injector( "coldbox.system.ioc.config.DefaultBinder" );
+						new coldbox.system.ioc.Injector( { scopeRegistration : { enabled : false } } );
 					} );
 				} );
 
 				given( "no binder", function(){
 					then( "I should create the injector with the default binder", function(){
-						new coldbox.system.ioc.Injector();
+						new coldbox.system.ioc.Injector( { scopeRegistration : { enabled : false } } );
 					} );
 				} );
 			} );
