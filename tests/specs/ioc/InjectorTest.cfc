@@ -250,7 +250,9 @@
 	}
 
 	function testRemoveChildInjector(){
-		var child = prepareMock( new coldbox.system.ioc.Injector( { scopeRegistration : { enabled : false } } ) ).$( "shutdown" );
+		var child = prepareMock( new coldbox.system.ioc.Injector( { scopeRegistration : { enabled : false } } ) ).$(
+			"shutdown"
+		);
 		injector.registerChildInjector( "alexia", child ).$( "shutdown" );
 		expect( injector.getChildInjector( "alexia" ) ).toBe( child );
 		expect( injector.removeChildInjector( "alexia" ) ).toBeTrue();
