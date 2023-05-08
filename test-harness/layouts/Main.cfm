@@ -7,7 +7,7 @@
 	<meta name="description" content="ColdBox Application Template">
     <meta name="author" content="Ortus Solutions, Corp">
 	<!---Base URL --->
-	<base href="#getSetting( "HTMLBaseURL" )#" />
+	<base href="#getSetting( "HTMLBaseURL", "" )#" />
 	<!---css --->
 	<link href="includes/css/bootstrap.min.css" rel="stylesheet">
 	<style>
