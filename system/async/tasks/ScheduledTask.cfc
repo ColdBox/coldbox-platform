@@ -1672,17 +1672,17 @@ component accessors="true" {
 		var amount = structKeyExists( arguments, "delay" ) ? arguments.delay : variables.delay;
 		var unit   = structKeyExists( arguments, "timeUnit" ) ? arguments.timeUnit : variables.timeUnit;
 
-		if ( !isDate( variables.stats.nextRun ) ) {
-			doLog(
-				"setInitialNextRunTime",
-				{
-					delay         : amount,
-					timeUnit      : unit,
-					nextRunSet    : isDate( variables.stats.nextRun ) ? true : false,
-					nextRunInArgs : !isNull( arguments.nextRun )
-				}
-			);
+		doLog(
+			"setInitialNextRunTime",
+			{
+				delay         : amount,
+				timeUnit      : unit,
+				nextRunSet    : isValid( "date", variables.stats.nextRun ) ? true : false,
+				nextRunInArgs : !isNull( arguments.nextRun )
+			}
+		);
 
+		if ( !isValid( "date", variables.stats.nextRun ) ) {
 			if ( !isNull( arguments.nextRun ) && isInstanceOf( arguments.nextRun, "java.time.LocalDateTime" ) )
 				variables.stats.nextRun = arguments.nextRun;
 			else if ( !isInstanceOf( variables.stats.nextRun, "java.time.LocalDateTime" ) )
