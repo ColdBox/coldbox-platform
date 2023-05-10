@@ -190,7 +190,7 @@ component accessors="true" {
 		debug    = false
 	){
 		// used for debugging output
-		variables.System = createObject( "java", "java.lang.System" );
+		variables.System           = createObject( "java", "java.lang.System" );
 		// Utility class
 		variables.util             = new coldbox.system.core.util.Util();
 		// Link up the executor and name
@@ -413,7 +413,7 @@ component accessors="true" {
 	/**
 	 *
 	 * @startTime The specific time using 24 hour format => HH:mm
-	 * @endTime The specific time using 24 hour format => HH:mm
+	 * @endTime   The specific time using 24 hour format => HH:mm
 	 */
 	ScheduledTask function between( required string startTime, required string endTime ){
 		doLog( "between" );
@@ -497,7 +497,7 @@ component accessors="true" {
 		if (
 			variables.dayOfTheMonth > 0 &&
 			now.getDayOfMonth() != variables.dayOfTheMonth &&
-			daysInMonth( now.toString() ) >	variables.dayOfTheMonth
+			daysInMonth( now.toString() ) > variables.dayOfTheMonth
 		) {
 			return true;
 		}
@@ -563,14 +563,15 @@ component accessors="true" {
 			len( variables.startTime ) ||
 			len( variables.endTime )
 		) {
-			var _startTime =  variables.dateTimeHelper.parse(
-				dateFormat( now(), "yyyy-mm-dd" ) & "T" & ( len( variables.startTime ) ? variables.startTime : "00:00:00" )
+			var _startTime = variables.dateTimeHelper.parse(
+				dateFormat( now(), "yyyy-mm-dd" ) & "T" & (
+					len( variables.startTime ) ? variables.startTime : "00:00:00"
+				)
 			);
-			var _endTime =  variables.dateTimeHelper.parse(
+			var _endTime = variables.dateTimeHelper.parse(
 				dateFormat( now(), "yyyy-mm-dd" ) & "T" & ( len( variables.endTime ) ? variables.endTime : "23:59:59" )
 			);
-			if ( now.isBefore( _startTime ) || now.isAfter( _endTime ) )
-				return true;
+			if ( now.isBefore( _startTime ) || now.isAfter( _endTime ) ) return true;
 		}
 
 		return false;
@@ -687,7 +688,6 @@ component accessors="true" {
 	 * @return A ScheduledFuture from where you can monitor the task, an empty ScheduledFuture if the task was not registered
 	 */
 	ScheduledFuture function start(){
-
 		// If we have overlaps and the spaced delay is 0 then grab it from the period
 		if ( variables.noOverlaps && variables.spacedDelay == 0 ) {
 			variables.spacedDelay = variables.period;
@@ -702,11 +702,11 @@ component accessors="true" {
 		// the time setting of the task based on the order presented
 		if (
 			variables.delay > 0 &&
-			len(variables.delayTimeUnit) &&
-			compare( variables.delayTimeUnit, variables.timeUnit)
-		){
-			if ( variables.timeUnit != "seconds" ){
-				variables.delay = 0;
+			len( variables.delayTimeUnit ) &&
+			compare( variables.delayTimeUnit, variables.timeUnit )
+		) {
+			if ( variables.timeUnit != "seconds" ) {
+				variables.delay         = 0;
 				// reset the initial nextRunTime
 				variables.stats.nextRun = "";
 			} else {
@@ -738,11 +738,11 @@ component accessors="true" {
 
 		doLog(
 			"start - " & variables.name & " - should execute initial next run call " &
-			serializeJSON({
+			serializeJSON( {
 				"spacedDelay" : variables.spacedDelay,
 				"period"      : variables.period,
 				"delay"       : variables.delay
-			})
+			} )
 		);
 
 		// Startup a spaced frequency task: no overlaps
@@ -846,19 +846,19 @@ component accessors="true" {
 	 */
 	ScheduledTask function delay(
 		numeric delay,
-		timeUnit = "milliseconds",
-		boolean overwrites = false,
+		timeUnit               = "milliseconds",
+		boolean overwrites     = false,
 		boolean setNextRunTime = true
 	){
 		doLog( "delay", arguments );
 
-		if ( arguments.overwrites || !variables.delay ){
+		if ( arguments.overwrites || !variables.delay ) {
 			variables.delay         = arguments.delay;
 			variables.delayTimeUnit = arguments.timeUnit;
 		}
 
 		if ( arguments.setNextRunTime )
-			setInitialNextRunTime( delay:arguments.delay, timeUnit:arguments.timeUnit );
+			setInitialNextRunTime( delay: arguments.delay, timeUnit: arguments.timeUnit );
 
 		return this;
 	}
@@ -867,7 +867,7 @@ component accessors="true" {
 	 * Run the task every custom spaced delay of execution, meaning no overlaps
 	 *
 	 * @spacedDelay The delay that will be used before executing the task with no overlaps
-	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is milliseconds
+	 * @timeUnit    The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is milliseconds
 	 */
 	ScheduledTask function spacedDelay( numeric spacedDelay, timeUnit = "milliseconds" ){
 		doLog( "spacedDelay", arguments );
@@ -1330,7 +1330,7 @@ component accessors="true" {
 	 * @time The specific time using 24 hour format => HH:mm, defaults to 00:00
 	 */
 	ScheduledTask function onWeekdays( string time = "00:00" ){
-		doLog( "onWeekdays" , arguments );
+		doLog( "onWeekdays", arguments );
 
 		// Check for minutes else add them
 		if ( !find( ":", arguments.time ) ) {
@@ -1589,14 +1589,14 @@ component accessors="true" {
 	/**
 	 * This utility method gives us the first business day of the month in Java format
 	 *
-	 * @time The specific time using 24 hour format => HH:mm, defaults to midnight
+	 * @time     The specific time using 24 hour format => HH:mm, defaults to midnight
 	 * @addMonth Boolean to specify adding a month to today's date
-	 * @now The date to use as the starting point, defaults to now()
+	 * @now      The date to use as the starting point, defaults to now()
 	 */
 	private function getFirstBusinessDayOfTheMonth(
-		string time = "00:00",
+		string time      = "00:00",
 		boolean addMonth = false,
-		date now = now()
+		date now         = now()
 	){
 		// Get the last day of the month
 		return variables.dateTimeHelper
@@ -1619,14 +1619,14 @@ component accessors="true" {
 	/**
 	 * This utility method gives us the last business day of the month in Java format
 	 *
-	 * @time The specific time using 24 hour format => HH:mm, defaults to midnight
+	 * @time     The specific time using 24 hour format => HH:mm, defaults to midnight
 	 * @addMonth Boolean to specify adding a month to today's date
-	 * @now The date to use as the starting point, defaults to now()
+	 * @now      The date to use as the starting point, defaults to now()
 	 */
 	private function getLastBusinessDayOfTheMonth(
-		string time = "00:00",
+		string time      = "00:00",
 		boolean addMonth = false,
-		date now = now()
+		date now         = now()
 	){
 		doLog( "getLastBusinessDayOfTheMonth" );
 
@@ -1664,28 +1664,26 @@ component accessors="true" {
 	 *
 	 * If a delay is set, it will set the next run time based on the delay and timeUnit
 	 *
-	 * @nextRun An instance of java.time.LocalDateTime to set the next run time to
-	 * @delay   The delay to set the next run time to
+	 * @nextRun  An instance of java.time.LocalDateTime to set the next run time to
+	 * @delay    The delay to set the next run time to
 	 * @timeUnit The time unit to use for the delay
 	 */
-	private function setInitialNextRunTime(
-		any nextRun,
-		numeric delay,
-		string timeUnit
-	){
+	private function setInitialNextRunTime( any nextRun, numeric delay, string timeUnit ){
 		var amount = structKeyExists( arguments, "delay" ) ? arguments.delay : variables.delay;
 		var unit   = structKeyExists( arguments, "timeUnit" ) ? arguments.timeUnit : variables.timeUnit;
 
-		if ( !isDate(variables.stats.nextRun) ){
+		if ( !isDate( variables.stats.nextRun ) ) {
+			doLog(
+				"setInitialNextRunTime",
+				{
+					delay         : amount,
+					timeUnit      : unit,
+					nextRunSet    : isDate( variables.stats.nextRun ) ? true : false,
+					nextRunInArgs : !isNull( arguments.nextRun )
+				}
+			);
 
-			doLog( "setInitialNextRunTime", {
-				delay         : amount,
-				timeUnit      : unit,
-				nextRunSet    : isDate(variables.stats.nextRun) ? true : false,
-				nextRunInArgs : !isNull(arguments.nextRun)
-			} );
-
-			if ( !isNull(arguments.nextRun) && isInstanceOf( arguments.nextRun, "java.time.LocalDateTime" ) )
+			if ( !isNull( arguments.nextRun ) && isInstanceOf( arguments.nextRun, "java.time.LocalDateTime" ) )
 				variables.stats.nextRun = arguments.nextRun;
 			else if ( !isInstanceOf( variables.stats.nextRun, "java.time.LocalDateTime" ) )
 				variables.stats.nextRun = getJavaNow();
@@ -1702,10 +1700,14 @@ component accessors="true" {
 						variables.stats.nextRun = variables.stats.nextRun.plusMinutes( javacast( "int", amount ) );
 						break;
 					case "milliseconds":
-						variables.stats.nextRun = variables.stats.nextRun.plusSeconds( javacast( "int", amount/1000 ) );
+						variables.stats.nextRun = variables.stats.nextRun.plusSeconds(
+							javacast( "int", amount / 1000 )
+						);
 						break;
 					case "microseconds":
-						variables.stats.nextRun = variables.stats.nextRun.plusNanos( javacast( "int", amount * 1000 ) );
+						variables.stats.nextRun = variables.stats.nextRun.plusNanos(
+							javacast( "int", amount * 1000 )
+						);
 						break;
 					case "nanoseconds":
 						variables.stats.nextRun = variables.stats.nextRun.plusNanos( javacast( "int", amount ) );
@@ -1717,34 +1719,40 @@ component accessors="true" {
 			}
 
 			var now       = getJavaNow();
-			var startTime = len(variables.startTime) ?
-									now
-										.withHour( javacast( "int", getToken( variables.startTime, 1, ":" ) ) )
-										.withMinute( javacast( "int", getToken( variables.startTime, 2, ":" ) ) )
-										.withSecond( javacast( "int", 0 ) ) :
-									now
-										.withHour( javacast( "int", 0 ) )
-										.withMinute( javacast( "int", 0 ) )
-										.withSecond( javacast( "int", 0 ) ) ;
-			var endTime = len(variables.endTime) ?
-									now
-										.withHour( javacast( "int", getToken( variables.endTime, 1, ":" ) ) )
-										.withMinute( javacast( "int", getToken( variables.endTime, 2, ":" ) ) )
-										.withSecond( javacast( "int", 0 ) ) :
-									now
-										.withHour( javacast( "int", 23 ) )
-										.withMinute( javacast( "int", 59 ) )
-										.withSecond( javacast( "int", 59 ) ) ;
+			var startTime = len( variables.startTime ) ? now
+				.withHour( javacast( "int", getToken( variables.startTime, 1, ":" ) ) )
+				.withMinute( javacast( "int", getToken( variables.startTime, 2, ":" ) ) )
+				.withSecond( javacast( "int", 0 ) ) : now
+				.withHour( javacast( "int", 0 ) )
+				.withMinute( javacast( "int", 0 ) )
+				.withSecond( javacast( "int", 0 ) );
+			var endTime = len( variables.endTime ) ? now
+				.withHour( javacast( "int", getToken( variables.endTime, 1, ":" ) ) )
+				.withMinute( javacast( "int", getToken( variables.endTime, 2, ":" ) ) )
+				.withSecond( javacast( "int", 0 ) ) : now
+				.withHour( javacast( "int", 23 ) )
+				.withMinute( javacast( "int", 59 ) )
+				.withSecond( javacast( "int", 59 ) );
 
 
-			doLog ( "startTime", { startTime:startTime.toString(), comp:now.compareTo( startTime ) } );
-			doLog ( "endTime", { endTime:endTime.toString(), comp:now.compareTo( endTime ) } );
+			doLog(
+				"startTime",
+				{
+					startTime : startTime.toString(),
+					comp      : now.compareTo( startTime )
+				}
+			);
+			doLog(
+				"endTime",
+				{
+					endTime : endTime.toString(),
+					comp    : now.compareTo( endTime )
+				}
+			);
 
-			if ( now.compareTo( startTime ) < 0 )
-				variables.stats.nextRun = startTime;
+			if ( now.compareTo( startTime ) < 0 ) variables.stats.nextRun = startTime;
 
-			if ( now.compareTo( endTime ) > 0 )
-				variables.stats.nextRun = startTime.plusDays( javacast( "int", 1 ) );
+			if ( now.compareTo( endTime ) > 0 ) variables.stats.nextRun = startTime.plusDays( javacast( "int", 1 ) );
 
 			variables.stats.nextRun = variables.stats.nextRun.toString();
 		}
@@ -1761,48 +1769,41 @@ component accessors="true" {
 		var amount = variables.spacedDelay != 0 ? variables.spacedDelay : variables.period;
 
 		// if overlaps are allowed task is immediately scheduled
-		if ( variables.spacedDelay == 0 && variables.stats.lastExecutionTime/1000 > variables.period )
-			amount = 0;
+		if ( variables.spacedDelay == 0 && variables.stats.lastExecutionTime / 1000 > variables.period ) amount = 0;
 
 		// reset nextRun to empty string to continue with process of setting
 		// next run time
 		variables.stats.nextRun = "";
 
 		// check if we are a first or last business day of month entry
-		if ( variables.firstBusinessDay ){
+		if ( variables.firstBusinessDay ) {
 			variables.stats.nextRun = getFirstBusinessDayOfTheMonth( variables.taskTime, true );
-		}
-		else if ( variables.lastBusinessDay ) {
+		} else if ( variables.lastBusinessDay ) {
 			variables.stats.nextRun = getLastBusinessDayOfTheMonth( variables.taskTime, true );
 		}
 		// check if we have a daily start or end time
-		else if ( len( variables.startTime) || len( variables.endTime ) ){
-			var startTime = len(variables.startTime) ?
-								now
-									.withHour( javacast( "int", getToken( variables.startTime, 1, ":" ) ) )
-									.withMinute( javacast( "int", getToken( variables.startTime, 2, ":" ) ) )
-									.withSecond( javacast( "int", 0 ) ) :
-								now
-									.withHour( javacast( "int", 0 ) )
-									.withMinute( javacast( "int", 0 ) )
-									.withSecond( javacast( "int", 0 ) ) ;
-			var endTime = len(variables.endTime) ?
-									now
-										.withHour( javacast( "int", getToken( variables.endTime, 1, ":" ) ) )
-										.withMinute( javacast( "int", getToken( variables.endTime, 2, ":" ) ) )
-										.withSecond( javacast( "int", 0 ) ) :
-									now
-										.withHour( javacast( "int", 23 ) )
-										.withMinute( javacast( "int", 59 ) )
-										.withSecond( javacast( "int", 59 ) ) ;
+		else if ( len( variables.startTime ) || len( variables.endTime ) ) {
+			var startTime = len( variables.startTime ) ? now
+				.withHour( javacast( "int", getToken( variables.startTime, 1, ":" ) ) )
+				.withMinute( javacast( "int", getToken( variables.startTime, 2, ":" ) ) )
+				.withSecond( javacast( "int", 0 ) ) : now
+				.withHour( javacast( "int", 0 ) )
+				.withMinute( javacast( "int", 0 ) )
+				.withSecond( javacast( "int", 0 ) );
+			var endTime = len( variables.endTime ) ? now
+				.withHour( javacast( "int", getToken( variables.endTime, 1, ":" ) ) )
+				.withMinute( javacast( "int", getToken( variables.endTime, 2, ":" ) ) )
+				.withSecond( javacast( "int", 0 ) ) : now
+				.withHour( javacast( "int", 23 ) )
+				.withMinute( javacast( "int", 59 ) )
+				.withSecond( javacast( "int", 59 ) );
 
-			if ( now.compareTo( startTime ) < 0 )
-				variables.stats.nextRun = startTime;
+			if ( now.compareTo( startTime ) < 0 ) variables.stats.nextRun = startTime;
 			else if ( now.compareTo( endTime ) > 0 )
 				variables.stats.nextRun = startTime.plusDays( javacast( "int", 1 ) );
 		}
 
-		if ( !len(variables.stats.nextRun) ){
+		if ( !len( variables.stats.nextRun ) ) {
 			switch ( variables.timeUnit ) {
 				case "days":
 					variables.stats.nextRun = now.plusDays( javacast( "int", amount ) );
@@ -1835,11 +1836,12 @@ component accessors="true" {
 	 * Debug logging method
 	 */
 	private function doLog( required string caller, struct args = {} ){
-		if ( variables.debugEnabled ){
+		if ( variables.debugEnabled ) {
 			var message = "ScheduledTask : " & variables.name & " : " & arguments.caller & "()" & (
 				structIsEmpty( arguments.args ) ? "" : " : " & serializeJSON( arguments.args )
 			);
 			variables.System.out.println( message );
 		}
 	}
+
 }
