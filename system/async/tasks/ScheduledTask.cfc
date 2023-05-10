@@ -143,6 +143,11 @@ component accessors="true" {
 	property name="scheduler";
 
 	/**
+	 * A struct for the task that can be used to store any metadata
+	 */
+	property name="meta" type="struct";
+
+	/**
 	 * The collection of stats for the task: { name, created, lastRun, nextRun, totalRuns, totalFailures, totalSuccess, lastResult, neverRun, lastExecutionTime }
 	 */
 	property name="stats" type="struct";
@@ -255,6 +260,8 @@ component accessors="true" {
 			// Server IP
 			"localIp"           : variables.util.getServerIp()
 		};
+		// Prepare for the user to store metadata
+		variables.meta          = {};
 		// Life cycle methods
 		variables.beforeTask    = "";
 		variables.afterTask     = "";
@@ -352,6 +359,46 @@ component accessors="true" {
 	}
 
 	/**
+	 * Update the debug setting for this task!
+	 */
+	ScheduledTask function debug( required boolean value ){
+		doLog( "debug" );
+
+		variables.debugEnabled = arguments.value;
+		return this;
+	}
+
+	/**
+	 * Set the meta data for this task!
+	 */
+	ScheduledTask function setMeta( required struct meta ){
+		doLog( "setMeta" );
+
+		variables.meta = arguments.meta;
+		return this;
+	}
+
+	/**
+	 * Set a specific meta data key for this task!
+	 */
+	ScheduledTask function setMetaKey( required string key, required any value ){
+		doLog( "setMetaKey" );
+
+		variables.meta[ arguments.key ] = arguments.value;
+		return this;
+	}
+
+	/**
+	 * Delete a specific meta data key from this task!
+	 */
+	ScheduledTask function deleteMetaKey( required string key ){
+		doLog( "deleteMetaKey" );
+
+		variables.meta.delete( arguments.key );
+		return this;
+	}
+
+	/**
 	 * --------------------------------------------------------------------------
 	 * Restrictions
 	 * --------------------------------------------------------------------------
@@ -375,16 +422,6 @@ component accessors="true" {
 		doLog( "disable" );
 
 		variables.disabled = true;
-		return this;
-	}
-
-	/**
-	 * Update the debug setting for this task!
-	 */
-	ScheduledTask function debug( required boolean value ){
-		doLog( "debug" );
-
-		variables.debugEnabled = arguments.value;
 		return this;
 	}
 
@@ -1585,6 +1622,12 @@ component accessors="true" {
 			return isCustomFunction( value ) || listFindNoCase( "this", key ) ? false : true;
 		} );
 	}
+
+	/**
+	 * --------------------------------------------------------------------------
+	 * Private Methods
+	 * --------------------------------------------------------------------------
+	 */
 
 	/**
 	 * This utility method gives us the first business day of the month in Java format
