@@ -77,15 +77,6 @@ jobs:
           printf "DB_BUNDLEVERSION=8.0.19\n" >> .env
           printf "DB_BUNDLENAME=com.mysql.cj\n" >> .env
 
-      - name: Cache CommandBox Dependencies
-        uses: actions/cache@v3
-        if: ${{ true }}
-        with:
-          path: ~/.CommandBox/artifacts
-          key: ${{ runner.OS }}-commandbox-cache-${{ hashFiles( 'box.json' ) }}
-          restore-keys: |
-            ${{ runner.OS }}-commandbox-cache-${{ hashFiles( 'box.json' ) }}
-
       - name: Install Dependencies
         run: |
           # Core dependencies
