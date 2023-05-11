@@ -55,7 +55,7 @@ component accessors="true" {
 	/**
 	 * The boolean value is used for debugging
 	 */
-	property name="debugEnabled";
+	property name="debug";
 
 	/**
 	 * A handy boolean that disables the scheduling of this task
@@ -194,8 +194,6 @@ component accessors="true" {
 		method   = "run",
 		debug    = false
 	){
-		// used for debugging output
-		variables.System           = createObject( "java", "java.lang.System" );
 		// Utility class
 		variables.util             = new coldbox.system.core.util.Util();
 		// Link up the executor and name
@@ -216,7 +214,7 @@ component accessors="true" {
 		variables.noOverlaps       = false;
 		// Constraints
 		variables.annually         = false;
-		variables.debugEnabled     = arguments.debug;
+		variables.debug            = arguments.debug;
 		variables.disabled         = false;
 		variables.whenClosure      = "";
 		variables.dayOfTheMonth    = 0;
@@ -268,7 +266,7 @@ component accessors="true" {
 		variables.onTaskSuccess = "";
 		variables.onTaskFailure = "";
 
-		doLog( "init" );
+		debugLog( "init" );
 
 		return this;
 	}
@@ -285,7 +283,7 @@ component accessors="true" {
 	 * @throws UserInterruptException - When the thread has been interrupted
 	 */
 	function checkInterrupted(){
-		doLog( "checkInterrupted" );
+		debugLog( "checkInterrupted" );
 
 		var thisThread = createObject( "java", "java.lang.Thread" ).currentThread();
 		// Has the user/system tried to interrupt this thread?
@@ -327,7 +325,7 @@ component accessors="true" {
 	 * @timezone The timezone string identifier
 	 */
 	ScheduledTask function setTimezone( required timezone ){
-		doLog( "setTimezone", arguments );
+		debugLog( "setTimezone", arguments );
 
 		variables.timezone = createObject( "java", "java.time.ZoneId" ).of( arguments.timezone );
 		return this;
@@ -337,7 +335,7 @@ component accessors="true" {
 	 * Has this task been assigned to a scheduler or not?
 	 */
 	boolean function hasScheduler(){
-		doLog( "hasScheduler" );
+		debugLog( "hasScheduler" );
 
 		return isObject( variables.scheduler );
 	}
@@ -351,7 +349,7 @@ component accessors="true" {
 	 * @return The schedule with the task/method registered on it
 	 */
 	ScheduledTask function call( required task, method = "run" ){
-		doLog( "call" );
+		debugLog( "call" );
 
 		variables.task   = arguments.task;
 		variables.method = arguments.method;
@@ -362,9 +360,9 @@ component accessors="true" {
 	 * Update the debug setting for this task!
 	 */
 	ScheduledTask function debug( required boolean value ){
-		doLog( "debug" );
+		debugLog( "debug" );
 
-		variables.debugEnabled = arguments.value;
+		variables.debug = arguments.value;
 		return this;
 	}
 
@@ -372,7 +370,7 @@ component accessors="true" {
 	 * Set the meta data for this task!
 	 */
 	ScheduledTask function setMeta( required struct meta ){
-		doLog( "setMeta" );
+		debugLog( "setMeta" );
 
 		variables.meta = arguments.meta;
 		return this;
@@ -382,7 +380,7 @@ component accessors="true" {
 	 * Set a specific meta data key for this task!
 	 */
 	ScheduledTask function setMetaKey( required string key, required any value ){
-		doLog( "setMetaKey" );
+		debugLog( "setMetaKey" );
 
 		variables.meta[ arguments.key ] = arguments.value;
 		return this;
@@ -392,7 +390,7 @@ component accessors="true" {
 	 * Delete a specific meta data key from this task!
 	 */
 	ScheduledTask function deleteMetaKey( required string key ){
-		doLog( "deleteMetaKey" );
+		debugLog( "deleteMetaKey" );
 
 		variables.meta.delete( arguments.key );
 		return this;
@@ -409,7 +407,7 @@ component accessors="true" {
 	 * If the closure returns true we schedule, else we disable it.
 	 */
 	ScheduledTask function when( target ){
-		doLog( "when" );
+		debugLog( "when" );
 
 		variables.whenClosure = arguments.target;
 		return this;
@@ -419,7 +417,7 @@ component accessors="true" {
 	 * Disable the task when scheduled, meaning, don't run this sucker!
 	 */
 	ScheduledTask function disable(){
-		doLog( "disable" );
+		debugLog( "disable" );
 
 		variables.disabled = true;
 		return this;
@@ -429,7 +427,7 @@ component accessors="true" {
 	 * Enable the task when disabled so we can run again
 	 */
 	ScheduledTask function enable(){
-		doLog( "enable" );
+		debugLog( "enable" );
 
 		variables.disabled = false;
 		return this;
@@ -442,7 +440,7 @@ component accessors="true" {
 	 * - when closure
 	 */
 	boolean function isDisabled(){
-		doLog( "isDisabled" );
+		debugLog( "isDisabled" );
 
 		return variables.disabled;
 	}
@@ -453,7 +451,8 @@ component accessors="true" {
 	 * @endTime   The specific time using 24 hour format => HH:mm
 	 */
 	ScheduledTask function between( required string startTime, required string endTime ){
-		doLog( "between" );
+		debugLog( "between" );
+
 		startOnTime( arguments.startTime );
 		endOnTime( arguments.endTime );
 		return this;
@@ -464,7 +463,7 @@ component accessors="true" {
 	 * @time The specific time using 24 hour format => HH:mm
 	 */
 	ScheduledTask function startOnTime( required string time ){
-		doLog( "startOnTime" );
+		debugLog( "startOnTime" );
 
 		// Check for minutes else add them
 		if ( !find( ":", arguments.time ) ) {
@@ -482,7 +481,7 @@ component accessors="true" {
 	 * @time The specific time using 24 hour format => HH:mm
 	 */
 	ScheduledTask function endOnTime( required string time ){
-		doLog( "endOnTime" );
+		debugLog( "endOnTime" );
 
 		// Check for minutes else add them
 		if ( !find( ":", arguments.time ) ) {
@@ -492,7 +491,6 @@ component accessors="true" {
 		validateTime( arguments.time );
 
 		variables.endTime = arguments.time;
-
 		return this;
 	}
 
@@ -515,7 +513,7 @@ component accessors="true" {
 	 * This method is called by the `run()` method at runtime to determine if the task can be ran at that point in time
 	 */
 	boolean function isConstrained(){
-		doLog( "isConstrained" );
+		debugLog( "isConstrained" );
 
 		var now = getJavaNow();
 
@@ -595,7 +593,7 @@ component accessors="true" {
 			return true;
 		}
 
-		// if we have a start time constraint
+		// if we have a start time and / or end time constraint
 		if (
 			len( variables.startTime ) ||
 			len( variables.endTime )
@@ -608,7 +606,9 @@ component accessors="true" {
 			var _endTime = variables.dateTimeHelper.parse(
 				dateFormat( now(), "yyyy-mm-dd" ) & "T" & ( len( variables.endTime ) ? variables.endTime : "23:59:59" )
 			);
-			if ( now.isBefore( _startTime ) || now.isAfter( _endTime ) ) return true;
+			if ( now.isBefore( _startTime ) || now.isAfter( _endTime ) ) {
+				return true;
+			}
 		}
 
 		return false;
@@ -618,7 +618,7 @@ component accessors="true" {
 	 * This is the runnable proxy method that executes your code by the executors
 	 */
 	function run( boolean force = false ){
-		doLog( "run - " & arguments.force );
+		debugLog( "run - " & arguments.force );
 
 		var sTime = getTickCount();
 
@@ -715,6 +715,7 @@ component accessors="true" {
 	 * any type of cleanups
 	 */
 	function cleanupTaskRun(){
+		debugLog( "cleanupTaskRun" );
 		// no cleanups for now
 	}
 
@@ -773,7 +774,7 @@ component accessors="true" {
 
 		variables.scheduled = true;
 
-		doLog(
+		debugLog(
 			"start - " & variables.name & " - should execute initial next run call " &
 			serializeJSON( {
 				"spacedDelay" : variables.spacedDelay,
@@ -825,7 +826,7 @@ component accessors="true" {
 	 * @target The closure to execute
 	 */
 	ScheduledTask function before( required target ){
-		doLog( "before" );
+		debugLog( "before" );
 
 		variables.beforeTask = arguments.target;
 		return this;
@@ -837,7 +838,7 @@ component accessors="true" {
 	 * @target The closure to execute
 	 */
 	ScheduledTask function after( required target ){
-		doLog( "after" );
+		debugLog( "after" );
 
 		variables.afterTask = arguments.target;
 		return this;
@@ -849,7 +850,7 @@ component accessors="true" {
 	 * @target The closure to execute
 	 */
 	ScheduledTask function onSuccess( required target ){
-		doLog( "onSuccess" );
+		debugLog( "onSuccess" );
 
 		variables.onTaskSuccess = arguments.target;
 		return this;
@@ -861,7 +862,7 @@ component accessors="true" {
 	 * @target The closure to execute
 	 */
 	ScheduledTask function onFailure( required target ){
-		doLog( "onFailure" );
+		debugLog( "onFailure" );
 
 		variables.onTaskFailure = arguments.target;
 		return this;
@@ -887,7 +888,7 @@ component accessors="true" {
 		boolean overwrites     = false,
 		boolean setNextRunTime = true
 	){
-		doLog( "delay", arguments );
+		debugLog( "delay", arguments );
 
 		if ( arguments.overwrites || !variables.delay ) {
 			variables.delay         = arguments.delay;
@@ -907,7 +908,7 @@ component accessors="true" {
 	 * @timeUnit    The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is milliseconds
 	 */
 	ScheduledTask function spacedDelay( numeric spacedDelay, timeUnit = "milliseconds" ){
-		doLog( "spacedDelay", arguments );
+		debugLog( "spacedDelay", arguments );
 
 		variables.spacedDelay = arguments.spacedDelay;
 		variables.timeUnit    = arguments.timeUnit;
@@ -919,7 +920,7 @@ component accessors="true" {
 	 * interval but could potentially overlap if they take longer to execute than the period.
 	 */
 	ScheduledTask function withNoOverlaps(){
-		doLog( "withNoOverlaps" );
+		debugLog( "withNoOverlaps" );
 
 		variables.noOverlaps = true;
 		return this;
@@ -931,7 +932,7 @@ component accessors="true" {
 	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is milliseconds
 	 */
 	ScheduledTask function every( numeric period, timeUnit = "milliseconds" ){
-		doLog( "every", arguments );
+		debugLog( "every", arguments );
 
 		variables.period   = arguments.period;
 		variables.timeUnit = arguments.timeUnit;
@@ -945,7 +946,7 @@ component accessors="true" {
 	 * Run the task every minute from the time it get's scheduled
 	 */
 	ScheduledTask function everyMinute(){
-		doLog( "everyMinute", arguments );
+		debugLog( "everyMinute", arguments );
 
 		return this.every( 1, "minutes" );
 	}
@@ -954,7 +955,7 @@ component accessors="true" {
 	 * Run the task every hour from the time it get's scheduled
 	 */
 	ScheduledTask function everyHour(){
-		doLog( "everyHour", arguments );
+		debugLog( "everyHour", arguments );
 
 		return this.every( 1, "hours" );
 	}
@@ -965,7 +966,7 @@ component accessors="true" {
 	 * @minutes The minutes past the hour mark
 	 */
 	ScheduledTask function everyHourAt( required numeric minutes ){
-		doLog( "everyHourAt", arguments );
+		debugLog( "everyHourAt", arguments );
 
 		var now     = getJavaNow();
 		var nextRun = now.withMinute( javacast( "int", arguments.minutes ) ).withSecond( javacast( "int", 0 ) );
@@ -994,33 +995,9 @@ component accessors="true" {
 	 * Run the task every day at midnight
 	 */
 	ScheduledTask function everyDay(){
-		doLog( "everyDay", arguments );
+		debugLog( "everyDay", arguments );
 
-		var now     = getJavaNow();
-		// Set at midnight
-		var nextRun = now
-			.withHour( javacast( "int", 0 ) )
-			.withMinute( javacast( "int", 0 ) )
-			.withSecond( javacast( "int", 0 ) );
-		// If we passed it, then move to the next day
-		if ( now.compareTo( nextRun ) > 0 ) {
-			nextRun = nextRun.plusDays( javacast( "int", 1 ) );
-		}
-		// Get the duration time for the next run and delay accordingly
-		this.delay(
-			variables.dateTimeHelper
-				.duration()
-				.getNative()
-				.between( now, nextRun )
-				.getSeconds(),
-			"seconds",
-			true
-		);
-		// Set the period to every day in seconds
-		variables.period   = variables.timeUnitHelper.get( "days" ).toSeconds( 1 );
-		variables.timeUnit = "seconds";
-
-		return this;
+		return this.everyDayAt( "00:00" );
 	}
 
 	/**
@@ -1030,7 +1007,7 @@ component accessors="true" {
 	 * @time The specific time using 24 hour format => HH:mm
 	 */
 	ScheduledTask function everyDayAt( required string time ){
-		doLog( "everyDayAt", arguments );
+		debugLog( "everyDayAt", arguments );
 
 		// Check for minutes else add them
 		if ( !find( ":", arguments.time ) ) {
@@ -1069,7 +1046,7 @@ component accessors="true" {
 	 * Run the task every Sunday at midnight
 	 */
 	ScheduledTask function everyWeek(){
-		doLog( "everyWeek", arguments );
+		debugLog( "everyWeek", arguments );
 
 		return this.everyWeekOn( 7 );
 	}
@@ -1081,7 +1058,7 @@ component accessors="true" {
 	 * @time      The specific time using 24 hour format => HH:mm, defaults to midnight
 	 */
 	ScheduledTask function everyWeekOn( required numeric dayOfWeek, string time = "00:00" ){
-		doLog( "everyWeekOn", arguments );
+		debugLog( "everyWeekOn", arguments );
 
 		var now = getJavaNow();
 		// Check for minutes else add them
@@ -1123,7 +1100,7 @@ component accessors="true" {
 	 * Run the task on the first day of every month at midnight
 	 */
 	ScheduledTask function everyMonth(){
-		doLog( "everyMonth", arguments );
+		debugLog( "everyMonth", arguments );
 
 		return this.everyMonthOn( 1 );
 	}
@@ -1135,7 +1112,7 @@ component accessors="true" {
 	 * @time The specific time using 24 hour format => HH:mm, defaults to midnight
 	 */
 	ScheduledTask function everyMonthOn( required numeric day, string time = "00:00" ){
-		doLog( "everyMonthOn", arguments );
+		debugLog( "everyMonthOn", arguments );
 
 		var now = getJavaNow();
 		// Check for minutes else add them
@@ -1181,7 +1158,7 @@ component accessors="true" {
 	 * @time The specific time using 24 hour format => HH:mm, defaults to midnight
 	 */
 	ScheduledTask function onFirstBusinessDayOfTheMonth( string time = "00:00" ){
-		doLog( "onFirstBusinessDayOfTheMonth", arguments );
+		debugLog( "onFirstBusinessDayOfTheMonth", arguments );
 
 		var now = getJavaNow();
 		// Check for minutes else add them
@@ -1222,7 +1199,7 @@ component accessors="true" {
 	 * @time The specific time using 24 hour format => HH:mm, defaults to midnight
 	 */
 	ScheduledTask function onLastBusinessDayOfTheMonth( string time = "00:00" ){
-		doLog( "onLastBusinessDayOfTheMonth", arguments );
+		debugLog( "onLastBusinessDayOfTheMonth", arguments );
 
 		var now = getJavaNow();
 		// Check for minutes else add them
@@ -1261,7 +1238,8 @@ component accessors="true" {
 	 * Run the task on the first day of the year at midnight
 	 */
 	ScheduledTask function everyYear(){
-		doLog( "everyYear" );
+		debugLog( "everyYear" );
+
 		return this.everyYearOn( 1, 1 );
 	}
 
@@ -1277,7 +1255,7 @@ component accessors="true" {
 		required numeric day,
 		required string time = "00:00"
 	){
-		doLog( "everyYearOn", arguments );
+		debugLog( "everyYearOn", arguments );
 
 		var now = getJavaNow();
 		// Check for minutes else add them
@@ -1323,7 +1301,7 @@ component accessors="true" {
 	 * @time The specific time using 24 hour format => HH:mm, defaults to 00:00
 	 */
 	ScheduledTask function onWeekends( string time = "00:00" ){
-		doLog( "onWeekends", arguments );
+		debugLog( "onWeekends", arguments );
 
 		// Check for minutes else add them
 		if ( !find( ":", arguments.time ) ) {
@@ -1367,7 +1345,7 @@ component accessors="true" {
 	 * @time The specific time using 24 hour format => HH:mm, defaults to 00:00
 	 */
 	ScheduledTask function onWeekdays( string time = "00:00" ){
-		doLog( "onWeekdays", arguments );
+		debugLog( "onWeekdays", arguments );
 
 		// Check for minutes else add them
 		if ( !find( ":", arguments.time ) ) {
@@ -1411,7 +1389,7 @@ component accessors="true" {
 	 * @time The specific time using 24 hour format => HH:mm, defaults to 00:00
 	 */
 	ScheduledTask function onMondays( string time = "00:00" ){
-		doLog( "onMondays", arguments );
+		debugLog( "onMondays", arguments );
 
 		return this.everyWeekOn( 1, arguments.time );
 	}
@@ -1422,7 +1400,7 @@ component accessors="true" {
 	 * @time The specific time using 24 hour format => HH:mm, defaults to 00:00
 	 */
 	ScheduledTask function onTuesdays( string time = "00:00" ){
-		doLog( "onTuesdays", arguments );
+		debugLog( "onTuesdays", arguments );
 
 		return this.everyWeekOn( 2, arguments.time );
 	}
@@ -1433,7 +1411,7 @@ component accessors="true" {
 	 * @time The specific time using 24 hour format => HH:mm, defaults to 00:00
 	 */
 	ScheduledTask function onWednesdays( string time = "00:00" ){
-		doLog( "onWednesdays", arguments );
+		debugLog( "onWednesdays", arguments );
 
 		return this.everyWeekOn( 3, arguments.time );
 	}
@@ -1444,7 +1422,7 @@ component accessors="true" {
 	 * @time The specific time using 24 hour format => HH:mm, defaults to 00:00
 	 */
 	ScheduledTask function onThursdays( string time = "00:00" ){
-		doLog( "onThursdays", arguments );
+		debugLog( "onThursdays", arguments );
 
 		return this.everyWeekOn( 4, arguments.time );
 	}
@@ -1455,7 +1433,7 @@ component accessors="true" {
 	 * @time The specific time using 24 hour format => HH:mm, defaults to 00:00
 	 */
 	ScheduledTask function onFridays( string time = "00:00" ){
-		doLog( "onFridays", arguments );
+		debugLog( "onFridays", arguments );
 
 		return this.everyWeekOn( 5, arguments.time );
 	}
@@ -1466,7 +1444,7 @@ component accessors="true" {
 	 * @time The specific time using 24 hour format => HH:mm, defaults to 00:00
 	 */
 	ScheduledTask function onSaturdays( string time = "00:00" ){
-		doLog( "onSaturdays", arguments );
+		debugLog( "onSaturdays", arguments );
 
 		return this.everyWeekOn( 6, arguments.time );
 	}
@@ -1477,7 +1455,7 @@ component accessors="true" {
 	 * @time The specific time using 24 hour format => HH:mm, defaults to 00:00
 	 */
 	ScheduledTask function onSundays( string time = "00:00" ){
-		doLog( "onSundays", arguments );
+		debugLog( "onSundays", arguments );
 
 		return this.everyWeekOn( 7, arguments.time );
 	}
@@ -1489,7 +1467,7 @@ component accessors="true" {
 	 * @time The specific time using 24 hour format => HH:mm, defaults to 00:00
 	 */
 	ScheduledTask function startOn( required date, string time = "00:00" ){
-		doLog( "startOn", arguments );
+		debugLog( "startOn", arguments );
 
 		variables.startOnDateTime = variables.dateTimeHelper.parse(
 			"#dateFormat( arguments.date, "yyyy-mm-dd" )#T#arguments.time#"
@@ -1504,7 +1482,7 @@ component accessors="true" {
 	 * @time The specific time using 24 hour format => HH:mm, defaults to 00:00
 	 */
 	ScheduledTask function endOn( required date, string time = "00:00" ){
-		doLog( "endOn", arguments );
+		debugLog( "endOn", arguments );
 
 		variables.endOnDateTime = variables.dateTimeHelper.parse(
 			"#dateFormat( arguments.date, "yyyy-mm-dd" )#T#arguments.time#"
@@ -1524,7 +1502,7 @@ component accessors="true" {
 	 * Set the time unit in days
 	 */
 	ScheduledTask function inDays(){
-		doLog( "inDays" );
+		debugLog( "inDays" );
 
 		variables.timeUnit = "days";
 		return this;
@@ -1534,7 +1512,7 @@ component accessors="true" {
 	 * Set the time unit in hours
 	 */
 	ScheduledTask function inHours(){
-		doLog( "inHours" );
+		debugLog( "inHours" );
 
 		variables.timeUnit = "hours";
 		return this;
@@ -1544,7 +1522,7 @@ component accessors="true" {
 	 * Set the time unit in microseconds
 	 */
 	ScheduledTask function inMicroseconds(){
-		doLog( "inMicroseconds" );
+		debugLog( "inMicroseconds" );
 
 		variables.timeUnit = "microseconds";
 		return this;
@@ -1554,7 +1532,7 @@ component accessors="true" {
 	 * Set the time unit in milliseconds
 	 */
 	ScheduledTask function inMilliseconds(){
-		doLog( "inMilliseconds" );
+		debugLog( "inMilliseconds" );
 
 		variables.timeUnit = "milliseconds";
 		return this;
@@ -1564,7 +1542,7 @@ component accessors="true" {
 	 * Set the time unit in minutes
 	 */
 	ScheduledTask function inMinutes(){
-		doLog( "inMinutes" );
+		debugLog( "inMinutes" );
 
 		variables.timeUnit = "minutes";
 		return this;
@@ -1574,7 +1552,7 @@ component accessors="true" {
 	 * Set the time unit in nanoseconds
 	 */
 	ScheduledTask function inNanoseconds(){
-		doLog( "inNanoseconds" );
+		debugLog( "inNanoseconds" );
 
 		variables.timeUnit = "nanoseconds";
 		return this;
@@ -1584,7 +1562,7 @@ component accessors="true" {
 	 * Set the time unit in seconds
 	 */
 	ScheduledTask function inSeconds(){
-		doLog( "inSeconds" );
+		debugLog( "inSeconds" );
 
 		variables.timeUnit = "seconds";
 		return this;
@@ -1671,7 +1649,7 @@ component accessors="true" {
 		boolean addMonth = false,
 		date now         = now()
 	){
-		doLog( "getLastBusinessDayOfTheMonth" );
+		debugLog( "getLastBusinessDayOfTheMonth" );
 
 		// Get the last day of the month
 		var lastDay = variables.dateTimeHelper
@@ -1715,7 +1693,7 @@ component accessors="true" {
 		var amount = structKeyExists( arguments, "delay" ) ? arguments.delay : variables.delay;
 		var unit   = structKeyExists( arguments, "timeUnit" ) ? arguments.timeUnit : variables.timeUnit;
 
-		doLog(
+		debugLog(
 			"setInitialNextRunTime",
 			{
 				delay         : amount,
@@ -1778,14 +1756,14 @@ component accessors="true" {
 				.withSecond( javacast( "int", 59 ) );
 
 
-			doLog(
+			debugLog(
 				"startTime",
 				{
 					startTime : startTime.toString(),
 					comp      : now.compareTo( startTime )
 				}
 			);
-			doLog(
+			debugLog(
 				"endTime",
 				{
 					endTime : endTime.toString(),
@@ -1793,9 +1771,13 @@ component accessors="true" {
 				}
 			);
 
-			if ( now.compareTo( startTime ) < 0 ) variables.stats.nextRun = startTime;
+			if ( now.compareTo( startTime ) < 0 ) {
+				variables.stats.nextRun = startTime
+			};
 
-			if ( now.compareTo( endTime ) > 0 ) variables.stats.nextRun = startTime.plusDays( javacast( "int", 1 ) );
+			if ( now.compareTo( endTime ) > 0 ) {
+				variables.stats.nextRun = startTime.plusDays( javacast( "int", 1 ) )
+			};
 
 			variables.stats.nextRun = variables.stats.nextRun.toString();
 		}
@@ -1805,14 +1787,15 @@ component accessors="true" {
 	 * This method is called to set the next run time of the task based on the timeUnit and period.
 	 */
 	private function setNextRunTime(){
-		doLog( "setNextRunTime", arguments );
+		debugLog( "setNextRunTime", arguments );
 
-		var now = getJavaNow();
-
+		var now    = getJavaNow();
 		var amount = variables.spacedDelay != 0 ? variables.spacedDelay : variables.period;
 
 		// if overlaps are allowed task is immediately scheduled
-		if ( variables.spacedDelay == 0 && variables.stats.lastExecutionTime / 1000 > variables.period ) amount = 0;
+		if ( variables.spacedDelay == 0 && variables.stats.lastExecutionTime / 1000 > variables.period ) {
+			amount = 0;
+		}
 
 		// reset nextRun to empty string to continue with process of setting
 		// next run time
@@ -1841,9 +1824,11 @@ component accessors="true" {
 				.withMinute( javacast( "int", 59 ) )
 				.withSecond( javacast( "int", 59 ) );
 
-			if ( now.compareTo( startTime ) < 0 ) variables.stats.nextRun = startTime;
-			else if ( now.compareTo( endTime ) > 0 )
+			if ( now.compareTo( startTime ) < 0 ) {
+				variables.stats.nextRun = startTime;
+			} else if ( now.compareTo( endTime ) > 0 ) {
 				variables.stats.nextRun = startTime.plusDays( javacast( "int", 1 ) );
+			}
 		}
 
 		if ( !len( variables.stats.nextRun ) ) {
@@ -1876,14 +1861,14 @@ component accessors="true" {
 	}
 
 	/**
-	 * Debug logging method
+	 * Debug output method
 	 */
-	private function doLog( required string caller, struct args = {} ){
-		if ( variables.debugEnabled ) {
+	function debugLog( required string caller, struct args = {} ){
+		if ( variables.debug ) {
 			var message = "ScheduledTask : " & variables.name & " : " & arguments.caller & "()" & (
 				structIsEmpty( arguments.args ) ? "" : " : " & serializeJSON( arguments.args )
 			);
-			variables.System.out.println( message );
+			variables.executor.out( message );
 		}
 	}
 
