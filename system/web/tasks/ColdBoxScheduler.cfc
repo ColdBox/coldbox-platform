@@ -91,14 +91,16 @@ component
 	 * Register a new task in this scheduler that will be executed once the `startup()` is fired or manually
 	 * via the run() method of the task.
 	 *
+	 * @name   The name of this task
+	 * @debug  Add debugging logs to System out, disabled by default in coldbox.system.web.tasks.ColdBoxScheduledTask
 	 * @return a ScheduledTask object so you can work on the registration of the task
 	 */
-	ColdBoxScheduledTask function task( required name ){
+	ColdBoxScheduledTask function task( required name, boolean debug = false ){
 		// Create task with custom name
 		var oColdBoxTask = variables.wirebox
 			.getInstance(
 				"coldbox.system.web.tasks.ColdBoxScheduledTask",
-				{ name : arguments.name, executor : variables.executor }
+				{ name : arguments.name, executor : variables.executor, debug: arguments.debug }
 			)
 			// Set ourselves into the task
 			.setScheduler( this )
