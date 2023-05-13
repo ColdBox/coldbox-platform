@@ -1869,8 +1869,8 @@ component accessors="true" {
 	 */
 	function debugLog( required string caller, struct args = {} ){
 		if ( variables.debug ) {
-			var message = dateTimeFormat(now(),"yyyy-mm-dd hh:nn:ss") &
-				" : ScheduledTask : " & variables.name & " : " & arguments.caller & "()" & (
+			var message = dateTimeFormat( now(), "yyyy-mm-dd hh:nn:ss" ) &
+			" : ScheduledTask : " & variables.name & " : " & arguments.caller & "()" & (
 				structIsEmpty( arguments.args ) ? "" : " : " & serializeJSON( arguments.args )
 			);
 			variables.executor.out( message );
