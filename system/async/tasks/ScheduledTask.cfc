@@ -9,17 +9,17 @@ component accessors="true" {
 	/**
 	 * The human name of this task
 	 */
-	property name="name";
+	property name="name" type="string";
 
 	/**
 	 * The task closure or CFC to execute in the task
 	 */
-	property name="task";
+	property name="task" type="any";
 
 	/**
 	 * The method to execute if the task is a CFC
 	 */
-	property name="method";
+	property name="method" type="string";
 
 	/**
 	 * The delay or time to wait before we execute the task in the scheduler
@@ -29,7 +29,7 @@ component accessors="true" {
 	/**
 	 * The time unit string used when there is a delay requested for the task
 	 */
-	property name="delayTimeUnit";
+	property name="delayTimeUnit" type="string";
 
 	/**
 	 * A fixed time period of execution of the tasks in this schedule. It does not wait for tasks to finish,
@@ -45,7 +45,7 @@ component accessors="true" {
 	/**
 	 * The time unit string used to schedule the task
 	 */
-	property name="timeUnit";
+	property name="timeUnit" type="string";
 
 	/**
 	 * A handy boolean that is set when the task is annually scheduled
@@ -55,7 +55,7 @@ component accessors="true" {
 	/**
 	 * The boolean value is used for debugging
 	 */
-	property name="debug";
+	property name="debug" type="boolean";
 
 	/**
 	 * A handy boolean that disables the scheduling of this task
@@ -115,32 +115,32 @@ component accessors="true" {
 	/**
 	 * Constraint of when the task can start execution.
 	 */
-	property name="startOnDateTime";
+	property name="startOnDateTime" type="date";
 
 	/**
 	 * Constraint of when the task must not continue to execute
 	 */
-	property name="endOnDateTime";
+	property name="endOnDateTime" type="date";
 
 	/**
 	 * Constraint to limit the task to run after a specified time of day.
 	 */
-	property name="startTime";
+	property name="startTime" type="string";
 
 	/**
 	 * Constraint to limit the task to run before a specified time of day.
 	 */
-	property name="endTime";
+	property name="endTime" type="string";
 
 	/**
 	 * The boolean value that lets us know if this task has been scheduled
 	 */
-	property name="scheduled";
+	property name="scheduled" type="boolean";
 
 	/**
 	 * This task can be assigned to a task scheduler or be executed on its own at runtime
 	 */
-	property name="scheduler";
+	property name="scheduler" type="any";
 
 	/**
 	 * A struct for the task that can be used to store any metadata
@@ -155,27 +155,27 @@ component accessors="true" {
 	/**
 	 * The timezone this task runs under, by default we use the timezone defined in the schedulers
 	 */
-	property name="timezone";
+	property name="timezone" type="string";
 
 	/**
 	 * The before task closure
 	 */
-	property name="beforeTask";
+	property name="beforeTask" type="any";
 
 	/**
 	 * The after task closure
 	 */
-	property name="afterTask";
+	property name="afterTask" type="any";
 
 	/**
 	 * The task success closure
 	 */
-	property name="onTaskSuccess";
+	property name="onTaskSuccess" type="any";
 
 	/**
 	 * The task failure closure
 	 */
-	property name="onTaskFailure";
+	property name="onTaskFailure" type="any";
 
 
 	/**
@@ -465,12 +465,8 @@ component accessors="true" {
 	ScheduledTask function startOnTime( required string time ){
 		debugLog( "startOnTime" );
 
-		// Check for minutes else add them
-		if ( !find( ":", arguments.time ) ) {
-			arguments.time &= ":00";
-		}
 		// Validate time format
-		validateTime( arguments.time );
+		arguments.time = validateTime( arguments.time );
 
 		variables.startTime = arguments.time;
 		return this;
@@ -483,12 +479,8 @@ component accessors="true" {
 	ScheduledTask function endOnTime( required string time ){
 		debugLog( "endOnTime" );
 
-		// Check for minutes else add them
-		if ( !find( ":", arguments.time ) ) {
-			arguments.time &= ":00";
-		}
 		// Validate time format
-		validateTime( arguments.time );
+		arguments.time = validateTime( arguments.time );
 
 		variables.endTime = arguments.time;
 		return this;
@@ -597,7 +589,7 @@ component accessors="true" {
 			return true;
 		}
 
-		// Do we have a start time and / or end time constraint
+		// Do we have we have a start time and / or end time constraint
 		if (
 			len( variables.startTime ) ||
 			len( variables.endTime )
@@ -622,7 +614,7 @@ component accessors="true" {
 	 * This is the runnable proxy method that executes your code by the executors
 	 */
 	function run( boolean force = false ){
-		debugLog( "run - " & arguments.force );
+		debugLog( "run( #arguments.force# )" );
 
 		var sTime = getTickCount();
 
@@ -677,8 +669,8 @@ component accessors="true" {
 			// store failures
 			variables.stats.totalFailures = variables.stats.totalFailures + 1;
 			// Log it, so it doesn't go to ether
-			err( "Error running task (#getname()#) : #e.message & e.detail#" );
-			err( "Stacktrace for task (#getname()#) : #e.stackTrace#" );
+			err( "Error running task (#getName()#) : #e.message & e.detail#" );
+			err( "Stacktrace for task (#geNname()#) : #e.stackTrace#" );
 
 			// Try to execute the error handlers. Try try try just in case.
 			try {
@@ -699,8 +691,8 @@ component accessors="true" {
 				}
 			} catch ( any afterException ) {
 				// Log it, so it doesn't go to ether and executor doesn't die.
-				err( "Error running task (#getname()#) after/error handlers : #afterException.message & afterException.detail#" );
-				err( "Stacktrace for task (#getname()#) after/error handlers : #afterException.stackTrace#" );
+				err( "Error running task (#getName()#) after/error handlers : #afterException.message & afterException.detail#" );
+				err( "Stacktrace for task (#getName()#) after/error handlers : #afterException.stackTrace#" );
 			}
 		} finally {
 			// Store finalization stats
@@ -776,16 +768,19 @@ component accessors="true" {
 			}
 		}
 
-		variables.scheduled = true;
-
 		debugLog(
-			"start - " & variables.name & " - should execute initial next run call " &
-			serializeJSON( {
-				"spacedDelay" : variables.spacedDelay,
-				"period"      : variables.period,
-				"delay"       : variables.delay
-			} )
+			"start",
+			{
+				delay         : variables.delay,
+				delayTimeUnit : variables.delayTimeUnit,
+				period        : variables.period,
+				spacedDelay   : variables.spacedDelay,
+				timeUnit      : variables.timeUnit,
+				type          : variables.spacedDelay > 0 ? "scheduleWithFixedDelay" : variables.period > 0 ? "scheduleAtFixedRate" : "runOnce"
+			}
 		);
+
+		variables.scheduled = true;
 
 		// Startup a spaced frequency task: no overlaps
 		if ( variables.spacedDelay > 0 ) {
@@ -883,7 +878,7 @@ component accessors="true" {
 	 *
 	 * @delay          The delay that will be used before executing the task
 	 * @timeUnit       The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is milliseconds
-	 * @overwrites     Boolean to overwrite delay and timeUnit even if value is already set, this is helpful if the delay is set later in the chain when creating the task - defaults to false
+	 * @overwrites     Boolean to overwrite delay and delayTimeUnit even if value is already set, this is helpful if the delay is set later in the chain when creating the task - defaults to false
 	 * @setNextRunTime Boolean to execute setInitialNextRunTime() - defaults to true
 	 */
 	ScheduledTask function delay(
@@ -930,7 +925,8 @@ component accessors="true" {
 		return this;
 	}
 
-	/**	 * Run the task every custom period of execution
+	/**
+	 * Run the task every custom period of execution
 	 *
 	 * @period   The period of execution
 	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is milliseconds
@@ -950,7 +946,7 @@ component accessors="true" {
 	 * Run the task every minute from the time it get's scheduled
 	 */
 	ScheduledTask function everyMinute(){
-		debugLog( "everyMinute", arguments );
+		debugLog( "everyMinute" );
 
 		return this.every( 1, "minutes" );
 	}
@@ -959,7 +955,7 @@ component accessors="true" {
 	 * Run the task every hour from the time it get's scheduled
 	 */
 	ScheduledTask function everyHour(){
-		debugLog( "everyHour", arguments );
+		debugLog( "everyHour" );
 
 		return this.every( 1, "hours" );
 	}
@@ -972,25 +968,15 @@ component accessors="true" {
 	ScheduledTask function everyHourAt( required numeric minutes ){
 		debugLog( "everyHourAt", arguments );
 
+		// Get times
 		var now     = getJavaNow();
 		var nextRun = now.withMinute( javacast( "int", arguments.minutes ) ).withSecond( javacast( "int", 0 ) );
-		// If we passed it, then move the hour by 1
+		// If we passed it, then move to the next hour
 		if ( now.compareTo( nextRun ) > 0 ) {
 			nextRun = nextRun.plusHours( javacast( "int", 1 ) );
 		}
-		// Get the duration time for the next run and delay accordingly
-		this.delay(
-			variables.chronoUnitHelper
-				.duration()
-				.getNative()
-				.between( now, nextRun )
-				.getSeconds(),
-			"seconds",
-			true
-		);
-		// Set the period to be every hour
-		variables.period   = variables.timeUnitHelper.get( "hours" ).toSeconds( 1 );
-		variables.timeUnit = "seconds";
+		// Set the initial delay, period, and time unit
+		setInitialDelayPeriodAndTimeUnit( now, nextRun, "hours" );
 
 		return this;
 	}
@@ -999,7 +985,7 @@ component accessors="true" {
 	 * Run the task every day at midnight
 	 */
 	ScheduledTask function everyDay(){
-		debugLog( "everyDay", arguments );
+		debugLog( "everyDay" );
 
 		return this.everyDayAt( "00:00" );
 	}
@@ -1013,12 +999,9 @@ component accessors="true" {
 	ScheduledTask function everyDayAt( required string time ){
 		debugLog( "everyDayAt", arguments );
 
-		// Check for minutes else add them
-		if ( !find( ":", arguments.time ) ) {
-			arguments.time &= ":00";
-		}
 		// Validate time format
-		validateTime( arguments.time );
+		arguments.time = validateTime( arguments.time );
+
 		// Get times
 		var now     = getJavaNow();
 		var nextRun = now
@@ -1029,19 +1012,8 @@ component accessors="true" {
 		if ( now.compareTo( nextRun ) > 0 ) {
 			nextRun = nextRun.plusDays( javacast( "int", 1 ) );
 		}
-		// Get the duration time for the next run and delay accordingly
-		this.delay(
-			variables.chronoUnitHelper
-				.duration()
-				.getNative()
-				.between( now, nextRun )
-				.getSeconds(),
-			"seconds",
-			true
-		);
-		// Set the period to every day in seconds
-		variables.period   = variables.timeUnitHelper.get( "DAYS" ).toSeconds( 1 );
-		variables.timeUnit = "seconds";
+		// Set the initial delay, period, and time unit
+		setInitialDelayPeriodAndTimeUnit( now, nextRun );
 
 		return this;
 	}
@@ -1050,7 +1022,7 @@ component accessors="true" {
 	 * Run the task every Sunday at midnight
 	 */
 	ScheduledTask function everyWeek(){
-		debugLog( "everyWeek", arguments );
+		debugLog( "everyWeek" );
 
 		return this.everyWeekOn( 7 );
 	}
@@ -1064,13 +1036,11 @@ component accessors="true" {
 	ScheduledTask function everyWeekOn( required numeric dayOfWeek, string time = "00:00" ){
 		debugLog( "everyWeekOn", arguments );
 
-		var now = getJavaNow();
-		// Check for minutes else add them
-		if ( !find( ":", arguments.time ) ) {
-			arguments.time &= ":00";
-		}
 		// Validate time format
-		validateTime( arguments.time );
+		arguments.time = validateTime( arguments.time );
+
+		// Get times
+		var now     = getJavaNow();
 		var nextRun = now
 			// Given day
 			.with( variables.chronoUnitHelper.ChronoField.DAY_OF_WEEK, javacast( "int", arguments.dayOfWeek ) )
@@ -1082,19 +1052,9 @@ component accessors="true" {
 		if ( now.compareTo( nextRun ) > 0 ) {
 			nextRun = nextRun.plusWeeks( javacast( "int", 1 ) );
 		}
-		// Get the duration time for the next run and delay accordingly
-		this.delay(
-			variables.chronoUnitHelper
-				.duration()
-				.getNative()
-				.between( now, nextRun )
-				.getSeconds(),
-			"seconds",
-			true
-		);
-		// Set the period to every week in seconds
-		variables.period       = variables.timeUnitHelper.get( "days" ).toSeconds( 7 );
-		variables.timeUnit     = "seconds";
+		// Set the initial delay, period, and time unit
+		setInitialDelayPeriodAndTimeUnit( now, nextRun, "days", 7 );
+		// set constraints
 		variables.dayOfTheWeek = arguments.dayOfWeek;
 
 		return this;
@@ -1104,7 +1064,7 @@ component accessors="true" {
 	 * Run the task on the first day of every month at midnight
 	 */
 	ScheduledTask function everyMonth(){
-		debugLog( "everyMonth", arguments );
+		debugLog( "everyMonth" );
 
 		return this.everyMonthOn( 1 );
 	}
@@ -1118,14 +1078,11 @@ component accessors="true" {
 	ScheduledTask function everyMonthOn( required numeric day, string time = "00:00" ){
 		debugLog( "everyMonthOn", arguments );
 
-		var now = getJavaNow();
-		// Check for minutes else add them
-		if ( !find( ":", arguments.time ) ) {
-			arguments.time &= ":00";
-		}
 		// Validate time format
-		validateTime( arguments.time );
-		// Get new time
+		arguments.time = validateTime( arguments.time );
+
+		// Get times
+		var now     = getJavaNow();
 		var nextRun = now
 			// First day of the month
 			.with( variables.chronoUnitHelper.ChronoField.DAY_OF_MONTH, javacast( "int", arguments.day ) )
@@ -1133,24 +1090,13 @@ component accessors="true" {
 			.withHour( javacast( "int", getToken( arguments.time, 1, ":" ) ) )
 			.withMinute( javacast( "int", getToken( arguments.time, 2, ":" ) ) )
 			.withSecond( javacast( "int", 0 ) );
-		// Have we passed it
+		// If we passed it, then move to the next month
 		if ( now.compareTo( nextRun ) > 0 ) {
 			nextRun = nextRun.plusMonths( javacast( "int", 1 ) );
 		}
-		// Get the duration time for the next run and delay accordingly
-		this.delay(
-			variables.chronoUnitHelper
-				.duration()
-				.getNative()
-				.between( now, nextRun )
-				.getSeconds(),
-			"seconds",
-			true
-		);
-		// Set the period to one day. And make sure we add a constraint for it
-		// Mostly because every month is different
-		variables.period        = variables.timeUnitHelper.get( "days" ).toSeconds( 1 );
-		variables.timeUnit      = "seconds";
+		// Set the initial delay, period, and time unit
+		setInitialDelayPeriodAndTimeUnit( now, nextRun );
+		// Set constraints
 		variables.dayOfTheMonth = arguments.day;
 
 		return this;
@@ -1164,33 +1110,19 @@ component accessors="true" {
 	ScheduledTask function onFirstBusinessDayOfTheMonth( string time = "00:00" ){
 		debugLog( "onFirstBusinessDayOfTheMonth", arguments );
 
-		var now = getJavaNow();
-		// Check for minutes else add them
-		if ( !find( ":", arguments.time ) ) {
-			arguments.time &= ":00";
-		}
 		// Validate time format
-		validateTime( arguments.time );
-		// Get new time
+		arguments.time = validateTime( arguments.time );
+
+		// Get times
+		var now     = getJavaNow();
 		var nextRun = getFirstBusinessDayOfTheMonth( arguments.time );
-		// Have we passed it
+		// If we passed it, then move to the first business day of next month
 		if ( now.compareTo( nextRun ) > 0 ) {
 			nextRun = getFirstBusinessDayOfTheMonth( arguments.time, true );
 		}
-		// Get the duration time for the next run and delay accordingly
-		this.delay(
-			variables.chronoUnitHelper
-				.duration()
-				.getNative()
-				.between( now, nextRun )
-				.getSeconds(),
-			"seconds",
-			true
-		);
-		// Set the period to one day. And make sure we add a constraint for it
-		// Mostly because every month is different
-		variables.period           = variables.timeUnitHelper.get( "days" ).toSeconds( 1 );
-		variables.timeUnit         = "seconds";
+		// Set the initial delay, period, and time unit
+		setInitialDelayPeriodAndTimeUnit( now, nextRun );
+		// Set constraints
 		variables.firstBusinessDay = true;
 		variables.taskTime         = arguments.time;
 
@@ -1205,33 +1137,19 @@ component accessors="true" {
 	ScheduledTask function onLastBusinessDayOfTheMonth( string time = "00:00" ){
 		debugLog( "onLastBusinessDayOfTheMonth", arguments );
 
-		var now = getJavaNow();
-		// Check for minutes else add them
-		if ( !find( ":", arguments.time ) ) {
-			arguments.time &= ":00";
-		}
 		// Validate time format
-		validateTime( arguments.time );
-		// Get the last day of the month
+		arguments.time = validateTime( arguments.time );
+
+		// Get times
+		var now     = getJavaNow();
 		var nextRun = getLastBusinessDayOfTheMonth( arguments.time );
-		// Have we passed it
+		// If we passed it, then move to the last business day of next month
 		if ( now.compareTo( nextRun ) > 0 ) {
 			nextRun = getLastBusinessDayOfTheMonth( arguments.time, true );
 		}
-		// Get the duration time for the next run and delay accordingly
-		this.delay(
-			variables.chronoUnitHelper
-				.duration()
-				.getNative()
-				.between( now, nextRun )
-				.getSeconds(),
-			"seconds",
-			true
-		);
-		// Set the period to one day. And make sure we add a constraint for it
-		// Mostly because every month is different
-		variables.period          = variables.timeUnitHelper.get( "days" ).toSeconds( 1 );
-		variables.timeUnit        = "seconds";
+		// Set the initial delay, period, and time unit
+		setInitialDelayPeriodAndTimeUnit( now, nextRun );
+		// Set constraints
 		variables.lastBusinessDay = true;
 		variables.taskTime        = arguments.time;
 
@@ -1261,13 +1179,11 @@ component accessors="true" {
 	){
 		debugLog( "everyYearOn", arguments );
 
-		var now = getJavaNow();
-		// Check for minutes else add them
-		if ( !find( ":", arguments.time ) ) {
-			arguments.time &= ":00";
-		}
 		// Validate time format
-		validateTime( arguments.time );
+		arguments.time = validateTime( arguments.time );
+
+		// Get times
+		var now     = getJavaNow();
 		var nextRun = now
 			// Specific month
 			.with( variables.chronoUnitHelper.ChronoField.MONTH_OF_YEAR, javacast( "int", arguments.month ) )
@@ -1277,23 +1193,13 @@ component accessors="true" {
 			.withHour( javacast( "int", getToken( arguments.time, 1, ":" ) ) )
 			.withMinute( javacast( "int", getToken( arguments.time, 2, ":" ) ) )
 			.withSecond( javacast( "int", 0 ) );
-		// Have we passed it?
+		// If we passed it, then move to the next year
 		if ( now.compareTo( nextRun ) > 0 ) {
 			nextRun = nextRun.plusYears( javacast( "int", 1 ) );
 		}
-		// Get the duration time for the next run and delay accordingly
-		this.delay(
-			variables.chronoUnitHelper
-				.duration()
-				.getNative()
-				.between( now, nextRun )
-				.getSeconds(),
-			"seconds",
-			true
-		);
-		// Set the period to
-		variables.period   = variables.timeUnitHelper.get( "days" ).toSeconds( 365 );
-		variables.timeUnit = "seconds";
+		// Set the initial delay, period, and time unit
+		setInitialDelayPeriodAndTimeUnit( now, nextRun, "days", 365 );
+		// Set constraints
 		variables.annually = true;
 
 		return this;
@@ -1307,12 +1213,9 @@ component accessors="true" {
 	ScheduledTask function onWeekends( string time = "00:00" ){
 		debugLog( "onWeekends", arguments );
 
-		// Check for minutes else add them
-		if ( !find( ":", arguments.time ) ) {
-			arguments.time &= ":00";
-		}
 		// Validate time format
-		validateTime( arguments.time );
+		arguments.time = validateTime( arguments.time );
+
 		// Get times
 		var now     = getJavaNow();
 		var nextRun = now
@@ -1323,20 +1226,9 @@ component accessors="true" {
 		if ( now.compareTo( nextRun ) > 0 ) {
 			nextRun = nextRun.plusDays( javacast( "int", 1 ) );
 		}
-		// Get the duration time for the next run and delay accordingly
-		this.delay(
-			variables.chronoUnitHelper
-				.duration()
-				.getNative()
-				.between( now, nextRun )
-				.getSeconds(),
-			"seconds",
-			true
-		);
-		// Set the period to every day in seconds
-		variables.period   = variables.timeUnitHelper.get( "DAYS" ).toSeconds( 1 );
-		variables.timeUnit = "seconds";
-		// Constraint to only run on weekends
+		// Set the initial delay, period, and time unit
+		setInitialDelayPeriodAndTimeUnit( now, nextRun );
+		// Set constraints
 		variables.weekends = true;
 		variables.weekdays = false;
 
@@ -1351,12 +1243,9 @@ component accessors="true" {
 	ScheduledTask function onWeekdays( string time = "00:00" ){
 		debugLog( "onWeekdays", arguments );
 
-		// Check for minutes else add them
-		if ( !find( ":", arguments.time ) ) {
-			arguments.time &= ":00";
-		}
 		// Validate time format
-		validateTime( arguments.time );
+		arguments.time = validateTime( arguments.time );
+
 		// Get times
 		var now     = getJavaNow();
 		var nextRun = now
@@ -1367,20 +1256,9 @@ component accessors="true" {
 		if ( now.compareTo( nextRun ) > 0 ) {
 			nextRun = nextRun.plusDays( javacast( "int", 1 ) );
 		}
-		// Get the duration time for the next run and delay accordingly
-		this.delay(
-			variables.chronoUnitHelper
-				.duration()
-				.getNative()
-				.between( now, nextRun )
-				.getSeconds(),
-			"seconds",
-			true
-		);
-		// Set the period to every day in seconds
-		variables.period   = variables.timeUnitHelper.get( "DAYS" ).toSeconds( 1 );
-		variables.timeUnit = "seconds";
-		// Constraint to only run on weekdays
+		// Set the initial delay, period, and time unit
+		setInitialDelayPeriodAndTimeUnit( now, nextRun );
+		// Set constraints
 		variables.weekdays = true;
 		variables.weekends = false;
 
@@ -1573,13 +1451,20 @@ component accessors="true" {
 	}
 
 	/**
-	 * Validates an incoming string to adhere to either: HH:mm
+	 * Validates an incoming string to adhere to HH:mm
 	 *
 	 * @time The time to check
 	 *
-	 * @throws InvalidTimeException - If the time is invalid, else it just continues operation
+	 * @throws InvalidTimeException - If the time is invalid, else it returns the time value
 	 */
-	function validateTime( required time ){
+	string function validateTime( required time ){
+		// Check for minutes else add them
+		if ( !find( ":", arguments.time ) ) {
+			arguments.time &= ":00";
+		}
+
+		debugLog( "validateTime", arguments );
+
 		// Regex check
 		if ( !reFind( "^[0-2][0-9]\:[0-5][0-9]$", arguments.time ) ) {
 			throw(
@@ -1587,13 +1472,17 @@ component accessors="true" {
 				type    = "InvalidTimeException"
 			);
 		}
+
+		return arguments.time;
 	}
 
 	/**
 	 * Get a Java localDateTime object using the current date/time and timezone
+	 *
+	 * @now The date to use as the starting point, defaults to now() - modifications are helpful for testing
 	 */
-	function getJavaNow(){
-		return variables.chronoUnitHelper.toLocalDateTime( now(), this.getTimezone() );
+	function getJavaNow( date now = now() ){
+		return variables.chronoUnitHelper.toLocalDateTime( arguments.now, this.getTimezone() );
 	}
 
 	/**
@@ -1788,10 +1677,51 @@ component accessors="true" {
 	}
 
 	/**
+	 * This method is called to set the initial delay period which
+	 * calls setInitialNextRunTime, then sets the timeUnit to seconds
+	 * and the period based on a value to convert to seconds.
+	 *
+	 * @now              The current time to use for calculating the initial delay
+	 * @nextRun          The first run time to use for calculating the initial delay
+	 * @periodValue      The value to use when calculating the period to seconds
+	 * @periodMultiplier The multiplier to use when calculating the period to seconds
+	 */
+	private function setInitialDelayPeriodAndTimeUnit(
+		required now,
+		required nextRun,
+		string periodValue       = "days",
+		numeric periodMultiplier = 1
+	){
+		debugLog(
+			"setInitialDelayPeriodAndTimeUnit",
+			{
+				now              : arguments.now.toString(),
+				nextRun          : arguments.nextRun.toString(),
+				periodValue      : arguments.periodValue,
+				periodMultiplier : arguments.periodMultiplier
+			}
+		);
+
+		// Get the duration time for the next run and delay accordingly
+		this.delay(
+			variables.chronoUnitHelper
+				.duration()
+				.getNative()
+				.between( arguments.now, arguments.nextRun )
+				.getSeconds(),
+			"seconds",
+			true
+		);
+		// Set the period to be every hour in seconds
+		variables.period   = variables.timeUnitHelper.get( arguments.period ).toSeconds( arguments.periodMultiplier );
+		variables.timeUnit = "seconds";
+	}
+
+	/**
 	 * This method is called to set the next run time of the task based on the timeUnit and period.
 	 */
 	private function setNextRunTime(){
-		debugLog( "setNextRunTime", arguments );
+		debugLog( "setNextRunTime" );
 
 		var now    = getJavaNow();
 		var amount = variables.spacedDelay != 0 ? variables.spacedDelay : variables.period;
@@ -1870,8 +1800,14 @@ component accessors="true" {
 	function debugLog( required string caller, struct args = {} ){
 		if ( variables.debug ) {
 			var message = dateTimeFormat( now(), "yyyy-mm-dd hh:nn:ss" ) &
-			" : ScheduledTask : " & variables.name & " : " & arguments.caller & "()" & (
-				structIsEmpty( arguments.args ) ? "" : " : " & serializeJSON( arguments.args )
+			" : ScheduledTask : " &
+			variables.name & " : " &
+			arguments.caller &
+			( !arguments.caller.find( "(" ) ? "()" : "" ) &
+			(
+				structIsEmpty( arguments.args ) ? "" : chr( 10 ) & repeatString( " ", 8 ) & serializeJSON(
+					arguments.args
+				)
 			);
 			variables.executor.out( message );
 		}
