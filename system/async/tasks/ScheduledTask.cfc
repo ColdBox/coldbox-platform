@@ -1451,26 +1451,42 @@ component accessors="true" {
 	}
 
 	/**
-	 * Validates an incoming string to adhere to HH:mm
+	 * Validates an incoming string to adhere to HH:mm while allowing a user to simply enter an hour value
 	 *
 	 * @time The time to check
 	 *
 	 * @throws InvalidTimeException - If the time is invalid, else it returns the time value
 	 */
-	string function validateTime( required time ){
-		// Check for minutes else add them
-		if ( !find( ":", arguments.time ) ) {
-			arguments.time &= ":00";
-		}
-
+	string function validateTime( required string time ){
 		debugLog( "validateTime", arguments );
 
-		// Regex check
-		if ( !reFind( "^[0-2][0-9]\:[0-5][0-9]$", arguments.time ) ) {
-			throw(
-				message = "Invalid time representation (#arguments.time#). Time is represented in 24 hour minute format => HH:mm",
-				type    = "InvalidTimeException"
-			);
+		if ( !reFind( "^([0-1][0-9]|[2][0-3])\:[0-5][0-9]$", arguments.time ) ) {
+			debugLog( "validateTime( parsing )" );
+			// To allow users to simply enter an hour we will
+			// parse the string and use time functions to create
+			// a valid time string
+			var parsedTime = listToArray( arguments.time, ":" );
+			try {
+				arguments.time = timeFormat(
+					createTime(
+						// protect the user if they entered an
+						// hour value more than 23
+						parsedTime[ 1 ] > 23 ? 0 : parsedTime[ 1 ],
+						// protect the user if they entered a
+						// minute value more than 59 or set to 0
+						// if they did not enter any
+						arrayLen( parsedTime ) > 1 ? ( parsedTime[ 2 ] > 59 ? 59 : parsedTime[ 2 ] )
+						 : 0,
+						0
+					),
+					"HH:mm"
+				);
+			} catch ( any e ) {
+				throw(
+					message = "Invalid time representation (#arguments.time#). Time is represented in 24 hour minute format => HH:mm",
+					type    = "InvalidTimeException"
+				);
+			}
 		}
 
 		return arguments.time;
