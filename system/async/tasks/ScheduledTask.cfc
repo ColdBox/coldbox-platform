@@ -1713,7 +1713,9 @@ component accessors="true" {
 			true
 		);
 		// Set the period to be every hour in seconds
-		variables.period   = variables.timeUnitHelper.get( arguments.period ).toSeconds( arguments.periodMultiplier );
+		variables.period = variables.timeUnitHelper
+			.get( arguments.periodValue )
+			.toSeconds( arguments.periodMultiplier );
 		variables.timeUnit = "seconds";
 	}
 
