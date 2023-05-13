@@ -506,9 +506,13 @@ component accessors="true" {
 	 * - when
 	 * - dayOfTheMonth
 	 * - dayOfTheWeek
+	 * - firstBusinessDay
 	 * - lastBusinessDay
-	 * - weekends
 	 * - weekdays
+	 * - weekends
+	 * - startOnDateTime
+	 * - endOnDateTime
+	 * - startTime and/or endTime
 	 *
 	 * This method is called by the `run()` method at runtime to determine if the task can be ran at that point in time
 	 */
@@ -537,6 +541,14 @@ component accessors="true" {
 			return true;
 		}
 
+		// Do we have day of the week?
+		if (
+			variables.dayOfTheWeek > 0 &&
+			now.getDayOfWeek().getValue() != variables.dayOfTheWeek
+		) {
+			return true;
+		}
+
 		// Do we have a first business day constraint
 		if (
 			variables.firstBusinessDay &&
@@ -553,14 +565,6 @@ component accessors="true" {
 			return true;
 		}
 
-		// Do we have weekends?
-		if (
-			variables.weekends &&
-			now.getDayOfWeek().getValue() <= 5
-		) {
-			return true;
-		}
-
 		// Do we have weekdays?
 		if (
 			variables.weekdays &&
@@ -569,10 +573,10 @@ component accessors="true" {
 			return true;
 		}
 
-		// Do we have day of the week?
+		// Do we have weekends?
 		if (
-			variables.dayOfTheWeek > 0 &&
-			now.getDayOfWeek().getValue() != variables.dayOfTheWeek
+			variables.weekends &&
+			now.getDayOfWeek().getValue() <= 5
 		) {
 			return true;
 		}
@@ -585,7 +589,7 @@ component accessors="true" {
 			return true;
 		}
 
-		// Do we have a end on constraint
+		// Do we have an end on constraint
 		if (
 			len( variables.endOnDateTime ) &&
 			now.isAfter( variables.endOnDateTime )
@@ -593,7 +597,7 @@ component accessors="true" {
 			return true;
 		}
 
-		// if we have a start time and / or end time constraint
+		// Do we have we have a start time and / or end time constraint
 		if (
 			len( variables.startTime ) ||
 			len( variables.endTime )
