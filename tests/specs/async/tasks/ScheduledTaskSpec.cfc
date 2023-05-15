@@ -176,7 +176,7 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 					expect( t.getPeriod() ).toBe( 86400 );
 					expect( t.getTimeUnit() ).toBe( "seconds" );
 					expect( t.getTaskTime() ).toBe( "09:00" );
-					expect(	t.getFirstBusinessDay() ).toBeTrue();
+					expect( t.getFirstBusinessDay() ).toBeTrue();
 				} );
 
 				it( "can register to fire onLastBusinessDayOfTheMonth()", function(){
