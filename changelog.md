@@ -1,35 +1,37 @@
 # Changelog
 
-All notable changes to this project will be documented here: https://coldbox.ortusbooks.com/intro/release-history and summarized in this file.
+All notable changes to this project will be documented here: <https://coldbox.ortusbooks.com/intro/release-history> and summarized in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-****
+* * *
 
-## [unreleased]
+## [Unreleased]
+
+## [7.0.0] - 2023-05-15
 
 ### ColdBox HMVC
 
 #### Bugs
 
 - [COLDBOX-1133](https://ortussolutions.atlassian.net/browse/COLDBOX-1133) \`getFullURL\` encodes the query string when it should not.
-- [COLDBOX-1136](https://ortussolutions.atlassian.net/browse/COLDBOX-1136) Scoping lookup bug in Lucee affects route\(\)
-- [COLDBOX-1138](https://ortussolutions.atlassian.net/browse/COLDBOX-1138) Event Cache Response Has Status Code of 0 \(or Null\)
+- [COLDBOX-1136](https://ortussolutions.atlassian.net/browse/COLDBOX-1136) Scoping lookup bug in Lucee affects route()
+- [COLDBOX-1138](https://ortussolutions.atlassian.net/browse/COLDBOX-1138) Event Cache Response Has Status Code of 0 (or Null)
 - [COLDBOX-1139](https://ortussolutions.atlassian.net/browse/COLDBOX-1139) make event caching cache keys lower cased to avoid case issues when clearing keys
-- [COLDBOX-1143](https://ortussolutions.atlassian.net/browse/COLDBOX-1143) render inline PDF \(CB 6.8.1\) throws a 500 error
-- [COLDBOX-1145](https://ortussolutions.atlassian.net/browse/COLDBOX-1145) RestHandler OnError\(\) Exception not checking for empty \`exception\` blocks which would cause another exception on development ONLY
+- [COLDBOX-1143](https://ortussolutions.atlassian.net/browse/COLDBOX-1143) render inline PDF (CB 6.8.1) throws a 500 error
+- [COLDBOX-1145](https://ortussolutions.atlassian.net/browse/COLDBOX-1145) RestHandler OnError() Exception not checking for empty \`exception\` blocks which would cause another exception on development ONLY
 - [COLDBOX-1146](https://ortussolutions.atlassian.net/browse/COLDBOX-1146) BiConsumer proxy was making both arguments required, when they can be null so execution fails
 - [COLDBOX-1149](https://ortussolutions.atlassian.net/browse/COLDBOX-1149) Woops and Adobe CF needs a double check if session/client is defined even if sessionManagement/clientManagement is defined
 - [COLDBOX-1150](https://ortussolutions.atlassian.net/browse/COLDBOX-1150) virtual app controller scoping is missing on ocassion due to this.load|unload flags
-- [COLDBOX-1151](https://ortussolutions.atlassian.net/browse/COLDBOX-1151) Integration Tests do not support NoRender\(\)
+- [COLDBOX-1151](https://ortussolutions.atlassian.net/browse/COLDBOX-1151) Integration Tests do not support NoRender()
 - [COLDBOX-1153](https://ortussolutions.atlassian.net/browse/COLDBOX-1153)   RestHandler.cfc missing exception information on InvalidCredentials & TokenInvalidException
 - [COLDBOX-1154](https://ortussolutions.atlassian.net/browse/COLDBOX-1154) Invalid DateFormat Mask in Whoops.cfm
 - [COLDBOX-1173](https://ortussolutions.atlassian.net/browse/COLDBOX-1173) Update the Router.cfc to look at not only the cgi host but the forwarded hosts
 - [COLDBOX-1175](https://ortussolutions.atlassian.net/browse/COLDBOX-1175) calling function "view" from within function which has an argument named "view" causes error.
-- [COLDBOX-1176](https://ortussolutions.atlassian.net/browse/COLDBOX-1176) viewLocations struct does not exist in function renderer.layout\(\) on line 684 if nolayout = true
-- [COLDBOX-1191](https://ortussolutions.atlassian.net/browse/COLDBOX-1191) Attempts to use \`getHTMLBaseURL\(\)\` inside of Async Task Fail on ACF
-- [COLDBOX-1193](https://ortussolutions.atlassian.net/browse/COLDBOX-1193) Missing java casting on arrayRange\(\) method ont the asyncmanager
+- [COLDBOX-1176](https://ortussolutions.atlassian.net/browse/COLDBOX-1176) viewLocations struct does not exist in function renderer.layout() on line 684 if nolayout = true
+- [COLDBOX-1191](https://ortussolutions.atlassian.net/browse/COLDBOX-1191) Attempts to use \`getHTMLBaseURL()\` inside of Async Task Fail on ACF
+- [COLDBOX-1193](https://ortussolutions.atlassian.net/browse/COLDBOX-1193) Missing java casting on arrayRange() method ont the asyncmanager
 - [COLDBOX-1194](https://ortussolutions.atlassian.net/browse/COLDBOX-1194)  Ensure modules are applied to routing action structs when necessary #243
 - [COLDBOX-1196](https://ortussolutions.atlassian.net/browse/COLDBOX-1196) Render collections items and counter variables are not thread safe since we migrated to a singleton renderer
 - [COLDBOX-1202](https://ortussolutions.atlassian.net/browse/COLDBOX-1202) urlMatches in the request context does not account for the path to be larger than the requested uri
@@ -41,55 +43,55 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - [COLDBOX-1029](https://ortussolutions.atlassian.net/browse/COLDBOX-1029) ModuleAwareness : Wirebox Injector Lookup Should Check Current Module First
 - [COLDBOX-1155](https://ortussolutions.atlassian.net/browse/COLDBOX-1155) Implement abort logic onAuthenticationFailure on RESTHandler
-- [COLDBOX-1157](https://ortussolutions.atlassian.net/browse/COLDBOX-1157) Reuse existing controller in getMockRequestContext\(\)
+- [COLDBOX-1157](https://ortussolutions.atlassian.net/browse/COLDBOX-1157) Reuse existing controller in getMockRequestContext()
 - [COLDBOX-1159](https://ortussolutions.atlassian.net/browse/COLDBOX-1159) JSON Serialization in \`forAttribute\` Does Not Support ACF Prefixing
 - [COLDBOX-1171](https://ortussolutions.atlassian.net/browse/COLDBOX-1171) Do not allow injection of the same applicatio helper on the same target
 - [COLDBOX-1177](https://ortussolutions.atlassian.net/browse/COLDBOX-1177) Please add more debugging info to REST handler
 - [COLDBOX-1184](https://ortussolutions.atlassian.net/browse/COLDBOX-1184) When whoops error template defaults to public for non-dev, the messaging is very confusing
-- [COLDBOX-1185](https://ortussolutions.atlassian.net/browse/COLDBOX-1185) ColdBox DebugMode with inDebugMode\(\) helper
+- [COLDBOX-1185](https://ortussolutions.atlassian.net/browse/COLDBOX-1185) ColdBox DebugMode with inDebugMode() helper
 - [COLDBOX-1190](https://ortussolutions.atlassian.net/browse/COLDBOX-1190) Reworking of several rest handler exception methods so they log the issues instead of announcing \`onException\` events and announce their appropriate events , onAuthenticationFailure, onAuthorizationFailure, onValidationException, onEntityNotFoundException
 - [COLDBOX-1195](https://ortussolutions.atlassian.net/browse/COLDBOX-1195) ColdBox Proxy should ignore the routing service captures to avoid redirects or returns
 - [COLDBOX-1210](https://ortussolutions.atlassian.net/browse/COLDBOX-1210) encapsulate route finding by name to the actual router itself
-- [COLDBOX-1214](https://ortussolutions.atlassian.net/browse/COLDBOX-1214) Compatibility layer for env methods in the Util object: getSystemSetting\(\), getSystemProperty\(\), getEnv\(\)
+- [COLDBOX-1214](https://ortussolutions.atlassian.net/browse/COLDBOX-1214) Compatibility layer for env methods in the Util object: getSystemSetting(), getSystemProperty(), getEnv()
 
 #### New Features
 
 - [COLDBOX-1022](https://ortussolutions.atlassian.net/browse/COLDBOX-1022) Allow for Flash RAM to use a third party provided tracking variable via the new setting identifierProvider
 - [COLDBOX-1039](https://ortussolutions.atlassian.net/browse/COLDBOX-1039) Allow unregistering closure listeners
 - [COLDBOX-1077](https://ortussolutions.atlassian.net/browse/COLDBOX-1077) Provide ability for handlers/interceptors/etc. to have inherent self-knowledge of the module they live in for modulesettings/moduleConfig injections
-- [COLDBOX-1137](https://ortussolutions.atlassian.net/browse/COLDBOX-1137) Allow passing interception point first in interceptor listen\(\) method
+- [COLDBOX-1137](https://ortussolutions.atlassian.net/browse/COLDBOX-1137) Allow passing interception point first in interceptor listen() method
 - [COLDBOX-1140](https://ortussolutions.atlassian.net/browse/COLDBOX-1140) Whoops updates galore! SQL Syntax highlighting, json formatting and highlighting, and more
 - [COLDBOX-1141](https://ortussolutions.atlassian.net/browse/COLDBOX-1141) New Flow delegate helpers for functional usage everywhere in ColdBox land
-- [COLDBOX-1142](https://ortussolutions.atlassian.net/browse/COLDBOX-1142) New convention for module setting overrides: config/\{moduleName\}.cfc
+- [COLDBOX-1142](https://ortussolutions.atlassian.net/browse/COLDBOX-1142) New convention for module setting overrides: config/{moduleName}.cfc
 - [COLDBOX-1147](https://ortussolutions.atlassian.net/browse/COLDBOX-1147) PostLayoutRender and PostViewRender now pass which view/layout path was used to render
 - [COLDBOX-1148](https://ortussolutions.atlassian.net/browse/COLDBOX-1148) postEvent now get's new interceptData: ehBean, handler and data results
 - [COLDBOX-1152](https://ortussolutions.atlassian.net/browse/COLDBOX-1152) this.unloadColdBox is false now as the default thanks to the virtual test app
-- [COLDBOX-1158](https://ortussolutions.atlassian.net/browse/COLDBOX-1158) New \`back\(\)\` function in super type that you can use to redirect back to your referer or a fallback
-- [COLDBOX-1161](https://ortussolutions.atlassian.net/browse/COLDBOX-1161) new toJson\(\) helper in the Util class which is delegated in many locations around the framework to add struct based query serialization and no dubm security prefixes
-- [COLDBOX-1162](https://ortussolutions.atlassian.net/browse/COLDBOX-1162) Add in functionality to exclude patterns via router's findRoute\(\)
+- [COLDBOX-1158](https://ortussolutions.atlassian.net/browse/COLDBOX-1158) New \`back()\` function in super type that you can use to redirect back to your referer or a fallback
+- [COLDBOX-1161](https://ortussolutions.atlassian.net/browse/COLDBOX-1161) new toJson() helper in the Util class which is delegated in many locations around the framework to add struct based query serialization and no dubm security prefixes
+- [COLDBOX-1162](https://ortussolutions.atlassian.net/browse/COLDBOX-1162) Add in functionality to exclude patterns via router's findRoute()
 - [COLDBOX-1165](https://ortussolutions.atlassian.net/browse/COLDBOX-1165) New convention for modules for storing and using coldfusion tags: \`/tags\`
 - [COLDBOX-1166](https://ortussolutions.atlassian.net/browse/COLDBOX-1166) Lazy loading and persistence of engine helper to assist in continued performance and initial load speed
 - [COLDBOX-1167](https://ortussolutions.atlassian.net/browse/COLDBOX-1167) New core delegates for smaller building blocks, which leverages the \`@coreDelegates\` namespace
 - [COLDBOX-1168](https://ortussolutions.atlassian.net/browse/COLDBOX-1168) New coldbox based delegates mapped with \`@cbDelegates\`
-- [COLDBOX-1172](https://ortussolutions.atlassian.net/browse/COLDBOX-1172) core json utils now include a prettyJson\(\) and a toPrettyJson\(\) utilities
-- [COLDBOX-1174](https://ortussolutions.atlassian.net/browse/COLDBOX-1174) New getEnv\(\) method on the base test class to get access to the env delegate for inquiring for env and java properties
+- [COLDBOX-1172](https://ortussolutions.atlassian.net/browse/COLDBOX-1172) core json utils now include a prettyJson() and a toPrettyJson() utilities
+- [COLDBOX-1174](https://ortussolutions.atlassian.net/browse/COLDBOX-1174) New getEnv() method on the base test class to get access to the env delegate for inquiring for env and java properties
 - [COLDBOX-1178](https://ortussolutions.atlassian.net/browse/COLDBOX-1178) ChronoUnit becomes the official cb Date Time Helper to assist with date/time conversions and formatting
-- [COLDBOX-1179](https://ortussolutions.atlassian.net/browse/COLDBOX-1179) New super type methods: getDateTimeHelper\(\) getIsoTime\(\) to assist with recurrent iso time conversions in modern APIs and responses
-- [COLDBOX-1186](https://ortussolutions.atlassian.net/browse/COLDBOX-1186) Add three environment location helpers in the controller and supertype: isProduction\(\), isDevelopment\(\), isTesting\(\)
-- [COLDBOX-1188](https://ortussolutions.atlassian.net/browse/COLDBOX-1188) Request Context setRequestTimeout\(\) method encapsulation, so you can control the time limit of a request
-- [COLDBOX-1189](https://ortussolutions.atlassian.net/browse/COLDBOX-1189) setRequestTimeout\(\) mock in testing Request Context so handlers cannot override testing timeouts
+- [COLDBOX-1179](https://ortussolutions.atlassian.net/browse/COLDBOX-1179) New super type methods: getDateTimeHelper() getIsoTime() to assist with recurrent iso time conversions in modern APIs and responses
+- [COLDBOX-1186](https://ortussolutions.atlassian.net/browse/COLDBOX-1186) Add three environment location helpers in the controller and supertype: isProduction(), isDevelopment(), isTesting()
+- [COLDBOX-1188](https://ortussolutions.atlassian.net/browse/COLDBOX-1188) Request Context setRequestTimeout() method encapsulation, so you can control the time limit of a request
+- [COLDBOX-1189](https://ortussolutions.atlassian.net/browse/COLDBOX-1189) setRequestTimeout() mock in testing Request Context so handlers cannot override testing timeouts
 - [COLDBOX-1192](https://ortussolutions.atlassian.net/browse/COLDBOX-1192) Module Inception Isolation - every module has it's own injector that matches the module hierarchy
 - [COLDBOX-1197](https://ortussolutions.atlassian.net/browse/COLDBOX-1197) All rendering methods now accept a \`viewVariables\` argument that allows you to add variables into the view's \`variables\` scope
-- [COLDBOX-1199](https://ortussolutions.atlassian.net/browse/COLDBOX-1199) New request context method: \`routeIs\( name \):boolean\` that evaluates if the passed name is the same as the current route
-- [COLDBOX-1200](https://ortussolutions.atlassian.net/browse/COLDBOX-1200) request context \`getFullUrl\(\)\` renamed to \`getUrl\(\)\`
-- [COLDBOX-1201](https://ortussolutions.atlassian.net/browse/COLDBOX-1201) request context \`getFullPath\(\)\` renamed to \`getPath\(\)\`
-- [COLDBOX-1205](https://ortussolutions.atlassian.net/browse/COLDBOX-1205) request context \`event.getUrl\( withQuery:true \)\` new argument \`withQuery\` to allow adding the query string or not
-- [COLDBOX-1206](https://ortussolutions.atlassian.net/browse/COLDBOX-1206) request context \`event.getPath\( withQuery:true \)\` new argument \`withQuery\` to allow adding the query string or not
-- [COLDBOX-1207](https://ortussolutions.atlassian.net/browse/COLDBOX-1207) New request context methods: \`getPathSegments\(\):array, getPathSegment\( index, defaultValue \):string\` so you can segment the incoming url path
-- [COLDBOX-1208](https://ortussolutions.atlassian.net/browse/COLDBOX-1208) Add \`persist\` and \`persistStruct\` to the \`back\(\)\` method in the supertype
+- [COLDBOX-1199](https://ortussolutions.atlassian.net/browse/COLDBOX-1199) New request context method: \`routeIs( name ):boolean\` that evaluates if the passed name is the same as the current route
+- [COLDBOX-1200](https://ortussolutions.atlassian.net/browse/COLDBOX-1200) request context \`getFullUrl()\` renamed to \`getUrl()\`
+- [COLDBOX-1201](https://ortussolutions.atlassian.net/browse/COLDBOX-1201) request context \`getFullPath()\` renamed to \`getPath()\`
+- [COLDBOX-1205](https://ortussolutions.atlassian.net/browse/COLDBOX-1205) request context \`event.getUrl( withQuery:true )\` new argument \`withQuery\` to allow adding the query string or not
+- [COLDBOX-1206](https://ortussolutions.atlassian.net/browse/COLDBOX-1206) request context \`event.getPath( withQuery:true )\` new argument \`withQuery\` to allow adding the query string or not
+- [COLDBOX-1207](https://ortussolutions.atlassian.net/browse/COLDBOX-1207) New request context methods: \`getPathSegments():array, getPathSegment( index, defaultValue ):string\` so you can segment the incoming url path
+- [COLDBOX-1208](https://ortussolutions.atlassian.net/browse/COLDBOX-1208) Add \`persist\` and \`persistStruct\` to the \`back()\` method in the supertype
 - [COLDBOX-1209](https://ortussolutions.atlassian.net/browse/COLDBOX-1209) Add route names to resourceful routes according to conventions
 - [COLDBOX-1215](https://ortussolutions.atlassian.net/browse/COLDBOX-1215) this.moduleInjector enables modular injector hiearchy. By default it is false until ColdBox 8
-- [COLDBOX-1216](https://ortussolutions.atlassian.net/browse/COLDBOX-1216) New super type method: \`getRootWireBox\(\)\` to get an instance of the root wirebox in the application
+- [COLDBOX-1216](https://ortussolutions.atlassian.net/browse/COLDBOX-1216) New super type method: \`getRootWireBox()\` to get an instance of the root wirebox in the application
 - [COLDBOX-1217](https://ortussolutions.atlassian.net/browse/COLDBOX-1217) New `AppModes` delegate that helps objects know in which modes the application is on: debugMode, testing, production, etc.
 - [COLDBOX-1226](https://ortussolutions.atlassian.net/browse/COLDBOX-1226) Many Many Many Scheduled Tasks Updates
 
@@ -97,10 +99,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - [COLDBOX-1160](https://ortussolutions.atlassian.net/browse/COLDBOX-1160) COMPAT: jsonQueryFormat has been removed in preference to "struct".
 - [COLDBOX-1169](https://ortussolutions.atlassian.net/browse/COLDBOX-1169) routes.cfm Support Removal
-- [COLDBOX-1170](https://ortussolutions.atlassian.net/browse/COLDBOX-1170) populateModel deprecated - refactored to just populate\(\) in the supertype methods
+- [COLDBOX-1170](https://ortussolutions.atlassian.net/browse/COLDBOX-1170) populateModel deprecated - refactored to just populate() in the supertype methods
 - [COLDBOX-1187](https://ortussolutions.atlassian.net/browse/COLDBOX-1187) Removal of uniqueUrls boolean indicator for URL routing, since Pretty URLs are now the standard. This rerouting feature needs to be removed.
 
-****
+* * *
 
 ### LogBox
 
@@ -113,7 +115,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [LOGBOX-61](https://ortussolutions.atlassian.net/browse/LOGBOX-61) Allow for closure for all logging messages in the logger, this way, we can verify the logging level automatically.
 - [LOGBOX-69](https://ortussolutions.atlassian.net/browse/LOGBOX-69) LogEvents in JSON are now prettified
 
-****
+* * *
 
 ### CacheBox
 
@@ -121,7 +123,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - [CACHEBOX-83](https://ortussolutions.atlassian.net/browse/CACHEBOX-83) Intermittent Exception from MetadataIndexer
 
-****
+* * *
 
 ### WireBox
 
@@ -136,7 +138,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### New Features
 
 - [WIREBOX-89](https://ortussolutions.atlassian.net/browse/WIREBOX-89) Wirebox - add onInjectorMissingDependency event
-- [WIREBOX-130](https://ortussolutions.atlassian.net/browse/WIREBOX-130) Ability to remove specific objects from wirebox injector singleton's and request scopes via a \`clear\( key \)\` method
+- [WIREBOX-130](https://ortussolutions.atlassian.net/browse/WIREBOX-130) Ability to remove specific objects from wirebox injector singleton's and request scopes via a \`clear( key )\` method
 - [WIREBOX-131](https://ortussolutions.atlassian.net/browse/WIREBOX-131) Object Delegators
 - [WIREBOX-134](https://ortussolutions.atlassian.net/browse/WIREBOX-134) Object Populator is now created by the Injector and it is now a singleton
 - [WIREBOX-135](https://ortussolutions.atlassian.net/browse/WIREBOX-135) Object populator now caches orm entity maps, so they are ONLy loaded once and population with orm objects accelerates tremendously
@@ -148,5 +150,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [WIREBOX-141](https://ortussolutions.atlassian.net/browse/WIREBOX-141) New config setting transientInjectionCache to enable or disable globally, default is true
 - [WIREBOX-142](https://ortussolutions.atlassian.net/browse/WIREBOX-142) You can now instantiate an Injector with the \`binder\` argument being the config structure instead of creating a binder
 - [WIREBOX-143](https://ortussolutions.atlassian.net/browse/WIREBOX-143) New injection DSL for ColdBox Root Injector \`coldbox:rootWireBox\`
-- [WIREBOX-144](https://ortussolutions.atlassian.net/browse/WIREBOX-144) Injectors can now track the root injector by having a root reference via \`getRoot\(\), hasRoot\(\)\` methods
+- [WIREBOX-144](https://ortussolutions.atlassian.net/browse/WIREBOX-144) Injectors can now track the root injector by having a root reference via \`getRoot(), hasRoot()\` methods
 - [WIREBOX-145](https://ortussolutions.atlassian.net/browse/WIREBOX-145) New DSL for wirebox only root injectors: \`wirebox:root\`
+
+[Unreleased]: https://github.com/ColdBox/coldbox-platform/compare/v7.0.0...HEAD
+
+[7.0.0]: https://github.com/ColdBox/coldbox-platform/compare/af03e4a577fa627e94619a451e56d36292815b06...v7.0.0
