@@ -1,4 +1,4 @@
-component {
+component{
 
 	property name="asyncManager" inject="coldbox:asyncManager";
 
@@ -35,6 +35,34 @@ component {
 
 	function index( event, rc, prc, name = "ColdBox" ){
 		prc.welcomeMessage = "Welcome to #arguments.name#!";
+
+		// writeDump( var={
+		// 	getSESBaseUrl : event.getSESBaseUrl(),
+		// 	getSESBasePath : event.getSESBasePath(),
+		// 	getHTMLBaseUrl : event.getHTMLBaseUrl(),
+		// 	getHtmlBasePath : event.getHtmlBasePath(),
+		// }, top = 5 );
+
+		log.info( "Executing index action", { name : "Test", when : now(), arcs = [1,2,3,4], test : "Message goes here" } );
+
+		var om = getInstance( "ObserverModel" );
+		om.setData( 'first' );
+		om.setData( 'second' );
+		om.setData2( 'first' );
+		om.setData2( 'second' );
+
+		getInstance( "LazyModel" ).getUtil();
+		getInstance( "LazyModel" ).getUtil2();
+		getInstance( "LazyModel" ).getLazyData();
+		getInstance( "LazyModel" ).getLazyData2();
+
+		unless( false, function(){
+			prc.whenFalse = true;
+		})
+		.when( true, function(){
+			prc.when = true;
+		});
+
 		event.setView( "main/index" );
 	}
 
@@ -91,7 +119,6 @@ component {
 		return "bad url";
 	}
 
-
 	/************************************** PRIVATE ACTIONS *********************************************/
 
 	private function privateInfo( event, rc, prc ){
@@ -128,7 +155,9 @@ component {
 		// Grab Exception From request collection, placed by ColdBox
 		var exceptionBean = event.getValue( name = "exception", private = true );
 		// Place exception handler below:
-		writedump( var="********** #exceptionBean.getMessage()#", output="console" );
+		//writedump( var="********** EXCEPTION: #exceptionBean.getMessage()#", output="console" );
+		log.error( "ExceptionBean ==> #exceptionBean.getMessage()#", exceptionBean );
+		log.error( "Raw Exception ==> #exceptionBean.getMessage()#", exceptionBean.getExceptionStruct() );
 	}
 
 	function onMissingTemplate( event, rc, prc ){

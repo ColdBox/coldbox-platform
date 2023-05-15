@@ -1,4 +1,4 @@
-name: Coldbox Pull Requests
+name: Pull Requests
 
 on:
   push:
@@ -6,28 +6,24 @@ on:
       - "main"
       - "master"
       - "development"
+      - "releases/**"
   pull_request:
     branches:
       - development
+      - "releases/**"
 
 jobs:
   tests:
-    uses: ColdBox/coldbox-platform/.github/workflows/tests.yml@development
-    secrets:
-      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+    uses: ./.github/workflows/tests.yml
+    secrets: inherit
 
-  format:
-    name: Format
+  format_check:
+    name: Checks Source Code Formatting
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3.2.0
 
       - uses: Ortus-Solutions/commandbox-action@v1.0.2
         with:
-          cmd: run-script format
-
-      - name: Commit Format Changes
-        uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          commit_message: Apply cfformat changes
+          cmd: run-script format:check

@@ -1,5 +1,4 @@
-﻿<cfif server.coldfusion.productVersion.listFirst() gt 2016>
-	<div>
+﻿<div>
 	<table align="center" width="100%" border="1" cellpadding="0" cellspacing="0" style="background:white">
 		<tr>
 			<td align="center">
@@ -44,5 +43,4 @@
 			</td>
 		</tr>
 	</table>
-	</div>
-	</cfif>
+</div>

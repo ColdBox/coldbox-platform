@@ -82,6 +82,14 @@ component serializable="false" accessors="true" {
 	 */
 	property name="responseHeaders" type="struct";
 
+	/**
+	 * The request's timeout if set via the setRequestTimeout() method.
+	 */
+	property
+		name   ="requestTimeout"
+		type   ="numeric"
+		default="0";
+
 	/************************************** STATIC CONSTRUCTS *********************************************/
 
 	// HTTP VERB ALIASES
@@ -181,6 +189,9 @@ component serializable="false" accessors="true" {
 		"511" : "Network Authentication Required",
 		"599" : "Network Connect Timeout Error"
 	};
+
+	// Family Marker
+	this.cbRequestContext = true;
 
 	/************************************** CONSTRUCTOR *********************************************/
 
@@ -667,6 +678,15 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
+	 * Verify if the passed name is the same as the current route name
+	 *
+	 * @name The name to test against the current route
+	 */
+	boolean function routeIs( required name ){
+		return getCurrentRouteName() == arguments.name;
+	}
+
+	/**
 	 * Tests that a given path exists in the currently routed URL.
 	 * If the exact flag is passed, the path must match exactly.
 	 * Using the `urlMatchesExact` is preferred.
@@ -677,10 +697,19 @@ component serializable="false" accessors="true" {
 	 * @return Boolean
 	 */
 	boolean function urlMatches( required string path, boolean exact = false ){
+		// Cleanup, routed url never has a `/` in front
+		arguments.path       = reReplace( arguments.path, "^/", "" );
 		var currentRoutedURL = getCurrentRoutedURL();
+
 		if ( arguments.exact ) {
 			return arguments.path == currentRoutedURL;
 		}
+
+		// if the incoming path to look for is greater than the current routed url, bail out
+		if ( arguments.path.len() > currentRoutedURL.len() ) {
+			return false;
+		}
+
 		var replaced = replace( currentRoutedURL, arguments.path, "" );
 		var sliced   = mid(
 			currentRoutedURL,
@@ -813,6 +842,18 @@ component serializable="false" accessors="true" {
 		return this;
 	}
 
+	/**
+	 * Set the request timeout for the request.
+	 *
+	 * @seconds The number of seconds as a time limit
+	 *
+	 * @return RequestContext
+	 */
+	RequestContext function setRequestTimeout( required numeric seconds ){
+		setting requesttimeout=arguments.seconds;
+		return this;
+	}
+
 	/************************************** VIEW-LAYOUT METHODS *********************************************/
 
 	/**
@@ -828,7 +869,7 @@ component serializable="false" accessors="true" {
 	 * @cacheLastAccessTimeout The last access timeout in minutes
 	 * @cacheSuffix            Add a cache suffix to the view cache entry. Great for multi-domain caching or i18n caching.
 	 * @cacheProvider          The cache provider you want to use for storing the rendered view. By default we use the 'template' cache provider
-	 * @name                   This triggers a rendering region.  This will be the unique name in the request for specifying a rendering region, you can then render it by passing the unique name to renderView();
+	 * @name                   This triggers a rendering region.  This will be the unique name in the request for specifying a rendering region, you can then render it by passing the unique name to the view();
 	 *
 	 * @return RequestContext
 	 */
@@ -1008,6 +1049,8 @@ component serializable="false" accessors="true" {
 	 */
 	function overrideEvent( required event ){
 		setValue( variables.eventName, arguments.event );
+		// Clear out any previous caching influences
+		setEventCacheableEntry( {} );
 		return this;
 	}
 
@@ -1090,6 +1133,20 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
+	 * Returns the HTML base path - minus the protocol and domain
+	 */
+	string function getHTMLBasePath(){
+		return variables.controller.getSetting( "HTMLBasePath", "" );
+	}
+
+	/**
+	 * Returns the SES base path - minus the protocol and domain
+	 */
+	string function getSESBasePath(){
+		return variables.controller.getSetting( "SESBasePath", "" );
+	}
+
+	/**
 	 * Set the ses base URL for this request
 	 *
 	 * @return RequestContext
@@ -1109,25 +1166,46 @@ component serializable="false" accessors="true" {
 	/**
 	 * Returns the full url including the protocol, host, mapping, path info, and query string.
 	 * Handles SES urls gracefully.
+	 *
+	 * @withQuery Add the query string or not, by default it adds it
+	 *
+	 * @return The full url including the protocol, host, mapping, path info, and query string (maybe).
 	 */
-	string function getFullURL(){
+	string function getUrl( boolean withQuery = true ){
 		var javaURI = createObject( "java", "java.net.URI" );
 		var baseUrl = javaURI.create( getSESBaseURL() );
-		return javaURI
+		var fullUrl = javaURI
 			.init(
 				baseUrl.getScheme(),
 				baseUrl.getAuthority(),
 				CGI.PATH_INFO != "" ? CGI.PATH_INFO : javacast( "null", "" ),
-				CGI.QUERY_STRING != "" ? CGI.QUERY_STRING : javacast( "null", "" ),
+				javacast( "null", "" ),
 				javacast( "null", "" )
 			)
 			.toString();
+
+		if ( !arguments.withQuery || CGI.QUERY_STRING == "" ) {
+			return fullUrl;
+		}
+
+		return fullUrl & "?" & CGI.QUERY_STRING;
 	}
 
 	/**
-	 * Returns the full relative path to the requested event: does not include protocol and host
+	 * @deprecated Use `getUrl()` instead
 	 */
-	string function getFullPath(){
+	string function getFullUrl(){
+		return getUrl();
+	}
+
+	/**
+	 * Return the relative path of the current request
+	 *
+	 * @withQuery Add the query string or not, by default it adds it
+	 *
+	 * @return the full relative path to the requested event: does not include protocol and host
+	 */
+	string function getPath( boolean withQuery = true ){
 		return arrayToList(
 			[
 				variables.controller
@@ -1135,62 +1213,98 @@ component serializable="false" accessors="true" {
 					.getRouter()
 					.composeRoutingPath(),
 				left( CGI.PATH_INFO, 1 ) == "/" ? right( CGI.PATH_INFO, -1 ) : CGI.PATH_INFO,
-				CGI.QUERY_STRING != "" && CGI.PATH_INFO == "" ? "/" : "",
-				CGI.QUERY_STRING != "" ? "?" : "",
-				CGI.QUERY_STRING
+				arguments.withQuery && CGI.QUERY_STRING != "" && CGI.PATH_INFO == "" ? "/" : "",
+				arguments.withQuery && CGI.QUERY_STRING != "" ? "?" : "",
+				arguments.withQuery ? CGI.QUERY_STRING : ""
 			],
 			""
 		);
 	}
 
 	/**
+	 * @Deprecated Use `getPath()` instead
+	 */
+	string function getFullPath(){
+		return getPath();
+	}
+
+	/**
+	 * Get all of the url path segments from the requested path
+	 */
+	array function getPathSegments(){
+		return getPath( withQuery: false ).listToArray( "/" );
+	}
+
+	/**
+	 * Get the segment from the incoming path at the specified index location
+	 *
+	 * @index        The index location
+	 * @defaultValue If the index doesn't exist, return the default value
+	 *
+	 * @throws InvalidSegmentIndex - When the passed index doesn't exist
+	 */
+	function getPathSegment( required numeric index, defaultValue ){
+		var segments = getPathSegments();
+		// Verify it exists
+		if ( segments.isDefined( arguments.index ) ) {
+			return segments[ arguments.index ];
+		}
+		// Do we have a default value
+		if ( !isNull( arguments.defaultValue ) ) {
+			return arguments.defaultValue;
+		}
+		// Kick it!
+		throw(
+			type   : "InvalidSegmentIndex",
+			message: "The segment index (#arguments.index#) does not exist in the current segments (#segments.len()#)"
+		);
+	}
+
+	/**
 	 * Builds links to named routes with or without parameters. If the named route is not found, this method will throw an `InvalidArgumentException`.
-	 * If you need a route from a module then append the module address: `@moduleName` or prefix it like in run event calls `moduleName:routenName` in order to find the right route.
+	 * If you need a route from a module then append the module address: `@moduleName` or prefix it like in run event calls `moduleName:routeName` in order to find the right route.
 	 *
 	 * @name   The name of the route
 	 * @params The parameters of the route to replace
 	 * @ssl    Turn SSL on/off or detect it by default
 	 *
-	 * @throws InvalidArgumentException
+	 * @throws InvalidArgumentException - If thre requested route name is not registered
 	 */
 	string function route( required name, struct params = {}, boolean ssl ){
 		// Get routing service and default routes
-		var router       = variables.controller.getWirebox().getInstance( "router@coldbox" );
-		var targetRoutes = router.getRoutes();
-		var entryPoint   = "";
+		var router = variables.controller.getWirebox().getInstance( "router@coldbox" );
 
 		// Module Route?
+		var targetModule = "";
 		if ( find( "@", arguments.name ) ) {
-			var targetModule = getToken( arguments.name, 2, "@" );
-			targetRoutes     = router.getModuleRoutes( targetModule );
-			arguments.name   = getToken( arguments.name, 1, "@" );
-			entryPoint       = variables.modules[ targetmodule ].inheritedEntryPoint;
+			targetModule = getToken( arguments.name, 2, "@" );
 		}
 		if ( find( ":", arguments.name ) ) {
-			var targetModule = getToken( arguments.name, 1, ":" );
-			targetRoutes     = router.getModuleRoutes( targetModule );
-			arguments.name   = getToken( arguments.name, 2, ":" );
-			entryPoint       = variables.modules[ targetmodule ].inheritedEntryPoint;
+			targetModule = getToken( arguments.name, 1, ":" );
 		}
+		// Discover route entry point
+		var entryPoint = len( targetModule ) ? variables.modules[ targetmodule ].inheritedEntryPoint : "";
 
 		// Find the named route
-		var foundRoute = targetRoutes.filter( function( item ){
-			return ( arguments.item.name == name ? true : false );
-		} );
+		var foundRoute = router.findRouteByName( arguments.name );
 
 		// Did we find it?
-		if ( arrayLen( foundRoute ) ) {
+		if ( !foundRoute.isEmpty() ) {
 			var args = {
-				to  : entryPoint & foundRoute[ 1 ].pattern,
-				ssl : javacast( "null", "" )
+				to  : entryPoint & foundRoute.pattern,
+				ssl : !isNull( arguments.ssl ) ? arguments.ssl : javacast( "null", "" )
 			};
-			if ( !isNull( arguments.ssl ) ) {
-				args.ssl = arguments.ssl;
-			}
 
 			// Process Params
 			arguments.params.each( function( key, value ){
-				args.to = reReplaceNoCase( args.to, ":#key#-?[^/]*", value, "all" );
+				args.to =
+				reReplaceNoCase(
+					args.to,
+					":#arguments.key#-?[^/]*",
+					encodeForURL( arguments.value ),
+					"all"
+				)
+				;
 			} );
 
 			return buildLink( argumentCollection = args );
@@ -1479,7 +1593,6 @@ component serializable="false" accessors="true" {
 	 * @statusText       Explains the HTTP status code sent to the browser.
 	 * @location         Optional argument used to set the HTTP Location header
 	 * @jsonCallback     Only needed when using JSONP, this is the callback to add to the JSON packet
-	 * @jsonQueryFormat  JSON Only: This parameter can be a Boolean value that specifies how to serialize ColdFusion queries or a string with possible values "row", "column", or "struct".
 	 * @jsonAsText       If set to false, defaults content mime-type to application/json, else will change encoding to plain/text
 	 * @xmlColumnList    XML Only: Choose which columns to inspect, by default it uses all the columns in the query, if using a query
 	 * @xmlUseCDATA      XML Only: Use CDATA content for ALL values. The default is false
@@ -1500,7 +1613,6 @@ component serializable="false" accessors="true" {
 		statusText          = "",
 		location            = "",
 		jsonCallback        = "",
-		jsonQueryFormat     = "true",
 		boolean jsonAsText  = false,
 		xmlColumnList       = "",
 		boolean xmlUseCDATA = false,
@@ -1546,14 +1658,7 @@ component serializable="false" accessors="true" {
 		rd.xmlRootName      = arguments.xmlRootName;
 
 		// JSON Properties
-		// Backwards compatibility, remove after next release
-		if ( arguments.jsonQueryFormat == "query" ) {
-			arguments.jsonQueryFormat = true;
-		} else if ( arguments.jsonQueryFormat == "array" ) {
-			arguments.jsonQueryFormat = false;
-		}
-		rd.jsonQueryFormat = arguments.jsonQueryFormat;
-		rd.jsonCallBack    = arguments.jsonCallBack;
+		rd.jsonCallBack = arguments.jsonCallBack;
 
 		// PDF properties
 		rd.pdfArgs = arguments.pdfArgs;
@@ -1631,7 +1736,12 @@ component serializable="false" accessors="true" {
 	any function getHTTPContent( boolean json = false, boolean xml = false ){
 		// Only read the content once
 		if ( !structKeyExists( variables.privateContext, "_httpContent" ) ) {
-			variables.privateContext._httpContent = getHTTPRequestData().content;
+			try {
+				variables.privateContext._httpContent = getHTTPRequestData().content;
+			} catch ( "java.lang.NullPointerException" e ) {
+				// if an exception is thrown, it's most likely we are in a thread, default it to empty string
+				variables.privateContext._httpContent = "";
+			}
 		}
 
 		// leave translations NOT cached, as you could ask for different types of formats
@@ -1656,7 +1766,13 @@ component serializable="false" accessors="true" {
 	 * @defaultValue The default value, if not found
 	 */
 	function getHTTPHeader( required header, defaultValue = "" ){
-		var headers = getHTTPRequestData( false ).headers;
+		var headers = {};
+		try {
+			headers = getHTTPRequestData( false ).headers;
+		} catch ( "java.lang.NullPointerException" e ) {
+			// if an exception is thrown, it's most likely we are in a thread, default it to {}
+			headers = {};
+		}
 
 		// ADOBE FIX YOUR ISNULL BS
 		if ( headers.keyExists( arguments.header ) ) {
@@ -1833,7 +1949,7 @@ component serializable="false" accessors="true" {
 				}
 				case "pdf": {
 					arguments.type = "pdf";
-					arguments.data = variables.controller.getRenderer().renderView( view = viewToRender );
+					arguments.data = variables.controller.getRenderer().view( view = viewToRender );
 					return renderData( argumentCollection = arguments );
 				}
 				case "html":

@@ -3,24 +3,72 @@
  * www.ortussolutions.com
  * ---
  * Base class for all things Box
+ * The Majority of contributions comes from its delegations
  *
  * @author Luis Majano <lmajano@ortussolutions.com>
  */
 component serializable="false" accessors="true" {
 
-	/**
-	 * App Controller
-	 */
-	property name="controller";
+	/****************************************************************
+	 * DI *
+	 ****************************************************************/
+
+	property name="controller" inject="coldbox";
+	property name="cachebox"   inject="cachebox";
+	property name="flash"      inject="coldbox:flash";
+	property name="logBox"     inject="logbox";
+	property name="log"        inject="logbox:logger:{this}";
+	property name="wirebox"    inject="wirebox";
+	property name="env"        inject="env@coreDelegates";
+	property name="jsonUtil"   inject="JsonUtil@coreDelegates";
+	property name="flow"       inject="Flow@coreDelegates";
 
 	/**
-	 * @deprecated
+	 * Constructor
 	 */
-	function getModel() cbMethod{
-		throw(
-			message = "getModel() is now fully deprecated in favor of getInstance().",
-			type    = "DeprecationException"
+	function init(){
+		variables.cbInjectedHelpers = {};
+		return this;
+	}
+
+	/****************************************************************
+	 * Deprecated/Removed Methods *
+	 ****************************************************************/
+
+	function renderview() cbMethod{
+		getRenderer().renderView( argumentCollection = arguments );
+	}
+	function renderLayout() cbMethod{
+		getRenderer().renderLayout( argumentCollection = arguments );
+	}
+	function renderExternalView() cbMethod{
+		getRenderer().renderExternalView( argumentCollection = arguments );
+	}
+	function announceInterception() cbMethod{
+		variables.log.warn(
+			"announceInterception() has been deprecated, please update your code to announce()",
+			callStackGet()
 		);
+		variables.controller.getInterceptorService().announce( argumentCollection = arguments );
+	}
+	function populateModel() cbMethod{
+		// TODO: Change to warn() by version 8 release
+		variables.log.debug(
+			"populateModel() has been deprecated, please update your code to populate()",
+			callStackGet()
+		);
+		return populate( argumentCollection = arguments );
+	}
+
+	/****************************************************************
+	 * WireBox + Population Methods *
+	 ****************************************************************/
+
+	/**
+	 * Get The root wirebox instance
+	 */
+	function getRootWireBox() cbMethod{
+		return variables.controller.getWireBox();
 	}
 
 	/**
@@ -44,11 +92,11 @@ component serializable="false" accessors="true" {
 		targetObject = "",
 		injector
 	) cbMethod{
-		return variables.controller.getWirebox().getInstance( argumentCollection = arguments );
+		return variables.wirebox.getInstance( argumentCollection = arguments );
 	}
 
 	/**
-	 * Populate a model object from the request Collection or a passed in memento structure
+	 * Populate an object from the incoming request collection
 	 *
 	 * @model                The name of the model to get and populate or the acutal model object. If you already have an instance of a model, then use the populateBean() method
 	 * @scope                Use scope injection instead of setters population. Ex: scope=variables.instance.
@@ -64,10 +112,11 @@ component serializable="false" accessors="true" {
 	 * @xml                  If you pass an xml string, we will populate your model with it
 	 * @qry                  If you pass a query, we will populate your model with it
 	 * @rowNumber            The row of the qry parameter to populate your model with
+	 * @ignoreTargetLists    If this is true, then the populator will ignore the target's population include/exclude metadata lists. By default this is false.
 	 *
 	 * @return The instance populated
 	 */
-	function populateModel(
+	function populate(
 		required model,
 		scope                        = "",
 		boolean trustedSetter        = false,
@@ -80,45 +129,15 @@ component serializable="false" accessors="true" {
 		struct memento               = getRequestCollection(),
 		string jsonstring,
 		string xml,
-		query qry
+		query qry,
+		boolean ignoreTargetLists = false
 	) cbMethod{
-		// Do we have a model or name
-		if ( isSimpleValue( arguments.model ) ) {
-			arguments.target = getInstance( model );
-		} else {
-			arguments.target = arguments.model;
-		}
-
-		// json?
-		if ( structKeyExists( arguments, "jsonstring" ) ) {
-			return variables.controller
-				.getWirebox()
-				.getObjectPopulator()
-				.populateFromJSON( argumentCollection = arguments );
-		}
-		// XML
-		else if ( structKeyExists( arguments, "xml" ) ) {
-			return variables.controller
-				.getWirebox()
-				.getObjectPopulator()
-				.populateFromXML( argumentCollection = arguments );
-		}
-		// Query
-		else if ( structKeyExists( arguments, "qry" ) ) {
-			return variables.controller
-				.getWirebox()
-				.getObjectPopulator()
-				.populateFromQuery( argumentCollection = arguments );
-		}
-		// Mementos
-		else {
-			// populate
-			return variables.controller
-				.getWirebox()
-				.getObjectPopulator()
-				.populateFromStruct( argumentCollection = arguments );
-		}
+		return variables.wirebox.getInstance( "Population@cbDelegates" ).populate( argumentCollection = arguments );
 	}
+
+	/****************************************************************
+	 * Rendering Methods *
+	 ****************************************************************/
 
 	/**
 	 * Retrieve the system web renderer
@@ -130,68 +149,6 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
-	 * Retrieve the request context object
-	 *
-	 * @return coldbox.system.web.context.RequestContext
-	 */
-	function getRequestContext() cbMethod{
-		return variables.controller.getRequestService().getContext();
-	}
-
-	/**
-	 * Get the RC or PRC collection reference
-	 *
-	 * @private The boolean bit that says give me the RC by default or true for the private collection (PRC)
-	 *
-	 * @return The requeted collection
-	 */
-	struct function getRequestCollection( boolean private = false ) cbMethod{
-		return getRequestContext().getCollection( private = arguments.private );
-	}
-
-	/**
-	 * Render out a view
-	 *
-	 * @deprecated             Use view() instead
-	 * @view                   The the view to render, if not passed, then we look in the request context for the current set view.
-	 * @args                   A struct of arguments to pass into the view for rendering, will be available as 'args' in the view.
-	 * @module                 The module to render the view from explicitly
-	 * @cache                  Cached the view output or not, defaults to false
-	 * @cacheTimeout           The time in minutes to cache the view
-	 * @cacheLastAccessTimeout The time in minutes the view will be removed from cache if idle or requested
-	 * @cacheSuffix            The suffix to add into the cache entry for this view rendering
-	 * @cacheProvider          The provider to cache this view in, defaults to 'template'
-	 * @collection             A collection to use by this Renderer to render the view as many times as the items in the collection (Array or Query)
-	 * @collectionAs           The name of the collection variable in the partial rendering.  If not passed, we will use the name of the view by convention
-	 * @collectionStartRow     The start row to limit the collection rendering with
-	 * @collectionMaxRows      The max rows to iterate over the collection rendering with
-	 * @collectionDelim        A string to delimit the collection renderings by
-	 * @prePostExempt          If true, pre/post view interceptors will not be fired. By default they do fire
-	 * @name                   The name of the rendering region to render out, Usually all arguments are coming from the stored region but you override them using this function's arguments.
-	 *
-	 * @return The rendered view
-	 */
-	function renderView(
-		view                   = "",
-		struct args            = {},
-		module                 = "",
-		boolean cache          = false,
-		cacheTimeout           = "",
-		cacheLastAccessTimeout = "",
-		cacheSuffix            = "",
-		cacheProvider          = "template",
-		collection,
-		collectionAs               = "",
-		numeric collectionStartRow = "1",
-		numeric collectionMaxRows  = 0,
-		collectionDelim            = "",
-		boolean prePostExempt      = false,
-		name
-	) cbMethod{
-		return variables.controller.getRenderer().renderView( argumentCollection = arguments );
-	}
-
-	/**
 	 * Render out a view
 	 *
 	 * @view                   The the view to render, if not passed, then we look in the request context for the current set view.
@@ -209,6 +166,7 @@ component serializable="false" accessors="true" {
 	 * @collectionDelim        A string to delimit the collection renderings by
 	 * @prePostExempt          If true, pre/post view interceptors will not be fired. By default they do fire
 	 * @name                   The name of the rendering region to render out, Usually all arguments are coming from the stored region but you override them using this function's arguments.
+	 * @viewVariables          A struct of variables to incorporate into the view's variables scope.
 	 *
 	 * @return The rendered view
 	 */
@@ -227,35 +185,10 @@ component serializable="false" accessors="true" {
 		numeric collectionMaxRows  = 0,
 		collectionDelim            = "",
 		boolean prePostExempt      = false,
-		name
+		name,
+		viewVariables = {}
 	) cbMethod{
-		return variables.controller.getRenderer().renderView( argumentCollection = arguments );
-	}
-
-	/**
-	 * Renders an external view anywhere that cfinclude works.
-	 *
-	 * @deprecated             Use `externalView()` instead
-	 * @view                   The the view to render
-	 * @args                   A struct of arguments to pass into the view for rendering, will be available as 'args' in the view.
-	 * @cache                  Cached the view output or not, defaults to false
-	 * @cacheTimeout           The time in minutes to cache the view
-	 * @cacheLastAccessTimeout The time in minutes the view will be removed from cache if idle or requested
-	 * @cacheSuffix            The suffix to add into the cache entry for this view rendering
-	 * @cacheProvider          The provider to cache this view in, defaults to 'template'
-	 *
-	 * @return The rendered view
-	 */
-	function renderExternalView(
-		required view,
-		struct args            = {},
-		boolean cache          = false,
-		cacheTimeout           = "",
-		cacheLastAccessTimeout = "",
-		cacheSuffix            = "",
-		cacheProvider          = "template"
-	) cbMethod{
-		return variables.controller.getRenderer().renderExternalView( argumentCollection = arguments );
+		return variables.controller.getRenderer().view( argumentCollection = arguments );
 	}
 
 	/**
@@ -268,6 +201,7 @@ component serializable="false" accessors="true" {
 	 * @cacheLastAccessTimeout The time in minutes the view will be removed from cache if idle or requested
 	 * @cacheSuffix            The suffix to add into the cache entry for this view rendering
 	 * @cacheProvider          The provider to cache this view in, defaults to 'template'
+	 * @viewVariables          A struct of variables to incorporate into the view's variables scope.
 	 *
 	 * @return The rendered view
 	 */
@@ -278,33 +212,10 @@ component serializable="false" accessors="true" {
 		cacheTimeout           = "",
 		cacheLastAccessTimeout = "",
 		cacheSuffix            = "",
-		cacheProvider          = "template"
+		cacheProvider          = "template",
+		viewVariables          = {}
 	) cbMethod{
-		return variables.controller.getRenderer().renderExternalView( argumentCollection = arguments );
-	}
-
-	/**
-	 * Render a layout or a layout + view combo
-	 *
-	 * @deprecated    Use `layout()` instead
-	 * @layout        The layout to render out
-	 * @module        The module to explicitly render this layout from
-	 * @view          The view to render within this layout
-	 * @args          An optional set of arguments that will be available to this layouts/view rendering ONLY
-	 * @viewModule    The module to explicitly render the view from
-	 * @prePostExempt If true, pre/post layout interceptors will not be fired. By default they do fire
-	 *
-	 * @return The rendered layout
-	 */
-	function renderLayout(
-		layout,
-		module                = "",
-		view                  = "",
-		struct args           = {},
-		viewModule            = "",
-		boolean prePostExempt = false
-	) cbMethod{
-		return variables.controller.getRenderer().renderLayout( argumentCollection = arguments );
+		return variables.controller.getRenderer().externalView( argumentCollection = arguments );
 	}
 
 	/**
@@ -316,6 +227,7 @@ component serializable="false" accessors="true" {
 	 * @args          An optional set of arguments that will be available to this layouts/view rendering ONLY
 	 * @viewModule    The module to explicitly render the view from
 	 * @prePostExempt If true, pre/post layout interceptors will not be fired. By default they do fire
+	 * @viewVariables A struct of variables to incorporate into the view's variables scope.
 	 *
 	 * @return The rendered layout
 	 */
@@ -325,21 +237,15 @@ component serializable="false" accessors="true" {
 		view                  = "",
 		struct args           = {},
 		viewModule            = "",
-		boolean prePostExempt = false
+		boolean prePostExempt = false,
+		viewVariables         = {}
 	) cbMethod{
-		return variables.controller.getRenderer().renderLayout( argumentCollection = arguments );
+		return variables.controller.getRenderer().layout( argumentCollection = arguments );
 	}
 
-	/**
-	 * Get an interceptor reference
-	 *
-	 * @interceptorName The name of the interceptor to retrieve
-	 *
-	 * @return Interceptor
-	 */
-	function getInterceptor( required interceptorName ) cbMethod{
-		return variables.controller.getInterceptorService().getInterceptor( argumentCollection = arguments );
-	}
+	/****************************************************************
+	 * Interception Methods *
+	 ****************************************************************/
 
 	/**
 	 * Register a closure listener as an interceptor on a specific point
@@ -376,28 +282,12 @@ component serializable="false" accessors="true" {
 		asyncPriority            = "NORMAL",
 		numeric asyncJoinTimeout = 0
 	) cbMethod{
-		// Backwards Compat: Remove by ColdBox 7
-		if ( !isNull( arguments.interceptData ) ) {
-			arguments.data = arguments.interceptData;
-		}
 		return variables.controller.getInterceptorService().announce( argumentCollection = arguments );
 	}
 
-	/**
-	 * @deprecated Please use the new `announce()` function
-	 */
-	function announceInterception(
-		required state,
-		struct interceptData     = {},
-		boolean async            = false,
-		boolean asyncAll         = false,
-		boolean asyncAllJoin     = true,
-		asyncPriority            = "NORMAL",
-		numeric asyncJoinTimeout = 0
-	) cbMethod{
-		arguments.data = arguments.interceptData;
-		return announce( argumentCollection = arguments );
-	}
+	/****************************************************************
+	 * Caching Methods *
+	 ****************************************************************/
 
 	/**
 	 * Get a named CacheBox Cache
@@ -409,6 +299,10 @@ component serializable="false" accessors="true" {
 	function getCache( name = "default" ) cbMethod{
 		return variables.controller.getCache( arguments.name );
 	}
+
+	/****************************************************************
+	 * Setting Methods *
+	 ****************************************************************/
 
 	/**
 	 * Get a setting from the system
@@ -470,14 +364,7 @@ component serializable="false" accessors="true" {
 	 * @return struct or any
 	 */
 	any function getModuleSettings( required module, setting, defaultValue ) cbMethod{
-		var moduleSettings = getModuleConfig( arguments.module ).settings;
-		// return specific setting?
-		if ( !isNull( arguments.setting ) ) {
-			return (
-				structKeyExists( moduleSettings, arguments.setting ) ? moduleSettings[ arguments.setting ] : arguments.defaultValue
-			);
-		}
-		return moduleSettings;
+		return variables.controller.getModuleSettings( argumentCollection = arguments );
 	}
 
 	/**
@@ -490,16 +377,25 @@ component serializable="false" accessors="true" {
 	 * @throws InvalidModuleException - The module passed is invalid
 	 */
 	struct function getModuleConfig( required module ) cbMethod{
-		var mConfig = variables.controller.getSetting( "modules" );
-		if ( structKeyExists( mConfig, arguments.module ) ) {
-			return mConfig[ arguments.module ];
-		}
-		throw(
-			message = "The module you passed #arguments.module# is invalid.",
-			detail  = "The loaded modules are #structKeyList( mConfig )#",
-			type    = "InvalidModuleException"
-		);
+		return variables.controller.getModuleConfig( argumentCollection = arguments );
 	}
+
+	/**
+	 * This method will return the unique user's request tracking identifier according to our discovery algoritm:
+	 *
+	 * 1. If we have an identifierProvider closure/lambda/udf, then call it and use it
+	 * 2. If we have session enabled, use the jessionId or session URL Token
+	 * 3. If we have cookies enabled, use the cfid/cftoken
+	 * 4. If we have in the URL the cfid/cftoken
+	 * 5. Create a request based tracking identifier: cbUserTrackingId
+	 */
+	function getUserSessionIdentifier(){
+		return variables.controller.getUserSessionIdentifier();
+	}
+
+	/****************************************************************
+	 * Relocation Methods *
+	 ****************************************************************/
 
 	/**
 	 * Relocate user browser requests to other events, URLs, or URIs.
@@ -531,6 +427,23 @@ component serializable="false" accessors="true" {
 	) cbMethod{
 		variables.controller.relocate( argumentCollection = arguments );
 	}
+
+	/**
+	 * Redirect back to the previous URL via the referrer header, else use the fallback
+	 *
+	 * @fallback      The fallback event or uri if the referrer is empty, defaults to `/`
+	 * @persist       What request collection keys to persist in flash ram
+	 * @persistStruct A structure key-value pairs to persist in flash ram
+	 */
+	function back( fallback = "/", persist, struct persistStruct ) cbMethod{
+		var event     = getRequestContext();
+		arguments.URL = event.getHTTPHeader( "referer", event.buildLink( arguments.fallback ) );
+		relocate( argumentCollection = arguments );
+	}
+
+	/****************************************************************
+	 * Runnables Methods *
+	 ****************************************************************/
 
 	/**
 	 * Executes internal named routes with or without parameters. If the named route is not found or the route has no event to execute then this method will throw an `InvalidArgumentException`.
@@ -607,7 +520,9 @@ component serializable="false" accessors="true" {
 		return this;
 	}
 
-	/****************************************** UTILITY METHODS ******************************************/
+	/****************************************************************
+	 * Env Methods *
+	 ****************************************************************/
 
 	/**
 	 * Retrieve a Java System property or env value by name. It looks at properties first then environment variables
@@ -616,7 +531,7 @@ component serializable="false" accessors="true" {
 	 * @defaultValue The default value to use if the key does not exist in the system properties or the env
 	 */
 	function getSystemSetting( required key, defaultValue ) cbMethod{
-		return variables.controller.getUtil().getSystemSetting( argumentCollection = arguments );
+		return variables.env.getSystemSetting( argumentCollection = arguments );
 	}
 
 	/**
@@ -626,7 +541,7 @@ component serializable="false" accessors="true" {
 	 * @defaultValue The default value to use if the key does not exist in the system properties or the env
 	 */
 	function getSystemProperty( required key, defaultValue ) cbMethod{
-		return variables.controller.getUtil().getSystemProperty( argumentCollection = arguments );
+		return variables.env.getSystemProperty( argumentCollection = arguments );
 	}
 
 	/**
@@ -636,8 +551,44 @@ component serializable="false" accessors="true" {
 	 * @defaultValue The default value to use if the key does not exist in the system properties or the env
 	 */
 	function getEnv( required key, defaultValue ) cbMethod{
-		return variables.controller.getUtil().getEnv( argumentCollection = arguments );
+		return variables.env.getEnv( argumentCollection = arguments );
 	}
+
+	/****************************************************************
+	 * Application Environment *
+	 ****************************************************************/
+
+	/**
+	 * Determine if the application is in the `debugMode` or not
+	 */
+	boolean function inDebugMode(){
+		return variables.controller.inDebugMode();
+	}
+
+	/**
+	 * Determine if the application is in the `development|local` environment
+	 */
+	boolean function isDevelopment(){
+		return variables.controller.isDevelopment();
+	}
+
+	/**
+	 * Determine if the application is in the `production` environment
+	 */
+	boolean function isProduction(){
+		return variables.controller.isProduction();
+	}
+
+	/**
+	 * Determine if the application is in the `testing` environment
+	 */
+	boolean function isTesting(){
+		return variables.controller.isTesting();
+	}
+
+	/****************************************************************
+	 * Location Methods *
+	 ****************************************************************/
 
 	/**
 	 * Resolve a file to be either relative or absolute in your application
@@ -657,15 +608,195 @@ component serializable="false" accessors="true" {
 		return variables.controller.locateDirectoryPath( argumentCollection = arguments );
 	}
 
+	/****************************************************************
+	 * Async Methods *
+	 ****************************************************************/
+
 	/**
-	 * Add a js/css asset(s) to the html head section. You can also pass in a list of assets. This method
-	 * keeps track of the loaded assets so they are only loaded once
+	 * Return the ColdBox Async Manager instance so you can do some async or parallel programming
 	 *
-	 * @asset The asset(s) to load, only js or css files. This can also be a comma delimited list.
+	 * @return coldbox.system.async.AsyncManager
 	 */
-	string function addAsset( required asset ) cbMethod{
-		return getInstance( "@HTMLHelper" ).addAsset( argumentCollection = arguments );
+	any function async() cbMethod{
+		if ( isNull( variables.asyncManager ) ) {
+			variables.asyncManager = variables.wirebox.getInstance( "asyncManager@coldbox" );
+		}
+		return variables.asyncManager;
 	}
+
+	/****************************************************************
+	 * Flow Methods *
+	 ****************************************************************/
+
+	/**
+	 * This function evaluates the target boolean expression and if `true` it will execute the `success` closure
+	 * else, if the `failure` closure is passed, it will execute it.
+	 *
+	 * @target  The boolean evaluator, this can be a boolean value
+	 * @success The closure/lambda to execute if the boolean value is true
+	 * @failure The closure/lambda to execute if the boolean value is false
+	 *
+	 * @return Returns itself
+	 */
+	function when(
+		required boolean target,
+		required success,
+		failure
+	) cbmethod{
+		return variables.flow.when( argumentCollection = arguments );
+	}
+
+	/**
+	 * This function evaluates the target boolean expression and if `false` it will execute the `success` closure
+	 * else, if the `failure` closure is passed, it will execute it.
+	 *
+	 * @target  The boolean evaluator, this can be a boolean value
+	 * @success The closure/lambda to execute if the boolean value is true
+	 * @failure The closure/lambda to execute if the boolean value is false
+	 *
+	 * @return Returns itself
+	 */
+	function unless(
+		required boolean target,
+		required success,
+		failure
+	) cbmethod{
+		return variables.flow.unless( argumentCollection = arguments );
+	}
+
+	/**
+	 * This function evaluates the target boolean expression and if `true` it will throw the controlled exception
+	 *
+	 * @target  The boolean evaluator, this can be a boolean value
+	 * @type    The exception type
+	 * @message The exception message
+	 * @detail  The exception detail
+	 *
+	 * @return Returns itself
+	 */
+	function throwIf(
+		required boolean target,
+		required type,
+		message = "",
+		detail  = ""
+	) cbmethod{
+		return variables.flow.throwIf( argumentCollection = arguments );
+	}
+
+	/**
+	 * This function evaluates the target boolean expression and if `false` it will throw the controlled exception
+	 *
+	 * @target  The boolean evaluator, this can be a boolean value
+	 * @type    The exception type
+	 * @message The exception message
+	 * @detail  The exception detail
+	 *
+	 * @return Returns itself
+	 */
+	function throwUnless(
+		required boolean target,
+		required type,
+		message = "",
+		detail  = ""
+	) cbmethod{
+		return variables.flow.throwUnless( argumentCollection = arguments );
+	}
+
+	/**
+	 * Verify if the target argument is `null` and if it is, then execute the `success` closure, else if passed
+	 * execute the `failure` closure.
+	 */
+	function ifNull( target, required success, failure ) cbmethod{
+		return variables.flow.ifNull( argumentCollection = arguments );
+	}
+
+	/**
+	 * Verify if the target argument is not `null` and if it is, then execute the `success` closure, else if passed
+	 * execute the `failure` closure.
+	 */
+	function ifPresent( target, required success, failure ) cbmethod{
+		return variables.flow.ifPresent( argumentCollection = arguments );
+	}
+
+	/****************************************************************
+	 * Data Integration Methods *
+	 ****************************************************************/
+
+	/**
+	 * This function allows you to serialize simple or complex data so it can be used within HTML Attributes.
+	 *
+	 * @data The simple or complex data to bind to an HTML Attribute
+	 */
+	function forAttribute( required data ) cbMethod{
+		return variables.jsonUtil.forAttribute( argumentCollection = arguments );
+	}
+
+	/**
+	 * Opinionated method that serializes json in a more digetstible way:
+	 * - queries as array of structs
+	 * - no dumb secure prefixes
+	 *
+	 * @obj The object to be serialized
+	 */
+	string function toJson( any obj ){
+		return variables.jsonUtil.toJson( argumentCollection = arguments );
+	}
+
+	/****************************************************************
+	 * Date Time Methods *
+	 ****************************************************************/
+
+	/**
+	 * Get the ColdBox date/time helper class
+	 *
+	 * @return coldbox.system.async.time.DateTimeHelper
+	 */
+	DateTimeHelper function getDateTimeHelper(){
+		if ( isNull( variables.cbDateTimeHelper ) ) {
+			variables.cbDateTimeHelper = variables.wirebox.getInstance(
+				"coldbox.system.async.time.DateTimeHelper"
+			);
+		}
+		return cbDateTimeHelper;
+	}
+
+	/**
+	 * Generate an iso8601 formatted string from an incoming date/time object or none for the current time in ISO time
+	 *
+	 * @dateTime The input datetime or if not passed, the current date/time
+	 * @toUTC    By default, we convert all times to UTC for standardization
+	 */
+	string function getIsoTime( dateTime = now(), boolean toUTC = true ){
+		return getDateTimeHelper().getIsoTime( argumentCollection = arguments );
+	}
+
+	/****************************************************************
+	 * Request Context Methods *
+	 ****************************************************************/
+
+	/**
+	 * Retrieve the request context object
+	 *
+	 * @return coldbox.system.web.context.RequestContext
+	 */
+	function getRequestContext() cbMethod{
+		return variables.controller.getRequestService().getContext();
+	}
+
+	/**
+	 * Get the RC or PRC collection reference
+	 *
+	 * @private The boolean bit that says give me the RC by default or true for the private collection (PRC)
+	 *
+	 * @return The requeted collection
+	 */
+	struct function getRequestCollection( boolean private = false ) cbMethod{
+		return getRequestContext().getCollection( private = arguments.private );
+	}
+
+	/****************************************************************
+	 * Mixin and Helper Methods *
+	 ****************************************************************/
 
 	/**
 	 * Injects a UDF Library (*.cfc or *.cfm) into the target object.  It does not however, put the mixins on any of the cfc scopes. Therefore they can only be called internally
@@ -677,11 +808,8 @@ component serializable="false" accessors="true" {
 	 * @throws UDFLibraryNotFoundException - When the requested library cannot be found
 	 */
 	any function includeUDF( required udflibrary ) cbMethod{
-		// Init the mixin location and caches reference
-		var defaultCache     = getCache( "default" );
 		var mixinLocationKey = hash( variables.controller.getAppHash() & arguments.udfLibrary );
-
-		var targetLocation = defaultCache.getOrSet(
+		var targetLocation   = getCache( "default" ).getOrSet(
 			// Key
 			"includeUDFLocation-#mixinLocationKey#",
 			// Producer
@@ -689,22 +817,23 @@ component serializable="false" accessors="true" {
 				var appMapping      = variables.controller.getSetting( "AppMapping" );
 				var UDFFullPath     = expandPath( udflibrary );
 				var UDFRelativePath = expandPath( "/" & appMapping & "/" & udflibrary );
+				var locatedPath     = "";
 
 				// Relative Checks First
 				if ( fileExists( UDFRelativePath ) ) {
-					targetLocation = "/" & appMapping & "/" & udflibrary;
+					locatedPath = "/" & appMapping & "/" & udflibrary;
 				}
 				// checks if no .cfc or .cfm where sent
 				else if ( fileExists( UDFRelativePath & ".cfc" ) ) {
-					targetLocation = "/" & appMapping & "/" & udflibrary & ".cfc";
+					locatedPath = "/" & appMapping & "/" & udflibrary & ".cfc";
 				} else if ( fileExists( UDFRelativePath & ".cfm" ) ) {
-					targetLocation = "/" & appMapping & "/" & udflibrary & ".cfm";
+					locatedPath = "/" & appMapping & "/" & udflibrary & ".cfm";
 				} else if ( fileExists( UDFFullPath ) ) {
-					targetLocation = "#udflibrary#";
+					locatedPath = "#udflibrary#";
 				} else if ( fileExists( UDFFullPath & ".cfc" ) ) {
-					targetLocation = "#udflibrary#.cfc";
+					locatedPath = "#udflibrary#.cfc";
 				} else if ( fileExists( UDFFullPath & ".cfm" ) ) {
-					targetLocation = "#udflibrary#.cfm";
+					locatedPath = "#udflibrary#.cfm";
 				} else {
 					throw(
 						message = "Error loading UDF library: #udflibrary#",
@@ -712,7 +841,7 @@ component serializable="false" accessors="true" {
 						type    = "UDFLibraryNotFoundException"
 					);
 				}
-				return targetLocation;
+				return locatedPath;
 			},
 			// Timeout: 1 week
 			10080
@@ -739,56 +868,14 @@ component serializable="false" accessors="true" {
 
 		// Inject global helpers
 		var helpers = variables.controller.getSetting( "applicationHelper" );
-
 		for ( var thisHelper in helpers ) {
-			includeUDF( thisHelper );
+			if ( !variables.cbInjectedHelpers.keyExists( thisHelper ) ) {
+				includeUDF( thisHelper );
+				variables.cbInjectedHelpers[ thisHelper ] = true;
+			}
 		}
 
 		return this;
-	}
-
-	/**
-	 * Return the ColdBox Async Manager instance so you can do some async or parallel programming
-	 *
-	 * @return coldbox.system.async.AsyncManager
-	 */
-	any function async() cbMethod{
-		if ( isNull( variables.asyncManager ) ) {
-			variables.asyncManager = variables.controller.getWireBox().getInstance( "asyncManager@coldbox" );
-		}
-		return variables.asyncManager;
-	}
-
-	/**
-	 * Functional construct for if statements
-	 *
-	 * @target  The boolean evaluator, this can be a boolean value
-	 * @success The closure/lambda to execute if the boolean value is true
-	 * @failure The closure/lambda to execute if the boolean value is false
-	 *
-	 * @return Returns the SuperType object for chaining
-	 */
-	function when(
-		required boolean target,
-		required success,
-		failure
-	) cbMethod{
-		if ( arguments.target ) {
-			arguments.success();
-		} else if ( !isNull( arguments.failure ) ) {
-			arguments.failure();
-		}
-		return this;
-	}
-
-	/**
-	 * This function allows you to serialize simple or complex data so it can be used within HTML Attributes.
-	 *
-	 * @data The simple or complex data to bind to an HTML Attribute
-	 */
-	function forAttribute( required data ) cbMethod{
-		arguments.data = ( isSimpleValue( arguments.data ) ? arguments.data : serializeJSON( arguments.data ) );
-		return encodeForHTMLAttribute( arguments.data );
 	}
 
 }

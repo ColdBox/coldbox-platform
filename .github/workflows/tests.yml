@@ -15,11 +15,35 @@ jobs:
     env:
       DB_USER: root
       DB_PASSWORD: root
+    continue-on-error: ${{ matrix.experimental }}
     strategy:
       fail-fast: false
       matrix:
-        cfengine: [ "lucee@5", "adobe@2016", "adobe@2018", "adobe@2021" ]
-        fullNull: [ "true", "false" ]
+        commandbox_version: [ "5.8.0" ]
+        cfengine: [ "lucee@5", "adobe@2018", "adobe@2021" ]
+        jdkVersion: [ "11" ]
+        experimental: [false]
+        include:
+          - cfengine: "lucee@5rc"
+            commandbox_version: "6.0.0-alpha"
+            jdkVersion: "11"
+            experimental: true
+          - cfengine: "lucee@6"
+            commandbox_version: "6.0.0-alpha"
+            jdkVersion: "11"
+            experimental: true
+          - cfengine: "lucee@6"
+            commandbox_version: "6.0.0-alpha"
+            jdkVersion: "17"
+            experimental: true
+          - cfengine: "adobe@2023"
+            commandbox_version: "6.0.0-alpha"
+            jdkVersion: "11"
+            experimental: true
+          - cfengine: "adobe@2023"
+            commandbox_version: "6.0.0-alpha"
+            jdkVersion: "17"
+            experimental: true
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
@@ -31,15 +55,15 @@ jobs:
           mysql -u${{ env.DB_USER }} -p${{ env.DB_PASSWORD }} < tests/resources/coolblog.sql
 
       - name: Setup Java
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
-          distribution: "adopt"
-          java-version: "11"
+          distribution: "temurin"
+          java-version: ${{ matrix.jdkVersion }}
 
       - name: Setup CommandBox CLI
-        uses: Ortus-Solutions/setup-commandbox@v2.0.0
+        uses: Ortus-Solutions/setup-commandbox@v2.0.1
         with:
-          version: 5.4.2
+          version: ${{ matrix.commandbox_version }}
 
       - name: Setup .env For Runner
         run: |
@@ -53,44 +77,30 @@ jobs:
           printf "DB_BUNDLEVERSION=8.0.19\n" >> .env
           printf "DB_BUNDLENAME=com.mysql.cj\n" >> .env
 
-      - name: Cache CommandBox Dependencies
-        uses: actions/cache@v1
-        if: ${{ true }}
-        with:
-          path: ~/.CommandBox/artifacts
-          key: ${{ runner.OS }}-commandbox-cache-${{ hashFiles( 'box.json' ) }}
-          restore-keys: |
-            ${{ runner.OS }}-commandbox-cache-${{ hashFiles( 'box.json' ) }}
-
       - name: Install Dependencies
         run: |
           # Core dependencies
           box install
-          # API Docs dependencies
-          cd apidocs && box install
 
       - name: Start ${{ matrix.cfengine }} Server
         run: |
           box server start serverConfigFile="server-${{ matrix.cfengine }}.json" --noSaveSettings --debug
-          # Install Adobe 2021 cfpm modules
-          if [[ "${{ matrix.cfengine }}" == "adobe@2021" ]] ; then
-            box run-script install:2021
-          fi
           # Test the harness
           curl http://127.0.0.1:8599/test-harness
 
-      - name: Run Tests Full Null (${{ matrix.fullNull }})
-        env:
-          FULL_NULL: ${{ matrix.fullNull }}
+      - name: Run Tests
         run: |
           ant -f build/build.xml run-tests
 
+      - name: Set cfengine version env
+        run: echo "CFENGINE_VERSION=$(box echo ${serverInfo.engineName@coldbox-${{ matrix.cfengine }}}@${serverInfo.engineVersion@coldbox-${{ matrix.cfengine }}})" >> $GITHUB_ENV
+
       - name: Publish Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v1
+        uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
           files: tests/results/**/*.xml
-          check_name: "${{ matrix.cfengine }} Test Results"
+          check_name: "${{ env.CFENGINE_VERSION }} Test Results"
 
       - name: Upload Test Results Artifacts
         if: always()

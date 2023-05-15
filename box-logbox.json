@@ -23,5 +23,11 @@
         "tests",
         "apidocs",
         "*/.md"
-    ]
+    ],
+	"dependencies":{
+        "cbproxies":"^1.0.1+13"
+    },
+	"installPaths":{
+        "cbproxies":"system/async/cbproxies/"
+    }
 }

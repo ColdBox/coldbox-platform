@@ -252,7 +252,7 @@ component accessors="true" {
 	/**
 	 * Log a debug message
 	 *
-	 * @message   The message to log
+	 * @message   A message to log or a closure that returns a message to log
 	 * @extraInfo Extra information to send to appenders
 	 *
 	 * @return Logger
@@ -265,7 +265,7 @@ component accessors="true" {
 	/**
 	 * Log a info message
 	 *
-	 * @message   The message to log
+	 * @message   A message to log or a closure that returns a message to log
 	 * @extraInfo Extra information to send to appenders
 	 *
 	 * @return Logger
@@ -278,7 +278,7 @@ component accessors="true" {
 	/**
 	 * Log a warn message
 	 *
-	 * @message   The message to log
+	 * @message   A message to log or a closure that returns a message to log
 	 * @extraInfo Extra information to send to appenders
 	 *
 	 * @return Logger
@@ -291,7 +291,7 @@ component accessors="true" {
 	/**
 	 * Log an error message
 	 *
-	 * @message   The message to log
+	 * @message   A message to log or a closure that returns a message to log
 	 * @extraInfo Extra information to send to appenders
 	 *
 	 * @return Logger
@@ -304,7 +304,7 @@ component accessors="true" {
 	/**
 	 * Log a fatal message
 	 *
-	 * @message   The message to log
+	 * @message   A message to log or a closure that returns a message to log
 	 * @extraInfo Extra information to send to appenders
 	 *
 	 * @return Logger
@@ -317,7 +317,7 @@ component accessors="true" {
 	/**
 	 * Write an entry into the loggers registered with this LogBox variables
 	 *
-	 * @message   The message to log
+	 * @message   A message to log or a closure that returns a message to log
 	 * @severity  The severity level to log, if invalid, it will default to **Info**
 	 * @extraInfo Extra information to send to appenders
 	 */
@@ -333,12 +333,6 @@ component accessors="true" {
 			arguments.severity = this.logLevels.INFO;
 		}
 
-		// If message empty, just exit
-		arguments.message = trim( arguments.message );
-		if ( NOT len( arguments.message ) ) {
-			return this;
-		}
-
 		// Is Logging Enabled?
 		if ( getLevelMin() eq this.logLevels.OFF ) {
 			return this;
@@ -349,11 +343,20 @@ component accessors="true" {
 			// Create Logging Event
 			arguments.category = target.getCategory();
 
+			// Detect Closure to construct string
+			if ( isClosure( arguments.message ) || isCustomFunction( arguments.message ) ) {
+				arguments.message = arguments.message( this );
+			}
+			// If message empty, just exit
+			arguments.message = trim( arguments.message );
+			if ( NOT len( arguments.message ) ) {
+				return this;
+			}
+
 			// Do we have appenders locally? or go to root Logger
 			if ( NOT hasAppenders() ) {
 				target = getRootLogger();
 			}
-
 
 			// Process all appenders
 			var targetAppenders = target

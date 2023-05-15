@@ -41,15 +41,14 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	property name="metadata" type="struct";
 
 	// Public Switch Properties
-	// TODO: Remove by ColdBox 4.2+ and move to variables scope.
 	this.loadColdbox   = true;
-	this.unLoadColdBox = true;
+	this.unLoadColdBox = false;
 
 	// Internal Properties
 	variables.appMapping    = "";
 	variables.webMapping    = "";
 	variables.configMapping = "";
-	variables.controller    = "";
+	variables.controller    = application.keyExists( "cbController" ) ? application.cbController : "";
 	variables.autowire      = false;
 	variables.metadata      = {};
 
@@ -61,7 +60,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * @return BaseTestCase
 	 */
 	function metadataInspection(){
-		variables.metadata = new coldbox.system.core.util.Util().getInheritedMetadata( this );
+		variables.metadata = getUtil().getInheritedMetadata( this );
 		// Inspect for appMapping annotation
 		if ( structKeyExists( variables.metadata, "appMapping" ) ) {
 			variables.appMapping = variables.metadata.appMapping;
@@ -238,10 +237,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 
 		// Create functioning request context
 		mockRC         = getMockBox().createMock( "coldbox.system.web.context.RequestContext" );
-		mockController = createObject( "component", "coldbox.system.testing.mock.web.MockController" ).init(
-			"/unittest",
-			"unitTest"
-		);
+		mockController = !isSimpleValue( variables.controller ) ? prepareMock( variables.controller ) : getMockController();
 
 		// Create mock properties
 		rcProps.defaultLayout     = "";
@@ -290,7 +286,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * @return coldbox.system.ioc.Injector
 	 */
 	function getWireBox(){
-		return variables.controller.getwireBox();
+		return variables.controller.getWireBox();
 	}
 
 	/**
@@ -509,15 +505,19 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 						if ( isSimpleValue( handlerResults ) ) {
 							renderedContent = handlerResults;
 						} else {
-							renderedContent = serializeJSON( handlerResults );
+							renderedContent = getUtil().toJson( handlerResults );
 						}
+					}
+					// Skip rendering if event.noRender is set
+					else if ( requestContext.getPrivateValue( "coldbox_norender", false ) ) {
+						renderedContent = "";
 					}
 					// render layout/view pair
 					else {
 						requestContext.setValue( "cbox_statusCode", getNativeStatusCode() );
 						renderedContent = cbcontroller
 							.getRenderer()
-							.renderLayout(
+							.layout(
 								module     = requestContext.getCurrentLayoutModule(),
 								viewModule = requestContext.getCurrentViewModule()
 							);
@@ -822,16 +822,6 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	}
 
 	/**
-	 * @deprecated
-	 */
-	function getModel(){
-		throw(
-			message = "getModel() is now fully deprecated in favor of getInstance().",
-			type    = "DeprecationException"
-		);
-	}
-
-	/**
 	 * Locates, Creates, Injects and Configures an object model instance
 	 *
 	 * @name          The mapping name or CFC instance path to try to build up
@@ -861,7 +851,22 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * @return coldbox.system.core.util.Util
 	 */
 	function getUtil(){
-		return new coldbox.system.core.util.Util();
+		if ( isNull( variables.cbUtil ) ) {
+			variables.cbUtil = new coldbox.system.core.util.Util();
+		}
+		return variables.cbUtil;
+	}
+
+	/**
+	 * Get the ColdBox Env Class
+	 *
+	 * @return coldbox.system.core.delegates.Env
+	 */
+	function getEnv(){
+		if ( isNull( variables.env ) ) {
+			variables.env = new coldbox.system.core.delegates.Env();
+		}
+		return variables.env;
 	}
 
 	/**
@@ -984,14 +989,12 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	}
 
 	/**
-	 * Helper method to deal with ACF2016's overload of the page context response, come on Adobe, get your act together!
-	 **/
+	 * Helper method to deal with ACF's overload of the page context response, come on Adobe, get your act together!
+	 */
 	private function getPageContextResponse(){
-		if ( structKeyExists( server, "lucee" ) ) {
-			return getPageContext().getResponse();
-		} else {
-			return getPageContext().getResponse().getResponse();
-		}
+		return server.keyExists( "lucee" ) ? getPageContext().getResponse() : getPageContext()
+			.getResponse()
+			.getResponse();
 	}
 
 }

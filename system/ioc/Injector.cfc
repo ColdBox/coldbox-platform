@@ -15,12 +15,17 @@
  * injector = new coldbox.system.ioc.Injector();
  * </pre>
  *
- *	Binder Startup
+ * Inline Config:
+ * <pre class='brush: cf'>
+ * injector = new coldbox.system.ioc.Injector( { scopeRegistration : { enabled : false } } );
+ * </pre>
+ *
+ * Binder Startup
  * <pre class='brush: cf'>
  * injector = new coldbox.system.ioc.Injector(new MyBinder());
  * </pre>
  *
- *	Binder Path Startup
+ * Binder Path Startup
  * <pre class='brush: cf'>
  * injector = new coldbox.system.ioc.Injector( "config.MyBinder" );
  * </pre>
@@ -85,6 +90,11 @@ component serializable="false" accessors="true" {
 	property name="parent";
 
 	/**
+	 * Root Injector instance
+	 */
+	property name="root";
+
+	/**
 	 * LifeCycle Scopes
 	 */
 	property name="scopes";
@@ -114,29 +124,49 @@ component serializable="false" accessors="true" {
 	property name="childInjectors" type="struct";
 
 	/**
-	 * Constructor. If called without a configuration binder, then WireBox will instantiate the default configuration binder found in: coldbox.system.ioc.config.DefaultBinder
+	 * The name of the injector
+	 */
+	property name="name" type="string";
+
+	/**
+	 * The object builder for this injector
+	 */
+	property name="objectBuilder";
+
+	/**
+	 * WireBox can be constructed with no parameters and it will use the default binder: `coldbox.system.ioc.config.DefaultBinder` for configuration
+	 * and place the instance in `application.wirebox` scope for easy access.
 	 *
-	 * @binder              The WireBox binder or data CFC instance or instantiation path to configure this injector with
+	 * However you can also instantiate Wirebox with:
+	 * - A binder instance
+	 * - A binder path
+	 * - A WireBox configuration DSL structure
+	 *
+	 * @binder              A binder instance, path, or DSL structure to configure WireBox with
 	 * @properties          A structure of binding properties to passthrough to the Binder Configuration CFC
 	 * @coldbox             A coldbox application context that this instance of WireBox can be linked to, if not using it, we just ignore it.
 	 * @coldbox.doc_generic coldbox.system.web.Controller
+	 * @name                The internal name of the injector, defaults to 'root' if not passed
 	 **/
 	Injector function init(
 		binder            = "coldbox.system.ioc.config.DefaultBinder",
 		struct properties = structNew(),
-		coldbox           = ""
+		coldbox           = "",
+		name              = "root"
 	){
 		// Setup Available public scopes
-		this.SCOPES         = new coldbox.system.ioc.Scopes();
+		this.SCOPES                 = new coldbox.system.ioc.Scopes();
 		// Setup Available public types
-		this.TYPES          = new coldbox.system.ioc.Types();
+		this.TYPES                  = new coldbox.system.ioc.Types();
 		// Build out the utilities
-		variables.utility   = new coldbox.system.core.util.Util();
-		variables.mixerUtil = variables.utility.getMixerUtil();
-
+		variables.utility           = new coldbox.system.core.util.Util();
+		variables.mixerUtil         = variables.utility.getMixerUtil();
+		// Store name
+		variables.name              = arguments.name;
 		// Instance contains lookup
 		variables.containsLookupMap = createObject( "java", "java.util.concurrent.ConcurrentHashMap" ).init();
-
+		// Scope Storage
+		variables.scopeStorage      = new coldbox.system.core.collections.ScopeStorage();
 		// Do we have a binder?
 		if ( isSimpleValue( arguments.binder ) AND NOT len( trim( arguments.binder ) ) ) {
 			arguments.binder = "coldbox.system.ioc.config.DefaultBinder";
@@ -164,13 +194,16 @@ component serializable="false" accessors="true" {
 			"beforeInjectorShutdown", // X right before the shutdown procedures start
 			"afterInjectorShutdown", // X right after the injector is shutdown
 			"beforeInstanceAutowire", // X right before an instance is autowired
-			"afterInstanceAutowire" // X right after an instance is autowired
+			"afterInstanceAutowire", // X right after an instance is autowired
+			"onInjectorMissingDependency" // when a dependency can't be located, last chance to provide it.
 		];
 		// LogBox and Class Logger
 		variables.logBox = "";
 		variables.log    = "";
 		// Parent Injector
 		variables.parent = "";
+		// Root Injector
+		variables.root   = "";
 		// LifeCycle Scopes
 		variables.scopes = {
 			"APPLICATION" : "",
@@ -182,7 +215,9 @@ component serializable="false" accessors="true" {
 			"SINGLETON"   : ""
 		};
 		// Child Injectors
-		variables.childInjectors = structNew( "ordered" );
+		variables.childInjectors       = structNew( "ordered" );
+		// Injector Reference Map for quick location via named injectors
+		variables.injectorReferenceMap = {};
 
 		// Prepare instance ID
 		variables.injectorID = createUUID();
@@ -190,7 +225,6 @@ component serializable="false" accessors="true" {
 		variables.lockName   = "WireBox.Injector.#variables.injectorID#";
 		// Link ColdBox Context if passed
 		variables.coldbox    = arguments.coldbox;
-
 		// Register the task scheduler according to operating mode
 		if ( !isObject( variables.coldbox ) ) {
 			variables.asyncManager  = new coldbox.system.async.AsyncManager();
@@ -277,12 +311,36 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
+	 * Register an injector to be tracked in the lookup reference map. Used for providers mostly.
+	 *
+	 * @injector The injector to track
+	 */
+	Injector function registerInjectorReference( required injector ){
+		variables.injectorReferenceMap[ arguments.injector.getName() ] = arguments.injector;
+		return this;
+	}
+
+	/**
+	 * Get an injector reference by unique name
+	 *
+	 * @name The unique injector reference name
+	 */
+	Injector function getInjectorReference( required name ){
+		return variables.injectorReferenceMap[ arguments.name ];
+	}
+
+	/**
+	 * Get an array of registered injector references
+	 */
+	array function getInjectorReferenceNames(){
+		return variables.injectorReferenceMap.keyArray();
+	}
+
+	/**
 	 * Configure this injector for operation, called by the init(). You can also re-configure this injector programmatically, but it is not recommended.
 	 *
-	 * @binder                 The configuration binder object or path to configure this Injector instance with
-	 * @binder.doc_generic     coldbox.system.ioc.config.Binder
-	 * @properties             A structure of binding properties to passthrough to the Configuration CFC
-	 * @properties.doc_generic struct
+	 * @binder     The configuration binder object or path or dsl structure to configure this Injector instance with
+	 * @properties A structure of binding properties to passthrough to the Configuration CFC
 	 **/
 	Injector function configure( required binder, required struct properties ){
 		// Create and Configure Event Manager
@@ -362,11 +420,6 @@ component serializable="false" accessors="true" {
 			variables.binder.onShutdown( this );
 		}
 
-		// Is parent linked
-		if ( isObject( variables.parent ) ) {
-			variables.parent.shutdown( this );
-		}
-
 		// Do we have children?
 		if ( structCount( variables.childInjectors ) ) {
 			variables.childInjectors.each( function( childName, childInstance ){
@@ -433,9 +486,10 @@ component serializable="false" accessors="true" {
 				return childInjector.getInstance( argumentCollection = arguments );
 			}
 			throw(
-				type   : "InvalidChildInjector",
-				message: "The child injector you requested (#arguments.injector#) has not been registered",
-				detail : "The registered child injectors are [#structKeyList( variables.childInjectors )#]"
+				type        : "InvalidChildInjector",
+				message     : "The child injector you requested (#arguments.injector#) has not been registered",
+				detail      : "The registered child injectors are [#structKeyList( variables.childInjectors )#]",
+				extendedInfo: "Current Injector -> #getName()#"
 			);
 		}
 
@@ -453,33 +507,47 @@ component serializable="false" accessors="true" {
 			);
 		}
 
-		// Check if Mapping Exists?
+		// Check if Mapping Exists in local binder
 		if ( NOT variables.binder.mappingExists( arguments.name ) ) {
-			// Find the instance locally from this injector
+			// Try to discover it locally
 			var instancePath = locateInstance( arguments.name );
 
-			// Try to discover it from the parent or child hierarchies if not found locally
+			// If not found, then lookup in hierarchy
 			if ( NOT len( instancePath ) ) {
-				// Verify parent first, parents know better :)
-				if ( isObject( variables.parent ) && variables.parent.containsInstance( arguments.name ) ) {
-					return variables.parent.getInstance( argumentCollection = arguments );
-				}
-
-				// Verify Children second in registration order
+				// Verify Children hierarchy first
 				for ( var thisChild in variables.childInjectors ) {
 					if ( variables.childInjectors[ thisChild ].containsInstance( arguments.name ) ) {
 						return variables.childInjectors[ thisChild ].getInstance( argumentCollection = arguments );
 					}
 				}
 
+				// Verify via ancestor if set
+				if ( hasParent() ) {
+					return variables.parent.getInstance( argumentCollection = arguments );
+				}
+
+				// Announce missing dependency event
+				var iData = {
+					name          : arguments.name,
+					initArguments : arguments.initArguments,
+					targetObject  : arguments.targetObject,
+					injector      : this
+				};
+				variables.eventManager.announce( "onInjectorMissingDependency", iData );
+				// Verify if an instance was built?
+				if ( !isNull( iData.instance ) ) {
+					return iData.instance;
+				}
+
 				// We could not find it
 				variables.log.error(
-					"Requested instance:#arguments.name# was not located in any declared scan location(s): #structKeyList( variables.binder.getScanLocations() )#, or path, or parent or children"
+					"Requested instance:#arguments.name# was not located in any declared scan location(s): #structKeyList( variables.binder.getScanLocations() )#, or by path or by hierarchy."
 				);
 				throw(
-					message = "Requested instance not found: '#arguments.name#'",
-					detail  = "The instance could not be located in any declared scan location(s) (#structKeyList( variables.binder.getScanLocations() )#) or full path location or parent or children",
-					type    = "Injector.InstanceNotFoundException"
+					message     : "Instance not found: '#arguments.name#'",
+					detail      : "The instance could not be located in any declared scan location(s) (#structKeyList( variables.binder.getScanLocations() )#) or full path location or parent or children",
+					type        : "Injector.InstanceNotFoundException",
+					extendedInfo: "Current Injector -> #getName()#"
 				);
 			}
 
@@ -576,8 +644,9 @@ component serializable="false" accessors="true" {
 			}
 			default: {
 				throw(
-					message = "Invalid Construction Type: #arguments.mapping.getType()#",
-					type    = "Injector.InvalidConstructionType"
+					message     = "Invalid Construction Type: #arguments.mapping.getType()#",
+					type        = "Injector.InvalidConstructionType",
+					extendedInfo: "Current Injector -> #getName()#"
 				);
 			}
 		}
@@ -596,7 +665,7 @@ component serializable="false" accessors="true" {
 		// log data
 		if ( variables.log.canDebug() ) {
 			variables.log.debug(
-				"Instance object built: #arguments.mapping.getName()#:#arguments.mapping.getPath().toString()#"
+				"Instance object built: #arguments.mapping.getName()#:#arguments.mapping.getPath().toString()# by (#getName()#) injector"
 			);
 		}
 
@@ -674,10 +743,6 @@ component serializable="false" accessors="true" {
 		else if ( locateInstance( arguments.name ).len() ) {
 			isFound = true;
 		}
-		// Ask parent hierarchy if set
-		else if ( isObject( variables.parent ) && variables.parent.containsInstance( arguments.name ) ) {
-			isFound = true;
-		}
 		// Ask child hierarchy if set
 		else if ( structCount( variables.childInjectors ) ) {
 			isFound = variables.childInjectors
@@ -716,7 +781,9 @@ component serializable="false" accessors="true" {
 			// Check if located? If so, return instantiation path
 			if ( fileExists( scanLocations[ thisScanPath ] & CFCName ) ) {
 				if ( variables.log.canDebug() ) {
-					variables.log.debug( "Instance: #arguments.name# located in #thisScanPath#" );
+					variables.log.debug(
+						"Instance: #arguments.name# located in #thisScanPath# by (#getName()#) injector"
+					);
 				}
 				return thisScanPath & "." & arguments.name;
 			}
@@ -725,14 +792,14 @@ component serializable="false" accessors="true" {
 		// Not found, so let's do full namespace location
 		if ( fileExists( expandPath( "/" & CFCName ) ) ) {
 			if ( variables.log.canDebug() ) {
-				variables.log.debug( "Instance: #arguments.name# located as is." );
+				variables.log.debug( "Instance: #arguments.name# located as is by (#getName()#) injector" );
 			}
 			return arguments.name;
 		}
 
 		// debug info, NADA found!
 		if ( variables.log.canDebug() ) {
-			variables.log.debug( "Instance: #arguments.name# was not located anywhere" );
+			variables.log.debug( "Instance: #arguments.name# was not located anywhere by (#getName()#) injector" );
 		}
 
 		return "";
@@ -741,12 +808,11 @@ component serializable="false" accessors="true" {
 	/**
 	 * I wire up target objects with dependencies either by mappings or a-la-carte autowires
 	 *
-	 * @target                      The target object to wire up
-	 * @mapping                     The object mapping with all the necessary wiring metadata. Usually passed by scopes and not a-la-carte autowires
-	 * @mapping.doc_generic         coldbox.system.ioc.config.Mapping
-	 * @targetID                    A unique identifier for this target to wire up. Usually a class path or file path should do. If none is passed we will get the id from the passed target via introspection but it will slow down the wiring
-	 * @annotationCheck             This value determines if we check if the target contains an autowire annotation in the cfcomponent tag: autowire=true|false, it will only autowire if that metadata attribute is set to true. The default is false, which will autowire anything automatically.
-	 * @annotationCheck.doc_generic Boolean
+	 * @target              The target object to wire up
+	 * @mapping             The object mapping with all the necessary wiring metadata. Usually passed by scopes and not a-la-carte autowires
+	 * @mapping.doc_generic coldbox.system.ioc.config.Mapping
+	 * @targetID            A unique identifier for this target to wire up. Usually a class path or file path should do. If none is passed we will get the id from the passed target via introspection but it will slow down the wiring
+	 * @annotationCheck     This value determines if we check if the target contains an autowire annotation in the cfcomponent tag: autowire=true|false, it will only autowire if that metadata attribute is set to true. The default is false, which will autowire anything automatically.
 	 */
 	function autowire(
 		required target,
@@ -838,18 +904,20 @@ component serializable="false" accessors="true" {
 			// DIProperty injection
 			if ( arguments.mapping.getDIProperties().len() ) {
 				processInjection(
-					targetObject,
-					arguments.mapping.getDIProperties(),
-					arguments.targetID
+					targetObject: targetObject,
+					DIData      : arguments.mapping.getDIProperties(),
+					targetId    : arguments.targetID,
+					mapping     : arguments.mapping
 				);
 			}
 
 			// DISetter injection
 			if ( arguments.mapping.getDISetters().len() ) {
 				processInjection(
-					targetObject,
-					arguments.mapping.getDISetters(),
-					arguments.targetID
+					targetObject: targetObject,
+					DIData      : arguments.mapping.getDISetters(),
+					targetId    : arguments.targetID,
+					mapping     : arguments.mapping
 				);
 			}
 
@@ -863,6 +931,16 @@ component serializable="false" accessors="true" {
 				processMixins( targetObject, arguments.mapping );
 			}
 
+			// Process Lazy Properties
+			if ( arguments.mapping.getLazyProperties().len() ) {
+				processLazyProperties( targetObject, arguments.mapping );
+			}
+
+			// Process Observer Properties
+			if ( arguments.mapping.getObservedProperties().len() ) {
+				processObservedProperties( targetObject, arguments.mapping );
+			}
+
 			// Process After DI Complete
 			processAfterCompleteDI( targetObject, arguments.mapping.getOnDIComplete() );
 
@@ -872,7 +950,7 @@ component serializable="false" accessors="true" {
 			// Debug Data
 			if ( variables.log.canDebug() ) {
 				variables.log.debug(
-					"Finalized Autowire for: #arguments.targetID#",
+					"Finalized Autowire for: #arguments.targetID# by (#getName()#) injector",
 					arguments.mapping.getMemento().toString()
 				);
 			}
@@ -893,6 +971,20 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
+	 * Has a parent injector
+	 */
+	boolean function hasParent(){
+		return isObject( variables.parent );
+	}
+
+	/**
+	 * Has a root injector
+	 */
+	boolean function hasRoot(){
+		return isObject( variables.root );
+	}
+
+	/**
 	 * Get a reference to the parent injector instance, else an empty simple string meaning nothing is set
 	 *
 	 * @doc_generic coldbox.system.ioc.Injector
@@ -904,10 +996,10 @@ component serializable="false" accessors="true" {
 	/**
 	 * Get an object populator useful for populating objects from JSON,XML, etc.
 	 *
-	 * @doc_generic coldbox.system.core.dynamic.BeanPopulator
+	 * @return coldbox.system.core.dynamic.ObjectPopulator
 	 */
 	function getObjectPopulator(){
-		return new coldbox.system.core.dynamic.BeanPopulator();
+		return getInstance( "coldbox.system.core.dynamic.ObjectPopulator" );
 	}
 
 	/**
@@ -939,7 +1031,7 @@ component serializable="false" accessors="true" {
 
 			// Log info
 			if ( variables.log.canDebug() ) {
-				variables.log.debug( "Injector removed from scope: #scopeInfo.toString()#" );
+				variables.log.debug( "Injector (#getName()#) removed from scope: #scopeInfo.toString()#" );
 			}
 		}
 		return this;
@@ -955,9 +1047,10 @@ component serializable="false" accessors="true" {
 	function getScope( required any scope ){
 		if ( !variables.scopes.keyExists( arguments.scope ) ) {
 			throw(
-				message: "The scope requested (#arguments.scope#) has not been registered in WireBox",
-				detail : "The valid registered scopes are: #variables.scopes.keyList()#",
-				type   : "InvalidScopeException"
+				message     : "The scope requested (#arguments.scope#) has not been registered in WireBox",
+				detail      : "The valid registered scopes are: #variables.scopes.keyList()#",
+				type        : "InvalidScopeException",
+				extendedInfo: "Current Injector -> #getName()#"
 			);
 		}
 		return variables.scopes[ arguments.scope ];
@@ -985,9 +1078,10 @@ component serializable="false" accessors="true" {
 		}
 
 		throw(
-			message = "The injector has not be registered in any scope",
-			detail  = "The scope info is: #scopeInfo.toString()#",
-			type    = "Injector.InvalidScopeRegistration"
+			message     : "The injector has not be registered in any scope",
+			detail      : "The scope info is: #scopeInfo.toString()#",
+			type        : "Injector.InvalidScopeRegistration",
+			extendedInfo: "Current Injector -> #getName()#"
 		);
 	}
 
@@ -995,10 +1089,67 @@ component serializable="false" accessors="true" {
 	 * Get the structure of scope registration information
 	 */
 	struct function getScopeRegistration(){
-		return variables.binder.getScopeRegistration();
+		var info = variables.binder.getScopeRegistration();
+
+		if ( info.enabled ) {
+			return info;
+		}
+
+		return hasParent() ? getParent().getScopeRegistration() : info;
 	}
 
 	/****************************************** PRIVATE ************************************************/
+
+	/**
+	 * Process lazy properties on the target object
+	 *
+	 * @targetObject The target object to do some goodness on
+	 * @mapping      The target mapping
+	 */
+	private Injector function processLazyProperties( required targetObject, required mapping ){
+		// Store lookup map on the target
+		arguments.targetObject.$wbLazyProperties = arguments.mapping
+			.getLazyProperties()
+			.reduce( function( result, item ){
+				arguments.result[ arguments.item.name ] = arguments.item;
+				return arguments.result;
+			}, {} );
+		// Create the getter/builder methods
+		arguments.mapping
+			.getLazyProperties()
+			.each( function( thisProperty ){
+				targetObject.injectMixin( "get#thisProperty.name#", variables.objectBuilder.lazyPropertyGetter );
+			} );
+
+		return this;
+	}
+
+	/**
+	 * Process observed properties on the target object
+	 *
+	 * @targetObject The target object to do some goodness on
+	 * @mapping      The target mapping
+	 */
+	private Injector function processObservedProperties( required targetObject, required mapping ){
+		// Store lookup map on the target
+		arguments.targetObject.$wbObservedProperties = arguments.mapping
+			.getObservedProperties()
+			.reduce( function( result, item ){
+				arguments.result[ arguments.item.name ] = arguments.item;
+				return arguments.result;
+			}, {} );
+		// Create the getter/builder methods
+		arguments.mapping
+			.getObservedProperties()
+			.each( function( thisProperty ){
+				targetObject.injectMixin(
+					"set#thisProperty.name#",
+					variables.objectBuilder.observedPropertySetter
+				);
+			} );
+
+		return this;
+	}
 
 	/**
 	 * Process mixins on the selected target
@@ -1013,7 +1164,6 @@ component serializable="false" accessors="true" {
 		// iterate and mixin baby!
 		for ( var key in mixin ) {
 			if ( key NEQ "$init" ) {
-				// add the provided method to the providers structure.
 				arguments.targetObject.injectMixin( name = key, UDF = mixin[ key ] );
 			}
 		}
@@ -1031,9 +1181,8 @@ component serializable="false" accessors="true" {
 		var providerMethods = arguments.mapping.getProviderMethods();
 
 		// Decorate the target if provider methods found, in preparation for replacements
-		arguments.targetObject.$wbScopeInfo    = variables.binder.getScopeRegistration();
-		arguments.targetObject.$wbScopeStorage = variables.scopeStorage;
-		arguments.targetObject.$wbProviders    = {};
+		arguments.targetObject.$wbProviders = {};
+		arguments.targetObject.$wbInjector  = this;
 
 		// iterate and provide baby!
 		for ( var thisProvider in providerMethods ) {
@@ -1070,23 +1219,54 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
-	 * Process property and setter injection
+	 * Process property and setter injections
 	 *
-	 * @targetObject The target object to do some goodness on
-	 * @DIData       The DI data to use
-	 * @targetID     The target ID to process injections
+	 * @targetObject The target object to do some goodness on, usually a CFC
+	 * @DIData       The DI data array to use for injection
+	 * @targetID     The target Identifier of the target object
+	 * @mapping      The mapping of the target object
 	 */
 	private Injector function processInjection(
 		required targetObject,
-		required DIData,
-		required targetID
+		required array DIData,
+		required string targetID,
+		required mapping
 	){
-		var DILen = arrayLen( arguments.DIData );
+		// Transient request cache
+		param request.cbTransientDICache = {};
+		// Transient Cache Enable
+		// - Global Flag
+		// - Has to be a transient
+		// - Has to be a non-virtual inheritance
+		// - Doesn't have a transientCache annotation
+		// cfformat-ignore-start
+		var transientCacheEnabled        = getBinder().getTransientInjectionCache() &&
+			arguments.mapping.isTransient() &&
+			!arguments.mapping.isVirtualInheritance() &&
+			arguments.mapping.getComponentAnnotation( "transientCache", true )
+		;
+		// cfformat-ignore-end
 
-		for ( var x = 1; x lte DILen; x++ ) {
-			var thisDIData = arguments.DIData[ x ];
+		// Verify if we have seen this transient in this request
+		if ( transientCacheEnabled && request.cbTransientDICache.keyExists( arguments.targetID ) ) {
+			// Injections Injection :)
+			structAppend(
+				arguments.targetObject.getVariablesMixin(),
+				request.cbTransientDICache[ arguments.targetId ].injections
+			);
+			// Delegations Injection
+			arguments.targetObject.$wbDelegateMap = request.cbTransientDICache[ arguments.targetId ].delegations;
+			// inject delegation into the target
+			for ( var delegationMethod in structKeyArray( arguments.targetObject.$wbDelegateMap ) ) {
+				arguments.targetObject.injectMixin( delegationMethod, variables.mixerUtil.getByDelegate );
+			}
+			return this;
+		}
+
+		for ( var thisDIData in arguments.DIData ) {
 			// Init the lookup structure
-			var refLocal   = {};
+			var refLocal = {};
+
 			// Check if direct value has been placed.
 			if ( !isNull( local.thisDIData.value ) ) {
 				refLocal.dependency = local.thisDIData.value;
@@ -1100,37 +1280,144 @@ component serializable="false" accessors="true" {
 					targetObject = arguments.targetObject
 				);
 			}
-			// else we have to have a reference ID or a nasty bug has occurred
+			// else we have to have a reference ID
 			else {
-				refLocal.dependency = getInstance( arguments.DIData[ x ].ref );
+				refLocal.dependency = getInstance( thisDIData.ref );
 			}
 
-			// Check if dependency located, else log it and skip
+			// Do we have a dependency to inject?
 			if ( structKeyExists( refLocal, "dependency" ) ) {
 				// Inject dependency
 				injectTarget(
-					target         = targetObject,
-					propertyName   = arguments.DIData[ x ].name,
+					target         = arguments.targetObject,
+					propertyName   = thisDIData.name,
 					propertyObject = refLocal.dependency,
-					scope          = arguments.DIData[ x ].scope,
-					argName        = arguments.DIData[ x ].argName
+					scope          = thisDIData.scope,
+					argName        = thisDIData.argName
 				);
+
+				// Is this injection a delegation also?
+				if ( thisDIData.delegate ) {
+					processDelegation(
+						target  : arguments.targetObject,
+						targetId: arguments.targetID,
+						delegate: refLocal.dependency,
+						DIData  : thisDIData
+					);
+				}
+
+				// Store in transient cache
+				if ( transientCacheEnabled ) {
+					// Init storage if not found
+					if ( !request.cbTransientDICache.keyExists( arguments.targetID ) ) {
+						lock
+							name          ="wirebox:transientcache:#arguments.targetId#"
+							type          ="exclusive"
+							throwontimeout="true"
+							timeout       ="15" {
+							if ( !request.cbTransientDICache.keyExists( arguments.targetID ) ) {
+								request.cbTransientDICache[ arguments.targetID ] = {
+									injections  : {},
+									delegations : {}
+								};
+							}
+						}
+					}
+
+					// Store delegations + injections
+					lock
+						name          ="wirebox:transientcache:#arguments.targetId#.storage"
+						type          ="exclusive"
+						throwontimeout="true"
+						timeout       ="15" {
+						request.cbTransientDICache[ arguments.targetId ].injections[ thisDIData.name ] = refLocal.dependency;
+						if ( structKeyExists( arguments.targetObject, "$wbDelegateMap" ) ) {
+							request.cbTransientDICache[ arguments.targetID ].delegations = arguments.targetObject.$wbDelegateMap;
+						}
+					}
+				}
 
 				// some debugging goodness
 				if ( variables.log.canDebug() ) {
 					variables.log.debug(
-						"Dependency: #arguments.DIData[ x ].toString()# --> injected into #arguments.targetID#"
+						"Dependency: #thisDIData.toString()# --> injected into #arguments.targetID# by (#getName()#) injector"
 					);
 				}
 			} else if ( variables.log.canDebug() ) {
 				variables.log.debug(
-					"Dependency: #arguments.DIData[ x ].toString()# Not Found when wiring #arguments.targetID#. Registered mappings are: #structKeyList( variables.binder.getMappings() )#"
+					"Dependency: #thisDIData.toString()# Not Found when wiring #arguments.targetID#. Registered mappings are: #structKeyList( variables.binder.getMappings() )# by (#getName()#) injector"
 				);
 			}
 		}
 		// end iteration
 
 		return this;
+	}
+
+	/**
+	 * Process a target object dependency delegation
+	 *
+	 * @target   The target object being injected with dependencies/delegations
+	 * @targetID The target ID to process injections
+	 * @delegate The delegation object that was injected
+	 * @DIData   The DI information about the delegation/injection
+	 */
+	private function processDelegation(
+		required target,
+		required string targetID,
+		required delegate,
+		required DIData
+	){
+		// systemOutput( "Processing Delegation for #getMetadata( target ).name#", true );
+		// Init lookup maps and injection mixins
+		param arguments.target.$wbDelegateMap        = {};
+		param arguments.DIData.delegateExcludes      = [];
+		param arguments.DIData.delegateIncludes      = [];
+		param arguments.delegate.injectPropertyMixin = variables.mixerUtil.injectPropertyMixin;
+
+		// Inject target into the delegate as $parent
+		arguments.delegate.injectPropertyMixin( "$parent", arguments.target );
+
+		// Defaults
+		var delegateIncludes = arguments.DIData.delegateIncludes;
+		var delegateExcludes = arguments.DIData.delegateExcludes;
+		var delegateSuffix   = arguments.DIData.delegateSuffix;
+		var delegatePrefix   = arguments.DIData.delegatePrefix;
+
+		// Delegation Process
+		var processDelegateInjection = function( thisMethod ){
+			var delegationMethod = "#delegatePrefix##arguments.thisMethod##delegateSuffix#";
+			// Check if this method has been override by the user first
+			if ( !structKeyExists( target, delegationMethod ) ) {
+				// Lookup targets
+				target.$wbDelegateMap[ delegationMethod ] = { delegate : delegate, method : arguments.thisMethod };
+				// inject delegation into the target
+				target.injectMixin( delegationMethod, variables.mixerUtil.getByDelegate );
+			}
+			// Has it been injected by another delegate?
+			else if ( structKeyExists( target.$wbDelegateMap, delegationMethod ) ) {
+				throw(
+					type        : "DuplicateDelegateException",
+					message     : "The method: (#delegationMethod#) from the (#getMetadata( delegate ).name#) delegate has already been injected by (#getMetadata( target.$wbDelegateMap[ delegationMethod ].delegate ).name#)",
+					detail      : "The target object is (#getMetadata( target ).name#).",
+					extendedInfo: "Current Injector -> #getName()#"
+				);
+			}
+		};
+
+		// Process includes Only
+		if ( delegateIncludes.len() ) {
+			for ( var thisInclude in delegateIncludes ) {
+				processDelegateInjection( thisInclude );
+			}
+			return;
+		}
+		// Process with exclusions now
+		for ( var thisMethod in structKeyArray( arguments.delegate ) ) {
+			if ( !arrayContainsNoCase( delegateExcludes, thisMethod ) ) {
+				processDelegateInjection( thisMethod );
+			}
+		}
 	}
 
 	/**
@@ -1221,9 +1508,10 @@ component serializable="false" accessors="true" {
 		} catch ( Any e ) {
 			variables.log.error( "Error creating listener: #listener.toString()#", e );
 			throw(
-				message = "Error creating listener: #listener.toString()#",
-				detail  = "#e.message# #e.detail# #e.stackTrace#",
-				type    = "Injector.ListenerCreationException"
+				message     : "Error creating listener: #listener.toString()#",
+				detail      : "#e.message# #e.detail# #e.stackTrace#",
+				type        : "Injector.ListenerCreationException",
+				extendedInfo: "Current Injector -> #getName()#"
 			);
 		}
 
@@ -1239,7 +1527,9 @@ component serializable="false" accessors="true" {
 
 		// debugging
 		if ( variables.log.canDebug() ) {
-			variables.log.debug( "Injector has just registered a new listener: #listener.toString()#" );
+			variables.log.debug(
+				"Injector (#getName()#) has just registered a new listener: #listener.toString()#"
+			);
 		}
 
 		return this;
@@ -1251,7 +1541,6 @@ component serializable="false" accessors="true" {
 	 * @scopeInfo The scope info struct: key, scope
 	 */
 	private Injector function doScopeRegistration( scopeInfo = variables.binder.getScopeRegistration() ){
-		variables.scopeStorage = new coldbox.system.core.collections.ScopeStorage();
 		// register injector with scope
 		variables.scopeStorage.put(
 			arguments.scopeInfo.key,
@@ -1262,7 +1551,7 @@ component serializable="false" accessors="true" {
 		// Log info
 		if ( variables.log.canDebug() ) {
 			variables.log.debug(
-				"Scope Registration enabled and Injector scoped to: #arguments.scopeInfo.toString()#"
+				"Scope Registration enabled and Injector (#getName()#) scoped to: #arguments.scopeInfo.toString()#"
 			);
 		}
 
@@ -1286,7 +1575,7 @@ component serializable="false" accessors="true" {
 			// debugging
 			if ( variables.log.canDebug() ) {
 				variables.log.debug(
-					"Configured Injector #getInjectorID()# with direct CacheBox instance: #variables.cacheBox.getFactoryID()#"
+					"Configured Injector #getName()# with direct CacheBox instance: #variables.cacheBox.getFactoryID()#"
 				);
 			}
 			return this;
@@ -1306,7 +1595,7 @@ component serializable="false" accessors="true" {
 			// debugging
 			if ( variables.log.canDebug() ) {
 				variables.log.debug(
-					"Configured Injector #getInjectorID()# with CacheBox instance: #variables.cacheBox.getFactoryID()# and configuration file: #arguments.config.configFile#"
+					"Configured Injector #getName()# with CacheBox instance: #variables.cacheBox.getFactoryID()# and configuration file: #arguments.config.configFile#"
 				);
 			}
 			return this;
@@ -1317,7 +1606,7 @@ component serializable="false" accessors="true" {
 		// debugging
 		if ( variables.log.canDebug() ) {
 			variables.log.debug(
-				"Configured Injector #getInjectorID()# with vanilla CacheBox instance: #variables.cacheBox.getFactoryID()#"
+				"Configured Injector #getName()# with vanilla CacheBox instance: #variables.cacheBox.getFactoryID()#"
 			);
 		}
 
@@ -1368,9 +1657,10 @@ component serializable="false" accessors="true" {
 		}
 
 		// Inject Environment Support
-		arguments.binder[ "getSystemSetting" ]  = variables.utility.getSystemSetting;
-		arguments.binder[ "getSystemProperty" ] = variables.utility.getSystemProperty;
-		arguments.binder[ "getEnv" ]            = variables.utility.getEnv;
+		var envUtil                             = new coldbox.system.core.delegates.Env();
+		arguments.binder[ "getSystemSetting" ]  = envUtil.getSystemSetting;
+		arguments.binder[ "getSystemProperty" ] = envUtil.getSystemProperty;
+		arguments.binder[ "getEnv" ]            = envUtil.getEnv;
 
 		// Check if data CFC or binder family
 		if ( !structKeyExists( arguments.binder, "$wbBinder" ) ) {

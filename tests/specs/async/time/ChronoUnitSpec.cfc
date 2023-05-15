@@ -9,35 +9,35 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 		// all your suites go here.
 		describe( "Chrono Units", function(){
 			beforeEach( function( currentSpec ){
-				chronounit = new coldbox.system.async.time.ChronoUnit();
+				dateTimeHelper = new coldbox.system.async.time.DateTimeHelper();
 			} );
 
 			it( "can be created", function(){
-				expect( chronounit ).toBeComponent();
+				expect( dateTimeHelper ).toBeComponent();
 			} );
 
 			it( "can convert cf dates to java instants", function(){
-				var instant = chronounit.toInstant( now() );
+				var instant = dateTimeHelper.toInstant( now() );
 				expect( instant.getEpochSecond() ).toBeGT( 0 );
 
-				var instant = chronounit.toInstant( "2021-01-01 12:00:00 pm" );
+				var instant = dateTimeHelper.toInstant( "2021-01-01 12:00:00 pm" );
 				expect( instant.getEpochSecond() ).toBeGT( 0 );
 			} );
 
 			it( "can convert cf dates to Java LocalDates", function(){
-				var jdate = chronounit.toLocalDate( now() );
+				var jdate = dateTimeHelper.toLocalDate( now() );
 				expect( jDate.getYear() ).toBe( year( now() ) );
-				var jdate = chronounit.toLocalDate( now(), "America/New_York" );
+				var jdate = dateTimeHelper.toLocalDate( now(), "America/New_York" );
 				expect( jDate.getYear() ).toBe( year( now() ) );
 			} );
 
 			it( "can get timezones", function(){
-				var t = chronounit.getTimezone( "America/Chicago" );
+				var t = dateTimeHelper.getTimezone( "America/Chicago" );
 				expect( t.getId() ).toInclude( "America/Chicago" );
 			} );
 
 			it( "can get the system timezone id", function(){
-				var t = chronounit.getSystemTimezone();
+				var t = dateTimeHelper.getSystemTimezone();
 				expect( t.getId() ).notToBeEmpty();
 			} );
 
@@ -65,7 +65,7 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 					data  = { unit : thisUnit },
 					title = "can produce the #thisUnit# java chrono unit",
 					body  = function( data ){
-						var unit = chronoUnit[ data.unit ];
+						var unit = dateTimeHelper[ data.unit ];
 						expect( unit.toString() ).toInclude( data.unit.replace( "_", "" ) );
 					}
 				);

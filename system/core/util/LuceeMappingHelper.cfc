@@ -7,16 +7,11 @@
 component {
 
 	/**
-	 * Add a Lucee mapping
+	 * Add an absolute custom tag path to the running application
 	 *
-	 * @name The name of the mapping
-	 * @path The path of the mapping
+	 * @path The absolute path to the directory containing the custom tags
 	 */
-	LuceeMappingHelper function addMapping( required name, required path ){
-		var appSettings            = getApplicationSettings();
-		var mappings               = appSettings.mappings;
-		mappings[ arguments.name ] = arguments.path;
-
+	LuceeMappingHelper function addCustomTagPath( required path ){
 		// Workaround for Lucee reverting the sessionCluster, clientCluster, and cgiReadOnly settings to defaults
 		// https://luceeserver.atlassian.net/browse/LDEV-2555
 		appSettings.sessionCluster = appSettings.sessionCluster ?: false;
@@ -24,20 +19,29 @@ component {
 		appSettings.cgiReadOnly    = appSettings.cgiReadOnly ?: true;
 		application
 			action        ="update"
-			mappings      ="#mappings#"
+			customTagPaths="#getApplicationSettings().customTagPaths.append( arguments.path )#"
 			sessionCluster="#appSettings.sessionCluster#"
 			clientCluster ="#appSettings.clientCluster#"
 			cgiReadOnly   ="#appSettings.cgiReadOnly#";
-
 		return this;
+	}
+
+	/**
+	 * Add a Lucee mapping
+	 *
+	 * @name The name of the mapping
+	 * @path The path of the mapping
+	 */
+	LuceeMappingHelper function addMapping( required name, required path ){
+		return addMappings( { "#arguments.name#" : arguments.path } );
 	}
 
 	/**
 	 * Add a Lucee mapping using a struct of mappings
 	 *
-	 * @mappings A struct of mappings to register
+	 * @mappings A struct of mappings to register: { name : path }
 	 */
-	LuceeMappingHelper function addMappings( required mappings ){
+	LuceeMappingHelper function addMappings( required struct mappings ){
 		var appSettings = getApplicationSettings();
 		var newMappings = appSettings.mappings.append( arguments.mappings );
 

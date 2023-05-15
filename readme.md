@@ -7,12 +7,10 @@
 </p>
 
 <p align="center">
-<a href="https://github.com/ColdBox/coldbox-platform/actions/workflows/ci.yml">
-	<img src="https://github.com/ColdBox/coldbox-platform/actions/workflows/ci.yml/badge.svg">
-</a>
-<a href="https://forgebox.io/view/coldbox"><img src="https://forgebox.io/api/v1/entry/coldbox/badges/downloads" alt="Total Downloads" /></a>
-<a href="https://forgebox.io/view/coldbox"><img src="https://forgebox.io/api/v1/entry/coldbox/badges/version" alt="Latest Stable Version" /></a>
-<a href="https://forgebox.io/view/coldbox"><img src="https://img.shields.io/badge/License-Apache2-brightgreen" alt="Apache2 License" /></a>
+	<a href="https://github.com/ColdBox/coldbox-platform/actions/workflows/snapshot.yml"><img src="https://github.com/ColdBox/coldbox-platform/actions/workflows/snapshot.yml/badge.svg" alt="ColdBox Snapshots" /></a>
+	<a href="https://forgebox.io/view/coldbox"><img src="https://forgebox.io/api/v1/entry/coldbox/badges/downloads" alt="Total Downloads" /></a>
+	<a href="https://forgebox.io/view/coldbox"><img src="https://forgebox.io/api/v1/entry/coldbox/badges/version" alt="Latest Stable Version" /></a>
+	<a href="https://forgebox.io/view/coldbox"><img src="https://img.shields.io/badge/License-Apache2-brightgreen" alt="Apache2 License" /></a>
 </p>
 
 <p align="center">
@@ -51,6 +49,21 @@ ColdBox *Hierarchical* MVC is the de-facto enterprise-level [HMVC](https://en.wi
 * [Logging engine](https://logbox.ortusbooks.com)
 * [An extensive eco-system](https://forgebox.io)
 * Much More
+
+
+## LTS Support
+
+For all ColdBox releases, updates are provided for 12 months and security fixes are provided for 2 years after the next major release.
+
+**ColdBox 6.x will receive bug fixes until 2024 and security fixes until 2025.**
+
+| Version | Release | Updates 	| Security Fixes |
+| ------- | ------- | --------- | -------------- |
+| 6.x     | 2022    | 2023      | 2025           |
+| 7.x     | 2023    | 2024      | 2026           |
+| 8.x     | 2024    | 2025      | 2027           |
+| 9.x     | 2025    | 2026      | 2028           |
+
 
 ## License
 
@@ -102,7 +115,7 @@ And constructed with the following guidelines:
 ## System Requirements
 
 * Lucee 5+
-* Adobe ColdFusion 2018+ (2016 Has Been Deprecated)
+* Adobe ColdFusion 2018+
 
 ## Quick Installation
 

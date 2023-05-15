@@ -16,10 +16,7 @@
 		c = { data : "hello", nums : [ 1, 2, 3 ] };
 		log.init( "unittest", 1, c, "unittest" );
 		r = log.getExtraInfoAsString();
-		// debug(r);
-
-		expected = serializeJSON( c );
-		assertEquals( expected, r );
+		expect( r ).toBeJson();
 	}
 
 	function testExtraInfoConventionString(){

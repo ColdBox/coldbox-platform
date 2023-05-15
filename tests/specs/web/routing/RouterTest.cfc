@@ -46,7 +46,13 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		describe( "Routing Router", function(){
 			beforeEach( function( currentSpec ){
 				// Create Router
-				router = createMock( "coldbox.system.web.routing.Router" ).init( controller );
+				router = createMock( "coldbox.system.web.routing.Router" )
+					.init()
+					.setController( controller )
+					.setLogBox( controller.getLogBox() )
+					.setLog( controller.getLogBox().getLogger( this ) )
+					.setCacheBox( controller.getCacheBox() )
+					.setWireBox( controller.getWireBox() );
 			} );
 
 			story( "I want to group routes with common options", function(){
@@ -71,6 +77,38 @@ component extends="coldbox.system.testing.BaseModelTest" {
 						expect( routes[ 2 ].handler ).toBe( "api" );
 						expect( routes[ 2 ].pattern ).toBe( "api/UtcOffsetByZip/:zip/" );
 						expect( routes[ 2 ].action ).toBe( { get : "UtcOffsetByZip", options : "returnOptions" } );
+					} );
+				} );
+
+				given( "a grouped route with handler and pattern only and resources call inside", function(){
+					then( "it should correctly prefix the resources generated", function(){
+						router.group( { pattern : "/api", handler : "api." }, function( options ){
+							router.resources( "users" );
+						} );
+
+						var routes = router.getRoutes();
+						expect( routes ).toHaveLength( 4 );
+
+						expect( routes[ 1 ].handler ).toBe( "api.users" );
+						expect( routes[ 1 ].pattern ).toBe( "api/users/:id/edit/" );
+						expect( routes[ 1 ].action ).toBe( { get : "edit" } )
+
+						expect( routes[ 2 ].handler ).toBe( "api.users" );
+						expect( routes[ 2 ].pattern ).toBe( "api/users/new/" );
+						expect( routes[ 2 ].action ).toBe( { get : "new" } )
+
+						expect( routes[ 3 ].handler ).toBe( "api.users" );
+						expect( routes[ 3 ].pattern ).toBe( "api/users/:id/" );
+						expect( routes[ 3 ].action ).toBe( {
+							get    : "show",
+							put    : "update",
+							patch  : "update",
+							delete : "delete"
+						} );
+
+						expect( routes[ 4 ].handler ).toBe( "api.users" );
+						expect( routes[ 4 ].pattern ).toBe( "api/users/" );
+						expect( routes[ 4 ].action ).toBe( { get : "index", post : "create" } );
 					} );
 				} );
 

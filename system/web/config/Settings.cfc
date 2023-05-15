@@ -7,17 +7,17 @@
 component {
 
 	// Release Metadata
-	this.codename      = "ColdBox Perseverance";
+	this.codename      = "ColdBox Restore";
 	this.author        = "Ortus Solutions";
 	this.authorEmail   = "info@ortussolutions.com";
 	this.authorWebsite = "https://www.ortussolutions.com";
-	this.suffix        = "Isaiah 40:29";
+	this.suffix        = "Psalm 23:3";
 	this.version       = "@build.version@+@build.number@";
-	this.description   = "This is the ColdBox Platform for ColdFusion Powered Web Applications.";
+	this.description   = "The Human Way to Build ColdFusion CFML apps!";
 
 	// ColdBox Operational Defaults
 	this.coldbox = {
-		// Global Settings
+		// Global Operational Settings
 		"appName"                  : application.applicationName,
 		"eventName"                : "event",
 		"reinitPassword"           : hash( createUUID() ),
@@ -27,12 +27,14 @@ component {
 		"autoMapModels"            : true,
 		"environment"              : "production",
 		"identifierProvider"       : "",
-		// Caching
+		"debugMode"                : false,
+		"exceptionEditor"          : "vscode",
+		// Caching Settings
 		"handlersIndexAutoReload"  : false,
 		"handlerCaching"           : true,
 		"eventCaching"             : true,
 		"viewCaching"              : true,
-		// Default Operations
+		// Default Conventions Events + Views
 		"defaultEvent"             : "main.index",
 		"defaultLayout"            : "Main.cfm",
 		"defaultView"              : "",

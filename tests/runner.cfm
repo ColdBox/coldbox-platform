@@ -7,7 +7,7 @@
 <cfparam name="url.directory" 			default="tests.specs">
 
 <!--- Regex list of exclusions --->
-<cfparam name="url.directoryExcludes" 	default="/(cache|ioc|integration|logging|async)">
+<cfparam name="url.directoryExcludes" 	default="/(async|cache|core|integration|ioc|logging)">
 <cfparam name="url.recurse" 			default="true" type="boolean">
 <cfparam name="url.bundles" 			default="">
 <cfparam name="url.labels" 				default="">

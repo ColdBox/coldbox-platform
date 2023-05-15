@@ -329,6 +329,75 @@ component serializable="false" accessors="true" {
 		return this;
 	}
 
+	/**
+	 * Get a module's settings structure or a specific setting if the setting key is passed
+	 *
+	 * @module       The module to retrieve the configuration settings from
+	 * @setting      The setting to retrieve if passed
+	 * @defaultValue The default value to return if setting does not exist
+	 *
+	 * @return struct or any
+	 */
+	any function getModuleSettings( required module, setting, defaultValue ) cbMethod{
+		var moduleSettings = getModuleConfig( arguments.module ).settings;
+		// return specific setting?
+		if ( !isNull( arguments.setting ) ) {
+			return (
+				structKeyExists( moduleSettings, arguments.setting ) ? moduleSettings[ arguments.setting ] : arguments.defaultValue
+			);
+		}
+		return moduleSettings;
+	}
+
+	/**
+	 * Get a module's configuration structure
+	 *
+	 * @module The module to retrieve the configuration structure from
+	 *
+	 * @return The struct requested
+	 *
+	 * @throws InvalidModuleException - The module passed is invalid
+	 */
+	struct function getModuleConfig( required module ){
+		var mConfig = getSetting( "modules" );
+		if ( structKeyExists( mConfig, arguments.module ) ) {
+			return mConfig[ arguments.module ];
+		}
+		throw(
+			message = "The module you passed #arguments.module# is invalid.",
+			detail  = "The loaded modules are #structKeyList( mConfig )#",
+			type    = "InvalidModuleException"
+		);
+	}
+
+	/**
+	 * Determine if the application is in the `debugMode` or not
+	 */
+	boolean function inDebugMode(){
+		return getSetting( "debugMode", false );
+	}
+
+	/**
+	 * Determine if the application is in the `development|local` environment
+	 */
+	boolean function isDevelopment(){
+		return listFindNoCase( "development,local", getSetting( "environment", "production" ) );
+	}
+
+	/**
+	 * Determine if the application is in the `production` environment
+	 */
+	boolean function isProduction(){
+		return getSetting( "environment", "production" ) == "production";
+	}
+
+	/**
+	 * Determine if the application is in the `testing` environment or in a testing.MockController execution
+	 */
+	boolean function isTesting(){
+		return getSetting( "environment", "production" ) == "testing" || isInstanceOf( this, "MockController" );
+	}
+
 	/****************************************************************
 	 * Deprecated Methods *
 	 ****************************************************************/
@@ -535,31 +604,17 @@ component serializable="false" accessors="true" {
 		cacheProvider          = "template",
 		boolean prePostExempt  = false
 	){
-		// Get routing service and default routes
-		var router       = getWirebox().getInstance( "router@coldbox" );
-		var targetRoutes = router.getRoutes();
-		var targetModule = "";
-
 		// Module Route?
+		var targetModule = "";
 		if ( find( "@", arguments.name ) ) {
-			targetModule   = getToken( arguments.name, 2, "@" );
-			targetRoutes   = router.getModuleRoutes( targetModule );
-			arguments.name = getToken( arguments.name, 1, "@" );
+			targetModule = getToken( arguments.name, 2, "@" );
 		}
 		if ( find( ":", arguments.name ) ) {
-			targetModule   = getToken( arguments.name, 1, ":" );
-			targetRoutes   = router.getModuleRoutes( targetModule );
-			arguments.name = getToken( arguments.name, 2, ":" );
+			targetModule = getToken( arguments.name, 1, ":" );
 		}
 
 		// Find the named route
-		var foundRoute = targetRoutes
-			.filter( function( item ){
-				return ( arguments.item.name == name ? true : false );
-			} )
-			.reduce( function( results, item ){
-				return item;
-			}, {} );
+		var foundRoute = getWirebox().getInstance( "router@coldbox" ).findRouteByName( arguments.name );
 
 		// Did we find it?
 		if ( !foundRoute.isEmpty() ) {
@@ -667,7 +722,7 @@ component serializable="false" accessors="true" {
 				local.results.data = local.results.data.$renderdata();
 			}
 			// Check if request context and ignore
-			else if ( isInstanceOf( local.results.data, "coldbox.system.web.context.RequestContext" ) ) {
+			else if ( structKeyExists( local.results.data, "cbRequestContext" ) ) {
 				local.results.delete( "data" );
 			}
 		}
@@ -740,7 +795,10 @@ component serializable="false" accessors="true" {
 		// Setup interception data
 		var iData = {
 			"processedEvent" : arguments.event,
-			"eventArguments" : arguments.eventArguments
+			"eventArguments" : arguments.eventArguments,
+			"data"           : "",
+			"ehBean"         : "",
+			"handler"        : ""
 		};
 
 		// Reset Invalid Event if default, just in case listeners used metadata
@@ -980,6 +1038,8 @@ component serializable="false" accessors="true" {
 				}
 
 				// Execute postEvent interceptor
+				iData.handler = oHandler;
+				iData.append( results );
 				services.interceptorService.announce( "postEvent", iData );
 			}
 			// end if prePostExempt

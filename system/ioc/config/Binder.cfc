@@ -109,6 +109,14 @@ component accessors="true" {
 	property name="autoProcessMappings" type="boolean";
 
 	/**
+	 * Enable/disable transient injetion cache
+	 */
+	property
+		name   ="transientInjectionCache"
+		type   ="boolean"
+		default="true";
+
+	/**
 	 * The configuration DEFAULTS struct
 	 */
 	property
@@ -156,7 +164,7 @@ component accessors="true" {
 	 * Constructor
 	 *
 	 * @injector   The injector this binder is bound to
-	 * @config     The WireBox Injector Data Configuration CFC instance or instantiation path to it. Leave blank if using this configuration object programmatically
+	 * @config     A binder CFC, a binder CFC path or a raw struct configuration DSL. Leave blank if using this configuration object programmatically
 	 * @properties A structure of binding properties to passthrough to the Binder Configuration CFC
 	 */
 	function init(
@@ -175,19 +183,26 @@ component accessors="true" {
 			variables.appMapping = variables.coldbox.getSetting( "AppMapping" );
 		}
 
-		// If Config CFC sent and a path, then create the data CFC
-		if ( !isNull( arguments.config ) and isSimpleValue( arguments.config ) ) {
-			arguments.config = createObject( "component", arguments.config );
-		}
+		// Did we pass a config path, cfc or data structure?
+		if ( !isNull( arguments.config ) ) {
+			// Is it a path to instantiate?
+			if ( isSimpleValue( arguments.config ) ) {
+				arguments.config = createObject( "component", arguments.config );
+			}
 
-		// If sent and a data CFC variables
-		if ( !isNull( arguments.config ) and isObject( arguments.config ) ) {
-			// Decorate our data CFC
-			arguments.config.getPropertyMixin = variables.injector.getUtility().getMixerUtil().getPropertyMixin;
-			// Execute the configuration
-			arguments.config.configure( this );
-			// Load the raw data DSL
-			loadDataDSL( arguments.config.getPropertyMixin( "wireBox", "variables", {} ) );
+			// Is it a simple CFC?
+			if ( isObject( arguments.config ) ) {
+				// Decorate our data CFC
+				arguments.config.getPropertyMixin = variables.injector.getUtility().getMixerUtil().getPropertyMixin;
+				// Execute the configuration
+				arguments.config.configure( this );
+				// Load the raw data DSL
+				loadDataDSL( arguments.config.getPropertyMixin( "wireBox", "variables", {} ) );
+			}
+			// Is it raw data DSL
+			else if ( isStruct( arguments.config ) ) {
+				loadDataDSL( arguments.config );
+			}
 		}
 
 		return this;
@@ -205,37 +220,39 @@ component accessors="true" {
 	 */
 	Binder function reset(){
 		// Contains the mappings currently being affected by the DSL.
-		variables.currentMapping      = [];
+		variables.currentMapping          = [];
 		// Main wirebox structure
-		variables.wirebox             = {};
+		variables.wirebox                 = {};
 		// logBox File
-		variables.logBoxConfig        = variables.DEFAULTS.logBoxConfig;
+		variables.logBoxConfig            = variables.DEFAULTS.logBoxConfig;
 		// CacheBox integration
-		variables.cacheBox            = variables.DEFAULTS.cacheBox;
+		variables.cacheBox                = variables.DEFAULTS.cacheBox;
 		// Scope Registration
-		variables.scopeRegistration   = variables.DEFAULTS.scopeRegistration;
+		variables.scopeRegistration       = variables.DEFAULTS.scopeRegistration;
 		// Custom DSL namespaces
-		variables.customDSL           = {};
+		variables.customDSL               = {};
 		// Custom Storage Scopes
-		variables.customScopes        = {};
+		variables.customScopes            = {};
 		// Package Scan Locations
-		variables.scanLocations       = structNew( "ordered" );
+		variables.scanLocations           = structNew( "ordered" );
 		// Parent Injector Mapping
-		variables.oParentInjector     = "";
+		variables.oParentInjector         = "";
 		// Stop Recursion classes
-		variables.aStopRecursions     = [];
+		variables.aStopRecursions         = [];
 		// Listeners
-		variables.listeners           = [];
+		variables.listeners               = [];
 		// Object Mappings
-		variables.mappings            = {};
+		variables.mappings                = {};
 		// Aspect Bindings
-		variables.aspectBindings      = [];
+		variables.aspectBindings          = [];
 		// Binding Properties
-		variables.properties          = {};
+		variables.properties              = {};
 		// Metadata cache
-		variables.metadataCache       = "";
+		variables.metadataCache           = "";
 		// Auto Process Mappings
-		variables.autoProcessMappings = variables.DEFAULTS.autoProcessMappings;
+		variables.autoProcessMappings     = variables.DEFAULTS.autoProcessMappings;
+		// Transient injection cache
+		variables.transientInjectionCache = true;
 
 		return this;
 	}
@@ -869,14 +886,19 @@ component accessors="true" {
 	/**
 	 * Map property injection
 	 *
-	 * @name     The name of the property to inject
-	 * @ref      The reference mapping id this property maps to
-	 * @dsl      The construction dsl this property references. If used, the name value must be used.
-	 * @value    The explicit value of the property, if passed.
-	 * @javaCast The type of javaCast() to use on the value of the value. Only used if using dsl or ref arguments
-	 * @scope    The scope in the CFC to inject the property to. By default it will inject it to the variables scope
-	 * @required If the property is required or not, by default we assume required DI
-	 * @type     The type of the property
+	 * @name             The name of the property to inject
+	 * @ref              The reference mapping id this property maps to
+	 * @dsl              The construction dsl this property references. If used, the name value must be used.
+	 * @value            The explicit value of the property, if passed.
+	 * @javaCast         The type of javaCast() to use on the value of the value. Only used if using dsl or ref arguments
+	 * @scope            The scope in the CFC to inject the property to. By default it will inject it to the variables scope
+	 * @required         If the property is required or not, by default we assume required DI
+	 * @type             The type of the property
+	 * @delegate         If the property is an object delegate
+	 * @delegatePrefix   If the property has a delegate prefix
+	 * @delegateSuffix   If the property has a delegate suffix
+	 * @delegateExcludes If the property has a delegate exclusion list
+	 * @delegateIncludes If the property has a delegate inclusion list
 	 */
 	Binder function property(
 		required name,
@@ -886,11 +908,29 @@ component accessors="true" {
 		javaCast,
 		scope            = "variables",
 		required required=true,
-		type             = "any"
+		type             = "any",
+		boolean delegate = false,
+		delegatePrefix   = "",
+		delegateSuffix   = "",
+		delegateExcludes = [],
+		delegateIncludes = []
 	){
 		for ( var mapping in variables.currentMapping ) {
 			mapping.addDIProperty( argumentCollection = arguments );
 		}
+		return this;
+	}
+
+	/**
+	 * Set any delegates on the target mapping
+	 *
+	 * @expression The delegates expression to define for the mapping or an array of expressions
+	 */
+	Binder function delegates( required expression ){
+		if ( isArray( arguments.expression ) ) {
+			arguments.expression = arrayToList( arguments.expression );
+		}
+		variables.currentMapping.setDelegates( arguments.expression );
 		return this;
 	}
 
@@ -1024,6 +1064,16 @@ component accessors="true" {
 	 */
 	Binder function parentInjector( required injector ){
 		variables.oParentInjector = arguments.injector;
+		return this;
+	}
+
+	/**
+	 * Enable/Disable Transient injection cache
+	 *
+	 * @enabled On/off
+	 */
+	Binder function transientInjectionCache( boolean enabled = true ){
+		variables.transientInjectionCache = arguments.enabled;
 		return this;
 	}
 
@@ -1281,6 +1331,11 @@ component accessors="true" {
 				map( key );
 				variables.mappings[ key ].processMemento( wireBoxDSL.mappings[ key ] );
 			}
+		}
+
+		// Transient Injection cache
+		if ( structKeyExists( wireboxDSL, "transientInjectionCache" ) ) {
+			this.transientInjectionCache( wireboxDSL.transientInjectionCache );
 		}
 
 		return this;

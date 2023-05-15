@@ -66,14 +66,14 @@ component extends="tests.resources.BaseIntegrationTest" {
 				given( "an invalid rendering region to renderview", function(){
 					then( "it should throw an exception", function(){
 						expect( function(){
-							controller.getRenderer().renderView( name = "invalid" );
+							controller.getRenderer().view( name = "invalid" );
 						} ).toThrow( type = "InvalidRenderingRegion" );
 					} );
 				} );
 			} );
 
 			story( "I want to be able to render simple views from actions", function(){
-				given( "a renderView() from an action", function(){
+				given( "a view() from an action", function(){
 					then( "it should render the simple view with no name", function(){
 						var e = execute( event = "rendering.normalRendering", renderResults = true );
 						expect( e.getRenderedContent() ).toInclude( "simple view" );
@@ -82,7 +82,7 @@ component extends="tests.resources.BaseIntegrationTest" {
 			} );
 
 			story( "I want to pass through rendering arguments to both layouts and views", function(){
-				given( "a renderLayout() call with custom arguments", function(){
+				given( "a layout() call with custom arguments", function(){
 					then( "the view AND layout should receive them", function(){
 						var e = execute( event = "rendering.renderLayoutWithArguments", renderResults = true );
 						expect( e.getRenderedContent() ).toInclude( "abc123" );

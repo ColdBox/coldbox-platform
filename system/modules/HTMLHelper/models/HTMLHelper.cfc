@@ -6,30 +6,27 @@
  * ORM data binding, auto escaping and much more.
  */
 component
-	extends  ="coldbox.system.FrameworkSupertype"
 	accessors=true
+	threadSafe
 	singleton
+	delegates="JsonUtil@coreDelegates,Settings@cbDelegates,StringUtil@coreDelegates"
 {
 
-	/**
-	 * Module Settings
-	 */
-	property name="settings";
+	/****************************************************************
+	 * DI *
+	 ****************************************************************/
+
+	property name="settings"       inject="coldbox:moduleSettings:htmlhelper";
+	property name="controller"     inject="coldbox";
+	property name="requestService" inject="coldbox:requestService";
 
 	/**
 	 * Constructor
-	 *
-	 * @controller        The ColdBox Controller
-	 * @controller.inject coldbox
 	 */
-	function init( required controller ){
-		variables.controller = arguments.controller;
-		variables.settings   = getModuleSettings( "htmlhelper" );
-
+	function init(){
 		// Used for elixir discovery paths
 		variables.cachedPaths     = {};
 		variables.elixirManifests = {};
-
 		return this;
 	}
 
@@ -87,7 +84,7 @@ component
 		boolean defer        = false
 	){
 		var sb    = createObject( "java", "java.lang.StringBuilder" ).init( "" );
-		var event = controller.getRequestService().getContext();
+		var event = requestService.getContext();
 
 		// Global location settings
 		var jsPath  = getSetting( name = "htmlhelper_js_path", defaultValue = variables.settings.js_path );
@@ -262,7 +259,7 @@ component
 		boolean noBaseURL = false,
 		struct data       = {}
 	){
-		var event = controller.getRequestService().getContext();
+		var event = requestService.getContext();
 
 		// self-link?
 		if ( NOT len( arguments.href ) ) {
@@ -550,42 +547,6 @@ component
 	}
 
 	/**
-	 * Slugify a string for URL Safety
-	 *
-	 * @str       Target to slugify
-	 * @maxLength The maximum number of characters for the slug
-	 * @allow     a regex safe list of additional characters to allow
-	 */
-	function slugify(
-		required str,
-		numeric maxLength = 0,
-		allow             = ""
-	){
-		// Cleanup and slugify the string
-		var slug = lCase( trim( arguments.str ) );
-		slug     = replaceList(
-			slug,
-			"#chr( 228 )#,#chr( 252 )#,#chr( 246 )#,#chr( 223 )#",
-			"ae,ue,oe,ss"
-		);
-		slug = reReplace(
-			slug,
-			"[^a-z0-9-\s#arguments.allow#]",
-			"",
-			"all"
-		);
-		slug = trim( reReplace( slug, "[\s-]+", " ", "all" ) );
-		slug = reReplace( slug, "\s", "-", "all" );
-
-		// is there a max length restriction
-		if ( arguments.maxlength ) {
-			slug = left( slug, arguments.maxlength );
-		}
-
-		return slug;
-	}
-
-	/**
 	 * Creates auto discovery links for RSS and ATOM feeds.
 	 *
 	 * @type  Type of feed: RSS or ATOM or Custom Type
@@ -831,7 +792,7 @@ component
 		struct data       = {}
 	){
 		var formBuffer    = createObject( "java", "java.lang.StringBuilder" ).init( "<form" );
-		var event         = controller.getRequestService().getContext();
+		var event         = requestService.getContext();
 		var desiredMethod = "";
 
 		// Browsers can't support all the HTTP verbs, so if we passed in something
@@ -1719,13 +1680,7 @@ component
 		selectedIndex = 0,
 		selectedValue = ""
 	){
-		var buffer    = createObject( "java", "java.lang.StringBuilder" ).init( "" );
-		var val       = "";
-		var nameVal   = "";
-		var x         = 1;
-		var qColumns  = "";
-		var thisName  = "";
-		var thisValue = "";
+		var buffer = createObject( "java", "java.lang.StringBuilder" ).init( "" );
 
 		// check if an array? So we can do array of objects check
 		if ( isArray( arguments.values ) AND arrayLen( arguments.values ) ) {
@@ -1740,30 +1695,30 @@ component
 		}
 
 		// setup local variables
-		val     = arguments.values;
-		nameVal = arguments.values;
+		var val     = arguments.values;
+		var nameVal = arguments.values;
 
 		// query normalization?
 		if ( isQuery( val ) ) {
 			// check if column sent? Else select the first column
 			if ( NOT len( arguments.column ) ) {
 				// select the first one
-				qColumns         = listToArray( arguments.values.columnList );
+				var qColumns     = listToArray( arguments.values.columnList );
 				arguments.column = qColumns[ 1 ];
 			}
 			// column for values
-			val     = getColumnArray( arguments.values, arguments.column );
-			nameVal = val;
+			var val     = getColumnArray( arguments.values, arguments.column );
+			var nameVal = val;
 			// name column values
 			if ( len( arguments.nameColumn ) ) {
-				nameVal = getColumnArray( arguments.values, arguments.nameColumn );
+				var nameVal = getColumnArray( arguments.values, arguments.nameColumn );
 			}
 		}
 
 		// values
 		for ( var x = 1; x lte arrayLen( val ); x++ ) {
-			thisValue = val[ x ];
-			thisName  = nameVal[ x ];
+			var thisValue = val[ x ];
+			var thisName  = nameVal[ x ];
 
 			// struct normalizing
 			if ( isStruct( val[ x ] ) ) {
@@ -2535,7 +2490,7 @@ component
 		numeric version       = 3,
 		manifestRoot          = ""
 	){
-		var argumentsHash  = hash( serializeJSON( arguments ) );
+		var argumentsHash  = hash( toJson( arguments ) );
 		// Incoming Cleanup
 		arguments.fileName = reReplace( arguments.fileName, "^//?", "" );
 
@@ -2546,11 +2501,17 @@ component
 
 		// Prepare state checks
 		var includesLocation    = controller.getColdBoxSetting( "IncludesConvention" );
-		var event               = getRequestContext();
+		var event               = requestService.getContext();
 		arguments.currentModule = event.getCurrentModule();
 
 		// Get the manifest location
 		var manifestPath = discoverElixirManifest( argumentCollection = arguments );
+		if ( !len( manifestPath ) ) {
+			throw(
+				message: "The manifest file path is empty, cannot continue to use the elixir path. Make sure you have ran your build.",
+				type   : "InvalidManifestPath"
+			);
+		}
 
 		// Calculate mapping for the asset in question
 		var mapping = ( arguments.useModuleRoot && len( arguments.currentModule ) ) ? event.getModuleRoot() : controller.getSetting(
@@ -2975,10 +2936,7 @@ component
 	 */
 	private string function prepareBaseLink( boolean noBaseURL = false, src ){
 		var baseURL = replaceNoCase(
-			controller
-				.getRequestService()
-				.getContext()
-				.getSESbaseURL(),
+			requestService.getContext().getSESbaseURL(),
 			"index.cfm",
 			""
 		);

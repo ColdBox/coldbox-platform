@@ -6,12 +6,37 @@ component extends="tests.resources.BaseIntegrationTest" {
 		describe( "Framework Super Type", function(){
 			beforeEach( function( currentSpec ){
 				setup();
-
-				target = prepareMock( new coldbox.system.FrameworkSupertype() ).setController( getController() );
+				target = prepareMock( getInstance( "coldbox.system.FrameworkSupertype" ) );
 			} );
 
 			it( "can retrieve the async manager", function(){
 				expect( target.async() ).toBeComponent();
+			} );
+
+			story( "it can use the back() function to return to the previous URI", function(){
+				given( "no previous referer", function(){
+					then( "it should use the fallback", function(){
+						var fallback              = "main.dashboard";
+						var mockContext           = getMockRequestContext();
+						mockContext.getHTTPHeader = function( header, defaultValue ){
+							return defaultValue;
+						};
+						target.$( "relocate" ).$( "getRequestContext", mockContext );
+						target.back( fallback );
+						expect( target.$callLog().relocate[ 1 ].url ).toInclude( "dashboard" );
+					} );
+				} );
+				given( "a previous referer", function(){
+					then( "it should use the referer", function(){
+						var mockContext           = getMockRequestContext();
+						mockContext.getHTTPHeader = function( header, defaultValue ){
+							return "http://localhost/luis/majano";
+						};
+						target.$( "relocate" ).$( "getRequestContext", mockContext );
+						target.back();
+						expect( target.$callLog().relocate[ 1 ].url ).toInclude( "majano" );
+					} );
+				} );
 			} );
 
 			story( "should encode data for binding to html attributes", function(){
@@ -34,29 +59,6 @@ component extends="tests.resources.BaseIntegrationTest" {
 				} );
 			} );
 
-			story( "can support fluent when() constructs to supplant traditional if statements", function(){
-				it( "can do when statements with no failures", function(){
-					var result = false;
-					target.when( true, function(){
-						result = true;
-					} );
-					expect( result ).toBeTrue();
-				} );
-				it( "can do when statements with failures", function(){
-					var result = true;
-					target.when(
-						false,
-						function(){
-							result = true;
-						},
-						function(){
-							result = false;
-						}
-					);
-					expect( result ).toBeFalse();
-				} );
-			} );
-
 			story( "can do object population from many input sources", function(){
 				it( "from the request collection", function(){
 					var rc   = getRequestContext().getCollection();
@@ -64,7 +66,7 @@ component extends="tests.resources.BaseIntegrationTest" {
 					rc.lname = "majano";
 
 					var target = getInterceptor( "Test1" );
-					var oBean  = target.populateModel( "formBean" );
+					var oBean  = target.populate( "formBean" );
 					expect( oBean.getFname() ).toBe( "luis" );
 					expect( oBean.getLname() ).toBe( "majano" );
 				} );
@@ -73,7 +75,7 @@ component extends="tests.resources.BaseIntegrationTest" {
 					var test = { fname : "luis", lname : "majano" };
 
 					var target = getInterceptor( "Test1" );
-					var oBean  = target.populateModel( model = "formBean", memento = test );
+					var oBean  = target.populate( model = "formBean", memento = test );
 					expect( oBean.getFname() ).toBe( "luis" );
 					expect( oBean.getLname() ).toBe( "majano" );
 				} );
@@ -82,7 +84,7 @@ component extends="tests.resources.BaseIntegrationTest" {
 					var test = serializeJSON( { "fname" : "luis", "lname" : "majano" } );
 
 					var target = getInterceptor( "Test1" );
-					var oBean  = target.populateModel( model = "formBean", jsonstring = test );
+					var oBean  = target.populate( model = "formBean", jsonstring = test );
 					expect( oBean.getFname() ).toBe( "luis" );
 					expect( oBean.getLname() ).toBe( "majano" );
 				} );
@@ -91,7 +93,7 @@ component extends="tests.resources.BaseIntegrationTest" {
 					var test = "<root><fname>luis</fname><lname>majano</lname></root>";
 
 					var target = getInterceptor( "Test1" );
-					var oBean  = target.populateModel( model = "formBean", xml = test );
+					var oBean  = target.populate( model = "formBean", xml = test );
 					expect( oBean.getFname() ).toBe( "luis" );
 					expect( oBean.getLname() ).toBe( "majano" );
 				} );
@@ -103,7 +105,7 @@ component extends="tests.resources.BaseIntegrationTest" {
 					);
 
 					var target = getInterceptor( "Test1" );
-					var oBean  = target.populateModel( model = "formBean", qry = test );
+					var oBean  = target.populate( model = "formBean", qry = test );
 					expect( oBean.getFname() ).toBe( "luis" );
 					expect( oBean.getLname() ).toBe( "majano" );
 				} );

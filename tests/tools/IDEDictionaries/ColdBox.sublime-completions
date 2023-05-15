@@ -96,8 +96,14 @@
 							"trigger": "getMockBox\tfn. (TestBox:BaseSpec)",
 							"contents": "getMockBox( generationPath=\"${1:}\" )"
 					},{
+							"trigger": "getMockDataCFC\tfn. (TestBox:BaseSpec)",
+							"contents": "getMockDataCFC( )"
+					},{
 							"trigger": "getProperty\tfn. (TestBox:BaseSpec)",
 							"contents": "getProperty( target=${1:any}, name=${2:any}, scope=${3:any}, defaultValue=${4:any} )"
+					},{
+							"trigger": "getUtility\tfn. (TestBox:BaseSpec)",
+							"contents": "getUtility( )"
 					},{
 							"trigger": "given\tfn. (TestBox:BaseSpec)",
 							"contents": "given( given=\"${1:}\", body=${2:any}, labels=${3:any}, asyncAll=${4:true,false}, skip=${5:any} )"
@@ -113,6 +119,9 @@
 					},{
 							"trigger": "makePublic\tfn. (TestBox:BaseSpec)",
 							"contents": "makePublic( target=${1:any}, method=\"${2:}\", newName=\"${3:}\" )"
+					},{
+							"trigger": "mockData\tfn. (TestBox:BaseSpec)",
+							"contents": "mockData( )"
 					},{
 							"trigger": "prepareMock\tfn. (TestBox:BaseSpec)",
 							"contents": "prepareMock( object=${1:any}, callLogging=${2:true,false} )"
@@ -147,6 +156,9 @@
 							"trigger": "scenario\tfn. (TestBox:BaseSpec)",
 							"contents": "scenario( scenario=\"${1:}\", body=${2:any}, labels=${3:any}, asyncAll=${4:true,false}, skip=${5:any} )"
 					},{
+							"trigger": "skip\tfn. (TestBox:BaseSpec)",
+							"contents": "skip( message=${1:any}, detail=${2:any} )"
+					},{
 							"trigger": "story\tfn. (TestBox:BaseSpec)",
 							"contents": "story( story=\"${1:}\", body=${2:any}, labels=${3:any}, asyncAll=${4:true,false}, skip=${5:any} )"
 					},{
@@ -180,32 +192,8 @@
 							"trigger": "xwhen\tfn. (TestBox:BaseSpec)",
 							"contents": "xwhen( when=\"${1:}\", body=${2:any}, labels=${3:any}, asyncAll=${4:true,false} )"
 					},{
-							"trigger": "appendToBuffer\tfn. (ColdBox:Interceptor)",
-							"contents": "appendToBuffer( str=${1:any} )"
-					},{
-							"trigger": "clearBuffer\tfn. (ColdBox:Interceptor)",
-							"contents": "clearBuffer( )"
-					},{
-							"trigger": "getBufferObject\tfn. (ColdBox:Interceptor)",
-							"contents": "getBufferObject( )"
-					},{
-							"trigger": "getBufferString\tfn. (ColdBox:Interceptor)",
-							"contents": "getBufferString( )"
-					},{
-							"trigger": "getCachebox\tfn. (ColdBox:Interceptor)",
-							"contents": "getCachebox( )"
-					},{
-							"trigger": "getFlash\tfn. (ColdBox:Interceptor)",
-							"contents": "getFlash( )"
-					},{
-							"trigger": "getInterceptorService\tfn. (ColdBox:Interceptor)",
-							"contents": "getInterceptorService( )"
-					},{
-							"trigger": "getLog\tfn. (ColdBox:Interceptor)",
-							"contents": "getLog( )"
-					},{
-							"trigger": "getLogBox\tfn. (ColdBox:Interceptor)",
-							"contents": "getLogBox( )"
+							"trigger": "cbLoadInterceptorHelpers\tfn. (ColdBox:Interceptor)",
+							"contents": "cbLoadInterceptorHelpers( event=${1:any}, interceptData=${2:any} )"
 					},{
 							"trigger": "getProperties\tfn. (ColdBox:Interceptor)",
 							"contents": "getProperties( )"
@@ -213,26 +201,8 @@
 							"trigger": "getProperty\tfn. (ColdBox:Interceptor)",
 							"contents": "getProperty( property=${1:any}, defaultValue=${2:any} )"
 					},{
-							"trigger": "getWirebox\tfn. (ColdBox:Interceptor)",
-							"contents": "getWirebox( )"
-					},{
 							"trigger": "propertyExists\tfn. (ColdBox:Interceptor)",
 							"contents": "propertyExists( property=${1:any} )"
-					},{
-							"trigger": "setCachebox\tfn. (ColdBox:Interceptor)",
-							"contents": "setCachebox( cachebox=${1:any} )"
-					},{
-							"trigger": "setFlash\tfn. (ColdBox:Interceptor)",
-							"contents": "setFlash( flash=${1:any} )"
-					},{
-							"trigger": "setInterceptorService\tfn. (ColdBox:Interceptor)",
-							"contents": "setInterceptorService( interceptorService=${1:coldbox.system.services.InterceptorService} )"
-					},{
-							"trigger": "setLog\tfn. (ColdBox:Interceptor)",
-							"contents": "setLog( log=${1:any} )"
-					},{
-							"trigger": "setLogBox\tfn. (ColdBox:Interceptor)",
-							"contents": "setLogBox( logBox=${1:any} )"
 					},{
 							"trigger": "setProperties\tfn. (ColdBox:Interceptor)",
 							"contents": "setProperties( properties=${1:{}} )"
@@ -240,23 +210,32 @@
 							"trigger": "setProperty\tfn. (ColdBox:Interceptor)",
 							"contents": "setProperty( property=${1:any}, value=${2:any} )"
 					},{
-							"trigger": "setWirebox\tfn. (ColdBox:Interceptor)",
-							"contents": "setWirebox( wirebox=${1:any} )"
-					},{
 							"trigger": "unregister\tfn. (ColdBox:Interceptor)",
 							"contents": "unregister( state=${1:any} )"
 					},{
-							"trigger": "addAsset\tfn. (ColdBox:FrameworkSuperType)",
-							"contents": "addAsset( asset=${1:any} )"
+							"trigger": "announce\tfn. (ColdBox:FrameworkSuperType)",
+							"contents": "announce( state=${1:any}, data=${2:{}}, async=${3:true,false}, asyncAll=${4:true,false}, asyncAllJoin=${5:true,false}, asyncPriority=${6:any}, asyncJoinTimeout=${7:numeric} )"
 					},{
 							"trigger": "announceInterception\tfn. (ColdBox:FrameworkSuperType)",
-							"contents": "announceInterception( state=${1:any}, interceptData=${2:{}}, async=${3:true,false}, asyncAll=${4:true,false}, asyncAllJoin=${5:true,false}, asyncPriority=${6:any}, asyncJoinTimeout=${7:numeric} )"
+							"contents": "announceInterception( )"
 					},{
 							"trigger": "async\tfn. (ColdBox:FrameworkSuperType)",
 							"contents": "async( )"
 					},{
+							"trigger": "back\tfn. (ColdBox:FrameworkSuperType)",
+							"contents": "back( fallback=${1:any}, persist=${2:any}, persistStruct=${3:{}} )"
+					},{
+							"trigger": "externalView\tfn. (ColdBox:FrameworkSuperType)",
+							"contents": "externalView( view=${1:any}, args=${2:{}}, cache=${3:true,false}, cacheTimeout=${4:any}, cacheLastAccessTimeout=${5:any}, cacheSuffix=${6:any}, cacheProvider=${7:any}, viewVariables=${8:any} )"
+					},{
+							"trigger": "forAttribute\tfn. (ColdBox:FrameworkSuperType)",
+							"contents": "forAttribute( data=${1:any} )"
+					},{
 							"trigger": "getCache\tfn. (ColdBox:FrameworkSuperType)",
 							"contents": "getCache( name=${1:any} )"
+					},{
+							"trigger": "getCachebox\tfn. (ColdBox:FrameworkSuperType)",
+							"contents": "getCachebox( )"
 					},{
 							"trigger": "getColdBoxSetting\tfn. (ColdBox:FrameworkSuperType)",
 							"contents": "getColdBoxSetting( name=${1:any}, defaultValue=${2:any} )"
@@ -264,17 +243,32 @@
 							"trigger": "getController\tfn. (ColdBox:FrameworkSuperType)",
 							"contents": "getController( )"
 					},{
+							"trigger": "getDateTimeHelper\tfn. (ColdBox:FrameworkSuperType)",
+							"contents": "getDateTimeHelper( )"
+					},{
 							"trigger": "getEnv\tfn. (ColdBox:FrameworkSuperType)",
 							"contents": "getEnv( key=${1:any}, defaultValue=${2:any} )"
 					},{
+							"trigger": "getFlash\tfn. (ColdBox:FrameworkSuperType)",
+							"contents": "getFlash( )"
+					},{
+							"trigger": "getFlow\tfn. (ColdBox:FrameworkSuperType)",
+							"contents": "getFlow( )"
+					},{
 							"trigger": "getInstance\tfn. (ColdBox:FrameworkSuperType)",
-							"contents": "getInstance( name=${1:any}, initArguments=${2:any}, dsl=${3:any} )"
+							"contents": "getInstance( name=${1:any}, initArguments=${2:{}}, dsl=${3:any}, targetObject=${4:any}, injector=${5:any} )"
 					},{
-							"trigger": "getInterceptor\tfn. (ColdBox:FrameworkSuperType)",
-							"contents": "getInterceptor( interceptorName=${1:any} )"
+							"trigger": "getIsoTime\tfn. (ColdBox:FrameworkSuperType)",
+							"contents": "getIsoTime( dateTime=${1:any}, toUTC=${2:true,false} )"
 					},{
-							"trigger": "getModel\tfn. (ColdBox:FrameworkSuperType)",
-							"contents": "getModel( )"
+							"trigger": "getJsonUtil\tfn. (ColdBox:FrameworkSuperType)",
+							"contents": "getJsonUtil( )"
+					},{
+							"trigger": "getLog\tfn. (ColdBox:FrameworkSuperType)",
+							"contents": "getLog( )"
+					},{
+							"trigger": "getLogBox\tfn. (ColdBox:FrameworkSuperType)",
+							"contents": "getLogBox( )"
 					},{
 							"trigger": "getModuleConfig\tfn. (ColdBox:FrameworkSuperType)",
 							"contents": "getModuleConfig( module=${1:any} )"
@@ -291,6 +285,9 @@
 							"trigger": "getRequestContext\tfn. (ColdBox:FrameworkSuperType)",
 							"contents": "getRequestContext( )"
 					},{
+							"trigger": "getRootWireBox\tfn. (ColdBox:FrameworkSuperType)",
+							"contents": "getRootWireBox( )"
+					},{
 							"trigger": "getSetting\tfn. (ColdBox:FrameworkSuperType)",
 							"contents": "getSetting( name=${1:any}, defaultValue=${2:any} )"
 					},{
@@ -300,11 +297,41 @@
 							"trigger": "getSystemSetting\tfn. (ColdBox:FrameworkSuperType)",
 							"contents": "getSystemSetting( key=${1:any}, defaultValue=${2:any} )"
 					},{
+							"trigger": "getUserSessionIdentifier\tfn. (ColdBox:FrameworkSuperType)",
+							"contents": "getUserSessionIdentifier( )"
+					},{
+							"trigger": "getWirebox\tfn. (ColdBox:FrameworkSuperType)",
+							"contents": "getWirebox( )"
+					},{
+							"trigger": "ifNull\tfn. (ColdBox:FrameworkSuperType)",
+							"contents": "ifNull( target=${1:any}, success=${2:any}, failure=${3:any} )"
+					},{
+							"trigger": "ifPresent\tfn. (ColdBox:FrameworkSuperType)",
+							"contents": "ifPresent( target=${1:any}, success=${2:any}, failure=${3:any} )"
+					},{
+							"trigger": "inDebugMode\tfn. (ColdBox:FrameworkSuperType)",
+							"contents": "inDebugMode( )"
+					},{
 							"trigger": "includeUDF\tfn. (ColdBox:FrameworkSuperType)",
 							"contents": "includeUDF( udflibrary=${1:any} )"
 					},{
+							"trigger": "isDevelopment\tfn. (ColdBox:FrameworkSuperType)",
+							"contents": "isDevelopment( )"
+					},{
+							"trigger": "isProduction\tfn. (ColdBox:FrameworkSuperType)",
+							"contents": "isProduction( )"
+					},{
+							"trigger": "isTesting\tfn. (ColdBox:FrameworkSuperType)",
+							"contents": "isTesting( )"
+					},{
+							"trigger": "layout\tfn. (ColdBox:FrameworkSuperType)",
+							"contents": "layout( layout=${1:any}, module=${2:any}, view=${3:any}, args=${4:{}}, viewModule=${5:any}, prePostExempt=${6:true,false}, viewVariables=${7:any} )"
+					},{
+							"trigger": "listen\tfn. (ColdBox:FrameworkSuperType)",
+							"contents": "listen( target=${1:any}, point=${2:any} )"
+					},{
 							"trigger": "loadApplicationHelpers\tfn. (ColdBox:FrameworkSuperType)",
-							"contents": "loadApplicationHelpers( )"
+							"contents": "loadApplicationHelpers( force=${1:true,false} )"
 					},{
 							"trigger": "locateDirectoryPath\tfn. (ColdBox:FrameworkSuperType)",
 							"contents": "locateDirectoryPath( pathToCheck=${1:any} )"
@@ -315,20 +342,23 @@
 							"trigger": "persistVariables\tfn. (ColdBox:FrameworkSuperType)",
 							"contents": "persistVariables( persist=${1:any}, persistStruct=${2:{}} )"
 					},{
+							"trigger": "populate\tfn. (ColdBox:FrameworkSuperType)",
+							"contents": "populate( model=${1:any}, scope=${2:any}, trustedSetter=${3:true,false}, include=${4:any}, exclude=${5:any}, ignoreEmpty=${6:true,false}, nullEmptyInclude=${7:any}, nullEmptyExclude=${8:any}, composeRelationships=${9:true,false}, memento=${10:{}}, jsonstring=\"${11:}\", xml=\"${12:}\", qry=${13:query}, ignoreTargetLists=${14:true,false} )"
+					},{
 							"trigger": "populateModel\tfn. (ColdBox:FrameworkSuperType)",
-							"contents": "populateModel( model=${1:any}, scope=${2:any}, trustedSetter=${3:true,false}, include=${4:any}, exclude=${5:any}, ignoreEmpty=${6:true,false}, nullEmptyInclude=${7:any}, nullEmptyExclude=${8:any}, composeRelationships=${9:true,false}, memento=${10:{}}, jsonstring=\"${11:}\", xml=\"${12:}\", qry=${13:query} )"
+							"contents": "populateModel( )"
 					},{
 							"trigger": "relocate\tfn. (ColdBox:FrameworkSuperType)",
 							"contents": "relocate( event=${1:any}, URL=${2:any}, URI=${3:any}, queryString=${4:any}, persist=${5:any}, persistStruct=${6:{}}, addToken=${7:true,false}, ssl=${8:true,false}, baseURL=${9:any}, postProcessExempt=${10:true,false}, statusCode=${11:numeric} )"
 					},{
 							"trigger": "renderExternalView\tfn. (ColdBox:FrameworkSuperType)",
-							"contents": "renderExternalView( view=${1:any}, args=${2:{}}, cache=${3:true,false}, cacheTimeout=${4:any}, cacheLastAccessTimeout=${5:any}, cacheSuffix=${6:any}, cacheProvider=${7:any} )"
+							"contents": "renderExternalView( )"
 					},{
 							"trigger": "renderLayout\tfn. (ColdBox:FrameworkSuperType)",
-							"contents": "renderLayout( layout=${1:any}, module=${2:any}, view=${3:any}, args=${4:{}}, viewModule=${5:any}, prePostExempt=${6:true,false} )"
+							"contents": "renderLayout( )"
 					},{
-							"trigger": "renderView\tfn. (ColdBox:FrameworkSuperType)",
-							"contents": "renderView( view=${1:any}, args=${2:{}}, module=${3:any}, cache=${4:true,false}, cacheTimeout=${5:any}, cacheLastAccessTimeout=${6:any}, cacheSuffix=${7:any}, cacheProvider=${8:any}, collection=${9:any}, collectionAs=${10:any}, collectionStartRow=${11:numeric}, collectionMaxRows=${12:numeric}, collectionDelim=${13:any}, prePostExempt=${14:true,false}, name=${15:any} )"
+							"trigger": "renderview\tfn. (ColdBox:FrameworkSuperType)",
+							"contents": "renderview( )"
 					},{
 							"trigger": "runEvent\tfn. (ColdBox:FrameworkSuperType)",
 							"contents": "runEvent( event=${1:any}, prePostExempt=${2:true,false}, private=${3:true,false}, defaultEvent=${4:true,false}, eventArguments=${5:{}}, cache=${6:true,false}, cacheTimeout=${7:any}, cacheLastAccessTimeout=${8:any}, cacheSuffix=${9:any}, cacheProvider=${10:any} )"
@@ -336,17 +366,89 @@
 							"trigger": "runRoute\tfn. (ColdBox:FrameworkSuperType)",
 							"contents": "runRoute( name=${1:any}, params=${2:{}}, cache=${3:true,false}, cacheTimeout=${4:any}, cacheLastAccessTimeout=${5:any}, cacheSuffix=${6:any}, cacheProvider=${7:any}, prePostExempt=${8:true,false} )"
 					},{
+							"trigger": "setCachebox\tfn. (ColdBox:FrameworkSuperType)",
+							"contents": "setCachebox( cachebox=${1:any} )"
+					},{
 							"trigger": "setController\tfn. (ColdBox:FrameworkSuperType)",
 							"contents": "setController( controller=${1:any} )"
+					},{
+							"trigger": "setEnv\tfn. (ColdBox:FrameworkSuperType)",
+							"contents": "setEnv( env=${1:any} )"
+					},{
+							"trigger": "setFlash\tfn. (ColdBox:FrameworkSuperType)",
+							"contents": "setFlash( flash=${1:any} )"
+					},{
+							"trigger": "setFlow\tfn. (ColdBox:FrameworkSuperType)",
+							"contents": "setFlow( flow=${1:any} )"
+					},{
+							"trigger": "setJsonUtil\tfn. (ColdBox:FrameworkSuperType)",
+							"contents": "setJsonUtil( jsonUtil=${1:any} )"
+					},{
+							"trigger": "setLog\tfn. (ColdBox:FrameworkSuperType)",
+							"contents": "setLog( log=${1:any} )"
+					},{
+							"trigger": "setLogBox\tfn. (ColdBox:FrameworkSuperType)",
+							"contents": "setLogBox( logBox=${1:any} )"
 					},{
 							"trigger": "setSetting\tfn. (ColdBox:FrameworkSuperType)",
 							"contents": "setSetting( name=${1:any}, value=${2:any} )"
 					},{
+							"trigger": "setWirebox\tfn. (ColdBox:FrameworkSuperType)",
+							"contents": "setWirebox( wirebox=${1:any} )"
+					},{
 							"trigger": "settingExists\tfn. (ColdBox:FrameworkSuperType)",
 							"contents": "settingExists( name=${1:any} )"
 					},{
+							"trigger": "throwIf\tfn. (ColdBox:FrameworkSuperType)",
+							"contents": "throwIf( target=${1:true,false}, type=${2:any}, message=${3:any}, detail=${4:any} )"
+					},{
+							"trigger": "throwUnless\tfn. (ColdBox:FrameworkSuperType)",
+							"contents": "throwUnless( target=${1:true,false}, type=${2:any}, message=${3:any}, detail=${4:any} )"
+					},{
+							"trigger": "toJson\tfn. (ColdBox:FrameworkSuperType)",
+							"contents": "toJson( obj=${1:any} )"
+					},{
+							"trigger": "unless\tfn. (ColdBox:FrameworkSuperType)",
+							"contents": "unless( target=${1:true,false}, success=${2:any}, failure=${3:any} )"
+					},{
+							"trigger": "view\tfn. (ColdBox:FrameworkSuperType)",
+							"contents": "view( view=${1:any}, args=${2:{}}, module=${3:any}, cache=${4:true,false}, cacheTimeout=${5:any}, cacheLastAccessTimeout=${6:any}, cacheSuffix=${7:any}, cacheProvider=${8:any}, collection=${9:any}, collectionAs=${10:any}, collectionStartRow=${11:numeric}, collectionMaxRows=${12:numeric}, collectionDelim=${13:any}, prePostExempt=${14:true,false}, name=${15:any}, viewVariables=${16:any} )"
+					},{
 							"trigger": "when\tfn. (ColdBox:FrameworkSuperType)",
 							"contents": "when( target=${1:true,false}, success=${2:any}, failure=${3:any} )"
+					},{
+							"trigger": "aroundHandler\tfn. (ColdBox:RestHandler)",
+							"contents": "aroundHandler( event=${1:any}, rc=${2:any}, prc=${3:any}, targetAction=${4:any}, eventArguments=${5:any} )"
+					},{
+							"trigger": "onAnyOtherException\tfn. (ColdBox:RestHandler)",
+							"contents": "onAnyOtherException( event=${1:any}, rc=${2:any}, prc=${3:any}, eventArguments=${4:any}, exception=${5:any} )"
+					},{
+							"trigger": "onAuthenticationFailure\tfn. (ColdBox:RestHandler)",
+							"contents": "onAuthenticationFailure( event=${1:any}, rc=${2:any}, prc=${3:any}, abort=${4:any}, exception=${5:any} )"
+					},{
+							"trigger": "onAuthorizationFailure\tfn. (ColdBox:RestHandler)",
+							"contents": "onAuthorizationFailure( event=${1:any}, rc=${2:any}, prc=${3:any}, abort=${4:any}, exception=${5:any} )"
+					},{
+							"trigger": "onEntityNotFoundException\tfn. (ColdBox:RestHandler)",
+							"contents": "onEntityNotFoundException( event=${1:any}, rc=${2:any}, prc=${3:any}, eventArguments=${4:any}, exception=${5:any} )"
+					},{
+							"trigger": "onError\tfn. (ColdBox:RestHandler)",
+							"contents": "onError( event=${1:any}, rc=${2:any}, prc=${3:any}, faultAction=${4:any}, exception=${5:any}, eventArguments=${6:any} )"
+					},{
+							"trigger": "onExpectationFailed\tfn. (ColdBox:RestHandler)",
+							"contents": "onExpectationFailed( event=${1:any}, rc=${2:any}, prc=${3:any}, message=${4:any} )"
+					},{
+							"trigger": "onInvalidHTTPMethod\tfn. (ColdBox:RestHandler)",
+							"contents": "onInvalidHTTPMethod( event=${1:any}, rc=${2:any}, prc=${3:any}, faultAction=${4:any}, eventArguments=${5:any} )"
+					},{
+							"trigger": "onInvalidRoute\tfn. (ColdBox:RestHandler)",
+							"contents": "onInvalidRoute( event=${1:any}, rc=${2:any}, prc=${3:any} )"
+					},{
+							"trigger": "onMissingAction\tfn. (ColdBox:RestHandler)",
+							"contents": "onMissingAction( event=${1:any}, rc=${2:any}, prc=${3:any}, missingAction=${4:any}, eventArguments=${5:any} )"
+					},{
+							"trigger": "onValidationException\tfn. (ColdBox:RestHandler)",
+							"contents": "onValidationException( event=${1:any}, rc=${2:any}, prc=${3:any}, eventArguments=${4:any}, exception=${5:any} )"
 					},{
 							"trigger": "_actionExists\tfn. (ColdBox:EventHandler)",
 							"contents": "_actionExists( action=${1:any} )"
@@ -357,35 +459,8 @@
 							"trigger": "_privateInvoker\tfn. (ColdBox:EventHandler)",
 							"contents": "_privateInvoker( method=${1:any}, argCollection=${2:any} )"
 					},{
-							"trigger": "getCachebox\tfn. (ColdBox:EventHandler)",
-							"contents": "getCachebox( )"
-					},{
-							"trigger": "getFlash\tfn. (ColdBox:EventHandler)",
-							"contents": "getFlash( )"
-					},{
-							"trigger": "getLog\tfn. (ColdBox:EventHandler)",
-							"contents": "getLog( )"
-					},{
-							"trigger": "getLogBox\tfn. (ColdBox:EventHandler)",
-							"contents": "getLogBox( )"
-					},{
-							"trigger": "getWirebox\tfn. (ColdBox:EventHandler)",
-							"contents": "getWirebox( )"
-					},{
-							"trigger": "setCachebox\tfn. (ColdBox:EventHandler)",
-							"contents": "setCachebox( cachebox=${1:any} )"
-					},{
-							"trigger": "setFlash\tfn. (ColdBox:EventHandler)",
-							"contents": "setFlash( flash=${1:any} )"
-					},{
-							"trigger": "setLog\tfn. (ColdBox:EventHandler)",
-							"contents": "setLog( log=${1:any} )"
-					},{
-							"trigger": "setLogBox\tfn. (ColdBox:EventHandler)",
-							"contents": "setLogBox( logBox=${1:any} )"
-					},{
-							"trigger": "setWirebox\tfn. (ColdBox:EventHandler)",
-							"contents": "setWirebox( wirebox=${1:any} )"
+							"trigger": "onHandlerDIComplete\tfn. (ColdBox:EventHandler)",
+							"contents": "onHandlerDIComplete( )"
 					},{
 							"trigger": "cachebox.addCache\tfn. (ColdBox:cachebox)",
 							"contents": "cachebox.addCache( cache=${1:any} )"
@@ -462,6 +537,9 @@
 							"trigger": "cachebox.getVersion\tfn. (ColdBox:cachebox)",
 							"contents": "cachebox.getVersion( )"
 						},{
+							"trigger": "cachebox.getWirebox\tfn. (ColdBox:cachebox)",
+							"contents": "cachebox.getWirebox( )"
+						},{
 							"trigger": "cachebox.isColdBoxLinked\tfn. (ColdBox:cachebox)",
 							"contents": "cachebox.isColdBoxLinked( )"
 						},{
@@ -519,6 +597,9 @@
 							"trigger": "cachebox.setVersion\tfn. (ColdBox:cachebox)",
 							"contents": "cachebox.setVersion( version=${1:any} )"
 						},{
+							"trigger": "cachebox.setWirebox\tfn. (ColdBox:cachebox)",
+							"contents": "cachebox.setWirebox( wirebox=${1:any} )"
+						},{
 							"trigger": "cachebox.shutdown\tfn. (ColdBox:cachebox)",
 							"contents": "cachebox.shutdown( )"
 						},{
@@ -573,6 +654,9 @@
 							"trigger": "logbox.getVersion\tfn. (ColdBox:logbox)",
 							"contents": "logbox.getVersion( )"
 						},{
+							"trigger": "logbox.getWirebox\tfn. (ColdBox:logbox)",
+							"contents": "logbox.getWirebox( )"
+						},{
 							"trigger": "logbox.locateCategoryParentLogger\tfn. (ColdBox:logbox)",
 							"contents": "logbox.locateCategoryParentLogger( category=${1:any} )"
 						},{
@@ -606,6 +690,12 @@
 							"trigger": "logbox.setVersion\tfn. (ColdBox:logbox)",
 							"contents": "logbox.setVersion( version=${1:any} )"
 						},{
+							"trigger": "logbox.setWirebox\tfn. (ColdBox:logbox)",
+							"contents": "logbox.setWirebox( wirebox=${1:any} )"
+						},{
+							"trigger": "logbox.shutdown\tfn. (ColdBox:logbox)",
+							"contents": "logbox.shutdown( )"
+						},{
 							"trigger": "binder.asEagerInit\tfn. (ColdBox:binder)",
 							"contents": "binder.asEagerInit( )"
 						},{
@@ -613,16 +703,25 @@
 							"contents": "binder.asSingleton( )"
 						},{
 							"trigger": "binder.bindAspect\tfn. (ColdBox:binder)",
-							"contents": "binder.bindAspect( classes=${1:coldbox.system.aop.Matcher}, methods=${2:coldbox.system.aop.Matcher}, aspects=${3:any} )"
+							"contents": "binder.bindAspect( classes=${1:any}, methods=${2:any}, aspects=${3:any} )"
 						},{
-							"trigger": "binder.cacheBox\tfn. (ColdBox:binder)",
-							"contents": "binder.cacheBox( configFile=${1:any}, cacheFactory=${2:any}, enabled=${3:any}, classNamespace=${4:any} )"
+							"trigger": "binder.cachebox\tfn. (ColdBox:binder)",
+							"contents": "binder.cachebox( configFile=${1:any}, cacheFactory=${2:any}, enabled=${3:true,false}, classNamespace=${4:any} )"
 						},{
 							"trigger": "binder.constructor\tfn. (ColdBox:binder)",
 							"contents": "binder.constructor( constructor=${1:any} )"
 						},{
+							"trigger": "binder.delegates\tfn. (ColdBox:binder)",
+							"contents": "binder.delegates( expression=${1:any} )"
+						},{
 							"trigger": "binder.extraAttributes\tfn. (ColdBox:binder)",
 							"contents": "binder.extraAttributes( data=${1:{}} )"
+						},{
+							"trigger": "binder.forceMap\tfn. (ColdBox:binder)",
+							"contents": "binder.forceMap( alias=${1:any} )"
+						},{
+							"trigger": "binder.getAStopRecursions\tfn. (ColdBox:binder)",
+							"contents": "binder.getAStopRecursions( )"
 						},{
 							"trigger": "binder.getAppMapping\tfn. (ColdBox:binder)",
 							"contents": "binder.getAppMapping( )"
@@ -630,11 +729,20 @@
 							"trigger": "binder.getAspectBindings\tfn. (ColdBox:binder)",
 							"contents": "binder.getAspectBindings( )"
 						},{
+							"trigger": "binder.getAutoProcessMappings\tfn. (ColdBox:binder)",
+							"contents": "binder.getAutoProcessMappings( )"
+						},{
 							"trigger": "binder.getCacheBoxConfig\tfn. (ColdBox:binder)",
 							"contents": "binder.getCacheBoxConfig( )"
 						},{
-							"trigger": "binder.getColdBox\tfn. (ColdBox:binder)",
-							"contents": "binder.getColdBox( )"
+							"trigger": "binder.getCachebox\tfn. (ColdBox:binder)",
+							"contents": "binder.getCachebox( )"
+						},{
+							"trigger": "binder.getColdbox\tfn. (ColdBox:binder)",
+							"contents": "binder.getColdbox( )"
+						},{
+							"trigger": "binder.getConfig\tfn. (ColdBox:binder)",
+							"contents": "binder.getConfig( )"
 						},{
 							"trigger": "binder.getCurrentMapping\tfn. (ColdBox:binder)",
 							"contents": "binder.getCurrentMapping( )"
@@ -645,8 +753,8 @@
 							"trigger": "binder.getCustomScopes\tfn. (ColdBox:binder)",
 							"contents": "binder.getCustomScopes( )"
 						},{
-							"trigger": "binder.getDefaults\tfn. (ColdBox:binder)",
-							"contents": "binder.getDefaults( )"
+							"trigger": "binder.getDEFAULTS\tfn. (ColdBox:binder)",
+							"contents": "binder.getDEFAULTS( )"
 						},{
 							"trigger": "binder.getInjector\tfn. (ColdBox:binder)",
 							"contents": "binder.getInjector( )"
@@ -669,6 +777,9 @@
 							"trigger": "binder.getMetadataCache\tfn. (ColdBox:binder)",
 							"contents": "binder.getMetadataCache( )"
 						},{
+							"trigger": "binder.getOParentInjector\tfn. (ColdBox:binder)",
+							"contents": "binder.getOParentInjector( )"
+						},{
 							"trigger": "binder.getParentInjector\tfn. (ColdBox:binder)",
 							"contents": "binder.getParentInjector( )"
 						},{
@@ -676,7 +787,7 @@
 							"contents": "binder.getProperties( )"
 						},{
 							"trigger": "binder.getProperty\tfn. (ColdBox:binder)",
-							"contents": "binder.getProperty( name=${1:any}, default=${2:any} )"
+							"contents": "binder.getProperty( name=${1:any}, defaultValue=${2:any} )"
 						},{
 							"trigger": "binder.getScanLocations\tfn. (ColdBox:binder)",
 							"contents": "binder.getScanLocations( )"
@@ -687,11 +798,17 @@
 							"trigger": "binder.getStopRecursions\tfn. (ColdBox:binder)",
 							"contents": "binder.getStopRecursions( )"
 						},{
+							"trigger": "binder.getTransientInjectionCache\tfn. (ColdBox:binder)",
+							"contents": "binder.getTransientInjectionCache( )"
+						},{
+							"trigger": "binder.getWirebox\tfn. (ColdBox:binder)",
+							"contents": "binder.getWirebox( )"
+						},{
 							"trigger": "binder.inCacheBox\tfn. (ColdBox:binder)",
 							"contents": "binder.inCacheBox( key=${1:any}, timeout=${2:any}, lastAccessTimeout=${3:any}, provider=${4:any} )"
 						},{
 							"trigger": "binder.initArg\tfn. (ColdBox:binder)",
-							"contents": "binder.initArg( name=${1:any}, ref=${2:any}, dsl=${3:any}, value=${4:any}, javaCast=${5:any}, required=${6:any} )"
+							"contents": "binder.initArg( name=${1:any}, ref=${2:any}, dsl=${3:any}, value=${4:any}, javaCast=${5:any}, required=${6:any}, type=${7:any} )"
 						},{
 							"trigger": "binder.initWith\tfn. (ColdBox:binder)",
 							"contents": "binder.initWith( )"
@@ -700,16 +817,16 @@
 							"contents": "binder.into( scope=${1:any} )"
 						},{
 							"trigger": "binder.listener\tfn. (ColdBox:binder)",
-							"contents": "binder.listener( class=${1:any}, properties=${2:any}, name=${3:any}, register=${4:any} )"
+							"contents": "binder.listener( class=${1:any}, properties=${2:{}}, name=${3:any}, register=${4:true,false} )"
 						},{
 							"trigger": "binder.loadDataDSL\tfn. (ColdBox:binder)",
-							"contents": "binder.loadDataDSL( rawDSL=${1:any} )"
+							"contents": "binder.loadDataDSL( rawDSL=${1:{}} )"
 						},{
 							"trigger": "binder.logBoxConfig\tfn. (ColdBox:binder)",
 							"contents": "binder.logBoxConfig( config=${1:any} )"
 						},{
 							"trigger": "binder.map\tfn. (ColdBox:binder)",
-							"contents": "binder.map( alias=${1:any}, force=${2:any} )"
+							"contents": "binder.map( alias=${1:any}, force=${2:true,false} )"
 						},{
 							"trigger": "binder.mapAspect\tfn. (ColdBox:binder)",
 							"contents": "binder.mapAspect( aspect=${1:any}, autoBinding=${2:true,false} )"
@@ -718,10 +835,10 @@
 							"contents": "binder.mapDSL( namespace=${1:any}, path=${2:any} )"
 						},{
 							"trigger": "binder.mapDirectory\tfn. (ColdBox:binder)",
-							"contents": "binder.mapDirectory( packagePath=${1:any}, include=${2:any}, exclude=${3:any}, influence=${4:any}, filter=${5:any}, namespace=${6:any}, prepend=${7:any}, process=${8:any} )"
+							"contents": "binder.mapDirectory( packagePath=${1:any}, include=${2:any}, exclude=${3:any}, influence=${4:any}, filter=${5:any}, namespace=${6:any}, prepend=${7:true,false}, process=${8:true,false} )"
 						},{
 							"trigger": "binder.mapPath\tfn. (ColdBox:binder)",
-							"contents": "binder.mapPath( path=${1:any}, namespace=${2:any}, prepend=${3:any}, force=${4:any} )"
+							"contents": "binder.mapPath( path=${1:any}, namespace=${2:any}, prepend=${3:true,false}, force=${4:true,false} )"
 						},{
 							"trigger": "binder.mapScope\tfn. (ColdBox:binder)",
 							"contents": "binder.mapScope( annotation=${1:any}, path=${2:any} )"
@@ -733,7 +850,7 @@
 							"contents": "binder.match( )"
 						},{
 							"trigger": "binder.methodArg\tfn. (ColdBox:binder)",
-							"contents": "binder.methodArg( name=${1:any}, ref=${2:any}, dsl=${3:any}, value=${4:any}, javaCast=${5:any} )"
+							"contents": "binder.methodArg( name=${1:any}, ref=${2:any}, dsl=${3:any}, value=${4:any}, javaCast=${5:any}, required=${6:any}, type=${7:any} )"
 						},{
 							"trigger": "binder.mixins\tfn. (ColdBox:binder)",
 							"contents": "binder.mixins( mixins=${1:any} )"
@@ -759,11 +876,14 @@
 							"trigger": "binder.process\tfn. (ColdBox:binder)",
 							"contents": "binder.process( )"
 						},{
+							"trigger": "binder.processEagerInits\tfn. (ColdBox:binder)",
+							"contents": "binder.processEagerInits( )"
+						},{
 							"trigger": "binder.processMappings\tfn. (ColdBox:binder)",
 							"contents": "binder.processMappings( )"
 						},{
 							"trigger": "binder.property\tfn. (ColdBox:binder)",
-							"contents": "binder.property( name=${1:any}, ref=${2:any}, dsl=${3:any}, value=${4:any}, javaCast=${5:any}, scope=${6:any}, required=${7:any} )"
+							"contents": "binder.property( name=${1:any}, ref=${2:any}, dsl=${3:any}, value=${4:any}, javaCast=${5:any}, scope=${6:any}, required=${7:any}, type=${8:any}, delegate=${9:true,false}, delegatePrefix=${10:any}, delegateSuffix=${11:any}, delegateExcludes=${12:any}, delegateIncludes=${13:any} )"
 						},{
 							"trigger": "binder.propertyExists\tfn. (ColdBox:binder)",
 							"contents": "binder.propertyExists( name=${1:any} )"
@@ -781,19 +901,76 @@
 							"contents": "binder.scanLocations( locations=${1:any} )"
 						},{
 							"trigger": "binder.scopeRegistration\tfn. (ColdBox:binder)",
-							"contents": "binder.scopeRegistration( enabled=${1:any}, scope=${2:any}, key=${3:any} )"
+							"contents": "binder.scopeRegistration( enabled=${1:true,false}, scope=${2:any}, key=${3:any} )"
+						},{
+							"trigger": "binder.setAStopRecursions\tfn. (ColdBox:binder)",
+							"contents": "binder.setAStopRecursions( aStopRecursions=${1:[]} )"
+						},{
+							"trigger": "binder.setAppMapping\tfn. (ColdBox:binder)",
+							"contents": "binder.setAppMapping( appMapping=${1:any} )"
+						},{
+							"trigger": "binder.setAspectBindings\tfn. (ColdBox:binder)",
+							"contents": "binder.setAspectBindings( aspectBindings=${1:[]} )"
+						},{
+							"trigger": "binder.setAutoProcessMappings\tfn. (ColdBox:binder)",
+							"contents": "binder.setAutoProcessMappings( autoProcessMappings=${1:true,false} )"
+						},{
+							"trigger": "binder.setCachebox\tfn. (ColdBox:binder)",
+							"contents": "binder.setCachebox( cachebox=${1:{}} )"
+						},{
+							"trigger": "binder.setColdbox\tfn. (ColdBox:binder)",
+							"contents": "binder.setColdbox( coldbox=${1:any} )"
+						},{
+							"trigger": "binder.setConfig\tfn. (ColdBox:binder)",
+							"contents": "binder.setConfig( config=${1:any} )"
+						},{
+							"trigger": "binder.setCurrentMapping\tfn. (ColdBox:binder)",
+							"contents": "binder.setCurrentMapping( currentMapping=${1:[]} )"
+						},{
+							"trigger": "binder.setCustomDSL\tfn. (ColdBox:binder)",
+							"contents": "binder.setCustomDSL( customDSL=${1:{}} )"
+						},{
+							"trigger": "binder.setCustomScopes\tfn. (ColdBox:binder)",
+							"contents": "binder.setCustomScopes( customScopes=${1:{}} )"
+						},{
+							"trigger": "binder.setInjector\tfn. (ColdBox:binder)",
+							"contents": "binder.setInjector( injector=${1:any} )"
+						},{
+							"trigger": "binder.setListeners\tfn. (ColdBox:binder)",
+							"contents": "binder.setListeners( listeners=${1:[]} )"
+						},{
+							"trigger": "binder.setLogBoxConfig\tfn. (ColdBox:binder)",
+							"contents": "binder.setLogBoxConfig( logBoxConfig=${1:any} )"
 						},{
 							"trigger": "binder.setMapping\tfn. (ColdBox:binder)",
 							"contents": "binder.setMapping( name=${1:any}, mapping=${2:any} )"
 						},{
+							"trigger": "binder.setMappings\tfn. (ColdBox:binder)",
+							"contents": "binder.setMappings( mappings=${1:{}} )"
+						},{
 							"trigger": "binder.setMetadataCache\tfn. (ColdBox:binder)",
 							"contents": "binder.setMetadataCache( metadataCache=${1:any} )"
 						},{
+							"trigger": "binder.setOParentInjector\tfn. (ColdBox:binder)",
+							"contents": "binder.setOParentInjector( oParentInjector=${1:any} )"
+						},{
 							"trigger": "binder.setProperties\tfn. (ColdBox:binder)",
-							"contents": "binder.setProperties( properties=${1:any} )"
+							"contents": "binder.setProperties( properties=${1:{}} )"
 						},{
 							"trigger": "binder.setProperty\tfn. (ColdBox:binder)",
 							"contents": "binder.setProperty( name=${1:any}, value=${2:any} )"
+						},{
+							"trigger": "binder.setScanLocations\tfn. (ColdBox:binder)",
+							"contents": "binder.setScanLocations( scanLocations=${1:{}} )"
+						},{
+							"trigger": "binder.setScopeRegistration\tfn. (ColdBox:binder)",
+							"contents": "binder.setScopeRegistration( scopeRegistration=${1:{}} )"
+						},{
+							"trigger": "binder.setTransientInjectionCache\tfn. (ColdBox:binder)",
+							"contents": "binder.setTransientInjectionCache( transientInjectionCache=${1:true,false} )"
+						},{
+							"trigger": "binder.setWirebox\tfn. (ColdBox:binder)",
+							"contents": "binder.setWirebox( wirebox=${1:{}} )"
 						},{
 							"trigger": "binder.setter\tfn. (ColdBox:binder)",
 							"contents": "binder.setter( name=${1:any}, ref=${2:any}, dsl=${3:any}, value=${4:any}, javaCast=${5:any}, argName=${6:any} )"
@@ -827,6 +1004,9 @@
 						},{
 							"trigger": "binder.toWebservice\tfn. (ColdBox:binder)",
 							"contents": "binder.toWebservice( path=${1:any} )"
+						},{
+							"trigger": "binder.transientInjectionCache\tfn. (ColdBox:binder)",
+							"contents": "binder.transientInjectionCache( enabled=${1:true,false} )"
 						},{
 							"trigger": "binder.unMap\tfn. (ColdBox:binder)",
 							"contents": "binder.unMap( name=${1:any} )"
@@ -1050,6 +1230,9 @@
 							"trigger": "assert.null\tfn. (TestBox:assert)",
 							"contents": "assert.null( actual=${1:any}, message=${2:any} )"
 						},{
+							"trigger": "assert.skip\tfn. (TestBox:assert)",
+							"contents": "assert.skip( message=${1:any}, detail=${2:any} )"
+						},{
 							"trigger": "assert.throws\tfn. (TestBox:assert)",
 							"contents": "assert.throws( target=${1:any}, type=${2:any}, regex=${3:any}, message=${4:any} )"
 						},{
@@ -1081,7 +1264,7 @@
 							"contents": "wirebox.containsInstance( name=${1:any} )"
 						},{
 							"trigger": "wirebox.doScopeRegistration\tfn. (ColdBox:wirebox)",
-							"contents": "wirebox.doScopeRegistration( )"
+							"contents": "wirebox.doScopeRegistration( scopeInfo=${1:any} )"
 						},{
 							"trigger": "wirebox.getAsyncManager\tfn. (ColdBox:wirebox)",
 							"contents": "wirebox.getAsyncManager( )"
@@ -1091,6 +1274,15 @@
 						},{
 							"trigger": "wirebox.getCacheBox\tfn. (ColdBox:wirebox)",
 							"contents": "wirebox.getCacheBox( )"
+						},{
+							"trigger": "wirebox.getChildInjector\tfn. (ColdBox:wirebox)",
+							"contents": "wirebox.getChildInjector( name=${1:any} )"
+						},{
+							"trigger": "wirebox.getChildInjectorNames\tfn. (ColdBox:wirebox)",
+							"contents": "wirebox.getChildInjectorNames( )"
+						},{
+							"trigger": "wirebox.getChildInjectors\tfn. (ColdBox:wirebox)",
+							"contents": "wirebox.getChildInjectors( )"
 						},{
 							"trigger": "wirebox.getColdbox\tfn. (ColdBox:wirebox)",
 							"contents": "wirebox.getColdbox( )"
@@ -1104,11 +1296,14 @@
 							"trigger": "wirebox.getInjectorID\tfn. (ColdBox:wirebox)",
 							"contents": "wirebox.getInjectorID( )"
 						},{
-							"trigger": "wirebox.getInstance\tfn. (ColdBox:wirebox)",
-							"contents": "wirebox.getInstance( name=${1:any}, initArguments=${2:{}}, dsl=${3:any}, targetObject=${4:any} )"
+							"trigger": "wirebox.getInjectorReference\tfn. (ColdBox:wirebox)",
+							"contents": "wirebox.getInjectorReference( name=${1:any} )"
 						},{
-							"trigger": "wirebox.getJavaSystem\tfn. (ColdBox:wirebox)",
-							"contents": "wirebox.getJavaSystem( )"
+							"trigger": "wirebox.getInjectorReferenceNames\tfn. (ColdBox:wirebox)",
+							"contents": "wirebox.getInjectorReferenceNames( )"
+						},{
+							"trigger": "wirebox.getInstance\tfn. (ColdBox:wirebox)",
+							"contents": "wirebox.getInstance( name=${1:any}, initArguments=${2:{}}, dsl=${3:any}, targetObject=${4:any}, injector=${5:any} )"
 						},{
 							"trigger": "wirebox.getLog\tfn. (ColdBox:wirebox)",
 							"contents": "wirebox.getLog( )"
@@ -1116,11 +1311,20 @@
 							"trigger": "wirebox.getLogBox\tfn. (ColdBox:wirebox)",
 							"contents": "wirebox.getLogBox( )"
 						},{
+							"trigger": "wirebox.getName\tfn. (ColdBox:wirebox)",
+							"contents": "wirebox.getName( )"
+						},{
+							"trigger": "wirebox.getObjectBuilder\tfn. (ColdBox:wirebox)",
+							"contents": "wirebox.getObjectBuilder( )"
+						},{
 							"trigger": "wirebox.getObjectPopulator\tfn. (ColdBox:wirebox)",
 							"contents": "wirebox.getObjectPopulator( )"
 						},{
 							"trigger": "wirebox.getParent\tfn. (ColdBox:wirebox)",
 							"contents": "wirebox.getParent( )"
+						},{
+							"trigger": "wirebox.getRoot\tfn. (ColdBox:wirebox)",
+							"contents": "wirebox.getRoot( )"
 						},{
 							"trigger": "wirebox.getScope\tfn. (ColdBox:wirebox)",
 							"contents": "wirebox.getScope( scope=${1:any} )"
@@ -1137,14 +1341,20 @@
 							"trigger": "wirebox.getTaskScheduler\tfn. (ColdBox:wirebox)",
 							"contents": "wirebox.getTaskScheduler( )"
 						},{
-							"trigger": "wirebox.getUtil\tfn. (ColdBox:wirebox)",
-							"contents": "wirebox.getUtil( )"
-						},{
 							"trigger": "wirebox.getUtility\tfn. (ColdBox:wirebox)",
 							"contents": "wirebox.getUtility( )"
 						},{
 							"trigger": "wirebox.getVersion\tfn. (ColdBox:wirebox)",
 							"contents": "wirebox.getVersion( )"
+						},{
+							"trigger": "wirebox.hasChildInjector\tfn. (ColdBox:wirebox)",
+							"contents": "wirebox.hasChildInjector( name=${1:any} )"
+						},{
+							"trigger": "wirebox.hasParent\tfn. (ColdBox:wirebox)",
+							"contents": "wirebox.hasParent( )"
+						},{
+							"trigger": "wirebox.hasRoot\tfn. (ColdBox:wirebox)",
+							"contents": "wirebox.hasRoot( )"
 						},{
 							"trigger": "wirebox.injectTarget\tfn. (ColdBox:wirebox)",
 							"contents": "wirebox.injectTarget( target=${1:any}, propertyName=${2:any}, propertyObject=${3:any}, scope=${4:any}, argName=${5:any} )"
@@ -1164,17 +1374,32 @@
 							"trigger": "wirebox.processAfterCompleteDI\tfn. (ColdBox:wirebox)",
 							"contents": "wirebox.processAfterCompleteDI( targetObject=${1:any}, DICompleteMethods=${2:any} )"
 						},{
+							"trigger": "wirebox.processDelegation\tfn. (ColdBox:wirebox)",
+							"contents": "wirebox.processDelegation( target=${1:any}, targetID=\"${2:}\", delegate=${3:any}, DIData=${4:any} )"
+						},{
 							"trigger": "wirebox.processInjection\tfn. (ColdBox:wirebox)",
-							"contents": "wirebox.processInjection( targetObject=${1:any}, DIData=${2:any}, targetID=${3:any} )"
+							"contents": "wirebox.processInjection( targetObject=${1:any}, DIData=${2:[]}, targetID=\"${3:}\", mapping=${4:any} )"
+						},{
+							"trigger": "wirebox.processLazyProperties\tfn. (ColdBox:wirebox)",
+							"contents": "wirebox.processLazyProperties( targetObject=${1:any}, mapping=${2:any} )"
 						},{
 							"trigger": "wirebox.processMixins\tfn. (ColdBox:wirebox)",
 							"contents": "wirebox.processMixins( targetObject=${1:any}, mapping=${2:any} )"
 						},{
+							"trigger": "wirebox.processObservedProperties\tfn. (ColdBox:wirebox)",
+							"contents": "wirebox.processObservedProperties( targetObject=${1:any}, mapping=${2:any} )"
+						},{
 							"trigger": "wirebox.processProviderMethods\tfn. (ColdBox:wirebox)",
 							"contents": "wirebox.processProviderMethods( targetObject=${1:any}, mapping=${2:any} )"
 						},{
+							"trigger": "wirebox.registerChildInjector\tfn. (ColdBox:wirebox)",
+							"contents": "wirebox.registerChildInjector( name=${1:any}, child=${2:any} )"
+						},{
 							"trigger": "wirebox.registerDSL\tfn. (ColdBox:wirebox)",
 							"contents": "wirebox.registerDSL( namespace=${1:any}, path=${2:any} )"
+						},{
+							"trigger": "wirebox.registerInjectorReference\tfn. (ColdBox:wirebox)",
+							"contents": "wirebox.registerInjectorReference( injector=${1:any} )"
 						},{
 							"trigger": "wirebox.registerListener\tfn. (ColdBox:wirebox)",
 							"contents": "wirebox.registerListener( listener=${1:any} )"
@@ -1188,6 +1413,9 @@
 							"trigger": "wirebox.registerScopes\tfn. (ColdBox:wirebox)",
 							"contents": "wirebox.registerScopes( )"
 						},{
+							"trigger": "wirebox.removeChildInjector\tfn. (ColdBox:wirebox)",
+							"contents": "wirebox.removeChildInjector( name=${1:any} )"
+						},{
 							"trigger": "wirebox.removeFromScope\tfn. (ColdBox:wirebox)",
 							"contents": "wirebox.removeFromScope( )"
 						},{
@@ -1199,6 +1427,9 @@
 						},{
 							"trigger": "wirebox.setCacheBox\tfn. (ColdBox:wirebox)",
 							"contents": "wirebox.setCacheBox( cacheBox=${1:any} )"
+						},{
+							"trigger": "wirebox.setChildInjectors\tfn. (ColdBox:wirebox)",
+							"contents": "wirebox.setChildInjectors( childInjectors=${1:{}} )"
 						},{
 							"trigger": "wirebox.setColdbox\tfn. (ColdBox:wirebox)",
 							"contents": "wirebox.setColdbox( coldbox=${1:any} )"
@@ -1212,17 +1443,23 @@
 							"trigger": "wirebox.setInjectorID\tfn. (ColdBox:wirebox)",
 							"contents": "wirebox.setInjectorID( injectorID=${1:any} )"
 						},{
-							"trigger": "wirebox.setJavaSystem\tfn. (ColdBox:wirebox)",
-							"contents": "wirebox.setJavaSystem( javaSystem=${1:any} )"
-						},{
 							"trigger": "wirebox.setLog\tfn. (ColdBox:wirebox)",
 							"contents": "wirebox.setLog( log=${1:any} )"
 						},{
 							"trigger": "wirebox.setLogBox\tfn. (ColdBox:wirebox)",
 							"contents": "wirebox.setLogBox( logBox=${1:any} )"
 						},{
+							"trigger": "wirebox.setName\tfn. (ColdBox:wirebox)",
+							"contents": "wirebox.setName( name=\"${1:}\" )"
+						},{
+							"trigger": "wirebox.setObjectBuilder\tfn. (ColdBox:wirebox)",
+							"contents": "wirebox.setObjectBuilder( objectBuilder=${1:any} )"
+						},{
 							"trigger": "wirebox.setParent\tfn. (ColdBox:wirebox)",
 							"contents": "wirebox.setParent( injector=${1:any} )"
+						},{
+							"trigger": "wirebox.setRoot\tfn. (ColdBox:wirebox)",
+							"contents": "wirebox.setRoot( root=${1:any} )"
 						},{
 							"trigger": "wirebox.setScopeStorage\tfn. (ColdBox:wirebox)",
 							"contents": "wirebox.setScopeStorage( scopeStorage=${1:any} )"
@@ -1336,7 +1573,7 @@
 							"contents": "flash.statusMarks( keys=\"${1:}\", keep=${2:true,false} )"
 						},{
 							"trigger": "event.buildLink\tfn. (ColdBox:event)",
-							"contents": "event.buildLink( to=${1:any}, translate=${2:true,false}, ssl=${3:true,false}, baseURL=${4:any}, queryString=${5:any} )"
+							"contents": "event.buildLink( to=${1:any}, queryString=${2:any}, translate=${3:true,false}, ssl=${4:true,false}, baseURL=${5:any} )"
 						},{
 							"trigger": "event.clearCollection\tfn. (ColdBox:event)",
 							"contents": "event.clearCollection( private=${1:true,false} )"
@@ -1346,6 +1583,9 @@
 						},{
 							"trigger": "event.collectionAppend\tfn. (ColdBox:event)",
 							"contents": "event.collectionAppend( collection=${1:{}}, overwrite=${2:true,false}, private=${3:true,false} )"
+						},{
+							"trigger": "event.discoverLayout\tfn. (ColdBox:event)",
+							"contents": "event.discoverLayout( view=\"${1:}\" )"
 						},{
 							"trigger": "event.getCollection\tfn. (ColdBox:event)",
 							"contents": "event.getCollection( deepCopy=${1:true,false}, private=${2:true,false} )"
@@ -1377,8 +1617,14 @@
 							"trigger": "event.getCurrentRoute\tfn. (ColdBox:event)",
 							"contents": "event.getCurrentRoute( )"
 						},{
+							"trigger": "event.getCurrentRouteMeta\tfn. (ColdBox:event)",
+							"contents": "event.getCurrentRouteMeta( )"
+						},{
 							"trigger": "event.getCurrentRouteName\tfn. (ColdBox:event)",
 							"contents": "event.getCurrentRouteName( )"
+						},{
+							"trigger": "event.getCurrentRouteRecord\tfn. (ColdBox:event)",
+							"contents": "event.getCurrentRouteRecord( )"
 						},{
 							"trigger": "event.getCurrentRoutedModule\tfn. (ColdBox:event)",
 							"contents": "event.getCurrentRoutedModule( )"
@@ -1419,8 +1665,14 @@
 							"trigger": "event.getFolderLayouts\tfn. (ColdBox:event)",
 							"contents": "event.getFolderLayouts( )"
 						},{
-							"trigger": "event.getFullURL\tfn. (ColdBox:event)",
-							"contents": "event.getFullURL( )"
+							"trigger": "event.getFullPath\tfn. (ColdBox:event)",
+							"contents": "event.getFullPath( )"
+						},{
+							"trigger": "event.getFullUrl\tfn. (ColdBox:event)",
+							"contents": "event.getFullUrl( )"
+						},{
+							"trigger": "event.getHTMLBasePath\tfn. (ColdBox:event)",
+							"contents": "event.getHTMLBasePath( )"
 						},{
 							"trigger": "event.getHTMLBaseURL\tfn. (ColdBox:event)",
 							"contents": "event.getHTMLBaseURL( )"
@@ -1451,6 +1703,15 @@
 						},{
 							"trigger": "event.getOnly\tfn. (ColdBox:event)",
 							"contents": "event.getOnly( keys=${1:any}, private=${2:true,false} )"
+						},{
+							"trigger": "event.getPath\tfn. (ColdBox:event)",
+							"contents": "event.getPath( withQuery=${1:true,false} )"
+						},{
+							"trigger": "event.getPathSegment\tfn. (ColdBox:event)",
+							"contents": "event.getPathSegment( index=${1:numeric}, defaultValue=${2:any} )"
+						},{
+							"trigger": "event.getPathSegments\tfn. (ColdBox:event)",
+							"contents": "event.getPathSegments( )"
 						},{
 							"trigger": "event.getPrivateCollection\tfn. (ColdBox:event)",
 							"contents": "event.getPrivateCollection( deepCopy=${1:true,false} )"
@@ -1485,6 +1746,9 @@
 							"trigger": "event.getRenderingRegions\tfn. (ColdBox:event)",
 							"contents": "event.getRenderingRegions( )"
 						},{
+							"trigger": "event.getRequestTimeout\tfn. (ColdBox:event)",
+							"contents": "event.getRequestTimeout( )"
+						},{
 							"trigger": "event.getResponse\tfn. (ColdBox:event)",
 							"contents": "event.getResponse( )"
 						},{
@@ -1494,11 +1758,11 @@
 							"trigger": "event.getRoutedStruct\tfn. (ColdBox:event)",
 							"contents": "event.getRoutedStruct( )"
 						},{
+							"trigger": "event.getSESBasePath\tfn. (ColdBox:event)",
+							"contents": "event.getSESBasePath( )"
+						},{
 							"trigger": "event.getSESBaseURL\tfn. (ColdBox:event)",
 							"contents": "event.getSESBaseURL( )"
-						},{
-							"trigger": "event.getSESEnabled\tfn. (ColdBox:event)",
-							"contents": "event.getSESEnabled( )"
 						},{
 							"trigger": "event.getSelf\tfn. (ColdBox:event)",
 							"contents": "event.getSelf( )"
@@ -1508,6 +1772,9 @@
 						},{
 							"trigger": "event.getTrimValue\tfn. (ColdBox:event)",
 							"contents": "event.getTrimValue( name=${1:any}, defaultValue=${2:any}, private=${3:true,false} )"
+						},{
+							"trigger": "event.getUrl\tfn. (ColdBox:event)",
+							"contents": "event.getUrl( withQuery=${1:true,false} )"
 						},{
 							"trigger": "event.getValue\tfn. (ColdBox:event)",
 							"contents": "event.getValue( name=${1:any}, defaultValue=${2:any}, private=${3:true,false} )"
@@ -1576,13 +1843,16 @@
 							"contents": "event.removeValue( name=${1:any}, private=${2:true,false} )"
 						},{
 							"trigger": "event.renderData\tfn. (ColdBox:event)",
-							"contents": "event.renderData( type=${1:any}, data=${2:any}, contentType=${3:any}, encoding=${4:any}, statusCode=${5:numeric}, statusText=${6:any}, location=${7:any}, jsonCallback=${8:any}, jsonQueryFormat=${9:any}, jsonAsText=${10:true,false}, xmlColumnList=${11:any}, xmlUseCDATA=${12:true,false}, xmlListDelimiter=${13:any}, xmlRootName=${14:any}, pdfArgs=${15:{}}, formats=${16:any}, formatsView=${17:any}, formatsRedirect=${18:any}, isBinary=${19:true,false} )"
+							"contents": "event.renderData( type=${1:any}, data=${2:any}, contentType=${3:any}, encoding=${4:any}, statusCode=${5:numeric}, statusText=${6:any}, location=${7:any}, jsonCallback=${8:any}, jsonAsText=${9:true,false}, xmlColumnList=${10:any}, xmlUseCDATA=${11:true,false}, xmlListDelimiter=${12:any}, xmlRootName=${13:any}, pdfArgs=${14:{}}, formats=${15:any}, formatsView=${16:any}, formatsRedirect=${17:any}, isBinary=${18:true,false} )"
 						},{
 							"trigger": "event.renderWithFormats\tfn. (ColdBox:event)",
 							"contents": "event.renderWithFormats( )"
 						},{
 							"trigger": "event.route\tfn. (ColdBox:event)",
 							"contents": "event.route( name=${1:any}, params=${2:{}}, ssl=${3:true,false} )"
+						},{
+							"trigger": "event.routeIs\tfn. (ColdBox:event)",
+							"contents": "event.routeIs( name=${1:any} )"
 						},{
 							"trigger": "event.sendFile\tfn. (ColdBox:event)",
 							"contents": "event.sendFile( file=${1:any}, name=${2:any}, mimeType=${3:any}, disposition=${4:any}, abortAtEnd=${5:true,false}, extension=${6:any}, deleteFile=${7:true,false} )"
@@ -1640,6 +1910,9 @@
 						},{
 							"trigger": "event.setRenderingRegions\tfn. (ColdBox:event)",
 							"contents": "event.setRenderingRegions( renderingRegions=${1:{}} )"
+						},{
+							"trigger": "event.setRequestTimeout\tfn. (ColdBox:event)",
+							"contents": "event.setRequestTimeout( seconds=${1:numeric} )"
 						},{
 							"trigger": "event.setResponseHeaders\tfn. (ColdBox:event)",
 							"contents": "event.setResponseHeaders( responseHeaders=${1:{}} )"
@@ -1713,6 +1986,9 @@
 							"trigger": "html.checkbox\tfn. (ColdBox:html)",
 							"contents": "html.checkbox( name=${1:any}, value=${2:any}, disabled=${3:true,false}, checked=${4:true,false}, wrapper=${5:any}, wrapperAttrs=${6:{}}, groupWrapper=${7:any}, groupWrapperAttrs=${8:{}}, label=${9:any}, labelAttrs=${10:{}}, labelWrapper=${11:any}, labelWrapperAttrs=${12:{}}, labelClass=${13:any}, bind=${14:any}, bindProperty=${15:any}, data=${16:{}}, inputInsideLabel=${17:true,false} )"
 						},{
+							"trigger": "html.discoverElixirManifest\tfn. (ColdBox:html)",
+							"contents": "html.discoverElixirManifest( currentModule=\"${1:}\", useModuleRoot=${2:true,false}, version=${3:numeric}, manifestRoot=${4:any} )"
+						},{
 							"trigger": "html.docType\tfn. (ColdBox:html)",
 							"contents": "html.docType( type=${1:any} )"
 						},{
@@ -1720,7 +1996,7 @@
 							"contents": "html.elixir( fileName=${1:any}, buildDirectory=${2:any}, sendToHeader=${3:true,false}, async=${4:true,false}, defer=${5:true,false}, version=${6:numeric}, manifestRoot=${7:any} )"
 						},{
 							"trigger": "html.elixirPath\tfn. (ColdBox:html)",
-							"contents": "html.elixirPath( fileName=${1:any}, buildDirectory=${2:any}, useModuleRoot=${3:true,false}, version=${4:numeric}, manifestRoot=${5:any} )"
+							"contents": "html.elixirPath( fileName=${1:any}, useModuleRoot=${2:true,false}, version=${3:numeric}, manifestRoot=${4:any} )"
 						},{
 							"trigger": "html.emailField\tfn. (ColdBox:html)",
 							"contents": "html.emailField( name=${1:any}, value=${2:any}, disabled=${3:true,false}, readonly=${4:true,false}, wrapper=${5:any}, wrapperAttrs=${6:{}}, groupWrapper=${7:any}, groupWrapperAttrs=${8:{}}, label=${9:any}, labelAttrs=${10:{}}, labelWrapper=${11:any}, labelWrapperAttrs=${12:{}}, labelClass=${13:any}, bind=${14:any}, bindProperty=${15:any}, data=${16:{}}, inputInsideLabel=${17:true,false} )"
@@ -1742,6 +2018,12 @@
 						},{
 							"trigger": "html.getColumnArray\tfn. (ColdBox:html)",
 							"contents": "html.getColumnArray( qry=${1:any}, columnName=${2:any} )"
+						},{
+							"trigger": "html.getController\tfn. (ColdBox:html)",
+							"contents": "html.getController( )"
+						},{
+							"trigger": "html.getRequestService\tfn. (ColdBox:html)",
+							"contents": "html.getRequestService( )"
 						},{
 							"trigger": "html.getSettings\tfn. (ColdBox:html)",
 							"contents": "html.getSettings( )"
@@ -1815,11 +2097,14 @@
 							"trigger": "html.select\tfn. (ColdBox:html)",
 							"contents": "html.select( name=${1:any}, options=${2:any}, column=${3:any}, nameColumn=${4:any}, selectedIndex=${5:any}, selectedValue=${6:any}, bind=${7:any}, bindProperty=${8:any}, disabled=${9:true,false}, multiple=${10:true,false}, wrapper=${11:any}, wrapperAttrs=${12:{}}, groupWrapper=${13:any}, groupWrapperAttrs=${14:{}}, label=${15:any}, labelAttrs=${16:{}}, labelwrapper=${17:any}, labelWrapperAttrs=${18:{}}, data=${19:{}}, labelClass=${20:any}, inputInsideLabel=${21:true,false} )"
 						},{
+							"trigger": "html.setController\tfn. (ColdBox:html)",
+							"contents": "html.setController( controller=${1:any} )"
+						},{
+							"trigger": "html.setRequestService\tfn. (ColdBox:html)",
+							"contents": "html.setRequestService( requestService=${1:any} )"
+						},{
 							"trigger": "html.setSettings\tfn. (ColdBox:html)",
 							"contents": "html.setSettings( settings=${1:any} )"
-						},{
-							"trigger": "html.slugify\tfn. (ColdBox:html)",
-							"contents": "html.slugify( str=${1:any}, maxLength=${2:numeric}, allow=${3:any} )"
 						},{
 							"trigger": "html.startFieldSet\tfn. (ColdBox:html)",
 							"contents": "html.startFieldSet( legend=${1:any}, data=${2:{}} )"
@@ -1865,6 +2150,9 @@
 						},{
 							"trigger": "controller.getAppKey\tfn. (ColdBox:controller)",
 							"contents": "controller.getAppKey( )"
+						},{
+							"trigger": "controller.getAppName\tfn. (ColdBox:controller)",
+							"contents": "controller.getAppName( )"
 						},{
 							"trigger": "controller.getAppRootPath\tfn. (ColdBox:controller)",
 							"contents": "controller.getAppRootPath( )"
@@ -1914,8 +2202,14 @@
 							"trigger": "controller.getMemento\tfn. (ColdBox:controller)",
 							"contents": "controller.getMemento( )"
 						},{
+							"trigger": "controller.getModuleConfig\tfn. (ColdBox:controller)",
+							"contents": "controller.getModuleConfig( module=${1:any} )"
+						},{
 							"trigger": "controller.getModuleService\tfn. (ColdBox:controller)",
 							"contents": "controller.getModuleService( )"
+						},{
+							"trigger": "controller.getModuleSettings\tfn. (ColdBox:controller)",
+							"contents": "controller.getModuleSettings( module=${1:any}, setting=${2:any}, defaultValue=${3:any} )"
 						},{
 							"trigger": "controller.getRenderer\tfn. (ColdBox:controller)",
 							"contents": "controller.getRenderer( )"
@@ -1926,11 +2220,17 @@
 							"trigger": "controller.getRoutingService\tfn. (ColdBox:controller)",
 							"contents": "controller.getRoutingService( )"
 						},{
+							"trigger": "controller.getSchedulerService\tfn. (ColdBox:controller)",
+							"contents": "controller.getSchedulerService( )"
+						},{
 							"trigger": "controller.getServices\tfn. (ColdBox:controller)",
 							"contents": "controller.getServices( )"
 						},{
 							"trigger": "controller.getSetting\tfn. (ColdBox:controller)",
 							"contents": "controller.getSetting( name=${1:any}, defaultValue=${2:any} )"
+						},{
+							"trigger": "controller.getUserSessionIdentifier\tfn. (ColdBox:controller)",
+							"contents": "controller.getUserSessionIdentifier( )"
 						},{
 							"trigger": "controller.getUtil\tfn. (ColdBox:controller)",
 							"contents": "controller.getUtil( )"
@@ -1938,8 +2238,20 @@
 							"trigger": "controller.getWirebox\tfn. (ColdBox:controller)",
 							"contents": "controller.getWirebox( )"
 						},{
+							"trigger": "controller.inDebugMode\tfn. (ColdBox:controller)",
+							"contents": "controller.inDebugMode( )"
+						},{
 							"trigger": "controller.invoker\tfn. (ColdBox:controller)",
 							"contents": "controller.invoker( target=${1:any}, method=${2:any}, argCollection=${3:{}}, private=${4:true,false} )"
+						},{
+							"trigger": "controller.isDevelopment\tfn. (ColdBox:controller)",
+							"contents": "controller.isDevelopment( )"
+						},{
+							"trigger": "controller.isProduction\tfn. (ColdBox:controller)",
+							"contents": "controller.isProduction( )"
+						},{
+							"trigger": "controller.isTesting\tfn. (ColdBox:controller)",
+							"contents": "controller.isTesting( )"
 						},{
 							"trigger": "controller.loadColdBoxSettings\tfn. (ColdBox:controller)",
 							"contents": "controller.loadColdBoxSettings( )"
@@ -1970,6 +2282,9 @@
 						},{
 							"trigger": "controller.setAppKey\tfn. (ColdBox:controller)",
 							"contents": "controller.setAppKey( appKey=${1:any} )"
+						},{
+							"trigger": "controller.setAppName\tfn. (ColdBox:controller)",
+							"contents": "controller.setAppName( appName=${1:any} )"
 						},{
 							"trigger": "controller.setAppRootPath\tfn. (ColdBox:controller)",
 							"contents": "controller.setAppRootPath( appRootPath=${1:any} )"

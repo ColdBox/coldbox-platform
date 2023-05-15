@@ -109,7 +109,7 @@ component extends="BaseAsyncSpec" {
 
 					var statusMap = asyncManager.getExecutorStatusMap();
 
-					debug( statusMap );
+					// debug( statusMap );
 					expect( statusMap ).toHaveKey( "unitTest1" ).toHaveKey( "unitTest2" );
 				} );
 
@@ -117,7 +117,7 @@ component extends="BaseAsyncSpec" {
 					var executor1 = asyncManager.newExecutor( "unitTest1" );
 					var statusMap = asyncManager.getExecutorStatusMap( "unitTest1" );
 
-					debug( statusMap );
+					// debug( statusMap );
 					expect( statusMap.isShutdown ).toBeFalse();
 				} );
 			} );

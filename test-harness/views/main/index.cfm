@@ -1,4 +1,5 @@
 ﻿<cfoutput>
+
 <div class="jumbotron">
 	<img src="includes/images/ColdBoxLogoSquare_125.png" class="pull-left margin10" alt="logo"/>
 	<h1>#prc.welcomeMessage#</h1>
@@ -13,6 +14,8 @@
 
 <div class="row">
 	<div class="col-md-9">
+
+		<h2>#html.slugify( "html helper ' can slugify via the string util" )#</h2>
 
 		<section id="eventHandlers">
 		<div class="page-header">
@@ -44,8 +47,10 @@
 		</div>
 		<p>Below are your application's loaded modules, click on them to visit them.</p>
 		<ul>
-			<cfloop collection="#getSetting("Modules")#" item="thisModule">
-			<li><a href="#event.buildLink( getModuleConfig( thisModule ).entryPoint )#">#thisModule#</a></li>
+			<cfloop collection="#getSetting( "Modules" )#" item="thisModule">
+				<li>
+					<a href="#event.buildLink( getModuleConfig( thisModule ).entryPoint )#">#thisModule#</a>
+				</li>
 			</cfloop>
 		</ul>
 		<cfif structCount( getSetting("Modules") ) eq 0>

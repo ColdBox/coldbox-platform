@@ -47,7 +47,7 @@ component accessors="true" {
 			// some nice debug info.
 			if ( variables.log.canDebug() ) {
 				variables.log.debug(
-					"Object: (#arguments.mapping.getName()#) not found in request scope, beginning construction."
+					"Object: (#arguments.mapping.getName()#) not found in request scope, beginning construction by (#variables.injector.getName()#) injector"
 				);
 			}
 
@@ -55,13 +55,18 @@ component accessors="true" {
 			var target          = variables.injector.buildInstance( arguments.mapping, arguments.initArguments );
 			request[ cacheKey ] = target;
 
-			// wire it
-			variables.injector.autowire( target = target, mapping = arguments.mapping );
+			try {
+				// wire it
+				variables.injector.autowire( target = target, mapping = arguments.mapping );
+			} catch ( any e ) {
+				structDelete( request, cacheKey );
+				rethrow;
+			}
 
 			// log it
 			if ( variables.log.canDebug() ) {
 				variables.log.debug(
-					"Object: (#arguments.mapping.getName()#) constructed and stored in Request scope."
+					"Object: (#arguments.mapping.getName()#) constructed and stored in Request scope by (#variables.injector.getName()#) injector"
 				);
 			}
 
@@ -78,11 +83,32 @@ component accessors="true" {
 	 * @mapping             The linked WireBox injector
 	 * @mapping.doc_generic coldbox.system.ioc.config.Mapping
 	 *
-	 * @return coldbox.system.ioc.scopes.IScope
+	 * @return True if the mapping exists in the singleton cache
 	 */
 	boolean function exists( required mapping ){
 		var cacheKey = "wirebox:#arguments.mapping.getName()#";
 		return structKeyExists( request, cacheKey );
+	}
+
+	/**
+	 * Clear the request based objects
+	 *
+	 * @key If passed, we will try to remove that key from the request based cache instead of every key
+	 */
+	RequestScope function clear( string key ){
+		if ( !isNull( arguments.key ) ) {
+			structDelete( request, "wirebox:#arguments.key#" );
+		} else {
+			request
+				.keyArray()
+				.filter( function( key ){
+					return arguments.key.findNoCase( "wirebox:" );
+				} )
+				.each( function( key ){
+					structDelete( request, arguments.key );
+				} )
+		}
+		return this;
 	}
 
 }

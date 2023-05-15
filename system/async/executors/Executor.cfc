@@ -73,7 +73,7 @@ component accessors="true" singleton {
 	 */
 	FutureTask function submit( required callable, method = "run" ){
 		var jCallable = createDynamicProxy(
-			new coldbox.system.async.proxies.Callable(
+			new coldbox.system.async.cbproxies.models.Callable(
 				arguments.callable,
 				arguments.method,
 				variables.debug,

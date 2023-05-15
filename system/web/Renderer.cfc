@@ -2,7 +2,7 @@
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * The system web renderer
+ * The system web renderer. In charge of location views/layouts and rendering them.
  *
  * @author Luis Majano <lmajano@ortussolutions.com>
  */
@@ -10,17 +10,19 @@ component
 	accessors   ="true"
 	serializable="false"
 	extends     ="coldbox.system.FrameworkSupertype"
+	threadSafe
 	singleton
 {
 
-	/************************************** DI *********************************************/
+	/****************************************************************
+	 * DI *
+	 ****************************************************************/
 
-	/**
-	 * Template cache provider
-	 */
 	property name="templateCache" inject="cachebox:template";
 
-	/************************************** PROPERTIES *********************************************/
+	/****************************************************************
+	 * Rendering Properties *
+	 ****************************************************************/
 
 	// Location of layouts
 	property name="layoutsConvention";
@@ -33,7 +35,7 @@ component
 	// Location of application
 	property name="appMapping";
 	// Modules configuration
-	property name="moduleConfig" type="struct";
+	property name="modulesConfig" type="struct";
 	// Views Helper Setting
 	property name="viewsHelper";
 	// Internal locking name
@@ -41,30 +43,45 @@ component
 	// Discovery caching is tied to handlers for discovery.
 	property name="isDiscoveryCaching";
 
-	property name="html";
-
-	/************************************** CONSTRUCTOR *********************************************/
-
 	/**
 	 * Constructor
-	 *
-	 * @controller        The ColdBox main controller
-	 * @controller.inject coldbox
 	 */
-	function init( required controller ){
-		// Register the Controller
-		variables.controller = arguments.controller;
-		// Register LogBox
-		variables.logBox     = arguments.controller.getLogBox();
-		// Register Log object
-		variables.log        = variables.logBox.getLogger( this );
-		// Register Flash RAM
-		variables.flash      = arguments.controller.getRequestService().getFlashScope();
-		// Register CacheBox
-		variables.cacheBox   = arguments.controller.getCacheBox();
-		// Register WireBox
-		variables.wireBox    = arguments.controller.getWireBox();
+	function init(){
+		// Layouts + Views Reference Maps
+		variables.layoutsRefMap = {};
+		variables.viewsRefMap   = {};
+		super.init();
+		return this;
+	}
 
+	/****************************************************************
+	 * Deprecated/Removed Methods *
+	 ****************************************************************/
+
+	function renderview(){
+		variables.log.warn( "renderview() has been deprecated, please update your code to view()", callStackGet() );
+		return this.view( argumentCollection = arguments );
+	}
+	function renderLayout(){
+		variables.log.warn(
+			"renderLayout() has been deprecated, please update your code to layout()",
+			callStackGet()
+		);
+		return this.layout( argumentCollection = arguments );
+	}
+	function renderExternalView(){
+		variables.log.warn(
+			"renderExternalView() has been deprecated, please update your code to externalView()",
+			callStackGet()
+		);
+		return this.externalView( argumentCollection = arguments );
+	}
+
+	/**
+	 * This is the startup procedures for the renderer. This is called after all modules, interceptions and contributions have been done
+	 * in order to allow for all chicken and the egg issues are not relevant.
+	 */
+	function startup(){
 		// Set Conventions, Settings and Properties
 		variables.layoutsConvention       = variables.controller.getColdBoxSetting( "layoutsConvention" );
 		variables.viewsConvention         = variables.controller.getColdBoxSetting( "viewsConvention" );
@@ -74,9 +91,6 @@ component
 		variables.modulesConfig           = variables.controller.getSetting( "modules" );
 		variables.viewsHelper             = variables.controller.getSetting( "viewsHelper" );
 		variables.viewCaching             = variables.controller.getSetting( "viewCaching" );
-		// Layouts + Views Reference Maps
-		variables.layoutsRefMap           = {};
-		variables.viewsRefMap             = {};
 
 		// Verify View Helper Template extension + location
 		if ( len( variables.viewsHelper ) ) {
@@ -92,18 +106,13 @@ component
 		variables.lockName = "rendering.#variables.controller.getAppHash()#";
 
 		// Discovery caching
-		variables.isDiscoveryCaching = controller.getSetting( "viewCaching" );
+		variables.isDiscoveryCaching = variables.controller.getSetting( "viewCaching" );
 
-		// HTML Helper
-		variables.html = variables.wirebox.getInstance( dsl = "@HTMLHelper" );
-
-		// Load global UDF Libraries into target
+		// Load Application helpers
 		loadApplicationHelpers();
 
 		// Announce interception
 		announce( "afterRendererInit", { variables : variables, this : this } );
-
-		return this;
 	}
 
 	/************************************** VIEW METHODS *********************************************/
@@ -111,23 +120,26 @@ component
 	/**
 	 * set the explicit view bit, used mostly internally
 	 *
-	 * @view   The name of the view to render
-	 * @module The name of the module this view comes from
-	 * @args   The view/layout passthrough arguments
+	 * @view          The name of the view to render
+	 * @module        The name of the module this view comes from
+	 * @args          The view/layout passthrough arguments
+	 * @viewVariables The view variables in the variables scope
 	 *
 	 * @return Renderer
 	 */
 	function setExplicitView(
 		required string view,
-		module      = "",
-		struct args = {}
+		module               = "",
+		struct args          = {},
+		struct viewVariables = {}
 	){
 		getRequestContext().setPrivateValue(
 			"_explicitView",
 			{
-				"view"   : arguments.view,
-				"module" : arguments.module,
-				"args"   : arguments.args
+				"view"          : arguments.view,
+				"module"        : arguments.module,
+				"args"          : arguments.args,
+				"viewVariables" : arguments.viewVariables
 			}
 		);
 		return this;
@@ -138,15 +150,6 @@ component
 	 */
 	function getExplicitView(){
 		return getRequestContext().getPrivateValue( "_explicitView", {} );
-	}
-
-	/**
-	 * Render out a view
-	 *
-	 * @deprecated Use `view()` instead
-	 */
-	function renderView(){
-		return this.view( argumentCollection = arguments );
 	}
 
 	/**
@@ -167,6 +170,7 @@ component
 	 * @collectionDelim        A string to delimit the collection renderings by
 	 * @prePostExempt          If true, pre/post view interceptors will not be fired. By default they do fire
 	 * @name                   The name of the rendering region to render out, Usually all arguments are coming from the stored region but you override them using this function's arguments.
+	 * @viewVariables          A struct of variables to incorporate into the view's variables scope.
 	 */
 	function view(
 		view                   = "",
@@ -183,7 +187,8 @@ component
 		numeric collectionMaxRows  = 0,
 		collectionDelim            = "",
 		boolean prePostExempt      = false,
-		name
+		name,
+		viewVariables = {}
 	){
 		var event             = getRequestContext();
 		var viewCacheKey      = "";
@@ -191,7 +196,7 @@ component
 		var viewCacheProvider = variables.templateCache;
 		var iData             = arguments;
 		var explicitModule    = false;
-		var viewLocations     = "";
+		var viewLocations     = { "viewPath" : "", "viewHelperPath" : "" };
 
 		// Rendering Region call?
 		if ( !isNull( arguments.name ) and len( arguments.name ) ) {
@@ -219,6 +224,7 @@ component
 				arguments.view   = explicitView.view;
 				arguments.module = explicitView.module;
 				arguments.args.append( explicitView.args, false );
+				arguments.viewVariables.append( explicitView.viewVariables, false );
 
 				// clear the explicit view now that it has been used
 				getRequestContext().removePrivateValue( "_explicitView" );
@@ -252,7 +258,7 @@ component
 		}
 
 		// Cleanup leading / in views, just in case
-		arguments.view = reReplace( arguments.view, "^(\\|/)", "" );
+		arguments.view = reReplace( arguments.view, "^(\\|//)", "" );
 
 		// Announce preViewRender interception
 		if ( NOT arguments.prepostExempt ) {
@@ -308,7 +314,7 @@ component
 		// Render collection views
 		if ( !isNull( arguments.collection ) ) {
 			// render collection in next context
-			iData.renderedView = getRenderer().renderViewCollection(
+			iData.renderedView = renderViewCollection(
 				arguments.view,
 				viewLocations.viewPath,
 				viewLocations.viewHelperPath,
@@ -317,7 +323,8 @@ component
 				arguments.collectionAs,
 				arguments.collectionStartRow,
 				arguments.collectionMaxRows,
-				arguments.collectionDelim
+				arguments.collectionDelim,
+				arguments.viewVariables
 			);
 		}
 		// Render simple composite view
@@ -326,13 +333,14 @@ component
 				arguments.view,
 				viewLocations.viewPath,
 				viewLocations.viewHelperPath,
-				arguments.args
+				arguments.args,
+				arguments.viewVariables
 			);
 		}
 
 		// Post View Render Interception point
 		if ( NOT arguments.prepostExempt ) {
-			announce( "postViewRender", local.iData );
+			announce( "postViewRender", local.iData.append( { viewPath : viewLocations.viewPath } ) );
 		}
 
 		// Are we caching view
@@ -361,98 +369,72 @@ component
 		collectionAs,
 		numeric collectionStartRow = 1,
 		numeric collectionMaxRows  = 0,
-		collectionDelim            = ""
+		collectionDelim            = "",
+		viewVariables              = {}
 	){
 		var buffer = createObject( "java", "java.lang.StringBuilder" ).init();
-		var x      = 1;
-		var recLen = 0;
 
 		// Determine the collectionAs key
 		if ( NOT len( arguments.collectionAs ) ) {
 			arguments.collectionAs = listLast( arguments.view, "/" );
 		}
 
-		// Array Rendering
-		if ( isArray( arguments.collection ) ) {
-			recLen = arrayLen( arguments.collection );
-			// is max rows passed?
-			if ( arguments.collectionMaxRows NEQ 0 AND arguments.collectionMaxRows LTE recLen ) {
-				recLen = arguments.collectionMaxRows;
-			}
-			// Create local marker
-			variables._items = recLen;
-			// iterate and present
-			for ( x = arguments.collectionStartRow; x lte recLen; x++ ) {
-				// setup local variables
-				variables._counter                  = x;
-				variables[ arguments.collectionAs ] = arguments.collection[ x ];
-				// prepend the delim
-				if ( x NEQ arguments.collectionStartRow ) {
-					buffer.append( arguments.collectionDelim );
-				}
-				// render item composite
-				buffer.append(
-					renderViewComposite(
-						arguments.view,
-						arguments.viewPath,
-						arguments.viewHelperPath,
-						arguments.args
-					)
-				);
-			}
-			return buffer.toString();
+		// Is this a query?
+		if ( isQuery( arguments.collection ) ) {
+			arguments.collection = arguments.collection.reduce( function( result, row ){
+				arguments.result.append( arguments.row );
+				return arguments.result;
+			}, [] );
 		}
 
-		// Query Rendering
-		variables._items = arguments.collection.recordCount;
-
-		// Max Rows
-		if ( arguments.collectionMaxRows NEQ 0 AND arguments.collectionMaxRows LTE arguments.collection.recordCount ) {
-			variables._items = arguments.collectionMaxRows;
+		var records = arrayLen( arguments.collection );
+		// is max rows passed?
+		if ( arguments.collectionMaxRows NEQ 0 AND arguments.collectionMaxRows LTE records ) {
+			records = arguments.collectionMaxRows;
 		}
-
-		// local counter when using startrow is greater than one and x values is reletive to lookup
-		var _localCounter = 1;
-		for ( x = arguments.collectionStartRow; x lte ( arguments.collectionStartRow + variables._items ) - 1; x++ ) {
-			// setup local cvariables
-			variables._counter = _localCounter;
-
-			var columnList = arguments.collection.columnList;
-			for ( var j = 1; j <= listLen( columnList ); j++ ) {
-				variables[ arguments.collectionAs ][ listGetAt( columnList, j ) ] = arguments.collection[
-					listGetAt( columnList, j )
-				][ x ];
-			}
-
+		// iterate and present
+		for ( var x = arguments.collectionStartRow; x lte records; x++ ) {
 			// prepend the delim
-			if ( variables._counter NEQ 1 ) {
+			if ( x NEQ arguments.collectionStartRow ) {
 				buffer.append( arguments.collectionDelim );
 			}
 
 			// render item composite
 			buffer.append(
 				renderViewComposite(
-					arguments.view,
-					arguments.viewPath,
-					arguments.viewHelperPath,
-					arguments.args
+					view          : arguments.view,
+					viewPath      : arguments.viewPath,
+					viewHelperPath: arguments.viewHelperPath,
+					args          : arguments.args,
+					viewVariables : arguments.viewVariables.append( {
+						"_items"                   : records,
+						"_counter"                 : x,
+						"#arguments.collectionAs#" : arguments.collection[ x ]
+					} )
 				)
 			);
-			_localCounter++;
 		}
-
 		return buffer.toString();
 	}
 
 	/**
 	 * Render a view alongside its helpers, used mostly internally, use at your own risk.
 	 *
-	 * @view           The view to render
+	 * @view           The view name to render
 	 * @viewPath       The path of the view to render
 	 * @viewHelperPath The helpers for the view to load before it
-	 * @args           The view arguments
+	 * @args           The view arguments structure
+	 * @variables      The struct of variables to incorporate into the view's `variables` scope
+	 *
+	 * @return The rendered view string
 	 */
-	private function renderViewComposite( view, viewPath, viewHelperPath, args ){
+	private function renderViewComposite(
+		view,
+		viewPath,
+		viewHelperPath,
+		args,
+		viewVariables = {}
+	){
 		var cbox_renderedView = "";
 		var event             = getRequestContext();
 
@@ -466,7 +448,8 @@ component
 				rendererVariables = ( isNull( attributes.rendererVariables ) ? variables : attributes.rendererVariables ),
 				event             = event,
 				rc                = event.getCollection(),
-				prc               = event.getPrivateCollection()
+				prc               = event.getPrivateCollection(),
+				viewVariables     = arguments.viewVariables
 			);
 		}
 
@@ -474,24 +457,16 @@ component
 	}
 
 	/**
-	 * Render an external view
-	 *
-	 * @deprecated Use `externalView()` instead
-	 */
-	function renderExternalView(){
-		return this.externalView( argumentCollection = arguments );
-	}
-
-	/**
 	 * Renders an external view anywhere that cfinclude works.
 	 *
 	 * @view                   The the view to render
-	 * @args                   A struct of arguments to pass into the view for rendering, will be available as 'args' in the view.
+	 * @args                   A struct of arguments to pass into the view for rendering, will be available as 'args' iview.
 	 * @cache                  Cached the view output or not, defaults to false
 	 * @cacheTimeout           The time in minutes to cache the view
 	 * @cacheLastAccessTimeout The time in minutes the view will be removed from cache if idle or requested
 	 * @cacheSuffix            The suffix to add into the cache entry for this view rendering
 	 * @cacheProvider          The provider to cache this view in, defaults to 'template'
+	 * @viewVariables          A struct of variables to incorporate into the view's variables scope.
 	 */
 	function externalView(
 		required view,
@@ -500,14 +475,15 @@ component
 		cacheTimeout           = "",
 		cacheLastAccessTimeout = "",
 		cacheSuffix            = "",
-		cacheProvider          = "template"
+		cacheProvider          = "template",
+		viewVariables          = {}
 	){
 		var cbox_renderedView  = "";
 		// Cache Entries
 		var cbox_cacheKey      = "";
 		var cbox_cacheEntry    = "";
 		var cbox_cacheProvider = variables.templateCache;
-		var viewLocations      = "";
+		var viewLocations      = { "viewPath" : "", "viewHelperPath" : "" };
 
 		// Setup the cache key
 		cbox_cacheKey = variables.templateCache.VIEW_CACHEKEY_PREFIX & "external-" & arguments.view & arguments.cacheSuffix;
@@ -533,7 +509,8 @@ component
 			viewPath       = viewLocations.viewPath,
 			viewHelperPath = viewLocations.viewHelperPath,
 			args           = args,
-			renderer       = this
+			renderer       = this,
+			viewVariables  = arguments.viewVariables
 		);
 		// Are we caching it
 		if ( arguments.cache && variables.viewCaching ) {
@@ -550,15 +527,6 @@ component
 	/************************************** LAYOUT METHODS *********************************************/
 
 	/**
-	 * Render a layout
-	 *
-	 * @deprecated Use `layout()` instead
-	 */
-	function renderLayout(){
-		return this.layout( argumentCollection = arguments );
-	}
-
-	/**
 	 * Render a layout or a layout + view combo
 	 *
 	 * @layout        The layout to render out
@@ -567,6 +535,7 @@ component
 	 * @args          An optional set of arguments that will be available to this layouts/view rendering ONLY
 	 * @viewModule    The module to explicitly render the view from
 	 * @prePostExempt If true, pre/post layout interceptors will not be fired. By default they do fire
+	 * @viewVariables A struct of variables to incorporate into the view's variables scope.
 	 */
 	function layout(
 		layout,
@@ -574,7 +543,8 @@ component
 		view                  = "",
 		struct args           = getRequestContext().getCurrentViewArgs(),
 		viewModule            = "",
-		boolean prePostExempt = false
+		boolean prePostExempt = false,
+		viewVariables         = {}
 	){
 		var event                  = getRequestContext();
 		var cbox_locateUDF         = variables.locateLayout;
@@ -582,7 +552,7 @@ component
 		var cbox_layoutLocationKey = "";
 		var cbox_layoutLocation    = "";
 		var iData                  = arguments;
-		var viewLocations          = "";
+		var viewLocations          = { "viewPath" : "", "viewHelperPath" : "" };
 		var explicitView           = getExplicitView();
 
 		// Are we discovering implicit views: setting must be on and no view set.
@@ -604,11 +574,12 @@ component
 			return controller
 				.getRenderer()
 				.setExplicitView(
-					arguments.view,
-					arguments.viewModule,
-					arguments.args
+					view         : arguments.view,
+					module       : arguments.viewModule,
+					args         : arguments.args,
+					viewVariables: arguments.viewVariables
 				)
-				.renderLayout( argumentCollection = arguments );
+				.layout( argumentCollection = arguments );
 		}
 
 		// If no passed layout, then get it from implicit values
@@ -652,7 +623,7 @@ component
 
 		// If Layout is blank, then just delegate to the view
 		if ( len( cbox_currentLayout ) eq 0 ) {
-			iData.renderedLayout = renderView();
+			iData.renderedLayout = this.view();
 		} else {
 			// Layout location key
 			cbox_layoutLocationKey = cbox_currentLayout & arguments.module & cbox_explicitModule;
@@ -682,24 +653,25 @@ component
 				}
 			}
 			// Get the view locations
-			var viewLocations = discoverViewPaths(
+			viewLocations = discoverViewPaths(
 				view           = reverse( listRest( reverse( cbox_layoutLocation ), "." ) ),
 				module         = arguments.module,
 				explicitModule = cbox_explicitModule
 			);
 
-			// RenderLayout
+			// layout
 			iData.renderedLayout = renderViewComposite(
 				view           = cbox_currentLayout,
 				viewPath       = viewLocations.viewPath,
 				viewHelperPath = viewLocations.viewHelperPath,
-				args           = args
+				args           = args,
+				viewVariables  = arguments.viewVariables
 			);
 		}
 
 		// Announce
 		if ( not arguments.prePostExempt ) {
-			announce( "postLayoutRender", iData );
+			announce( "postLayoutRender", iData.append( { viewPath : viewLocations.viewPath } ) );
 		}
 
 		return iData.renderedLayout;

@@ -1,7 +1,10 @@
 ﻿/**
  * A utility object that provides runtime mixins
  */
-component {
+component accessors="true" {
+
+	// The mixins map to inject
+	property name="mixins";
 
 	/**
 	 * Constructor
@@ -193,6 +196,30 @@ component {
 		} else {
 			return invoke( this, arguments.method );
 		}
+	}
+
+	/**
+	 * Utility function injected into target objects that expose delegation
+	 * It will allow ANY delegate method to do method delegation lookups
+	 *
+	 * @throws InvalidDelegateFunction - When a function that has not been delegated has been called
+	 */
+	function getByDelegate(){
+		var targetFunction = getFunctionCalledName();
+
+		if ( !this.$wbDelegateMap.keyExists( targetFunction ) ) {
+			throw(
+				message: "The requested delegate function (#targetFunction#) has not been registered",
+				type   : "InvalidDelegateFunction"
+			)
+		}
+
+		// Invoke delegation with argument collection
+		return invoke(
+			this.$wbDelegateMap[ targetFunction ].delegate,
+			this.$wbDelegateMap[ targetFunction ].method,
+			arguments
+		);
 	}
 
 }

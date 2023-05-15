@@ -82,6 +82,10 @@ component {
 			}
 		}
 
+		if( url.keyExists( "fwreinit" ) ){
+			ormReload();
+		}
+
 		// Process ColdBox Request
 		application.cbBootstrap.onRequestStart( arguments.targetPage );
 

@@ -71,7 +71,7 @@ component accessors="true" {
 				// some nice debug info.
 				if ( variables.log.canDebug() ) {
 					variables.log.debug(
-						"Object: (#cacheProperties.toString()#) not found in cacheBox, beginning construction."
+						"Object: (#cacheProperties.toString()#) not found in cacheBox, beginning construction by (#variables.injector.getName()#) injector"
 					);
 				}
 
@@ -91,8 +91,13 @@ component accessors="true" {
 					);
 				}
 
-				// wire up dependencies on the object
-				variables.injector.autowire( target = local.refLocal.target, mapping = arguments.mapping );
+				try {
+					// wire up dependencies on the object
+					variables.injector.autowire( target = local.refLocal.target, mapping = arguments.mapping );
+				} catch ( any e ) {
+					cacheProvider.clear( cacheKey );
+					rethrow;
+				}
 
 				// If thread safe, then now store it in the cache, as all dependencies are now safely wired
 				if ( arguments.mapping.getThreadSafe() ) {
@@ -107,7 +112,7 @@ component accessors="true" {
 				// log it
 				if ( variables.log.canDebug() ) {
 					variables.log.debug(
-						"Object: (#cacheProperties.toString()#) constructed and stored in cacheBox. ThreadSafe=#arguments.mapping.getThreadSafe()#"
+						"Object: (#cacheProperties.toString()#) constructed and stored in cacheBox. ThreadSafe=#arguments.mapping.getThreadSafe()# by (#variables.injector.getName()#) injector"
 					);
 				}
 
@@ -127,7 +132,7 @@ component accessors="true" {
 	 * @mapping             The linked WireBox injector
 	 * @mapping.doc_generic coldbox.system.ioc.config.Mapping
 	 *
-	 * @return coldbox.system.ioc.scopes.IScope
+	 * @return True if the mapping exists in the singleton cache
 	 */
 	boolean function exists( required mapping ){
 		return variables.cacheProvider.lookupQuiet( arguments.mapping.getCacheProperties().key );

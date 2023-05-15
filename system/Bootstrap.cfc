@@ -100,14 +100,14 @@ component serializable="false" accessors="true" {
 		}
 
 		// Create Brand New Controller
-		application[ appKey ] = new coldbox.system.web.Controller( COLDBOX_APP_ROOT_PATH, appKey );
+		application[ appKey ] = new coldbox.system.web.Controller( variables.COLDBOX_APP_ROOT_PATH, appKey );
 		// Setup the Framework And Application
 		application[ appKey ]
 			.getLoaderService()
 			.loadApplication(
-				COLDBOX_CONFIG_FILE,
-				COLDBOX_APP_MAPPING,
-				COLDBOX_WEB_MAPPING
+				variables.COLDBOX_CONFIG_FILE,
+				variables.COLDBOX_APP_MAPPING,
+				variables.COLDBOX_WEB_MAPPING
 			);
 		// Get the reinit key
 		// Application Start Handler
@@ -215,9 +215,7 @@ component serializable="false" accessors="true" {
 	 */
 	function processColdBoxRequest() output="true"{
 		// Get Controller Reference
-		lock type="readonly" name="#variables.appHash#" timeout="#variables.lockTimeout#" throwontimeout="true" {
-			var cbController = application[ locateAppKey() ];
-		}
+		var cbController       = application[ locateAppKey() ];
 		// Local references
 		var interceptorService = cbController.getInterceptorService();
 		var cacheBox           = cbController.getCacheBox();
@@ -225,7 +223,7 @@ component serializable="false" accessors="true" {
 		try {
 			// set request time, for info purposes
 			request.fwExecTime = getTickCount();
-			// Load Module CF Mappings
+			// Load Module Mappings since dumb CFML engines can't keep state on this.
 			cbController.getModuleService().loadMappings();
 			// Create Request Context & Capture Request
 			var event = cbController.getRequestService().requestCapture();
@@ -266,7 +264,9 @@ component serializable="false" accessors="true" {
 				} );
 
 				// Cached Status Code
-				if ( isNumeric( local.refResults.eventCaching.statusCode ) && local.refResults.eventCaching.statusCode > 0 ) {
+				if (
+					isNumeric( local.refResults.eventCaching.statusCode ) && local.refResults.eventCaching.statusCode > 0
+				) {
 					event.setHTTPHeader( statusCode = local.refResults.eventCaching.statusCode );
 				}
 
@@ -313,7 +313,7 @@ component serializable="false" accessors="true" {
 						}
 						// ColdBox does native JSON if you return a complex object.
 						else {
-							renderedContent = serializeJSON( local.refResults.results, true );
+							renderedContent = cbController.getUtil().toJson( local.refResults.results );
 							getPageContextResponse().setContentType( "application/json" );
 						}
 					}
@@ -321,7 +321,7 @@ component serializable="false" accessors="true" {
 					else {
 						renderedContent = cbcontroller
 							.getRenderer()
-							.renderLayout(
+							.layout(
 								module     = event.getCurrentLayoutModule(),
 								viewModule = event.getCurrentViewModule()
 							);
@@ -426,7 +426,6 @@ component serializable="false" accessors="true" {
 		request.fwExecTime = getTickCount() - request.fwExecTime;
 	}
 
-
 	/**
 	 * Verify if a reinit is sent
 	 */
@@ -514,9 +513,7 @@ component serializable="false" accessors="true" {
 	 */
 	boolean function onMissingTemplate( required template ){
 		// get reference
-		lock type="readonly" name="#variables.appHash#" timeout="#variables.lockTimeout#" throwontimeout="true" {
-			var cbController = application[ locateAppKey() ];
-		}
+		var cbController = application[ locateAppKey() ];
 		// Execute Missing Template Handler if it exists
 		if ( len( cbController.getSetting( "MissingTemplateHandler" ) ) ) {
 			// Save missing template in RC and right handler for this call.
@@ -541,9 +538,7 @@ component serializable="false" accessors="true" {
 	 */
 	function onSessionStart(){
 		// get reference
-		lock type="readonly" name="#variables.appHash#" timeout="#variables.lockTimeout#" throwontimeout="true" {
-			var cbController = application[ locateAppKey() ];
-		}
+		var cbController = application[ locateAppKey() ];
 		// Session start interceptors
 		cbController.getInterceptorService().announce( "sessionStart", session );
 		// Execute Session Start Handler
@@ -558,12 +553,9 @@ component serializable="false" accessors="true" {
 	function onSessionEnd( required struct sessionScope, struct appScope ){
 		var cbController = "";
 
-		// Get reference
-		lock type="readonly" name="#variables.appHash#" timeout="#variables.lockTimeout#" throwontimeout="true" {
-			// Check for cb Controller
-			if ( structKeyExists( arguments.appScope, locateAppKey() ) ) {
-				cbController = arguments.appScope.cbController;
-			}
+		// Check for cb Controller
+		if ( structKeyExists( arguments.appScope, locateAppKey() ) ) {
+			cbController = arguments.appScope.cbController;
 		}
 
 		if ( not isSimpleValue( cbController ) ) {
@@ -735,23 +727,19 @@ component serializable="false" accessors="true" {
 	 * Locate the application key
 	 */
 	private function locateAppKey(){
-		if ( len( trim( COLDBOX_APP_KEY ) ) ) {
-			return COLDBOX_APP_KEY;
+		if ( len( trim( variables.COLDBOX_APP_KEY ) ) ) {
+			return variables.COLDBOX_APP_KEY;
 		}
 		return "cbController";
 	}
 
 	/**
-	 * Helper method to deal with ACF2016's overload of the page context response, come on Adobe, get your act together!
-	 **/
+	 * Helper method to deal with ACF's overload of the page context response, come on Adobe, get your act together!
+	 */
 	private function getPageContextResponse(){
-		var response = getPageContext().getResponse();
-		try {
-			response.getStatus();
-			return response;
-		} catch ( any e ) {
-			return response.getResponse();
-		}
+		return server.keyExists( "lucee" ) ? getPageContext().getResponse() : getPageContext()
+			.getResponse()
+			.getResponse();
 	}
 
 }

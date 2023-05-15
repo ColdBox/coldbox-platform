@@ -8,8 +8,8 @@ Hola amigo! I'm really excited that you are interested in contributing to ColdBo
 - [Pull Request Guidelines](#pull-request-guidelines)
 - [Security Vulnerabilities](#security-vulnerabilities)
 - [Development Setup](#development-setup)
-	- [Language Compatiblity](#language-compatiblity)
-- [Coding Styles & Formatting](#coding-styles--formatting)
+- [Language Compatiblity](#language-compatiblity)
+- [Coding Styles \& Formatting](#coding-styles--formatting)
 - [CFC Docs With DocBox](#cfc-docs-with-docbox)
 - [Financial Contributions](#financial-contributions)
 - [Contributors](#contributors)
@@ -21,14 +21,13 @@ This project is open source, and as such, the maintainers give their free time t
 - As contributors and maintainers of this project, we pledge to respect all people who contribute through reporting issues, posting feature requests, updating documentation, submitting pull requests or patches, and other activities.
 - Participants will be tolerant of opposing views.
 - Examples of unacceptable behavior by participants include the use of sexual language or imagery, derogatory comments or personal attacks, trolling, public or private harassment, insults, or other unprofessional conduct.
-- Project maintainers have the right and responsibility to remove, edit, or reject comments, commits, code, wiki edits, issues, and other contributions that are not aligned to this Code of Conduct. Project maintainers who do not follow the Code of Conduct may be removed from the project team.
+- Project maintainers have the right and responsibility to remove, edit, or reject comments, commits, code, wiki edits, issues, and other contributions that are not aligned with this Code of Conduct. Project maintainers who do not follow the Code of Conduct may be removed from the project team.
 - When interpreting the words and actions of others, participants should always assume good intentions.  Emotions cannot be derived from textual representations.
 - Instances of abusive, harassing, or otherwise unacceptable behavior may be reported by opening an issue or contacting one or more of the project maintainers.
 
-
 ## Bug Reporting
 
-Each of the main standalone frameworks in ColdBox have their separate locations for submitting bug reports.  Please make sure also that if you submit a pull request, that you link it to the appropriate issue.
+Each of the main standalone frameworks in ColdBox has its separate locations for submitting bug reports.  Please make sure also that if you submit a pull request, you link it to the appropriate issue.
 
 - ColdBox Core : https://ortussolutions.atlassian.net/browse/COLDBOX
 - CacheBox : https://ortussolutions.atlassian.net/browse/CACHEBOX
@@ -39,10 +38,10 @@ If you file a bug report, your issue should contain a title, a clear description
 
 ## Support Questions
 
-If you have any questions on usage, professional support or just ideas to bounche of the maintainers, please do not create an issue.  Leverage our support channels first.
+If you have any questions on usage, professional support or just ideas to bounce off the maintainers, please do not create an issue.  Leverage our support channels first.
 
 - Ortus Community Discourse: https://community.ortussolutions.com/c/communities/coldbox/13
-- Box Slack Team: http://boxteam.herokuapp.com/
+- Box Slack Team: http://boxteam.ortussolutions.com/
 - Professional Support: https://www.ortussolutions.com/services/support
 
 ## Pull Request Guidelines
@@ -62,7 +61,7 @@ If you discover a security vulnerability, please send an email to the developmen
 
 We have added all the necessary information for you to develop on ColdBox in our [readme collaboration area](../readme.md#collaboration) and also in our [tests readme](../tests/readme.md) so you can setup the database to test against.
 
-### Language Compatiblity
+## Language Compatiblity
 
 Please make sure your code runs on the following CFML Engines:
 
@@ -89,7 +88,6 @@ You can also see the Ortus Coding Standards you must follow here: https://github
 
 All CFCs are self-documenting and we leverage [DocBox](https://docbox.ortusbooks.com/) to document the entire software.  All functions must be properly documented using the DocBox syntax: https://docbox.ortusbooks.com/getting-started/annotating-your-code
 
-
 ## Financial Contributions
 
 You can support ColdBox and all of our Open Source initiatives at Ortus Solutions by becoming a patreon.  You can also get lots of goodies and services depending on the level of contributions.
@@ -99,8 +97,7 @@ You can support ColdBox and all of our Open Source initiatives at Ortus Solution
 
 ## Contributors
 
-Thank you to all the people who have already contributed to ColdBox! We :heart: :heart: :heart: love you!
-
+Thank you to all the people who have already contributed to ColdBox! We: heart: : heart: : heart: love you!
 
 <a href = "https://github.com/coldbox/coldbox-platform/graphs/contributors">
   <img src = "https://contrib.rocks/image?repo=coldbox/coldbox-platform"/>

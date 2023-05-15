@@ -114,6 +114,21 @@ component extends="tests.resources.BaseIntegrationTest" {
 					} );
 				} );
 			} );
+
+			story( "I want to retrieve root injectors via DSL", function(){
+				beforeEach( function( currentSpec ){
+					var child = new coldbox.system.ioc.Injector(
+						"coldbox.tests.specs.ioc.config.samples.NoScopeBinder"
+					).setRoot( getWireBox() );
+					injector.registerChildInjector( "myChild", child );
+				} );
+				given( "An object with a wirebox:root dsl", function(){
+					then( "it should build and inject a root injector", function(){
+						var childSample = injector.getInstance( "tests.resources.ChildInjectorSample" );
+						expect( childSample.getRoot().getName() ).toBe( "root" );
+					} );
+				} );
+			} );
 		} );
 	}
 

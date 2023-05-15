@@ -29,17 +29,12 @@ component
 	function beforeAll(){
 
 		// Cleanup
-		structDelete( request, "_lastInvalidEvent" );
+		cleanupColdBoxRequestData();
 		structDelete( url, "event" );
 		structDelete( url, "format" );
 
 		// Super size me!
 		super.beforeAll();
-
-		// Wire up the test object with dependencies
-		if( this.loadColdBox && structKeyExists( application, "wirebox" ) ){
-			application.wirebox.autowire( this );
-		}
 
 		// add custom matchers
 		addMatchers( {
@@ -64,8 +59,9 @@ component
 	 * Cleanup for invalid handler on all tests
 	 * @beforeEach
 	 */
-	function cleanupInvalidHandler(){
+	function cleanupColdBoxRequestData(){
 		structDelete( request, "_lastInvalidEvent" );
+		structDelete( request, "cbTransientDICache" )
 	}
 
 	function isAdobe(){
@@ -74,6 +70,14 @@ component
 
 	function isLucee(){
 		return server.keyExists( "lucee" );
+	}
+
+	function isLucee6(){
+		return server.keyExists( "lucee" ) && left( server.lucee.version, 1 ) == 6;
+	}
+
+	function noWSDLSupport(){
+		return isAdobe() || isLucee6();
 	}
 
 	function shutdownColdBox(){

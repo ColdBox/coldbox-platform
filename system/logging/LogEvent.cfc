@@ -46,9 +46,7 @@ component accessors="true" {
 		category  = ""
 	){
 		// Init event
-		variables.timestamp    = now();
-		// converters
-		variables.xmlConverter = new coldbox.system.core.conversion.XMLConverter();
+		variables.timestamp = now();
 
 		for ( var key in arguments ) {
 			if ( isSimpleValue( arguments[ key ] ) ) {
@@ -57,6 +55,20 @@ component accessors="true" {
 			variables[ key ] = arguments[ key ];
 		}
 		return this;
+	}
+
+	function getXmlConverter(){
+		if ( isNull( variables.xmlConverter ) ) {
+			variables.xmlConverter = new coldbox.system.core.conversion.XMLConverter();
+		}
+		return variables.xmlConverter;
+	}
+
+	function getUtil(){
+		if ( isNull( variables.util ) ) {
+			variables.util = new coldbox.system.core.util.Util();
+		}
+		return variables.util;
 	}
 
 	/**
@@ -73,13 +85,24 @@ component accessors="true" {
 			return variables.extraInfo.$toString();
 		}
 
+		// Is this a raw CFML Exception?
+		if (
+			( isObject( variables.extraInfo ) || isStruct( variables.extraInfo ) )
+			&&
+			structKeyExists( variables.extraInfo, "stacktrace" ) &&
+			structKeyExists( variables.extraInfo, "message" ) &&
+			structKeyExists( variables.extraInfo, "detail" )
+		) {
+			return new coldbox.system.web.context.ExceptionBean( variables.extraInfo ).$toString();
+		}
+
 		// Component XML conversion
 		if ( isObject( variables.extraInfo ) ) {
-			return variables.xmlConverter.toXML( variables.extraInfo );
+			return getXmlConverter().toXML( variables.extraInfo );
 		}
 
 		// Complex values, return serialized in json
-		return serializeJSON( variables.extraInfo );
+		return getUtil().toPrettyJson( variables.extraInfo );
 	}
 
 }

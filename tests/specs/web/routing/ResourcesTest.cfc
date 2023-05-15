@@ -20,6 +20,7 @@
 					{
 						pattern   : "/sites/:siteId/agents/:id/edit",
 						handler   : "agents",
+						name      : "agents.edit",
 						action    : { GET : "edit" },
 						module    : "",
 						namespace : "",
@@ -32,6 +33,7 @@
 						pattern   : "/sites/:siteId/agents/new",
 						handler   : "agents",
 						action    : { GET : "new" },
+						name      : "agents.new",
 						module    : "",
 						namespace : "",
 						meta      : {}
@@ -48,6 +50,7 @@
 							PATCH  : "update",
 							DELETE : "delete"
 						},
+						name      : "agents.process",
 						module    : "",
 						namespace : "",
 						meta      : {}
@@ -59,6 +62,7 @@
 						pattern   : "/sites/:siteId/agents",
 						handler   : "agents",
 						action    : { GET : "index", POST : "create" },
+						name      : "agents",
 						module    : "",
 						namespace : "",
 						meta      : {}
@@ -72,7 +76,7 @@
 
 				var cl = router.$callLog().addRoute;
 
-				debug( cl );
+				// debug( cl );
 
 				expect( cl ).toHaveLength( 2, "addRoute should have been called 2 times" );
 				expect( cl[ 1 ] ).toBe(
@@ -85,6 +89,7 @@
 							PATCH  : "update",
 							DELETE : "delete"
 						},
+						name      : "photos.process",
 						module    : "",
 						namespace : "",
 						meta      : {}
@@ -96,6 +101,7 @@
 						pattern   : "/photos",
 						handler   : "photos",
 						action    : { GET : "index", POST : "create" },
+						name      : "photos",
 						module    : "",
 						namespace : "",
 						meta      : {}
@@ -109,7 +115,7 @@
 
 				var cl = router.$callLog().addRoute;
 
-				debug( cl );
+				// debug( cl );
 
 				expect( cl ).toHaveLength( 4, "addRoute should have been called 4 times" );
 				expect( cl[ 1 ] ).toBe(
@@ -117,6 +123,7 @@
 						pattern   : "/photos/:id/edit",
 						handler   : "photos",
 						action    : { GET : "edit" },
+						name      : "photos.edit",
 						module    : "",
 						namespace : "",
 						meta      : {}
@@ -128,6 +135,7 @@
 						pattern   : "/photos/new",
 						handler   : "photos",
 						action    : { GET : "new" },
+						name      : "photos.new",
 						module    : "",
 						namespace : "",
 						meta      : {}
@@ -144,6 +152,7 @@
 							PATCH  : "update",
 							DELETE : "delete"
 						},
+						name      : "photos.process",
 						module    : "",
 						namespace : "",
 						meta      : {}
@@ -155,6 +164,7 @@
 						pattern   : "/photos",
 						handler   : "photos",
 						action    : { GET : "index", POST : "create" },
+						name      : "photos",
 						module    : "",
 						namespace : "",
 						meta      : {}
@@ -175,6 +185,7 @@
 						pattern   : "/photos/:id/edit",
 						handler   : "PhotosController",
 						action    : { GET : "edit" },
+						name      : "PhotosController.edit",
 						module    : "",
 						namespace : "",
 						meta      : {}
@@ -186,6 +197,7 @@
 						pattern   : "/photos/new",
 						handler   : "PhotosController",
 						action    : { GET : "new" },
+						name      : "PhotosController.new",
 						module    : "",
 						namespace : "",
 						meta      : {}
@@ -202,6 +214,7 @@
 							PATCH  : "update",
 							DELETE : "delete"
 						},
+						name      : "PhotosController.process",
 						module    : "",
 						namespace : "",
 						meta      : {}
@@ -213,6 +226,7 @@
 						pattern   : "/photos",
 						handler   : "PhotosController",
 						action    : { GET : "index", POST : "create" },
+						name      : "PhotosController",
 						module    : "",
 						namespace : "",
 						meta      : {}
@@ -233,6 +247,7 @@
 						pattern   : "/photos/:photoId/edit",
 						handler   : "photos",
 						action    : { GET : "edit" },
+						name      : "photos.edit",
 						module    : "",
 						namespace : "",
 						meta      : {}
@@ -244,6 +259,7 @@
 						pattern   : "/photos/new",
 						handler   : "photos",
 						action    : { GET : "new" },
+						name      : "photos.new",
 						module    : "",
 						namespace : "",
 						meta      : {}
@@ -260,6 +276,7 @@
 							PATCH  : "update",
 							DELETE : "delete"
 						},
+						name      : "photos.process",
 						module    : "",
 						namespace : "",
 						meta      : {}
@@ -271,6 +288,7 @@
 						pattern   : "/photos",
 						handler   : "photos",
 						action    : { GET : "index", POST : "create" },
+						name      : "photos",
 						module    : "",
 						namespace : "",
 						meta      : {}
@@ -299,6 +317,7 @@
 								pattern   : "/photos/:id",
 								handler   : "photos",
 								action    : { GET : "show" },
+								name      : "photos.process",
 								module    : "",
 								namespace : "",
 								meta      : {}
@@ -310,6 +329,7 @@
 								pattern   : "/photos",
 								handler   : "photos",
 								action    : { GET : "index" },
+								name      : "photos",
 								module    : "",
 								namespace : "",
 								meta      : {}
@@ -330,6 +350,7 @@
 								pattern   : "/photos/:id",
 								handler   : "photos",
 								action    : { GET : "show" },
+								name      : "photos.process",
 								module    : "",
 								namespace : "",
 								meta      : {}
@@ -341,6 +362,7 @@
 								pattern   : "/photos",
 								handler   : "photos",
 								action    : { GET : "index" },
+								name      : "photos",
 								module    : "",
 								namespace : "",
 								meta      : {}
@@ -363,6 +385,7 @@
 								pattern   : "/photos/new",
 								handler   : "photos",
 								action    : { GET : "new" },
+								name      : "photos.new",
 								module    : "",
 								namespace : "",
 								meta      : {}
@@ -374,6 +397,7 @@
 								pattern   : "/photos/:id",
 								handler   : "photos",
 								action    : { GET : "show" },
+								name      : "photos.process",
 								module    : "",
 								namespace : "",
 								meta      : {}
@@ -385,6 +409,7 @@
 								pattern   : "/photos",
 								handler   : "photos",
 								action    : { GET : "index" },
+								name      : "photos",
 								module    : "",
 								namespace : "",
 								meta      : {}
@@ -405,6 +430,7 @@
 								pattern   : "/photos/new",
 								handler   : "photos",
 								action    : { GET : "new" },
+								name      : "photos.new",
 								module    : "",
 								namespace : "",
 								meta      : {}
@@ -416,6 +442,7 @@
 								pattern   : "/photos/:id",
 								handler   : "photos",
 								action    : { GET : "show" },
+								name      : "photos.process",
 								module    : "",
 								namespace : "",
 								meta      : {}
@@ -427,6 +454,7 @@
 								pattern   : "/photos",
 								handler   : "photos",
 								action    : { GET : "index" },
+								name      : "photos",
 								module    : "",
 								namespace : "",
 								meta      : {}
@@ -456,6 +484,7 @@
 								pattern   : "/photos",
 								handler   : "photos",
 								action    : { GET : "index" },
+								name      : "photos",
 								module    : "",
 								namespace : "",
 								meta      : {}

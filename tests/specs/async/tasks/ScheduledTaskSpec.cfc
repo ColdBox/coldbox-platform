@@ -175,7 +175,8 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 					var t = scheduler.task( "test" ).onFirstBusinessDayOfTheMonth( "09:00" );
 					expect( t.getPeriod() ).toBe( 86400 );
 					expect( t.getTimeUnit() ).toBe( "seconds" );
-					expect( t.getDayOfTheMonth() ).toBe( 1 );
+					expect( t.getTaskTime() ).toBe( "09:00" );
+					expect( t.getFirstBusinessDay() ).toBeTrue();
 				} );
 
 				it( "can register to fire onLastBusinessDayOfTheMonth()", function(){
@@ -262,14 +263,14 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 				} );
 
 				it( "can have a last business day of the month constraint", function(){
-					var nowDate = new coldbox.system.async.time.ChronoUnit().toLocalDateTime( now(), "UTC" );
+					var nowDate = new coldbox.system.async.time.DateTimeHelper().toLocalDateTime( now(), "UTC" );
 
 					var t = prepareMock( scheduler.task( "test" ) ).setLastBusinessDay( true );
 
-					makePublic( t, "getLastDayOfTheMonth" );
+					makePublic( t, "getLastBusinessDayOfTheMonth" );
 
 					// If we are at the last day, increase it
-					if ( nowDate.getDayOfMonth() == t.getLastDayOfTheMonth().getDayOfMonth() ) {
+					if ( nowDate.getDayOfMonth() == t.getLastBusinessDayOfTheMonth().getDayOfMonth() ) {
 						nowDate = nowDate.plusDays( javacast( "int", -1 ) );
 					}
 
@@ -277,7 +278,7 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 					expect( t.isConstrained() ).toBeTrue();
 
 					var mockNow = t.getJavaNow();
-					prepareMock( t ).$( "getLastDayOfTheMonth", mockNow );
+					prepareMock( t ).$( "getLastBusinessDayOfTheMonth", mockNow );
 
 					expect( t.isConstrained() ).toBeFalse();
 				} );
@@ -375,7 +376,7 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 					} );
 				} );
 
-				fstory( "can restrict tasks via a end on constraint", function(){
+				story( "can restrict tasks via a end on constraint", function(){
 					given( "a valid end on constraint", function(){
 						then( "it should run the task", function(){
 							var targetDate = dateFormat( dateAdd( "d", 5, now() ), "yyyy-mm-dd" );

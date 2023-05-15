@@ -1,0 +1,18 @@
+{
+    "app":{
+        "cfengine":"adobe@2021"
+    },
+    "name":"6load-acf2021",
+    "JVM":{
+        "heapSize":"512"
+    },
+    "web":{
+        "rewrites":{
+            "enable":"false"
+        },
+        "http":{
+            "port":"8700"
+        }
+    },
+    "openbrowser":false
+}

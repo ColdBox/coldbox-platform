@@ -16,17 +16,23 @@
 			.$( "getInterceptorService", mockIService )
 			.$( "getSetting" )
 			.$args( "applicationHelper" )
-			.$results( [] );
-
-		mockController.setLogBox( mockLogBox );
-		mockController.setWireBox( mockWireBox );
-		mockController.setCacheBox( mockCacheBox );
+			.$results( [] )
+			.setLogBox( mockLogBox )
+			.setWireBox( mockWireBox )
+			.setCacheBox( mockCacheBox );
 
 		mockRS.$( "getFlashScope", flashScope );
 		mockLogBox.$( "getLogger", mockLogger );
 
 		properties = { debugmode : true, configFile : "config/routes.cfm" };
-		interceptor.init( mockController, properties ).$( "getInterceptorService", mockIService );
+		interceptor
+			.init( properties )
+			.setCacheBox( mockCacheBox )
+			.setController( mockController )
+			.setFlash( flashScope )
+			.setLogBox( mockLogBox )
+			.setLog( mockLogger )
+			.setWireBox( mockWirebox );
 	}
 
 	function testProperties(){

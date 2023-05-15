@@ -413,7 +413,7 @@ component accessors="true" singleton {
 
 		// build it up
 		var javaArray = createObject( "java", "java.util.stream.IntStream" )
-			.rangeClosed( arguments.from, arguments.to )
+			.rangeClosed( javacast( "int", arguments.from ), javacast( "int", arguments.to ) )
 			.toArray();
 		var cfArray = [];
 		cfArray.append( javaArray, true );

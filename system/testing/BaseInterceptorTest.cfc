@@ -35,9 +35,7 @@ component extends="coldbox.system.testing.BaseTestCase" {
 			applicationHelper = listToArray( md.applicationHelper );
 		}
 		// Check if user setup interceptor properties on scope
-		if ( NOT structKeyExists( variables, "configProperties" ) ) {
-			variables.configProperties = structNew();
-		}
+		param variables.configProperties = {};
 
 		// Create interceptor with Mocking capabilities
 		variables.interceptor = mockBox.createMock( md.interceptor );
@@ -55,7 +53,9 @@ component extends="coldbox.system.testing.BaseTestCase" {
 		variables.mockLogger   = mockBox.createEmptyMock( "coldbox.system.logging.Logger" );
 		variables.mockFlash    = mockBox.createMock( "coldbox.system.web.flash.MockFlash" ).init( mockController );
 		variables.mockCacheBox = mockBox.createEmptyMock( "coldbox.system.cache.CacheFactory" );
-		variables.mockWireBox  = mockBox.createEmptyMock( "coldbox.system.ioc.Injector" );
+		variables.mockWireBox  = mockBox
+			.createMock( "coldbox.system.ioc.Injector" )
+			.init( { scopeRegistration : { enabled : false } } );
 
 		// Mock interceptor Dependencies
 		variables.mockController
@@ -77,11 +77,21 @@ component extends="coldbox.system.testing.BaseTestCase" {
 			getUtil().convertToColdBox( "interceptor", variables.interceptor );
 			// Check if doing cbInit()
 			if ( structKeyExists( variables.interceptor, "$cbInit" ) ) {
-				variables.interceptor.$cbInit( mockController, configProperties );
+				variables.interceptor.$cbInit( configProperties );
 			}
 		} else {
-			variables.interceptor.init( mockController, configProperties );
+			variables.interceptor.init( configProperties );
 		}
+		variables.interceptor
+			.setController( mockController )
+			.setCacheBox( mockCachebox )
+			.setFlash( mockFlash )
+			.setLogBox( mockLogBox )
+			.setLog( mockLogger )
+			.setWireBox( mockWireBox )
+			.setEnv( mockWireBox.getInstance( "coldbox.system.core.delegates.Env" ) )
+			.setjsonUtil( mockWireBox.getInstance( "coldbox.system.core.delegates.JsonUtil" ) )
+			.setFlow( mockWireBox.getInstance( "coldbox.system.core.delegates.Flow" ) );
 	}
 
 }

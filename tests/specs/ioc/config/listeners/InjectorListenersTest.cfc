@@ -1,5 +1,5 @@
-﻿<cfcomponent extends="coldbox.system.testing.BaseModelTest">
-	<cfscript>
+﻿component extends="coldbox.system.testing.BaseModelTest" {
+
 	function setup(){
 		// init with defaults
 		injector = createMock( "coldbox.system.ioc.Injector" );
@@ -15,5 +15,5 @@
 		assertEquals( true, structKeyExists( eventContainers, "afterInstanceCreation" ) );
 		assertEquals( true, structKeyExists( eventContainers, "beforeInstanceCreation" ) );
 	}
-	</cfscript>
-</cfcomponent>
+
+}

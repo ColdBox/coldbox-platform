@@ -10,30 +10,37 @@ component accessors="true" {
 	 * Invocation path
 	 */
 	property name="invocationPath";
+
 	/**
 	 * The handler to execute
 	 */
 	property name="handler";
+
 	/**
 	 * The method to execute
 	 */
 	property name="method";
+
 	/**
 	 * The module assignment
 	 */
 	property name="module";
+
 	/**
 	 * Missing action method
 	 */
 	property name="missingAction";
+
 	/**
 	 * Private execution
 	 */
 	property name="isPrivate" type="boolean";
+
 	/**
 	 * View dispatching
 	 */
 	property name="viewDispatch" type="boolean";
+
 	/**
 	 * Action metadata
 	 */

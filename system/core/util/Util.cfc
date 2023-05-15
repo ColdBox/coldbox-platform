@@ -1,11 +1,34 @@
 ﻿/**
- * The main ColdBox utility library, it is built with tags to allow for dumb ACF10 compatibility
+ * The main ColdBox utility library.
  */
 component {
 
 	/****************************************************************
 	 * SERVER/USER/CFML ENGINE HELPERS *
 	 ****************************************************************/
+
+	private function getEngineMappingHelper(){
+		// Lazy load the helper
+		if ( isNull( variables.engineMappingHelper ) ) {
+			// Detect server
+			if ( listFindNoCase( "Lucee", server.coldfusion.productname ) ) {
+				variables.engineMappingHelper = new LuceeMappingHelper();
+			} else {
+				variables.engineMappingHelper = new CFMappingHelper();
+			}
+		}
+		return variables.engineMappingHelper;
+	}
+
+	/**
+	 * Add a path to the application's custom tag path
+	 *
+	 * @path The absolute path to the directory containing tags
+	 */
+	Util function addCustomTagPath( required path ){
+		getEngineMappingHelper().addCustomTagPath( arguments.path );
+		return this;
+	}
 
 	/**
 	 * Add a CFML Mapping to the running engine
@@ -15,17 +38,10 @@ component {
 	 * @mappings A struct of mappings to incorporate instead of one-offs
 	 */
 	Util function addMapping( string name, string path, struct mappings ){
-		var mappingHelper = "";
-
-		// Detect server
-		if ( listFindNoCase( "Lucee", server.coldfusion.productname ) ) {
-			mappingHelper = new LuceeMappingHelper();
-		} else {
-			mappingHelper = new CFMappingHelper();
-		}
+		var engineMappingHelper = getEngineMappingHelper();
 
 		if ( !isNull( arguments.mappings ) ) {
-			mappingHelper.addMappings( arguments.mappings );
+			engineMappingHelper.addMappings( arguments.mappings );
 		} else {
 			// Add / registration
 			if ( left( arguments.name, 1 ) != "/" ) {
@@ -33,7 +49,7 @@ component {
 			}
 
 			// Add mapping
-			mappingHelper.addMapping( arguments.name, arguments.path );
+			engineMappingHelper.addMapping( arguments.name, arguments.path );
 		}
 
 		return this;
@@ -162,6 +178,65 @@ component {
 	 ****************************************************************/
 
 	/**
+	 * Format an incoming json string to a pretty version
+	 *
+	 * @target The target json to prettify
+	 */
+	string function prettyJson( string target ){
+		var newLine = chr( 13 ) & chr( 10 );
+		var tab     = chr( 9 );
+		var padding = 0;
+		return arguments.target
+			.reReplace(
+				"([\{|\}|\[|\]|\(|\)|,])",
+				"\1#newLine#",
+				"all"
+			)
+			.reReplace( "(\]|\})#newLine#", "#newLine#\1", "all" )
+			.listToArray( newLine )
+			.map( ( token ) => {
+				if ( token.reFind( "[\}|\)|\]]" ) && padding > 0 ) {
+					padding--;
+				};
+				var newToken = repeatString( tab, padding ) & token.trim();
+				if ( token.reFind( "[\{|\(|\[]" ) ) {
+					padding++;
+				};
+				return newToken;
+			} )
+			.toList( newLine );
+	}
+
+	/**
+	 * Opinionated method that serializes json in a more digetstible way:
+	 * - queries as array of structs
+	 * - no dumb secure prefixes
+	 * And it also prettifies the output
+	 *
+	 * @obj The object to be serialized and prettified
+	 */
+	string function toPrettyJson( required any obj ){
+		return prettyJson( toJson( arguments.obj ) );
+	}
+
+	/**
+	 * Opinionated method that serializes json in a more digetstible way:
+	 * - queries as array of structs
+	 * - no dumb secure prefixes
+	 *
+	 * @obj The object to be serialized
+	 */
+	string function toJson( required any obj ){
+		// https://cfdocs.org/serializejson
+		// We default to "struct" serialization for queries.  The CFML defaults are dumb and just nasty!
+		return serializeJSON(
+			arguments.obj,
+			"struct",
+			listFindNoCase( "Lucee", server.coldfusion.productname ) ? "utf-8" : false
+		);
+	}
+
+	/**
 	 * PlaceHolder Replacer for strings containing <code>${}</code> patterns
 	 *
 	 * @str      The string target
@@ -204,97 +279,6 @@ component {
 		}
 
 		return returnString;
-	}
-
-	/****************************************************************
-	 * ENVIRONMENT METHODS *
-	 ****************************************************************/
-
-	/**
-	 * Retrieve a Java System property or env value by name. It looks at properties first then environment variables
-	 *
-	 * @key          The name of the setting to look up.
-	 * @defaultValue The default value to use if the key does not exist in the system properties or the env
-	 *
-	 * @throws SystemSettingNotFound When the java system property or env is not found
-	 */
-	function getSystemSetting( required key, defaultValue ){
-		var value = getJavaSystem().getProperty( arguments.key );
-		if ( !isNull( local.value ) ) {
-			return value;
-		}
-
-		value = getJavaSystem().getEnv( arguments.key );
-		if ( !isNull( local.value ) ) {
-			return value;
-		}
-
-		if ( !isNull( arguments.defaultValue ) ) {
-			return arguments.defaultValue;
-		}
-
-		throw(
-			type   : "SystemSettingNotFound",
-			message: "Could not find a Java System property or Env setting with key [#arguments.key#]."
-		);
-	}
-
-	/**
-	 * Retrieve a Java System property value by key
-	 *
-	 * @key          The name of the setting to look up.
-	 * @defaultValue The default value to use if the key does not exist in the system properties or the env
-	 *
-	 * @throws SystemSettingNotFound When the java system property is not found
-	 */
-	function getSystemProperty( required key, defaultValue ){
-		var value = getJavaSystem().getProperty( arguments.key );
-		if ( !isNull( local.value ) ) {
-			return value;
-		}
-
-		if ( !isNull( arguments.defaultValue ) ) {
-			return arguments.defaultValue;
-		}
-
-		throw(
-			type    = "SystemSettingNotFound",
-			message = "Could not find a Java System property with key [#arguments.key#]."
-		);
-	}
-
-	/**
-	 * Retrieve a Java System environment value by name
-	 *
-	 * @key          The name of the setting to look up.
-	 * @defaultValue The default value to use if the key does not exist in the system properties or the env
-	 *
-	 * @throws SystemSettingNotFound When the java system property is not found
-	 */
-	function getEnv( required key, defaultValue ){
-		var value = getJavaSystem().getEnv( arguments.key );
-		if ( !isNull( local.value ) ) {
-			return value;
-		}
-
-		if ( !isNull( arguments.defaultValue ) ) {
-			return arguments.defaultValue;
-		}
-
-		throw(
-			type    = "SystemSettingNotFound",
-			message = "Could not find a environment variable with key [#arguments.key#]."
-		);
-	}
-
-	/**
-	 * Retrieve an instance of Java System
-	 */
-	function getJavaSystem(){
-		if ( isNull( variables.javaSystem ) ) {
-			variables.javaSystem = createObject( "java", "java.lang.System" );
-		}
-		return variables.javaSystem;
 	}
 
 	/**
@@ -448,6 +432,10 @@ component {
 
 		// Override ourselves into parent
 		for ( var thisKey in arguments.md ) {
+			// https://luceeserver.atlassian.net/browse/LDEV-4421
+			if ( arrayContains( [ "sub", "subname" ], thisKey ) ) {
+				continue;
+			}
 			// Functions and properties are an array of structs keyed on name, so I can treat them the same
 			if ( listFindNoCase( "functions,properties", thisKey ) ) {
 				if ( !structKeyExists( loc.parent, thisKey ) ) {
@@ -504,6 +492,34 @@ component {
 				.getVersion()
 				.toString();
 		}
+	}
+
+	/**
+	 **************************************************************************************************************
+	 * DEPRECATED FUNCTIONS
+	 * TODO: REMOVE BY V8
+	 * **************************************************************************************************************
+	 */
+
+	/**
+	 * @deprecated Refactor to use the Env Delegate: coldbox.system.core.delegates.Env
+	 */
+	function getSystemSetting( required key, defaultValue ){
+		return new coldbox.system.core.delegates.Env().getSystemSetting( argumentCollection = arguments );
+	}
+
+	/**
+	 * @deprecated Refactor to use the Env Delegate: coldbox.system.core.delegates.Env
+	 */
+	function getSystemProperty( required key, defaultValue ){
+		return new coldbox.system.core.delegates.Env().getSystemProperty( argumentCollection = arguments );
+	}
+
+	/**
+	 * @deprecated Refactor to use the Env Delegate: coldbox.system.core.delegates.Env
+	 */
+	function getEnv( required key, defaultValue ){
+		return new coldbox.system.core.delegates.Env().getEnv( argumentCollection = arguments );
 	}
 
 }

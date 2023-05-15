@@ -1,0 +1,27 @@
+{
+    "app":{
+        "cfengine":"lucee@5.3-rc",
+        "serverHomeDirectory":".engine/luceerc"
+    },
+    "name":"coldbox-lucee@5rc",
+    "force":true,
+    "openBrowser":false,
+    "web":{
+        "directoryBrowsing":true,
+        "http":{
+            "port":"8599"
+        },
+        "rewrites":{
+            "enable":true
+        },
+        "aliases":{
+            "/coldbox":"./"
+        }
+    },
+    "JVM":{
+        "heapSize":"1024"
+    },
+    "cfconfig":{
+        "file":".cfconfig.json"
+    }
+}

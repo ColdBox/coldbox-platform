@@ -158,7 +158,7 @@
 			"high",
 			mockBuffer
 		);
-		sleep( 5000 );
+		sleep( 500 );
 		assertTrue( mockInterceptor.$once( "unittest" ) );
 		// debug( cfthread );
 	}

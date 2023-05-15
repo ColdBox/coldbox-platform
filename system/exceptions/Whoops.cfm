@@ -1,7 +1,7 @@
 <cfprocessingdirective pageEncoding="utf-8">
 <cfscript>
-	// Detect Session Scope
-	local.sessionScopeExists = getApplicationMetadata().sessionManagement;
+	// Local raw exception structure
+	local.exception = oException.getExceptionStruct();
 
 	// Detect host
 	try {
@@ -72,14 +72,15 @@
 		]
 	};
 
-	// Build ID
+	// Detect Session Scope
+	local.sessionScopeExists = getApplicationMetadata().sessionManagement;
 	if ( local.sessionScopeExists ) {
 		local.fwString = "";
-		if ( getApplicationMetadata().clientManagement ) {
+		if ( getApplicationMetadata().clientManagement  && isDefined( "client" ) ) {
 			if ( structKeyExists( client, "cfid" ) ) fwString &= "CFID=" & client.CFID;
 			if ( structKeyExists( client, "CFToken" ) ) fwString &= "<br/>CFToken=" & client.CFToken;
 		}
-		if ( getApplicationMetadata().sessionManagement ) {
+		if ( getApplicationMetadata().sessionManagement && isDefined( "session" ) ) {
 			if ( structKeyExists( session, "cfid" ) ) fwString &= "CFID=" & session.CFID;
 			if ( structKeyExists( session, "CFToken" ) ) fwString &= "<br/>CFToken=" & session.CFToken;
 			if ( structKeyExists( session, "sessionID" ) ) fwString &= "<br/>JSessionID=" & session.sessionID;
@@ -91,8 +92,8 @@
 	local.databaseInfo = {};
 	if (
 		(
-			isStruct( oException.getExceptionStruct() )
-			OR findNoCase( "DatabaseQueryException", getMetadata( oException.getExceptionStruct() ).getName() )
+			isStruct( local.exception )
+			OR findNoCase( "DatabaseQueryException", getMetadata( local.exception ).getName() )
 		) AND findNoCase( "database", oException.getType() )
 	) {
 		local.databaseInfo = {
@@ -100,14 +101,26 @@
 			"NativeErrorCode"      : oException.getNativeErrorCode(),
 			"SQL Sent"             : oException.getSQL(),
 			"Driver Error Message" : oException.getqueryError(),
-			"Name-Value Pairs"     : oException.getWhere()
+			"Name-Value Pairs"     : oException.getWhere(),
+			"Exception Detail"     : local.exception.message,
+			"Datasource"     	   : structKeyExists( local.exception, 'datasource' ) ? local.exception.datasource : "",
+			"Additional Info"      : structKeyExists( local.exception, 'additional' ) ? local.exception.additional : "",
+			"itemorder"      : [
+				"Datasource",
+				"Name-Value Pairs",
+				"SQL Sent",
+				"SQL State",
+				"NativeErrorCode",
+				"Driver Error Message",
+				"Exception Detail",
+				"Additional Info"
+			]
 		};
 	}
 
 	// Get exception information and mark the safe environment token
-	local.e = oException.getExceptionStruct();
-	stackFrames = arrayLen( local.e.TagContext );
-	local.safeEnvironment = "development";
+	local.stackFrames = arrayLen( local.exception.tagContext );
+	local.inDebugMode = controller.inDebugMode();
 
 	// Is this an Ajax Request? If so, present the plain exception templates
 	local.requestHeaders = getHTTPRequestData( false ).headers;
@@ -116,12 +129,13 @@
 		&&
 		local.requestHeaders[ "X-Requested-With" ] eq "XMLHttpRequest"
 	){
-		// Development report
-		if( local.eventDetails.environment eq local.safeEnvironment ){
+		// Debug mode report
+		if( local.inDebugMode ){
 			include "BugReport.cfm";
 		}
 		// Production Report
 		else {
+			writeOutput( "<h1>Whoops was not shown as ColdBox is not in <b>debugMode</b>!</h1>" );
 			include "BugReport-Public.cfm";
 		}
 		return;
@@ -135,12 +149,14 @@
 			<script src="/coldbox/system/exceptions/js/syntaxhighlighter.js"></script>
 			<script src="/coldbox/system/exceptions/js/javascript-brush.js"></script>
 			<script src="/coldbox/system/exceptions/js/coldfusion-brush.js"></script>
+			<script src="/coldbox/system/exceptions/js/sql-brush.js"></script>
 			<link type="text/css" rel="stylesheet" href="/coldbox/system/exceptions/css/syntaxhighlighter-theme.css">
 			<link type="text/css" rel="stylesheet" href="/coldbox/system/exceptions/css/whoops.css">
 			<script>
 				SyntaxHighlighter.defaults[ 'gutter' ] 		= true;
 				SyntaxHighlighter.defaults[ 'smart-tabs' ] 	= false;
 				SyntaxHighlighter.defaults[ 'tab-size' ]   	=  4;
+
 				//SyntaxHighlighter.all();
 			</script>
 		</head>
@@ -185,12 +201,12 @@
 
 						<h1 class="exception__timestamp" title="Time of exception">
 							<i data-eva="clock-outline" fill="##7fcbe2"></i>
-							<span>#dateFormat( now(), "MM/DD/YYYY" )# #timeFormat( now(), "hh:MM:SS TT" )#</span>
+							<span>#dateTimeFormat( now(), "mm/dd/yyyy hh:nn tt" )#</span>
 						</h1>
 
 						<h1 class="exception__type" title="Error Code and Exception Type">
 							<i data-eva="close-circle-outline" fill="red"></i>
-							<span>#trim( eventDetails[ "Error Code" ] & " " & local.e.type )#</span>
+							<span>#trim( eventDetails[ "Error Code" ] & " " & local.exception.type )#</span>
 						</h1>
 
 						<div
@@ -205,7 +221,7 @@
 								data-eva-height="16"
 								style="cursor: pointer; float: right"></i>
 
-							#oException.processMessage( local.e.message )#
+							#oException.processMessage( local.exception.message )#
 						</div>
 
 					</div>
@@ -218,8 +234,8 @@
 					<div class="whoops__stacktrace_panel">
 						<ul class="stacktrace__list">
 							<cfset root = expandPath( "/" )/>
-							<cfloop from="1" to="#arrayLen( local.e.TagContext )#" index="i">
-								<cfset instance = local.e.TagContext[ i ]/>
+							<cfloop from="1" to="#arrayLen( local.exception.TagContext )#" index="i">
+								<cfset instance = local.exception.TagContext[ i ]/>
 								<!--- <cfdump var="#instance#"> --->
 								<li
 									id   ="stack#stackFrames - i + 1#"
@@ -231,7 +247,7 @@
 											#replace( instance.template, root, "" )#:<span class="stacktrace__line-number">#instance.line#</span>
 										</h3>
 
-										<cfif structKeyExists( instance, "codePrintPlain" ) && local.eventDetails.environment eq local.safeEnvironment>
+										<cfif structKeyExists( instance, "codePrintPlain" ) && local.inDebugMode>
 											<cfset codesnippet = instance.codePrintPlain>
 											<cfset codesnippet = reReplace( codesnippet, "\n\t", " ", "All" )>
 											<cfset codesnippet = htmlEditFormat( codesnippet )>
@@ -277,9 +293,9 @@
 					<!----------------------------------------------------------------------------------------->
 					<!--- Code Container --->
 					<!----------------------------------------------------------------------------------------->
-					<cfif stackFrames gt 0 AND local.eventDetails.environment eq local.safeEnvironment>
+					<cfif stackFrames gt 0 AND local.inDebugMode>
 						<div class="code-preview">
-							<cfset instance = local.e.TagContext[ 1 ]/>
+							<cfset instance = local.exception.TagContext[ 1 ]/>
 							<div id="code-container"></div>
 						</div>
 					</cfif>
@@ -293,7 +309,7 @@
 						<!--- Slide UP Button --->
 						<!----------------------------------------------------------------------------------------->
 
-						<cfif stackFrames gt 0 AND local.eventDetails.environment eq local.safeEnvironment>
+						<cfif stackFrames gt 0 AND local.inDebugMode>
 							<div class="slideup_row">
 								<a href="javascript:void(0);" onclick="toggleCodePreview()" class="button button-icononly">
 									<i id="codetoggle-up" data-eva="arrowhead-up-outline"></i>
@@ -312,17 +328,17 @@
 							</h2>
 							<div class="data-filter" title="Filter Scopes">
 								<i data-eva="funnel-outline" fill="white"></i>
-								<a class="button active" 	href="javascript:void(0);" onclick="filterScopes( this, '' );">All</a>
-								<a class="button" 			href="javascript:void(0);" onclick="filterScopes( this, 'eventdetails' );">Error Details</a>
-								<a class="button" 			href="javascript:void(0);" onclick="filterScopes( this, 'frameworksnapshot_scope' );">Framework Snapshot</a>
-								<a class="button" 			href="javascript:void(0);" onclick="filterScopes( this, 'database_scope' );">Database</a>
-								<a class="button" 			href="javascript:void(0);" onclick="filterScopes( this, 'rc_scope' );">RC</a>
-								<a class="button" 			href="javascript:void(0);" onclick="filterScopes( this, 'prc_scope' );">PRC</a>
-								<a class="button" 			href="javascript:void(0);" onclick="filterScopes( this, 'headers_scope' );">Headers</a>
-								<a class="button" 			href="javascript:void(0);" onclick="filterScopes( this, 'session_scope' );">Session</a>
-								<a class="button" 			href="javascript:void(0);" onclick="filterScopes( this, 'application_scope' );">Application</a>
-								<a class="button" 			href="javascript:void(0);" onclick="filterScopes( this, 'cookies_scope' );">Cookies</a>
-								<a class="button" 			href="javascript:void(0);" onclick="filterScopes( this, 'stacktrace_scope' );">Raw Stack Trace</a>
+								<a class="button all active"				href="javascript:void(0);" onclick="filterScopes( this, '' );">All</a>
+								<a class="button eventdetails" 				href="javascript:void(0);" onclick="filterScopes( this, 'eventdetails' );">Error Details</a>
+								<a class="button frameworksnapshot_scope" 	href="javascript:void(0);" onclick="filterScopes( this, 'frameworksnapshot_scope' );">Framework Snapshot</a>
+								<a class="button database_scope" 			href="javascript:void(0);" onclick="filterScopes( this, 'database_scope' );">Database</a>
+								<a class="button rc_scope" 					href="javascript:void(0);" onclick="filterScopes( this, 'rc_scope' );">RC</a>
+								<a class="button prc_scope" 				href="javascript:void(0);" onclick="filterScopes( this, 'prc_scope' );">PRC</a>
+								<a class="button headers_scope" 			href="javascript:void(0);" onclick="filterScopes( this, 'headers_scope' );">Headers</a>
+								<a class="button session_scope" 			href="javascript:void(0);" onclick="filterScopes( this, 'session_scope' );">Session</a>
+								<a class="button application_scope" 		href="javascript:void(0);" onclick="filterScopes( this, 'application_scope' );">Application</a>
+								<a class="button cookies_scope" 			href="javascript:void(0);" onclick="filterScopes( this, 'cookies_scope' );">Cookies</a>
+								<a class="button stacktrace_scope" 			href="javascript:void(0);" onclick="filterScopes( this, 'stacktrace_scope' );">Raw Stack Trace</a>
 							</div>
 						</div>
 
@@ -405,22 +421,35 @@
 			<!----------------------------------------------------------------------------------------->
 
 			<!--- Make sure we are in Development only --->
-			<cfif local.eventDetails.environment eq local.safeEnvironment>
+			<cfif local.inDebugMode>
 				<cfset stackRenderings = {}>
-				<cfloop array="#local.e.tagContext#" item="thisTagContext" index="i">
+				<cfloop array="#local.exception.tagContext#" item="thisTagContext" index="i">
 					<!--- Verify if File Exists: Just in case it's a core CFML engine file, else don't add it --->
 					<cfif fileExists( thisTagContext.template )>
-
 						<!--- Determine Source Highlighter --->
 						<cfset highlighter = ( listLast( thisTagContext.template, "." ) eq "cfm" ? "cf" : "js" )/>
-
+						<cfset spacing = "#chr( 20 )##chr( 20 )##chr( 20 )##chr( 20 )#">
 						<!--- Output code only once per instance found --->
+						<cfset filecontent = []>
+						<!--- Replace spaces with space charaters for correct indentation --->
+						<cfloop file="#thisTagContext.template#" index="line">
+							<cfset findInitalSpaces = reFind( "^[\s\t]+", line, 0, true, "All" )>
+							<cfif trim( line ) is not "" and arrayLen( findInitalSpaces )>
+								<cfset trimmedline = right( line, len( line ) - findInitalSpaces[ 1 ].len[ 1 ] )>
+								<cfset arrayAppend(
+									filecontent,
+									"#repeatString( spacing, findInitalSpaces[ 1 ].len[ 1 ] )##trimmedline#"
+								)>
+							<cfelse>
+								<cfset arrayAppend( filecontent, "#chr( 20 )##line#" )>
+							</cfif>
+						</cfloop>
 						<cfif NOT structKeyExists( stackRenderings, thisTagContext.template )>
 							<script
 								id="stackframe-#hash( thisTagContext.template )#"
 								type="text"
 								async
-							><![CDATA[<cfloop file="#thisTagContext.template#" index="line">#line##chr( 13 )##chr( 10 )#</cfloop>]]></script>
+							><![CDATA[#arrayToList( filecontent, "#chr( 13 )##chr( 10 )#" )#]]></script>
 							<cfset stackRenderings[ thisTagContext.template ] = true>
 						</cfif>
 
@@ -450,6 +479,13 @@
 			<script>
 				// activate icons
 				eva.replace();
+
+				SyntaxHighlighter.highlight('brush:sql');
+				<cfif local.exception.type == 'database'>
+					var buttonEl = document.querySelector(".button.database_scope");
+					filterScopes( buttonEl, 'database_scope' );
+					toggleCodePreview();
+				</cfif>
 			</script>
 		</body>
 	</html>

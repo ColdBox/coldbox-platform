@@ -8,51 +8,28 @@ component
 	extends     ="coldbox.system.FrameworkSupertype"
 	serializable="false"
 	accessors   ="true"
+	threadsafe
 {
 
-	// Controller Reference
-	property name="controller";
-	// LogBox reference
-	property name="logBox";
-	// Pre-Configured Log Object
-	property name="log";
-	// Flash Reference
-	property name="flash";
-	// CacheBox Reference
-	property name="cachebox";
-	// WireBox Reference
-	property name="wirebox";
-	// The interceptor properties structure
-	property name="properties"         type="struct";
-	// The interceptor service
-	property name="interceptorService" type="coldbox.system.services.InterceptorService";
+	/****************************************************************
+	 * Properties *
+	 ****************************************************************/
+
+	/**
+	 * The properties this interceptors is bound with
+	 */
+	property name="properties" type="struct";
 
 	/**
 	 * Constructor
 	 *
-	 * @controller The ColdBox controller
 	 * @properties The properties to init the Interceptor with
 	 *
 	 * @return Interceptor
 	 */
-	function init( required controller, struct properties = {} ){
-		// Register Controller
-		variables.controller         = arguments.controller;
-		// Register LogBox
-		variables.logBox             = arguments.controller.getLogBox();
-		// Register Log object
-		variables.log                = variables.logBox.getLogger( this );
-		// Register Flash RAM
-		variables.flash              = arguments.controller.getRequestService().getFlashScope();
-		// Register CacheBox
-		variables.cacheBox           = arguments.controller.getCacheBox();
-		// Register WireBox
-		variables.wireBox            = arguments.controller.getWireBox();
-		// store properties
-		variables.properties         = arguments.properties;
-		// setup interceptor service
-		variables.interceptorService = arguments.controller.getInterceptorService();
-
+	function init( struct properties = {} ){
+		variables.properties = arguments.properties;
+		super.init();
 		return this;
 	}
 

@@ -4,7 +4,7 @@ br  	= chr(10);
 dq      = chr(34);
 
 objects = [
-	"coldbox.system.core.dynamic.BeanPopulator"
+	"coldbox.system.core.dynamic.ObjectPopulator"
 ];
 fncExclude  = "init,onMissingMethod";
 
@@ -99,4 +99,3 @@ fileWrite(expandPath(".") & "/docs/#listLast(md.name,'.')#.htm", out.toString() 
 
 }
 </cfscript>
-

@@ -33,6 +33,7 @@ component {
 		return {
 			"FrameworkSuperType" : "coldbox.system.FrameworkSuperType",
 			"EventHandler"       : "coldbox.system.EventHandler",
+			"RestHandler"       : "coldbox.system.RestHandler",
 			"Interceptor"        : "coldbox.system.Interceptor",
 			"BaseSpec"           : "testbox.system.BaseSpec"
 		}

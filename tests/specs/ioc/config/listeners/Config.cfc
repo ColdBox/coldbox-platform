@@ -30,7 +30,7 @@ WireBox injector is created
 			scopeRegistration : {
 				enabled : true,
 				scope   : "application", // server, session, application
-				key     : "wireBox"
+				key     : "wireBox_#hash( getCurrentTemplatePath() )#"
 			},
 			// DSL Namespace registrations
 			customDSL     : {},

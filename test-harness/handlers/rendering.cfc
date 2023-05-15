@@ -37,7 +37,7 @@ component output="false" singleton {
 	 * normalRendering
 	 */
 	function normalRendering( event, rc, prc ){
-		return renderView( view = "simpleview" );
+		return view( view = "simpleview" );
 	}
 
 
@@ -45,7 +45,7 @@ component output="false" singleton {
 	 * Render layout with arguments and passthrough
 	 */
 	function renderLayoutWithArguments( event, rc, prc ){
-		return renderLayout(
+		return layout(
 			view   = "viewWithArgs",
 			layout = "Simple",
 			args   = { data : "abc123" }
@@ -56,7 +56,7 @@ component output="false" singleton {
 	 * Render Layout issue https://ortussolutions.atlassian.net/browse/COLDBOX-903
 	 */
 	function renderLayout903( event, rc, prc ){
-		prc.welcomeMessage = renderLayout( layout:"Main", view:"main/mailcontent" );
+		prc.welcomeMessage = layout( layout:"Main", view:"main/mailcontent" );
 		event.setView( "main/index" );
 	}
 
@@ -97,6 +97,18 @@ component output="false" singleton {
 
 	function onInvalidHTTPMethod( faultAction, event, rc, prc ){
 		return "Yep, onInvalidHTTPMethod works!";
+	}
+
+	function renderingPdf( event, rc, prc ) {
+		cfheader( name='content-disposition', value='attachment;filename="Delivered by Hand.pdf"' );
+
+		event.renderData(
+			data='Just some testing text, inline rendering PDF'
+			,type='pdf'
+			,pdfArgs={ pagetype:'A4', unit:'cm', margintop:'1', marginbottom:'1',marginleft:'1', marginright:'1' }
+		);
+
+		return;
 	}
 
 }

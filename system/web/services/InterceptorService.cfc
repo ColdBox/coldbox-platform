@@ -37,6 +37,11 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			"afterAspectsLoad",
 			"cbLoadInterceptorHelpers",
 			"preReinit",
+			// Rest Handler Exceptions
+			"onAuthenticationFailure",
+			"onAuthorizationFailure",
+			"onValidationException",
+			"onEntityNotFoundException",
 			// On Actions
 			"onException",
 			"onRequestCapture",
@@ -88,14 +93,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 */
 	InterceptorService function configure(){
 		// Reconfigure Logging With Application Configuration Data
-		variables.log               = controller.getLogBox().getLogger( this );
+		variables.log               = variables.controller.getLogBox().getLogger( this );
 		// Setup Configuration
-		variables.interceptorConfig = controller.getSetting( "InterceptorConfig" );
-		// Register CFC Configuration Object
-		registerInterceptor(
-			interceptorObject = controller.getSetting( "coldboxConfig" ),
-			interceptorName   = "coldboxConfig"
-		);
+		variables.interceptorConfig = variables.controller.getSetting( "InterceptorConfig" );
 
 		return this;
 	}
@@ -107,8 +107,13 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 */
 	function onConfigurationLoad(){
 		// WireBox is loaded now, set it for performance.
-		variables.wirebox = controller.getWireBox();
-		// Register All Application Interceptors
+		variables.wirebox = variables.controller.getWireBox();
+		// Register the ColdBox Config as an interceptor
+		registerInterceptor(
+			interceptorObject = variables.controller.getSetting( "coldboxConfig" ),
+			interceptorName   = "coldboxConfig"
+		);
+		// Register All Core App Interceptors
 		registerInterceptors();
 		// Store hash of loaded points
 		variables.onLoadInterceptionPointsHash = hash( arrayToList( variables.interceptionPoints ) );
@@ -260,12 +265,26 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	}
 
 	/**
+	 * Unregister the given closure from a specific interception point
+	 *
+	 * @target The closure/lambda to unregister
+	 * @point  The interception point from which to unregister the listener
+	 *
+	 * @return True if interception point found and unregistered; else false.
+	 */
+	boolean function unlisten( required target, required point ){
+		arguments = normalizeListenArguments( argumentCollection = arguments );
+		return unregister( "closure-#arguments.point#-#hash( arguments.target.toString() )#" );
+	}
+
+	/**
 	 * Register a closure listener as an interceptor on a specific point
 	 *
 	 * @target The closure/lambda to register
 	 * @point  The interception point to register the listener to
 	 */
 	void function listen( required target, required point ){
+		arguments = normalizeListenArguments( argumentCollection = arguments );
 		// Append Custom Points
 		appendInterceptionPoints( arguments.point );
 		// Register the listener
@@ -274,6 +293,23 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			state          = arguments.point,
 			oInterceptor   = arguments.target
 		);
+	}
+
+	/**
+	 * Allow point-first arguments when calling listen() or unlisten().
+	 *
+	 * Basically flips the `target` and `point` arguments if the former is found to be a string instead of closure.
+	 *
+	 * @target Could be the target closure... could be the listen point.
+	 * @point  Could be the interception point... could be the target closure
+	 */
+	private struct function normalizeListenArguments( required target, required point ){
+		if ( isSimpleValue( arguments.target ) ) {
+			var closure      = arguments.point;
+			arguments.point  = arguments.target;
+			arguments.target = closure;
+		}
+		return arguments;
 	}
 
 	/**
@@ -301,6 +337,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * @interceptorProperties The structure of properties to register this interceptor with.
 	 * @customPoints          A comma delimited list or array of custom interception points, if the object or class sent in observes them.
 	 * @interceptorName       The name to use for the interceptor when stored. If not used, we will use the name found in the object's class
+	 * @injector              The passed injector to use for construction
 	 *
 	 * @return InterceptorService
 	 */
@@ -309,7 +346,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		interceptorObject,
 		struct interceptorProperties = {},
 		customPoints                 = "",
-		interceptorName
+		interceptorName,
+		injector
 	){
 		// determine registration names
 		var objectName   = "";
@@ -351,7 +389,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 					oInterceptor = createInterceptor(
 						interceptorClass,
 						objectName,
-						interceptorProperties
+						interceptorProperties,
+						isNull( arguments.injector ) ? variables.wirebox : arguments.injector
 					);
 				} catch ( Any e ) {
 					variables.log.error(
@@ -406,28 +445,29 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * @interceptorClass      The class path to instantiate
 	 * @interceptorName       The unique name of the object
 	 * @interceptorProperties Construction properties
+	 * @injector              The WireBox injector to use
 	 *
 	 * @return The newly created interceptor
 	 */
 	function createInterceptor(
 		required interceptorClass,
 		required interceptorName,
-		struct interceptorProperties = {}
+		struct interceptorProperties = {},
+		injector                     = variables.wirebox
 	){
 		// Check if interceptor mapped?
-		if ( NOT variables.wirebox.getBinder().mappingExists( "interceptor-" & arguments.interceptorName ) ) {
+		if ( NOT arguments.injector.getBinder().mappingExists( "interceptor-" & arguments.interceptorName ) ) {
 			// wirebox lazy load checks
-			wireboxSetup();
+			injectorSeedBaseClasses( arguments.injector );
 			// feed this interceptor to wirebox with virtual inheritance just in case, use registerNewInstance so its thread safe
-			variables.wirebox
+			arguments.injector
 				.registerNewInstance(
-					name         = "interceptor-" & arguments.interceptorName,
-					instancePath = arguments.interceptorClass
+					name        : "interceptor-" & arguments.interceptorName,
+					instancePath: arguments.interceptorClass
 				)
-				.setScope( variables.wirebox.getBinder().SCOPES.SINGLETON )
+				.setScope( arguments.injector.getBinder().SCOPES.SINGLETON )
 				.setThreadSafe( true )
 				.setVirtualInheritance( "coldbox.system.Interceptor" )
-				.addDIConstructorArgument( name = "controller", value = controller )
 				.addDIConstructorArgument( name = "properties", value = arguments.interceptorProperties );
 		}
 
@@ -560,20 +600,22 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	}
 
 	/**
-	 * Verifies the setup for interceptor classes is online
+	 * Verifies setup of base handler classes in WireBox
+	 *
+	 * @injector The injector to seed and verify
+	 *
+	 * @return InterceptorService
 	 */
-	private InterceptorService function wireboxSetup(){
+	private function injectorSeedBaseClasses( required injector ){
 		// Check if handler mapped?
-		if ( NOT variables.wirebox.getBinder().mappingExists( variables.INTERCEPTOR_BASE_CLASS ) ) {
+		if ( NOT arguments.injector.getBinder().mappingExists( variables.INTERCEPTOR_BASE_CLASS ) ) {
 			// feed the base class
-			variables.wirebox
+			arguments.injector
 				.registerNewInstance(
-					name         = variables.INTERCEPTOR_BASE_CLASS,
-					instancePath = variables.INTERCEPTOR_BASE_CLASS
+					name        : variables.INTERCEPTOR_BASE_CLASS,
+					instancePath: variables.INTERCEPTOR_BASE_CLASS
 				)
-				.addDIConstructorArgument( name = "controller", value = controller )
-				.addDIConstructorArgument( name = "properties", value = {} )
-				.setAutowire( false );
+				.setScope( "singleton" );
 		}
 
 		return this;

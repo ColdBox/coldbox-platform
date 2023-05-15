@@ -79,7 +79,7 @@ component serializable="false" accessors="true" {
 	 * @return coldbox.system.ioc.dsl.ColdBoxDSL
 	 */
 	function getColdBoxDSL(){
-		if ( isNull( coldboxDSL ) ) {
+		if ( isNull( variables.coldboxDSL ) ) {
 			variables.coldboxDSL = new coldbox.system.ioc.dsl.ColdBoxDSL( variables.injector );
 		}
 		return variables.coldboxDSL;
@@ -114,10 +114,12 @@ component serializable="false" accessors="true" {
 	 */
 	Builder function registerCustomBuilders(){
 		var customDSL = variables.injector.getBinder().getCustomDSL();
+
 		// Register Custom DSL Builders
 		for ( var key in customDSL ) {
 			registerDSL( namespace = key, path = customDSL[ key ] );
 		}
+
 		return this;
 	}
 
@@ -132,25 +134,81 @@ component serializable="false" accessors="true" {
 		variables.customDSL[ arguments.namespace ] = new "#arguments.path#"( variables.injector );
 		// Debugging
 		if ( variables.log.canDebug() ) {
-			variables.log.debug( "Registered custom DSL Builder with namespace: #arguments.namespace#" );
+			variables.log.debug(
+				"Registered custom DSL Builder with namespace: #arguments.namespace# by (#variables.injector.getName()#) injector"
+			);
 		}
 		return this;
 	}
 
 	/**
-	 * Used to provider providers via mixers on targeted objects
+	 * Used to provider providers via mixers on targeted objects.
+	 * This method is the one used to replace the provided methods.
 	 */
 	function buildProviderMixer(){
-		var targetInjector = this.$wbScopeStorage.get( this.$wbScopeInfo.key, this.$wbScopeInfo.scope );
-		var targetProvider = this.$wbProviders[ getFunctionCalledName() ];
+		return this.$wbInjector.getInstance(
+			name         = this.$wbProviders[ getFunctionCalledName() ],
+			targetObject = this
+		);
+	}
 
-		// Verify if this is a mapping first?
-		if ( targetInjector.containsInstance( targetProvider ) ) {
-			return targetInjector.getInstance( name = targetProvider, targetObject = this );
+	/**
+	 * Dynamic function injected into the targets to provide lazy functions
+	 */
+	function lazyPropertyGetter(){
+		var propertyName = getFunctionCalledName().reReplaceNoCase( "^get", "" );
+
+		var withLock = function( propertyName, builder ){
+			lock name="wb-lazy-#arguments.propertyName#" type="exclusive" timeout=10 throwOnTimeout=true {
+				return arguments.builder( arguments.propertyName );
+			}
+		};
+		var buildProperty = function( propertyName ){
+			// Build it out
+			variables[ arguments.propertyName ] = invoke(
+				variables,
+				this.$wbLazyProperties[ arguments.propertyName ].builder
+			);
+			return variables[ arguments.propertyName ];
+		};
+
+		// Verify if built
+		if ( variables.keyExists( propertyName ) && !isNull( variables[ propertyName ] ) ) {
+			return variables[ propertyName ];
 		}
 
-		// else treat as full DSL
-		return targetInjector.getInstance( dsl = targetProvider, targetObject = this );
+		// Else build it
+		return this.$wbLazyProperties[ propertyName ].useLock ? withLock( propertyName, buildProperty ) : buildProperty(
+			propertyName
+		);
+	}
+
+	/**
+	 * Dynamic function injected into the targets to provide lazy functions
+	 */
+	function observedPropertySetter( value ){
+		var propertyName = getFunctionCalledName().reReplaceNoCase( "^set", "" );
+
+		// Previous value
+		var oldValue = variables.keyExists( propertyName ) && !isNull( variables[ propertyName ] ) ? variables[
+			propertyName
+		] : javacast( "null", "" );
+
+		// Set the value now
+		variables[ propertyName ] = !isNull( arguments.value ) ? arguments.value : javacast( "null", "" );
+
+		// Call the observer
+		invoke(
+			variables,
+			this.$wbObservedProperties[ propertyName ].observer,
+			{
+				newValue : !isNull( arguments.value ) ? arguments.value : javacast( "null", "" ), // new value
+				oldValue : !isNull( oldValue ) ? oldValue : javacast( "null", "" ), // previous value
+				property : propertyName // property name
+			}
+		);
+
+		return this;
 	}
 
 	/**
@@ -234,12 +292,10 @@ component serializable="false" accessors="true" {
 					.toList( chr( 13 ) & chr( 10 ) );
 
 				throw(
-					type    = "Builder.BuildCFCDependencyException",
-					message = "Error building: #arguments.mapping.getName()# -> #e.message#
-					#e.detail#.",
-					detail = "DSL: #arguments.mapping.getDSL()#, Path: #arguments.mapping.getPath()#,
-					Error Location:
-					#reducedTagContext#"
+					type        : "Builder.BuildCFCDependencyException",
+					message     : "Error building: #arguments.mapping.getName()# -> #e.message# #e.detail#.",
+					detail      : "DSL: #len( arguments.mapping.getDSL() ) ? arguments.mapping.getDSL() : "none"#; Path: #arguments.mapping.getPath()#; Error Location: #reducedTagContext#",
+					extendedInfo: "Current Injector -> #variables.injector.getName()#"
 				);
 			}
 		}
@@ -262,8 +318,9 @@ component serializable="false" accessors="true" {
 		// check if factory exists, else throw exception
 		if ( NOT variables.injector.containsInstance( factoryName ) ) {
 			throw(
-				message = "The factory mapping: #factoryName# is not registered with the injector",
-				type    = "Builder.InvalidFactoryMappingException"
+				message     : "The factory mapping: #factoryName# is not registered with the injector",
+				type        : "Builder.InvalidFactoryMappingException",
+				extendedInfo: "Current Injector -> #variables.injector.getName()#"
 			);
 		}
 
@@ -375,15 +432,16 @@ component serializable="false" accessors="true" {
 				);
 				// not found but required, then throw exception
 				throw(
-					message = "Argument reference not located: #local.thisArg.name#",
-					detail  = "Injecting: #thisMap.getName()#. The argument details are: #local.thisArg.toString()#.",
-					type    = "Injector.ArgumentNotFoundException"
+					message     : "Argument reference not located: #local.thisArg.name#",
+					detail      : "Injecting: #thisMap.getName()#. The argument details are: #local.thisArg.toString()#.",
+					type        : "Injector.ArgumentNotFoundException",
+					extendedInfo: "Current Injector -> #variables.injector.getName()#"
 				);
 			}
 			// else just log it via debug
 			else if ( variables.log.canDebug() ) {
 				variables.log.debug(
-					"Target: #thisMap.getName()# -> Argument reference not located: #local.thisArg.name#",
+					"Target: #thisMap.getName()# -> Argument reference not located: #local.thisArg.name# by (#variables.injector.getName()#) injector",
 					local.thisArg
 				);
 			}
@@ -459,9 +517,8 @@ component serializable="false" accessors="true" {
 		required targetID,
 		required targetObject = ""
 	){
-		var definition = { required : true, name : "", dsl : arguments.dsl };
 		return buildDSLDependency(
-			definition   = definition,
+			definition   = { "required" : true, "name" : "", "dsl" : arguments.dsl },
 			targetID     = arguments.targetID,
 			targetObject = arguments.targetObject
 		);
@@ -494,6 +551,27 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
+	 * Try to get the DSL object from the custom registered DSLs locally an in the child hierarchy.  If not found, returns null
+	 *
+	 * @namespace The namespace to look for
+	 * @args      The arguments to pass to the DSL
+	 */
+	any function getObjectFromCustomDSL( required namespace, args = {} ){
+		// Check local first
+		if ( structKeyExists( variables.customDSL, arguments.namespace ) ) {
+			return variables.customDSL[ arguments.namespace ].process( argumentCollection: arguments.args );
+		}
+
+		// Verify Children hierarchy
+		for ( var thisChild in variables.injector.getChildInjectors() ) {
+			var childBuilder = variables.injector.getChildInjector( thisChild ).getObjectBuilder();
+			if ( childBuilder.isDSLNamespace( arguments.namespace ) ) {
+				return childBuilder.getObjectFromCustomDSL( arguments.namespace, arguments.args );
+			}
+		}
+	}
+
+	/**
 	 * Build a DSL Dependency, if not found, returns null
 	 *
 	 * @definition   The dependency definition structure: name, dsl as keys
@@ -513,9 +591,11 @@ component serializable="false" accessors="true" {
 		var refLocal     = {};
 		var DSLNamespace = listFirst( arguments.definition.dsl, ":" );
 
-		// Check if Custom DSL exists, if it does, execute it
-		if ( structKeyExists( variables.customDSL, DSLNamespace ) ) {
-			return variables.customDSL[ DSLNamespace ].process( argumentCollection = arguments );
+		// Custom DSL Lookups
+		refLocal.dependency = getObjectFromCustomDSL( namespace: DSLNamespace, args: arguments );
+		// return only if found
+		if ( !isNull( refLocal.dependency ) ) {
+			return refLocal.dependency;
 		}
 
 		// Determine Type of Injection according to type
@@ -526,8 +606,9 @@ component serializable="false" accessors="true" {
 				// check if linked
 				if ( !variables.injector.isCacheBoxLinked() AND !variables.injector.isColdBoxLinked() ) {
 					throw(
-						message = "The DSLNamespace: #DSLNamespace# cannot be used as it requires a ColdBox/CacheBox Context",
-						type    = "Builder.IllegalDSLException"
+						message     : "The DSLNamespace: #DSLNamespace# cannot be used as it requires a ColdBox/CacheBox Context",
+						type        : "Builder.IllegalDSLException",
+						extendedInfo: "Current Injector -> #variables.injector.getName()#"
 					);
 				}
 				// retrieve it
@@ -539,9 +620,15 @@ component serializable="false" accessors="true" {
 			case "coldbox":
 			case "box": {
 				if ( !variables.injector.isColdBoxLinked() ) {
+					var targetName = "";
+					if ( isObject( targetObject ) ) {
+						targetName = getMetadata( targetObject ).name;
+					}
 					throw(
-						message = "The DSLNamespace: #DSLNamespace# cannot be used as it requires a ColdBox Context",
-						type    = "Builder.IllegalDSLException"
+						message     : "The DSLNamespace: [#DSLNamespace#] cannot be used as it requires a ColdBox Context",
+						type        : "Builder.IllegalDSLException",
+						detail      : "DSL: [#arguments.definition.dsl#], target: [#targetName#]",
+						extendedInfo: "Current Injector -> #variables.injector.getName()#"
 					);
 				}
 				refLocal.dependency = getColdBoxDSL().process( argumentCollection = arguments );
@@ -620,7 +707,7 @@ component serializable="false" accessors="true" {
 				depDesc.append( "REF of '#arguments.definition.REF#'" );
 			}
 
-			var injectMessage = "The target '#arguments.targetID#' requested a missing dependency with a #depDesc.toList( " and " )#";
+			var injectMessage = "The target '#arguments.targetID#' requested a missing dependency with a #depDesc.toList( " and " )# by (#variables.injector.getName()#) injector";
 
 			// Logging
 			if ( variables.log.canError() ) {
@@ -629,9 +716,9 @@ component serializable="false" accessors="true" {
 
 			// Throw exception as DSL Dependency requested was not located
 			throw(
-				message = injectMessage,
+				message: injectMessage,
 				// safe serialization that won't blow uo on complex values or do weird things with nulls (looking at you, Adobe)
-				detail  = serializeJSON(
+				detail : serializeJSON(
 					arguments.definition.map( function( k, v ){
 						if ( isNull( v ) ) {
 							return;
@@ -642,7 +729,8 @@ component serializable="false" accessors="true" {
 						}
 					} )
 				),
-				type = "Builder.DSLDependencyNotFoundException"
+				type        : "Builder.DSLDependencyNotFoundException",
+				extendedInfo: "Current Injector -> #variables.injector.getName()#"
 			);
 		}
 		// else return void, no dependency found that was required
@@ -658,9 +746,7 @@ component serializable="false" accessors="true" {
 	 * @targetID     The target ID we are building this dependency for
 	 */
 	private any function getJavaDSL( required definition, targetObject, targetID ){
-		var javaClass = getToken( arguments.definition.dsl, 2, ":" );
-
-		return createObject( "java", javaClass );
+		return createObject( "java", getToken( arguments.definition.dsl, 2, ":" ) );
 	}
 
 	/**
@@ -704,6 +790,9 @@ component serializable="false" accessors="true" {
 					}
 					case "properties": {
 						return variables.injector.getBinder().getProperties();
+					}
+					case "root": {
+						return variables.injector.getName() == "root" ? variables.injector : variables.injector.getRoot();
 					}
 					case "targetID": {
 						return arguments.targetID;
@@ -805,7 +894,7 @@ component serializable="false" accessors="true" {
 			return asyncManager.getExecutor( executorName );
 		} else if ( variables.log.canDebug() ) {
 			variables.log.debug(
-				"X getExecutorDsl() cannot find executor #executorName# using definition #arguments.definition.toString()#"
+				"X getExecutorDsl() cannot find executor #executorName# using definition #arguments.definition.toString()# by (#variables.injector.getName()#) injector"
 			);
 		}
 	}
@@ -859,20 +948,13 @@ component serializable="false" accessors="true" {
 			}
 		}
 
-		// Check if model Exists
-		if ( variables.injector.containsInstance( modelName ) ) {
-			// Get Model object
-			var oModel = variables.injector.getInstance( modelName );
-			// Factories: TODO: Add arguments with 'ref()' parsing for argument references or 'dsl()'
-			if ( len( methodCall ) ) {
-				return invoke( oModel, methodCall );
-			}
-			return oModel;
-		} else if ( variables.log.canDebug() ) {
-			variables.log.debug(
-				"getModelDSL() cannot find model object #modelName# using definition #arguments.definition.toString()#"
-			);
+		// Get Model object
+		var oModel = variables.injector.getInstance( modelName );
+		// Factories: TODO: Add arguments with 'ref()' parsing for argument references or 'dsl()'
+		if ( len( methodCall ) ) {
+			return invoke( oModel, methodCall );
 		}
+		return oModel;
 	}
 
 	/**
@@ -909,24 +991,12 @@ component serializable="false" accessors="true" {
 			}
 		}
 
-		// Build provider arguments
-		var args = {
-			scopeRegistration : variables.injector.getScopeRegistration(),
-			scopeStorage      : variables.injector.getScopeStorage(),
-			targetObject      : arguments.targetObject
-		};
-
-		// Check if the passed in provider is an ID directly
-		if ( variables.injector.containsInstance( providerName ) ) {
-			args.name = providerName;
-		}
-		// Else try to tag it by FULL DSL
-		else {
-			args.dsl = providerName;
-		}
-
-		// Build provider and return it.
-		return createObject( "component", "coldbox.system.ioc.Provider" ).init( argumentCollection = args );
+		return new coldbox.system.ioc.Provider(
+			scopeRegistration: variables.injector.getScopeRegistration(),
+			targetObject     : arguments.targetObject,
+			name             : providerName,
+			injectorName     : variables.injector.getName()
+		);
 	}
 
 	/**
@@ -965,8 +1035,10 @@ component serializable="false" accessors="true" {
 			// process inspection of instance
 			arguments.mapping.process( binder = variables.injector.getBinder(), injector = variables.injector );
 		}
+
 		// Build it out the base object and wire it
 		var baseObject = variables.injector.buildInstance( arguments.mapping );
+		variables.mixerUtil.start( baseObject );
 		variables.injector.autowire(
 			target  = baseObject,
 			mapping = arguments.mapping,
@@ -975,7 +1047,6 @@ component serializable="false" accessors="true" {
 
 		// Mix them up baby!
 		variables.mixerUtil.start( arguments.target );
-		variables.mixerUtil.start( baseObject );
 
 		// Check if init already exists in target and base? If so, then inject it as $superInit
 		if ( structKeyExists( arguments.target, "init" ) AND structKeyExists( baseObject, "init" ) ) {
@@ -1044,6 +1115,7 @@ component serializable="false" accessors="true" {
 				if ( !isNull( arguments.propertyValue ) ) {
 					args.target.injectPropertyMixin( propertyName, propertyValue );
 				}
+
 				// Do we need to do automatic generic getter/setters
 				if ( generateAccessors and baseProperties.keyExists( propertyName ) ) {
 					if ( !structKeyExists( args.target, "get#propertyName#" ) ) {

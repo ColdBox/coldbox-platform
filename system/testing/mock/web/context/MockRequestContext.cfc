@@ -42,4 +42,17 @@ component
 		return this;
 	}
 
+	/**
+	 * Set the request timeout for the request. In mock mode, we set it as a property
+	 * and we ignore the setting
+	 *
+	 * @seconds The number of seconds as a time limit
+	 *
+	 * @return MockRequestContext
+	 */
+	MockRequestContext function setRequestTimeout( required numeric seconds ){
+		variables.requestTimeout = arguments.seconds;
+		return this;
+	}
+
 }

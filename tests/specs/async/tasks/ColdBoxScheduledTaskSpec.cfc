@@ -11,10 +11,12 @@ component extends="tests.resources.BaseIntegrationTest" {
 		// all your suites go here.
 		describe( "ColdBox Scheduled Task", function(){
 			beforeEach( function( currentSpec ){
-				variables.scheduler = new coldbox.system.web.tasks.ColdBoxScheduler(
-					"bdd-tests",
-					variables.asyncManager,
-					getController()
+				variables.scheduler = getInstance(
+					name         : "coldbox.system.web.tasks.ColdBoxScheduler",
+					initArguments: {
+						name         : "bdd-tests",
+						asyncManager : variables.asyncManager
+					}
 				);
 			} );
 

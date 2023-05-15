@@ -78,6 +78,6 @@
 </head>
 <body>
 <!--- Render The View. This is set wherever you want to render the view in your Layout. --->
-<cfoutput>#renderView()#</cfoutput>
+<cfoutput>#view()#</cfoutput>
 </body>
 </html>

@@ -315,7 +315,7 @@ component accessors="true" {
 			returnType : "any"
 		};
 		var mappingName = arguments.mapping.getName();
-		var mdJSON      = urlEncodedFormat( serializeJSON( arguments.jointPointMD ) );
+		var mdJSON      = urlEncodedFormat( variables.injector.getUtility().toJson( arguments.jointPointMD ) );
 
 		// cfformat-ignore-start
 

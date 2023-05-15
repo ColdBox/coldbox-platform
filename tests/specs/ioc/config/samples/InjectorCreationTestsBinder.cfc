@@ -9,7 +9,7 @@
 			// CacheBox Integration
 			cacheBox          : { enabled : true },
 			// Scope registration, automatically register a wirebox injector instance on any CF scope
-			scopeRegistration : { enabled : true },
+			scopeRegistration : { enabled : true, key : "wirebox_testing" },
 			// Package scan locations
 			scanLocations     : [ "coldbox.test-harness.models" ],
 			// Stop recursions

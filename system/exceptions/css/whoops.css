@@ -370,3 +370,7 @@ a.button.active {
 	font-weight: 300;
 	padding-bottom: 10px;
 }
+
+.code-cell {
+    background: #072b36;
+}

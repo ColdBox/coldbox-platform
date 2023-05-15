@@ -61,7 +61,7 @@ component accessors="true" {
 					// some nice debug info.
 					if ( variables.log.canDebug() ) {
 						variables.log.debug(
-							"Object: (#cacheKey#) not found in singleton cache, beginning construction."
+							"Object: (#cacheKey#) not found in singleton cache, beginning construction by (#variables.injector.getName()#) injector"
 						);
 					}
 
@@ -76,8 +76,13 @@ component accessors="true" {
 						variables.singletons.put( cacheKey, tmpSingleton );
 					}
 
-					// wire up dependencies on the singleton object
-					variables.injector.autowire( target = tmpSingleton, mapping = arguments.mapping );
+					try {
+						// wire up dependencies on the singleton object
+						variables.injector.autowire( target = tmpSingleton, mapping = arguments.mapping );
+					} catch ( any e ) {
+						variables.singletons.remove( cacheKey );
+						rethrow;
+					}
 
 					// If thread safe, then now store it in the singleton cache, as all dependencies are now safely wired
 					if ( arguments.mapping.getThreadSafe() ) {
@@ -87,7 +92,7 @@ component accessors="true" {
 					// log it
 					if ( variables.log.canDebug() ) {
 						variables.log.debug(
-							"Object: (#cacheKey#) constructed and stored in singleton cache. ThreadSafe=#arguments.mapping.getThreadSafe()#"
+							"Object: (#cacheKey#) constructed and stored in singleton cache. ThreadSafe=#arguments.mapping.getThreadSafe()# by (#variables.injector.getName()#) injector"
 						);
 					}
 
@@ -108,7 +113,7 @@ component accessors="true" {
 	 * @mapping             The linked WireBox injector
 	 * @mapping.doc_generic coldbox.system.ioc.config.Mapping
 	 *
-	 * @return coldbox.system.ioc.scopes.IScope
+	 * @return True if the mapping exists in the singleton cache
 	 */
 	boolean function exists( required mapping ){
 		return variables.singletons.containsKey( lCase( arguments.mapping.getName() ) );
@@ -116,9 +121,15 @@ component accessors="true" {
 
 	/**
 	 * Clear the singletons scopes
+	 *
+	 * @key If passed, we will try to remove that key from the singleton cache instead of every key
 	 */
-	function clear(){
-		variables.singletons = createObject( "java", "java.util.concurrent.ConcurrentHashMap" ).init();
+	Singleton function clear( string key ){
+		if ( !isNull( arguments.key ) ) {
+			variables.singletons.remove( lCase( arguments.key ) );
+		} else {
+			variables.singletons.clear();
+		}
 		return this;
 	}
 

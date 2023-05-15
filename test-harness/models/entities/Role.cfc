@@ -1,9 +1,11 @@
 ﻿component persistent = "true" table = "roles"{
+
 	property
 		name     ="roleID"
 		column   ="roleID"
 		fieldType="id"
 		generator="native";
+
 	property name="role";
 
 	// O2M -> Users
@@ -17,4 +19,7 @@
 		fkcolumn    ="FKRoleID"
 		inverse     ="true"
 		cascade     ="all-delete-orphan";
+
+    this.population = { exclude : ["roleId"] };
+
 }

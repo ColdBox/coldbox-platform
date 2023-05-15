@@ -1,7 +1,6 @@
 component {
 
 	function configure(){
-		setUniqueURLs( false );
 		// setFullRewrites( false );
 
 		route( "/bar" ).toModuleRouting( "resourcesTest" );

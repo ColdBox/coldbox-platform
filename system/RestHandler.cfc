@@ -1,10 +1,10 @@
 /**
- * ********************************************************************************
- * Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
- * ********************************************************************************
- * This specialized handler is to be used for Restful applications.
- * It wraps around functions to provide consistency and an opinionated approach to RESTing!
+ * ---
+ * Base class for all RESTFul event handlers
+ *
+ * @author Luis Majano <lmajano@ortussolutions.com>
  */
 component extends="EventHandler" {
 
@@ -59,10 +59,12 @@ component extends="EventHandler" {
 		}
 		// Auth Issues
 		catch ( "InvalidCredentials" e ) {
+			arguments.exception = e;
 			this.onAuthenticationFailure( argumentCollection = arguments );
 		}
 		// Token Decoding Issues
 		catch ( "TokenInvalidException" e ) {
+			arguments.exception = e;
 			this.onAuthenticationFailure( argumentCollection = arguments );
 		}
 		// Validation Exceptions
@@ -84,17 +86,19 @@ component extends="EventHandler" {
 		catch ( "RecordNotFound" e ) {
 			arguments.exception = e;
 			this.onEntityNotFoundException( argumentCollection = arguments );
-		} catch ( Any e ) {
+		}
+		// Global Catch
+		catch ( Any e ) {
 			arguments.exception = e;
 			this.onAnyOtherException( argumentCollection = arguments );
 			// If in development, let's show the error template
-			if ( getSetting( "environment" ) eq "development" ) {
+			if ( inDebugMode() ) {
 				rethrow;
 			}
 		}
 
 		// Development additions
-		if ( getSetting( "environment" ) eq "development" ) {
+		if ( inDebugMode() ) {
 			arguments.prc.response
 				.addHeader( "x-current-route", arguments.event.getCurrentRoute() )
 				.addHeader( "x-current-routed-url", arguments.event.getCurrentRoutedURL() )
@@ -122,15 +126,14 @@ component extends="EventHandler" {
 
 			// Magical renderings
 			event.renderData(
-				type            = arguments.prc.response.getFormat(),
-				data            = responseData,
-				contentType     = arguments.prc.response.getContentType(),
-				statusCode      = arguments.prc.response.getStatusCode(),
-				statusText      = arguments.prc.response.getStatusText(),
-				location        = arguments.prc.response.getLocation(),
-				isBinary        = arguments.prc.response.getBinary(),
-				jsonCallback    = arguments.prc.response.getJsonCallback(),
-				jsonQueryFormat = arguments.prc.response.getJsonQueryFormat()
+				type         = arguments.prc.response.getFormat(),
+				data         = responseData,
+				contentType  = arguments.prc.response.getContentType(),
+				statusCode   = arguments.prc.response.getStatusCode(),
+				statusText   = arguments.prc.response.getStatusText(),
+				location     = arguments.prc.response.getLocation(),
+				isBinary     = arguments.prc.response.getBinary(),
+				jsonCallback = arguments.prc.response.getJsonCallback()
 			);
 		}
 
@@ -167,12 +170,14 @@ component extends="EventHandler" {
 		eventArguments = {}
 	){
 		// Try to discover exception, if not, hard error
-		if ( isNull( arguments.exception ) && !isNull( arguments.prc.exception ) ) {
+		if (
+			!isNull( arguments.prc.exception ) && ( isNull( arguments.exception ) || isEmpty( arguments.exception ) )
+		) {
 			arguments.exception = arguments.prc.exception.getExceptionStruct();
 		}
 
 		// If in development and not in testing mode, then show exception template, easier to debug
-		if ( getSetting( "environment" ) eq "development" && !isInstanceOf( variables.controller, "MockController" ) ) {
+		if ( inDebugMode() && !isInstanceOf( variables.controller, "MockController" ) ) {
 			throw( object = arguments.exception );
 		}
 
@@ -195,7 +200,7 @@ component extends="EventHandler" {
 			.setStatusText( "General application error" );
 
 		// Development additions Great for Testing
-		if ( getSetting( "environment" ) eq "development" ) {
+		if ( inDebugMode() ) {
 			prc.response
 				.setData(
 					structKeyExists( arguments.exception, "tagContext" ) ? arguments.exception.tagContext : {}
@@ -227,16 +232,13 @@ component extends="EventHandler" {
 	 * @exception      The thrown exception
 	 */
 	function onValidationException( event, rc, prc, eventArguments, exception = {} ){
-		// Log Locally
-		if ( log.canDebug() ) {
-			log.debug(
-				"ValidationException Execution of (#arguments.event.getCurrentEvent()#)",
-				arguments.exception.extendedInfo ?: ""
-			);
-		}
-
+		// Param Exceptions, just in case
+		param name="arguments.exception.message"      default="";
+		param name="arguments.exception.extendedInfo" default="";
 		// Announce exception
-		announce( "onException", { "exception" : arguments.exception } );
+		announce( "onValidationException", { "exception" : arguments.exception } );
+		// Log it
+		log.warn( "onValidationException of (#event.getCurrentEvent()#)", arguments.exception?.extendedInfo ?: "" );
 
 		// Setup Response
 		arguments.event
@@ -276,16 +278,13 @@ component extends="EventHandler" {
 		param name="arguments.exception.message"      default="";
 		param name="arguments.exception.extendedInfo" default="";
 
-		// Log Locally
-		if ( log.canDebug() ) {
-			log.debug(
-				"Record not found in execution of (#arguments.event.getCurrentEvent()#)",
-				arguments.exception.extendedInfo
-			);
-		}
-
 		// Announce exception
-		announce( "onException", { "exception" : arguments.exception } );
+		announce( "onEntityNotFoundException", { "exception" : arguments.exception } );
+		// Log it
+		log.warn(
+			"onEntityNotFoundException of (#event.getCurrentEvent()#)",
+			arguments.exception?.extendedInfo ?: ""
+		);
 
 		// Setup Response
 		arguments.event
@@ -387,9 +386,10 @@ component extends="EventHandler" {
 	 * @event     The request context
 	 * @rc        The rc reference
 	 * @prc       The prc reference
+	 * @abort     Hard abort the request if passed, defaults to false
 	 * @exception The thrown exception
 	 *
-	 * @return 403
+	 * @return 401
 	 */
 	function onAuthenticationFailure(
 		event     = getRequestContext(),
@@ -399,7 +399,12 @@ component extends="EventHandler" {
 		exception = {}
 	){
 		// Announce exception
-		announce( "onException", { "exception" : arguments.exception } );
+		announce( "onAuthenticationFailure", { "exception" : arguments.exception } );
+		// Log it
+		log.warn(
+			"onAuthenticationFailure of (#event.getCurrentEvent()#)",
+			arguments.prc?.cbSecurity_validatorResults?.messages ?: ""
+		);
 
 		// case when the a jwt token was valid, but expired
 		if (
@@ -421,6 +426,22 @@ component extends="EventHandler" {
 			.setStatusCode( arguments.event.STATUS.NOT_AUTHENTICATED )
 			.setStatusText( "Invalid or Missing Credentials" )
 			.addMessage( "Invalid or Missing Authentication Credentials" );
+
+		/**
+		 * When you need a really hard stop to prevent further execution ( use as last resort )
+		 */
+		if ( arguments.abort ) {
+			event.setHTTPHeader( name = "Content-Type", value = "application/json" );
+			event.setHTTPHeader(
+				statusCode = "#arguments.event.STATUS.NOT_AUTHENTICATED#",
+				statusText = "Invalid or Missing Credentials"
+			);
+
+			writeOutput( toJson( prc.response.getDataPacket( reset = this.resetDataOnError ) ) );
+
+			flush;
+			abort;
+		}
 	}
 
 	/**
@@ -443,7 +464,12 @@ component extends="EventHandler" {
 		exception = {}
 	){
 		// Announce exception
-		announce( "onException", { "exception" : arguments.exception } );
+		announce( "onAuthorizationFailure", { "exception" : arguments.exception } );
+		// Log it
+		log.warn(
+			"onAuthorizationFailure of (#event.getCurrentEvent()#)",
+			arguments.prc?.cbSecurity_validatorResults?.messages ?: ""
+		);
 
 		arguments.event
 			.getResponse()
@@ -523,7 +549,21 @@ component extends="EventHandler" {
 		// Setup General Error Response
 		arguments.prc.response
 			.setError( true )
-			.addMessage( "General application error: #arguments.exception.message#" )
+			.setData( {
+				"environment" : {
+					"currentRoute"     : arguments.event.getCurrentRoute(),
+					"currentRoutedUrl" : arguments.event.getCurrentRoutedUrl(),
+					"currentEvent"     : arguments.event.getCurrentEvent(),
+					"timestamp"        : getIsoTime()
+				},
+				"exception" : {
+					"stack"        : arguments.exception.tagContext.map( ( item ) => item.template & ":" & item.line ),
+					"type"         : arguments.exception.type,
+					"detail"       : arguments.exception.detail,
+					"extendedInfo" : arguments.exception.extendedInfo
+				}
+			} )
+			.addMessage( "An exception ocurred: #arguments.exception.message#" )
 			.setStatusCode( arguments.event.STATUS.INTERNAL_ERROR )
 			.setStatusText( "General application error" );
 	}

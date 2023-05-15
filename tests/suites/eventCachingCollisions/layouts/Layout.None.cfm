@@ -1,3 +1,3 @@
 ﻿<cfsetting showdebugoutput="false">
 <cfset event.showdebugpanel("false")>
-<cfoutput>#renderView()#</cfoutput>
+<cfoutput>#view()#</cfoutput>
