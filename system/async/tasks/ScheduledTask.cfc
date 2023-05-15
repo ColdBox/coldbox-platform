@@ -691,7 +691,9 @@ component accessors="true" {
 				}
 			} catch ( any afterException ) {
 				// Log it, so it doesn't go to ether and executor doesn't die.
-				err( "Error running task (#getName()#) after/error handlers : #afterException.message & afterException.detail#" );
+				err(
+					"Error running task (#getName()#) after/error handlers : #afterException.message & afterException.detail#"
+				);
 				err( "Stacktrace for task (#getName()#) after/error handlers : #afterException.stackTrace#" );
 			}
 		} finally {
