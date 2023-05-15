@@ -1,6 +1,6 @@
 {
     "name":"ColdBox Platform",
-    "version":"7.0.0",
+    "version":"7.1.0",
     "location":"https://downloads.ortussolutions.com/ortussolutions/coldbox/@build.version@/coldbox-@build.version@.zip",
     "author":"Ortus Solutions <info@ortussolutions.com>",
     "slug":"coldbox",
@@ -55,19 +55,19 @@
         "start:lucee":"server start serverConfigFile='server-lucee@5.json' --force",
         "start:2018":"server start serverConfigFile='server-adobe@2018.json' --force",
         "start:2021":"server start serverConfigFile='server-adobe@2021.json' --force",
-		"start:2023":"server start serverConfigFile='server-adobe@2023.json' --force",
-		"stop:lucee":"server stop serverConfigFile='server-lucee@5.json' --force",
+        "start:2023":"server start serverConfigFile='server-adobe@2023.json' --force",
+        "stop:lucee":"server stop serverConfigFile='server-lucee@5.json' --force",
         "stop:2018":"server stop serverConfigFile='server-adobe@2018.json' --force",
         "stop:2021":"server stop serverConfigFile='server-adobe@2021.json' --force",
-		"stop:2023":"server stop serverConfigFile='server-adobe@2023.json' --force",
+        "stop:2023":"server stop serverConfigFile='server-adobe@2023.json' --force",
         "log:lucee":"server log coldbox-lucee@5 --follow",
         "log:2018":"server log coldbox-adobe@2018 --follow",
         "log:2021":"server log coldbox-adobe@2021 --follow",
-		"log:2023":"server log coldbox-adobe@2023 --follow",
+        "log:2023":"server log coldbox-adobe@2023 --follow",
         "cfpm":"echo '\".engine/acf2021/WEB-INF/cfusion/bin/cfpm.sh\"' | run",
         "cfpm:install":"echo '\".engine/adobe2021/WEB-INF/cfusion/bin/cfpm.sh\" install ${1}' | run"
     },
-	"installPaths":{
+    "installPaths":{
         "testbox":"testbox/",
         "cbproxies":"system/async/cbproxies/"
     }
