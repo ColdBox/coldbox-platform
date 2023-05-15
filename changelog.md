@@ -4,7 +4,7 @@ All notable changes to this project will be documented here: https://coldbox.ort
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-
+****
 ----
 
 ## [unreleased]
@@ -91,6 +91,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [COLDBOX-1215](https://ortussolutions.atlassian.net/browse/COLDBOX-1215) this.moduleInjector enables modular injector hiearchy. By default it is false until ColdBox 8
 - [COLDBOX-1216](https://ortussolutions.atlassian.net/browse/COLDBOX-1216) New super type method: \`getRootWireBox\(\)\` to get an instance of the root wirebox in the application
 - [COLDBOX-1217](https://ortussolutions.atlassian.net/browse/COLDBOX-1217) New `AppModes` delegate that helps objects know in which modes the application is on: debugMode, testing, production, etc.
+- [COLDBOX-1226](https://ortussolutions.atlassian.net/browse/COLDBOX-1226) Many Many Many Scheduled Tasks Updates
 
 #### Task
 
