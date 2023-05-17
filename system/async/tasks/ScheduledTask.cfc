@@ -703,7 +703,7 @@ component accessors="true" {
 			variables.stats.totalFailures = variables.stats.totalFailures + 1;
 			// Log it, so it doesn't go to ether
 			err( "Error running task (#getName()#) : #e.message & e.detail#" );
-			err( "Stacktrace for task (#geNname()#) : #e.stackTrace#" );
+			err( "Stacktrace for task (#getName()#) : #e.stackTrace#" );
 
 			// Try to execute the error handlers. Try try try just in case.
 			try {
