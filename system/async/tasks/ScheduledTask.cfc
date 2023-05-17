@@ -367,6 +367,38 @@ component accessors="true" {
 	}
 
 	/**
+	 * Disable the task when scheduled, meaning, don't run this sucker!
+	 */
+	ScheduledTask function disable(){
+		debugLog( "disable" );
+
+		variables.disabled = true;
+		return this;
+	}
+
+	/**
+	 * Enable the task when disabled so we can run again
+	 */
+	ScheduledTask function enable(){
+		debugLog( "enable" );
+
+		variables.disabled = false;
+		return this;
+	}
+
+	/**
+	 * Verifies if we can schedule this task or not by looking at the following constraints:
+	 *
+	 * - disabled
+	 * - when closure
+	 */
+	boolean function isDisabled(){
+		debugLog( "isDisabled" );
+
+		return variables.disabled;
+	}
+
+	/**
 	 * Set the meta data for this task!
 	 */
 	ScheduledTask function setMeta( required struct meta ){
@@ -414,38 +446,37 @@ component accessors="true" {
 	}
 
 	/**
-	 * Disable the task when scheduled, meaning, don't run this sucker!
-	 */
-	ScheduledTask function disable(){
-		debugLog( "disable" );
-
-		variables.disabled = true;
-		return this;
-	}
-
-	/**
-	 * Enable the task when disabled so we can run again
-	 */
-	ScheduledTask function enable(){
-		debugLog( "enable" );
-
-		variables.disabled = false;
-		return this;
-	}
-
-	/**
-	 * Verifies if we can schedule this task or not by looking at the following constraints:
+	 * Set when this task should start execution on. By default it starts automatically.
 	 *
-	 * - disabled
-	 * - when closure
+	 * @date The date when this task should start execution on => yyyy-mm-dd format is preferred.
+	 * @time The specific time using 24 hour format => HH:mm, defaults to 00:00
 	 */
-	boolean function isDisabled(){
-		debugLog( "isDisabled" );
+	ScheduledTask function startOn( required date, string time = "00:00" ){
+		debugLog( "startOn", arguments );
 
-		return variables.disabled;
+		variables.startOnDateTime = variables.chronoUnitHelper.parse(
+			"#dateFormat( arguments.date, "yyyy-mm-dd" )#T#arguments.time#"
+		);
+		return this;
 	}
 
 	/**
+	 * Set when this task should stop execution on. By default it never ends
+	 *
+	 * @date The date when this task should stop execution on => yyyy-mm-dd format is preferred.
+	 * @time The specific time using 24 hour format => HH:mm, defaults to 00:00
+	 */
+	ScheduledTask function endOn( required date, string time = "00:00" ){
+		debugLog( "endOn", arguments );
+
+		variables.endOnDateTime = variables.chronoUnitHelper.parse(
+			"#dateFormat( arguments.date, "yyyy-mm-dd" )#T#arguments.time#"
+		);
+		return this;
+	}
+
+	/**
+	 * Sets a daily time range restriction where this task can run on.
 	 *
 	 * @startTime The specific time using 24 hour format => HH:mm
 	 * @endTime   The specific time using 24 hour format => HH:mm
@@ -459,6 +490,7 @@ component accessors="true" {
 	}
 
 	/**
+	 * Sets a daily start time restriction for this task.
 	 *
 	 * @time The specific time using 24 hour format => HH:mm
 	 */
@@ -473,6 +505,7 @@ component accessors="true" {
 	}
 
 	/**
+	 * Sets a daily end time restriction for this task.
 	 *
 	 * @time The specific time using 24 hour format => HH:mm
 	 */
@@ -1342,36 +1375,6 @@ component accessors="true" {
 		debugLog( "onSundays", arguments );
 
 		return this.everyWeekOn( 7, arguments.time );
-	}
-
-	/**
-	 * Set when this task should start execution on. By default it starts automatically.
-	 *
-	 * @date The date when this task should start execution on => yyyy-mm-dd format is preferred.
-	 * @time The specific time using 24 hour format => HH:mm, defaults to 00:00
-	 */
-	ScheduledTask function startOn( required date, string time = "00:00" ){
-		debugLog( "startOn", arguments );
-
-		variables.startOnDateTime = variables.chronoUnitHelper.parse(
-			"#dateFormat( arguments.date, "yyyy-mm-dd" )#T#arguments.time#"
-		);
-		return this;
-	}
-
-	/**
-	 * Set when this task should stop execution on. By default it never ends
-	 *
-	 * @date The date when this task should stop execution on => yyyy-mm-dd format is preferred.
-	 * @time The specific time using 24 hour format => HH:mm, defaults to 00:00
-	 */
-	ScheduledTask function endOn( required date, string time = "00:00" ){
-		debugLog( "endOn", arguments );
-
-		variables.endOnDateTime = variables.chronoUnitHelper.parse(
-			"#dateFormat( arguments.date, "yyyy-mm-dd" )#T#arguments.time#"
-		);
-		return this;
 	}
 
 	/**
