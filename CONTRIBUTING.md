@@ -1,6 +1,6 @@
 # ColdBox Contributing Guide
 
-Hola amigo! I'm really excited that you are interested in contributing to ColdBox, CacheBox, LogBox and/or WireBox. Before submitting your contribution, please make sure to take a moment and read through the following guidelines:
+¡Hola, amigo! I'm really excited that you are interested in contributing to ColdBox, CacheBox, LogBox and/or WireBox. Before submitting your contribution, please make sure to take a moment and read through the following guidelines:
 
 - [Code Of Conduct](#code-of-conduct)
 - [Bug Reporting](#bug-reporting)
