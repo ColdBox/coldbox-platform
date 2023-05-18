@@ -1,4 +1,4 @@
-﻿<p align="center">
+<p align="center">
 	<img src="https://www.ortussolutions.com/__media/coldbox-185-logo.png">
 	<br>
 	<img src="https://www.ortussolutions.com/__media/wirebox-185.png" height="125">
