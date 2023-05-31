@@ -19,7 +19,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        commandbox_version: [ "5.8.0" ]
+        commandbox_version: [ "5.9.0" ]
         cfengine: [ "lucee@5", "adobe@2018", "adobe@2021", "adobe@2023" ]
         jdkVersion: [ "11" ]
         experimental: [false]
@@ -33,7 +33,7 @@ jobs:
             jdkVersion: "17"
             experimental: true
           - cfengine: "adobe@2023"
-            commandbox_version: "5.8.0"
+            commandbox_version: "5.9.0"
             jdkVersion: "17"
             experimental: false
     steps:
