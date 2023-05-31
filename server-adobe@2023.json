@@ -1,6 +1,6 @@
 {
     "app":{
-        "cfengine":"adobe@2023.0.0-beta.1",
+        "cfengine":"adobe@2023",
         "serverHomeDirectory":".engine/adobe2023"
     },
     "name":"coldbox-adobe@2023",
