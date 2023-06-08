@@ -97,9 +97,12 @@ component accessors="true" singleton {
 	 * Register a new task in this scheduler but disable it immediately.  This is useful
 	 * when debugging tasks and have the easy ability to disable them.
 	 *
+	 * @name  The name of this task
+	 * @debug Add debugging logs to System out, disabled by default in coldbox.system.async.tasks.ScheduledTask
+	 *
 	 * @return The registered and disabled Scheduled Task
 	 */
-	ScheduledTask function xtask( required name ){
+	ScheduledTask function xtask( required name, boolean debug = false ){
 		return task( argumentCollection = arguments ).disable();
 	}
 
@@ -107,13 +110,16 @@ component accessors="true" singleton {
 	 * Register a new task in this scheduler that will be executed once the `startup()` is fired or manually
 	 * via the run() method of the task.
 	 *
+	 * @name  The name of this task
+	 * @debug Add debugging logs to System out, disabled by default in coldbox.system.async.tasks.ScheduledTask
+	 *
 	 * @return a ScheduledTask object so you can work on the registration of the task
 	 */
-	ScheduledTask function task( required name ){
+	ScheduledTask function task( required name, boolean debug = false ){
 		// Create task with custom name
 		var oTask = variables.executor
 			// Give me the task broda!
-			.newTask( arguments.name )
+			.newTask( argumentCollection = arguments )
 			// Register ourselves in the task
 			.setScheduler( this )
 			// Set default timezone into the task
