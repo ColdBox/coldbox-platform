@@ -1,10 +1,10 @@
 /**
- * ********************************************************************************
- * Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
- * ********************************************************************************
- * This specialized handler is to be used for Restful applications.
- * It wraps around functions to provide consistency and an opinionated approach to RESTing!
+ * ---
+ * Base class for all RESTFul event handlers
+ *
+ * @author Luis Majano <lmajano@ortussolutions.com>
  */
 component extends="EventHandler" {
 
@@ -59,10 +59,12 @@ component extends="EventHandler" {
 		}
 		// Auth Issues
 		catch ( "InvalidCredentials" e ) {
+			arguments.exception = e;
 			this.onAuthenticationFailure( argumentCollection = arguments );
 		}
 		// Token Decoding Issues
 		catch ( "TokenInvalidException" e ) {
+			arguments.exception = e;
 			this.onAuthenticationFailure( argumentCollection = arguments );
 		}
 		// Validation Exceptions
@@ -84,7 +86,9 @@ component extends="EventHandler" {
 		catch ( "RecordNotFound" e ) {
 			arguments.exception = e;
 			this.onEntityNotFoundException( argumentCollection = arguments );
-		} catch ( Any e ) {
+		}
+		// Global Catch
+		catch ( Any e ) {
 			arguments.exception = e;
 			this.onAnyOtherException( argumentCollection = arguments );
 			// If in development, let's show the error template
@@ -122,15 +126,14 @@ component extends="EventHandler" {
 
 			// Magical renderings
 			event.renderData(
-				type            = arguments.prc.response.getFormat(),
-				data            = responseData,
-				contentType     = arguments.prc.response.getContentType(),
-				statusCode      = arguments.prc.response.getStatusCode(),
-				statusText      = arguments.prc.response.getStatusText(),
-				location        = arguments.prc.response.getLocation(),
-				isBinary        = arguments.prc.response.getBinary(),
-				jsonCallback    = arguments.prc.response.getJsonCallback(),
-				jsonQueryFormat = arguments.prc.response.getJsonQueryFormat()
+				type         = arguments.prc.response.getFormat(),
+				data         = responseData,
+				contentType  = arguments.prc.response.getContentType(),
+				statusCode   = arguments.prc.response.getStatusCode(),
+				statusText   = arguments.prc.response.getStatusText(),
+				location     = arguments.prc.response.getLocation(),
+				isBinary     = arguments.prc.response.getBinary(),
+				jsonCallback = arguments.prc.response.getJsonCallback()
 			);
 		}
 
@@ -167,7 +170,9 @@ component extends="EventHandler" {
 		eventArguments = {}
 	){
 		// Try to discover exception, if not, hard error
-		if ( isNull( arguments.exception ) && !isNull( arguments.prc.exception ) ) {
+		if (
+			!isNull( arguments.prc.exception ) && ( isNull( arguments.exception ) || isEmpty( arguments.exception ) )
+		) {
 			arguments.exception = arguments.prc.exception.getExceptionStruct();
 		}
 
