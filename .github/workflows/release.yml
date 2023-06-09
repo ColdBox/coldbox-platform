@@ -17,6 +17,11 @@ on:
         required: false
         default: false
         type: boolean
+      tag:
+        description: 'Tag changelogs, source and commit'
+        required: false
+        default: false
+        type: boolean
 
   # Manual Trigger for LTS Releases
   workflow_dispatch:
@@ -26,10 +31,16 @@ on:
         required: false
         default: true
         type: boolean
+      tag:
+        description: 'Tag changelogs, source and commit'
+        required: false
+        default: true
+        type: boolean
 
 env:
   SNAPSHOT: ${{ inputs.snapshot || false }}
   LTS: ${{ inputs.lts || false }}
+  TAG: ${{ inputs.tag || true }}
 
 jobs:
   #############################################
@@ -70,12 +81,12 @@ jobs:
         run: |
           cd apidocs && box install
 
-      # - name: Update changelog [unreleased] with latest version
-      #   uses: thomaseizinger/keep-a-changelog-new-release@1.3.0
-      #   if: env.SNAPSHOT == 'false'
-      #   with:
-      #     changelogPath: ./changelog.md
-      #     tag: v${{ env.COLDBOX_VERSION }}
+      - name: Update changelog [unreleased] with latest version
+        uses: thomaseizinger/keep-a-changelog-new-release@1.3.0
+        if: env.SNAPSHOT == 'false' && env.TAG == 'true'
+        with:
+          changelogPath: ./changelog.md
+          tag: v${{ env.COLDBOX_VERSION }}
 
       - name: Build ColdBox Variants for ${{ env.BRANCH }} v${{ env.COLDBOX_VERSION }}
         run: |
@@ -84,22 +95,22 @@ jobs:
           box server start serverConfigFile="server-lucee@5.json" --debug
           ant -DisPreRelease=${{ env.COLDBOX_PRERELEASE }} -Dcoldbox.version=${{ env.COLDBOX_VERSION }} -Dbuild.branch=${{ env.BRANCH }} -Dbuild.number=${{ github.run_number }} -f build/build.xml
 
-      # - name: Commit Changelog [unreleased] with latest version
-      #   uses: EndBug/add-and-commit@v9.1.1
-      #   if: env.SNAPSHOT == 'false'
-      #   with:
-      #     author_name: Github Actions
-      #     author_email: info@ortussolutions.com
-      #     message: 'Finalized changelog for v${{ env.COLDBOX_VERSION }}'
-      #     add: changelog.md
+      - name: Commit Changelog [unreleased] with latest version
+        uses: EndBug/add-and-commit@v9.1.1
+        if: env.SNAPSHOT == 'false' && env.TAG == 'true'
+        with:
+          author_name: Github Actions
+          author_email: info@ortussolutions.com
+          message: 'Finalized changelog for v${{ env.COLDBOX_VERSION }}'
+          add: changelog.md
 
-      # - name: Tag Version
-      #   uses: rickstaa/action-create-tag@v1.6.1
-      #   if: env.SNAPSHOT == 'false'
-      #   with:
-      #     tag: "v${{ env.COLDBOX_VERSION }}"
-      #     force_push_tag: true
-      #     message: "Latest Release v${{ env.COLDBOX_VERSION }}"
+      - name: Tag Version
+        uses: rickstaa/action-create-tag@v1.6.1
+        if: env.SNAPSHOT == 'false' && env.TAG == 'true'
+        with:
+          tag: "v${{ env.COLDBOX_VERSION }}"
+          force_push_tag: true
+          message: "Latest Release v${{ env.COLDBOX_VERSION }}"
 
       - name: Upload Build Artifacts
         if: success()
