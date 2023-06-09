@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.9.0] - 2023-06-09
+
 ### Added
 
 - [COLDBOX-1229](https://ortussolutions.atlassian.net/browse/COLDBOX-1229) Added debug argument to ScheduleExecutor and Scheduler when creating tasks for consistency
@@ -20,7 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- [COLDBOX-1145](https://ortussolutions.atlassian.net/browse/COLDBOX-1145) RestHandler OnError\(\) Exception not checking for empty \`exception\` blocks which would cause another exception on development ONLY
+- [COLDBOX-1145](https://ortussolutions.atlassian.net/browse/COLDBOX-1145) RestHandler OnError() Exception not checking for empty \`exception\` blocks which would cause another exception on development ONLY
 
 ## [6.8.2] - 2023-05-01
 
@@ -260,6 +262,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - [WIREBOX-123](https://ortussolutions.atlassian.net/browse/WIREBOX-123) Removal of usage of Injector dsl interface due to so many issues with multiple engines
 
-[Unreleased]: https://github.com/ColdBox/coldbox-platform/compare/v6.8.2...HEAD
+[Unreleased]: https://github.com/ColdBox/coldbox-platform/compare/v6.9.0...HEAD
+
+[6.9.0]: https://github.com/ColdBox/coldbox-platform/compare/v6.8.2...v6.9.0
 
 [6.8.2]: https://github.com/ColdBox/coldbox-platform/compare/e0aa96ff743adb860834194715729198ecb051bd...v6.8.2
