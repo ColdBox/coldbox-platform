@@ -181,6 +181,7 @@ component {
 	 * Format an incoming json string to a pretty version
 	 *
 	 * @target The target json to prettify
+	 *
 	 * @return The prettified json
 	 */
 	string function prettyJson( string target = "" ){
