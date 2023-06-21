@@ -181,8 +181,9 @@ component {
 	 * Format an incoming json string to a pretty version
 	 *
 	 * @target The target json to prettify
+	 * @return The prettified json
 	 */
-	string function prettyJson( string target ){
+	string function prettyJson( string target = "" ){
 		var newLine = chr( 13 ) & chr( 10 );
 		var tab     = chr( 9 );
 		var padding = 0;
