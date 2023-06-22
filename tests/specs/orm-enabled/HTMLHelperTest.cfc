@@ -66,7 +66,9 @@
 			it( "can produce img tags", function(){
 				var img = htmlhelper.img( "includes/images/pio.jpg" );
 				assertEquals(
-					"<img src=""#encodeForHTMLAttribute( "#controller.getSetting( "htmlBaseUrl", "" )#/includes/images/pio.jpg" )#""></img>",
+					"<img src=""#encodeForHTMLAttribute(
+						"#controller.getSetting( "htmlBaseUrl", "" )#/includes/images/pio.jpg"
+					)#""></img>",
 					img
 				);
 
