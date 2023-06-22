@@ -110,7 +110,7 @@ component {
 	 * expect( event ).toRedirectTo( "Main.index" )
 	 * </pre>
 	 */
-	function toRedirectTo( expectation, args = {} ) {
+	function toRedirectTo( expectation, args = {} ){
 		// handle both positional and named arguments
 		param args.event = "";
 		if ( structKeyExists( args, 1 ) ) {
@@ -126,7 +126,7 @@ component {
 			return false;
 		}
 
-		var actual = expectation.actual.getValue( "relocate_event" );
+		var actual          = expectation.actual.getValue( "relocate_event" );
 		var relocateMatches = actual == args.event;
 
 		if ( !relocateMatches ) {
