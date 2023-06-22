@@ -61,13 +61,6 @@
 		// debug(r);
 	}
 
-	function testbuildWebservice() skip="noWSDLSupport"{
-		mapping = createMock( "coldbox.system.ioc.config.Mapping" ).init( "Buffer" );
-		mapping.setPath( "http://localhost:8599/test-harness/remote/Echo.cfc?wsdl" );
-		r = builder.buildwebservice( mapping );
-		// debug(r);
-	}
-
 	function testbuildcfc(){
 		// simple cfc
 		var mapping = createMock( "coldbox.system.ioc.config.Mapping" ).init( "MyCFC" );
