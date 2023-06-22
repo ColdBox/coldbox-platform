@@ -872,8 +872,7 @@ component serializable="false" accessors="true" {
 			// Debug Data
 			if ( variables.log.canDebug() ) {
 				variables.log.debug(
-					"Finalized Autowire for: #arguments.targetID#",
-					arguments.mapping.getMemento().toString()
+					"Finalized Autowire for: #arguments.targetID#:#arguments.mapping.getName()#:#arguments.mapping.getPath().toString()#"
 				);
 			}
 		}
