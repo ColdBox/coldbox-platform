@@ -115,7 +115,7 @@ component serializable="false" accessors="true" {
 		if ( NOT reFind( "(/|\\)$", arguments.appRootPath ) ) {
 			arguments.appRootPath = appRootPath & "/";
 		}
-		variables.appHash         = hash( arguments.appRootPath );
+		variables.appHash         = hash( arguments.appRootPath & variables.appName );
 		variables.appRootPath     = arguments.appRootPath;
 		// The App Settings
 		variables.configSettings  = {};
