@@ -102,7 +102,7 @@ component serializable="false" accessors="true" {
 		// Create Utility
 		variables.util         = new coldbox.system.core.util.Util();
 		// services scope
-		variables.services     = structsNew( "ordered" );
+		variables.services     = structNew( "ordered" );
 		// CFML Engine Utility
 		variables.CFMLEngine   = new coldbox.system.core.util.CFMLEngine();
 		// Register the application's async manager
