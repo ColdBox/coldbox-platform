@@ -138,19 +138,6 @@
 		assertTrue( len( prop ) );
 	}
 
-	function testWebService() skip="noWSDLSupport"{
-		ws = injector.getInstance( "coldboxWS" );
-
-		//
-		if ( listFindNoCase( "Lucee", server.coldfusion.productname ) ) {
-			expect( getMetadata( ws ).name ).toMatch( "rpc" );
-		}
-		// adobe
-		else {
-			expect( getMetadata( ws ).name ).toMatch( "ServiceProxy" );
-		}
-	}
-
 	function testDSL(){
 		dslobject = injector.getInstance( "coolDSL" );
 
