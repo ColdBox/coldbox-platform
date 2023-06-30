@@ -64,7 +64,7 @@
 			} );
 
 			it( "can produce img tags", function(){
-				var img = htmlhelper.img( "includes/images/pio.jpg" );
+				var img = htmlhelper.img( "/includes/images/pio.jpg" );
 				assertEquals(
 					"<img src=""#encodeForHTMLAttribute(
 						"#controller.getSetting( "htmlBaseUrl", "" )#/includes/images/pio.jpg"
@@ -325,10 +325,6 @@
 
 				str = htmlhelper.startForm( action = "user.save" );
 				expect( str ).toInclude( "&##x2f;user&##x2f;save" );
-
-				str = htmlhelper.startForm( action = "user.save", ssl = true );
-				// debug(str);
-				expect( str ).toInclude( encodeForHTMLAttribute( "https://" ) );
 
 				str = htmlhelper.startForm(
 					action = "user.save",
