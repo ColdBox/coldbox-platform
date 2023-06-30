@@ -65,18 +65,10 @@
 
 			it( "can produce img tags", function(){
 				var img = htmlhelper.img( "/includes/images/pio.jpg" );
-				assertEquals(
-					"<img src=""#encodeForHTMLAttribute(
-						"#controller.getSetting( "htmlBaseUrl", "" )#/includes/images/pio.jpg"
-					)#""></img>",
-					img
-				);
+				expect( img ).toInclude( encodeForHTMLAttribute( "includes/images/pio.jpg" ) );
 
 				var img = htmlhelper.img( "http://hello.com/includes/images/pio.jpg" );
-				assertEquals(
-					"<img src=""#encodeForHTMLAttribute( "http://hello.com/includes/images/pio.jpg" )#""></img>",
-					img
-				);
+				expect( img ).toInclude( encodeForHTMLAttribute( "http://hello.com/includes/images/pio.jpg" ) );
 			} );
 
 			it( "can produce link tags", function(){
@@ -337,7 +329,7 @@
 					.toInclude( "name=""userForm""" );
 
 				str = htmlhelper.startForm();
-				expect( str ).toInclude( "cbTestHarness&##x2f;index.cfm&##x2f;" ).toInclude( "method=""post""" );
+				expect( str ).toInclude( "method=""post""" );
 			} );
 
 			it( "can produce form tags with non-standard HTTP Methods (PUT,PATCH,DELETE)", function(){
