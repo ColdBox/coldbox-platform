@@ -277,10 +277,7 @@
         	<fileset dir="system/async" />
         </copy>
 		<copy todir="${dir.build}/cachebox/system/core" encoding="UTF-8" overwrite="true">
-        	<fileset dir="system/core">
-        		<exclude name="mail/*" />
-        		<exclude name="db/*" />
-        	</fileset>
+        	<fileset dir="system/core" />
         </copy>
 		<copy todir="${dir.build}/cachebox/system/logging" encoding="UTF-8" overwrite="true">
         	<fileset dir="system/logging" />
@@ -394,12 +391,7 @@
         	<fileset dir="system/async" />
         </copy>
 		<copy todir="${dir.build}/logbox/system/core" encoding="UTF-8" overwrite="true">
-        	<fileset dir="system/core">
-        		<include name="util/*" />
-        		<include name="dynamic/*" />
-        		<include name="collections/*" />
-        		<include name="conversion/*" />
-        	</fileset>
+        	<fileset dir="system/core" />
         </copy>
         <!--Copy text files to root folder-->
 		<copy todir="${dir.build}/logbox" encoding="UTF-8" overwrite="true">
@@ -513,13 +505,7 @@
         	<fileset dir="system/cache" />
         </copy>
 		<copy todir="${dir.build}/wirebox/system/core" encoding="UTF-8" overwrite="true">
-        	<fileset dir="system/core">
-        		<include name="collections/"/>
-        		<include name="conversion/"/>
-        		<include name="util/"/>
-        		<include name="dynamic/"/>
-        		<include name="events/"/>
-        	</fileset>
+        	<fileset dir="system/core" />
         </copy>
 		<copy todir="${dir.build}/wirebox/system/logging" encoding="UTF-8" overwrite="true">
         	<fileset dir="system/logging" />
