@@ -1231,30 +1231,30 @@ component serializable="false" accessors="true" {
 		required string targetID,
 		required mapping
 	){
-		// Transient request cache
-		param request.cbTransientDICache = {};
-		// Transient Cache Enable
+		// Transient Cache Enabled Checks
 		// - Global Flag
-		// - Has to be a transient
-		// - Has to be a non-virtual inheritance
-		// - Doesn't have a transientCache annotation
+		// - Mapping has to be a transient
+		// - Mapping has to be a non-virtual inheritance
+		// - Mapping doesn't have a transientCache annotation
 		// cfformat-ignore-start
 		var transientCacheEnabled        = getBinder().getTransientInjectionCache() &&
 			arguments.mapping.isTransient() &&
 			!arguments.mapping.isVirtualInheritance() &&
 			arguments.mapping.getComponentAnnotation( "transientCache", true )
 		;
+		var transientCache = getTransientCache();
 		// cfformat-ignore-end
 
 		// Verify if we have seen this transient in this request
-		if ( transientCacheEnabled && request.cbTransientDICache.keyExists( arguments.targetID ) ) {
+		if ( transientCacheEnabled && transientCache.containsKey( arguments.targetID.lcase() ) ) {
+			var targetTransientCache = getTransientCache( arguments.targetID.lcase() );
 			// Injections Injection :)
 			structAppend(
 				arguments.targetObject.getVariablesMixin(),
-				request.cbTransientDICache[ arguments.targetId ].injections
+				targetTransientCache.injections
 			);
 			// Delegations Injection
-			arguments.targetObject.$wbDelegateMap = request.cbTransientDICache[ arguments.targetId ].delegations;
+			arguments.targetObject.$wbDelegateMap = targetTransientCache.delegations;
 			// inject delegation into the target
 			for ( var delegationMethod in structKeyArray( arguments.targetObject.$wbDelegateMap ) ) {
 				arguments.targetObject.injectMixin( delegationMethod, variables.mixerUtil.getByDelegate );
@@ -1307,32 +1307,10 @@ component serializable="false" accessors="true" {
 
 				// Store in transient cache
 				if ( transientCacheEnabled ) {
-					// Init storage if not found
-					if ( !request.cbTransientDICache.keyExists( arguments.targetID ) ) {
-						lock
-							name          ="wirebox:transientcache:#arguments.targetId#"
-							type          ="exclusive"
-							throwontimeout="true"
-							timeout       ="15" {
-							if ( !request.cbTransientDICache.keyExists( arguments.targetID ) ) {
-								request.cbTransientDICache[ arguments.targetID ] = {
-									injections  : {},
-									delegations : {}
-								};
-							}
-						}
-					}
-
-					// Store delegations + injections
-					lock
-						name          ="wirebox:transientcache:#arguments.targetId#.storage"
-						type          ="exclusive"
-						throwontimeout="true"
-						timeout       ="15" {
-						request.cbTransientDICache[ arguments.targetId ].injections[ thisDIData.name ] = refLocal.dependency;
-						if ( structKeyExists( arguments.targetObject, "$wbDelegateMap" ) ) {
-							request.cbTransientDICache[ arguments.targetID ].delegations = arguments.targetObject.$wbDelegateMap;
-						}
+					var targetTransientCache = getTransientCache( arguments.targetID.lcase() );
+					targetTransientCache.injections[ thisDIData.name ] = refLocal.dependency;
+					if ( structKeyExists( arguments.targetObject, "$wbDelegateMap" ) ) {
+						targetTransientCache.delegations = arguments.targetObject.$wbDelegateMap;
 					}
 				}
 
@@ -1351,6 +1329,49 @@ component serializable="false" accessors="true" {
 		// end iteration
 
 		return this;
+	}
+
+	/**
+	 * Get a reference to the transient cache, if none exists, it will be created for the request.
+	 *
+	 * @targetID If passed, get the transient cache for the targetID, otherwise, get the global transient cache
+	 */
+	struct function getTransientCache( targetId ){
+		if( !request.keyExists( "cbTransientDICache" ) ){
+			lock
+				name          ="wirebox:transientcache"
+				type          ="exclusive"
+				throwontimeout="true"
+				timeout       ="15" {
+				if( !request.keyExists( "cbTransientDICache" ) ){
+					request.cbTransientDICache = createObject( "java", "java.util.concurrent.ConcurrentHashMap" ).init();
+					variables.log.debug( () => "WireBox Transient Cache Created" );
+				}
+			}
+		}
+
+		// Global or targeted transient cache?
+		if( isNull( arguments.targetId ) ){
+			return request.cbTransientDICache;
+		}
+
+		// Init targetID storage if not found
+		if ( !request.cbTransientDICache.containsKey( arguments.targetID.lcase() ) ) {
+			lock
+				name          ="wirebox:transientcache:#arguments.targetId#"
+				type          ="exclusive"
+				throwontimeout="true"
+				timeout       ="15" {
+				if ( !request.cbTransientDICache.containsKey( arguments.targetID.lcase() ) ) {
+					request.cbTransientDICache.put( arguments.targetID.lcase(), {
+						"injections"  : {},
+						"delegations" : {}
+					} );
+					variables.log.debug( () => "WireBox Transient Cache Storage for #targetId# Created" );
+				}
+			}
+		}
+		return request.cbTransientDICache.get( arguments.targetId.lcase() );
 	}
 
 	/**
