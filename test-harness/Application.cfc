@@ -22,6 +22,9 @@ component {
 	COLDBOX_CONFIG_FILE   = "";
 	// COLDBOX APPLICATION KEY OVERRIDE
 	COLDBOX_APP_KEY       = "";
+	COLDBOX_FAIL_FAST = true;
+	COLDBOX_WEB_MAPPING = "test-harness";
+
 	// JAVA INTEGRATION: JUST DROP JARS IN THE LIB FOLDER
 	// You can add more paths or change the reload flag as well.
 	this.javaSettings     = {
@@ -54,7 +57,9 @@ component {
 			COLDBOX_CONFIG_FILE,
 			COLDBOX_APP_ROOT_PATH,
 			COLDBOX_APP_KEY,
-			COLDBOX_APP_MAPPING
+			COLDBOX_APP_MAPPING,
+			COLDBOX_FAIL_FAST,
+			COLDBOX_WEB_MAPPING
 		);
 		application.cbBootstrap.loadColdbox();
 
