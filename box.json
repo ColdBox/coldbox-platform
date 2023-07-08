@@ -42,7 +42,7 @@
         "cbproxies":"^1.0.1+13"
     },
     "devDependencies":{
-        "testbox":"be",
+        "testbox":"^5.1.0+2",
         "commandbox-dotenv":"*",
         "commandbox-cfconfig":"*",
         "commandbox-cfformat":"*"
