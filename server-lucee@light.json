@@ -21,7 +21,10 @@
     "JVM":{
         "heapSize":"1024"
     },
-	"cfconfig": {
-		"file" : ".cfconfig.json"
-	}
+    "cfconfig":{
+        "file":".cfconfig.json"
+    },
+    "env":{
+        "lucee-extensions":"D062D72F-F8A2-46F0-8CBC91325B2F067B,37C61C0A-5D7E-4256-8572639BE0CF5838 "
+    }
 }
