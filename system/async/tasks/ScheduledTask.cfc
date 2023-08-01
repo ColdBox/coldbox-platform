@@ -929,7 +929,7 @@ component accessors="true" {
 			variables.delayTimeUnit = arguments.timeUnit;
 		}
 
-		if ( arguments.setNextRunTime ){
+		if ( arguments.setNextRunTime ) {
 			setInitialNextRunTime( delay: arguments.delay, timeUnit: arguments.timeUnit );
 		}
 
@@ -1619,9 +1619,9 @@ component accessors="true" {
 		);
 
 		if ( !isValid( "date", variables.stats.nextRun ) ) {
-			if ( !isNull( arguments.nextRun ) && isInstanceOf( arguments.nextRun, "java.time.LocalDateTime" ) ){
+			if ( !isNull( arguments.nextRun ) && isInstanceOf( arguments.nextRun, "java.time.LocalDateTime" ) ) {
 				variables.stats.nextRun = arguments.nextRun;
-			} else if ( !isInstanceOf( variables.stats.nextRun, "java.time.LocalDateTime" ) ){
+			} else if ( !isInstanceOf( variables.stats.nextRun, "java.time.LocalDateTime" ) ) {
 				variables.stats.nextRun = getJavaNow();
 			}
 
