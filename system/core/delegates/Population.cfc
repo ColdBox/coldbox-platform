@@ -33,7 +33,7 @@ component {
 		boolean ignoreEmpty          = false,
 		string nullEmptyInclude      = "",
 		string nullEmptyExclude      = "",
-		boolean composeRelationships = true,
+		boolean composeRelationships = false,
 		any target                   = $parent,
 		boolean ignoreTargetLists    = false
 	){
@@ -65,7 +65,7 @@ component {
 		boolean ignoreEmpty          = false,
 		string nullEmptyInclude      = "",
 		string nullEmptyExclude      = "",
-		boolean composeRelationships = true,
+		boolean composeRelationships = false,
 		required string prefix,
 		any target                = $parent,
 		boolean ignoreTargetLists = false
@@ -97,7 +97,7 @@ component {
 		boolean ignoreEmpty          = false,
 		string nullEmptyInclude      = "",
 		string nullEmptyExclude      = "",
-		boolean composeRelationships = true,
+		boolean composeRelationships = false,
 		any target                   = $parent,
 		boolean ignoreTargetLists    = false
 	){
@@ -130,7 +130,7 @@ component {
 		boolean ignoreEmpty          = false,
 		string nullEmptyInclude      = "",
 		string nullEmptyExclude      = "",
-		boolean composeRelationships = true,
+		boolean composeRelationships = false,
 		any target                   = $parent,
 		boolean ignoreTargetLists    = false
 	){
@@ -163,7 +163,7 @@ component {
 		boolean ignoreEmpty          = false,
 		string nullEmptyInclude      = "",
 		string nullEmptyExclude      = "",
-		boolean composeRelationships = true,
+		boolean composeRelationships = false,
 		any target                   = $parent,
 		boolean ignoreTargetLists    = false
 	){
