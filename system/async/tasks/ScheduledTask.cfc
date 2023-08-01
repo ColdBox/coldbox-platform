@@ -929,8 +929,9 @@ component accessors="true" {
 			variables.delayTimeUnit = arguments.timeUnit;
 		}
 
-		if ( arguments.setNextRunTime )
+		if ( arguments.setNextRunTime ){
 			setInitialNextRunTime( delay: arguments.delay, timeUnit: arguments.timeUnit );
+		}
 
 		return this;
 	}
@@ -1618,10 +1619,11 @@ component accessors="true" {
 		);
 
 		if ( !isValid( "date", variables.stats.nextRun ) ) {
-			if ( !isNull( arguments.nextRun ) && isInstanceOf( arguments.nextRun, "java.time.LocalDateTime" ) )
+			if ( !isNull( arguments.nextRun ) && isInstanceOf( arguments.nextRun, "java.time.LocalDateTime" ) ){
 				variables.stats.nextRun = arguments.nextRun;
-			else if ( !isInstanceOf( variables.stats.nextRun, "java.time.LocalDateTime" ) )
+			} else if ( !isInstanceOf( variables.stats.nextRun, "java.time.LocalDateTime" ) ){
 				variables.stats.nextRun = getJavaNow();
+			}
 
 			if ( amount ) {
 				switch ( unit ) {
@@ -1668,7 +1670,6 @@ component accessors="true" {
 				.withHour( javacast( "int", 23 ) )
 				.withMinute( javacast( "int", 59 ) )
 				.withSecond( javacast( "int", 59 ) );
-
 
 			debugLog(
 				"startTime",
@@ -1818,7 +1819,10 @@ component accessors="true" {
 	}
 
 	/**
-	 * Debug output method
+	 * Debug output to the executor out console
+	 *
+	 * @caller The name of the method calling this method
+	 * @args   The arguments to attach to the logging output
 	 */
 	function debugLog( required string caller, struct args = {} ){
 		if ( variables.debug ) {
