@@ -66,6 +66,14 @@ A reporting template about exceptions in your ColdBox Apps
 					<td>#HTMLEditFormat( oException.getDetail() ).listChangeDelims( '<br>', chr(13)&chr(10) )#</td>
 				</tr>
 			 </cfif>
+			 <cfif oException.getTagContext().indexExists(1)>
+				<tr>
+					<td align="right" class="info"><strong>Line:</strong></td>
+					<td>
+						#HTMLEditFormat( oException.getTagContext()[1].line )#
+					</td>
+				</tr>
+			</cfif>
 			<tr>
 				<td align="right" class="info"><strong>Timestamp: </strong></td>
 				<td>#dateformat(now(), "mm/dd/yyyy")# #timeformat(now(),"hh:mm:ss tt")#</td>
