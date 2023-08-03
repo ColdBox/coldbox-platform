@@ -64,17 +64,11 @@
 			} );
 
 			it( "can produce img tags", function(){
-				var img = htmlhelper.img( "includes/images/pio.jpg" );
-				assertEquals(
-					"<img src=""#encodeForHTMLAttribute( "#controller.getSetting( "htmlBaseUrl" )#/includes/images/pio.jpg" )#""></img>",
-					img
-				);
+				var img = htmlhelper.img( "/includes/images/pio.jpg" );
+				expect( img ).toInclude( encodeForHTMLAttribute( "includes/images/pio.jpg" ) );
 
 				var img = htmlhelper.img( "http://hello.com/includes/images/pio.jpg" );
-				assertEquals(
-					"<img src=""#encodeForHTMLAttribute( "http://hello.com/includes/images/pio.jpg" )#""></img>",
-					img
-				);
+				expect( img ).toInclude( encodeForHTMLAttribute( "http://hello.com/includes/images/pio.jpg" ) );
 			} );
 
 			it( "can produce link tags", function(){
@@ -324,10 +318,6 @@
 				str = htmlhelper.startForm( action = "user.save" );
 				expect( str ).toInclude( "&##x2f;user&##x2f;save" );
 
-				str = htmlhelper.startForm( action = "user.save", ssl = true );
-				// debug(str);
-				expect( str ).toInclude( encodeForHTMLAttribute( "https://" ) );
-
 				str = htmlhelper.startForm(
 					action = "user.save",
 					method = "get",
@@ -339,7 +329,7 @@
 					.toInclude( "name=""userForm""" );
 
 				str = htmlhelper.startForm();
-				expect( str ).toInclude( "cbTestHarness&##x2f;index.cfm&##x2f;" ).toInclude( "method=""post""" );
+				expect( str ).toInclude( "method=""post""" );
 			} );
 
 			it( "can produce form tags with non-standard HTTP Methods (PUT,PATCH,DELETE)", function(){

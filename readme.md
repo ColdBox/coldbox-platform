@@ -50,7 +50,6 @@ ColdBox *Hierarchical* MVC is the de-facto enterprise-level [HMVC](https://en.wi
 * [An extensive eco-system](https://forgebox.io)
 * Much More
 
-
 ## LTS Support
 
 For all ColdBox releases, updates are provided for 12 months and security fixes are provided for 2 years after the next major release.

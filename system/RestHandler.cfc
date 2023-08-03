@@ -534,6 +534,20 @@ component extends="EventHandler" {
 	 * @exception      The thrown exception
 	 */
 	function onAnyOtherException( event, rc, prc, eventArguments, exception = {} ){
+		// Param due to inconsistencies with safe navigation operators in all CFML engines
+		param arguments.exception.type = "";
+
+		// Handle a convention of on{type}Exception() in your base handler
+		if (
+			len( arguments.exception.type ) && structKeyExists( this, "on#arguments.exception.type#Exception" ) && isCustomFunction(
+				this[ "on#arguments.exception.type#Exception" ]
+			)
+		) {
+			this[ "on#arguments.exception.type#Exception" ]( argumentCollection = arguments );
+			return;
+		}
+
+
 		// Log Exception
 		log.error(
 			"Error calling #arguments.event.getCurrentEvent()#: #arguments.exception.message# #arguments.exception.detail#",

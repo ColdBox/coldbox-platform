@@ -6,7 +6,7 @@ on:
   workflow_call:
     secrets:
       SLACK_WEBHOOK_URL:
-        required: true
+        required: false
 
 jobs:
   tests:
@@ -19,15 +19,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        commandbox_version: [ "5.8.0" ]
-        cfengine: [ "lucee@5", "adobe@2018", "adobe@2021" ]
+        commandbox_version: [ "5.9.0" ]
+        cfengine: [ "lucee@5", "adobe@2018", "adobe@2021", "adobe@2023" ]
         jdkVersion: [ "11" ]
         experimental: [false]
         include:
-          - cfengine: "lucee@5rc"
-            commandbox_version: "6.0.0-alpha"
-            jdkVersion: "11"
-            experimental: true
           - cfengine: "lucee@6"
             commandbox_version: "6.0.0-alpha"
             jdkVersion: "11"
@@ -37,13 +33,9 @@ jobs:
             jdkVersion: "17"
             experimental: true
           - cfengine: "adobe@2023"
-            commandbox_version: "6.0.0-alpha"
-            jdkVersion: "11"
-            experimental: true
-          - cfengine: "adobe@2023"
-            commandbox_version: "6.0.0-alpha"
+            commandbox_version: "5.9.0"
             jdkVersion: "17"
-            experimental: true
+            experimental: false
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
@@ -126,6 +118,8 @@ jobs:
       - name: Failure Debugging Info
         if: ${{ failure() }}
         run: |
+          box version
+          box server info serverConfigFile="server-${{ matrix.cfengine }}.json" --json
           box server log serverConfigFile="server-${{ matrix.cfengine }}.json"
 
       - name: Upload Debugging Info To Artifacts
