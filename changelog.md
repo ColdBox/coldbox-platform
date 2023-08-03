@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [7.1.0] - 2023-08-03
+
 ### ColdBox HMVC
 
 #### Bug
@@ -21,12 +23,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [COLDBOX-1230](https://ortussolutions.atlassian.net/browse/COLDBOX-1230) Reorganized ScheduledTasks functions within the CFC into code groups and comments
 - [COLDBOX-1235](https://ortussolutions.atlassian.net/browse/COLDBOX-1235) New StringUtil.prettySQL method for usage in debugging and whoops reports
 - [COLDBOX-1238](https://ortussolutions.atlassian.net/browse/COLDBOX-1238) New testing matcher: toRedirectTo for easier testing against relocations
-- [COLDBOX-1239](https://ortussolutions.atlassian.net/browse/COLDBOX-1239) New REST convention for custom error handlers: \`on\{errorType\}Exception\(\)\`
+- [COLDBOX-1239](https://ortussolutions.atlassian.net/browse/COLDBOX-1239) New REST convention for custom error handlers: \`on{errorType}Exception()\`
 
 #### Improvements
 
 - [COLDBOX-1041](https://ortussolutions.atlassian.net/browse/COLDBOX-1041) Logging category in ColdBox scheduler is generic
-- [COLDBOX-1231](https://ortussolutions.atlassian.net/browse/COLDBOX-1231) Improve RestHandler Exception handler with on#ExceptionType#Exception\(\) convention
+- [COLDBOX-1231](https://ortussolutions.atlassian.net/browse/COLDBOX-1231) Improve RestHandler Exception handler with on#ExceptionType#Exception() convention
 - [COLDBOX-1234](https://ortussolutions.atlassian.net/browse/COLDBOX-1234) Account for null or empty incoming json to prettyjson output
 - [COLDBOX-1236](https://ortussolutions.atlassian.net/browse/COLDBOX-1236) Incorporate appName into the appHash to give more uniqueness to locks internally
 
@@ -50,7 +52,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Task
 
-- [WIREBOX-149](https://ortussolutions.atlassian.net/browse/WIREBOX-149) \`toWebservice\(\)\` is now deprecated
+- [WIREBOX-149](https://ortussolutions.atlassian.net/browse/WIREBOX-149) \`toWebservice()\` is now deprecated
 
 * * *
 
@@ -198,6 +200,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [WIREBOX-144](https://ortussolutions.atlassian.net/browse/WIREBOX-144) Injectors can now track the root injector by having a root reference via \`getRoot(), hasRoot()\` methods
 - [WIREBOX-145](https://ortussolutions.atlassian.net/browse/WIREBOX-145) New DSL for wirebox only root injectors: \`wirebox:root\`
 
-[Unreleased]: https://github.com/ColdBox/coldbox-platform/compare/v7.0.0...HEAD
+[Unreleased]: https://github.com/ColdBox/coldbox-platform/compare/v7.1.0...HEAD
+
+[7.1.0]: https://github.com/ColdBox/coldbox-platform/compare/v7.0.0...v7.1.0
 
 [7.0.0]: https://github.com/ColdBox/coldbox-platform/compare/af03e4a577fa627e94619a451e56d36292815b06...v7.0.0
