@@ -5,7 +5,6 @@ user = entityLoad("User","88B73A03-FEFA-935D-AD8036E1B7954B76",true);
 writeDump(test);
 writeDump(user);
 
-
 orm = ormGetSession();
 ormFactory = ormgetSessionFactory();
 stats = orm.getStatistics();
