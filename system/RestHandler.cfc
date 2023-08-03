@@ -538,8 +538,12 @@ component extends="EventHandler" {
 		param arguments.exception.type = "";
 
 		// Handle a convention of on{type}Exception() in your base handler
-		if( len( arguments.exception.type ) && structKeyExists( this, "on#arguments.exception.type#Exception" ) && isCustomFunction( this[ "on#arguments.exception.type#Exception" ] ) ){
-			this[ "on#arguments.exception.type#Exception" ]( argumentCollection=arguments );
+		if (
+			len( arguments.exception.type ) && structKeyExists( this, "on#arguments.exception.type#Exception" ) && isCustomFunction(
+				this[ "on#arguments.exception.type#Exception" ]
+			)
+		) {
+			this[ "on#arguments.exception.type#Exception" ]( argumentCollection = arguments );
 			return;
 		}
 
