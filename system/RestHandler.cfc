@@ -543,6 +543,7 @@ component extends="EventHandler" {
 			return;
 		}
 
+
 		// Log Exception
 		log.error(
 			"Error calling #arguments.event.getCurrentEvent()#: #arguments.exception.message# #arguments.exception.detail#",
