@@ -40,6 +40,14 @@ component output="false" singleton {
 		return view( view = "simpleview" );
 	}
 
+	/**
+	 * printable uses simple layout to display the request in one of two
+	 * printable formats (html or pdf) base on rc.output value
+	 */
+	function printable( event , rc, prc ) {
+		var test = layout( layout : "simple", view : "simpleview");
+		event.renderData( data : test, type : "pdf" );
+	}
 
 	/**
 	 * Render layout with arguments and passthrough
