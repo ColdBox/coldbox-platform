@@ -112,6 +112,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			variables.wirebox.getInstance( arguments.name, { name : arguments.name } ).setName( arguments.name )
 		);
 
+		// Reconfigure the Logger Category due to virtual inheritance
+		oScheduler.getLog().setCategory( arguments.path );
+
 		// Register the Scheduler as an Interceptor as well.
 		variables.controller.getInterceptorService().registerInterceptor( interceptorObject = oScheduler );
 
