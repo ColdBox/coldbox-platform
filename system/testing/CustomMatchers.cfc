@@ -36,7 +36,7 @@ component {
 	}
 
 	/**
-	 * Expectation for testing again cbValidation invalid data fields returned in a Restful response
+	 * Expectation for testing against cbValidation invalid data fields returned in a Restful response
 	 * by looking into the response object
 	 *
 	 * <pre>
@@ -100,6 +100,41 @@ component {
 		}
 
 		// We checked and it's all good!
+		return true;
+	}
+
+	/**
+	 * Expectation for testing if an event returns a relocate.
+	 *
+	 * <pre>
+	 * expect( event ).toRedirectTo( "Main.index" )
+	 * </pre>
+	 */
+	function toRedirectTo( expectation, args = {} ){
+		// handle both positional and named arguments
+		param args.event = "";
+		if ( structKeyExists( args, 1 ) ) {
+			args.event = args[ 1 ];
+		}
+		param args.message = "";
+		if ( structKeyExists( args, 2 ) ) {
+			args.message = args[ 2 ];
+		}
+
+		if ( !expectation.actual.valueExists( "relocate_event" ) ) {
+			expectation.message = "The event did not relocate.";
+			return false;
+		}
+
+		var actual          = expectation.actual.getValue( "relocate_event" );
+		var relocateMatches = actual == args.event;
+
+		if ( !relocateMatches ) {
+			expectation.message = "#args.message#. Event did not relocate to the expected event. Expected [#args.event#]. Received [#actual#].";
+			debug( expectation.actual.getCollection() );
+			return false;
+		}
+
 		return true;
 	}
 
