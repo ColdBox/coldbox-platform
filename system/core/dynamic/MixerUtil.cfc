@@ -36,7 +36,7 @@ component accessors="true" {
 		if ( !structKeyExists( arguments.target, "$wbMixer" ) ) {
 			structAppend( arguments.target, variables.mixins, true );
 		}
-		return this;
+		return arguments.target;
 	}
 
 	/**
@@ -48,7 +48,7 @@ component accessors="true" {
 		for ( var udf in variables.mixins ) {
 			structDelete( arguments.target, udf );
 		}
-		return this;
+		return arguments.target;
 	}
 
 	/****************** MIXINS ************************/

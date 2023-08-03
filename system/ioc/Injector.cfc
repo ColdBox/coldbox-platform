@@ -1669,11 +1669,17 @@ component serializable="false" accessors="true" {
 			arguments.binder = createObject( "component", arguments.binder );
 		}
 
-		// Inject Environment Support
-		var envUtil                             = new coldbox.system.core.delegates.Env();
-		arguments.binder[ "getSystemSetting" ]  = envUtil.getSystemSetting;
-		arguments.binder[ "getSystemProperty" ] = envUtil.getSystemProperty;
-		arguments.binder[ "getEnv" ]            = envUtil.getEnv;
+		// Inject Environment Support if it's an object
+		if ( isObject( arguments.binder ) ) {
+			var envUtil = new coldbox.system.core.delegates.Env();
+			variables.mixerUtil
+				.start( arguments.binder )
+				.injectPropertyMixin( propertyName: "env", propertyValue: envUtil )
+				.injectMixin( "getSystemSetting", envUtil.getSystemSetting )
+				.injectMixin( "getSystemProperty", envUtil.getSystemProperty )
+				.injectMixin( "getJavaSystem", envUtil.getJavaSystem )
+				.injectMixin( "getEnv", envUtil.getEnv );
+		}
 
 		// Check if data CFC or binder family
 		if ( !structKeyExists( arguments.binder, "$wbBinder" ) ) {
