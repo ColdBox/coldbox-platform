@@ -43,6 +43,7 @@ component accessors="true" {
 		}
 		variables.extraMessage = arguments.extraMessage;
 		variables.extraInfo    = arguments.extraInfo;
+		variables.utility      = new coldbox.system.core.util.Util();
 
 		return this;
 	}
@@ -282,9 +283,7 @@ component accessors="true" {
 		if ( isSimpleValue( getExtraInfo() ) && len( getExtraInfo() ) ) {
 			buffer.append( "ExtraInfo = " & getExtraInfo() & chr( 13 ) );
 		} else {
-			buffer.append(
-				"ExtraInfo = " & new coldbox.system.core.util.Util().toJson( getExtraInfo() ) & chr( 13 )
-			);
+			buffer.append( "ExtraInfo = " & variables.utility.toJson( getExtraInfo() ) & chr( 13 ) );
 		}
 		return buffer.toString();
 	}
@@ -442,7 +441,9 @@ component accessors="true" {
 
 				list.append(
 					"<td class="" code-cell overflow-scroll ""><pre class=""brush:js;gutter:false"">"
-					& ( len( arguments.scope[ i ] ) ? formatJSON( arguments.scope[ i ] ) : "<em>---</em>" ) & "</pre></td>"
+					& (
+						len( arguments.scope[ i ] ) ? variables.utility.prettyJson( arguments.scope[ i ] ) : "<em>---</em>"
+					) & "</pre></td>"
 				);
 			} else if ( isSimpleValue( arguments.scope[ i ] ) ) {
 				list.append(
@@ -521,79 +522,6 @@ component accessors="true" {
 
 		return list.toString();
 	}
-
-
-	/**
-	 * Formats a JSON string with indents &amp; new lines.
-	 * v1.0 by Ben Koshy
-	 *
-	 * @param   str      JSON string (Required)
-	 * @author  Ben Koshy (cf@animex.com)
-	 * @version 0, September 16, 2012
-	 *
-	 * @return Returns a string of indent-formated JSON
-	 */
-	// formatJSON() :: formats and indents JSON string
-	// based on blog post @ http://ketanjetty.com/coldfusion/javascript/format-json/
-	// modified for CFScript By Ben Koshy @animexcom
-	// usage: result = formatJSON('STRING TO BE FORMATTED') OR result = formatJSON(StringVariableToFormat);
-
-	public string function formatJSON( str ){
-		var fjson     = "";
-		var pos       = 0;
-		var regex     = ":""([^""]+)?.*";
-		var strLen    = len( arguments.str );
-		var indentStr = "  "; // Adjust Indent Token If you Like
-		var newLine   = chr( 10 ); // Adjust New Line Token If you Like
-
-		var string      = "";
-		var prev        = "";
-		var char        = "";
-		var commaPos    = 0;
-		var commaPosArr = [];
-		for ( var i = 1; i < strlen; i++ ) {
-			char = mid( arguments.str, i, 1 );
-			prev = "";
-			if ( i != 1 ) {
-				prev = mid( arguments.str, i - 1, 1 );
-			}
-			strhascomma = false;
-
-			if ( prev == ":" && char == """" ) {
-				string      = mid( arguments.str, i - 1, ( strLen - i ) );
-				string      = reReplaceNoCase( string, regex, "\1" );
-				commaposarr = reFindNoCase( ",", string, 1, true );
-				if ( commaposarr.pos[ 1 ] != 0 ) {
-					commapos = "i" + commaposarr.pos[ arrayLen( commaposarr.pos ) ];
-				}
-			}
-
-			if ( char == "}" || char == "]" ) {
-				fjson &= newLine;
-				pos = pos - 1;
-				for ( var j = 1; j <= pos; j++ ) {
-					fjson &= indentStr;
-				}
-			}
-
-			fjson &= char;
-			if ( char == "{" || char == "[" || ( char == "," && i != commaPos ) ) {
-				commapos = 0;
-				fjson &= newLine;
-				if ( char == "{" || char == "[" ) {
-					pos = pos + 1;
-				}
-				for ( var k = 1; k <= pos; k++ ) {
-					fjson &= indentStr;
-				}
-			}
-		}
-		fjson &= newLine & "}";
-		return trim( fjson );
-	}
-
-
-
 
 	/**
 	 * Compose a screen for a file to open in an editor
