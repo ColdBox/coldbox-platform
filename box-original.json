@@ -1,43 +1,74 @@
 {
-    "name": "ColdBox Platform",
-    "version": "@build.version@+@build.number@",
-    "location": "https://downloads.ortussolutions.com/ortussolutions/coldbox/@build.version@/coldbox-@build.version@.zip",
-    "author": "Ortus Solutions <info@ortussolutions.com>",
-    "slug": "coldbox",
-    "packageDirectory": "coldbox",
-    "type": "mvc",
-    "keywords": "mvc,hmc,conventions,coldbox",
-    "homepage": "https://www.coldbox.org",
-    "documentation": "https://coldbox.ortusbooks.com/",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/coldbox/coldbox-platform"
+    "name":"ColdBox Platform",
+    "version":"7.2.0",
+    "location":"https://downloads.ortussolutions.com/ortussolutions/coldbox/@build.version@/coldbox-@build.version@.zip",
+    "author":"Ortus Solutions <info@ortussolutions.com>",
+    "slug":"coldbox",
+    "packageDirectory":"coldbox",
+    "type":"mvc",
+    "keywords":"mvc,hmvc,conventions,coldbox",
+    "homepage":"https://www.coldbox.org",
+    "documentation":"https://coldbox.ortusbooks.com/",
+    "repository":{
+        "type":"git",
+        "url":"https://github.com/coldbox/coldbox-platform"
     },
-    "bugs": "https://ortussolutions.atlassian.net/browse/COLDBOX",
-    "shortDescription": "A conventions based HMVC development framework",
-    "license": [
-		{
-        "type": "Apache2",
-        "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
-		}
-	],
-    "contributors": [
+    "bugs":"https://ortussolutions.atlassian.net/browse/COLDBOX",
+    "shortDescription":"A conventions based HMVC development framework",
+    "license":[
+        {
+            "type":"Apache2",
+            "url":"http://www.apache.org/licenses/LICENSE-2.0.html"
+        }
+    ],
+    "contributors":[
         "Brad Wood <bdw429s@gmail.com>",
         "Curt Gratz <gratz@computerknowhow.com>"
     ],
-    "ignore": [
+    "ignore":[
         "**/.*",
         "tests",
         "apidocs",
-        "testbox",
-        "*/.md"
+        "testbox"
     ],
-    "devDependencies": {
+    "testbox":{
+        "runner":[
+            {
+                "default":"http://localhost:8599/tests/runner.cfm"
+            }
+        ]
     },
-	"dependencies":{
+    "dependencies":{
         "cbproxies":"^1.0.1+13"
     },
-	"installPaths":{
+    "devDependencies":{
+        "testbox":"^5.1.0+2",
+        "commandbox-dotenv":"*",
+        "commandbox-cfconfig":"*",
+        "commandbox-cfformat":"*"
+    },
+    "scripts":{
+        "release":"recipe build/release.boxr",
+        "format":"cfformat run system/**/*.cfc,tests/specs/**/*.cfc --overwrite",
+        "format:watch":"cfformat watch system/**/*.cfc,tests/specs/**/*.cfc ./.cfformat.json",
+        "format:check":"cfformat check system/**/*.cfc,tests/specs/**/*.cfc ./.cfformat.json",
+        "start:lucee":"server start serverConfigFile='server-lucee@5.json' --force",
+        "start:2018":"server start serverConfigFile='server-adobe@2018.json' --force",
+        "start:2021":"server start serverConfigFile='server-adobe@2021.json' --force",
+        "start:2023":"server start serverConfigFile='server-adobe@2023.json' --force",
+        "stop:lucee":"server stop serverConfigFile='server-lucee@5.json' --force",
+        "stop:2018":"server stop serverConfigFile='server-adobe@2018.json' --force",
+        "stop:2021":"server stop serverConfigFile='server-adobe@2021.json' --force",
+        "stop:2023":"server stop serverConfigFile='server-adobe@2023.json' --force",
+        "log:lucee":"server log coldbox-lucee@5 --follow",
+        "log:2018":"server log coldbox-adobe@2018 --follow",
+        "log:2021":"server log coldbox-adobe@2021 --follow",
+        "log:2023":"server log coldbox-adobe@2023 --follow",
+        "cfpm":"echo '\".engine/acf2021/WEB-INF/cfusion/bin/cfpm.sh\"' | run",
+        "cfpm:install":"echo '\".engine/adobe2021/WEB-INF/cfusion/bin/cfpm.sh\" install ${1}' | run"
+    },
+    "installPaths":{
+        "testbox":"testbox/",
         "cbproxies":"system/async/cbproxies/"
     }
 }

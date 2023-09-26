@@ -18,6 +18,8 @@ logs/*
 
 # Build artifacts
 artifacts/*
+.artifacts/*
+.tmp/*
 apidocs/*-APIDocs
 build/build.number
 build-coldbox
