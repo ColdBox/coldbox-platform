@@ -82,7 +82,10 @@ jobs:
           npm install -g markdownlint-cli
           markdownlint changelog.md --fix
           box server start serverConfigFile="server-lucee@5.json" --debug
-          ant -DisPreRelease=${{ env.COLDBOX_PRERELEASE }} -Dcoldbox.version=${{ env.COLDBOX_VERSION }} -Dbuild.branch=${{ env.BRANCH }} -Dbuild.number=${{ github.run_number }} -f build/build.xml
+          box task run build/Build.cfc /
+            ${{ env.COLDBOX_VERSION }} / # version
+            ${{ github.run_number }} / # build number
+            ${{ env.BRANCH }} # branch
 
       - name: Commit Changelog [unreleased] with latest version
         uses: EndBug/add-and-commit@v9.1.1
@@ -107,7 +110,7 @@ jobs:
         with:
           name: coldbox-variants
           path: |
-            artifacts/**/*
+            .artifacts/**/*
             changelog.md
 
       - name: Upload Binaries to S3
@@ -118,7 +121,7 @@ jobs:
           AWS_S3_BUCKET: "downloads.ortussolutions.com"
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_SECRET }}
-          SOURCE_DIR: "artifacts"
+          SOURCE_DIR: ".artifacts"
           DEST_DIR: "ortussolutions"
 
       - name: Upload API Docs to S3
@@ -129,7 +132,7 @@ jobs:
           AWS_S3_BUCKET: "apidocs.ortussolutions.com"
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_SECRET }}
-          SOURCE_DIR: "build-coldbox/apidocs"
+          SOURCE_DIR: ".tmp/apidocs"
           DEST_DIR: ""
 
       - name: Publish

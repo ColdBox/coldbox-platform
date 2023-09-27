@@ -292,8 +292,9 @@ component {
 		print.greenLine( "Moving BE artifacts..." ).toConsole();
 		copy(
 			"#libArtifactDir#/#arguments.library#-#arguments.version#.zip",
-			"#variables.artifactsDir#/#arguments.library#-be.zip"
+			"#variables.artifactsDir#/#arguments.library#/#arguments.library#-be.zip"
 		);
+		copy( "#libBuildDir#/box.json", "#variables.artifactsDir#/#arguments.library#/box.json" );
 	}
 
 	/**
