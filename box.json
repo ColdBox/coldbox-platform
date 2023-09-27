@@ -50,6 +50,13 @@
     "scripts":{
         "release":"recipe build/release.boxr",
 		"tests": "task run build/Build.cfc runTests",
+		"tests:integration": "task run build/Build.cfc runTests integration",
+		"tests:mvc": "task run build/Build.cfc runTests mvc",
+		"tests:cachebox": "task run build/Build.cfc runTests cachebox",
+		"tests:logbox": "task run build/Build.cfc runTests logbox",
+		"tests:wirebox": "task run build/Build.cfc runTests wirebox",
+		"tests:core": "task run build/Build.cfc runTests core",
+		"tests:async": "task run build/Build.cfc runTests async",
 		"apidocs" : "task run build/Build.cfc buildDocs",
 		"build": "task run build/Build.cfc run :docs=false",
         "format":"cfformat run system/**/*.cfc,tests/specs/**/*.cfc --overwrite",

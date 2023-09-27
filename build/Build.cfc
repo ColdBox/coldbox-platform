@@ -140,8 +140,10 @@ component {
 
 	/**
 	 * Run the test suites
+	 *
+	 * @segment The specific runner to run or run all runner segments. Available: integration, mvc, cachebox, logbox, wirebox, core, async
 	 */
-	function runTests(){
+	function runTests( segment ){
 		// Tests First, if they fail then exit
 		variables.print
 			.blueLine( "*********************************************" )
@@ -160,6 +162,11 @@ component {
 		};
 
 		runners.each( ( type, runner ) => {
+
+			if( !isNull( segment ) && type != segment ){
+				return;
+			}
+
 			print.blueLine( "> Running [#arguments.type#] tests..." ).toConsole();
 			directoryCreate(
 				variables.cwd & "tests/results/#arguments.type#",
