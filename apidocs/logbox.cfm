@@ -2,13 +2,13 @@
 <cfparam name="url.path" 	default="#expandPath( "./logbox-APIDocs" )#">
 <cfscript>
 	docName = "logbox-APIDocs";
-	base = expandPath( "/logbox" );
+	base = expandPath( "/logbox/system" );
 
 	docbox 	= new docbox.DocBox( properties = {
 		projectTitle 	= "logbox v#url.version#",
 		outputDir 		= url.path
 	} );
-	docbox.generate( source=base, mapping="logbox" );
+	docbox.generate( source=base, mapping="logbox.system" );
 </cfscript>
 
 <!---

@@ -1,23 +1,28 @@
+/**
+ * We use this approach, because if not, we get conflicts with WireBox in COmmandBox.
+ * So we have to isolate the mapping.
+ */
 component{
 
-	this.name = "APIDOCS" & hash( getCurrentTemplatePath() );
+	this.name = "APIDOCS";
 	this.sessionManagement 	= true;
 	this.sessionTimeout 	= createTimeSpan( 0, 0, 1, 0 );
 	this.setClientCookies 	= true;
 
 	// API Root
 	API_ROOT = getDirectoryFromPath( getCurrentTemplatePath() );
-	// ColdBox Root
-	COLDBOX_ROOT = REReplaceNoCase( API_ROOT, "apidocs(\\|\/)$", "" );
+	// App Root
+	COLDBOX_ROOT = url.keyExists( "root" ) ? url.root : REReplaceNoCase( API_ROOT, "apidocs(\\|\/)$", "" );
 
 	// Core Mappings
-	this.mappings[ "/docbox" ] 	= API_ROOT & "docbox";
-	this.mappings[ "/testbox" ]  = API_ROOT & "testbox";
+	this.mappings[ "/docbox" ] 		= API_ROOT & "docbox";
+	this.mappings[ "/testbox" ]  	= API_ROOT & "testbox";
 
 	// Standlone mappings
-	this.mappings[ "/coldbox" ]  = ( structKeyExists( url, "coldbox_root" )  ? url.coldbox_root  : COLDBOX_ROOT );
-	this.mappings[ "/cachebox" ] = ( structKeyExists( url, "cachebox_root" ) ? url.cachebox_root : COLDBOX_ROOT );
-	this.mappings[ "/logbox" ] 	 = ( structKeyExists( url, "logbox_root" )   ? url.logbox_root   : COLDBOX_ROOT );
-	this.mappings[ "/wirebox" ]  = ( structKeyExists( url, "wirebox_root" )  ? url.wirebox_root  : COLDBOX_ROOT );
+	this.mappings[ "/coldbox" ] 	= url.keyExists( "root" ) ? url.root & "coldbox"	: COLDBOX_ROOT;
+	this.mappings[ "/cachebox" ] 	= url.keyExists( "root" ) ? url.root & "cachebox"	: COLDBOX_ROOT;
+	this.mappings[ "/logbox" ] 		= url.keyExists( "root" ) ? url.root & "logbox"		: COLDBOX_ROOT;
+	this.mappings[ "/wirebox" ] 	= url.keyExists( "root" ) ? url.root & "wirebox"	: COLDBOX_ROOT;
 
+	systemOutput( "**** Mappings #this.mappings.toString()# ", true );
 }

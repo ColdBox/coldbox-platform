@@ -2,39 +2,34 @@
  * Build process for ColdBox Modules
  * Adapt to your needs.
  */
-component{
+component {
 
-    /**
-     * Constructor
-     */
-    function init(){
-        // Setup Pathing
-        variables.cwd           = getCWD().reReplace( "\.$", "" );
-        variables.artifactsDir  = cwd & ".artifacts";
-        variables.buildDir      = cwd & ".tmp";
-        variables.testRunner    = "http://localhost:60299/tests/runner.cfm";
+	/**
+	 * Constructor
+	 */
+	function init(){
+		// Setup Pathing
+		variables.cwd          = getCWD().reReplace( "\.$", "" );
+		variables.artifactsDir = cwd & ".artifacts";
+		variables.buildDir     = cwd & ".tmp";
+		variables.serverPort   = 8599;
+		variables.apiDocs      = "http://localhost:#variables.serverPort#/apidocs";
 
-        // Source Excludes Not Added to final binary
-        variables.excludes      = [
-            "^\..*",
-            "build",
-            "test-harness"
-        ];
+		// Source Excludes Not Added to final binary
+		variables.excludes = [ "^\..*", "build", "test-harness" ];
 
 		variables.libraries = {
 			"coldbox" : {
 				"standalone" : false,
-				"readme" : "readme.md",
-				"boxjson" : "box-original.json",
-				"packages" : [
-					"system"
-				]
+				"readme"     : "readme.md",
+				"boxjson"    : "box-original.json",
+				"packages"   : [ "system" ]
 			},
 			"cachebox" : {
 				"standalone" : true,
-				"readme" : "system/cache/readme.md",
-				"boxjson" : "box-cachebox.json",
-				"packages" : [
+				"readme"     : "system/cache/readme.md",
+				"boxjson"    : "box-cachebox.json",
+				"packages"   : [
 					"system/async",
 					"system/cache",
 					"system/core",
@@ -43,9 +38,9 @@ component{
 			},
 			"logbox" : {
 				"standalone" : true,
-				"readme" : "system/logging/readme.md",
-				"boxjson" : "box-logbox.json",
-				"packages" : [
+				"readme"     : "system/logging/readme.md",
+				"boxjson"    : "box-logbox.json",
+				"packages"   : [
 					"system/async",
 					"system/core",
 					"system/logging"
@@ -53,9 +48,9 @@ component{
 			},
 			"wirebox" : {
 				"standalone" : true,
-				"readme" : "system/ioc/readme.md",
-				"boxjson" : "box-wirebox.json",
-				"packages" : [
+				"readme"     : "system/ioc/readme.md",
+				"boxjson"    : "box-wirebox.json",
+				"packages"   : [
 					"system/async",
 					"system/aop",
 					"system/cache",
@@ -66,181 +61,208 @@ component{
 			}
 		};
 
-        // Cleanup + Init Build Directories
-        [ variables.buildDir, variables.artifactsDir ].each( function( item ){
-            if( directoryExists( item ) ){
-                directoryDelete( item, true );
-            }
-            // Create directories
-            directoryCreate( item, true, true );
+		// Cleanup + Init Build Directories
+		[ variables.buildDir, variables.artifactsDir ].each( function( item ){
+			if ( directoryExists( item ) ) {
+				directoryDelete( item, true );
+			}
+			// Create directories
+			directoryCreate( item, true, true );
 		} );
 
-		// Ensure build directories
+		// Ensure build directories for each library
 		directoryCreate( variables.buildDir & "/dist", true, true )
 		directoryCreate( variables.buildDir & "/apidocs", true, true )
 		variables.libraries.each( ( lib ) => {
-			variables[ lib & "buildDir" ] = variables.buildDir & "/dist/" & lib
+			variables[ lib & "buildDir" ]   = variables.buildDir & "/dist/" & lib
 			variables[ lib & "apiDocsDir" ] = variables.buildDir & "/apidocs/" & lib
 			directoryCreate( variables[ lib & "buildDir" ], true, true )
 			directoryCreate( variables[ lib & "apiDocsDir" ], true, true )
 			directoryCreate( variables.artifactsDir & "/#lib#", true, true )
-		});
+		} );
 
 		// Done!
 		systemOutput( "Build Process Initialized at [#variables.cwd#]", true );
 
-        return this;
-    }
+		return this;
+	}
 
-    /**
-     * Run the build process for all the libraries
-     *
-     * @version The version you are building
-     * @buldID The build identifier
-     * @branch The branch you are building
-     */
-    function run(
-        version="1.0.0",
-        buildID=createUUID(),
-        branch="development"
-    ){
-
-        // Build the source distributions
+	/**
+	 * Run the build process for all the libraries
+	 *
+	 * @version The version you are building
+	 * @buldID  The build identifier
+	 * @branch  The branch you are building
+	 */
+	function run(
+		version = "1.0.0",
+		buildID = createUUID(),
+		branch  = "development"
+	){
+		// Build the source distributions
 		variables.libraries.each( ( lib ) => {
-			print.line()
+			print
+				.line()
 				.line( "************************************************************" )
-				.boldMagentaLine( "Starting build process for [#arguments.lib#]..." )
+				.boldMagentaLine( "Building Source For [#arguments.lib#]..." )
 				.line( "************************************************************" )
 				.toConsole()
 			buildSource(
-				library : arguments.lib,
-				version : version,
+				library: arguments.lib,
+				version: version,
 				buildID: buildID,
 				branch : branch
 			);
-		});
+		} );
 
-        // Finalize Message
-        print.line()
-            .boldMagentaLine( "Build Process is done! Enjoy your build!" )
-            .toConsole();
-    }
+		// Build The Docs
+		buildDocs( argumentCollection = arguments );
 
-    /**
-     * Run the test suites
-     */
-    function runTests(){
-        // Tests First, if they fail then exit
-        print.blueLine( "Testing the package, please wait..." ).toConsole();
+		// Finalize Message
+		print
+			.line()
+			.boldMagentaLine( "Build Process is done! Enjoy your build!" )
+			.toConsole();
+	}
 
-        command( 'testbox run' )
-            .params(
-                runner = variables.testRunner,
-				verbose = true,
-				outputFile = "build/results.json"
-            )
-            .run();
+	/**
+	 * Run the test suites
+	 */
+	function runTests(){
+		// Tests First, if they fail then exit
+		variables.print
+			.blueLine( "*********************************************" )
+			.blueBoldLine( "Starting Tests" )
+			.blueLine( "*********************************************" )
+			.toConsole();
 
-        // Check Exit Code?
-        if( shell.getExitCode() ){
-            return error( "Cannot continue building, tests failed!" );
-        }
-    }
+		var runners = {
+			"integration" : "runner-integration.cfm",
+			"mvc"         : "runner.cfm",
+			"cachebox"    : "runner-cachebox.cfm",
+			"logbox"      : "runner-logbox.cfm",
+			"wirebox"     : "runner-wirebox.cfm",
+			"core"        : "runner-core.cfm",
+			"async"       : "runner-async.cfm"
+		};
 
-    /**
-     * Build the source of the specificed library
+		runners.each( ( type, runner ) => {
+			print.blueLine( "> Running [#arguments.type#] tests..." ).toConsole();
+			directoryCreate(
+				variables.cwd & "tests/results/#arguments.type#",
+				true,
+				true
+			);
+			command( "testbox run" )
+				.params(
+					runner        = "http://localhost:#variables.serverPort#/tests/#arguments.runner#",
+					verbose       = false,
+					outputFile    = "tests/results/#arguments.type#/test-results",
+					outputFormats = "json,antjunit"
+				)
+				.run();
+		} );
+
+		variables.print
+			.blueLine( "*********************************************" )
+			.blueBoldLine( "Tests Finalized" )
+			.blueLine( "*********************************************" )
+			.toConsole();
+	}
+
+	/**
+	 * Build the source of the specificed library
 	 *
 	 * @library The library to generate docs for: coldbox, wirebox, cachebox, and logbox
-     * @version The version you are building
-     * @buldID The build identifier
-     * @branch The branch you are building
-     */
-    function buildSource(
+	 * @version The version you are building
+	 * @buldID  The build identifier
+	 * @branch  The branch you are building
+	 */
+	function buildSource(
 		required library,
-        version="1.0.0",
-        buildID=createUUID(),
-        branch="development"
-    ){
-
+		version = "1.0.0",
+		buildID = createUUID(),
+		branch  = "development"
+	){
 		// Build Notice ID
-        print.line()
-		.boldMagentaLine( "Building [#arguments.library#] v#arguments.version#+#arguments.buildID# from [#cwd#] using the [#arguments.branch#] branch." )
-		.toConsole();
+		print
+			.line()
+			.boldMagentaLine( "Building [#arguments.library#] v#arguments.version#+#arguments.buildID# from [#cwd#] using the [#arguments.branch#] branch." )
+			.toConsole();
 
-        // Prep records
-		var libRecord = variables.libraries[ arguments.library ];
+		// Prep records
+		var libRecord      = variables.libraries[ arguments.library ];
 		var libArtifactDir = ensureExportDir( arguments.library, arguments.version );
-		var libBuildDir = variables[ arguments.library & "buildDir" ];
+		var libBuildDir    = variables[ arguments.library & "buildDir" ];
 
-        // Create build ID
-        fileWrite(
+		// Create build ID
+		fileWrite(
 			"#libBuildDir#/#arguments.library#-#arguments.version#+#arguments.buildID#",
 			"Built with love on #dateTimeFormat( now(), "full" )#"
 		);
 
 		// Copy Sources
-		libRecord
-			.packages.each( ( package ) => {
-				copy( variables.cwd & "#package#", libBuildDir & "/#package#")
-			});
+		libRecord.packages.each( ( package ) => {
+			copy( variables.cwd & "#package#", libBuildDir & "/#package#" )
+		} );
 		copy( variables.cwd & "license.txt", libBuildDir );
 		copy( variables.cwd & libRecord.readme, libBuildDir );
 		copy( variables.cwd & libRecord.boxjson, libBuildDir & "/box.json" );
 
-        // Updating Placeholders
-        print.greenLine( "Updating version identifier to [#arguments.version#]..." ).toConsole();
-        command( 'tokenReplace' )
-            .params(
-                path = "/#libBuildDir#/**",
-                token = "@build.version@",
-                replacement = arguments.version,
-				verbose = true
-            )
-            .run();
+		// Updating Placeholders
+		print.greenLine( "Updating version identifier to [#arguments.version#]..." ).toConsole();
+		command( "tokenReplace" )
+			.params(
+				path        = "/#libBuildDir#/**",
+				token       = "@build.version@",
+				replacement = arguments.version,
+				verbose     = true
+			)
+			.run();
 
-        print.greenLine( "Updating build identifier to [#arguments.buildID#]..." ).toConsole();
-        command( 'tokenReplace' )
-            .params(
-                path = "/#libBuildDir#/**",
-                token = ( arguments.branch == "master" ? "@build.number@" : "+@build.number@" ),
-                replacement = ( arguments.branch == "master" ? arguments.buildID : "-snapshot" ),
-				verbose = true
-            )
-            .run();
+		print.greenLine( "Updating build identifier to [#arguments.buildID#]..." ).toConsole();
+		command( "tokenReplace" )
+			.params(
+				path        = "/#libBuildDir#/**",
+				token       = ( arguments.branch == "master" ? "@build.number@" : "+@build.number@" ),
+				replacement = ( arguments.branch == "master" ? arguments.buildID : "-snapshot" ),
+				verbose     = true
+			)
+			.run();
 
 		// Refactor Paths
-		if( libRecord.standalone ){
+		if ( libRecord.standalone ) {
 			print.greenLine( "Refactoring for standalone paths ..." ).toConsole();
-			command( 'tokenReplace' )
+			command( "tokenReplace" )
 				.params(
-					path = "/#libBuildDir#/**",
-					token = "/coldbox/system/",
+					path        = "/#libBuildDir#/**",
+					token       = "/coldbox/system/",
 					replacement = "/#arguments.library#/system/",
-					verbose = true
+					verbose     = true
 				)
 				.run();
-			command( 'tokenReplace' )
+			command( "tokenReplace" )
 				.params(
-					path = "/#libBuildDir#/**",
-					token = "coldbox.system.",
+					path        = "/#libBuildDir#/**",
+					token       = "coldbox.system.",
 					replacement = "#arguments.library#.system.",
-					verbose = true
+					verbose     = true
 				)
 				.run();
 		}
 
-        // Zip Bundle
-        print.greenLine( "Zipping code to [#libArtifactDir#]..." ).toConsole();
-        cfzip(
-            action="zip",
-            file="#libArtifactDir#/#arguments.library#-#arguments.version#.zip",
-            source="#libBuildDir#",
-            overwrite=true,
-            recurse=true
-        );
+		// Zip Bundle
+		print.greenLine( "Zipping code to [#libArtifactDir#]..." ).toConsole();
+		cfzip(
+			action    = "zip",
+			file      = "#libArtifactDir#/#arguments.library#-#arguments.version#.zip",
+			source    = "#libBuildDir#",
+			overwrite = true,
+			recurse   = true
+		);
 
-        // Copy To project artifacts for convenience
-        copy( "#libBuildDir#/box.json", libArtifactDir );
+		// Copy To project artifacts for convenience
+		copy( "#libBuildDir#/box.json", libArtifactDir );
 		copy( "#libBuildDir#/readme.md", libArtifactDir );
 
 		// Build Checksums
@@ -252,130 +274,148 @@ component{
 			"#libArtifactDir#/#arguments.library#-#arguments.version#.zip",
 			"#variables.artifactsDir#/#arguments.library#-be.zip"
 		);
-    }
-
-    /**
-     * Produce the API Docs
-	 *
-	 * @library The library to generate docs for: coldbox, wirebox, cachebox, logbox, the mapping must exist as well.
-	 * @version The version you are building
-	 * @outputDir The output directory for the docs
-     */
-    function docs( required library, version="1.0.0", outputDir=".tmp/apidocs" ) depends="buildSource"{
-		// Create Mappings
-		var originalMappings = {
-			"wirebox" = expandPath( "/wirebox" )
-		};
-		fileSystemUtil.createMapping( "cachebox", variables.cwd );
-		fileSystemUtil.createMapping( "coldbox", variables.cwd );
-		fileSystemUtil.createMapping( "logbox", variables.cwd );
-		fileSystemUtil.createMapping( "testbox", variables.cwd & "/testbox" );
-		fileSystemUtil.createMapping( "wirebox", variables.cwd );
-
-		try{
-			// Messages
-			print.greenLine( "Generating API Docs for [#arguments.library#], please wait..." ).toConsole();
-			directoryCreate( arguments.outputDir, true, true );
-
-			command( 'docbox generate' )
-				.params(
-					"source"               	=  expandPath( "/#arguments.library#" ),
-					"mapping"              	=  "#arguments.library#",
-					"strategy-projectTitle" = "#arguments.library# v#arguments.version#",
-					"strategy-outputDir"   	= arguments.outputDir & "/" & arguments.library
-				)
-				.run();
-
-			print.greenLine( "API Docs for [#arguments.library#] produced at [#arguments.outputDir#]" ).toConsole();
-		} finally{
-			fileSystemUtil.createMapping( "wirebox", originalMappings.wirebox );
-		}
-
-        var destination = "#variables.exportsDir#/#arguments.library#-docs-#version#.zip";
-        print.greenLine( "Zipping apidocs to [#destination#]" ).toConsole();
-        cfzip(
-            action="zip",
-            file="#destination#",
-            source="#arguments.outputDir#",
-            overwrite=true,
-            recurse=true
-        );
 	}
 
-    /********************************************* PRIVATE HELPERS *********************************************/
+	/**
+	 * Produce the API Docs
+	 *
+	 * @version The version you are building
+	 */
+	function buildDocs( version = "1.0.0" ) depends="buildSource"{
+		variables.libraries.each( ( library ) => {
+			// Prep records
+			var libRecord      = variables.libraries[ arguments.library ];
+			var libArtifactDir = ensureExportDir( arguments.library, version );
+			var libBuildDir    = variables[ arguments.library & "buildDir" ];
+			var libApiDocsDir  = variables[ library & "apiDocsDir" ];
+			var docsUrl        = "#variables.apiDocs#/#arguments.library#.cfm?" &
+			"version=#version#&" &
+			"path=#urlEncodedFormat( libApiDocsDir )#&" &
+			"root=#urlEncodedFormat( variables.buildDir & "/dist/" )#";
 
-    /**
-     * Build Checksums
+			variables.print
+				.blueLine( "Building the [#arguments.library#] api docs, please wait..." )
+				.line( "Doc Url: #docsUrl#" )
+				.line()
+				.toConsole();
+
+			// Run the docs
+			cfhttp( url = docsUrl, result = "local.docResults" );
+
+			if ( local.docResults.status_code > 400 ) {
+				variables.print
+					.redLine( "********************************************************************" )
+					.redLine( "Docs failed to build!" )
+					.redLine( "********************************************************************" )
+					.redLine( "Results: #local.docResults.filecontent.toString()#" )
+					.redLine( "********************************************************************" )
+					.toConsole();
+			} else {
+				print.blueLine( "Docs built, packaging them..." ).toConsole();
+			}
+
+			var destination = "#libArtifactDir#/#arguments.library#-apidocs-#version#.zip";
+			print.greenLine( "Zipping [#arguments.library#] apidocs to [#destination#]" ).toConsole();
+			cfzip(
+				action    = "zip",
+				file      = "#destination#",
+				source    = "#libApiDocsDir#",
+				overwrite = true,
+				recurse   = true
+			);
+		} );
+	}
+
+	/********************************************* PRIVATE HELPERS *********************************************/
+
+	/**
+	 * Build Checksums
 	 *
 	 * @target The target directory to checksum
-     */
-    private function buildChecksums( required target ){
-        print.greenLine( "Building checksums..." ).toConsole();
-        command( 'checksum' )
-            .params( path = '#arguments.target#/*.zip', algorithm = 'SHA-512', extension="sha512", write=true )
-            .run();
-        command( 'checksum' )
-            .params( path = '#arguments.target#/*.zip', algorithm = 'md5', extension="md5", write=true )
-            .run();
-    }
+	 */
+	private function buildChecksums( required target ){
+		print.greenLine( "Building checksums..." ).toConsole();
+		command( "checksum" )
+			.params(
+				path      = "#arguments.target#/*.zip",
+				algorithm = "SHA-512",
+				extension = "sha512",
+				write     = true
+			)
+			.run();
+		command( "checksum" )
+			.params(
+				path      = "#arguments.target#/*.zip",
+				algorithm = "md5",
+				extension = "md5",
+				write     = true
+			)
+			.run();
+	}
 
-    /**
-     * DirectoryCopy is broken in lucee
-     */
-    private function copy( src, target, recurse=true ){
+	/**
+	 * DirectoryCopy is broken in lucee
+	 */
+	private function copy( src, target, recurse = true ){
 		var srcFileInfo = getFileInfo( arguments.src );
 
 		// file or directory
-		if( srcFileInfo.type == "file" ){
+		if ( srcFileInfo.type == "file" ) {
 			print.blueLine( "- File Copied [ #arguments.src#]" ).toConsole();
 			fileCopy( arguments.src, arguments.target );
 			return;
 		}
 
 		print.blueLine( "Copying Source [ #arguments.src#] to [#arguments.target#]" ).toConsole();
-		if( !directoryExists( arguments.target ) ){
+		if ( !directoryExists( arguments.target ) ) {
 			directoryCreate( arguments.target, true, true );
 		}
 
-        // process paths with excludes
-        directoryList( src, false, "path", function( path ){
-            var isExcluded = false;
-            variables.excludes.each( function( item ){
-                if( path.replaceNoCase( variables.cwd, "", "all" ).reFindNoCase( item ) ){
-					print.yellowLine( " x Excluded [#item#]" ).toConsole();
-                    isExcluded = true;
-                }
-            } );
-            return !isExcluded;
-        }).each( function( item ){
-            // Copy to target
-            if( fileExists( item ) ){
-                print.blueLine( "- File Copied [#item#]" ).toConsole();
-                fileCopy( item, target );
-            } else {
-                print.blueLine( "- Directory Copied [#item#] to [#target & item.replace( src, "" )#]" ).toConsole();
-                directoryCopy( item, target & "/" & item.replace( src, "" ), true );
-            }
-        } );
-    }
+		// process paths with excludes
+		directoryList(
+			src,
+			false,
+			"path",
+			function( path ){
+				var isExcluded = false;
+				variables.excludes.each( function( item ){
+					if ( path.replaceNoCase( variables.cwd, "", "all" ).reFindNoCase( item ) ) {
+						print.yellowLine( " x Excluded [#item#]" ).toConsole();
+						isExcluded = true;
+					}
+				} );
+				return !isExcluded;
+			}
+		).each( function( item ){
+			// Copy to target
+			if ( fileExists( item ) ) {
+				print.blueLine( "- File Copied [#item#]" ).toConsole();
+				fileCopy( item, target );
+			} else {
+				print.blueLine( "- Directory Copied [#item#] to [#target & item.replace( src, "" )#]" ).toConsole();
+				directoryCopy(
+					item,
+					target & "/" & item.replace( src, "" ),
+					true
+				);
+			}
+		} );
+	}
 
-    /**
+	/**
 	 * Gets the last Exit code to be used
 	 **/
-	private function getExitCode() {
-		return ( createObject( 'java', 'java.lang.System' ).getProperty( 'cfml.cli.exitCode' ) ?: 0);
+	private function getExitCode(){
+		return ( createObject( "java", "java.lang.System" ).getProperty( "cfml.cli.exitCode" ) ?: 0 );
 	}
 
 	/**
 	 * Ensure the export directory exists at artifacts/{library}/{version}/
 	 */
-	private function ensureExportDir(
-		required library,
-		version   = "1.0.0"
-	){
+	private function ensureExportDir( required library, version = "1.0.0" ){
 		var libExportDir = variables.artifactsDir & "/#arguments.library#/#arguments.version#";
 
-		if ( !directoryExists( libExportDir ) ){
+		if ( !directoryExists( libExportDir ) ) {
 			directoryCreate( libExportDir, true, true );
 		}
 
