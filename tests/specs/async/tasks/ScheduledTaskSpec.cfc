@@ -252,7 +252,7 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 					var t      = scheduler.task( "test" );
 					var target = t
 						.getJavaNow()
-						.plusDays( javacast( "int", 3 ) )
+						.plusDays( javacast( "long", 3 ) )
 						.getDayOfMonth();
 					t.setDayOfTheMonth( target );
 
@@ -273,7 +273,7 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 
 					// If we are at the last day, increase it
 					if ( nowDate.getDayOfMonth() == t.getLastBusinessDayOfTheMonth().getDayOfMonth() ) {
-						nowDate = nowDate.plusDays( javacast( "int", -1 ) );
+						nowDate = nowDate.plusDays( javacast( "long", -1 ) );
 					}
 
 					t.$( "getJavaNow", nowDate );

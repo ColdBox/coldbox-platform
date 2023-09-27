@@ -1009,7 +1009,7 @@ component accessors="true" {
 		var nextRun = now.withMinute( javacast( "int", arguments.minutes ) ).withSecond( javacast( "int", 0 ) );
 		// If we passed it, then move to the next hour
 		if ( now.compareTo( nextRun ) > 0 ) {
-			nextRun = nextRun.plusHours( javacast( "int", 1 ) );
+			nextRun = nextRun.plusHours( javacast( "long", 1 ) );
 		}
 		// Set the initial delay, period, and time unit
 		setInitialDelayPeriodAndTimeUnit( now, nextRun, "hours" );
@@ -1046,7 +1046,7 @@ component accessors="true" {
 			.withSecond( javacast( "int", 0 ) );
 		// If we passed it, then move to the next day
 		if ( now.compareTo( nextRun ) > 0 ) {
-			nextRun = nextRun.plusDays( javacast( "int", 1 ) );
+			nextRun = nextRun.plusDays( javacast( "long", 1 ) );
 		}
 		// Set the initial delay, period, and time unit
 		setInitialDelayPeriodAndTimeUnit( now, nextRun );
@@ -1086,7 +1086,7 @@ component accessors="true" {
 			.withSecond( javacast( "int", 0 ) );
 		// If we passed it, then move to the next week
 		if ( now.compareTo( nextRun ) > 0 ) {
-			nextRun = nextRun.plusWeeks( javacast( "int", 1 ) );
+			nextRun = nextRun.plusWeeks( javacast( "long", 1 ) );
 		}
 		// Set the initial delay, period, and time unit
 		setInitialDelayPeriodAndTimeUnit( now, nextRun, "days", 7 );
@@ -1128,7 +1128,7 @@ component accessors="true" {
 			.withSecond( javacast( "int", 0 ) );
 		// If we passed it, then move to the next month
 		if ( now.compareTo( nextRun ) > 0 ) {
-			nextRun = nextRun.plusMonths( javacast( "int", 1 ) );
+			nextRun = nextRun.plusMonths( javacast( "long", 1 ) );
 		}
 		// Set the initial delay, period, and time unit
 		setInitialDelayPeriodAndTimeUnit( now, nextRun );
@@ -1231,7 +1231,7 @@ component accessors="true" {
 			.withSecond( javacast( "int", 0 ) );
 		// If we passed it, then move to the next year
 		if ( now.compareTo( nextRun ) > 0 ) {
-			nextRun = nextRun.plusYears( javacast( "int", 1 ) );
+			nextRun = nextRun.plusYears( javacast( "long", 1 ) );
 		}
 		// Set the initial delay, period, and time unit
 		setInitialDelayPeriodAndTimeUnit( now, nextRun, "days", 365 );
@@ -1260,7 +1260,7 @@ component accessors="true" {
 			.withSecond( javacast( "int", 0 ) );
 		// If we passed it, then move to the next day
 		if ( now.compareTo( nextRun ) > 0 ) {
-			nextRun = nextRun.plusDays( javacast( "int", 1 ) );
+			nextRun = nextRun.plusDays( javacast( "long", 1 ) );
 		}
 		// Set the initial delay, period, and time unit
 		setInitialDelayPeriodAndTimeUnit( now, nextRun );
@@ -1290,7 +1290,7 @@ component accessors="true" {
 			.withSecond( javacast( "int", 0 ) );
 		// If we passed it, then move to the next day
 		if ( now.compareTo( nextRun ) > 0 ) {
-			nextRun = nextRun.plusDays( javacast( "int", 1 ) );
+			nextRun = nextRun.plusDays( javacast( "long", 1 ) );
 		}
 		// Set the initial delay, period, and time unit
 		setInitialDelayPeriodAndTimeUnit( now, nextRun );
@@ -1628,29 +1628,29 @@ component accessors="true" {
 			if ( amount ) {
 				switch ( unit ) {
 					case "days":
-						variables.stats.nextRun = variables.stats.nextRun.plusDays( javacast( "int", amount ) );
+						variables.stats.nextRun = variables.stats.nextRun.plusDays( javacast( "long", amount ) );
 						break;
 					case "hours":
-						variables.stats.nextRun = variables.stats.nextRun.plusHours( javacast( "int", amount ) );
+						variables.stats.nextRun = variables.stats.nextRun.plusHours( javacast( "long", amount ) );
 						break;
 					case "minutes":
-						variables.stats.nextRun = variables.stats.nextRun.plusMinutes( javacast( "int", amount ) );
+						variables.stats.nextRun = variables.stats.nextRun.plusMinutes( javacast( "long", amount ) );
 						break;
 					case "milliseconds":
 						variables.stats.nextRun = variables.stats.nextRun.plusSeconds(
-							javacast( "int", amount / 1000 )
+							javacast( "long", amount / 1000 )
 						);
 						break;
 					case "microseconds":
 						variables.stats.nextRun = variables.stats.nextRun.plusNanos(
-							javacast( "int", amount * 1000 )
+							javacast( "long", amount * 1000 )
 						);
 						break;
 					case "nanoseconds":
-						variables.stats.nextRun = variables.stats.nextRun.plusNanos( javacast( "int", amount ) );
+						variables.stats.nextRun = variables.stats.nextRun.plusNanos( javacast( "long", amount ) );
 						break;
 					default:
-						variables.stats.nextRun = variables.stats.nextRun.plusSeconds( javacast( "int", amount ) );
+						variables.stats.nextRun = variables.stats.nextRun.plusSeconds( javacast( "long", amount ) );
 						break;
 				}
 			}
@@ -1691,7 +1691,7 @@ component accessors="true" {
 			};
 
 			if ( now.compareTo( endTime ) > 0 ) {
-				variables.stats.nextRun = startTime.plusDays( javacast( "int", 1 ) )
+				variables.stats.nextRun = startTime.plusDays( javacast( "long", 1 ) )
 			};
 
 			variables.stats.nextRun = variables.stats.nextRun.toString();
@@ -1785,32 +1785,32 @@ component accessors="true" {
 			if ( now.compareTo( startTime ) < 0 ) {
 				variables.stats.nextRun = startTime;
 			} else if ( now.compareTo( endTime ) > 0 ) {
-				variables.stats.nextRun = startTime.plusDays( javacast( "int", 1 ) );
+				variables.stats.nextRun = startTime.plusDays( javacast( "long", 1 ) );
 			}
 		}
 
 		if ( !len( variables.stats.nextRun ) ) {
 			switch ( variables.timeUnit ) {
 				case "days":
-					variables.stats.nextRun = now.plusDays( javacast( "int", amount ) );
+					variables.stats.nextRun = now.plusDays( javacast( "long", amount ) );
 					break;
 				case "hours":
-					variables.stats.nextRun = now.plusHours( javacast( "int", amount ) );
+					variables.stats.nextRun = now.plusHours( javacast( "long", amount ) );
 					break;
 				case "minutes":
-					variables.stats.nextRun = now.plusMinutes( javacast( "int", amount ) );
+					variables.stats.nextRun = now.plusMinutes( javacast( "long", amount ) );
 					break;
 				case "milliseconds":
-					variables.stats.nextRun = now.plusSeconds( javacast( "int", amount / 1000 ) );
+					variables.stats.nextRun = now.plusSeconds( javacast( "long", amount / 1000 ) );
 					break;
 				case "microseconds":
-					variables.stats.nextRun = now.plusNanos( javacast( "int", amount * 1000 ) );
+					variables.stats.nextRun = now.plusNanos( javacast( "long", amount * 1000 ) );
 					break;
 				case "nanoseconds":
-					variables.stats.nextRun = now.plusNanos( javacast( "int", amount ) );
+					variables.stats.nextRun = now.plusNanos( javacast( "long", amount ) );
 					break;
 				default:
-					variables.stats.nextRun = now.plusSeconds( javacast( "int", amount ) );
+					variables.stats.nextRun = now.plusSeconds( javacast( "long", amount ) );
 					break;
 			}
 		}
