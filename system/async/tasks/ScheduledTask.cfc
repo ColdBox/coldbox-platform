@@ -556,12 +556,12 @@ component accessors="true" {
 		}
 
 		// Do we have a day of the month constraint? and the same as the running date/time? Else skip it
-		// If the day day assigned is greater than the days in the month, then we let it thru
+		// If the day assigned is greater than the days in the month, then we let it thru
 		// as the user intended to run it at the end of the month
 		if (
 			variables.dayOfTheMonth > 0 &&
 			now.getDayOfMonth() != variables.dayOfTheMonth &&
-			daysInMonth( now.toString() ) > variables.dayOfTheMonth
+			variables.dayOfTheMonth <= daysInMonth( now.toString() )
 		) {
 			return true;
 		}

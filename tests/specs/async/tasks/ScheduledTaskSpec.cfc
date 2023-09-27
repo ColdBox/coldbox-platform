@@ -255,6 +255,8 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 						.plusDays( javacast( "int", 3 ) )
 						.getDayOfMonth();
 					t.setDayOfTheMonth( target );
+
+					var jNow = t.getJavaNow();
 					expect( t.isConstrained() ).toBeTrue( "Day is : #target#" );
 
 					var target = t.getJavaNow().getDayOfMonth();
