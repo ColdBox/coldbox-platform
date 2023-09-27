@@ -79,13 +79,13 @@ jobs:
 
       - name: Build ColdBox Variants for ${{ env.BRANCH }} v${{ env.COLDBOX_VERSION }}
         run: |
+          # Fix changelog markdown
           npm install -g markdownlint-cli
           markdownlint changelog.md --fix
+          # Startup the server for API Docs mostly.
           box server start serverConfigFile="server-lucee@5.json" --debug
-          box task run build/Build.cfc /
-            ${{ env.COLDBOX_VERSION }} / # version
-            ${{ github.run_number }} / # build number
-            ${{ env.BRANCH }} # branch
+          # Run the task
+          box task run build/Build.cfc ${{ env.COLDBOX_VERSION }} ${{ github.run_number }} ${{ env.BRANCH }}
 
       - name: Commit Changelog [unreleased] with latest version
         uses: EndBug/add-and-commit@v9.1.1
@@ -138,10 +138,10 @@ jobs:
       - name: Publish
         run: |
           ROOT_DIR=`pwd`
-          cd $ROOT_DIR/artifacts/coldbox/${{ env.COLDBOX_VERSION }} && box forgebox publish
-          cd $ROOT_DIR/artifacts/cachebox/${{ env.COLDBOX_VERSION }} && box forgebox publish
-          cd $ROOT_DIR/artifacts/wirebox/${{ env.COLDBOX_VERSION }} && box forgebox publish
-          cd $ROOT_DIR/artifacts/logbox/${{ env.COLDBOX_VERSION }} && box forgebox publish
+          cd $ROOT_DIR/.artifacts/coldbox/${{ env.COLDBOX_VERSION }} && box forgebox publish
+          cd $ROOT_DIR/.artifacts/cachebox/${{ env.COLDBOX_VERSION }} && box forgebox publish
+          cd $ROOT_DIR/.artifacts/wirebox/${{ env.COLDBOX_VERSION }} && box forgebox publish
+          cd $ROOT_DIR/.artifacts/logbox/${{ env.COLDBOX_VERSION }} && box forgebox publish
 
       - name: Create Github Release
         uses: taiki-e/create-gh-release-action@v1.6.2

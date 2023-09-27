@@ -308,7 +308,7 @@ component {
 			var libRecord      = variables.libraries[ arguments.library ];
 			var libArtifactDir = ensureExportDir( arguments.library, version );
 			var libBuildDir    = variables[ arguments.library & "buildDir" ];
-			var libApiDocsDir  = variables[ library & "apiDocsDir" ];
+			var libApiDocsDir  = variables[ library & "apiDocsDir" ] & "/#version#/";
 			var docsUrl        = "#variables.apiDocs#/#arguments.library#.cfm?" &
 			"version=#version#&" &
 			"path=#urlEncodedFormat( libApiDocsDir )#&" &
