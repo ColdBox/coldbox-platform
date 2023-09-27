@@ -21,10 +21,10 @@
 		assertTrue( scope.delete( "luis", "server" ) );
 
 		// https://luceeserver.atlassian.net/browse/LDEV-4423
-		if ( isLucee6() ) {
-			writeOutput( "--- SKIPPED for Lucee 6 --- " );
-			return;
-		}
+		// if ( isLucee6() ) {
+		// 	writeOutput( "--- SKIPPED for Lucee 6 --- " );
+		// 	return;
+		// }
 		assertFalse( scope.delete( "luis", "server" ) );
 		</cfscript>
 	</cffunction>
