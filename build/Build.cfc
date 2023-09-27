@@ -93,19 +93,23 @@ component {
 	 * @version The version you are building
 	 * @buldID  The build identifier
 	 * @branch  The branch you are building
+	 * @docs Whether to build the docs or not
+	 * @tests Whether to run the tests or not
 	 */
 	function run(
 		version = "1.0.0",
 		buildID = createUUID(),
-		branch  = "development"
+		branch  = "development",
+		boolean docs = true,
+		boolean tests = false
 	){
 		// Build the source distributions
 		variables.libraries.each( ( lib ) => {
-			print
+			variables.print
 				.line()
-				.line( "************************************************************" )
-				.boldMagentaLine( "Building Source For [#arguments.lib#]..." )
-				.line( "************************************************************" )
+				.blueLine( "************************************************************" )
+				.boldBlueLine( "< Building Source For [#arguments.lib#] >" )
+				.blueLine( "************************************************************" )
 				.toConsole()
 			buildSource(
 				library: arguments.lib,
@@ -115,13 +119,22 @@ component {
 			);
 		} );
 
-		// Build The Docs
-		buildDocs( argumentCollection = arguments );
+		// Build the API Docs
+		if( arguments.docs ){
+			buildDocs( argumentCollection = arguments );
+		}
+
+		// RUn tests
+		if( arguments.tests ){
+			runTests();
+		}
 
 		// Finalize Message
-		print
+		variables.print
 			.line()
-			.boldMagentaLine( "Build Process is done! Enjoy your build!" )
+			.greenLine( "************************************************************" )
+			.boldGreenLine( "√ Build Process is done, enjoy your build!" )
+			.greenLine( "************************************************************" )
 			.toConsole();
 	}
 
@@ -294,8 +307,10 @@ component {
 			"root=#urlEncodedFormat( variables.buildDir & "/dist/" )#";
 
 			variables.print
-				.blueLine( "Building the [#arguments.library#] api docs, please wait..." )
-				.line( "Doc Url: #docsUrl#" )
+				.blueLine( "************************************************************" )
+				.boldBlueLine( "Building the [#arguments.library#] api docs, please wait..." )
+				.line( "+ Doc Url: #docsUrl#" )
+				.blueLine( "************************************************************" )
 				.line()
 				.toConsole();
 

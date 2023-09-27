@@ -49,6 +49,9 @@
     },
     "scripts":{
         "release":"recipe build/release.boxr",
+		"tests": "task run build/Build.cfc runTests",
+		"apidocs" : "task run build/Build.cfc buildDocs",
+		"build": "task run build/Build.cfc run :docs=false",
         "format":"cfformat run system/**/*.cfc,tests/specs/**/*.cfc --overwrite",
         "format:watch":"cfformat watch system/**/*.cfc,tests/specs/**/*.cfc ./.cfformat.json",
         "format:check":"cfformat check system/**/*.cfc,tests/specs/**/*.cfc ./.cfformat.json",
