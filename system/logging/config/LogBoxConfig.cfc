@@ -155,6 +155,10 @@ component accessors="true" {
 			instance.rootLogger.appenders = structKeyList( getAllAppenders() );
 		}
 
+        if ( len( instance.rootLogger.exclude ) ) {
+            instance.rootLogger.appenders = excludeAppenders( instance.rootLogger.appenders, instance.rootLogger.exclude );
+        }
+
 		// Check root's appenders
 		for ( var x = 1; x lte listLen( instance.rootLogger.appenders ); x++ ) {
 			if ( NOT structKeyExists( instance.appenders, listGetAt( instance.rootLogger.appenders, x ) ) ) {
@@ -223,10 +227,16 @@ component accessors="true" {
 	 * @appenders A list of appenders to configure the root logger with. Send a * to add all appenders
 	 * @levelMin  The default log level for the root logger, by default it is 0 (FATAL). Optional. ex: config.logLevels.WARN
 	 * @levelMax  The default log level for the root logger, by default it is 4 (DEBUG). Optional. ex: config.logLevels.WARN
+     * @exclude a list of appenders to exclude from the root logger
 	 *
 	 * @throws InvalidAppenders
 	 */
-	LogBoxConfig function root( required appenders, levelMin = 0, levelMax = 4 ){
+	LogBoxConfig function root( 
+        required appenders, 
+        levelMin = 0, 
+        levelMax = 4,
+        exclude = "" 
+    ){
 		// Convert Levels
 		convertLevels( arguments );
 
@@ -284,9 +294,7 @@ component accessors="true" {
 
         // filter appenders based on exclusion list
         if ( len( arguments.exclude ) ) {
-            appenders = listToArray( appenders ).filter( function( item ) {
-                return !listFindNoCase( exclude, item );
-            } ).toList();
+            appenders = excludeAppenders( appenders, arguments.exclude );
         }
 
 		// Add category registration
@@ -326,6 +334,18 @@ component accessors="true" {
 	struct function getAllAppenders(){
 		return instance.appenders;
 	}
+
+    /**
+     * Exclude appenders from a list of appenders
+     *
+     * @appenders A list of appenders to exclude from
+     * @exclude A list of appenders to exclude
+     */
+    string function excludeAppenders( required string appenders, required string exclude ) {
+        return listToArray( appenders ).filter( function( item ) {
+            return !listFindNoCase( exclude, item );
+        } ).toList();
+    }   
 
 	/**
 	 * Add categories to the DEBUG level. Send each category as an argument.
