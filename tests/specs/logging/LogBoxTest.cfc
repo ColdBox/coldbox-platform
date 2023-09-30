@@ -38,6 +38,14 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				logBox.getLogger( "postInitLogger" ).info( "My Test" ); // Fails if appender was not added to internal registry
 			} );
 
+            it( "can exclude appenders from categories", function(){
+				var config = logBox.getConfig();
+				config.category( name: "noLuis2", appenders: "*", exclude: "luis2" );
+                var logger = logBox.getLogger( "noLuis2" );
+                // expect luis2 to not be present in the logger
+                expect( logger.getAppenders().keyArray().findNoCase( "luis2" ) ).toBeFalse();
+			} );
+
 			describe( "can retrieve loggers with different category names", function(){
 				given( "A valid category inheritance trail that is turned off", function(){
 					then( "it will retrieve the inherited category", function(){

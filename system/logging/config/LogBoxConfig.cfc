@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
@@ -262,12 +262,14 @@ component accessors="true" {
 	 * @levelMin  The default log level for the root logger, by default it is 0 (FATAL). Optional. ex: config.logLevels.WARN
 	 * @levelMax  The default log level for the root logger, by default it is 4 (DEBUG). Optional. ex: config.logLevels.WARN
 	 * @appenders A list of appender names to configure this category with. By default it uses all the registered appenders
+     * @exclude A list of appender names to exclude from this category
 	 */
 	LogBoxConfig function category(
 		required name,
 		levelMin  = 0,
 		levelMax  = 4,
-		appenders = "*"
+		appenders = "*",
+        exclude = ""
 	){
 		// Convert Levels
 		convertLevels( arguments );
@@ -279,6 +281,13 @@ component accessors="true" {
 		if ( appenders eq "*" ) {
 			appenders = structKeyList( getAllAppenders() );
 		}
+
+        // filter appenders based on exclusion list
+        if ( len( arguments.exclude ) ) {
+            appenders = listToArray( appenders ).filter( function( item ) {
+                return !listFindNoCase( exclude, item );
+            } ).toList();
+        }
 
 		// Add category registration
 		instance.categories[ arguments.name ] = arguments;
