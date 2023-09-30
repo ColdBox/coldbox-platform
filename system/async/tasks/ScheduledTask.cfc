@@ -231,12 +231,14 @@ component accessors="true" {
 		variables.scheduled        = false;
 		// Probable Scheduler or not
 		variables.scheduler        = "";
+        variables.created          = now(); // Will use Lucee/ACF server's timezone.
+
 		// Prepare execution tracking stats
 		variables.stats            = {
 			// Save name just in case
 			"name"              : arguments.name,
-			// When task got created
-			"created"           : now(),
+			// When task got created (will be populated when the timezone is set)
+			"created"           : "",
 			// The last execution run timestamp
 			"lastRun"           : "",
 			// The next execution run timestamp
@@ -256,7 +258,8 @@ component accessors="true" {
 			// Server Host
 			"inetHost"          : variables.util.discoverInetHost(),
 			// Server IP
-			"localIp"           : variables.util.getServerIp()
+			"localIp"           : variables.util.getServerIp(),
+            "timezone"          : ""
 		};
 		// Prepare for the user to store metadata
 		variables.meta          = {};
@@ -328,6 +331,8 @@ component accessors="true" {
 		debugLog( "setTimezone", arguments );
 
 		variables.timezone = createObject( "java", "java.time.ZoneId" ).of( arguments.timezone );
+        variables.stats.timezone = variables.timezone.toString();
+        variables.stats.created = getJavaNow( variables.created ).toString();
 		return this;
 	}
 
@@ -731,7 +736,7 @@ component accessors="true" {
 			}
 		} finally {
 			// Store finalization stats
-			variables.stats.lastRun           = now();
+			variables.stats.lastRun           = getJavaNow().toString();
 			variables.stats.totalRuns         = variables.stats.totalRuns + 1;
 			variables.stats.lastExecutionTime = getTickCount() - sTime;
 			// Call internal cleanups event
