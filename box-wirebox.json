@@ -22,6 +22,7 @@
         "**/.*",
         "tests",
         "apidocs",
+		"testbox",
         "*/.md"
     ],
 	"dependencies":{

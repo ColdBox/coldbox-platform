@@ -229,7 +229,7 @@ component {
 		copy( variables.cwd & libRecord.readme, libBuildDir );
 		copy( variables.cwd & libRecord.boxjson, libBuildDir & "/box.json" );
 
-		// Updating Placeholders
+		//Updating Placeholders
 		print.greenLine( "Updating version identifier to [#arguments.version#]..." ).toConsole();
 		command( "tokenReplace" )
 			.params(
@@ -240,7 +240,7 @@ component {
 			)
 			.run();
 
-		print.greenLine( "Updating build identifier to [#arguments.buildID#]..." ).toConsole();
+		print.greenLine( "Updating build identifier to [#arguments.buildID#-#arguments.branch#]..." ).toConsole();
 		command( "tokenReplace" )
 			.params(
 				path        = "/#libBuildDir#/**",
