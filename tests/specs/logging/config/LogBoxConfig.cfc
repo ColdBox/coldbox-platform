@@ -1,5 +1,4 @@
-﻿<cfcomponent output="false" hint="A LogBox Configuration Data Object">
-	<cfscript>
+﻿component output="false" hint="A LogBox Configuration Data Object"{
 	/**
 	 * Configure LogBox, that's it!
 	 */
@@ -29,5 +28,6 @@
 			OFF   : [ "hello.model", "yes.wow.wow" ]
 		};
 	}
-	</cfscript>
-</cfcomponent>
+
+
+}

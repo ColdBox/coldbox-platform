@@ -1,8 +1,9 @@
-﻿<cfcomponent extends="coldbox.system.testing.BaseModelTest">
-	<cfscript>
+﻿component extends="coldbox.system.testing.BaseModelTest"{
+
 	function setup(){
 		config = createMock( className = "coldbox.system.logging.config.LogBoxConfig" ).init();
 	}
+
 	function testAddAppender(){
 		config.appender( "luis", "coldbox.system.logging.AbstractAppender" );
 		config.appender( "luis2", "coldbox.system.logging.AbstractAppender" );
@@ -51,6 +52,7 @@
 		config.root( appenders = "luis2" );
 		config.validate();
 	}
+
 	function testRootAppenders(){
 		// Add root
 		config.appender( "luis2", "coldbox.system.logging.AbstractAppender" );
@@ -59,6 +61,7 @@
 		config.validate();
 		// debug(config.getRoot());
 	}
+
 	function testConventionMethods(){
 		config.info( "com.coldbox", "com.transfer" );
 		assertEquals( structCount( config.getAllCategories() ), 2 );
@@ -75,5 +78,6 @@
 		config.fatal( "com.coldbox", "com.transfer" );
 		assertEquals( structCount( config.getAllCategories() ), 2 );
 	}
-	</cfscript>
-</cfcomponent>
+
+
+}
