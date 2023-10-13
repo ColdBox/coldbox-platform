@@ -639,7 +639,9 @@ component accessors="true" {
 				)
 			);
 			var _endTime = variables.dateTimeHelper.parse(
-				dateFormat( getJavaNow().toString(), "yyyy-mm-dd" ) & "T" & ( len( variables.endTime ) ? variables.endTime : "23:59:59" )
+				dateFormat( getJavaNow().toString(), "yyyy-mm-dd" ) & "T" & (
+					len( variables.endTime ) ? variables.endTime : "23:59:59"
+				)
 			);
 			if ( now.isBefore( _startTime ) || now.isAfter( _endTime ) ) {
 				return true;
