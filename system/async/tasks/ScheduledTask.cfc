@@ -12,6 +12,11 @@ component accessors="true" {
 	property name="name" type="string";
 
 	/**
+	 * The group this task belongs to. You can use this for organizational purposes.
+	 */
+	property name="group" type="string";
+
+	/**
 	 * The task closure or CFC to execute in the task
 	 */
 	property name="task" type="any";
@@ -265,6 +270,7 @@ component accessors="true" {
 		variables.afterTask     = "";
 		variables.onTaskSuccess = "";
 		variables.onTaskFailure = "";
+		variables.group = "";
 
 		debugLog( "init" );
 
