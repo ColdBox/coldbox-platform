@@ -236,7 +236,7 @@ component accessors="true" {
 			// Save name just in case
 			"name"              : arguments.name,
 			// When task got created
-			"created"           : now(),
+			"created"           : getJavaNow().toString(),
 			// The last execution run timestamp
 			"lastRun"           : "",
 			// The next execution run timestamp
@@ -628,12 +628,12 @@ component accessors="true" {
 			len( variables.endTime )
 		) {
 			var _startTime = variables.dateTimeHelper.parse(
-				dateFormat( now(), "yyyy-mm-dd" ) & "T" & (
+				dateFormat( getJavaNow().toString(), "yyyy-mm-dd" ) & "T" & (
 					len( variables.startTime ) ? variables.startTime : "00:00:00"
 				)
 			);
 			var _endTime = variables.dateTimeHelper.parse(
-				dateFormat( now(), "yyyy-mm-dd" ) & "T" & ( len( variables.endTime ) ? variables.endTime : "23:59:59" )
+				dateFormat( getJavaNow().toString(), "yyyy-mm-dd" ) & "T" & ( len( variables.endTime ) ? variables.endTime : "23:59:59" )
 			);
 			if ( now.isBefore( _startTime ) || now.isAfter( _endTime ) ) {
 				return true;
@@ -731,7 +731,7 @@ component accessors="true" {
 			}
 		} finally {
 			// Store finalization stats
-			variables.stats.lastRun           = now();
+			variables.stats.lastRun           = getJavaNow().toString();
 			variables.stats.totalRuns         = variables.stats.totalRuns + 1;
 			variables.stats.lastExecutionTime = getTickCount() - sTime;
 			// Call internal cleanups event
