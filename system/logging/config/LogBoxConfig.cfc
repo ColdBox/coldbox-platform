@@ -291,13 +291,13 @@ component accessors="true" {
 		levelChecks( arguments.levelMin, arguments.levelMax );
 
 		// Check * all appenders
-		if ( appenders eq "*" ) {
-			appenders = structKeyList( getAllAppenders() );
+		if ( arguments.appenders eq "*" ) {
+			arguments.appenders = structKeyList( getAllAppenders() );
 		}
 
 		// filter appenders based on exclusion list
 		if ( len( arguments.exclude ) ) {
-			appenders = excludeAppenders( appenders, arguments.exclude );
+			arguments.appenders = excludeAppenders( arguments.appenders, arguments.exclude );
 		}
 
 		// Add category registration
