@@ -270,7 +270,7 @@ component accessors="true" {
 		variables.afterTask     = "";
 		variables.onTaskSuccess = "";
 		variables.onTaskFailure = "";
-		variables.group = "";
+		variables.group         = "";
 
 		debugLog( "init" );
 
