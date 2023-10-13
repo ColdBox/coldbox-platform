@@ -27,7 +27,7 @@ component accessors="true" {
 	property name="rootLogger" type="struct";
 
 	// The log levels enum as a public property
-	this.logLevels    = new coldbox.system.logging.LogLevels();
+	this.logLevels = new coldbox.system.logging.LogLevels();
 	// Startup the configuration
 	reset();
 
@@ -63,7 +63,7 @@ component accessors="true" {
 	 * Get the ColdBox Utility object
 	 */
 	private function getUtil(){
-		if( isNull( variables.utility ) ){
+		if ( isNull( variables.utility ) ) {
 			variables.utility = new coldbox.system.core.util.Util();
 		}
 		return variables.utility;
@@ -209,7 +209,12 @@ component accessors="true" {
 			}
 
 			for ( var x = 1; x lte listLen( variables.categories[ key ].appenders ); x++ ) {
-				if ( NOT structKeyExists( variables.appenders, listGetAt( variables.categories[ key ].appenders, x ) ) ) {
+				if (
+					NOT structKeyExists(
+						variables.appenders,
+						listGetAt( variables.categories[ key ].appenders, x )
+					)
+				) {
 					throw(
 						message = "Invalid appender in Category: #key#",
 						detail  = "The appender #listGetAt( variables.categories[ key ].appenders, x )# has not been defined yet. Please define it first.",
@@ -373,9 +378,7 @@ component accessors="true" {
 	 * @exclude   A list of appenders to exclude
 	 */
 	string function excludeAppenders( required string appenders, required string exclude ){
-		return listToArray( appenders )
-			.filter( ( item ) => !listFindNoCase( exclude, item ) )
-			.toList();
+		return listToArray( appenders ).filter( ( item ) => !listFindNoCase( exclude, item ) ).toList();
 	}
 
 	/**
