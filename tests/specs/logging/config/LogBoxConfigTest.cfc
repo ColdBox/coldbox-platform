@@ -1,4 +1,4 @@
-﻿component extends="coldbox.system.testing.BaseModelTest"{
+﻿component extends="coldbox.system.testing.BaseModelTest" {
 
 	function setup(){
 		config = createMock( className = "coldbox.system.logging.config.LogBoxConfig" ).init();
@@ -78,6 +78,5 @@
 		config.fatal( "com.coldbox", "com.transfer" );
 		assertEquals( structCount( config.getAllCategories() ), 2 );
 	}
-
 
 }
