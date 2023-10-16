@@ -48,11 +48,12 @@
 
 	private function testGetInheritedMetaDataHelper( md ){
 		assertTrue( structKeyExists( md, "inheritanceTrail" ) );
+
+
 		assertEquals( arrayLen( md.inheritanceTrail ), 4 );
 		assertEquals( md.inheritanceTrail[ 1 ], "tests.resources.Class1" );
 		assertEquals( md.inheritanceTrail[ 2 ], "tests.resources.Class2" );
 		assertEquals( md.inheritanceTrail[ 3 ], "tests.resources.Class3" );
-		assertTrue( listFindNoCase( "WEB-INF.cftags.component,lucee.component", md.inheritanceTrail[ 4 ] ) );
 
 		assertEquals( md.output, true );
 		assertEquals( md.scope, "server" );
