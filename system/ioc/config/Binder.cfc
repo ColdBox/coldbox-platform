@@ -1450,6 +1450,17 @@ component accessors="true" {
 	}
 
 	/**
+	 * Verify if we have aspects defined in this binder
+	 *
+	 * @return True if we have aspects, false if not
+	 */
+	boolean function hasAspects(){
+		return mappings.some( (key, mapping) => {
+			return arguments.mapping.isAspect();
+		} );
+	}
+
+	/**
 	 * Create a new matcher class for usage in class or method matching
 	 *
 	 * @return coldbox.system.aop.Matcher

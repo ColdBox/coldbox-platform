@@ -1501,8 +1501,20 @@ component serializable="false" accessors="true" {
 	 * Register all the configured listeners in the configuration file
 	 */
 	private Injector function registerListeners(){
+		var aopMixerAdded = false;
 		for ( var thisListener in variables.binder.getListeners() ) {
+			if( thisListener.class == "coldbox.system.aop.Mixer" ){
+				aopMixerAdded = true;
+			}
 			registerListener( thisListener );
+		}
+		// If we have any aspects defined but no mixer, auto-add it
+		if( !aopMixerAdded && variables.binder.hasAspects() ){
+			variables.log.info( "AOP aspects detected but no Mixer listener found, auto-adding it with defaults..." );
+			registerListener( {
+				class: "coldbox.system.aop.Mixer",
+				name: "aopMixer"
+			} );
 		}
 		return this;
 	}
@@ -1510,9 +1522,10 @@ component serializable="false" accessors="true" {
 	/**
 	 * Register all the configured listeners in the configuration file
 	 *
-	 * @listener The listener to register
+	 * @listener The listener struct to register: { class, name, properties }
 	 */
-	public Injector function registerListener( required listener ){
+	public Injector function registerListener( required struct listener ){
+		param arguments.listener.properties = {};
 		try {
 			// create it
 			var thisListener = createObject( "component", listener.class );
