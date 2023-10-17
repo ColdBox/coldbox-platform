@@ -1455,7 +1455,7 @@ component accessors="true" {
 	 * @return True if we have aspects, false if not
 	 */
 	boolean function hasAspects(){
-		return mappings.some( (key, mapping) => {
+		return mappings.some( ( key, mapping ) => {
 			return arguments.mapping.isAspect();
 		} );
 	}

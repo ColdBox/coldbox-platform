@@ -1503,18 +1503,17 @@ component serializable="false" accessors="true" {
 	private Injector function registerListeners(){
 		var aopMixerAdded = false;
 		for ( var thisListener in variables.binder.getListeners() ) {
-			if( thisListener.class == "coldbox.system.aop.Mixer" ){
+			if ( thisListener.class == "coldbox.system.aop.Mixer" ) {
 				aopMixerAdded = true;
 			}
 			registerListener( thisListener );
 		}
 		// If we have any aspects defined but no mixer, auto-add it
-		if( !aopMixerAdded && variables.binder.hasAspects() ){
-			variables.log.info( "AOP aspects detected but no Mixer listener found, auto-adding it with defaults..." );
-			registerListener( {
-				class: "coldbox.system.aop.Mixer",
-				name: "aopMixer"
-			} );
+		if ( !aopMixerAdded && variables.binder.hasAspects() ) {
+			variables.log.info(
+				"AOP aspects detected but no Mixer listener found, auto-adding it with defaults..."
+			);
+			registerListener( { class : "coldbox.system.aop.Mixer", name : "aopMixer" } );
 		}
 		return this;
 	}
