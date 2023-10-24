@@ -62,6 +62,11 @@ component extends="EventHandler" {
 			arguments.exception = e;
 			this.onAuthenticationFailure( argumentCollection = arguments );
 		}
+		// Auth Issues
+		catch ( "NotAuthorized" e ) {
+			arguments.exception = e;
+			this.onAuthenticationFailure( argumentCollection = arguments );
+		}
 		// Token Decoding Issues
 		catch ( "TokenInvalidException" e ) {
 			arguments.exception = e;
