@@ -1773,8 +1773,9 @@ component accessors="true" {
 		} else if ( variables.lastBusinessDay ) {
 			variables.stats.nextRun = getLastBusinessDayOfTheMonth( variables.taskTime, true );
 		}
+
 		// check if we have a daily start or end time
-		else if ( len( variables.startTime ) || len( variables.endTime ) ) {
+		if ( len( variables.startTime ) || len( variables.endTime ) ) {
 			var startTime = len( variables.startTime ) ? now
 				.withHour( javacast( "int", getToken( variables.startTime, 1, ":" ) ) )
 				.withMinute( javacast( "int", getToken( variables.startTime, 2, ":" ) ) )
