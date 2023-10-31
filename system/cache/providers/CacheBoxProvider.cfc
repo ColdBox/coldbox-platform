@@ -137,12 +137,17 @@ component
 			// Configure the reaping scheduled task
 			variables.cacheFactory
 				.getTaskScheduler()
-				.newSchedule( this, "reap" )
+				.newTask(
+					name  : "cachebox-reap-#getName()#",
+					task  : this,
+					method: "reap"
+				)
+				.inMinutes()
 				.delay( getConfiguration().reapFrequency ) // Don't start immediately, give it a breathing room
 				.spacedDelay( getConfiguration().reapFrequency ) // Runs again, after this spaced delay once each reap finalizes
-				.inMinutes()
 				.start();
-			variables.logger.info( "Reaping scheduled task started for #getName()# cache." );
+
+			variables.logger.info( "Reaping scheduled task started for (#getName()#) every (#getConfiguration().reapFrequency#) minutes" );
 
 			// startup message
 			variables.logger.info( "CacheBox Cache: #getName()# has been initialized successfully for operation" );

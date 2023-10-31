@@ -53,15 +53,22 @@ component accessors="true" extends="coldbox.system.logging.appenders.FileAppende
 
 		variables.logbox
 			.getTaskScheduler()
-			.newSchedule( this, "logRotation" )
-			.delay( 1 ) // Don't start immediately, give it a breathing room
-			.spacedDelay( 1 ) // Runs again, after this spaced delay once each reap finalizes
+			.newTask(
+				name  : "file-appender-#getName()#-log-rotation",
+				task  : this,
+				method: "logRotation"
+			)
 			.inMinutes()
+			.delay( 5 ) // Don't start immediately, give it a breathing room
+			.spacedDelay( 1 ) // Runs again, after this spaced delay once each reap finalizes
 			.start();
 
 		return this;
 	}
 
+	/**
+	 * Rotate the log files
+	 */
 	function logRotation(){
 		try {
 			variables.fileRotator.checkRotation( this );
