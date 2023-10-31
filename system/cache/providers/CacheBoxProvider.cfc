@@ -147,7 +147,9 @@ component
 				.spacedDelay( getConfiguration().reapFrequency ) // Runs again, after this spaced delay once each reap finalizes
 				.start();
 
-			variables.logger.info( "Reaping scheduled task started for (#getName()#) every (#getConfiguration().reapFrequency#) minutes" );
+			variables.logger.info(
+				"Reaping scheduled task started for (#getName()#) every (#getConfiguration().reapFrequency#) minutes"
+			);
 
 			// startup message
 			variables.logger.info( "CacheBox Cache: #getName()# has been initialized successfully for operation" );
