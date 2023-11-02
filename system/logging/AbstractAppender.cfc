@@ -428,7 +428,9 @@ component accessors="true" {
 
 			// Stop log listener only if not in force mode
 			if ( !arguments.force ) {
-				variables.lock( () => variables.logListener.active = false );
+				variables.lock( () => {
+					variables.logListener.active = false;
+				} );
 			}
 		}
 	}
