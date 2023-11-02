@@ -92,7 +92,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 
 		// DB Rotation Time
 		variables.lastDBRotation         = "";
-		variables.queryParamDataTimeType = variables.getQueryParamDateTimeType;
+		variables.queryParamDataTimeType = variables.schemaInfo.getQueryParamDateTimeType( getProperty( "dsn" ) );
 		return this;
 	}
 
