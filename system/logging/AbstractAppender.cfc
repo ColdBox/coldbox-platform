@@ -353,7 +353,7 @@ component accessors="true" {
 			var queueContext = {
 				"lastRun"       : getTickCount(),
 				"start"         : getTickCount(),
-				"maxIdle"       : 15000, // 15 seconds of idle time
+				"maxIdle"       : 10000, // 10 seconds of idle time
 				"sleepInterval" : 25, // 25ms of sleep time
 				"count"         : 0,
 				"force"         : arguments.force
@@ -384,7 +384,7 @@ component accessors="true" {
 					var thisData = variables.logListener.queue.first();
 					variables.logListener.queue.deleteAt( 1 );
 
-					// out( "processing #thisData.toString()#" );
+					// out( "=============> processing #thisData.toString()#" );
 
 					processQueueElement(
 						thisData,
@@ -396,7 +396,7 @@ component accessors="true" {
 					queueContext.lastRun = getTickCount();
 				}
 
-				// out( "Sleeping: lastRun #lastRun + queueContext.maxIdle#" );
+				// out( "Sleeping (#getName()#): lastRun #queueContext.lastRun + queueContext.maxIdle#" );
 
 				// Advice we are about to go to sleep
 				onLogListenerSleep( queueContext );

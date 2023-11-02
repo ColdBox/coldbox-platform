@@ -44,34 +44,38 @@ component accessors="true" {
 				throwontimeout="true" {
 				//  Should I remove log Files
 				if ( qArchivedLogs.recordcount >= oAppender.getProperty( "fileMaxArchives" ) ) {
-					var archiveToDelete = qArchivedLogs.directory[ 1 ] & "/" & qArchivedLogs.name[ 1 ];
-					//  Remove the oldest one
-					fileDelete( archiveToDelete );
+					//  Remove the oldest archive
+					fileDelete( qArchivedLogs.directory[ 1 ] & "/" & qArchivedLogs.name[ 1 ] );
 				}
 
 				//  Set the name of the archive
-				var zipFileName = getDirectoryFromPath( logFullPath ) & fileName & "." & dateFormat(
-					now(),
-					"yyyymmdd"
-				) & "." & timeFormat( now(), "HHmmss" ) & ".zip";
+				var zipFileName = getDirectoryFromPath( logFullPath ) &
+				fileName &
+				"-" &
+				dateFormat( now(), "yyyy-mm-dd" ) &
+				"-" &
+				timeFormat( now(), "HH-mm" ) &
+				"-#qArchivedLogs.recordcount + 1#" &
+				".zip";
 
-				//  Zip it
-				cfzip(
-					action    = "zip",
-					file      = "#zipFileName#",
-					overwrite = "true",
-					storepath = "false",
-					recurse   = "false",
-					source    = "#logFullPath#"
-				);
+				arguments.appender.lock( () => {
+					//  Zip it
+					cfzip(
+						action    = "zip",
+						file      = "#zipFileName#",
+						overwrite = "true",
+						storepath = "false",
+						recurse   = "false",
+						source    = "#logFullPath#"
+					);
+					//  Clean & reinit Log File
+					fileDelete( logFullPath );
+					//  Reinit The log File
+					oAppender.initLoglocation();
+				} );
+				;
 			}
 			// end lock
-
-			//  Clean & reinit Log File
-			oAppender.removeLogFile();
-
-			//  Reinit The log File
-			oAppender.initLoglocation();
 		}
 
 		return this;

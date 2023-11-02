@@ -33,11 +33,14 @@ component accessors="true" extends="coldbox.system.logging.appenders.FileAppende
 	){
 		super.init( argumentCollection = arguments );
 
-		if ( NOT propertyExists( "fileMaxSize" ) OR NOT isNumeric( getProperty( "fileMaxSize" ) ) ) {
+		if ( !propertyExists( "fileMaxSize" ) OR !isNumeric( getProperty( "fileMaxSize" ) ) ) {
 			setProperty( "fileMaxSize", "2000" );
 		}
-		if ( NOT propertyExists( "fileMaxArchives" ) OR NOT isNumeric( getProperty( "fileMaxArchives" ) ) ) {
-			setProperty( "fileMaxArchives", "2" );
+		if ( !propertyExists( "fileMaxArchives" ) OR !isNumeric( getProperty( "fileMaxArchives" ) ) ) {
+			setProperty( "fileMaxArchives", "10" );
+		}
+		if ( !propertyExists( "archiveLayout" ) ) {
+			setProperty( "archiveLayout", "" );
 		}
 
 		variables.fileRotator = new coldbox.system.logging.util.FileRotator();
