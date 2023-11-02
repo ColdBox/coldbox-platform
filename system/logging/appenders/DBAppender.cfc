@@ -165,11 +165,11 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 		queryExecute(
 			"DELETE
 				FROM #getTable()#
-				WHERE #columns.logdate# <: datetime
+				WHERE #columns.logdate# < :datetime
 			",
 			{
 				datetime : {
-					cfsqltype : variables.getQueryParamDateTimeType,
+					cfsqltype : variables.queryParamDataTimeType,
 					value     : "#dateFormat( targetDate, "mm/dd/yyyy" )#"
 				}
 			},
@@ -206,17 +206,26 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 	 * @return ConsoleAppender
 	 */
 	function processQueueElement( required data, required queueContext ){
+		var columns = getColumnNames();
 		// Insert into table
 		queryExecute(
-			"INSERT INTO #getTable()# (#getColumnNames().keyList()#)
+			"INSERT INTO #getTable()# (
+					#columns[ "id" ]#,
+					#columns[ "severity" ]#,
+					#columns[ "category" ]#,
+					#columns[ "logdate" ]#,
+					#columns[ "appendername" ]#,
+					#columns[ "message" ]#,
+					#columns[ "extrainfo" ]#
+				)
 				VALUES (
-					: uuid,
-					: severity,
-					: category,
-					: timestamp,
-					: name,
-					: message,
-					: extraInfo
+					:uuid,
+					:severity,
+					:category,
+					:timestamp,
+					:name,
+					:message,
+					:extraInfo
 				)
 			",
 			{
@@ -251,6 +260,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 			},
 			{ datasource : getProperty( "dsn" ) }
 		);
+
 		return this;
 	}
 
