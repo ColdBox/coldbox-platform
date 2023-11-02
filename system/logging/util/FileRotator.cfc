@@ -43,7 +43,11 @@ component accessors="true" {
 				timeout       ="#oAppender.getlockTimeout()#"
 				throwontimeout="true" {
 				//  Should I remove log Files
-				if ( qArchivedLogs.recordcount >= oAppender.getProperty( "fileMaxArchives" ) ) {
+				if (
+					qArchivedLogs.recordcount >= oAppender.getProperty( "fileMaxArchives" )
+					&&
+					fileExists( qArchivedLogs.directory[ 1 ] & "/" & qArchivedLogs.name[ 1 ] )
+				) {
 					//  Remove the oldest archive
 					fileDelete( qArchivedLogs.directory[ 1 ] & "/" & qArchivedLogs.name[ 1 ] );
 				}
