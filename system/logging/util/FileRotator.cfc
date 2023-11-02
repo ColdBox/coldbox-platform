@@ -25,7 +25,9 @@ component accessors="true" {
 		var logFullPath = oAppender.getLogFullPath();
 
 		//  Verify FileSize
-		if ( getFileSize( logFullPath ) > ( oAppender.getProperty( "fileMaxSize" ) * 1024 ) ) {
+		if (
+			fileExists( logFullPath ) && getFileSize( logFullPath ) > ( oAppender.getProperty( "fileMaxSize" ) * 1024 )
+		) {
 			//  How Many Log Files Do we Have
 			var qArchivedLogs = directoryList(
 				getDirectoryFromPath( logFullPath ),
