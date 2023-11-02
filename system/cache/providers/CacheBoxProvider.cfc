@@ -138,13 +138,13 @@ component
 			variables.cacheFactory
 				.getTaskScheduler()
 				.newTask(
-					name  : "cachebox-reap-#getName()#",
+					name  : "cachebox-reap-#getName()#-#getCacheId()#",
 					task  : this,
 					method: "reap"
 				)
-				.inMinutes()
 				.delay( getConfiguration().reapFrequency ) // Don't start immediately, give it a breathing room
 				.spacedDelay( getConfiguration().reapFrequency ) // Runs again, after this spaced delay once each reap finalizes
+				.inMinutes()
 				.start();
 
 			variables.logger.info(

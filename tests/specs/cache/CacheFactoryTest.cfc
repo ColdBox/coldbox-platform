@@ -9,6 +9,10 @@
 		cacheFactory.init();
 	}
 
+	function afterTests(){
+		cacheFactory.shutdown();
+	}
+
 	function testGetConfig(){
 		// debug( cacheFactory.getConfig() );
 	}

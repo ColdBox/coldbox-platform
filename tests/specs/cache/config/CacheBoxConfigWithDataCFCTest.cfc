@@ -1,5 +1,5 @@
-﻿<cfcomponent extends="coldbox.system.testing.BaseModelTest">
-	<cfscript>
+﻿component extends="coldbox.system.testing.BaseModelTest" {
+
 	function setup(){
 		// cacheBox = createMock(className="coldbox.system.logging.LogBox" );
 		dataConfigPath = "coldbox.tests.resources.CacheBoxConfigData";
@@ -51,5 +51,5 @@
 
 		config.validate();
 	}
-	</cfscript>
-</cfcomponent>
+
+}

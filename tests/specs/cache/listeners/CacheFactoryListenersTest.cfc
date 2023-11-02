@@ -1,5 +1,5 @@
-﻿<cfcomponent extends="coldbox.system.testing.BaseModelTest">
-	<cfscript>
+﻿component extends="coldbox.system.testing.BaseModelTest" {
+
 	function setup(){
 		// init with defaults
 		cacheFactory = createMock( "coldbox.system.cache.CacheFactory" );
@@ -13,6 +13,10 @@
 		cacheFactory.init( config = config );
 	}
 
+	function afterTests(){
+		cacheFactory.shutdown();
+	}
+
 	function testRegisterListeners(){
 		eventContainers = cacheFactory.getEventManager().getEventPoolContainer();
 
@@ -20,5 +24,5 @@
 		assertEquals( true, structKeyExists( eventContainers, "beforeCacheShutdown" ) );
 		assertEquals( true, structKeyExists( eventContainers, "afterCacheFactoryConfiguration" ) );
 	}
-	</cfscript>
-</cfcomponent>
+
+}
