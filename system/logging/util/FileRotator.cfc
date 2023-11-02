@@ -49,13 +49,9 @@ component accessors="true" {
 				}
 
 				//  Set the name of the archive
-				var zipFileName = getDirectoryFromPath( logFullPath ) &
-				fileName &
-				"-" &
-				dateFormat( now(), "yyyy-mm-dd" ) &
-				"-" &
-				timeFormat( now(), "HH-mm" ) &
-				"-#qArchivedLogs.recordcount + 1#" &
+				var archiveLayout = appender.getProperty( "archiveLayout" );
+				var zipFileName   = getDirectoryFromPath( logFullPath ) &
+				archiveLayout( fileName, qArchivedLogs.recordcount ) &
 				".zip";
 
 				arguments.appender.lock( () => {

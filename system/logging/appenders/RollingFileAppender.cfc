@@ -40,12 +40,31 @@ component accessors="true" extends="coldbox.system.logging.appenders.FileAppende
 			setProperty( "fileMaxArchives", "10" );
 		}
 		if ( !propertyExists( "archiveLayout" ) ) {
-			setProperty( "archiveLayout", "" );
+			setProperty( "archiveLayout", variables.getDefaultArchiveLayout );
 		}
 
 		variables.fileRotator = new coldbox.system.logging.util.FileRotator();
 
 		return this;
+	}
+
+	/**
+	 * Get the default archive layout:
+	 * <code>#filename#-#yyy-mm-dd#-#hh-mm#-#archiveNumber#</code>
+	 * DO NOT ADD EXTENSION TO IT, WE WILL ADD IT
+	 *
+	 * @filename     The filename to use for the archive layout
+	 * @archiveCount The archive count
+	 *
+	 * @return The default archive layout
+	 */
+	function getDefaultArchiveLayout( required filename, required archiveCount ){
+		return arguments.fileName &
+		"-" &
+		dateFormat( now(), "yyyy-mm-dd" ) &
+		"-" &
+		timeFormat( now(), "HH-mm" ) &
+		"-#arguments.archiveCount + 1#";
 	}
 
 	/**
