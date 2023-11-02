@@ -185,15 +185,15 @@ component accessors="true" {
 			variables.config.onShutdown( this );
 		}
 
-		// Shutdown Executors if not in ColdBox Mode or WireBox mode
-		if ( !isObject( variables.coldbox ) && !isObject( variables.wirebox ) ) {
-			variables.asyncManager.shutdownAllExecutors( force = true );
-		}
-
 		// Shutdown appenders
 		variables.appenderRegistry.each( function( key, appender ){
 			arguments.appender.shutdown();
 		} );
+
+		// Shutdown Executors if not in ColdBox Mode or WireBox mode
+		if ( !isObject( variables.coldbox ) && !isObject( variables.wirebox ) ) {
+			variables.asyncManager.shutdownAllExecutors( force = true );
+		}
 	}
 
 	/**
