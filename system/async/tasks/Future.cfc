@@ -806,17 +806,25 @@ component accessors="true" {
 	 * allApply( data, ( item ) => item.key & item.value.toString() )
 	 * </pre>
 	 *
-	 * @items    An array or struct to process in parallel
-	 * @fn       The function that will be applied to each of the collection's items
-	 * @executor The custom executor to use if passed, else the forkJoin Pool
-	 * @timeout  The timeout to use when waiting for each item to be processed
-	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is milliseconds
+	 * @items        An array or struct to process in parallel
+	 * @fn           The function that will be applied to each of the collection's items
+	 * @executor     The custom executor to use if passed, else the forkJoin Pool
+	 * @timeout      The timeout to use when waiting for each item to be processed
+	 * @timeUnit     The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is milliseconds
+	 * @errorHandler The error handler to use if any of the items fail to process: Closure or UDF
 	 *
 	 * @return An array or struct with the items processed in parallel
 	 *
 	 * @throws UnsupportedCollectionException - When something other than an array or struct is passed as items
 	 */
-	any function allApply( items, fn, executor, timeout, timeUnit ){
+	any function allApply(
+		items,
+		fn,
+		executor,
+		timeout,
+		timeUnit,
+		errorHandler
+	){
 		var incomingExecutor = arguments.executor ?: "";
 		// Boolean indicator to avoid `isObject()` calls on iterations
 		var usingExecutor    = isObject( incomingExecutor );
@@ -842,6 +850,11 @@ component accessors="true" {
 				.map( function( thisItem ){
 					// Create a new completed future
 					var f = new Future( arguments.thisItem );
+
+					// Error Handler?
+					if ( !isNull( errorHandler ) ) {
+						f = f.onException( errorHandler );
+					}
 
 					// Execute it on a custom executor or core
 					if ( usingExecutor ) {
