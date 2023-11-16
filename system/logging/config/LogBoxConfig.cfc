@@ -49,10 +49,8 @@ component accessors="true" {
 			arguments.CFCConfig.getPropertyMixin = getUtil().getMixerUtil().getPropertyMixin;
 			// Execute the configuration
 			arguments.CFCConfig.configure();
-			// Get Data
-			var logBoxDSL = arguments.CFCConfig.getPropertyMixin( "logBox", "variables", structNew() );
 			// Load the DSL
-			loadDataDSL( logBoxDSL );
+			loadDataDSL( arguments.CFCConfig.getPropertyMixin( "logBox", "variables", structNew() ) );
 		}
 
 		// Just return, most likely programmatic config

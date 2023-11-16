@@ -68,6 +68,11 @@ component accessors=true serializable=false {
 	property name="taskScheduler";
 
 	/**
+	 * The default configuration class to use when no configuration is passed to the init method.
+	 */
+	variables.DEFAULT_CONFIG = "coldbox.system.cache.config.DefaultConfiguration";
+
+	/**
 	 * Constructor
 	 *
 	 * @config              The CacheBoxConfig object or path to use to configure this instance of CacheBox. If not passed then CacheBox will instantiate the default configuration.
@@ -77,15 +82,20 @@ component accessors=true serializable=false {
 	 * @factoryID           A unique ID or name for this factory. If not passed I will make one up for you.
 	 * @wirebox             A configured wirebox instance to get logbox, asyncManager, and EventManager from.  If not passed, I will create new ones.
 	 */
-	function init( config, coldbox, factoryId = "", wirebox ){
-		var defaultConfigPath = "coldbox.system.cache.config.DefaultConfiguration";
-
+	function init(
+		config = variables.DEFAULT_CONFIG,
+		coldbox,
+		factoryId = createUUID(),
+		wirebox
+	){
 		// CacheBox Factory UniqueID
-		variables.factoryId    = createUUID();
+		variables.factoryId = arguments.factoryId;
 		// Version
-		variables.version      = "@build.version@+@build.number@";
-		// Configuration object
-		variables.config       = "";
+		variables.version   = "@build.version@+@build.number@";
+		// Default Config Checks
+		if ( isSimpleValue( arguments.config ) AND NOT len( trim( arguments.config ) ) ) {
+			arguments.config = variables.DEFAULT_CONFIG;
+		}
 		// ColdBox Application Link
 		variables.coldbox      = "";
 		// ColdBox Application Link
@@ -110,26 +120,20 @@ component accessors=true serializable=false {
 			"afterCacheShutdown"
 		];
 		// LogBox Links
-		variables.logBox = "";
-		variables.log    = "";
-		// Caches
-		variables.caches = {};
-
-		// Did we send a factoryID in?
-		if ( len( arguments.factoryID ) ) {
-			variables.factoryID = arguments.factoryID;
-		}
-
+		variables.logBox          = "";
+		variables.log             = "";
+		// Cache Map
+		variables.caches          = {};
 		// Prepare Lock Info
-		variables.lockName = "CacheFactory.#variables.factoryID#";
-
-		// Passed in configuration?
-		if ( isNull( arguments.config ) ) {
-			// Create default configuration
-			arguments.config = new coldbox.system.cache.config.CacheBoxConfig( CFCConfigPath = defaultConfigPath );
-		} else if ( isSimpleValue( arguments.config ) ) {
-			arguments.config = new coldbox.system.cache.config.CacheBoxConfig( CFCConfigPath = arguments.config );
-		}
+		variables.lockName        = "CacheFactory.#variables.factoryID#";
+		// Registered system cache providers
+		variables.systemProviders = directoryList(
+			expandPath( "/coldbox/system/cache/providers" ),
+			false, // don't recurse
+			"name", // only names
+			"*.cfc" // only cfcs
+		).filter( ( thisProvider ) => left( thisProvider, 1 ) != "I" )
+			.map( ( thisProvider ) => listFirst( thisProvider, "." ) );
 
 		// Check if linking ColdBox
 		if ( !isNull( arguments.coldbox ) ) {
@@ -165,21 +169,79 @@ component accessors=true serializable=false {
 					name   : "cachebox-tasks",
 					threads: 20
 				);
-
-				// Running standalone, so create our own logging first
-				configureLogBox( arguments.config.getLogBoxConfig() );
 				// Running standalone, so create our own event manager
-				configureEventManager();
+				variables.eventManager = new coldbox.system.core.events.EventPoolManager( variables.eventStates );
 			}
 		}
-
-		// Configure Logging for the Cache Factory
-		variables.log = variables.logBox.getLogger( this );
 
 		// Configure the Cache Factory
 		configure( arguments.config );
 
+		// Configure Logging for the Cache Factory
+		variables.log = variables.logBox.getLogger( this );
+
 		return this;
+	}
+
+	/**
+	 * Configure the cache factory for operation, called by the init().
+	 * You can also re-configure CacheBox programmatically.
+	 *
+	 * @config A CacheBox Config object, path or struct to configure LogBox with.
+	 */
+	function configure( required config ){
+		// Check if just a plain CFC path and build it
+		if ( isSimpleValue( arguments.config ) ) {
+			arguments.config = new coldbox.system.cache.config.CacheBoxConfig( CFCConfigPath: arguments.config );
+		}
+
+		// Check if it's a struct literal config
+		if ( !isObject( arguments.config ) && isStruct( arguments.config ) ) {
+			arguments.config = new coldbox.system.cache.config.CacheBoxConfig().loadDataDSL( arguments.config );
+		}
+
+		// Store config object with validation
+		variables.config = arguments.config.validate();
+
+		// Reset Registries
+		variables.caches = {};
+
+		// Running standalone, so create our own logging first
+		if ( !isObject( variables.coldbox ) && !isObject( variables.wirebox ) ) {
+			variables.logBox = new coldbox.system.logging.LogBox( arguments.config.getLogBoxConfig() );
+		}
+
+		// Register Listeners if not using ColdBox
+		if ( !isObject( variables.coldbox ) ) {
+			registerListeners();
+		}
+
+		// Register default cache first
+		var defaultCacheConfig = variables.config.getDefaultCache();
+		createCache(
+			name      : "default",
+			provider  : defaultCacheConfig.provider,
+			properties: defaultCacheConfig
+		);
+
+		// Register named caches
+		variables.config
+			.getCaches()
+			.each( function( key, def ){
+				createCache(
+					name      : key,
+					provider  : def.provider,
+					properties: def.properties
+				);
+			} );
+
+		// Scope registrations
+		if ( variables.config.getScopeRegistration().enabled ) {
+			doScopeRegistration();
+		}
+
+		// Announce To Listeners
+		variables.eventManager.announce( "afterCacheFactoryConfiguration", { cacheFactory : this } );
 	}
 
 	/**
@@ -209,55 +271,6 @@ component accessors=true serializable=false {
 			} );
 
 		return this;
-	}
-
-	/**
-	 * Configure the cache factory for operation, called by the init(). You can also re-configure CacheBox programmatically.
-	 *
-	 * @config             The CacheBox config object
-	 * @config.doc_generic coldbox.system.cache.config.CacheBoxConfig
-	 */
-	function configure( required config ){
-		lock name="#variables.lockName#" type="exclusive" timeout="30" throwontimeout="true" {
-			// Store config object
-			variables.config = arguments.config;
-			// Validate configuration
-			variables.config.validate();
-			// Reset Registries
-			variables.caches = {};
-
-			// Register Listeners if not using ColdBox
-			if ( not isObject( variables.coldbox ) ) {
-				registerListeners();
-			}
-
-			// Register default cache first
-			var defaultCacheConfig = variables.config.getDefaultCache();
-			createCache(
-				name       = "default",
-				provider   = defaultCacheConfig.provider,
-				properties = defaultCacheConfig
-			);
-
-			// Register named caches
-			variables.config
-				.getCaches()
-				.each( function( key, def ){
-					createCache(
-						name       = key,
-						provider   = def.provider,
-						properties = def.properties
-					);
-				} );
-
-			// Scope registrations
-			if ( variables.config.getScopeRegistration().enabled ) {
-				doScopeRegistration();
-			}
-
-			// Announce To Listeners
-			variables.eventManager.announce( "afterCacheFactoryConfiguration", { cacheFactory : this } );
-		}
 	}
 
 	/********************************* PUBLIC CACHE FACTORY OPERATIONS *********************************/
@@ -735,37 +748,6 @@ component accessors=true serializable=false {
 		}
 
 		return this;
-	}
-
-	/**
-	 * Configure a standalone version of logBox for logging
-	 *
-	 * @configPath The LogBox configuration CFC path
-	 */
-	private CacheFactory function configureLogBox( required configPath ){
-		// Create config object
-		var oConfig      = new coldbox.system.logging.config.LogBoxConfig( CFCConfigPath = arguments.configPath );
-		// Create LogBox standalone and store it
-		variables.logBox = new coldbox.system.logging.LogBox( oConfig );
-		return this;
-	}
-
-	/**
-	 * Configure a standalone version of a ColdBox Event Manager
-	 */
-	private CacheFactory function configureEventManager(){
-		// create event manager
-		variables.eventManager = new coldbox.system.core.events.EventPoolManager( variables.eventStates );
-		// register the points to listen to
-		variables.eventManager.appendInterceptionPoints( variables.eventStates );
-		return this;
-	}
-
-	/**
-	 * Get a new utility object
-	 */
-	function getUtil(){
-		return new coldbox.system.core.util.Util();
 	}
 
 }

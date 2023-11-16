@@ -101,9 +101,6 @@ component accessors="true" {
 		variables.coldbox           = arguments.coldbox;
 		// Link incoming WireBox instance
 		variables.wirebox           = arguments.wirebox;
-		// Build out the utilities
-		variables.utility           = new coldbox.system.core.util.Util();
-		variables.mixerUtil         = variables.utility.getMixerUtil();
 
 		// Registered system appenders
 		variables.systemAppenders = directoryList(

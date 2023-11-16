@@ -11,7 +11,7 @@ component extends="testbox.system.BaseSpec" {
 
 	function run( testResults, testBox ){
 		// all your suites go here.
-		describe( "Load LogBox with a struct literal config", function(){
+		describe( "LogBox can be built using different configuration strategies", function(){
 			it( "can load with the default config", function(){
 				var logBox = new LogBox();
 				expect( logBox ).toBeInstanceOf( "LogBox" );
@@ -54,9 +54,7 @@ component extends="testbox.system.BaseSpec" {
 						.getConfig()
 						.getCategories()
 						.keyArray()
-				)
-				.toInclude( "hello.model" )
-				.toInclude( "yes.wow.wow" );
+				).toInclude( "hello.model" ).toInclude( "yes.wow.wow" );
 			} );
 		} );
 	}
