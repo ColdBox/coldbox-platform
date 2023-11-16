@@ -134,6 +134,11 @@ component serializable="false" accessors="true" {
 	property name="objectBuilder";
 
 	/**
+	 * The default binder class to use when no binder is passed to the injector
+	 */
+	variables.DEFAULT_BINDER = "coldbox.system.ioc.config.DefaultBinder";
+
+	/**
 	 * WireBox can be constructed with no parameters and it will use the default binder: `coldbox.system.ioc.config.DefaultBinder` for configuration
 	 * and place the instance in `application.wirebox` scope for easy access.
 	 *
@@ -149,7 +154,7 @@ component serializable="false" accessors="true" {
 	 * @name                The internal name of the injector, defaults to 'root' if not passed
 	 **/
 	Injector function init(
-		binder            = "coldbox.system.ioc.config.DefaultBinder",
+		binder            = variables.DEFAULT_BINDER,
 		struct properties = structNew(),
 		coldbox           = "",
 		name              = "root"
@@ -169,7 +174,7 @@ component serializable="false" accessors="true" {
 		variables.scopeStorage      = new coldbox.system.core.collections.ScopeStorage();
 		// Do we have a binder?
 		if ( isSimpleValue( arguments.binder ) AND NOT len( trim( arguments.binder ) ) ) {
-			arguments.binder = "coldbox.system.ioc.config.DefaultBinder";
+			arguments.binder = variables.DEFAULT_BINDER;
 		}
 		// Version
 		variables.version      = "@build.version@+@build.number@";

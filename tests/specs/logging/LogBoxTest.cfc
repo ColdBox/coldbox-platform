@@ -19,7 +19,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 					.OFF( "coldbox.system" )
 					.debug( "coldbox.system.async" );
 
-				// init logBox
+				// init logBox with Config CFC
 				logBox.init( config );
 
 				// add this configuration after the fact to test another code path
