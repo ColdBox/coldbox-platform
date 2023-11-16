@@ -20,14 +20,18 @@ component extends="testbox.system.BaseSpec" {
 				var cacheBox = new CacheFactory();
 				expect( cacheBox ).toBeInstanceOf( "CacheFactory" );
 				expect( cachebox.getDefaultCache() ).toBeComponent();
-				expect( cachebox.getDefaultCache().getConfiguration().objectStore ).toBe( "ConcurrentSoftReferenceStore" );
+				expect( cachebox.getDefaultCache().getConfiguration().objectStore ).toBe(
+					"ConcurrentSoftReferenceStore"
+				);
 			} );
 
 			it( "can load with the default config given an empty config string", function(){
 				var cacheBox = new CacheFactory( config: "" );
 				expect( cacheBox ).toBeInstanceOf( "CacheFactory" );
 				expect( cachebox.getDefaultCache() ).toBeComponent();
-				expect( cachebox.getDefaultCache().getConfiguration().objectStore ).toBe( "ConcurrentSoftReferenceStore" );
+				expect( cachebox.getDefaultCache().getConfiguration().objectStore ).toBe(
+					"ConcurrentSoftReferenceStore"
+				);
 			} );
 
 			it( "can load with a custom config cfc path", function(){
