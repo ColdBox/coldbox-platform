@@ -1,4 +1,4 @@
-﻿component extends="coldbox.system.testing.BaseModelTest"{
+﻿component extends="coldbox.system.testing.BaseModelTest" {
 
 	function setup(){
 		// Create logbox config

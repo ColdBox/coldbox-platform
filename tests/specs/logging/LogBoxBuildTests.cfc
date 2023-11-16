@@ -54,9 +54,7 @@ component extends="testbox.system.BaseSpec" {
 						.getConfig()
 						.getCategories()
 						.keyArray()
-				)
-				.toInclude( "hello.model" )
-				.toInclude( "yes.wow.wow" );
+				).toInclude( "hello.model" ).toInclude( "yes.wow.wow" );
 			} );
 		} );
 	}
