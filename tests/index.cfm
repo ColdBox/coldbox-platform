@@ -77,6 +77,21 @@
 		</div>
 	</div>
 
+	<!--- Runners --->
+	<div class="row">
+		<div class="col-md-12 mb-4">
+			<h2>Availble Test Runners: </h2>
+			<p>
+				Below is a listing of the runners matching the "runner*.cfm" pattern.
+			</p>
+
+			<cfset runners = directoryList( expandPath( "./" ), false, "query", "runner*.cfm" )>
+			<cfoutput query="runners">
+				<a href="#runners.name#" target="_blank" class="btn btn-secondary btn-sm my-1 mx-1">#runners.name#</a>
+			</cfoutput>
+		</div>
+	</div>
+
 	<!--- Listing --->
 	<div class="row">
 		<div class="col-md-12">
