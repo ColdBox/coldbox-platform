@@ -125,8 +125,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * * *
 
-* * *
-
 ## [7.0.0] - 2023-05-15
 
 ### ColdBox HMVC
@@ -220,8 +218,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [COLDBOX-1170](https://ortussolutions.atlassian.net/browse/COLDBOX-1170) populateModel deprecated - refactored to just populate() in the supertype methods
 * [COLDBOX-1187](https://ortussolutions.atlassian.net/browse/COLDBOX-1187) Removal of uniqueUrls boolean indicator for URL routing, since Pretty URLs are now the standard. This rerouting feature needs to be removed.
 
-* * *
-
 ### LogBox
 
 #### Improvements
@@ -233,15 +229,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [LOGBOX-61](https://ortussolutions.atlassian.net/browse/LOGBOX-61) Allow for closure for all logging messages in the logger, this way, we can verify the logging level automatically.
 * [LOGBOX-69](https://ortussolutions.atlassian.net/browse/LOGBOX-69) LogEvents in JSON are now prettified
 
-* * *
-
 ### CacheBox
 
 #### Bugs
 
 * [CACHEBOX-83](https://ortussolutions.atlassian.net/browse/CACHEBOX-83) Intermittent Exception from MetadataIndexer
-
-* * *
 
 ### WireBox
 
