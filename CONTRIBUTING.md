@@ -9,7 +9,7 @@ Hola amigo! I'm really excited that you are interested in contributing to ColdBo
 - [Security Vulnerabilities](#security-vulnerabilities)
 - [Development Setup](#development-setup)
 - [Language Compatiblity](#language-compatiblity)
-- [Coding Styles \& Formatting](#coding-styles--formatting)
+- [Coding Styles + Formatting](#coding-styles--formatting)
 - [CFC Docs With DocBox](#cfc-docs-with-docbox)
 - [Financial Contributions](#financial-contributions)
 - [Contributors](#contributors)
@@ -68,7 +68,7 @@ Please make sure your code runs on the following CFML Engines:
 - Lucee 5+
 - Adobe ColdFusion 2018+
 
-## Coding Styles & Formatting
+## Coding Styles + Formatting
 
 We are big on coding styles and have included a `.cfformat.json` in the root of the project so that you can run the formatting tools and CommandBox scripts:
 
