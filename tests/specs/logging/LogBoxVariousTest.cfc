@@ -1,5 +1,5 @@
-﻿<cfcomponent extends="coldbox.system.testing.BaseModelTest">
-	<cfscript>
+﻿component extends="coldbox.system.testing.BaseModelTest" {
+
 	function setup(){
 		// Create logbox config
 		config = createObject( "component", "coldbox.system.logging.config.LogBoxConfig" ).init();
@@ -23,8 +23,6 @@
 			appenders = "cfconsole"
 		);
 
-		// nice cats with root logger appenders
-
 		// create logbox
 		logbox = createMock( className = "coldbox.system.logging.LogBox" ).init( config );
 	}
@@ -42,5 +40,5 @@
 		logger = logBox.getLogger( "NONE TEST" );
 		logger.debug( "nada" );
 	}
-	</cfscript>
-</cfcomponent>
+
+}

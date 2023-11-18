@@ -82,7 +82,7 @@ jobs:
 
       - name: Run Tests
         run: |
-          ant -f build/build.xml run-tests
+          box run-script tests
 
       - name: Set cfengine version env
         run: echo "CFENGINE_VERSION=$(box echo ${serverInfo.engineName@coldbox-${{ matrix.cfengine }}}@${serverInfo.engineVersion@coldbox-${{ matrix.cfengine }}})" >> $GITHUB_ENV

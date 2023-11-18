@@ -1,43 +1,43 @@
 {
-    "name": "ColdBox Platform",
-    "version": "@build.version@+@build.number@",
-    "location": "https://downloads.ortussolutions.com/ortussolutions/coldbox/@build.version@/coldbox-@build.version@.zip",
-    "author": "Ortus Solutions <info@ortussolutions.com>",
-    "slug": "coldbox",
-    "packageDirectory": "coldbox",
-    "type": "mvc",
-    "keywords": "mvc,hmc,conventions,coldbox",
-    "homepage": "https://www.coldbox.org",
-    "documentation": "https://coldbox.ortusbooks.com/",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/coldbox/coldbox-platform"
-    },
-    "bugs": "https://ortussolutions.atlassian.net/browse/COLDBOX",
-    "shortDescription": "A conventions based HMVC development framework",
-    "license": [
+	"name": "ColdBox Platform",
+	"version": "@build.version@+@build.number@",
+	"location": "https://downloads.ortussolutions.com/ortussolutions/coldbox/@build.version@/coldbox-@build.version@.zip",
+	"author": "Ortus Solutions <info@ortussolutions.com>",
+	"slug": "coldbox",
+	"packageDirectory": "coldbox",
+	"type": "mvc",
+	"keywords": "mvc,hmvc,conventions,coldbox",
+	"homepage": "https://www.coldbox.org",
+	"documentation": "https://coldbox.ortusbooks.com/",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/coldbox/coldbox-platform"
+	},
+	"bugs": "https://ortussolutions.atlassian.net/browse/COLDBOX",
+	"shortDescription": "A conventions based HMVC development framework",
+	"license": [
 		{
-        "type": "Apache2",
-        "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+			"type": "Apache2",
+			"url": "http://www.apache.org/licenses/LICENSE-2.0.html"
 		}
 	],
-    "contributors": [
-        "Brad Wood <bdw429s@gmail.com>",
-        "Curt Gratz <gratz@computerknowhow.com>"
-    ],
-    "ignore": [
-        "**/.*",
-        "tests",
-        "apidocs",
-        "testbox",
-        "*/.md"
-    ],
-    "devDependencies": {
-    },
-	"dependencies":{
-        "cbproxies":"^1.0.1+13"
-    },
-	"installPaths":{
-        "cbproxies":"system/async/cbproxies/"
-    }
+	"contributors": [
+		"Brad Wood <bdw429s@gmail.com>",
+		"Curt Gratz <gratz@computerknowhow.com>"
+	],
+	"ignore": [
+		"**/.*",
+		"tests",
+		"apidocs",
+		"testbox",
+		"*/.md"
+	],
+	"dependencies": {
+		"cbproxies": "^1.0.1+13"
+	},
+	"devDependencies": {
+	},
+	"installPaths": {
+		"cbproxies": "system/async/cbproxies/"
+	}
 }

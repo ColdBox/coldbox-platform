@@ -2,7 +2,7 @@
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * A ColdFusion Appender
+ * A ColdFusion Log Appender
  * - logType 	: file or application
  * - fileName 	: The log file name to use, else uses the appender's name
  **/
@@ -17,7 +17,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 	 * @levelMin   The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARN
 	 * @levelMax   The default log level for this appender, by default it is 5. Optional. ex: LogBox.logLevels.WARN
 	 *
-	 * @throws CFAppender.InvalidLogTypeException
+	 * @throws CFAppender.InvalidLogTypeException If the logType is not <code>file</code> or <code>application</code>
 	 */
 	function init(
 		required name,
@@ -51,6 +51,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 
 	/**
 	 * Write an entry into the appender. You must implement this method yourself.
+	 * We don't use the queing approach. We let CF do that.
 	 *
 	 * @logEvent The logging event to log
 	 */
@@ -60,7 +61,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 		if ( hasCustomLayout() ) {
 			entry = getCustomLayout().format( arguments.logEvent );
 		} else {
-			entry = "#arguments.logEvent.getCategory()# #arguments.logEvent.getMessage()# | ExtraInfo: #arguments.logEvent.getextraInfoAsString()#";
+			entry = "#arguments.logEvent.getCategory()# #arguments.logEvent.getMessage()# | ExtraInfo: #arguments.logEvent.getExtraInfoAsString()#";
 		}
 
 		if ( getProperty( "logType" ) == "file" ) {

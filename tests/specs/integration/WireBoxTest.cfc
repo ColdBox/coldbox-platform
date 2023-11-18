@@ -6,6 +6,16 @@ component extends="tests.resources.BaseIntegrationTest" {
 	/*********************************** BDD SUITES ***********************************/
 
 	function run(){
+		story( "Make AOP mixer auto-load if any aspects are defined", function(){
+			given( "1 or more aspects defined", function(){
+				then( "the AOP mixer must load", function(){
+					var mixer = controller.getInterceptorService().getInterceptionStates();
+					expect( mixer ).toHaveKey( "afterInstanceAutowire" );
+					expect( mixer.afterInstanceAutowire.getPool().containsKey( "aopmixer" ) ).toBeTrue();
+				} );
+			} );
+		} );
+
 		describe( "WireBox custom DSL", function(){
 			beforeEach( function( currentSpec ){
 				setup();

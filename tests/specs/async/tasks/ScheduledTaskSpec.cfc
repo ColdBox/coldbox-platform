@@ -43,6 +43,16 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 				expect( t.disable().isDisabled() ).toBeTrue();
 			} );
 
+			it( "can run and set a last result with a value", function(){
+				var t = scheduler.task( "test" );
+				t.call( function(){
+					return "test";
+				} );
+				expect( t.getLastResult().isPresent() ).toBeFalse();
+				t.run( force: true );
+				expect( t.getLastResult().get() ).toBe( "test" );
+			} );
+
 			describe( "can have life cycle methods", function(){
 				it( "can call before", function(){
 					var t = scheduler
@@ -252,9 +262,11 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 					var t      = scheduler.task( "test" );
 					var target = t
 						.getJavaNow()
-						.plusDays( javacast( "int", 3 ) )
+						.plusDays( javacast( "long", 3 ) )
 						.getDayOfMonth();
 					t.setDayOfTheMonth( target );
+
+					var jNow = t.getJavaNow();
 					expect( t.isConstrained() ).toBeTrue( "Day is : #target#" );
 
 					var target = t.getJavaNow().getDayOfMonth();
@@ -263,23 +275,20 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 				} );
 
 				it( "can have a last business day of the month constraint", function(){
-					var nowDate = new coldbox.system.async.time.DateTimeHelper().toLocalDateTime( now(), "UTC" );
-
-					var t = prepareMock( scheduler.task( "test" ) ).setLastBusinessDay( true );
-
-					makePublic( t, "getLastBusinessDayOfTheMonth" );
+					var dateTimeHelper = prepareMock( new coldbox.system.async.time.DateTimeHelper() );
+					var mockNow        = dateTimeHelper.now();
+					var t              = prepareMock( scheduler.task( "test" ) ).setLastBusinessDay( true );
 
 					// If we are at the last day, increase it
-					if ( nowDate.getDayOfMonth() == t.getLastBusinessDayOfTheMonth().getDayOfMonth() ) {
-						nowDate = nowDate.plusDays( javacast( "int", -1 ) );
+					if ( mockNow.getDayOfMonth() == dateTimeHelper.getLastBusinessDayOfTheMonth().getDayOfMonth() ) {
+						mockNow = mockNow.plusDays( javacast( "long", -1 ) );
 					}
 
-					t.$( "getJavaNow", nowDate );
+					t.$( "getJavaNow", mockNow );
 					expect( t.isConstrained() ).toBeTrue();
 
-					var mockNow = t.getJavaNow();
-					prepareMock( t ).$( "getLastBusinessDayOfTheMonth", mockNow );
-
+					var lastDayOfTheMonth = DateTimeHelper.getLastBusinessDayOfTheMonth();
+					t.$( "getJavaNow", lastDayOfTheMonth );
 					expect( t.isConstrained() ).toBeFalse();
 				} );
 

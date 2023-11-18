@@ -9,6 +9,10 @@
 		cacheFactory.init();
 	}
 
+	function afterTests(){
+		cacheFactory.shutdown();
+	}
+
 	function testGetConfig(){
 		// debug( cacheFactory.getConfig() );
 	}
@@ -20,16 +24,10 @@
 	}
 
 	function testconfigureLogBox(){
-		makePublic( cachefactory, "configureLogBox" );
-		cacheFactory.configureLogBox( "coldbox.system.cache.config.LogBox" );
-
 		assertTrue( isObject( cacheFactory.getLogBox() ) );
 	}
 
 	function testConfigureEventManager(){
-		makePublic( cachefactory, "configureEventManager" );
-		cacheFactory.configureEventManager();
-
 		assertTrue( isObject( cacheFactory.getEventManager() ) );
 	}
 

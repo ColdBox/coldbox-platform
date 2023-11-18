@@ -1,17 +1,33 @@
-﻿/**
+/**
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * This is a LogBox configuration object.  You can use it to configure a LogBox instance.
+ * This is a LogBox configuration object.  You can use it to configure a LogBox variables.
  **/
 component accessors="true" {
 
+	/**
+	 * The ColdBox Utility object
+	 */
+	property name="utility";
+
+	/**
+	 * The appenders registered
+	 */
+	property name="appenders" type="struct";
+
+	/**
+	 * The categories registered
+	 */
+	property name="categories" type="struct";
+
+	/**
+	 * The root logger registered
+	 */
+	property name="rootLogger" type="struct";
+
 	// The log levels enum as a public property
-	this.logLevels    = new coldbox.system.logging.LogLevels();
-	// Internal Utility object
-	variables.utility = new coldbox.system.core.util.Util();
-	// Instance private scope
-	instance          = structNew();
+	this.logLevels = new coldbox.system.logging.LogLevels();
 	// Startup the configuration
 	reset();
 
@@ -23,20 +39,18 @@ component accessors="true" {
 	 */
 	function init( any CFCConfig, string CFCConfigPath ){
 		// Test and load via Data CFC Path
-		if ( structKeyExists( arguments, "CFCConfigPath" ) ) {
+		if ( !isNull( arguments.CFCConfigPath ) ) {
 			arguments.CFCConfig = createObject( "component", arguments.CFCConfigPath );
 		}
 
 		// Test and load via Data CFC
-		if ( structKeyExists( arguments, "CFCConfig" ) and isObject( arguments.CFCConfig ) ) {
+		if ( !isNull( arguments.CFCConfig ) and isObject( arguments.CFCConfig ) ) {
 			// Decorate our data CFC
-			arguments.CFCConfig.getPropertyMixin = variables.utility.getMixerUtil().getPropertyMixin;
+			arguments.CFCConfig.getPropertyMixin = getUtil().getMixerUtil().getPropertyMixin;
 			// Execute the configuration
 			arguments.CFCConfig.configure();
-			// Get Data
-			var logBoxDSL = arguments.CFCConfig.getPropertyMixin( "logBox", "variables", structNew() );
 			// Load the DSL
-			loadDataDSL( logBoxDSL );
+			loadDataDSL( arguments.CFCConfig.getPropertyMixin( "logBox", "variables", structNew() ) );
 		}
 
 		// Just return, most likely programmatic config
@@ -44,15 +58,25 @@ component accessors="true" {
 	}
 
 	/**
+	 * Get the ColdBox Utility object
+	 */
+	private function getUtil(){
+		if ( isNull( variables.utility ) ) {
+			variables.utility = new coldbox.system.core.util.Util();
+		}
+		return variables.utility;
+	}
+
+	/**
 	 * Reset the configuration
 	 */
 	LogBoxConfig function reset(){
 		// Register appenders
-		instance.appenders  = structNew();
+		variables.appenders  = structNew();
 		// Register categories
-		instance.categories = structNew();
+		variables.categories = structNew();
 		// Register root logger
-		instance.rootLogger = structNew();
+		variables.rootLogger = structNew();
 		return this;
 	}
 
@@ -86,22 +110,22 @@ component accessors="true" {
 
 		// Register Level Categories
 		if ( structKeyExists( logBoxDSL, "debug" ) ) {
-			DEBUG( argumentCollection = variables.utility.arrayToStruct( logBoxDSL.debug ) );
+			DEBUG( argumentCollection = getUtil().arrayToStruct( logBoxDSL.debug ) );
 		}
 		if ( structKeyExists( logBoxDSL, "info" ) ) {
-			INFO( argumentCollection = variables.utility.arrayToStruct( logBoxDSL.info ) );
+			INFO( argumentCollection = getUtil().arrayToStruct( logBoxDSL.info ) );
 		}
 		if ( structKeyExists( logBoxDSL, "warn" ) ) {
-			WARN( argumentCollection = variables.utility.arrayToStruct( logBoxDSL.warn ) );
+			WARN( argumentCollection = getUtil().arrayToStruct( logBoxDSL.warn ) );
 		}
 		if ( structKeyExists( logBoxDSL, "error" ) ) {
-			ERROR( argumentCollection = variables.utility.arrayToStruct( logBoxDSL.error ) );
+			ERROR( argumentCollection = getUtil().arrayToStruct( logBoxDSL.error ) );
 		}
 		if ( structKeyExists( logBoxDSL, "fatal" ) ) {
-			FATAL( argumentCollection = variables.utility.arrayToStruct( logBoxDSL.fatal ) );
+			FATAL( argumentCollection = getUtil().arrayToStruct( logBoxDSL.fatal ) );
 		}
 		if ( structKeyExists( logBoxDSL, "off" ) ) {
-			OFF( argumentCollection = variables.utility.arrayToStruct( logBoxDSL.off ) );
+			OFF( argumentCollection = getUtil().arrayToStruct( logBoxDSL.off ) );
 		}
 
 		return this;
@@ -111,7 +135,7 @@ component accessors="true" {
 	 * Reset appender configuration
 	 */
 	LogBoxConfig function resetAppenders(){
-		instance.appenders = structNew();
+		variables.appenders = structNew();
 		return this;
 	}
 
@@ -119,7 +143,7 @@ component accessors="true" {
 	 * Reset categories configuration
 	 */
 	LogBoxConfig function resetCategories(){
-		instance.categories = structNew();
+		variables.categories = structNew();
 		return this;
 	}
 
@@ -127,57 +151,71 @@ component accessors="true" {
 	 * Reset root configuration
 	 */
 	LogBoxConfig function resetRoot(){
-		instance.rootLogger = structNew();
+		variables.rootLogger = structNew();
 		return this;
 	}
 
 	/**
-	 * Get the instance memento
+	 * Get the config memento
 	 */
 	struct function getMemento(){
-		return instance;
+		return variables.filter( ( key, value ) => {
+			return isCustomFunction( value ) || listFindNoCase( "this", key ) ? false : true;
+		} );
 	}
 
 	/**
 	 * Validates the configuration. If not valid, it will throw an appropriate exception.
 	 *
-	 * @throws AppenderNotFound
+	 * @throws AppenderNotFound - If an appender is not found in the configuration
 	 */
 	LogBoxConfig function validate(){
 		// Check root logger definition
-		if ( structIsEmpty( instance.rootLogger ) ) {
+		if ( structIsEmpty( variables.rootLogger ) ) {
 			// Auto register a root logger
 			root( appenders = "*" );
 		}
 
 		// All root appenders?
-		if ( instance.rootLogger.appenders eq "*" ) {
-			instance.rootLogger.appenders = structKeyList( getAllAppenders() );
+		if ( variables.rootLogger.appenders eq "*" ) {
+			variables.rootLogger.appenders = structKeyList( getAllAppenders() );
+		}
+
+		if ( len( variables.rootLogger.exclude ) ) {
+			variables.rootLogger.appenders = excludeAppenders(
+				variables.rootLogger.appenders,
+				variables.rootLogger.exclude
+			);
 		}
 
 		// Check root's appenders
-		for ( var x = 1; x lte listLen( instance.rootLogger.appenders ); x++ ) {
-			if ( NOT structKeyExists( instance.appenders, listGetAt( instance.rootLogger.appenders, x ) ) ) {
+		for ( var x = 1; x lte listLen( variables.rootLogger.appenders ); x++ ) {
+			if ( NOT structKeyExists( variables.appenders, listGetAt( variables.rootLogger.appenders, x ) ) ) {
 				throw(
 					message = "Invalid appender in Root Logger",
-					detail  = "The appender #listGetAt( instance.rootLogger.appenders, x )# has not been defined yet. Please define it first.",
+					detail  = "The appender #listGetAt( variables.rootLogger.appenders, x )# has not been defined yet. Please define it first.",
 					type    = "AppenderNotFound"
 				);
 			}
 		}
 
 		// Check all Category Appenders
-		for ( var key in instance.categories ) {
+		for ( var key in variables.categories ) {
 			// Check * all appenders
-			if ( instance.categories[ key ].appenders eq "*" ) {
-				instance.categories[ key ].appenders = structKeyList( getAllAppenders() );
+			if ( variables.categories[ key ].appenders eq "*" ) {
+				variables.categories[ key ].appenders = structKeyList( getAllAppenders() );
 			}
 
-			for ( var x = 1; x lte listLen( instance.categories[ key ].appenders ); x++ ) {
-				if ( NOT structKeyExists( instance.appenders, listGetAt( instance.categories[ key ].appenders, x ) ) ) {
+			for ( var x = 1; x lte listLen( variables.categories[ key ].appenders ); x++ ) {
+				if (
+					NOT structKeyExists(
+						variables.appenders,
+						listGetAt( variables.categories[ key ].appenders, x )
+					)
+				) {
 					throw(
 						message = "Invalid appender in Category: #key#",
-						detail  = "The appender #listGetAt( instance.categories[ key ].appenders, x )# has not been defined yet. Please define it first.",
+						detail  = "The appender #listGetAt( variables.categories[ key ].appenders, x )# has not been defined yet. Please define it first.",
 						type    = "AppenderNotFound"
 					);
 				}
@@ -212,7 +250,7 @@ component accessors="true" {
 		levelChecks( arguments.levelMin, arguments.levelMax );
 
 		// Register appender
-		instance.appenders[ arguments.name ] = arguments;
+		variables.appenders[ arguments.name ] = arguments;
 
 		return this;
 	}
@@ -223,10 +261,16 @@ component accessors="true" {
 	 * @appenders A list of appenders to configure the root logger with. Send a * to add all appenders
 	 * @levelMin  The default log level for the root logger, by default it is 0 (FATAL). Optional. ex: config.logLevels.WARN
 	 * @levelMax  The default log level for the root logger, by default it is 4 (DEBUG). Optional. ex: config.logLevels.WARN
+	 * @exclude   a list of appenders to exclude from the root logger
 	 *
 	 * @throws InvalidAppenders
 	 */
-	LogBoxConfig function root( required appenders, levelMin = 0, levelMax = 4 ){
+	LogBoxConfig function root(
+		required appenders,
+		levelMin = 0,
+		levelMax = 4,
+		exclude  = ""
+	){
 		// Convert Levels
 		convertLevels( arguments );
 
@@ -243,7 +287,7 @@ component accessors="true" {
 		}
 
 		// Add definition
-		instance.rootLogger = arguments;
+		variables.rootLogger = arguments;
 
 		return this;
 	}
@@ -252,7 +296,7 @@ component accessors="true" {
 	 * Get the root logger definition
 	 */
 	struct function getRoot(){
-		return instance.rootLogger;
+		return variables.rootLogger;
 	}
 
 	/**
@@ -262,12 +306,14 @@ component accessors="true" {
 	 * @levelMin  The default log level for the root logger, by default it is 0 (FATAL). Optional. ex: config.logLevels.WARN
 	 * @levelMax  The default log level for the root logger, by default it is 4 (DEBUG). Optional. ex: config.logLevels.WARN
 	 * @appenders A list of appender names to configure this category with. By default it uses all the registered appenders
+	 * @exclude   A list of appender names to exclude from this category
 	 */
 	LogBoxConfig function category(
 		required name,
 		levelMin  = 0,
 		levelMax  = 4,
-		appenders = "*"
+		appenders = "*",
+		exclude   = ""
 	){
 		// Convert Levels
 		convertLevels( arguments );
@@ -276,12 +322,17 @@ component accessors="true" {
 		levelChecks( arguments.levelMin, arguments.levelMax );
 
 		// Check * all appenders
-		if ( appenders eq "*" ) {
-			appenders = structKeyList( getAllAppenders() );
+		if ( arguments.appenders eq "*" ) {
+			arguments.appenders = structKeyList( getAllAppenders() );
+		}
+
+		// filter appenders based on exclusion list
+		if ( len( arguments.exclude ) ) {
+			arguments.appenders = excludeAppenders( arguments.appenders, arguments.exclude );
 		}
 
 		// Add category registration
-		instance.categories[ arguments.name ] = arguments;
+		variables.categories[ arguments.name ] = arguments;
 
 		return this;
 	}
@@ -292,7 +343,7 @@ component accessors="true" {
 	 * @name The category name
 	 */
 	struct function getCategory( required name ){
-		return instance.categories[ arguments.name ];
+		return variables.categories[ arguments.name ];
 	}
 
 	/**
@@ -301,21 +352,31 @@ component accessors="true" {
 	 * @name The category name
 	 */
 	boolean function categoryExists( required name ){
-		return structKeyExists( instance.categories, arguments.name );
+		return structKeyExists( variables.categories, arguments.name );
 	}
 
 	/**
 	 * Get the configured categories
 	 */
 	struct function getAllCategories(){
-		return instance.categories;
+		return variables.categories;
 	}
 
 	/**
 	 * Get all the configured appenders
 	 */
 	struct function getAllAppenders(){
-		return instance.appenders;
+		return variables.appenders;
+	}
+
+	/**
+	 * Exclude appenders from a list of appenders
+	 *
+	 * @appenders A list of appenders to exclude from
+	 * @exclude   A list of appenders to exclude
+	 */
+	string function excludeAppenders( required string appenders, required string exclude ){
+		return listToArray( appenders ).filter( ( item ) => !listFindNoCase( exclude, item ) ).toList();
 	}
 
 	/**

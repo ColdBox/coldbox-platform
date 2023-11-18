@@ -18,6 +18,10 @@ component extends="testbox.system.BaseSpec" {
 	function run( testResults, testBox ){
 		// all your suites go here.
 		describe( "CacheBox Standalone", function(){
+			afterEach( function( currentSpec ){
+				cachebox.shutdown();
+			} );
+
 			it( "can be configured with a standalone configuration object", function(){
 				cacheBox = new coldbox.system.cache.CacheFactory(
 					config = "tests.resources.StandaloneCacheBoxConfig"

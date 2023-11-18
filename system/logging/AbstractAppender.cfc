@@ -118,27 +118,77 @@ component accessors="true" {
 		variables.lockTimeout = 25;
 
 		// Activate Log Listener Queue
-		variables.logListener = { active : false, queue : [] };
+		variables.logListener = { "active" : false, "queue" : [] };
 
 		return this;
 	}
 
 	/**
-	 * Runs after the appender has been created and registered. Implemented by Concrete appender
+	 * --------------------------------------------------------------------------
+	 * Apender Life-Cycle Methods
+	 * --------------------------------------------------------------------------
+	 */
+
+	/**
+	 * Runs after the appender has been created and registered. Implemented by Concrete appenders ONLY
 	 */
 	AbstractAppender function onRegistration(){
 		return this;
 	}
 
 	/**
-	 * Runs before the appender is unregistered from LogBox. Implemented by Concrete appender
+	 * Runs before the appender is unregistered from LogBox. Implemented by Concrete appenders ONLY
 	 */
 	AbstractAppender function onUnRegistration(){
 		return this;
 	}
 
 	/**
+	 * Each appender can shut itself down if needed. This callback is done by the LogBox engine during reinits or shutdowns
+	 */
+	AbstractAppender function shutdown(){
+		return this;
+	}
+
+	/**
+	 * --------------------------------------------------------------------------
+	 * Log Methods
+	 * --------------------------------------------------------------------------
+	 * These methods are the ones that are called by the LogBox engine to log messages
+	 */
+
+	/**
+	 * Write an entry into the appender. You must implement this method yourself.
+	 *
+	 * @logEvent The logging event to log
+	 *
+	 * @return AbstractAppender
+	 */
+	AbstractAppender function logMessage( required coldbox.system.logging.LogEvent logEvent ){
+		return this;
+	}
+
+	/**
+	 * Checks wether a log can be made on this appender using a passed in level
+	 *
+	 * @level The level to check
+	 *
+	 * @return If the log can be made using the passed in level
+	 */
+	boolean function canLog( required numeric level ){
+		return ( arguments.level GTE getLevelMin() AND arguments.level LTE getLevelMax() );
+	}
+
+	/**
+	 * --------------------------------------------------------------------------
+	 * Utility Methods
+	 * --------------------------------------------------------------------------
+	 */
+
+	/**
 	 * Setter for level min
+	 *
+	 * @levelMin The minimum level to log
 	 *
 	 * @throws AbstractAppender.InvalidLogLevelException
 	 */
@@ -158,6 +208,8 @@ component accessors="true" {
 
 	/**
 	 * Setter for level max
+	 *
+	 * @levelMax The maximum level to log
 	 *
 	 * @throws AbstractAppender.InvalidLogLevelException
 	 */
@@ -186,13 +238,15 @@ component accessors="true" {
 	 * convert a severity to a string
 	 *
 	 * @severity The severity to convert to a string
+	 *
+	 * @return The string representation of the severity
 	 */
 	function severityToString( required numeric severity ){
 		return this.logLevels.lookup( arguments.severity );
 	}
 
 	/**
-	 * Get internal hash id
+	 * Get internal hash id for this appender
 	 */
 	function getHash(){
 		return variables._hash;
@@ -203,24 +257,6 @@ component accessors="true" {
 	 */
 	boolean function isInitialized(){
 		return variables.initialized;
-	}
-
-	/**
-	 * Write an entry into the appender. You must implement this method yourself.
-	 *
-	 * @logEvent The logging event to log
-	 */
-	AbstractAppender function logMessage( required coldbox.system.logging.LogEvent logEvent ){
-		return this;
-	}
-
-	/**
-	 * Checks wether a log can be made on this appender using a passed in level
-	 *
-	 * @level The level to check
-	 */
-	boolean function canLog( required numeric level ){
-		return ( arguments.level GTE getLevelMin() AND arguments.level LTE getLevelMax() );
 	}
 
 	/**
@@ -261,6 +297,8 @@ component accessors="true" {
 	 * --------------------------------------------------------------------------
 	 * Log Listener and Processing Queues
 	 * --------------------------------------------------------------------------
+	 * We have a concept of a global log listener that sends messages
+	 * to messaging queue which is processed by the appender asynchronously.
 	 */
 
 	/**
@@ -315,10 +353,9 @@ component accessors="true" {
 			var queueContext = {
 				"lastRun"       : getTickCount(),
 				"start"         : getTickCount(),
-				"maxIdle"       : 15000,
-				"sleepInterval" : 25,
+				"maxIdle"       : 10000, // 10 seconds of idle time
+				"sleepInterval" : 25, // 25ms of sleep time
 				"count"         : 0,
-				"hasMessages"   : false,
 				"force"         : arguments.force
 			};
 
@@ -328,33 +365,49 @@ component accessors="true" {
 			// Start Advice
 			onLogListenerStart( queueContext );
 
+			// Keep running :
+			// - Are forcing the run
+			// - We have messages in the queue
+			// - We have been not been idle for more than maxIdle
 			while (
-				arguments.force || variables.logListener.queue.len() || queueContext.lastRun + queueContext.maxIdle > getTickCount()
+				arguments.force ||
+				variables.logListener.queue.len() ||
+				queueContext.lastRun + queueContext.maxIdle > getTickCount()
 			) {
 				// out( "len: #variables.logListener.queue.len()# last run: #lastRun# idle: #queueContext.maxIdle#" );
 
+				preProcessQueue( variables.logListener.queue, queueContext );
+
+				// Process the queue if we have any messages
 				if ( variables.logListener.queue.len() ) {
 					// pop and dequeue
-					var thisData = variables.logListener.queue[ 1 ];
+					var thisData = variables.logListener.queue.first();
 					variables.logListener.queue.deleteAt( 1 );
 
-					// out( "processing #thisData.toString()#" );
+					// out( "=============> processing #thisData.toString()#" );
 
-					processQueueElement( thisData, queueContext );
+					processQueueElement(
+						thisData,
+						queueContext,
+						variables.logListener.queue
+					);
 
 					// Mark the last run
 					queueContext.lastRun = getTickCount();
 				}
 
-				// out( "Sleeping: lastRun #lastRun + queueContext.maxIdle#" );
+				// out( "Sleeping (#getName()#): lastRun #queueContext.lastRun + queueContext.maxIdle#" );
 
 				// Advice we are about to go to sleep
 				onLogListenerSleep( queueContext );
 
 				// Only take a nap if we've nothing to do and we are not in force mode
+				// So we can wait for more messages
 				if ( !arguments.force && !variables.logListener.queue.len() ) {
 					sleep( queueContext.sleepInterval ); // take a nap
 				}
+
+				postProcessQueue( variables.logListener.queue, queueContext );
 			}
 		} catch ( Any e ) {
 			if ( e.message contains "interrupted" ) {
@@ -375,7 +428,7 @@ component accessors="true" {
 
 			// Stop log listener only if not in force mode
 			if ( !arguments.force ) {
-				variables.lock( function(){
+				variables.lock( () => {
 					variables.logListener.active = false;
 				} );
 			}
@@ -383,7 +436,17 @@ component accessors="true" {
 	}
 
 	/**
-	 * Fired once the listener starts queue processing
+	 * --------------------------------------------------------------------------
+	 * Log Listener & Queue Events
+	 * --------------------------------------------------------------------------
+	 * These events are to be implemented by the appropriate appender
+	 * in order to process the logging queue.
+	 */
+
+	/**
+	 * Fired once the listener starts queue processing. This only runs
+	 * once per listener thread.  Remember that the listener thread is
+	 * created, then destroyed after the queue is empty or after a timeout.
 	 *
 	 * @queueContext A struct of data attached to this processing queue thread
 	 */
@@ -391,7 +454,9 @@ component accessors="true" {
 	}
 
 	/**
-	 * Fired once the listener will go to sleep
+	 * Fired once the listener will go to sleep. This happens
+	 * when the queue is empty and the listener will sleep for a while
+	 * to wait for more messages.
 	 *
 	 * @queueContext A struct of data attached to this processing queue thread
 	 */
@@ -399,7 +464,9 @@ component accessors="true" {
 	}
 
 	/**
-	 * Fired once the listener stops queue processing
+	 * Fired once the listener stops queue processing.
+	 * This happens when there are no more messages in the queue
+	 * or when the queue has been idle for a while.
 	 *
 	 * @queueContext A struct of data attached to this processing queue thread
 	 */
@@ -407,16 +474,48 @@ component accessors="true" {
 	}
 
 	/**
+	 *  Fired before the queue is processed within the log listener thread
+	 *
+	 * @queue        The queue itself
+	 * @queueContext A struct of data attached to this processing queue thread
+	 */
+	function preProcessQueue( required queue, required struct queueContext ){
+	}
+
+	/**
+	 *  Fired after the queue is processed within the log listener thread
+	 *
+	 * @queue        The queue itself
+	 * @queueContext A struct of data attached to this processing queue thread
+	 */
+	function postProcessQueue( required queue, required struct queueContext ){
+	}
+
+	/**
+	 * --------------------------------------------------------------------------
+	 * Queuing Helpers
+	 * --------------------------------------------------------------------------
+	 * The processQueueElement can be implemented by the appender to process the queue
+	 * The queueMessage() method is used to queue up messages to the appender instead
+	 * of logging directly.
+	 */
+
+	/**
 	 * Processes a queue element to a destination
 	 * This method is called by the log listeners asynchronously.
 	 *
 	 * @data         The data element the queue needs processing
 	 * @queueContext The queue context in process
+	 * @queue        The queue itself
 	 *
-	 * @return AbstractAppender
+	 * @return The appender
 	 */
-	function processQueueElement( required data, required queueContext ){
-		variables.out( data.toString() );
+	function processQueueElement(
+		required data,
+		required queueContext,
+		required queue
+	){
+		variables.out( arguments.data.toString() );
 		return this;
 	}
 
@@ -424,7 +523,35 @@ component accessors="true" {
 	 * Appends a data struct into the logging array queue so the log listeners can deliver it
 	 * to the destination. This is a NON-Blocking operation
 	 *
+	 * The appender has the option from the <code>logMessage()</code>
+	 * to decide if they log directly or queue up the message for later
+	 * processing.
+	 *
+	 * Example:
+	 * <pre><code>
+	 * function logMessage( required logEvent ){
+	 * 	// Log it
+	 *	switch ( logEvent.getSeverity() ) {
+	 *		// Fatal + Error go to error stream
+	 *		case "0":
+	 *		case "1": {
+	 *			// log message
+	 *			queueMessage( { message : entry, isError : true } );
+	 *			break;
+	 *		}
+	 *		// Warning and above go to info stream
+	 *		default: {
+	 *			// log message
+	 *			queueMessage( { message : entry, isError : false } );
+	 *			break;
+	 *		}
+	 *	 }
+	 * }
+	 * </code></pre>
+	 *
 	 * @data The data to be queued up
+	 *
+	 * @return The appender
 	 */
 	AbstractAppender function queueMessage( required data ){
 		// Ensure log listener
@@ -435,9 +562,21 @@ component accessors="true" {
 	}
 
 	/**
-	 * Each appender can shut itself down if needed. This callback is done by the LogBox engine during reinits or shutdowns
+	 * A functional locking wrapper for the appender which uses it's internal hash and name as the lock name
+	 *
+	 * @body The function/closure/lambda to wrap under a lock call
+	 * @type The lock type. Exclusive or readonly. Defaults to exclusive if not passed
+	 *
+	 * @return The return of the arguments.body() call
 	 */
-	function shutdown(){
+	public function lock( required body, type = "exclusive" ){
+		lock
+			name          ="#getHash() & getName()#-logListener"
+			type          =arguments.type
+			timeout       ="#variables.lockTimeout#"
+			throwOnTimeout=true {
+			return arguments.body();
+		}
 	}
 
 	/****************************************** PRIVATE *********************************************/
@@ -455,6 +594,9 @@ component accessors="true" {
 
 	/**
 	 * Facade to internal ColdFusion logging facilities, just in case.
+	 *
+	 * @severity The severity of the message
+	 * @message  The message to log
 	 */
 	private AbstractAppender function $log( required severity, required message ){
 		cflog(
@@ -481,24 +623,6 @@ component accessors="true" {
 	 */
 	private function err( required message ){
 		variables.System.err.println( arguments.message.toString() );
-	}
-
-	/**
-	 * A functional locking wrapper
-	 *
-	 * @body The function/closure/lambda to wrap under a lock call
-	 * @type The lock type. Exclusive or readonly. Defaults to exclusive if not passed
-	 *
-	 * @return The return of the arguments.body() call
-	 */
-	private function lock( body, type = "exclusive" ){
-		lock
-			name          ="#getHash() & getName()#-logListener"
-			type          =arguments.type
-			timeout       ="#variables.lockTimeout#"
-			throwOnTimeout=true {
-			return arguments.body();
-		}
 	}
 
 }

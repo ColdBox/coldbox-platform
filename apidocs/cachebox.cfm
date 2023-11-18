@@ -2,13 +2,13 @@
 <cfparam name="url.path" 	default="#expandPath( "./CacheBox-APIDocs" )#">
 <cfscript>
 	docName = "CacheBox-APIDocs";
-	base = expandPath( "/cachebox" );
+	base = expandPath( "/cachebox/system" );
 
 	docbox 	= new docbox.DocBox( properties = {
 		projectTitle 	= "CacheBox v#url.version#",
 		outputDir 		= url.path
 	} );
-	docbox.generate( source=base, mapping="cachebox" );
+	docbox.generate( source=base, mapping="cachebox.system" );
 </cfscript>
 
 <!---

@@ -69,16 +69,21 @@ component accessors="true" {
 	this.logLevels = new coldbox.system.logging.LogLevels();
 
 	/**
+	 * The default configuration class to use when no configuration is passed to the init method.
+	 */
+	variables.DEFAULT_CONFIG = "coldbox.system.logging.config.DefaultConfig";
+
+	/**
 	 * Constructor
 	 *
-	 * @config  The LogBoxConfig object to use to configure this instance of LogBox or a path to your configuration object
+	 * @config  A LogBox Config object, path or struct to configure LogBox with.
 	 * @coldbox A coldbox application that this instance of logbox can be linked to.
 	 * @wirebox A wirebox injector that this instance of logbox can be linked to.
 	 *
 	 * @return A configured and loaded LogBox instance
 	 */
 	function init(
-		config  = "coldbox.system.logging.config.DefaultConfig",
+		config  = variables.DEFAULT_CONFIG,
 		coldbox = "",
 		wirebox = ""
 	){
@@ -92,12 +97,10 @@ component accessors="true" {
 		variables.categoryAppenders = "";
 		// Version
 		variables.version           = "@build.version@+@build.number@";
-
 		// Link incoming ColdBox instance
-		variables.coldbox = arguments.coldbox;
+		variables.coldbox           = arguments.coldbox;
 		// Link incoming WireBox instance
-		variables.wirebox = arguments.wirebox;
-
+		variables.wirebox           = arguments.wirebox;
 
 		// Registered system appenders
 		variables.systemAppenders = directoryList(
@@ -125,6 +128,11 @@ component accessors="true" {
 			);
 		}
 
+		// Default Config Checks
+		if ( isSimpleValue( arguments.config ) AND NOT len( trim( arguments.config ) ) ) {
+			arguments.config = variables.DEFAULT_CONFIG;
+		}
+
 		// Configure LogBox
 		configure( arguments.config );
 
@@ -132,48 +140,50 @@ component accessors="true" {
 	}
 
 	/**
-	 * Configure logbox for operation. You can also re-configure LogBox programmatically. Basically we register all appenders here and all categories
+	 * Configure LogBox for operation.
+	 * You can also re-configure LogBox programmatically.
+	 * Basically we register all appenders here and all categories
 	 *
-	 * @config             The LogBoxConfig object to use to configure this instance of LogBox or the path to your configuration object
-	 * @config.doc_generic coldbox.system.logging.config.LogBoxConfig
+	 * @config A LogBox Config object, path or struct to configure LogBox with.
 	 */
 	function configure( required config ){
-		lock name="#variables.logBoxID#.logbox.config" type="exclusive" timeout="30" throwOnTimeout=true {
-			// Do we need to build the config object?
-			if ( isSimpleValue( arguments.config ) ) {
-				arguments.config = new coldbox.system.logging.config.LogBoxConfig(
-					CFCConfigPath: arguments.config
-				);
-			}
-
-			// Store config object with validation
-			variables.config = arguments.config.validate();
-
-			// Reset Registries
-			variables.appenderRegistry = structNew();
-			variables.loggerRegistry   = structNew();
-
-			// Get appender definitions
-			var appenders = variables.config.getAllAppenders();
-
-			// Register All Appenders configured
-			for ( var key in appenders ) {
-				registerAppender( argumentCollection = appenders[ key ] );
-			}
-
-			// Get Root def
-			var rootConfig = variables.config.getRoot();
-			// Create Root Logger
-			var args       = {
-				category  : "ROOT",
-				levelMin  : rootConfig.levelMin,
-				levelMax  : rootConfig.levelMax,
-				appenders : getAppendersMap( rootConfig.appenders )
-			};
-
-			// Save in Registry
-			variables.loggerRegistry = { "ROOT" : new coldbox.system.logging.Logger( argumentCollection = args ) };
+		// Check if just a plain CFC path and build it
+		if ( isSimpleValue( arguments.config ) ) {
+			arguments.config = new coldbox.system.logging.config.LogBoxConfig( CFCConfigPath: arguments.config );
 		}
+
+		// Check if it's a struct literal config
+		if ( !isObject( arguments.config ) && isStruct( arguments.config ) ) {
+			arguments.config = new coldbox.system.logging.config.LogBoxConfig().loadDataDSL( arguments.config );
+		}
+
+		// Store config object with validation
+		variables.config = arguments.config.validate();
+
+		// Reset Registries
+		variables.appenderRegistry = structNew();
+		variables.loggerRegistry   = structNew();
+
+		// Get appender definitions
+		var appenders = variables.config.getAllAppenders();
+
+		// Register All Appenders configured
+		for ( var key in appenders ) {
+			registerAppender( argumentCollection = appenders[ key ] );
+		}
+
+		// Get Root def
+		var rootConfig = variables.config.getRoot();
+		// Create Root Logger
+		var args       = {
+			category  : "ROOT",
+			levelMin  : rootConfig.levelMin,
+			levelMax  : rootConfig.levelMax,
+			appenders : getAppendersMap( rootConfig.appenders )
+		};
+
+		// Save in Registry
+		variables.loggerRegistry = { "ROOT" : new coldbox.system.logging.Logger( argumentCollection = args ) };
 	}
 
 	/**
@@ -185,15 +195,15 @@ component accessors="true" {
 			variables.config.onShutdown( this );
 		}
 
-		// Shutdown Executors if not in ColdBox Mode or WireBox mode
-		if ( !isObject( variables.coldbox ) && !isObject( variables.wirebox ) ) {
-			variables.asyncManager.shutdownAllExecutors( force = true );
-		}
-
 		// Shutdown appenders
 		variables.appenderRegistry.each( function( key, appender ){
 			arguments.appender.shutdown();
 		} );
+
+		// Shutdown Executors if not in ColdBox Mode or WireBox mode
+		if ( !isObject( variables.coldbox ) && !isObject( variables.wirebox ) ) {
+			variables.asyncManager.shutdownAllExecutors( force = true );
+		}
 	}
 
 	/**
@@ -403,13 +413,6 @@ component accessors="true" {
 			} );
 
 		return ( isNull( local.results ) ? structNew() : results );
-	}
-
-	/**
-	 * Get Utility Object
-	 */
-	private function getUtil(){
-		return new coldbox.system.core.util.Util();
 	}
 
 }

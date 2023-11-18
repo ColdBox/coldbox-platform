@@ -35,24 +35,25 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 	 * Write an entry into the appender.
 	 *
 	 * @logEvent The logging event to log
+	 *
+	 * @return ConsoleAppender
 	 */
 	function logMessage( required coldbox.system.logging.LogEvent logEvent ){
-		var loge      = arguments.logEvent;
-		var timestamp = loge.getTimestamp();
-		var message   = loge.getMessage();
+		var timestamp = arguments.logEvent.getTimestamp();
+		var message   = arguments.logEvent.getMessage();
 		var entry     = "";
 
 		// Message Layout
 		if ( hasCustomLayout() ) {
-			entry = getCustomLayout().format( loge );
+			entry = getCustomLayout().format( arguments.logEvent );
 		} else {
 			// Cleanup main message
-			if ( len( loge.getExtraInfoAsString() ) ) {
-				message &= " | ExtraInfo: " & loge.getExtraInfoAsString();
+			if ( len( arguments.logEvent.getExtraInfoAsString() ) ) {
+				message &= " | ExtraInfo: " & arguments.logEvent.getExtraInfoAsString();
 			}
 
 			// Entry string
-			entry = "#dateFormat( timestamp, "yyyy-mm-dd" )# #timeFormat( timestamp, "HH:MM:SS" )# #loge.getCategory()# #message#";
+			entry = "#dateFormat( timestamp, "yyyy-mm-dd" )# #timeFormat( timestamp, "HH:MM:SS" )# #arguments.logEvent.getCategory()# #message#";
 		}
 
 		// Log it

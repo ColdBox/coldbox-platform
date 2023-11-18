@@ -23,7 +23,7 @@
 			// Parent Injector to assign to the configured injector, this must be an object reference
 			parentInjector : "",
 			// Register all event listeners here, they are created in the specified order
-			listeners      : [ { class : "coldbox.system.aop.Mixer" } ],
+			listeners      : [ ],
 			// Enable transient injection cache
 			transientInjectionCache : true
 		};

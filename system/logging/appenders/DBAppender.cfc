@@ -4,38 +4,40 @@
  * ---
  * A simple DB appender for MySQL, MSSQL, Oracle, PostgreSQL
  *
- * Properties:
- * - dsn : the dsn to use for logging
- * - table : the table to store the logs in
- * - schema : which schema the table exists in (Optional)
- * - columnMap : A column map for aliasing columns. (Optional)
- * - autocreate : if true, then we will create the table. Defaults to false (Optional)
- * - ensureChecks : if true, then we will check the dsn and table existence.  Defaults to true (Optional)
+ * Properties    :
+ * - dsn         : the dsn to use for logging
+ * - table       : the table to store the logs in
+ * - schema      : which schema the table exists in (Optional)
+ * - columnMap   : A column map for aliasing columns. (Optional)
+ * - autocreate  : if true, then we will create the table. Defaults to false (Optional)
+ * - ensureChecks: if true, then we will check the dsn and table existence.  Defaults to true (Optional)
  *
  * The columns needed in the table are
  *
- * - id : UUID
- * - severity : string
- * - category : string
- * - logdate : timestamp
- * - appendername : string
- * - message : string
- * - extrainfo : string
+ * - id          : UUID
+ * - severity    : string
+ * - category    : string
+ * - logdate     : timestamp
+ * - appendername: string
+ * - message     : string
+ * - extrainfo   : string
  *
  * If you are building a mapper, a column that is not in the map will use the default column name.
  **/
 component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 
-	// Default column names
-	variables.DEFAULT_COLUMNS = [
-		"id",
-		"severity",
-		"category",
-		"logdate",
-		"appendername",
-		"message",
-		"extrainfo"
-	];
+	// Default column map
+	variables.DEFAULT_COLUMNS = {
+		"id"           : "id",
+		"severity"     : "severity",
+		"category"     : "category",
+		"logdate"      : "logdate",
+		"appendername" : "appendername",
+		"message"      : "message",
+		"extrainfo"    : "extrainfo"
+	};
+
+	variables.schemaInfo = new coldbox.system.core.database.SchemaInfo();
 
 	/**
 	 * Constructor
@@ -89,7 +91,8 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 		}
 
 		// DB Rotation Time
-		variables.lastDBRotation = "";
+		variables.lastDBRotation         = "";
+		variables.queryParamDataTimeType = variables.schemaInfo.getQueryParamDateTimeType( getProperty( "dsn" ) );
 		return this;
 	}
 
@@ -155,21 +158,22 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 	 */
 	function doRotation(){
 		var qLogs      = "";
-		var cols       = getColumnNames();
+		var columns    = getColumnNames();
 		var targetDate = dateAdd( "d", "-#getProperty( "rotationDays" )#", now() );
+		var dsn        = getProperty( "dsn" );
 
 		queryExecute(
 			"DELETE
 				FROM #getTable()#
-				WHERE #listGetAt( cols, 4 )# < :datetime
+				WHERE #columns.logdate# < :datetime
 			",
 			{
 				datetime : {
-					cfsqltype : "#getDateTimeDBType()#",
+					cfsqltype : variables.queryParamDataTimeType,
 					value     : "#dateFormat( targetDate, "mm/dd/yyyy" )#"
 				}
 			},
-			{ datasource : getProperty( "dsn" ) }
+			{ datasource : dsn }
 		);
 
 		return this;
@@ -202,11 +206,18 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 	 * @return ConsoleAppender
 	 */
 	function processQueueElement( required data, required queueContext ){
-		var cols = getColumnNames();
-
+		var columns = getColumnNames();
 		// Insert into table
 		queryExecute(
-			"INSERT INTO #getTable()# (#cols#)
+			"INSERT INTO #getTable()# (
+					#columns[ "id" ]#,
+					#columns[ "severity" ]#,
+					#columns[ "category" ]#,
+					#columns[ "logdate" ]#,
+					#columns[ "appendername" ]#,
+					#columns[ "message" ]#,
+					#columns[ "extrainfo" ]#
+				)
 				VALUES (
 					:uuid,
 					:severity,
@@ -231,7 +242,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 					value     : "#arguments.data.category#"
 				},
 				timestamp : {
-					cfsqltype : "cf_sql_timestamp",
+					cfsqltype : variables.queryParamDataTimeType,
 					value     : "#arguments.data.timestamp#"
 				},
 				name : {
@@ -249,6 +260,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 			},
 			{ datasource : getProperty( "dsn" ) }
 		);
+
 		return this;
 	}
 
@@ -276,153 +288,32 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 	 * Verify or create the logging table
 	 */
 	private function ensureTable(){
-		var dsn        = getProperty( "dsn" );
-		var qTables    = 0;
-		var tableFound = false;
-		var qCreate    = "";
-		var cols       = getColumnNames();
+		var dsn = getProperty( "dsn" );
 
-		if ( getProperty( "autoCreate" ) ) {
-			// Get Tables on this DSN
-			cfdbinfo(
-				datasource = "#dsn#",
-				name       = "qTables",
-				type       = "tables"
+		if ( getProperty( "autoCreate" ) && !variables.schemaInfo.hasTable( getProperty( "table" ), dsn ) ) {
+			var columns = getColumnNames();
+			queryExecute(
+				"CREATE TABLE #getTable()# (
+					#columns.id# VARCHAR(36) NOT NULL,
+					#columns.severity# VARCHAR(10) NOT NULL,
+					#columns.category# VARCHAR(100) NOT NULL,
+					#columns.logdate# #variables.schemaInfo.getDateTimeColumnType( dsn )# NOT NULL,
+					#columns.appendername# VARCHAR(100) NOT NULL,
+					#columns.message# #variables.schemaInfo.getTextColumnType( dsn )#,
+					#columns.extrainfo# #variables.schemaInfo.getTextColumnType( dsn )#,
+					PRIMARY KEY ( #columns.id# )
+				)",
+				{},
+				{ datasource : dsn }
 			);
-
-			for ( var thisRecord in qTables ) {
-				if ( thisRecord.table_name == getProperty( "table" ) ) {
-					tableFound = true;
-					break;
-				}
-			}
-
-			if ( NOT tableFound ) {
-				queryExecute(
-					"CREATE TABLE #getTable()# (
-						#listGetAt( cols, 1 )# VARCHAR(36) NOT NULL,
-						#listGetAt( cols, 2 )# VARCHAR(10) NOT NULL,
-						#listGetAt( cols, 3 )# VARCHAR(100) NOT NULL,
-						#listGetAt( cols, 4 )# #getDateTimeColumnType()# NOT NULL,
-						#listGetAt( cols, 5 )# VARCHAR(100) NOT NULL,
-						#listGetAt( cols, 6 )# #getTextColumnType()#,
-						#listGetAt( cols, 7 )# #getTextColumnType()#,
-						PRIMARY KEY ( #listGetAt( cols, 1 )# )
-					)",
-					{},
-					{ datasource : getProperty( "dsn" ) }
-				);
-			}
 		}
 	}
 
 	/**
-	 * Get db specific date time column type
+	 * Get the original or the mapped column names
 	 */
-	private function getDateTimeDBType(){
-		var qResults = "";
-
-		cfdbinfo(
-			type       = "Version",
-			name       = "qResults",
-			datasource = "#getProperty( "dsn" )#"
-		);
-
-		switch ( qResults.database_productName ) {
-			case "PostgreSQL": {
-				return "cf_sql_timestamp";
-			}
-			case "MySQL": {
-				return "cf_sql_timestamp";
-			}
-			case "Microsoft SQL Server": {
-				return "cf_sql_date";
-			}
-			case "Oracle": {
-				return "cf_sql_timestamp";
-			}
-			default: {
-				return "cf_sql_timestamp";
-			}
-		}
-	}
-
-	/**
-	 * Get db specific text column type
-	 */
-	private function getTextColumnType(){
-		var qResults = "";
-
-		cfdbinfo(
-			type       = "Version",
-			name       = "qResults",
-			datasource = "#getProperty( "dsn" )#"
-		);
-
-		switch ( qResults.database_productName ) {
-			case "PostgreSQL": {
-				return "TEXT";
-			}
-			case "MySQL": {
-				return "LONGTEXT";
-			}
-			case "Microsoft SQL Server": {
-				return "TEXT";
-			}
-			case "Oracle": {
-				return "LONGTEXT";
-			}
-			default: {
-				return "TEXT";
-			}
-		}
-	}
-
-	/**
-	 * Get db specific text column type
-	 */
-	private function getDateTimeColumnType(){
-		var qResults = "";
-
-		cfdbinfo(
-			type       = "Version",
-			name       = "qResults",
-			datasource = "#getProperty( "dsn" )#"
-		);
-
-		switch ( qResults.database_productName ) {
-			case "PostgreSQL": {
-				return "TIMESTAMP";
-			}
-			case "MySQL": {
-				return "DATETIME";
-			}
-			case "Microsoft SQL Server": {
-				return "DATETIME";
-			}
-			case "Oracle": {
-				return "DATE";
-			}
-			default: {
-				return "DATETIME";
-			}
-		}
-	}
-
-	/**
-	 * Return a list of the column names for the database, this is affected by the `columnMap` property.
-	 */
-	private string function getColumnNames(){
-		var columnNames = variables.DEFAULT_COLUMNS;
-
-		if ( propertyExists( "columnMap" ) ) {
-			var columnMap = getProperty( "columnMap" );
-			columnNames   = variables.DEFAULT_COLUMNS.map( function( thisColumn ){
-				return columnMap.keyExists( arguments.thisColumn ) ? columnMap[ arguments.thisColumn ] : arguments.thisColumn;
-			} );
-		}
-
-		return arrayToList( columnNames );
+	private struct function getColumnNames(){
+		return propertyExists( "columnMap" ) ? getProperty( "columnMap" ) : variables.DEFAULT_COLUMNS;
 	}
 
 }

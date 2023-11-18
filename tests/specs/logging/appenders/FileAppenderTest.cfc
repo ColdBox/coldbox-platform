@@ -55,6 +55,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				}
 
 				// sleep to let threads write to disk.
+				writeDump( var = "Sleeping for 5 seconds waiting for log file...", output = "console" );
 				sleep( 5000 );
 
 				var content = fileRead( fileAppender.getLogFullPath() );

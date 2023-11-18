@@ -555,7 +555,7 @@ component serializable="false" accessors="true" {
 
 		// Check for cb Controller
 		if ( structKeyExists( arguments.appScope, locateAppKey() ) ) {
-			cbController = arguments.appScope.cbController;
+			cbController = arguments.appScope[ locateAppKey() ];
 		}
 
 		if ( not isSimpleValue( cbController ) ) {

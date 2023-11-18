@@ -2,7 +2,7 @@
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.ortussolutions.com
 ********************************************************************************
-ColdBox is open source. However, if you use this product please know that it is bound to the following Licence.
+ColdBox is open source. However, if you use this product please know that it is bound to the following License.
 If you use ColdBox, please make mention of it in your code or web site or add a Powered By Coldbox icon.
 
 Apache License, Version 2.0

@@ -25,7 +25,9 @@ component accessors="true" {
 		var logFullPath = oAppender.getLogFullPath();
 
 		//  Verify FileSize
-		if ( getFileSize( logFullPath ) > ( oAppender.getProperty( "fileMaxSize" ) * 1024 ) ) {
+		if (
+			fileExists( logFullPath ) && getFileSize( logFullPath ) > ( oAppender.getProperty( "fileMaxSize" ) * 1024 )
+		) {
 			//  How Many Log Files Do we Have
 			var qArchivedLogs = directoryList(
 				getDirectoryFromPath( logFullPath ),
@@ -41,35 +43,39 @@ component accessors="true" {
 				timeout       ="#oAppender.getlockTimeout()#"
 				throwontimeout="true" {
 				//  Should I remove log Files
-				if ( qArchivedLogs.recordcount >= oAppender.getProperty( "fileMaxArchives" ) ) {
-					var archiveToDelete = qArchivedLogs.directory[ 1 ] & "/" & qArchivedLogs.name[ 1 ];
-					//  Remove the oldest one
-					fileDelete( archiveToDelete );
+				if (
+					qArchivedLogs.recordcount >= oAppender.getProperty( "fileMaxArchives" )
+					&&
+					fileExists( qArchivedLogs.directory[ 1 ] & "/" & qArchivedLogs.name[ 1 ] )
+				) {
+					//  Remove the oldest archive
+					fileDelete( qArchivedLogs.directory[ 1 ] & "/" & qArchivedLogs.name[ 1 ] );
 				}
 
 				//  Set the name of the archive
-				var zipFileName = getDirectoryFromPath( logFullPath ) & fileName & "." & dateFormat(
-					now(),
-					"yyyymmdd"
-				) & "." & timeFormat( now(), "HHmmss" ) & ".zip";
+				var archiveLayout = appender.getProperty( "archiveLayout" );
+				var zipFileName   = getDirectoryFromPath( logFullPath ) &
+				archiveLayout( fileName, qArchivedLogs.recordcount ) &
+				".zip";
 
-				//  Zip it
-				cfzip(
-					action    = "zip",
-					file      = "#zipFileName#",
-					overwrite = "true",
-					storepath = "false",
-					recurse   = "false",
-					source    = "#logFullPath#"
-				);
+				arguments.appender.lock( () => {
+					//  Zip it
+					cfzip(
+						action    = "zip",
+						file      = "#zipFileName#",
+						overwrite = "true",
+						storepath = "false",
+						recurse   = "false",
+						source    = "#logFullPath#"
+					);
+					//  Clean & reinit Log File
+					fileDelete( logFullPath );
+					//  Reinit The log File
+					oAppender.initLoglocation();
+				} );
+				;
 			}
 			// end lock
-
-			//  Clean & reinit Log File
-			oAppender.removeLogFile();
-
-			//  Reinit The log File
-			oAppender.initLoglocation();
 		}
 
 		return this;

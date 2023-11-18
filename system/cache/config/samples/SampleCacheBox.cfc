@@ -13,11 +13,11 @@ component {
 		// The CacheBox configuration structure DSL
 		cacheBox = {
 			// LogBox Configuration file
-			logBoxConfig      : "coldbox.system.cache.config.LogBoxConfig",
+			logBoxConfig      : "",
 			// Scope registration, automatically register the cachebox factory instance on any CF scope
 			// By default it registers itself on server scope
 			scopeRegistration : {
-				enabled : true,
+				enabled : false,
 				scope   : "server", // server, session
 				key     : "cacheBox"
 			},
@@ -33,7 +33,7 @@ component {
 				evictionPolicy                 : "LRU",
 				evictCount                     : 1,
 				maxObjects                     : 200,
-				objectStore                    : "ConcurrentSoftReferenceStore"
+				objectStore                    : "ConcurrentStore"
 			},
 			// Register all the custom named caches you like here
 			caches : {

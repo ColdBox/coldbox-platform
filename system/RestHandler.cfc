@@ -62,6 +62,11 @@ component extends="EventHandler" {
 			arguments.exception = e;
 			this.onAuthenticationFailure( argumentCollection = arguments );
 		}
+		// Auth Issues
+		catch ( "NotAuthorized" e ) {
+			arguments.exception = e;
+			this.onAuthenticationFailure( argumentCollection = arguments );
+		}
 		// Token Decoding Issues
 		catch ( "TokenInvalidException" e ) {
 			arguments.exception = e;
@@ -547,7 +552,6 @@ component extends="EventHandler" {
 			return;
 		}
 
-
 		// Log Exception
 		log.error(
 			"Error calling #arguments.event.getCurrentEvent()#: #arguments.exception.message# #arguments.exception.detail#",
@@ -563,20 +567,22 @@ component extends="EventHandler" {
 		// Setup General Error Response
 		arguments.prc.response
 			.setError( true )
-			.setData( {
-				"environment" : {
-					"currentRoute"     : arguments.event.getCurrentRoute(),
-					"currentRoutedUrl" : arguments.event.getCurrentRoutedUrl(),
-					"currentEvent"     : arguments.event.getCurrentEvent(),
-					"timestamp"        : getIsoTime()
-				},
-				"exception" : {
-					"stack"        : arguments.exception.tagContext.map( ( item ) => item.template & ":" & item.line ),
-					"type"         : arguments.exception.type,
-					"detail"       : arguments.exception.detail,
-					"extendedInfo" : arguments.exception.extendedInfo
-				}
-			} )
+			.setData(
+				inDebugMode() ? {
+					"environment" : {
+						"currentRoute"     : arguments.event.getCurrentRoute(),
+						"currentRoutedUrl" : arguments.event.getCurrentRoutedUrl(),
+						"currentEvent"     : arguments.event.getCurrentEvent(),
+						"timestamp"        : getIsoTime()
+					},
+					"exception" : {
+						"stack"        : arguments.exception.tagContext.map( ( item ) => item.template & ":" & item.line ),
+						"type"         : arguments.exception.type,
+						"detail"       : arguments.exception.detail,
+						"extendedInfo" : arguments.exception.extendedInfo
+					}
+				} : {}
+			)
 			.addMessage( "An exception ocurred: #arguments.exception.message#" )
 			.setStatusCode( arguments.event.STATUS.INTERNAL_ERROR )
 			.setStatusText( "General application error" );
