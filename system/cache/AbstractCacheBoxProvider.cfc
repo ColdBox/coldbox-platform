@@ -394,27 +394,17 @@ component accessors=true serializable=false {
 			return target;
 		}
 
-		// else, produce it
-		lock
-			name          ="GetOrSet.#variables.cacheID#.#arguments.objectKey#"
-			type          ="exclusive"
-			timeout       ="45"
-			throwonTimeout="true" {
-			// double lock, due to race conditions
-			var target    = get( arguments.objectKey );
-			if ( isNull( local.target ) ) {
-				// produce it
-				target = arguments.produce();
-				// store it
-				set(
-					objectKey         = arguments.objectKey,
-					object            = target,
-					timeout           = arguments.timeout,
-					lastAccessTimeout = arguments.lastAccessTimeout,
-					extra             = arguments.extra
-				);
-			}
-		}
+		// produce it
+		target = arguments.produce();
+
+		// store it
+		set(
+			objectKey         = arguments.objectKey,
+			object            = target,
+			timeout           = arguments.timeout,
+			lastAccessTimeout = arguments.lastAccessTimeout,
+			extra             = arguments.extra
+		);
 
 		return target;
 	}
