@@ -138,12 +138,12 @@
 		var cacheKey = "test-#createUUID()#";
 		var results  = cache.getOrSet( objectKey = cacheKey, produce = cacheProducer );
 		assertTrue( structKeyExists( results, "name" ) );
-		assertEquals( 2, cache.getStats().getMisses() );
+		assertEquals( 1, cache.getStats().getMisses() );
 		assertEquals( 0, cache.getStats().getHits() );
 
 		var results = cache.getOrSet( objectKey = cacheKey, produce = cacheProducer );
 		assertTrue( structKeyExists( results, "name" ) );
-		assertEquals( 2, cache.getStats().getMisses() );
+		assertEquals( 1, cache.getStats().getMisses() );
 		assertEquals( 1, cache.getStats().getHits() );
 	}
 
