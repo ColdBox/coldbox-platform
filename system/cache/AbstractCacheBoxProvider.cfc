@@ -400,7 +400,7 @@ component accessors=true serializable=false {
 			timeout       ="45"
 			throwonTimeout="true" {
 			// double production check
-			var target = getQuiet( arguments.objectKey );
+			var target    = getQuiet( arguments.objectKey );
 			if ( isNull( local.target ) ) {
 				// produce it
 				target = arguments.produce();
