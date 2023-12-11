@@ -16,7 +16,7 @@ component {
 		variables.apiDocs      = "http://localhost:#variables.serverPort#/apidocs";
 
 		// Source Excludes Not Added to final binary
-		variables.excludes = [ "^\..*", "build", "test-harness" ];
+		variables.excludes = [ "^\..*", "\/build\/", "test-harness" ];
 
 		variables.libraries = {
 			"coldbox" : {
