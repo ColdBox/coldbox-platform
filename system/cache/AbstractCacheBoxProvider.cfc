@@ -394,17 +394,26 @@ component accessors=true serializable=false {
 			return target;
 		}
 
-		// produce it
-		target = arguments.produce();
-
-		// store it
-		set(
-			objectKey         = arguments.objectKey,
-			object            = target,
-			timeout           = arguments.timeout,
-			lastAccessTimeout = arguments.lastAccessTimeout,
-			extra             = arguments.extra
-		);
+		lock
+			name          ="GetOrSet.#variables.cacheID#.#arguments.objectKey#"
+			type          ="exclusive"
+			timeout       ="45"
+			throwonTimeout="true" {
+			// double production check
+			var target = getQuiet( arguments.objectKey );
+			if ( isNull( local.target ) ) {
+				// produce it
+				target = arguments.produce();
+				// store it
+				set(
+					objectKey         = arguments.objectKey,
+					object            = target,
+					timeout           = arguments.timeout,
+					lastAccessTimeout = arguments.lastAccessTimeout,
+					extra             = arguments.extra
+				);
+			}
+		}
 
 		return target;
 	}
