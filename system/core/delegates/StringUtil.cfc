@@ -53,16 +53,8 @@ component singleton {
 				"all"
 			) )
 			// Parenthesis spacing
-			.map( ( item ) => item.reReplace(
-				"\((\w)",
-				"( \1",
-				"all"
-			) )
-			.map( ( item ) => item.reReplace(
-				"(\w)\)",
-				"\1 )",
-				"all"
-			) )
+			.map( ( item ) => item.reReplace( "\((\w)", "( \1", "all" ) )
+			.map( ( item ) => item.reReplace( "(\w)\)", "\1 )", "all" ) )
 			// Keyword spacing
 			.map( ( item ) => {
 				return item.reReplacenocase(
