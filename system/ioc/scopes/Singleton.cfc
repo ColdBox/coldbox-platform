@@ -24,6 +24,11 @@ component accessors="true" {
 	property name="log";
 
 	/**
+	 * These are keys we use internally in ColdBox, so we don't want to clear them when doing clearAppOnly() calls
+	 */
+	variables.RESERVED_KEYS = [ "@coldbox", "interceptor-", "cbscheduler", "@coreDelegates", "@cbdelegates" ];
+
+	/**
 	 * Configure the scope for operation and returns itself
 	 *
 	 * @injector             The linked WireBox injector
@@ -131,6 +136,31 @@ component accessors="true" {
 			variables.singletons.clear();
 		}
 		return this;
+	}
+
+	/**
+	 * Clear application only singletons
+	 */
+	function clearAppOnly(){
+		var keys = variables.singletons.keySet().toArray();
+		for( var key in keys ){
+			// They key must NOT match any pattern in our reserved keys, so we can clear it
+			if( !inReservedKeys( key ) ){
+				variables.singletons.remove( key );
+			}
+		}
+		return this;
+	}
+
+	/**
+	 * Discover if a key is in our reserved keys
+	 *
+	 * @key The key to check
+	 *
+	 * @return boolean
+	 */
+	private boolean function inReservedKeys( String key ){
+		return variables.RESERVED_KEYS.some( ( reservedKey ) => findNoCase( reservedKey, key ) );
 	}
 
 }

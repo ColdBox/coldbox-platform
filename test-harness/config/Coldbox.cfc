@@ -144,5 +144,8 @@
 	}
 
 	function development(){
+		wirebox = {
+			singletonReload : true
+		}
 	}
 }

@@ -191,7 +191,7 @@ component serializable="false" accessors="true" {
 			// WireBox Singleton AutoReload
 			if ( cbController.getSetting( "Wirebox" ).singletonReload ) {
 				lock type="exclusive" name="#appHash#" timeout="#lockTimeout#" throwontimeout="true" {
-					cbController.getWireBox().clearSingletons();
+					cbController.getWireBox().clearAppSingletons();
 				}
 			}
 			// Handler's Index Auto Reload

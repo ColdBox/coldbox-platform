@@ -1069,6 +1069,14 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
+	 * Clear the app singleton cache
+	 */
+	Injector function clearAppSingletons(){
+		getScope( "SINGLETON" ).clearAppOnly();
+		return this;
+	}
+
+	/**
 	 * Return a self reference using the scoped registration, mostly used by providers or scope widening objects
 	 *
 	 * @doc_generic coldbox.system.ioc.Injector
