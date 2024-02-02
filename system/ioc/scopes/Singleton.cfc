@@ -26,7 +26,13 @@ component accessors="true" {
 	/**
 	 * These are keys we use internally in ColdBox, so we don't want to clear them when doing clearAppOnly() calls
 	 */
-	variables.RESERVED_KEYS = [ "@coldbox", "interceptor-", "cbscheduler", "@coreDelegates", "@cbdelegates" ];
+	variables.RESERVED_KEYS = [
+		"@coldbox",
+		"interceptor-",
+		"cbscheduler",
+		"@coreDelegates",
+		"@cbdelegates"
+	];
 
 	/**
 	 * Configure the scope for operation and returns itself
@@ -143,9 +149,9 @@ component accessors="true" {
 	 */
 	function clearAppOnly(){
 		var keys = variables.singletons.keySet().toArray();
-		for( var key in keys ){
+		for ( var key in keys ) {
 			// They key must NOT match any pattern in our reserved keys, so we can clear it
-			if( !inReservedKeys( key ) ){
+			if ( !inReservedKeys( key ) ) {
 				variables.singletons.remove( key );
 			}
 		}
