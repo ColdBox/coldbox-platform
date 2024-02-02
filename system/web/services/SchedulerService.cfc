@@ -198,11 +198,17 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	/**
 	 * Restarts a scheduler from this manager, if it exists.
 	 *
-	 * @name The name of the scheduler
+	 * @name    The name of the scheduler
+	 * @force   If true, it forces all shutdowns this is usually true when doing reinits
+	 * @timeout The timeout in seconds to wait for the shutdown of all tasks, defaults to the scheduler's shutdown timeout
 	 *
 	 * @return True if restarted, false if not found
 	 */
-	boolean function restartScheduler( required name ){
+	boolean function restartScheduler(
+		required name,
+		boolean force = false,
+		numeric timeout
+	){
 		if ( hasScheduler( arguments.name ) ) {
 			variables.schedulers[ arguments.name ].restart();
 			return true;
