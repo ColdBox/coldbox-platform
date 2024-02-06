@@ -210,8 +210,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		numeric timeout
 	){
 		if ( hasScheduler( arguments.name ) ) {
+			var scheduler = variables.scheduler[ arguments.name ];
 			structDelete( arguments, "name" );
-			variables.schedulers[ arguments.name ].restart( argumentCollection = arguments );
+			scheduler.restart( argumentCollection = arguments );
 			return true;
 		}
 		return false;
