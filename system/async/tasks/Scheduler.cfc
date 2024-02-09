@@ -63,13 +63,8 @@ component accessors="true" singleton {
 		variables.tasks           = structNew( "ordered" );
 		// Default TimeZone to UTC for all tasks
 		variables.timezone        = createObject( "java", "java.time.ZoneId" ).systemDefault();
-		// Build out the executor for this scheduler
-		variables.executor        = arguments.asyncManager.newExecutor(
-			name: arguments.name & "-scheduler",
-			type: "scheduled"
-		);
 		// Bit that denotes if this scheduler has been started or not
-		variables.started = false;
+		variables.started         = false;
 		// Send notice
 		arguments.asyncManager.out( "√ Scheduler (#arguments.name#) has been registered" );
 
@@ -167,6 +162,12 @@ component accessors="true" singleton {
 		if ( !variables.started ) {
 			lock name="scheduler-#getName()#-startup" type="exclusive" timeout="45" throwOnTimeout="true" {
 				if ( !variables.started ) {
+					// Build out the executor for this scheduler
+					variables.executor = arguments.asyncManager.newExecutor(
+						name: arguments.name & "-scheduler",
+						type: "scheduled"
+					);
+
 					// Iterate over tasks and send them off for scheduling
 					variables.tasks.each( function( taskName, taskRecord ){
 						// Verify we can start it up the task or not
@@ -247,6 +248,28 @@ component accessors="true" singleton {
 		variables.started = false;
 		// Log it
 		variables.asyncManager.out( "√ Scheduler (#getName()#) has been shutdown!" );
+		return this;
+	}
+
+	/**
+	 * Restarts a scheduler by shutting it down, clearing out the tasks, calling `configure`, and starting it again.
+	 * Useful when loading tasks from a database or other dynamic sources.
+	 *
+	 * @force   If true, it forces all shutdowns this is usually true when doing reinits
+	 * @timeout The timeout in seconds to wait for the shutdown of all tasks, defaults to 30 or whatever you set using the setShutdownTimeout() method
+	 */
+	public Scheduler function restart( boolean force = false, numeric timeout = variables.shutdownTimeout ){
+		variables.asyncManager.out( "√ Scheduler (#arguments.name#) is being restarted" );
+		shutdown( argumentCollection = arguments );
+		clearTasks();
+		configure();
+		startup();
+		variables.asyncManager.out( "√ Scheduler (#arguments.name#) has been restarted" );
+		return this;
+	}
+
+	public Scheduler function clearTasks(){
+		variables.tasks = structNew( "ordered" );
 		return this;
 	}
 

@@ -146,7 +146,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	}
 
 	/**
-	 * This method is ran by the laoder service once the ColdBox application is ready to serve requests.
+	 * This method is ran by the loader service once the ColdBox application is ready to serve requests.
 	 * It will startup all the schedulers in the order they where registered.
 	 */
 	SchedulerService function startupSchedulers(){
@@ -190,6 +190,29 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		if ( hasScheduler( arguments.name ) ) {
 			variables.schedulers[ arguments.name ].shutdown();
 			structDelete( variables.schedulers, arguments.name );
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Restarts a scheduler from this manager, if it exists.
+	 *
+	 * @name    The name of the scheduler
+	 * @force   If true, it forces all shutdowns this is usually true when doing reinits
+	 * @timeout The timeout in seconds to wait for the shutdown of all tasks, defaults to the scheduler's shutdown timeout
+	 *
+	 * @return True if restarted, false if not found
+	 */
+	boolean function restartScheduler(
+		required name,
+		boolean force = false,
+		numeric timeout
+	){
+		if ( hasScheduler( arguments.name ) ) {
+			var scheduler = variables.scheduler[ arguments.name ];
+			structDelete( arguments, "name" );
+			scheduler.restart( argumentCollection = arguments );
 			return true;
 		}
 		return false;
