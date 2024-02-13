@@ -40,10 +40,10 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Java
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: "temurin"
           java-version: "11"
@@ -175,13 +175,13 @@ jobs:
     needs: [ build ]
     steps:
       - name: Checkout Development Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         if: env.LTS == 'false'
         with:
           ref: development
 
       - name: Checkout LTS Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         if: env.LTS == 'true'
 
       - name: Setup CommandBox
