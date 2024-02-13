@@ -88,7 +88,7 @@ jobs:
           box task run build/Build.cfc run ${{ env.COLDBOX_VERSION }} ${{ github.run_number }} ${{ env.BRANCH }}
 
       - name: Commit Changelog [unreleased] with latest version
-        uses: EndBug/add-and-commit@v9.1.1
+        uses: EndBug/add-and-commit@v9.1.4
         if: env.SNAPSHOT == 'false'
         with:
           author_name: Github Actions
@@ -97,7 +97,7 @@ jobs:
           add: changelog.md
 
       - name: Tag Version
-        uses: rickstaa/action-create-tag@v1.6.1
+        uses: rickstaa/action-create-tag@v1.7.2
         if: env.SNAPSHOT == 'false'
         with:
           tag: "v${{ env.COLDBOX_VERSION }}"
@@ -106,7 +106,7 @@ jobs:
 
       - name: Upload Build Artifacts
         if: success()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: coldbox-variants
           path: |
@@ -144,7 +144,7 @@ jobs:
           cd $ROOT_DIR/.artifacts/logbox/${{ env.COLDBOX_VERSION }} && box forgebox publish
 
       - name: Create Github Release
-        uses: taiki-e/create-gh-release-action@v1.6.2
+        uses: taiki-e/create-gh-release-action@v1.8.0
         continue-on-error: true
         if: env.SNAPSHOT == 'false'
         with:
@@ -190,7 +190,7 @@ jobs:
           forgeboxAPIKey: ${{ secrets.FORGEBOX_TOKEN }}
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: coldbox-variants
           path: .tmp
@@ -210,7 +210,7 @@ jobs:
           git pull
 
       - name: Commit Version Bump
-        uses: EndBug/add-and-commit@v9.1.1
+        uses: EndBug/add-and-commit@v9.1.4
         with:
           author_name: Github Actions
           author_email: info@ortussolutions.com
