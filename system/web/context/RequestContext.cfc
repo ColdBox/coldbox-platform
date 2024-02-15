@@ -1790,9 +1790,9 @@ component serializable="false" accessors="true" {
 	 * @name       The header name; Mutually exclusive with statusCode
 	 * @value      The header value; Mutually exclusive with statusText
 	 *
-	 * @throws RequestContext.InvalidHTTPHeaderParameters - If no name or statusCode is passed
-	 *
 	 * @return RequestContext
+	 *
+	 * @throws RequestContext.InvalidHTTPHeaderParameters - If no name or statusCode is passed
 	 */
 	function setHTTPHeader( statusCode, statusText = "", name, value = "" ){
 		// status code? We do not add to response headers as this is a separate marker identifier to the response
