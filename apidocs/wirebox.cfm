@@ -4,6 +4,11 @@
 	docName = "wirebox-APIDocs";
 	base = expandPath( "/wirebox/system" );
 
+	// Create the output directory if it doesn't exist
+	if ( !directoryExists( url.path ) ) {
+		directoryCreate( url.path );
+	}
+
 	docbox 	= new docbox.DocBox( properties = {
 		projectTitle 	= "wirebox v#url.version#",
 		outputDir 		= url.path
