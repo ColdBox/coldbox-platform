@@ -66,7 +66,7 @@ component accessors="true" singleton {
 		// Build out the executor for this scheduler
 		createSchedulerExecutor();
 		// Bit that denotes if this scheduler has been started or not
-		variables.started         = false;
+		variables.started = false;
 		// Send notice
 		arguments.asyncManager.out( "√ Scheduler (#arguments.name#) has been registered" );
 
