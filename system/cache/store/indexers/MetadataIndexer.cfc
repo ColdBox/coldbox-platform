@@ -97,7 +97,7 @@ component accessors="true" {
 	 */
 	struct function getObjectMetadata( required objectKey ){
 		var results = variables.poolMetadata.get( arguments.objectKey );
-		return  isNull( results ) ? {} : results;
+		return isNull( results ) ? {} : results;
 	}
 
 	/**
@@ -176,8 +176,8 @@ component accessors="true" {
 	 * Get an array of sorted keys for this indexer according to parameters
 	 *
 	 * @objectKey
-	 * @property
-	 * @value
+	 * @property 
+	 * @value    
 	 */
 	array function getSortedKeys(
 		required property,
