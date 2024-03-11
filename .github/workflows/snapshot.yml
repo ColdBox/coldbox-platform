@@ -7,6 +7,11 @@ on:
     branches:
       - development
 
+# Unique group name per workflow-branch/tag combo
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   #############################################
   # Tests First baby! We fail, no build :(
