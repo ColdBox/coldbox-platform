@@ -1803,16 +1803,15 @@ component serializable="false" accessors="true" {
 		}
 		// Name Exists and not already set.
 		else if ( !isNull( arguments.name ) ) {
-
 			var response = getPageContext().getResponse();
-						
+
 			// special exception for Set-Cookie. We always append this header, instead of overwriting
- 			if ( arguments.name == "Set-Cookie" ) {
+			if ( arguments.name == "Set-Cookie" ) {
 				response.addHeader( javacast( "string", arguments.name ), javacast( "string", arguments.value ) );
 			} else {
 				response.setHeader( javacast( "string", arguments.name ), javacast( "string", arguments.value ) );
 			}
-				
+
 			variables.responseHeaders[ arguments.name ] = arguments.value;
 		} else {
 			throw(
