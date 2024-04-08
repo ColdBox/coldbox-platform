@@ -17,7 +17,7 @@ tests/suites/loadtests/settings.xml
 logs/*
 
 # Build artifacts
-artifacts/*
+.artifacts/*
 apidocs/*-APIDocs
 build/build.number
 build-coldbox
