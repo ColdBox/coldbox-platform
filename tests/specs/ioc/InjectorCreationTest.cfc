@@ -70,12 +70,6 @@
 		val = injector.buildInstance( mapping );
 		assertEquals( mockStub, val );
 
-		// Webservice
-		mapping.setType( "webservice" );
-		mockBuilder.$( "buildWebService", mockStub );
-		val = injector.buildInstance( mapping );
-		assertEquals( mockStub, val );
-
 		// Feed
 		mapping.setType( "rss" );
 		mockBuilder.$( "buildFeed", mockStub );
@@ -137,19 +131,6 @@
 	function testConstant(){
 		prop = injector.getInstance( "jsonProperty" );
 		assertTrue( len( prop ) );
-	}
-
-	function testWebService() skip="isAdobe"{
-		ws = injector.getInstance( "coldboxWS" );
-
-		//
-		if ( listFindNoCase( "Lucee", server.coldfusion.productname ) ) {
-			expect( getMetadata( ws ).name ).toMatch( "rpc" );
-		}
-		// adobe
-		else {
-			expect( getMetadata( ws ).name ).toMatch( "ServiceProxy" );
-		}
 	}
 
 	function testDSL(){
