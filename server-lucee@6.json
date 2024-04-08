@@ -1,9 +1,9 @@
 {
     "app":{
-        "cfengine":"adobe@2016",
-        "serverHomeDirectory":".engine/adobe2016"
+        "cfengine":"lucee@6",
+        "serverHomeDirectory":".engine/lucee6"
     },
-    "name":"coldbox-adobe@2016",
+    "name":"coldbox-lucee@6",
     "force":true,
     "openBrowser":false,
     "web":{
@@ -21,7 +21,10 @@
     "JVM":{
         "heapSize":"1024"
     },
-	"cfconfig": {
-		"file" : ".cfconfig.json"
-	}
+    "cfconfig":{
+        "file":".cfconfig.json"
+    },
+	"env":{
+        "LUCEE_EXTENSIONS":"D062D72F-F8A2-46F0-8CBC91325B2F067B"
+    }
 }

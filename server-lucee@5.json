@@ -23,5 +23,8 @@
     },
     "cfconfig":{
         "file":".cfconfig.json"
+    },
+	"env":{
+        "LUCEE_EXTENSIONS":"D062D72F-F8A2-46F0-8CBC91325B2F067B"
     }
 }
