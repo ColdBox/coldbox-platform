@@ -176,7 +176,7 @@ component accessors="true" {
 			""
 		);
 		// Cleanup the template path
-		var localPath    = getDirectoryFromPath( replaceNoCase( getTemplatePath(), "\", "/", "all" ) );
+		var localPath    = getDirectoryFromPath( replaceNoCase( getBaseTemplatePath(), "\", "/", "all" ) );
 		// Verify Path Location
 		var pathLocation = findNoCase( webPath, localPath );
 
