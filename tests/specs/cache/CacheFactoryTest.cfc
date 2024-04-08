@@ -10,9 +10,9 @@
 	}
 
 	function afterTests(){
-		try{
+		try {
 			cacheFactory.shutdown();
-		} catch( any e ){
+		} catch ( any e ) {
 			console( "Error shutting down cache factory #e.detail# #e.message#" );
 		}
 	}
