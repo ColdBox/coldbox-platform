@@ -1626,29 +1626,29 @@ component accessors="true" {
 			if ( amount ) {
 				switch ( unit ) {
 					case "days":
-						variables.stats.nextRun = variables.stats.nextRun.plusDays( javacast( "int", amount ) );
+						variables.stats.nextRun = variables.stats.nextRun.plusDays( javacast( "long", amount ) );
 						break;
 					case "hours":
-						variables.stats.nextRun = variables.stats.nextRun.plusHours( javacast( "int", amount ) );
+						variables.stats.nextRun = variables.stats.nextRun.plusHours( javacast( "long", amount ) );
 						break;
 					case "minutes":
-						variables.stats.nextRun = variables.stats.nextRun.plusMinutes( javacast( "int", amount ) );
+						variables.stats.nextRun = variables.stats.nextRun.plusMinutes( javacast( "long", amount ) );
 						break;
 					case "milliseconds":
 						variables.stats.nextRun = variables.stats.nextRun.plusSeconds(
-							javacast( "int", amount / 1000 )
+							javacast( "long", amount / 1000 )
 						);
 						break;
 					case "microseconds":
 						variables.stats.nextRun = variables.stats.nextRun.plusNanos(
-							javacast( "int", amount * 1000 )
+							javacast( "long", amount * 1000 )
 						);
 						break;
 					case "nanoseconds":
-						variables.stats.nextRun = variables.stats.nextRun.plusNanos( javacast( "int", amount ) );
+						variables.stats.nextRun = variables.stats.nextRun.plusNanos( javacast( "long", amount ) );
 						break;
 					default:
-						variables.stats.nextRun = variables.stats.nextRun.plusSeconds( javacast( "int", amount ) );
+						variables.stats.nextRun = variables.stats.nextRun.plusSeconds( javacast( "long", amount ) );
 						break;
 				}
 			}
@@ -1791,25 +1791,25 @@ component accessors="true" {
 		if ( !len( variables.stats.nextRun ) ) {
 			switch ( variables.timeUnit ) {
 				case "days":
-					variables.stats.nextRun = now.plusDays( javacast( "int", amount ) );
+					variables.stats.nextRun = now.plusDays( javacast( "long", amount ) );
 					break;
 				case "hours":
-					variables.stats.nextRun = now.plusHours( javacast( "int", amount ) );
+					variables.stats.nextRun = now.plusHours( javacast( "long", amount ) );
 					break;
 				case "minutes":
-					variables.stats.nextRun = now.plusMinutes( javacast( "int", amount ) );
+					variables.stats.nextRun = now.plusMinutes( javacast( "long", amount ) );
 					break;
 				case "milliseconds":
-					variables.stats.nextRun = now.plusSeconds( javacast( "int", amount / 1000 ) );
+					variables.stats.nextRun = now.plusSeconds( javacast( "long", amount / 1000 ) );
 					break;
 				case "microseconds":
-					variables.stats.nextRun = now.plusNanos( javacast( "int", amount * 1000 ) );
+					variables.stats.nextRun = now.plusNanos( javacast( "long", amount * 1000 ) );
 					break;
 				case "nanoseconds":
-					variables.stats.nextRun = now.plusNanos( javacast( "int", amount ) );
+					variables.stats.nextRun = now.plusNanos( javacast( "long", amount ) );
 					break;
 				default:
-					variables.stats.nextRun = now.plusSeconds( javacast( "int", amount ) );
+					variables.stats.nextRun = now.plusSeconds( javacast( "long", amount ) );
 					break;
 			}
 		}
