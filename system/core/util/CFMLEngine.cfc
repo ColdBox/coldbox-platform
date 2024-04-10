@@ -22,6 +22,7 @@ component {
 			adobe2016 : { invokeArray : false },
 			adobe2018 : { invokeArray : false },
 			adobe2021 : { invokeArray : false },
+			adobe2023 : { invokeArray : false },
 			lucee     : { invokeArray : true }
 		};
 		variables.productVersion = listFirst( server.coldfusion.productversion );
@@ -54,7 +55,7 @@ component {
 	 * Verify if this is an adobe server
 	 */
 	boolean function isAdobe(){
-		return !isLucee();
+		return server.keyExists( "coldfusion" ) && server.coldfusion.productName.findNoCase( "ColdFusion" );
 	}
 
 	/**
