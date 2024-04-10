@@ -737,9 +737,12 @@ component serializable="false" accessors="true" {
 	 * Helper method to deal with ACF's overload of the page context response, come on Adobe, get your act together!
 	 */
 	private function getPageContextResponse(){
-		return server.keyExists( "lucee" ) ? getPageContext().getResponse() : getPageContext()
+		if( server.keyExists( "coldfusion" ) && server.coldfusion.productName.findNoCase( "ColdFusion" ) ){
+			return getPageContext()
 			.getResponse()
 			.getResponse();
+		}
+		return getPageContext().getResponse();
 	}
 
 }
