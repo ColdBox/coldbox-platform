@@ -47,12 +47,15 @@ component accessors="true" {
 		variables.UUID           = createUUID();
 		variables.loadAppContext = arguments.loadAppContext;
 
+		variables.isLucee = server.keyExists( "lucee" );
+		variables.isAdobe = server.keyExists( "coldfusion" ) && server.coldfusion.productName.findNocase( "ColdFusion" ) > 0;
+
 		// If loading App context or not
 		if ( arguments.loadAppContext ) {
-			if ( server.keyExists( "lucee" ) ) {
+			if ( variables.isLucee ) {
 				variables.cfContext   = getCFMLContext().getApplicationContext();
 				variables.pageContext = getCFMLContext();
-			} else {
+			} else if ( variables.isAdobe ) {
 				variables.DataSrcImplStatic     = createObject( "java", "coldfusion.sql.DataSrcImpl" );
 				variables.fusionContextStatic   = createObject( "java", "coldfusion.filter.FusionContext" );
 				variables.originalFusionContext = fusionContextStatic.getCurrent().clone();
@@ -102,9 +105,9 @@ component accessors="true" {
 
 		try {
 			// Lucee vs Adobe Implementations
-			if ( server.keyExists( "lucee" ) ) {
+			if ( variables.isLucee ) {
 				getCFMLContext().setApplicationContext( variables.cfContext );
-			} else {
+			} else if ( variables.isAdobe ) {
 				// Set the current thread's class loader from the CF space to avoid
 				// No class defined issues in thread land.
 				getCurrentThread().setContextClassLoader(
@@ -162,8 +165,7 @@ component accessors="true" {
 
 		try {
 			// Lucee vs Adobe Implementations
-			if ( server.keyExists( "lucee" ) ) {
-			} else {
+			if ( variables.isAdobe ) {
 				// Ensure any DB connections used get returned to the connection pool. Without clearSqlProxy an executor will hold onto any connections it touched while running and they will not timeout/close, and no other code can use the connection except for the executor that last touched it.   Credit to Brad Wood for finding this!
 				variables.DataSrcImplStatic.clearSqlProxy();
 				variables.fusionContextStatic.setCurrent( javacast( "null", "" ) );
@@ -197,10 +199,10 @@ component accessors="true" {
 	 * Amend this check once Adobe fixes this in a later update
 	 */
 	function getConcurrentEngineLockName(){
-		if ( server.keyExists( "lucee" ) ) {
-			return createUUID();
-		} else {
+		if ( variables.isAdobe ) {
 			return variables.UUID;
+		} else {
+			return createUUID();
 		}
 	}
 
