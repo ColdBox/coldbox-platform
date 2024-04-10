@@ -27,10 +27,10 @@ jobs:
     name: Code Auto-Formatting
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Auto-format
-        uses: Ortus-Solutions/commandbox-action@v1.0.2
+        uses: Ortus-Solutions/commandbox-action@v1.0.3
         with:
           cmd: run-script format
 

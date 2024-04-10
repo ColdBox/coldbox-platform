@@ -10,5 +10,7 @@
 	},
 	"no-duplicate-header" : {
 		"siblings_only" : true
-	}
+	},
+	"no-duplicate-heading" : false,
+	"no-inline-html" : false
 }

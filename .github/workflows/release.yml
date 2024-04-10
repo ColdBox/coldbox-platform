@@ -51,7 +51,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Java
         uses: actions/setup-java@v3
@@ -183,13 +183,13 @@ jobs:
     needs: [ build ]
     steps:
       - name: Checkout Development Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         if: env.LTS == 'false'
         with:
           ref: development
 
       - name: Checkout LTS Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         if: env.LTS == 'true'
 
       - name: Setup CommandBox
@@ -198,7 +198,7 @@ jobs:
           forgeboxAPIKey: ${{ secrets.FORGEBOX_TOKEN }}
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: coldbox-variants
           path: .tmp
