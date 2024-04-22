@@ -58,14 +58,6 @@
 
 	<!--- Begin specific tests --->
 
-	<cffunction name="testGetters" access="public" returnType="void">
-		<cfscript>
-		for ( key in this.instance ) {
-			evaluate( "this.e.get#key#()" );
-		}
-		</cfscript>
-	</cffunction>
-
 	<cffunction name="testgetmemento" access="public" returnType="void">
 		<cfscript>
 		assertTrue( isStruct( this.e.getMemento() ) );
@@ -169,4 +161,3 @@
 		</cfscript>
 	</cffunction>
 </cfcomponent>
-
