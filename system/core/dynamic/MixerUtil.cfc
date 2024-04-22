@@ -161,7 +161,7 @@ component {
 	 * Removes a method in a CFC
 	 */
 	function removePropertyMixin( required propertyName, scope = "variables" ){
-		switch( arguments.scope ){
+		switch ( arguments.scope ) {
 			case "variables":
 				return structDelete( variables, arguments.propertyName );
 				break;
