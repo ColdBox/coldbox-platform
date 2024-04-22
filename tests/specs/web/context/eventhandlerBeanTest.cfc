@@ -15,7 +15,7 @@
 		this.ehbean.init( this.instance.invocationPath );
 
 		for ( var thisKey in this.instance ) {
-			evaluate( "this.ehBean.set#thisKey#( this.instance[ thisKey ] )" );
+			invoke( this.ehBean, "set#thisKey#", [ this.instance[ thisKey ] ] );
 		}
 		</cfscript>
 	</cffunction>
