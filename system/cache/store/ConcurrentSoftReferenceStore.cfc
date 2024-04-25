@@ -189,7 +189,8 @@ component extends="coldbox.system.cache.store.ConcurrentStore" accessors=true {
 		if (
 			!isNull( local.softRef ) && variables.indexer.getObjectMetadataProperty(
 				arguments.objectKey,
-				"isSoftReference"
+				"isSoftReference",
+				false
 			)
 		) {
 			variables.softRefKeyMap.remove( softRef.hashCode() );
