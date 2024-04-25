@@ -83,6 +83,9 @@ component
 				continue;
 			}
 			var md = indexer.getObjectMetadata( item );
+			if ( NOT md.keyExists( "timeout" ) || NOT md.keyExists( "isExpired" ) ) {
+				continue;
+			}
 
 			// Evict if not already marked for eviction or an eternal object.
 			if ( md.timeout GT 0 AND NOT md.isExpired ) {
