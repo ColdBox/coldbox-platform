@@ -209,7 +209,7 @@ component singleton {
 				return "cf_sql_timestamp";
 			}
 			case "Microsoft SQL Server": {
-				return "cf_sql_date";
+				return "cf_sql_datetime";
 			}
 			case "Oracle": {
 				return "cf_sql_timestamp";

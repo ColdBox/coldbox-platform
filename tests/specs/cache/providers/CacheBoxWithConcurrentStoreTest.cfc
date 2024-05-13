@@ -8,7 +8,7 @@
 			objectDefaultTimeout           : 60,
 			objectDefaultLastAccessTimeout : 30,
 			useLastAccessTimeouts          : true,
-			reapFrequency                  : 2,
+			reapFrequency                  : 10,
 			freeMemoryPercentageThreshold  : 0,
 			evictionPolicy                 : "LRU",
 			evictCount                     : 1,

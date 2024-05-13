@@ -7,6 +7,11 @@ on:
     branches:
       - development
 
+# Unique group name per workflow-branch/tag combo
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   #############################################
   # Tests First baby! We fail, no build :(
@@ -22,7 +27,7 @@ jobs:
     name: Code Auto-Formatting
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Auto-format
         uses: Ortus-Solutions/commandbox-action@v1.0.2

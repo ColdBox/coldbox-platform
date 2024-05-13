@@ -64,10 +64,7 @@ component accessors="true" singleton {
 		// Default TimeZone to UTC for all tasks
 		variables.timezone        = createObject( "java", "java.time.ZoneId" ).systemDefault();
 		// Build out the executor for this scheduler
-		variables.executor        = arguments.asyncManager.newExecutor(
-			name: arguments.name & "-scheduler",
-			type: "scheduled"
-		);
+		createSchedulerExecutor();
 		// Bit that denotes if this scheduler has been started or not
 		variables.started = false;
 		// Send notice
@@ -245,8 +242,36 @@ component accessors="true" singleton {
 		variables.asyncManager.deleteExecutor( variables.name & "-scheduler" );
 		// Mark it
 		variables.started = false;
+		// Clear the tasks
+		clearTasks();
 		// Log it
 		variables.asyncManager.out( "√ Scheduler (#getName()#) has been shutdown!" );
+		return this;
+	}
+
+	/**
+	 * Restarts a scheduler by shutting it down, clearing out the tasks, calling `configure`, and starting it again.
+	 * Useful when loading tasks from a database or other dynamic sources.
+	 *
+	 * @force   If true, it forces all shutdowns this is usually true when doing reinits
+	 * @timeout The timeout in seconds to wait for the shutdown of all tasks, defaults to 30 or whatever you set using the setShutdownTimeout() method
+	 */
+	public Scheduler function restart( boolean force = false, numeric timeout = variables.shutdownTimeout ){
+		variables.asyncManager.out( "√ Scheduler (#arguments.name#) is being restarted" );
+		shutdown( argumentCollection = arguments );
+		createSchedulerExecutor();
+		configure();
+		startup();
+		variables.asyncManager.out( "√ Scheduler (#arguments.name#) has been restarted" );
+		return this;
+	}
+
+	/**
+	 * Clear the tasks from this scheduler
+	 * BEWARE: This will not stop the tasks, it will just remove them from the scheduler
+	 */
+	public Scheduler function clearTasks(){
+		variables.tasks = structNew( "ordered" );
 		return this;
 	}
 
@@ -386,6 +411,16 @@ component accessors="true" singleton {
 	 */
 	private function getCurrentThread(){
 		return createObject( "java", "java.lang.Thread" ).currentThread();
+	}
+
+	/**
+	 * Create a new scheduled executor for this scheduler according to it's name and type
+	 */
+	private function createSchedulerExecutor(){
+		variables.executor = variables.asyncManager.newExecutor(
+			name: variables.name & "-scheduler",
+			type: "scheduled"
+		);
 	}
 
 }

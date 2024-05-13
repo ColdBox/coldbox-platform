@@ -96,7 +96,8 @@ component accessors="true" {
 	 * @objectKey The key to get
 	 */
 	struct function getObjectMetadata( required objectKey ){
-		return variables.poolMetadata.get( arguments.objectKey ) ?: {};
+		var results = variables.poolMetadata.get( arguments.objectKey );
+		return isNull( results ) ? {} : results;
 	}
 
 	/**

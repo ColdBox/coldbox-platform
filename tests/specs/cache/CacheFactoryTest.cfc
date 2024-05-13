@@ -10,7 +10,11 @@
 	}
 
 	function afterTests(){
-		cacheFactory.shutdown();
+		try {
+			cacheFactory.shutdown();
+		} catch ( any e ) {
+			console( "Error shutting down cache factory #e.detail# #e.message#" );
+		}
 	}
 
 	function testGetConfig(){

@@ -4,6 +4,11 @@
 	docName = "ColdBox-APIDocs";
 	base = expandPath( "/coldbox/system" );
 
+	// Create the output directory if it doesn't exist
+	if ( !directoryExists( url.path ) ) {
+		directoryCreate( url.path );
+	}
+
 	docbox 	= new docbox.DocBox( properties = {
 		projectTitle 	= "ColdBox v#url.version#",
 		outputDir 		= url.path

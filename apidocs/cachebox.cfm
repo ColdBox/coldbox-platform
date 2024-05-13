@@ -4,6 +4,11 @@
 	docName = "CacheBox-APIDocs";
 	base = expandPath( "/cachebox/system" );
 
+	// Create the output directory if it doesn't exist
+	if ( !directoryExists( url.path ) ) {
+		directoryCreate( url.path );
+	}
+
 	docbox 	= new docbox.DocBox( properties = {
 		projectTitle 	= "CacheBox v#url.version#",
 		outputDir 		= url.path

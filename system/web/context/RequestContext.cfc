@@ -4,7 +4,7 @@
  * ---
  * Models a ColdBox request, stores the incoming request collection (FORM/URL/REMOTE) and private request collection.
  * It is also used to determine metadata about a request and helps you build RESTFul responses.
- **/
+ */
 component serializable="false" accessors="true" {
 
 	/**
@@ -1785,13 +1785,14 @@ component serializable="false" accessors="true" {
 	/**
 	 * Set an HTTP Response Header
 	 *
-	 * @statusCode the status code
-	 * @statusText the status text
-	 * @name       The header name
-	 * @value      The header value
-	 * @charset    The charset to use, defaults to UTF-8
+	 * @statusCode the status code header
+	 * @statusText the status text header
+	 * @name       The header name; Mutually exclusive with statusCode
+	 * @value      The header value; Mutually exclusive with statusText
 	 *
 	 * @return RequestContext
+	 *
+	 * @throws RequestContext.InvalidHTTPHeaderParameters - If no name or statusCode is passed
 	 */
 	function setHTTPHeader( statusCode, statusText = "", name, value = "" ){
 		// status code? We do not add to response headers as this is a separate marker identifier to the response
@@ -1800,16 +1801,22 @@ component serializable="false" accessors="true" {
 				.getResponse()
 				.setStatus( javacast( "int", arguments.statusCode ), javacast( "string", arguments.statusText ) );
 		}
-		// Name Exists
+		// Name Exists and not already set.
 		else if ( !isNull( arguments.name ) ) {
-			getPageContext()
-				.getResponse()
-				.addHeader( javacast( "string", arguments.name ), javacast( "string", arguments.value ) );
+			var response = getPageContext().getResponse();
+
+			// special exception for Set-Cookie. We always append this header, instead of overwriting
+			if ( arguments.name == "Set-Cookie" ) {
+				response.addHeader( javacast( "string", arguments.name ), javacast( "string", arguments.value ) );
+			} else {
+				response.setHeader( javacast( "string", arguments.name ), javacast( "string", arguments.value ) );
+			}
+
 			variables.responseHeaders[ arguments.name ] = arguments.value;
 		} else {
 			throw(
 				message = "Invalid header arguments",
-				detail  = "Pass in either a statusCode or name argument",
+				detail  = "Pass in either a [statusCode] or [name] argument",
 				type    = "RequestContext.InvalidHTTPHeaderParameters"
 			);
 		}

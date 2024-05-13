@@ -19,26 +19,22 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        commandbox_version: [ "5.9.0" ]
+        commandbox_version: [ "6.0.1" ]
         cfengine: [ "lucee@5", "adobe@2018", "adobe@2021", "adobe@2023" ]
         jdkVersion: [ "11" ]
         experimental: [false]
         include:
           - cfengine: "lucee@6"
-            commandbox_version: "6.0.0-alpha"
-            jdkVersion: "11"
-            experimental: true
-          - cfengine: "lucee@6"
-            commandbox_version: "6.0.0-alpha"
             jdkVersion: "17"
+            commandbox_version: "6.0.1"
             experimental: true
           - cfengine: "adobe@2023"
-            commandbox_version: "5.9.0"
             jdkVersion: "17"
+            commandbox_version: "6.0.1"
             experimental: false
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Setup Database and Fixtures
         run: |
@@ -47,7 +43,7 @@ jobs:
           mysql -u${{ env.DB_USER }} -p${{ env.DB_PASSWORD }} < tests/resources/coolblog.sql
 
       - name: Setup Java
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: "temurin"
           java-version: ${{ matrix.jdkVersion }}
@@ -87,18 +83,11 @@ jobs:
       - name: Set cfengine version env
         run: echo "CFENGINE_VERSION=$(box echo ${serverInfo.engineName@coldbox-${{ matrix.cfengine }}}@${serverInfo.engineVersion@coldbox-${{ matrix.cfengine }}})" >> $GITHUB_ENV
 
-      - name: Publish Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v2
-        if: always()
-        with:
-          files: tests/results/**/*.xml
-          check_name: "${{ env.CFENGINE_VERSION }} Test Results"
-
       - name: Upload Test Results Artifacts
         if: always()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
-          name: coldbox-test-results-${{ matrix.cfengine }}
+          name: Test Results Engine ${{ matrix.cfengine }} JDK ${{ matrix.jdkVersion }}
           path: |
             tests/results/**/*
 
@@ -115,7 +104,7 @@ jobs:
           SLACK_USERNAME: CI
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
 
-      - name: Failure Debugging Info
+      - name: Output Failure Debugging Info
         if: ${{ failure() }}
         run: |
           box version
@@ -124,9 +113,26 @@ jobs:
 
       - name: Upload Debugging Info To Artifacts
         if: ${{ failure() }}
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
-          name: Failure Debugging Info - ${{ matrix.cfengine }}
+          name: Failure Debugging Info - ${{ matrix.cfengine }} - ${{ matrix.jdkVersion }}
           path: |
             .engine/**/logs/*
             .engine/**/WEB-INF/cfusion/logs/*
+
+  # Publish the test results
+  publish-test-results:
+    name: Publish Test Results
+    needs: tests
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Download Test Results Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        with:
+          files: artifacts/**/*.xml

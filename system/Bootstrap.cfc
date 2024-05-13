@@ -191,7 +191,7 @@ component serializable="false" accessors="true" {
 			// WireBox Singleton AutoReload
 			if ( cbController.getSetting( "Wirebox" ).singletonReload ) {
 				lock type="exclusive" name="#appHash#" timeout="#lockTimeout#" throwontimeout="true" {
-					cbController.getWireBox().clearSingletons();
+					cbController.getWireBox().clearAppSingletons();
 				}
 			}
 			// Handler's Index Auto Reload
@@ -737,9 +737,10 @@ component serializable="false" accessors="true" {
 	 * Helper method to deal with ACF's overload of the page context response, come on Adobe, get your act together!
 	 */
 	private function getPageContextResponse(){
-		return server.keyExists( "lucee" ) ? getPageContext().getResponse() : getPageContext()
-			.getResponse()
-			.getResponse();
+		if ( server.keyExists( "coldfusion" ) && server.coldfusion.productName.findNoCase( "ColdFusion" ) ) {
+			return getPageContext().getResponse().getResponse();
+		}
+		return getPageContext().getResponse();
 	}
 
 }

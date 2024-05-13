@@ -251,7 +251,7 @@ component extends="BaseAsyncSpec" {
 				var f1 = asyncManager
 					.newFuture()
 					.run( function(){
-						sleep( 1000 );
+						sleep( 2000 );
 						return "hello";
 					} );
 				var f2 = asyncManager
@@ -265,7 +265,7 @@ component extends="BaseAsyncSpec" {
 
 			it( "can process multiple closures in parallel via the anyOf() method", function(){
 				var f1 = function(){
-					sleep( 1000 );
+					sleep( 2000 );
 					return "hello";
 				};
 				var f2 = function(){

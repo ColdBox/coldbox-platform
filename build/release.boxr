@@ -7,19 +7,8 @@
 # Merge development into it for release
 !git merge --no-ff development
 
-# Tag the master repo with the version from box.json
-!git tag v`box package show version`
-
 # Push all branches back out to github
 !git push origin --all
 
-# Push all tags
-!git push origin --tags
-
 # Check development again
 !git checkout -f development
-
-# Bump to prepare for a new release, do minor, change if needed and don't tag
-bump --minor --!tagVersion
-!git commit -a -m "version bump"
-!git push origin development

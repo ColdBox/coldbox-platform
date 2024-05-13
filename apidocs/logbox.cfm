@@ -4,6 +4,11 @@
 	docName = "logbox-APIDocs";
 	base = expandPath( "/logbox/system" );
 
+	// Create the output directory if it doesn't exist
+	if ( !directoryExists( url.path ) ) {
+		directoryCreate( url.path );
+	}
+
 	docbox 	= new docbox.DocBox( properties = {
 		projectTitle 	= "logbox v#url.version#",
 		outputDir 		= url.path

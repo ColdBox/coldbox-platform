@@ -18,44 +18,52 @@ component singleton {
 	 */
 	function prettySql( string target = "" ){
 		var keywords = [
-			"SELECT",
+			"ALTER TABLE",
+			"CREATE TABLE",
+			"DELETE",
+			"DROP TABLE",
 			"FROM",
-			"WHERE",
 			"GROUP BY",
 			"HAVING",
-			"ORDER BY",
 			"INSERT INTO",
+			"LIMIT",
+			"ORDER BY",
+			"OFFSET",
+			"SELECT",
+			"UNION",
 			"UPDATE",
-			"DELETE",
-			"CREATE TABLE",
-			"ALTER TABLE",
-			"DROP TABLE",
-			"UNION"
+			"WHERE"
 		];
 		var indentedKeywords = [
+			"FULL JOIN",
+			"INNER JOIN",
 			"JOIN",
 			"LEFT JOIN",
-			"INNER JOIN",
-			"OUTER JOIN",
-			"FULL JOIN"
+			"OUTER JOIN"
 		];
 		var indent = "  ";
 
 		return arguments.target
 			.listToArray( variables.NEW_LINE )
 			.map( ( item ) => item.trim() )
+			// comma spacing
 			.map( ( item ) => item.reReplace(
-				"(\s)*,(\s)*",
+				"\s*(?![^()]*\))(,)\s*",
 				",#variables.NEW_LINE##indent#",
 				"all"
 			) )
+			// Parenthesis spacing
+			.map( ( item ) => item.reReplace( "\((\w)", "( \1", "all" ) )
+			.map( ( item ) => item.reReplace( "(\w)\)", "\1 )", "all" ) )
+			// Keyword spacing
 			.map( ( item ) => {
 				return item.reReplacenocase(
-					"(\s)*(#keywords.toList( "|" )#)(\s)*",
-					"\2#variables.NEW_LINE##indent#",
+					"(\s)*(#keywords.toList( "|" )#)(\s)+",
+					"#variables.NEW_LINE#\2#variables.NEW_LINE##indent#",
 					"all"
 				)
 			} )
+			// Indented keyword spacing
 			.map( ( item ) => {
 				return item.reReplacenocase(
 					"(#indentedKeywords.toList( "|" )#)",
