@@ -9,6 +9,7 @@ component {
 	// setup the engine properties
 	this.ADOBE = "adobe";
 	this.LUCEE = "lucee";
+	this.BOXLANG = "boxlang";
 
 	// JDK Version
 	this.JDK_VERSION = createObject( "java", "java.lang.System" ).getProperty( "java.version" );
@@ -22,9 +23,9 @@ component {
 			adobe2018 : { invokeArray : false },
 			adobe2021 : { invokeArray : false },
 			adobe2023 : { invokeArray : false },
-			lucee     : { invokeArray : true }
+			lucee     	: { invokeArray : true },
+			boxlang 	: { invokeArray : true }
 		};
-		variables.productVersion = listFirst( server.coldfusion.productversion );
 
 		return this;
 	}
@@ -33,14 +34,21 @@ component {
 	 * Returns the current running CFML major version level
 	 */
 	numeric function getVersion(){
-		return variables.productVersion;
+		return listFirst( getFullVersion(), "." );
 	}
 
 	/**
 	 * Returns the current running CFML full version
 	 */
 	string function getFullVersion(){
-		return server.coldfusion.productversion;
+		switch( getEngine() ){
+			case this.adobe:
+				return server.coldfusion.productVersion;
+			case this.lucee:
+				return server.lucee.version;
+			case this.boxlang:
+				return server.boxlang.version;
+		}
 	}
 
 	/**
@@ -58,12 +66,25 @@ component {
 	}
 
 	/**
+	 * Verify if this is a boxlang server
+	 */
+	boolean function isBoxLang(){
+		return server.keyExists( "boxlang" );
+	}
+
+	/**
 	 * Get the current CFML Engine name
 	 *
-	 * @return Either 'lucee' or 'adobe'
+	 * @return Either 'lucee' or 'adobe' or 'boxlang'
 	 */
 	string function getEngine(){
-		return ( isLucee() ? this.lucee : this.adobe );
+		if( isLucee() ){
+			return this.lucee;
+		}else if( isAdobe() ){
+			return this.adobe;
+		}else if( isBoxLang() ){
+			return this.boxlang;
+		}
 	}
 
 	/**
@@ -72,7 +93,8 @@ component {
 	 * @return lucee, adobe{version}
 	 */
 	string function getFeatureEngineSlug(){
-		return isLucee() ? this.lucee : this.adobe & getVersion();
+		var engine = getEngine();
+		return isAdobe() ? engine & getVersion() : engine;
 	}
 
 	/**
