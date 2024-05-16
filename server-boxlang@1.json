@@ -25,5 +25,8 @@
         "file":".cfconfig.json"
     },
     "env":{
-    }
+    },
+	"scripts" : {
+		"onServerInitialInstall":"install bx-mail,bx-mysql,bx-derby,bx-compat"
+	}
 }

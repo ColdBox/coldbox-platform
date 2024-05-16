@@ -24,6 +24,7 @@ component
 	// Never unload until the request dies
 	this.unloadColdBox = false;
 
+
 	/*********************************** LIFE CYCLE Methods ***********************************/
 
 	function beforeAll(){
@@ -65,11 +66,15 @@ component
 	}
 
 	function isAdobe(){
-		return !server.keyExists( "lucee" );
+		return server.keyExists( "coldfusion" ) && server.coldfusion.productName.findNoCase( "ColdFusion" );
 	}
 
 	function isLucee(){
 		return server.keyExists( "lucee" );
+	}
+
+	function isBoxLang(){
+		return server.keyExists( "boxlang" );
 	}
 
 	function isLucee6(){
@@ -77,7 +82,7 @@ component
 	}
 
 	function noWSDLSupport(){
-		return isAdobe() || isLucee6();
+		return isAdobe() || isLucee6() || isBoxLang();
 	}
 
 	function shutdownColdBox(){
