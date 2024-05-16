@@ -7,8 +7,8 @@
 component {
 
 	// setup the engine properties
-	this.ADOBE = "adobe";
-	this.LUCEE = "lucee";
+	this.ADOBE   = "adobe";
+	this.LUCEE   = "lucee";
 	this.BOXLANG = "boxlang";
 
 	// JDK Version
@@ -23,8 +23,8 @@ component {
 			adobe2018 : { invokeArray : false },
 			adobe2021 : { invokeArray : false },
 			adobe2023 : { invokeArray : false },
-			lucee     	: { invokeArray : true },
-			boxlang 	: { invokeArray : true }
+			lucee     : { invokeArray : true },
+			boxlang   : { invokeArray : true }
 		};
 
 		return this;
@@ -41,7 +41,7 @@ component {
 	 * Returns the current running CFML full version
 	 */
 	string function getFullVersion(){
-		switch( getEngine() ){
+		switch ( getEngine() ) {
 			case this.adobe:
 				return server.coldfusion.productVersion;
 			case this.lucee:
@@ -78,11 +78,11 @@ component {
 	 * @return Either 'lucee' or 'adobe' or 'boxlang'
 	 */
 	string function getEngine(){
-		if( isLucee() ){
+		if ( isLucee() ) {
 			return this.lucee;
-		}else if( isAdobe() ){
+		} else if ( isAdobe() ) {
 			return this.adobe;
-		}else if( isBoxLang() ){
+		} else if ( isBoxLang() ) {
 			return this.boxlang;
 		}
 	}
