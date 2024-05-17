@@ -1531,7 +1531,7 @@ component accessors="true" {
 		// Set the period to be every hour in seconds
 		variables.period = variables.timeUnitHelper
 			.get( arguments.periodValue )
-			.toSeconds( arguments.periodMultiplier );
+			.toSeconds( javacast( "long", arguments.periodMultiplier ) );
 		variables.timeUnit = "seconds";
 	}
 
