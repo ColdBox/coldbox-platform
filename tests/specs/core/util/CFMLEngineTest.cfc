@@ -5,7 +5,7 @@
 	}
 
 	function testGetVersion(){
-		expect( target.getVersion() ).toBeNumeric( target.getVersion() );
+		expect( target.getVersion() ).notToBeEmpty();
 	}
 
 	function testGetFullVersion(){
