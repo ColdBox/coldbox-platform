@@ -5,15 +5,15 @@
 	}
 
 	function testGetVersion(){
-		expect( target.getVersion() ).toBeNumeric();
+		expect( target.getVersion() ).toBeNumeric( target.getVersion() );
 	}
 
 	function testGetFullVersion(){
-		expect( target.getFullVersion() ).toBeString();
+		expect( target.getFullVersion() ).toBeString( target.getFullVersion() );
 	}
 
 	function testGetEngine(){
-		expect( target.getEngine() ).toBeString();
+		expect( target.getEngine() ).toBeString( target.getEngine() );
 	}
 
 }

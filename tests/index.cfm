@@ -86,9 +86,9 @@
 			</p>
 
 			<cfset runners = directoryList( expandPath( "./" ), false, "query", "runner*.cfm" )>
-			<cfoutput query="runners">
+			<cfloop query="runners">
 				<a href="#runners.name#" target="_blank" class="btn btn-secondary btn-sm my-1 mx-1">#runners.name#</a>
-			</cfoutput>
+			</cfloop>
 		</div>
 	</div>
 

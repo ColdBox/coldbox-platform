@@ -33,20 +33,20 @@ component {
 	/**
 	 * Returns the current running CFML major version level
 	 */
-	numeric function getVersion(){
-		return listFirst( getFullVersion(), "." );
+	function getVersion(){
+		return listFirst( getFullVersion(), "," );
 	}
 
 	/**
 	 * Returns the current running CFML full version
 	 */
-	string function getFullVersion(){
+	function getFullVersion(){
 		switch ( getEngine() ) {
-			case this.adobe:
+			case "adobe":
 				return server.coldfusion.productVersion;
-			case this.lucee:
+			case "lucee":
 				return server.lucee.version;
-			case this.boxlang:
+			case "boxlang":
 				return server.boxlang.version;
 		}
 	}
@@ -90,7 +90,7 @@ component {
 	/**
 	 * Discover the running engine slug for feature checks
 	 *
-	 * @return lucee, adobe{version}
+	 * @return lucee, adobe{version}, boxlang
 	 */
 	string function getFeatureEngineSlug(){
 		var engine = getEngine();
