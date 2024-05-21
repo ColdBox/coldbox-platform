@@ -7,7 +7,7 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 
 	function run( testResults, testBox ){
 		// all your suites go here.
-		describe( "Chrono Units", function(){
+		describe( "Date Time Helper", function(){
 			beforeEach( function( currentSpec ){
 				dateTimeHelper = new coldbox.system.async.time.DateTimeHelper();
 			} );
@@ -39,6 +39,11 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 			it( "can get the system timezone id", function(){
 				var t = dateTimeHelper.getSystemTimezone();
 				expect( t.getId() ).notToBeEmpty();
+			} );
+
+			it( "can validate a numeric time value", function(){
+				var timeValue = dateTimeHelper.validateTime( 11 );
+				expect( timeValue ).toBe( "11:00" );
 			} );
 
 			var units = [
