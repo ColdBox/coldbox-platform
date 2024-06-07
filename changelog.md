@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### New Features
+
+- [COLDBOX-1285](https://ortussolutions.atlassian.net/browse/COLDBOX-1285) BoxLang Support
+
+### Bugs
+
+- [COLDBOX-1280](https://ortussolutions.atlassian.net/browse/COLDBOX-1280) coldbox.system.cache.policies.LRU cleanup errors
+- [COLDBOX-1281](https://ortussolutions.atlassian.net/browse/COLDBOX-1281) DateTimeHelper.validateTime Regression
+- [COLDBOX-1282](https://ortussolutions.atlassian.net/browse/COLDBOX-1282) ScheduledTasks Bug - java.util.concurrent.TimeUnit type error
+
+## [7.2.1] - 2024-05-14
+
 ### New Feature
 
 - Prettier SQL printing in `StringUtil.prettySQL()`
