@@ -407,7 +407,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 				.$args( "server_name", requestContext )
 				.$results( arguments.domain );
 
-			// If the route is for the home page, use the default event in the config/ColdBox.cfc
+			// If the route is for the home page, use the default event in the config/ColdBox
 			if ( arguments.route == "/" ) {
 				// Set the default app event
 				arguments.event = getController().getSetting( "defaultEvent" );
