@@ -225,9 +225,15 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		var isBundle              = listLast( modLocation, "-" ) eq "bundle";
 
 		// Check if module config exists, or we have a module.
-		if ( NOT fileExists( modLocation & "/ModuleConfig.cfc" ) && NOT isBundle ) {
+		if (
+			NOT isBundle
+			&&
+			NOT fileExists( modLocation & "/ModuleConfig.cfc" )
+			&&
+			NOT fileExists( modLocation & "/ModuleConfig.bx" )
+		) {
 			variables.logger.WARN(
-				"The module (#modName#) cannot be loaded as it does not have a ModuleConfig.cfc in its root. Path Checked: #modLocation#"
+				"The module (#modName#) cannot be loaded as it does not have a ModuleConfig class in its root. Path Checked: #modLocation#"
 			);
 			return false;
 		}
