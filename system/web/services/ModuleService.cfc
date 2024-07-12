@@ -449,10 +449,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			mConfig.modelsPhysicalPath &= "/#mConfig.conventions.modelsLocation#";
 			// Router
 			mConfig.routerInvocationPath &= ".#mConfig.conventions.routerLocation#";
-			mConfig.routerPhysicalPath &= "/#mConfig.conventions.routerLocation.replace( ".", "/", "all" )#.cfc";
+			mConfig.routerPhysicalPath &= "/#mConfig.conventions.routerLocation.replace( ".", "/", "all" )#";
 			// Scheduler
 			mConfig.schedulerInvocationPath &= ".#mConfig.conventions.schedulerLocation#";
-			mConfig.schedulerPhysicalPath &= "/#mConfig.conventions.schedulerLocation.replace( ".", "/", "all" )#.cfc";
+			mConfig.schedulerPhysicalPath &= "/#mConfig.conventions.schedulerLocation.replace( ".", "/", "all" )#";
 
 			// Register CFML Mapping if it exists, for loading purposes
 			// TODO: If a duplicate mapping is detected, warn it to logs
@@ -751,8 +751,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 					append  = false
 				);
 
-				// config/Router.cfc Conventions
-				if ( fileExists( mConfig.routerPhysicalPath ) ) {
+				// config/Router Conventions
+				if ( fileExists( mConfig.routerPhysicalPath & ".cfc" ) || fileExists( mConfig.routerPhysicalPath & ".bx" ) ) {
 					// Process as a Router.cfc with virtual inheritance
 					mConfig.injector
 						.registerNewInstance(
@@ -823,7 +823,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			| Module Schedulers
 			|--------------------------------------------------------------------------
 			*/
-			if ( fileExists( mConfig.schedulerPhysicalPath ) ) {
+			if ( fileExists( mConfig.schedulerPhysicalPath & ".cfc" ) || fileExists( mConfig.schedulerPhysicalPath & ".bx" ) ) {
 				mConfig.scheduler = variables.controller
 					.getSchedulerService()
 					.loadScheduler(
