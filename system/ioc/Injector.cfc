@@ -774,7 +774,7 @@ component serializable="false" accessors="true" {
 	 */
 	function locateInstance( required name ){
 		var scanLocations = variables.binder.getScanLocations();
-		var CFCName       = replace( arguments.name, ".", "/", "all" ) & ".cfc";
+		var CFCName       = replace( arguments.name, ".", "/", "all" );
 
 		// If we find a :, then avoid doing lookups on the i/o system.
 		if ( find( ":", CFCName ) ) {
@@ -784,21 +784,13 @@ component serializable="false" accessors="true" {
 		// Check Scan Locations In Order
 		for ( var thisScanPath in scanLocations ) {
 			// Check if located? If so, return instantiation path
-			if ( fileExists( scanLocations[ thisScanPath ] & CFCName ) ) {
-				if ( variables.log.canDebug() ) {
-					variables.log.debug(
-						"Instance: #arguments.name# located in #thisScanPath# by (#getName()#) injector"
-					);
-				}
+			if ( fileExists( scanLocations[ thisScanPath ] & CFCName & ".cfc" ) || fileExists( scanLocations[ thisScanPath ] & CFCName & ".bx" )  ) {
 				return thisScanPath & "." & arguments.name;
 			}
 		}
 
 		// Not found, so let's do full namespace location
-		if ( fileExists( expandPath( "/" & CFCName ) ) ) {
-			if ( variables.log.canDebug() ) {
-				variables.log.debug( "Instance: #arguments.name# located as is by (#getName()#) injector" );
-			}
+		if ( fileExists( expandPath( "/" & CFCName & ".cfc" ) ) || fileExists( expandPath( "/" & CFCName & ".bx" ) ) ) {
 			return arguments.name;
 		}
 
