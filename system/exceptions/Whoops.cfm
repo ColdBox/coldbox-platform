@@ -427,7 +427,7 @@
 					<!--- Verify if File Exists: Just in case it's a core CFML engine file, else don't add it --->
 					<cfif fileExists( thisTagContext.template )>
 						<!--- Determine Source Highlighter --->
-						<cfset highlighter = ( listLast( thisTagContext.template, "." ) eq "cfm" ? "cf" : "js" )/>
+						<cfset highlighter = ( listFindNoCase( "cfm,bxm", listLast( thisTagContext.template, "." ) ) ? "cf" : "js" )/>
 						<cfset spacing = "#chr( 20 )##chr( 20 )##chr( 20 )##chr( 20 )#">
 						<!--- Output code only once per instance found --->
 						<cfset filecontent = []>
