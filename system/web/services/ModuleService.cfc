@@ -487,7 +487,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 						// cleanup module name
 						var childName = listLast( thisChild, "/\" );
 						// verify ModuleConfig exists, else skip
-						if ( fileExists( thisChild & "/ModuleConfig.cfc" ) ) {
+						if ( fileExists( thisChild & "/ModuleConfig.cfc" ) || fileExists( thisChild & "/ModuleConfig.bx" ) ) {
 							// add to parent children
 							arrayAppend( mConfig.childModules, childname );
 							// register child
@@ -689,7 +689,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				}
 
 				// Register Default Module Export if it exists as @moduleName, so you can do getInstance( "@moduleName" )
-				if ( fileExists( mconfig.modelsPhysicalPath & "/#arguments.moduleName#.cfc" ) ) {
+				if ( fileExists( mconfig.modelsPhysicalPath & "/#arguments.moduleName#.cfc" ) || fileExists( mconfig.modelsPhysicalPath & "/#arguments.moduleName#.bx" ) ) {
 					mConfig.injector
 						.getBinder()
 						.map( [
@@ -1278,7 +1278,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			mConfig.settings.append( globalModuleSettings[ mConfig.modelNamespace ], true );
 
 			// config/{mConfig.modelNamespace}.cfc overrides
-			if ( fileExists( "#appSettings.applicationPath#config/modules/#mConfig.modelnamespace#.cfc" ) ) {
+			if ( fileExists( "#appSettings.applicationPath#config/modules/#mConfig.modelnamespace#.cfc" ) || fileExists( "#appSettings.applicationPath#config/modules/#mConfig.modelnamespace#.bx" ) ) {
 				loadModuleSettingsOverride( mConfig, mConfig.modelNamespace );
 			}
 		}
