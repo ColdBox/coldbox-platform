@@ -295,7 +295,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		coldboxSettings[ "ConfigFileLocationOverride" ] = false;
 
 		// verify coldbox.cfc exists in convention: /app/config/Coldbox.cfc
-		if ( fileExists( appRootPath & replace( configFileLocation, ".", "/", "all" ) & ".cfc" ) ) {
+		if ( fileExists( appRootPath & replace( configFileLocation, ".", "/", "all" ) & ".cfc" ) || fileExists( appRootPath & replace( configFileLocation, ".", "/", "all" ) & ".bx" ) ) {
 			coldboxSettings[ "ConfigFileLocation" ] = configFileLocation;
 		}
 

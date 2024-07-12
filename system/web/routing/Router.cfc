@@ -250,7 +250,7 @@ component
 	/**
 	 * Includes a routes configuration file as an added import and returns itself after import
 	 *
-	 * @deprecated Please use the Routes.cfc approach instead
+	 * @deprecated Please use the Routes class approach instead
 	 * @location   The include location of the routes configuration template.
 	 *
 	 * @return Router
