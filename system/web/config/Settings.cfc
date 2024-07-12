@@ -36,7 +36,7 @@ component {
 		"viewCaching"              : true,
 		// Default Conventions Events + Views
 		"defaultEvent"             : "main.index",
-		"defaultLayout"            : "Main.cfm",
+		"defaultLayout"            : "Main",
 		"defaultView"              : "",
 		// Implicit Events
 		"applicationStartHandler"  : "",
