@@ -411,8 +411,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			targetView = renderer.locateView( cEvent );
 		}
 
-		// Validate Target View
-		if ( fileExists( expandPath( targetView & ".cfm" ) ) ) {
+		// CFML View
+		if (
+			fileExists( expandPath( targetView & ".cfm" ) ) || fileExists( expandPath( targetView & ".bxm" ) )
+		) {
 			arguments.ehBean.setViewDispatch( true );
 			return true;
 		}

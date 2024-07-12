@@ -502,9 +502,11 @@ component serializable="false" accessors="true" {
 		reloadChecks();
 
 		// Process A ColdBox Request Only
-		if ( findNoCase( "index.cfm", listLast( arguments.targetPage, "/" ) ) ) {
+		// If the file is "index.(cfm|bxm)" then we will process it
+		if( reFindNoCase( "index\.(cfm|bxm)", listLast( arguments.targetPage, "/" ) ) ){
 			processColdBoxRequest();
 		}
+
 		return true;
 	}
 
@@ -524,8 +526,14 @@ component serializable="false" accessors="true" {
 					cbController.getSetting( "EventName" ),
 					cbController.getSetting( "MissingTemplateHandler" )
 				);
+
 			// Process it
-			onRequestStart( "index.cfm" );
+			if( fileExists( cbController.locateFilePath( "index.bxm" ) ) ){
+				onRequestStart( "index.bxm" );
+			} else {
+				onRequestStart( "index.cfm" );
+			}
+
 			// Return processed
 			return true;
 		}

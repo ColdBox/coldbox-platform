@@ -977,7 +977,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		results[ "scriptName" ] = trim(
 			reReplaceNoCase(
 				getCGIElement( "script_name", arguments.event ),
-				"[/\\]index\.cfm",
+				"[/\\]index\.(cfm|bxm)",
 				""
 			)
 		);
@@ -995,8 +995,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			results[ "scriptName" ] = replaceNoCase( results[ "scriptName" ], getContextRoot(), "" );
 		}
 
-		// Clean up the path_info from index.cfm
-		results[ "pathInfo" ] = reReplaceNoCase( results[ "pathInfo" ], "^[/\\]index\.cfm", "" );
+		// Clean up the path_info from index
+		results[ "pathInfo" ] = reReplaceNoCase( results[ "pathInfo" ], "^[/\\]index\.(cfm|bxm)", "" );
 
 		// Clean the scriptname from the pathinfo if it is the first item in case this is a nested application
 		if ( len( results[ "scriptName" ] ) ) {

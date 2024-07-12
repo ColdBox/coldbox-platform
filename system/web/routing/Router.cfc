@@ -22,12 +22,12 @@ component
 	 ****************************************************************/
 
 	property
-		name    ="cachebox"  
+		name    ="cachebox"
 		inject  ="cachebox"
 		delegate="getCache";
 	property
 		name    ="controller"
-		inject  ="coldbox" 
+		inject  ="coldbox"
 		delegate="relocate,runEvent,runRoute";
 	property name="flash"  inject="coldbox:flash";
 	property name="logBox" inject="logbox";
@@ -102,7 +102,7 @@ component
 	property name="baseURL" type="string";
 
 	/**
-	 * This flag denotes if full URL rewrites are enabled or not. Meaning if the `index.cfm` is in the path of the rewriter or not.
+	 * This flag denotes if full URL rewrites are enabled or not. Meaning if the `index` is in the path of the rewriter or not.
 	 * The default value is **false**.
 	 */
 	property
@@ -194,14 +194,16 @@ component
 	 * This is ONLY called by the routing services and only ONCE in the Application Life-Cycle
 	 */
 	function startup(){
+		var frontController = findNoCase( ".cfm", cgi.script_name ) ? "index.cfm" : "index.bxm";
+
 		// Verify baseUrl is still empty to default it for operation
 		if ( !len( variables.baseUrl ) ) {
 			variables.baseUrl = composeRoutingUrl();
 		}
 
-		// Check if rewrites turned off. If so, append the `index.cfm` to it.
-		if ( !variables.fullRewrites AND !findNoCase( "index.cfm", variables.baseURL ) ) {
-			variables.baseURL &= "/index.cfm";
+		// Check if rewrites turned off. If so, append the `index` to it.
+		if ( !variables.fullRewrites AND !findNoCase( frontController, variables.baseURL ) ) {
+			variables.baseURL &= "/#frontController#";
 		}
 
 		// Remove any double slashes: sometimes proxies can interfere
@@ -211,8 +213,8 @@ component
 		variables.controller
 			.setSetting( "SESBaseURL", variables.baseURL )
 			.setSetting( "SESBasePath", composeRoutingPath() )
-			.setSetting( "HTMLBaseURL", replaceNoCase( variables.baseURL, "index.cfm", "" ) )
-			.setSetting( "HTMLBasePath", replaceNoCase( composeRoutingPath(), "index.cfm", "" ) );
+			.setSetting( "HTMLBaseURL", replaceNoCase( variables.baseURL, frontController, "" ) )
+			.setSetting( "HTMLBasePath", replaceNoCase( composeRoutingPath(), frontController, "" ) );
 	}
 
 	/**
@@ -246,20 +248,14 @@ component
 	// DEPRECATED FUNCTIONALITY: Remove in later release
 
 	/**
-	 *
 	 * Includes a routes configuration file as an added import and returns itself after import
 	 *
 	 * @deprecated Please use the Routes.cfc approach instead
-	 * @location   The include location of the routes configuration template. Do not add '.cfm'
+	 * @location   The include location of the routes configuration template.
 	 *
 	 * @return Router
 	 */
 	function includeRoutes( required location ){
-		// verify .cfm or not
-		if ( listLast( arguments.location, "." ) NEQ "cfm" ) {
-			arguments.location &= ".cfm";
-		}
-
 		// We are ready to roll
 		try {
 			// Try to remove pathInfoProvider, just in case
@@ -2078,8 +2074,9 @@ component
 	 * Composes the base routing path with no host or protocol
 	 */
 	string function composeRoutingPath(){
+		var base = findNoCase( ".cfm", cgi.script_name ) ? "index.cfm" : "index.bxm";
 		return variables.controller.getSetting( "RoutingAppMapping" ) & // routing app mapping
-		( variables.fullRewrites ? "" : "index.cfm" ); // full or controller routing
+		( variables.fullRewrites ? "" : base ); // full or controller routing
 	}
 
 	/*****************************************************************************************/

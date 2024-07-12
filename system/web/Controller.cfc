@@ -415,7 +415,7 @@ component serializable="false" accessors="true" {
 	 * @persist           What request collection keys to persist in flash RAM automatically for you
 	 * @persistStruct     A structure of key-value pairs to persist in flash RAM automatically for you
 	 * @ssl               Whether to relocate in SSL or not. You need to explicitly say TRUE or FALSE if going out from SSL. If none passed, we look at the even's SES base URL (if in SES mode)
-	 * @baseURL           Use this baseURL instead of the index.cfm that is used by default. You can use this for SSL or any full base url you would like to use. Ex: https://mysite.com/index.cfm
+	 * @baseURL           Use this baseURL instead of the index that is used by default. You can use this for SSL or any full base url you would like to use. Ex: https://mysite.com/index.cfm/bxm
 	 * @postProcessExempt Do not fire the postProcess interceptors, by default it does
 	 * @URL               The full URL you would like to relocate to instead of an event: ex: URL='http://www.google.com'
 	 * @URI               The relative URI you would like to relocate to instead of an event: ex: URI='/mypath/awesome/here'

@@ -408,7 +408,7 @@ component serializable="false" accessors="true" {
 	 * @persistStruct     A structure key-value pairs to persist in flash ram
 	 * @addToken          Wether to add the tokens or not. Default is false
 	 * @ssl               Whether to relocate in SSL or not
-	 * @baseURL           Use this baseURL instead of the index.cfm that is used by default. You can use this for ssl or any full base url you would like to use. Ex: https://mysite.com/index.cfm
+	 * @baseURL           Use this baseURL instead of the index that is used by default. You can use this for ssl or any full base url you would like to use. Ex: https://mysite.com/index.cfm|bxm
 	 * @postProcessExempt Do not fire the postProcess interceptors
 	 * @statusCode        The status code to use in the relocation
 	 */
@@ -799,7 +799,7 @@ component serializable="false" accessors="true" {
 	 ****************************************************************/
 
 	/**
-	 * Injects a UDF Library (*.cfc or *.cfm) into the target object.  It does not however, put the mixins on any of the cfc scopes. Therefore they can only be called internally
+	 * Injects a UDF Library (*.cfc or *.cfm or *.bxm or *bx) into the target object.  It does not however, put the mixins on any of the cfc scopes. Therefore they can only be called internally
 	 *
 	 * @udflibrary The UDF library to inject
 	 *
@@ -826,14 +826,22 @@ component serializable="false" accessors="true" {
 				// checks if no .cfc or .cfm where sent
 				else if ( fileExists( UDFRelativePath & ".cfc" ) ) {
 					locatedPath = "/" & appMapping & "/" & udflibrary & ".cfc";
+				} else if ( fileExists( UDFRelativePath & ".bx" ) ) {
+						locatedPath = "/" & appMapping & "/" & udflibrary & ".bx";
 				} else if ( fileExists( UDFRelativePath & ".cfm" ) ) {
 					locatedPath = "/" & appMapping & "/" & udflibrary & ".cfm";
+				} else if ( fileExists( UDFRelativePath & ".bxm" ) ) {
+					locatedPath = "/" & appMapping & "/" & udflibrary & ".bxm";
 				} else if ( fileExists( UDFFullPath ) ) {
 					locatedPath = "#udflibrary#";
 				} else if ( fileExists( UDFFullPath & ".cfc" ) ) {
 					locatedPath = "#udflibrary#.cfc";
+				} else if ( fileExists( UDFFullPath & ".bx" ) ) {
+					locatedPath = "#udflibrary#.bx";
 				} else if ( fileExists( UDFFullPath & ".cfm" ) ) {
 					locatedPath = "#udflibrary#.cfm";
+				} else if ( fileExists( UDFFullPath & ".bxm" ) ) {
+					locatedPath = "#udflibrary#.bxm";
 				} else {
 					throw(
 						message = "Error loading UDF library: #udflibrary#",
