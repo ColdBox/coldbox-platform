@@ -83,8 +83,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		var baseRouter   = "coldbox.system.web.routing.Router";
 
 		// Discover router: app or base
-		var configFilePath = variables.routingAppMapping & modernRouter.replace( ".", "/", "all" ) & ".cfc";
-		var routerType     = fileExists( expandPath( configFilePath ) ) ? "modern" : "base";
+		var configFilePath = variables.routingAppMapping & modernRouter.replace( ".", "/", "all" );
+		var routerType     =  ( fileExists( expandPath( configFilePath & ".cfc" ) ) || fileExists( expandPath( configFilePath & ".bx" ) ) ) ? "modern" : "base";
 
 		// Check if base router mapped?
 		if ( NOT wirebox.getBinder().mappingExists( baseRouter ) ) {
