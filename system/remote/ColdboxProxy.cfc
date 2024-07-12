@@ -295,7 +295,7 @@ component serializable="false" accessors="true" {
 	 * unless you specify the reload argument or the application expired.
 	 *
 	 * @appMapping     The app to load via mapping
-	 * @configLocation The config cfc to load else use by convention config/Coldboc.cfc
+	 * @configLocation The config cfc to load else use by convention config/Coldbox
 	 * @reloadApp      To reload the app if running
 	 * @appKey         The running app key in application scope
 	 */
@@ -362,8 +362,9 @@ component serializable="false" accessors="true" {
 	 */
 	private function selfAutoWire(){
 		var scriptName = CGI.SCRIPT_NAME;
+
 		// Only process this logic if hitting a remote proxy CFC directly and if ColdBox exists.
-		if ( len( scriptName ) < 5 || right( scriptName, 4 ) != ".cfc" || !verifyColdBox( throwOnNotExist = false ) ) {
+		if ( len( scriptName ) < 5 || !reFindNoCase( "(cfc|bx)", right( scriptName, 4 ) ) || !verifyColdBox( throwOnNotExist = false ) ) {
 			return;
 		}
 
