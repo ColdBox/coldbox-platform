@@ -92,14 +92,15 @@ component
 		variables.viewsHelper             = variables.controller.getSetting( "viewsHelper" );
 		variables.viewCaching             = variables.controller.getSetting( "viewCaching" );
 
-		// Verify View Helper Template extension + location
+		// Global View Helper
 		if ( len( variables.viewsHelper ) ) {
-			// extension detection
-			variables.viewsHelper = (
-				listLast( variables.viewsHelper, "." ) eq "cfm" ? variables.viewsHelper : variables.viewsHelper & ".cfm"
-			);
-			// Append mapping to it.
-			variables.viewsHelper = "/#variables.appMapping#/#variables.viewsHelper#";
+			var viewHelperPath = "/#variables.appMapping#/#variables.viewsHelper.listFirst( "." )#";
+			if ( fileExists( expandPath( viewHelperPath & ".cfm" ) ) ) {
+				variables.viewsHelper = viewHelperPath & ".cfm";
+			}
+			if ( fileExists( expandPath( viewHelperPath & ".bxm" ) ) ) {
+				variables.viewsHelper = viewHelperPath & ".bxm";
+			}
 		}
 
 		// Template Cache & Caching Maps
