@@ -412,7 +412,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		}
 
 		// CFML View
-		if ( fileExists( expandPath( targetView & ".cfm" ) ) || fileExists( expandPath( targetView & ".bxm" ) ) ) {
+		if ( fileExists( expandPath( targetView ) ) ) {
 			arguments.ehBean.setViewDispatch( true );
 			return true;
 		}
