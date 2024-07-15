@@ -827,7 +827,7 @@ component serializable="false" accessors="true" {
 				else if ( fileExists( UDFRelativePath & ".cfc" ) ) {
 					locatedPath = "/" & appMapping & "/" & udflibrary & ".cfc";
 				} else if ( fileExists( UDFRelativePath & ".bx" ) ) {
-						locatedPath = "/" & appMapping & "/" & udflibrary & ".bx";
+					locatedPath = "/" & appMapping & "/" & udflibrary & ".bx";
 				} else if ( fileExists( UDFRelativePath & ".cfm" ) ) {
 					locatedPath = "/" & appMapping & "/" & udflibrary & ".cfm";
 				} else if ( fileExists( UDFRelativePath & ".bxm" ) ) {

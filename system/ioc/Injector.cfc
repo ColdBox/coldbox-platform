@@ -784,7 +784,11 @@ component serializable="false" accessors="true" {
 		// Check Scan Locations In Order
 		for ( var thisScanPath in scanLocations ) {
 			// Check if located? If so, return instantiation path
-			if ( fileExists( scanLocations[ thisScanPath ] & CFCName & ".cfc" ) || fileExists( scanLocations[ thisScanPath ] & CFCName & ".bx" )  ) {
+			if (
+				fileExists( scanLocations[ thisScanPath ] & CFCName & ".cfc" ) || fileExists(
+					scanLocations[ thisScanPath ] & CFCName & ".bx"
+				)
+			) {
 				return thisScanPath & "." & arguments.name;
 			}
 		}

@@ -503,7 +503,7 @@ component serializable="false" accessors="true" {
 
 		// Process A ColdBox Request Only
 		// If the file is "index.(cfm|bxm)" then we will process it
-		if( reFindNoCase( "index\.(cfm|bxm)", listLast( arguments.targetPage, "/" ) ) ){
+		if ( reFindNoCase( "index\.(cfm|bxm)", listLast( arguments.targetPage, "/" ) ) ) {
 			processColdBoxRequest();
 		}
 
@@ -528,7 +528,7 @@ component serializable="false" accessors="true" {
 				);
 
 			// Process it
-			if( fileExists( cbController.locateFilePath( "index.bxm" ) ) ){
+			if ( fileExists( cbController.locateFilePath( "index.bxm" ) ) ) {
 				onRequestStart( "index.bxm" );
 			} else {
 				onRequestStart( "index.cfm" );

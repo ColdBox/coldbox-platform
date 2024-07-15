@@ -412,9 +412,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		}
 
 		// CFML View
-		if (
-			fileExists( expandPath( targetView & ".cfm" ) ) || fileExists( expandPath( targetView & ".bxm" ) )
-		) {
+		if ( fileExists( expandPath( targetView & ".cfm" ) ) || fileExists( expandPath( targetView & ".bxm" ) ) ) {
 			arguments.ehBean.setViewDispatch( true );
 			return true;
 		}
@@ -595,7 +593,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// Convert windows \ to java /
 		arguments.directory = replace( arguments.directory, "\", "/", "all" );
 
-		return directoryList( arguments.directory, true, "array", "*.cfc|*.bx" ).map( function( item ){
+		return directoryList(
+			arguments.directory,
+			true,
+			"array",
+			"*.cfc|*.bx"
+		).map( function( item ){
 			var thisAbsolutePath = replace( item, "\", "/", "all" );
 			var cleanHandler     = replaceNoCase( thisAbsolutePath, directory, "", "all" );
 			// Clean OS separators to dot notation.

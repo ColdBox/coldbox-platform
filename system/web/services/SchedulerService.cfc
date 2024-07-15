@@ -72,7 +72,11 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		}
 
 		// Check if the convention exists, else just build out a simple scheduler
-		if ( fileExists( variables.appPath & "config/Scheduler.cfc" ) || fileExists( variables.appPath & "config/Scheduler.bx" ) ) {
+		if (
+			fileExists( variables.appPath & "config/Scheduler.cfc" ) || fileExists(
+				variables.appPath & "config/Scheduler.bx"
+			)
+		) {
 			schedulerPath = (
 				variables.appMapping.len() ? "#variables.appMapping#.#appSchedulerConvention#" : appSchedulerConvention
 			);
