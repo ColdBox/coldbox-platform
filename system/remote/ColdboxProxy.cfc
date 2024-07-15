@@ -364,7 +364,11 @@ component serializable="false" accessors="true" {
 		var scriptName = CGI.SCRIPT_NAME;
 
 		// Only process this logic if hitting a remote proxy CFC directly and if ColdBox exists.
-		if ( len( scriptName ) < 5 || !reFindNoCase( "(cfc|bx)", right( scriptName, 4 ) ) || !verifyColdBox( throwOnNotExist = false ) ) {
+		if (
+			len( scriptName ) < 5 || !reFindNoCase( "(cfc|bx)", right( scriptName, 4 ) ) || !verifyColdBox(
+				throwOnNotExist = false
+			)
+		) {
 			return;
 		}
 

@@ -84,7 +84,11 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 		// Discover router: app or base
 		var configFilePath = variables.routingAppMapping & modernRouter.replace( ".", "/", "all" );
-		var routerType     =  ( fileExists( expandPath( configFilePath & ".cfc" ) ) || fileExists( expandPath( configFilePath & ".bx" ) ) ) ? "modern" : "base";
+		var routerType     = (
+			fileExists( expandPath( configFilePath & ".cfc" ) ) || fileExists(
+				expandPath( configFilePath & ".bx" )
+			)
+		) ? "modern" : "base";
 
 		// Check if base router mapped?
 		if ( NOT wirebox.getBinder().mappingExists( baseRouter ) ) {
@@ -996,7 +1000,11 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		}
 
 		// Clean up the path_info from index
-		results[ "pathInfo" ] = reReplaceNoCase( results[ "pathInfo" ], "^[/\\]index\.(cfm|bxm)", "" );
+		results[ "pathInfo" ] = reReplaceNoCase(
+			results[ "pathInfo" ],
+			"^[/\\]index\.(cfm|bxm)",
+			""
+		);
 
 		// Clean the scriptname from the pathinfo if it is the first item in case this is a nested application
 		if ( len( results[ "scriptName" ] ) ) {

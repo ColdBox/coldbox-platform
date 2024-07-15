@@ -767,7 +767,7 @@ component accessors="true" {
 			cleanupTaskRun();
 			// set next run time based on timeUnit and period
 			// ONLY if we are not forcing the task to run
-			if( !arguments.force ){
+			if ( !arguments.force ) {
 				setNextRunTime();
 			}
 		}
