@@ -202,7 +202,7 @@ component
 
 		// Rendering Region call?
 		if ( !isNull( arguments.name ) and len( arguments.name ) ) {
-			arguments = incorporateRenderingRegion( arguments.name, arguments );
+			arguments = incorporateRenderingRegion( arguments.name, event, arguments );
 		}
 
 		// Rendering an explicit view or do we need to get the view from the context or explicit context?
@@ -977,14 +977,15 @@ component
 	/**
 	 * Incorporate a rendering region into the arguments struct
 	 *
-	 * @name The name of the rendering region
-	 * @args The arguments struct to incorporate the rendering region into
+	 * @name  The name of the rendering region
+	 * @event The request context
+	 * @args  The arguments struct to incorporate the rendering region into
 	 *
 	 * @return The arguments processed
 	 *
 	 * @throws InvalidRenderingRegion - If the region name does not exist
 	 */
-	private function incorporateRenderingRegion( required name, any args ){
+	private function incorporateRenderingRegion( required name, required event, any args ){
 		var regions = event.getRenderingRegions();
 		// Verify Region
 		if ( !structKeyExists( regions, arguments.name ) ) {
