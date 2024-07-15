@@ -898,7 +898,7 @@ component
 		var cacheMap    = arguments.isLayout ? variables.layoutsRefMap : variables.viewsRefMap;
 		// The UDF is determined if you are in layout or view mode and if you are in module mode
 		var locationUDF = len( arguments.module ) ? variables[
-			arguments.isLayout ? "locateLayoutView" : "locateModuleView"
+			arguments.isLayout ? "locateModuleLayout" : "locateModuleView"
 		] : variables[ arguments.isLayout ? "locateLayout" : "locateView" ];
 
 		// Check cached paths first
