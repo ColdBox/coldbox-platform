@@ -171,6 +171,8 @@ component
 	 * @prePostExempt          If true, pre/post view interceptors will not be fired. By default they do fire
 	 * @name                   The name of the rendering region to render out, Usually all arguments are coming from the stored region but you override them using this function's arguments.
 	 * @viewVariables          A struct of variables to incorporate into the view's variables scope.
+	 *
+	 * @throws ViewNotSetException If no view is set to render or none found
 	 */
 	function view(
 		view                   = "",
@@ -196,27 +198,14 @@ component
 		var viewCacheProvider = variables.templateCache;
 		var iData             = arguments;
 		var explicitModule    = false;
-		var viewLocations     = { "viewPath" : "", "viewHelperPath" : "" };
 
 		// Rendering Region call?
 		if ( !isNull( arguments.name ) and len( arguments.name ) ) {
-			var regions = event.getRenderingRegions();
-			// Verify Region
-			if ( !structKeyExists( regions, arguments.name ) ) {
-				throw(
-					message = "Invalid rendering region: #arguments.name#",
-					detail  = "Valid regions are: #structKeyList( regions )#",
-					type    = "InvalidRenderingRegion"
-				);
-			}
-			// Incorporate region data
-			structAppend( arguments, regions[ arguments.name ] );
-			// Clean yourself like a ninja
-			structDelete( arguments, "name" );
+			arguments = incorporateRenderingRegion( arguments.name, arguments );
 		}
 
 		// Rendering an explicit view or do we need to get the view from the context or explicit context?
-		if ( NOT len( arguments.view ) ) {
+		if ( isNull( arguments.view ) || NOT len( arguments.view ) ) {
 			var explicitView = getExplicitView();
 			// Rendering an explicit Renderer view/layout combo?
 			if ( explicitView.keyExists( "view" ) && explicitView.view.len() ) {
@@ -225,7 +214,6 @@ component
 				arguments.module = explicitView.module;
 				arguments.args.append( explicitView.args, false );
 				arguments.viewVariables.append( explicitView.viewVariables, false );
-
 				// clear the explicit view now that it has been used
 				getRequestContext().removePrivateValue( "_explicitView" );
 			}
@@ -305,7 +293,7 @@ component
 
 		// No caching, just render
 		// Discover and cache view/helper locations
-		viewLocations = discoverViewPaths(
+		var viewLocations = discoverViewPaths(
 			view           = arguments.view,
 			module         = arguments.module,
 			explicitModule = explicitModule
@@ -483,7 +471,6 @@ component
 		var cbox_cacheKey      = "";
 		var cbox_cacheEntry    = "";
 		var cbox_cacheProvider = variables.templateCache;
-		var viewLocations      = { "viewPath" : "", "viewHelperPath" : "" };
 
 		// Setup the cache key
 		cbox_cacheKey = variables.templateCache.VIEW_CACHEKEY_PREFIX & "external-" & arguments.view & arguments.cacheSuffix;
@@ -496,13 +483,15 @@ component
 		if ( !isNull( local.cbox_renderedView ) ) {
 			return cbox_renderedView;
 		}
+
 		// Not in cache, render it
 		// Get view locations
-		viewLocations = discoverViewPaths(
+		var viewLocations = discoverViewPaths(
 			view           = arguments.view,
 			module         = "",
 			explicitModule = false
 		);
+
 		// Render External View
 		cbox_renderedView = renderViewComposite(
 			view           = view,
@@ -512,6 +501,7 @@ component
 			renderer       = this,
 			viewVariables  = arguments.viewVariables
 		);
+
 		// Are we caching it
 		if ( arguments.cache && variables.viewCaching ) {
 			cbox_cacheProvider.set(
@@ -552,7 +542,6 @@ component
 		var cbox_layoutLocationKey = "";
 		var cbox_layoutLocation    = "";
 		var iData                  = arguments;
-		var viewLocations          = { "viewPath" : "", "viewHelperPath" : "" };
 		var explicitView           = getExplicitView();
 
 		// Are we discovering implicit views: setting must be on and no view set.
@@ -584,19 +573,18 @@ component
 
 		// If no passed layout, then get it from implicit values
 		if ( isNull( arguments.layout ) ) {
-			// Strip off the .cfm extension if it is set
-			if ( len( cbox_implicitLayout ) GT 4 AND right( cbox_implicitLayout, 4 ) eq ".cfm" ) {
-				cbox_implicitLayout = left( cbox_implicitLayout, len( cbox_implicitLayout ) - 4 );
-			}
-			arguments.layout   = cbox_implicitLayout;
-			cbox_currentLayout = arguments.layout;
+			arguments.layout = cbox_implicitLayout;
 		}
 
-		// module default value
+		// Are we in an explicit or current module call?
 		if ( not len( arguments.module ) ) {
 			arguments.module = event.getCurrentModule();
 		} else {
 			cbox_explicitModule = true;
+		}
+		// Choose location algorithm if in module mode
+		if ( len( arguments.module ) ) {
+			cbox_locateUDF = variables.locateModuleLayout;
 		}
 
 		// Announce
@@ -610,68 +598,38 @@ component
 			if ( len( arguments.layout ) ) {
 				// Cleanup leading / in views, just in case
 				arguments.layout   = reReplace( arguments.layout, "^(\\|/)", "" );
-				cbox_currentLayout = arguments.layout & ".cfm";
+				cbox_currentLayout = arguments.layout;
 			} else {
 				cbox_currentLayout = "";
 			}
 		}
 
-		// Choose location algorithm if in module mode
-		if ( len( arguments.module ) ) {
-			cbox_locateUDF = variables.locateModuleLayout;
-		}
-
 		// If Layout is blank, then just delegate to the view
+		// No layout rendering.
 		if ( len( cbox_currentLayout ) eq 0 ) {
 			iData.renderedLayout = this.view();
 		} else {
-			// Layout location key
-			cbox_layoutLocationKey = cbox_currentLayout & arguments.module & cbox_explicitModule;
-
-			// Check cached paths first
-			if (
-				structKeyExists( variables.layoutsRefMap, cbox_layoutLocationKey )
-				AND
-				variables.isDiscoveryCaching
-			) {
-				lock name="#cbox_layoutLocationKey#.#lockName#" type="readonly" timeout="15" throwontimeout="true" {
-					cbox_layoutLocation = structFind( variables.layoutsRefMap, cbox_layoutLocationKey );
-				}
-			} else {
-				lock name="#cbox_layoutLocationKey#.#lockname#" type="exclusive" timeout="15" throwontimeout="true" {
-					cbox_layoutLocation = cbox_locateUDF(
-						layout         = cbox_currentLayout,
-						module         = arguments.module,
-						explicitModule = cbox_explicitModule
-					);
-					structInsert(
-						variables.layoutsRefMap,
-						cbox_layoutLocationKey,
-						cbox_layoutLocation,
-						true
-					);
-				}
-			}
-			// Get the view locations
-			viewLocations = discoverViewPaths(
-				view           = reverse( listRest( reverse( cbox_layoutLocation ), "." ) ),
-				module         = arguments.module,
-				explicitModule = cbox_explicitModule
+			// Discover the layout location + helpers
+			var layoutLocations = discoverViewPaths(
+				view          : cbox_currentLayout,
+				module        : arguments.module,
+				explicitModule: cbox_explicitModule,
+				isLayout      : true
 			);
 
-			// layout
+			// Render the layout with it's helpers
 			iData.renderedLayout = renderViewComposite(
-				view           = cbox_currentLayout,
-				viewPath       = viewLocations.viewPath,
-				viewHelperPath = viewLocations.viewHelperPath,
-				args           = args,
-				viewVariables  = arguments.viewVariables
+				view          : cbox_currentLayout,
+				viewPath      : layoutLocations.viewPath,
+				viewHelperPath: layoutLocations.viewHelperPath,
+				args          : args,
+				viewVariables : arguments.viewVariables
 			);
 		}
 
 		// Announce
 		if ( not arguments.prePostExempt ) {
-			announce( "postLayoutRender", iData.append( { viewPath : viewLocations.viewPath } ) );
+			announce( "postLayoutRender", iData.append( { viewPath : layoutLocations.viewPath } ) );
 		}
 
 		return iData.renderedLayout;
@@ -683,31 +641,29 @@ component
 	 * @layout The layout name
 	 */
 	function locateLayout( required layout ){
-		// Default path is the conventions
-		var event            = getRequestContext();
-		var layoutPath       = "/#variables.appMapping#/#variables.layoutsConvention#/#arguments.layout#";
-		var extLayoutPath    = "#variables.layoutsExternalLocation#/#arguments.layout#";
-		var moduleName       = event.getCurrentModule();
-		var moduleLayoutPath = "";
+		// Default path is the conventions location
+		var layoutPaths = [
+			"/#variables.appMapping#/#variables.layoutsConvention#/#arguments.layout#",
+			"#variables.layoutsExternalLocation#/#arguments.layout#"
+		];
 
-		// If layout exists in module and this is a module call, then use module layout.
-		if ( len( moduleName ) ) {
-			moduleLayoutPath = "#variables.modulesConfig[ moduleName ].mapping#/#variables.layoutsConvention#/#arguments.layout#";
-			if ( fileExists( expandPath( moduleLayoutPath ) ) ) {
-				return moduleLayoutPath;
+		// Try to locate the view
+		for ( var thisLayoutPath in layoutPaths ) {
+			reReplace( thisLayoutPath, "//", "/", "all" );
+			if ( fileExists( expandPath( thisLayoutPath & ".cfm" ) ) ) {
+				return thisLayoutPath & ".cfm";
+			}
+			if ( fileExists( expandPath( thisLayoutPath & ".bxm" ) ) ) {
+				return thisLayoutPath & ".bxm";
 			}
 		}
 
-		// Check if layout does not exists in Conventions, but in the ext location
-		if ( NOT fileExists( expandPath( layoutPath ) ) AND fileExists( expandPath( extLayoutPath ) ) ) {
-			return extLayoutPath;
-		}
-
-		return layoutPath;
+		// If all fails, return the path as is
+		return arguments.layout;
 	}
 
 	/**
-	 * Locate a layout in the conventions system
+	 * Locate a layout in the module system
 	 *
 	 * @layout         The layout name
 	 * @module         The name of the module we are searching for
@@ -718,53 +674,84 @@ component
 		module                 = "",
 		boolean explicitModule = false
 	){
-		var event                  = getRequestContext();
-		var parentModuleLayoutPath = "";
-		var parentCommonLayoutPath = "";
-		var moduleLayoutPath       = "";
-		var moduleName             = "";
+		var event = getRequestContext();
 
 		// Explicit Module layout lookup?
 		if ( len( arguments.module ) and arguments.explicitModule ) {
-			return "#variables.modulesConfig[ arguments.module ].mapping#/#variables.modulesConfig[ arguments.module ].conventions.layoutsLocation#/#arguments.layout#";
+			var explicitLayout = "#variables.modulesConfig[ arguments.module ].mapping#/#variables.modulesConfig[ arguments.module ].conventions.layoutsLocation#/#arguments.layout#";
+			if ( fileExists( expandPath( explicitLayout & ".cfm" ) ) ) {
+				return explicitLayout & ".cfm";
+			}
+			if ( fileExists( expandPath( explicitLayout & ".bxm" ) ) ) {
+				return explicitLayout & ".bxm";
+			}
+			throw(
+				message = "The layout [#arguments.layout#] was not found in the module path: [#explicitLayout#]",
+				detail  = "Please verify the layout exists in the module.",
+				type    = "Renderer.LayoutNotFoundException"
+			)
 		}
 
 		// Declare Locations
-		moduleName             = event.getCurrentModule();
-		parentModuleLayoutPath = "/#variables.appMapping#/#variables.layoutsConvention#/modules/#moduleName#/#arguments.layout#";
-		parentCommonLayoutPath = "/#variables.appMapping#/#variables.layoutsConvention#/modules/#arguments.layout#";
-		moduleLayoutPath       = "#variables.modulesConfig[ moduleName ].mapping#/#variables.modulesConfig[ moduleName ].conventions.layoutsLocation#/#arguments.layout#";
+		var moduleName             = event.getCurrentModule();
+		var parentModuleLayoutPath = "/#variables.appMapping#/#variables.layoutsConvention#/modules/#moduleName#/#arguments.layout#";
+		var parentCommonLayoutPath = "/#variables.appMapping#/#variables.layoutsConvention#/modules/#arguments.layout#";
+		var moduleLayoutPath       = "#variables.modulesConfig[ moduleName ].mapping#/#variables.modulesConfig[ moduleName ].conventions.layoutsLocation#/#arguments.layout#";
 
 		// Check parent view order setup
 		if ( variables.modulesConfig[ moduleName ].layoutParentLookup ) {
 			// We check if layout is overridden in parent first.
-			if ( fileExists( expandPath( parentModuleLayoutPath ) ) ) {
-				return parentModuleLayoutPath;
+			if ( fileExists( expandPath( parentModuleLayoutPath & ".cfm" ) ) ) {
+				return parentModuleLayoutPath & ".cfm";
 			}
+			if ( fileExists( expandPath( parentModuleLayoutPath & ".bxm" ) ) ) {
+				return parentModuleLayoutPath & ".bxm";
+			}
+
 			// Check if parent has a common layout override
-			if ( fileExists( expandPath( parentCommonLayoutPath ) ) ) {
-				return parentCommonLayoutPath;
+			if ( fileExists( expandPath( parentCommonLayoutPath & ".cfm" ) ) ) {
+				return parentCommonLayoutPath & ".cfm";
 			}
+			if ( fileExists( expandPath( parentCommonLayoutPath & ".bxm" ) ) ) {
+				return parentCommonLayoutPath & ".bxm";
+			}
+
 			// Check module
-			if ( fileExists( expandPath( moduleLayoutPath ) ) ) {
-				return moduleLayoutPath;
+			if ( fileExists( expandPath( moduleLayoutPath & ".cfm" ) ) ) {
+				return moduleLayoutPath & ".cfm";
 			}
+			if ( fileExists( expandPath( moduleLayoutPath & ".bxm" ) ) ) {
+				return moduleLayoutPath & ".bxm";
+			}
+
 			// Return normal layout lookup
 			return locateLayout( arguments.layout );
 		}
 
 		// If we reach here then we are doing module lookup first then if not parent.
-		if ( fileExists( expandPath( moduleLayoutPath ) ) ) {
-			return moduleLayoutPath;
+		if ( fileExists( expandPath( moduleLayoutPath & ".cfm" ) ) ) {
+			return moduleLayoutPath & ".cfm";
 		}
+		if ( fileExists( expandPath( moduleLayoutPath & ".bxm" ) ) ) {
+			return moduleLayoutPath & ".bxm";
+		}
+
 		// We check if layout is overridden in parent first.
-		if ( fileExists( expandPath( parentModuleLayoutPath ) ) ) {
-			return parentModuleLayoutPath;
+		if ( fileExists( expandPath( parentModuleLayoutPath & ".cfm" ) ) ) {
+			return parentModuleLayoutPath & ".cfm";
 		}
+		if ( fileExists( expandPath( parentModuleLayoutPath & ".bxm" ) ) ) {
+			return parentModuleLayoutPath & ".bxm";
+		}
+
 		// Check if parent has a common layout override
-		if ( fileExists( expandPath( parentCommonLayoutPath ) ) ) {
-			return parentCommonLayoutPath;
+		if ( fileExists( expandPath( parentCommonLayoutPath & ".cfm" ) ) ) {
+			return parentCommonLayoutPath & ".cfm";
 		}
+		if ( fileExists( expandPath( parentCommonLayoutPath & ".bxm" ) ) ) {
+			return parentCommonLayoutPath & ".bxm";
+		}
+
 		// Return normal layout lookup
 		return locateLayout( arguments.layout );
 	}
@@ -775,20 +762,29 @@ component
 	 * @view The view to locate
 	 */
 	function locateView( required view ){
-		// Default path is the conventions
-		var viewPath    = "/#variables.appMapping#/#variables.viewsConvention#/#arguments.view#";
-		var extViewPath = "#variables.viewsExternalLocation#/#arguments.view#";
+		// Default path is the conventions location, then the external location
+		var viewPaths = [
+			"/#variables.appMapping#/#variables.viewsConvention#/#arguments.view#",
+			"#variables.viewsExternalLocation#/#arguments.view#"
+		];
 
-		// Check if view does not exists in Conventions
-		if ( NOT fileExists( expandPath( viewPath & ".cfm" ) ) AND fileExists( expandPath( extViewPath & ".cfm" ) ) ) {
-			return extViewPath;
+		// Try to locate the view
+		for ( var thisViewPath in viewPaths ) {
+			reReplace( thisViewPath, "//", "/", "all" );
+			if ( fileExists( expandPath( thisViewPath & ".cfm" ) ) ) {
+				return thisViewPath & ".cfm";
+			}
+			if ( fileExists( expandPath( thisViewPath & ".bxm" ) ) ) {
+				return thisViewPath & ".bxm";
+			}
 		}
 
-		return viewPath;
+		// If all fails, return the path as is
+		return arguments.view;
 	}
 
 	/**
-	 * Locate a view in the conventions system
+	 * Locate a view in the module system
 	 *
 	 * @view           The view name
 	 * @module         The name of the module we are searching for
@@ -799,51 +795,80 @@ component
 		module                 = "",
 		boolean explicitModule = false
 	){
-		var parentModuleViewPath = "";
-		var parentCommonViewPath = "";
-		var moduleViewPath       = "";
-		var moduleName           = "";
-
 		// Explicit Module view lookup?
 		if ( len( arguments.module ) and arguments.explicitModule ) {
-			return "#variables.modulesConfig[ arguments.module ].mapping#/#variables.modulesConfig[ arguments.module ].conventions.viewsLocation#/#arguments.view#";
+			var explicitView = "#variables.modulesConfig[ arguments.module ].mapping#/#variables.modulesConfig[ arguments.module ].conventions.viewsLocation#/#arguments.view#";
+			if ( fileExists( expandPath( explicitView & ".cfm" ) ) ) {
+				return explicitView & ".cfm";
+			}
+			if ( fileExists( expandPath( explicitView & ".bxm" ) ) ) {
+				return explicitView & ".bxm";
+			}
+			throw(
+				message = "The view [#arguments.view#] was not found in the module path: [#explicitView#]",
+				detail  = "Please verify the view exists in the module.",
+				type    = "Renderer.ViewNotFoundException"
+			)
 		}
 
 		// Declare Locations
-		moduleName           = arguments.module;
-		parentModuleViewPath = "/#variables.appMapping#/#variables.viewsConvention#/modules/#moduleName#/#arguments.view#";
-		parentCommonViewPath = "/#variables.appMapping#/#variables.viewsConvention#/modules/#arguments.view#";
-		moduleViewPath       = "#variables.modulesConfig[ moduleName ].mapping#/#variables.modulesConfig[ moduleName ].conventions.viewsLocation#/#arguments.view#";
+		var moduleName           = arguments.module;
+		var parentModuleViewPath = "/#variables.appMapping#/#variables.viewsConvention#/modules/#moduleName#/#arguments.view#";
+		var parentCommonViewPath = "/#variables.appMapping#/#variables.viewsConvention#/modules/#arguments.view#";
+		var moduleViewPath       = "#variables.modulesConfig[ moduleName ].mapping#/#variables.modulesConfig[ moduleName ].conventions.viewsLocation#/#arguments.view#";
 
 		// Check parent view order setup
 		if ( variables.modulesConfig[ moduleName ].viewParentLookup ) {
 			// We check if view is overridden in parent first.
 			if ( fileExists( expandPath( parentModuleViewPath & ".cfm" ) ) ) {
-				return parentModuleViewPath;
+				return parentModuleViewPath & ".cfm";
 			}
+			if ( fileExists( expandPath( parentModuleViewPath & ".bxm" ) ) ) {
+				return parentModuleViewPath & ".bxm";
+			}
+
 			// Check if parent has a common view override
 			if ( fileExists( expandPath( parentCommonViewPath & ".cfm" ) ) ) {
-				return parentCommonViewPath;
+				return parentCommonViewPath & ".cfm";
 			}
+			if ( fileExists( expandPath( parentCommonViewPath & ".bxm" ) ) ) {
+				return parentCommonViewPath & ".bxm";
+			}
+
 			// Check module for view
 			if ( fileExists( expandPath( moduleViewPath & ".cfm" ) ) ) {
-				return moduleViewPath;
+				return moduleViewPath & ".cfm";
 			}
+			if ( fileExists( expandPath( moduleViewPath & ".bxm" ) ) ) {
+				return moduleViewPath & ".bxm";
+			}
+
 			// Return normal view lookup
 			return locateView( arguments.view );
 		}
 
-		// If we reach here then we are doing module lookup first then if not parent.
+		// If we reach here then we are doing module lookup first then if not the parent.
 		if ( fileExists( expandPath( moduleViewPath & ".cfm" ) ) ) {
-			return moduleViewPath;
+			return moduleViewPath & ".cfm";
 		}
+		if ( fileExists( expandPath( moduleViewPath & ".bxm" ) ) ) {
+			return moduleViewPath & ".bxm";
+		}
+
 		// We check if view is overridden in parent first.
 		if ( fileExists( expandPath( parentModuleViewPath & ".cfm" ) ) ) {
-			return parentModuleViewPath;
+			return parentModuleViewPath & ".cfm";
 		}
+		if ( fileExists( expandPath( parentModuleViewPath & ".bxm" ) ) ) {
+			return parentModuleViewPath & ".bxm";
+		}
+
 		// Check if parent has a common view override
 		if ( fileExists( expandPath( parentCommonViewPath & ".cfm" ) ) ) {
-			return parentCommonViewPath;
+			return parentCommonViewPath & ".cfm";
+		}
+		if ( fileExists( expandPath( parentCommonViewPath & ".bxm" ) ) ) {
+			return parentCommonViewPath & ".bxm";
 		}
 
 		// Return normal view lookup
@@ -851,72 +876,71 @@ component
 	}
 
 	/**
-	 * Discover view+helper path locations
+	 * Discover view+helper path locations.  The returned helper and view locations will have the appropriate extension.
 	 *
 	 * @view           The view to discover
 	 * @module         The module address
 	 * @explicitModule Is the module explicit or discoverable.
+	 * @isLayout       Are we discovering a layout or a view
 	 *
 	 * @return struct  = { viewPath:string, viewHelperPath:string }
 	 */
 	function discoverViewPaths(
 		required view,
 		module,
-		boolean explicitModule = false
+		boolean explicitModule = false,
+		boolean isLayout       = false
 	){
-		var locationKey = arguments.view & arguments.module & arguments.explicitModule;
-		var locationUDF = variables.locateView;
-		var refMap      = { viewPath : "", viewHelperPath : [] };
+		var locationKey = "#arguments.view#-#arguments.module#-#arguments.explicitModule#-#arguments.isLayout#";
+		var results     = { "viewPath" : "", "viewHelperPath" : [] };
+		// If you are in layout mode, then use the layout reference map, else use the view reference map
+		var cacheMap    = arguments.isLayout ? variables.layoutsRefMap : variables.viewsRefMap;
+		// The UDF is determined if you are in layout or view mode and if you are in module mode
+		var locationUDF = len( arguments.module ) ? variables[
+			arguments.isLayout ? "locateLayoutView" : "locateModuleView"
+		] : variables[ arguments.isLayout ? "locateLayout" : "locateView" ];
 
-		// Check cached paths first --->
-		if ( structKeyExists( variables.viewsRefMap, locationKey ) AND variables.isDiscoveryCaching ) {
-			return structFind( variables.viewsRefMap, locationKey );
+		// Check cached paths first
+		if ( structKeyExists( cacheMap, locationKey ) AND variables.isDiscoveryCaching ) {
+			return cacheMap[ locationKey ];
 		}
 
-		if ( left( arguments.view, 1 ) EQ "/" ) {
-			refMap = { viewPath : arguments.view, viewHelperPath : [] };
+		// If already a full path, then just return it
+		// Else go locate it according to the locationUDF
+		if ( fileExists( arguments.view ) ) {
+			results.viewPath = arguments.view;
 		} else {
-			// view discovery based on relative path
-
-			// module change mode
-			if ( len( arguments.module ) ) {
-				locationUDF = variables.locateModuleView;
-			}
-
-			// Locate the view to render according to discovery algorithm and create cache map
-			refMap = {
-				viewPath : locationUDF(
-					arguments.view,
-					arguments.module,
-					arguments.explicitModule
-				),
-				viewHelperPath : []
-			};
-		}
-
-		var dPath = getDirectoryFromPath( refMap.viewPath );
-
-		// Check for directory helper convention first
-		if ( fileExists( expandPath( dPath & listLast( dPath, "/" ) & "Helper.cfm" ) ) ) {
-			refMap.viewHelperPath.append( dPath & listLast( dPath, "/" ) & "Helper.cfm" );
-		}
-
-		// Check for view helper convention second
-		if ( fileExists( expandPath( refMap.viewPath & "Helper.cfm" ) ) ) {
-			refMap.viewHelperPath.append( refMap.viewPath & "Helper.cfm" );
-		}
-
-		// Lock and create view entry
-		if ( NOT structKeyExists( variables.viewsRefMap, locationKey ) ) {
-			structInsert(
-				variables.viewsRefMap,
-				locationKey,
-				refMap,
-				true
+			results.viewPath = locationUDF(
+				arguments.view,
+				arguments.module,
+				arguments.explicitModule
 			);
 		}
 
-		return refMap;
+		// Check for directory helper convention first
+		var dPath = getDirectoryFromPath( results.viewPath );
+		if ( fileExists( expandPath( dPath & listLast( dPath, "/" ) & "Helper.cfm" ) ) ) {
+			results.viewHelperPath.append( dPath & listLast( dPath, "/" ) & "Helper.cfm" );
+		}
+		if ( fileExists( expandPath( dPath & listLast( dPath, "/" ) & "Helper.bxm" ) ) ) {
+			results.viewHelperPath.append( dPath & listLast( dPath, "/" ) & "Helper.bxm" );
+		}
+
+		// Check for view helper convention second
+		var vPath = results.viewPath.listFirst( "." );
+		if ( fileExists( expandPath( vPath & "Helper.cfm" ) ) ) {
+			results.viewHelperPath.append( vPath & "Helper.cfm" );
+		}
+		if ( fileExists( expandPath( vPath & "Helper.bxm" ) ) ) {
+			results.viewHelperPath.append( vPath & "Helper.bxm" );
+		}
+
+		// Create the cache entry
+		if ( NOT structKeyExists( cacheMap, locationKey ) ) {
+			cacheMap[ locationKey ] = results;
+		}
+
+		return results;
 	}
 
 	/************************************** PRIVATE *********************************************/
@@ -947,6 +971,33 @@ component
 		}
 
 		return this;
+	}
+
+	/**
+	 * Incorporate a rendering region into the arguments struct
+	 *
+	 * @name The name of the rendering region
+	 * @args The arguments struct to incorporate the rendering region into
+	 *
+	 * @return The arguments processed
+	 *
+	 * @throws InvalidRenderingRegion - If the region name does not exist
+	 */
+	private function incorporateRenderingRegion( required name, any args ){
+		var regions = event.getRenderingRegions();
+		// Verify Region
+		if ( !structKeyExists( regions, arguments.name ) ) {
+			throw(
+				message = "Invalid rendering region: #arguments.name#",
+				detail  = "Valid regions are: #structKeyList( regions )#",
+				type    = "InvalidRenderingRegion"
+			);
+		}
+		// Incorporate region data
+		structAppend( arguments.args, regions[ arguments.name ] );
+		// Clean yourself like a ninja
+		structDelete( arguments.args, "name" );
+		return arguments.args;
 	}
 
 }
