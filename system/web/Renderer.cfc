@@ -921,11 +921,11 @@ component
 
 		// Check for directory helper convention first
 		var dPath = getDirectoryFromPath( results.viewPath );
-		if ( fileExists( expandPath( dPath & listLast( dPath, "/" ) & "Helper.cfm" ) ) ) {
-			results.viewHelperPath.append( dPath & listLast( dPath, "/" ) & "Helper.cfm" );
+		if ( fileExists( expandPath( dPath & listLast( dPath, "\/" ) & "Helper.cfm" ) ) ) {
+			results.viewHelperPath.append( dPath & listLast( dPath, "\/" ) & "Helper.cfm" );
 		}
-		if ( fileExists( expandPath( dPath & listLast( dPath, "/" ) & "Helper.bxm" ) ) ) {
-			results.viewHelperPath.append( dPath & listLast( dPath, "/" ) & "Helper.bxm" );
+		if ( fileExists( expandPath( dPath & listLast( dPath, "\/" ) & "Helper.bxm" ) ) ) {
+			results.viewHelperPath.append( dPath & listLast( dPath, "\/" ) & "Helper.bxm" );
 		}
 
 		// Check for view helper convention second
