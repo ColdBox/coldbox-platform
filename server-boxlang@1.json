@@ -3,7 +3,7 @@
         "cfengine":"boxlang",
         "serverHomeDirectory":".engine/boxlang"
     },
-    "name":"coldbox-boxlang@1",
+    "name":"coldbox-boxlang",
     "force":true,
     "openBrowser":false,
     "web":{
@@ -19,14 +19,16 @@
         }
     },
     "JVM":{
-        "heapSize":"1024"
+        "heapSize":"1024",
+		"javaVersion":"openjdk21_jdk"
     },
     "cfconfig":{
         "file":".cfconfig.json"
     },
     "env":{
+		"BOXLANG_DEBUG": true
     },
 	"scripts" : {
-		"onServerInitialInstall":"install bx-mail,bx-mysql,bx-derby,bx-compat"
+		"onServerInitialInstall":"install bx-mail,bx-mysql,bx-derby,bx-compat,bx-unsafe-evaluate"
 	}
 }
