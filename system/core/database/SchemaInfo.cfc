@@ -191,9 +191,9 @@ component singleton {
 	/**
 	 * Get the query param type for a specific datasource for a date/time column
 	 *
-	 * @dsn      The datasource name
-	 * @username The username to use
-	 * @password The password to use
+	 * @dsn        The datasource name
+	 * @username   The username to use
+	 * @password   The password to use
 	 * @deprecated There are no longer any instances where this would be different between engines.  Deprecate in 7.x and remove in 8x.
 	 */
 	public string function getQueryParamDateTimeType(
