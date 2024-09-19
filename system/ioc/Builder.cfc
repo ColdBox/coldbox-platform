@@ -291,12 +291,20 @@ component serializable="false" accessors="true" {
 					.rows
 					.toList( chr( 13 ) & chr( 10 ) );
 
-				throw(
-					type        : "Builder.BuildCFCDependencyException",
-					message     : "Error building: #arguments.mapping.getName()# -> #e.message# #e.detail#.",
-					detail      : "DSL: #len( arguments.mapping.getDSL() ) ? arguments.mapping.getDSL() : "none"#; Path: #arguments.mapping.getPath()#; Error Location: #reducedTagContext#",
-					extendedInfo: "Current Injector -> #variables.injector.getName()#"
-				);
+				if( server.keyExists( "boxlang" ) ){
+					throw(
+						type        : "Builder.BuildCFCDependencyException",
+						extendedInfo: "Current Injector -> #variables.injector.getName()#",
+						object : e
+					);
+				} else {
+					throw(
+						type        : "Builder.BuildCFCDependencyException",
+						message     : "Error building: #arguments.mapping.getName()# -> #e.message# #e.detail#.",
+						detail      : "DSL: #len( arguments.mapping.getDSL() ) ? arguments.mapping.getDSL() : "none"#; Path: #arguments.mapping.getPath()#; Error Location: #reducedTagContext#",
+						extendedInfo: "Current Injector -> #variables.injector.getName()#"
+					);
+				}
 			}
 		}
 

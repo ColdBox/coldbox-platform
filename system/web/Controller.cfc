@@ -86,6 +86,10 @@ component serializable="false" accessors="true" {
 	 */
 	property name="asyncManager";
 
+	// BoxLang Detection
+	variables.IS_BOXLANG = server.keyExists( "boxlang" );
+	variables.IS_CLI = variables.IS_BOXLANG && server.boxlang.cliMode ? true : false;
+
 	/**
 	 * Constructor
 	 *

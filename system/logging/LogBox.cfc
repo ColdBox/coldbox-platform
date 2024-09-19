@@ -72,6 +72,9 @@ component accessors="true" {
 	 * The default configuration class to use when no configuration is passed to the init method.
 	 */
 	variables.DEFAULT_CONFIG = "coldbox.system.logging.config.DefaultConfig";
+	// BoxLang Detection
+	variables.IS_BOXLANG = server.keyExists( "boxlang" );
+	variables.IS_CLI = variables.IS_BOXLANG && server.boxlang.cliMode ? true : false;
 
 	/**
 	 * Constructor
