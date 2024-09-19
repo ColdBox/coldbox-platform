@@ -291,11 +291,11 @@ component serializable="false" accessors="true" {
 					.rows
 					.toList( chr( 13 ) & chr( 10 ) );
 
-				if( server.keyExists( "boxlang" ) ){
+				if ( server.keyExists( "boxlang" ) ) {
 					throw(
 						type        : "Builder.BuildCFCDependencyException",
 						extendedInfo: "Current Injector -> #variables.injector.getName()#",
-						object : e
+						object      : e
 					);
 				} else {
 					throw(

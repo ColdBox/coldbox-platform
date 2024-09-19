@@ -13,7 +13,7 @@ component {
 
 	// BoxLang Detection
 	this.IS_BOXLANG = server.keyExists( "boxlang" );
-	this.IS_CLI = this.IS_BOXLANG && server.boxlang.cliMode ? true : false;
+	this.IS_CLI     = this.IS_BOXLANG && server.boxlang.cliMode ? true : false;
 
 	// JDK Version
 	this.JDK_VERSION = createObject( "java", "java.lang.System" ).getProperty( "java.version" );

@@ -73,8 +73,8 @@ component accessors="true" {
 	 */
 	variables.DEFAULT_CONFIG = "coldbox.system.logging.config.DefaultConfig";
 	// BoxLang Detection
-	variables.IS_BOXLANG = server.keyExists( "boxlang" );
-	variables.IS_CLI = variables.IS_BOXLANG && server.boxlang.cliMode ? true : false;
+	variables.IS_BOXLANG     = server.keyExists( "boxlang" );
+	variables.IS_CLI         = variables.IS_BOXLANG && server.boxlang.cliMode ? true : false;
 
 	/**
 	 * Constructor

@@ -137,8 +137,8 @@ component serializable="false" accessors="true" {
 	 * The default binder class to use when no binder is passed to the injector
 	 */
 	variables.DEFAULT_BINDER = "coldbox.system.ioc.config.DefaultBinder";
-	variables.IS_BOXLANG = server.keyExists( "boxlang" );
-	variables.IS_CLI = variables.IS_BOXLANG && server.boxlang.cliMode ? true : false;
+	variables.IS_BOXLANG     = server.keyExists( "boxlang" );
+	variables.IS_CLI         = variables.IS_BOXLANG && server.boxlang.cliMode ? true : false;
 
 	/**
 	 * WireBox can be constructed with no parameters and it will use the default binder: `coldbox.system.ioc.config.DefaultBinder` for configuration
