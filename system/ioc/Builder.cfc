@@ -265,45 +265,11 @@ component serializable="false" accessors="true" {
 				true
 			);
 
-			try {
-				// Invoke constructor, we do this because using invoke() can be slow
-				if ( constructorName eq "init" ) {
-					oModel.init( argumentCollection = constructorArgCollection );
-				} else {
-					invoke(
-						oModel,
-						constructorName,
-						constructorArgCollection
-					);
-				}
-			} catch ( any e ) {
-				var reducedTagContext = e.tagContext
-					.reduce( function( result, file ){
-						if ( !result.done ) {
-							if ( file.template.listLast( "/\" ) == "Builder.cfc" ) {
-								result.done = true;
-							} else {
-								result.rows.append( "#file.template#:#file.line#" );
-							}
-						}
-						return result;
-					}, { rows : [], done : false } )
-					.rows
-					.toList( chr( 13 ) & chr( 10 ) );
-
-				var throwAttributes = {
-					type         : "Builder.BuildCFCDependencyException",
-					extendedInfo : "Current Injector -> #variables.injector.getName()#"
-				};
-
-				if ( server.keyExists( "boxlang" ) ) {
-					throwAttributes.object = e;
-				} else {
-					throwAttributes.message = "Error building: #arguments.mapping.getName()# -> #e.message# #e.detail#.";
-					throwAttributes.detail  = "DSL: #len( arguments.mapping.getDSL() ) ? arguments.mapping.getDSL() : "none"#; Path: #arguments.mapping.getPath()#; Error Location: #reducedTagContext#";
-				}
-				throw( argumentCollection = throwAttributes );
-			}
+			invoke(
+				oModel,
+				constructorName,
+				constructorArgCollection
+			);
 		}
 
 		return oModel;
