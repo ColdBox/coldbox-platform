@@ -292,16 +292,15 @@ component serializable="false" accessors="true" {
 					.toList( chr( 13 ) & chr( 10 ) );
 
 				var throwAttributes = {
-					type        : "Builder.BuildCFCDependencyException",
-					extendedInfo: "Current Injector -> #variables.injector.getName()#"
+					type         : "Builder.BuildCFCDependencyException",
+					extendedInfo : "Current Injector -> #variables.injector.getName()#"
 				};
 
 				if ( server.keyExists( "boxlang" ) ) {
 					throwAttributes.object = e;
-
 				} else {
 					throwAttributes.message = "Error building: #arguments.mapping.getName()# -> #e.message# #e.detail#.";
-					throwAttributes.detail = "DSL: #len( arguments.mapping.getDSL() ) ? arguments.mapping.getDSL() : "none"#; Path: #arguments.mapping.getPath()#; Error Location: #reducedTagContext#";
+					throwAttributes.detail  = "DSL: #len( arguments.mapping.getDSL() ) ? arguments.mapping.getDSL() : "none"#; Path: #arguments.mapping.getPath()#; Error Location: #reducedTagContext#";
 				}
 				throw( argumentCollection = throwAttributes );
 			}
