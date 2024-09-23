@@ -146,7 +146,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 */
 	function afterTests(){
 		if ( this.unLoadColdbox ) {
-			getColdBoxVirtualApp().shutdown();
+			reset();
 		}
 	}
 
