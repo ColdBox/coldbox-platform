@@ -4,7 +4,28 @@
  * ---
  * This component is mostly used as a delegate to have flow control methods for fluent beauty
  */
-component singleton {
+component {
+
+	/**
+	 * This function will execute the target closure and return the delegated object so you
+	 * can continue chaining.
+	 * <pre>
+	 *  // Example Flow
+	 *  user
+	 * 	.setName( "Luis" )
+	 *  .setAge( 21 )
+	 *  .peek( user => println( user.getName() ) )
+	 *  .setEmail( "lmajano@ortus.com" )
+	 * </pre>
+	 *
+	 * @target The closure to execute with the delegate. We pass the target of the delegate as the first argument.
+	 *
+	 * @return Returns itself
+	 */
+	function peek( required target ) cbMethod{
+		arguments.target( $parent );
+		return $parent;
+	}
 
 	/**
 	 * This function evaluates the target boolean expression and if `true` it will execute the `success` closure
@@ -26,7 +47,7 @@ component singleton {
 		} else if ( !isNull( arguments.failure ) ) {
 			arguments.failure();
 		}
-		return this;
+		return $parent;
 	}
 
 	/**
@@ -49,7 +70,7 @@ component singleton {
 		} else if ( !isNull( arguments.failure ) ) {
 			arguments.failure();
 		}
-		return this;
+		return $parent;
 	}
 
 	/**
@@ -75,7 +96,7 @@ component singleton {
 				detail  = arguments.detail
 			);
 		}
-		return this;
+		return $parent;
 	}
 
 	/**
@@ -101,7 +122,7 @@ component singleton {
 				detail  = arguments.detail
 			);
 		}
-		return this;
+		return $parent;
 	}
 
 	/**
