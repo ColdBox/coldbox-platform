@@ -21,7 +21,7 @@
     "JVM":{
         "heapSize":"1024",
 		"javaVersion":"openjdk21_jdk",
-		"args": "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8888"
+		"args": "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=9999"
     },
     "cfconfig":{
         "file":".cfconfig.json"
@@ -30,6 +30,6 @@
 		"BOXLANG_DEBUG": true
     },
 	"scripts" : {
-		"onServerInitialInstall":"install bx-mail,bx-mysql,bx-derby,bx-compat,bx-unsafe-evaluate"
+		"onServerInitialInstall":"install bx-mail,bx-mysql,bx-derby,bx-compat-cfml,bx-unsafe-evaluate --!savesettings"
 	}
 }
