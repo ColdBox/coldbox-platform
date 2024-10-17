@@ -39,10 +39,10 @@
         ]
     },
     "dependencies":{
-        "cbproxies":"^1.0.1+13"
+        "cbproxies":"^1"
     },
     "devDependencies":{
-        "testbox":"^5.1.0+2",
+        "testbox":"*",
         "commandbox-dotenv":"*",
         "commandbox-cfconfig":"*",
         "commandbox-cfformat":"*"
