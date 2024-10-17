@@ -992,7 +992,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * Helper method to deal with ACF's overload of the page context response, come on Adobe, get your act together!
 	 */
 	private function getPageContextResponse(){
-		return server.keyExists( "lucee" ) || server.keyExists( "boxlang") ? getPageContext().getResponse() : getPageContext()
+		return server.keyExists( "lucee" ) || server.keyExists( "boxlang" ) ? getPageContext().getResponse() : getPageContext()
 			.getResponse()
 			.getResponse();
 	}
