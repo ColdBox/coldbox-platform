@@ -4,7 +4,7 @@
  * ---
  * This component is mostly used as a delegate to have flow control methods for fluent beauty
  */
-component accessors = true {
+component accessors=true {
 
 	/**
 	 * Pivots if used in delegate or normal mode.
