@@ -4,7 +4,14 @@
  * ---
  * This component is mostly used as a delegate to have flow control methods for fluent beauty
  */
-component {
+component accessors = true {
+
+	/**
+	 * Pivots if used in delegate or normal mode.
+	 */
+	private function getParent(){
+		return isNull( $parent ) ? this : $parent;
+	}
 
 	/**
 	 * This function will execute the target closure and return the delegated object so you
@@ -23,8 +30,8 @@ component {
 	 * @return Returns itself
 	 */
 	function peek( required target ) cbMethod{
-		arguments.target( $parent );
-		return $parent;
+		arguments.target( getParent() );
+		return getParent();
 	}
 
 	/**
@@ -47,7 +54,7 @@ component {
 		} else if ( !isNull( arguments.failure ) ) {
 			arguments.failure();
 		}
-		return $parent;
+		return getParent();
 	}
 
 	/**
@@ -70,7 +77,7 @@ component {
 		} else if ( !isNull( arguments.failure ) ) {
 			arguments.failure();
 		}
-		return $parent;
+		return getParent();
 	}
 
 	/**
@@ -96,7 +103,7 @@ component {
 				detail  = arguments.detail
 			);
 		}
-		return $parent;
+		return getParent();
 	}
 
 	/**
@@ -122,7 +129,7 @@ component {
 				detail  = arguments.detail
 			);
 		}
-		return $parent;
+		return getParent();
 	}
 
 	/**
