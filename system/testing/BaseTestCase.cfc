@@ -138,7 +138,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 			variables.controller.getRequestService().removeContext();
 
 			// Reset the buffer if not committed
-			if( !getPageContextResponse().isCommitted() ){
+			if ( !getPageContextResponse().isCommitted() ) {
 				getPageContextResponse().reset();
 			}
 
