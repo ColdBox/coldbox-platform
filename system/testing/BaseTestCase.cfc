@@ -136,7 +136,12 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 			}
 			// remove context + reset headers
 			variables.controller.getRequestService().removeContext();
-			getPageContextResponse().reset();
+
+			// Reset the buffer if not committed
+			if( !getPageContextResponse().isCommitted() ){
+				getPageContextResponse().reset();
+			}
+
 			structDelete( request, "_lastInvalidEvent" );
 		}
 	}
