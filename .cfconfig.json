@@ -23,6 +23,9 @@
         }
     },
     "cacheDefaultObject": "default",
+	"experimental" : {
+		"compiler": "asm"
+	},
     "datasources": {
         "coolblog": {
 			"allowAlter":true,
