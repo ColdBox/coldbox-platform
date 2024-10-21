@@ -24,6 +24,7 @@
     },
     "cacheDefaultObject": "default",
 	"experimental" : {
+		"ASTCapture": false,
 		"compiler": "asm"
 	},
     "datasources": {
