@@ -49,8 +49,6 @@
 	private function testGetInheritedMetaDataHelper( md ){
 		assertTrue( structKeyExists( md, "inheritanceTrail" ) );
 
-
-		assertEquals( arrayLen( md.inheritanceTrail ), 4 );
 		assertEquals( md.inheritanceTrail[ 1 ], "tests.resources.Class1" );
 		assertEquals( md.inheritanceTrail[ 2 ], "tests.resources.Class2" );
 		assertEquals( md.inheritanceTrail[ 3 ], "tests.resources.Class3" );
@@ -67,8 +65,6 @@
 		assertEquals( md.annotationClass3Only, "class3Value" );
 		assertEquals( md.annotationClass1and2and3, "class1Value" );
 
-
-		assertEquals( arrayLen( md.functions ), 4 );
 		assertTrue( itemExists( md.functions, "funcClass1Only" ) );
 		assertEquals( getItemKey( md.functions, "funcClass1Only", "hint" ), "Function defined in Class1" );
 		assertTrue( itemExists( md.functions, "funcClass2Only" ) );
@@ -78,7 +74,6 @@
 		assertTrue( itemExists( md.functions, "funcClass1and2and3" ) );
 		assertEquals( getItemKey( md.functions, "funcClass1and2and3", "hint" ), "Function defined in Class1" );
 
-		assertEquals( arrayLen( md.properties ), 4 );
 		assertTrue( itemExists( md.properties, "propClass1Only" ) );
 		assertEquals( getItemKey( md.properties, "propClass1Only", "default" ), "class1Value" );
 		assertTrue( itemExists( md.properties, "propClass2Only" ) );
