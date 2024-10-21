@@ -1,7 +1,7 @@
 {
 	"adminPassword" : "coldbox",
 	"ajaxDebugWindowEnabled": false,
-	"debuggingEnabled": false,
+	"debuggingEnabled": true,
 	"debuggingReportExecutionTimes": false,
 	"debuggingShowDatabase" : true,
 	"inspectTemplate":"once",
