@@ -87,7 +87,7 @@ component {
 			}
 		}
 
-		if( url.keyExists( "fwreinit" ) ){
+		if( url.keyExists( "fwreinit" ) && getFunctionList().keyExists( "ormReload" ) ){
 			ormReload();
 		}
 

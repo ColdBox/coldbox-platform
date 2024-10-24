@@ -59,7 +59,7 @@ component {
 	 * Verify if this is a lucee server
 	 */
 	boolean function isLucee(){
-		return structKeyExists( server, "lucee" );
+		return server.keyExists( "lucee" ) && !server.keyExists( "boxlang" );
 	}
 
 	/**
