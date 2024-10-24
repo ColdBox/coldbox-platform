@@ -516,7 +516,7 @@
 		config.reset();
 
 		config.mapDirectory( packagePath = "coldbox.test-harness.models", include = "ioc.*" );
-		assertTrue( structCount( config.getMappings ) gte 2 );
+		assertTrue( structCount( config.getMappings() ) gte 2 );
 
 		config.reset();
 
