@@ -370,7 +370,6 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true" 
 							cfsqltype : "integer"
 						},
 						now       : { value : now(), cfsqltype : "timestamp" },
-						now       : { value : now(), cfsqltype : "timestamp" },
 						isExpired : { value : "0", cfsqltype : "bit" },
 						isSimple  : { value : "#isSimple#", cfsqltype : "bit" }
 					},
@@ -403,7 +402,6 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true" 
 						value     : "#arguments.lastAccessTimeout#",
 						cfsqltype : "integer"
 					},
-					now       : { value : now(), cfsqltype : "timestamp" },
 					now       : { value : now(), cfsqltype : "timestamp" },
 					isExpired : { value : "0", cfsqltype : "bit" },
 					isSimple  : { value : "#isSimple#", cfsqltype : "bit" }
