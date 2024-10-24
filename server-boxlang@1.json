@@ -30,6 +30,6 @@
 		"BOXLANG_DEBUG": true
     },
 	"scripts" : {
-		"onServerInitialInstall":"install bx-mail,bx-mysql,bx-derby,bx-compat-cfml,bx-unsafe-evaluate --noSave"
+		"onServerInitialInstall":"install bx-mail,bx-mysql,bx-derby,bx-compat-cfml,bx-unsafe-evaluate,bx-esapi --noSave"
 	}
 }
