@@ -1,7 +1,7 @@
 ﻿component extends="coldbox.system.testing.BaseModelTest" skip="notLucee" {
 
 	boolean function notLucee(){
-		if( isBoxLang() || isAdobe() ){
+		if ( isBoxLang() || isAdobe() ) {
 			return true;
 		}
 		return false;

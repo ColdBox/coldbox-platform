@@ -19,30 +19,30 @@ component accessors="true" singleton {
 	/**
 	 * The name of this scheduler
 	 */
-	property name = "name";
+	property name="name";
 
 	/**
 	 * An ordered struct of all the tasks this scheduler manages
 	 */
-	property name = "tasks" type = "struct";
+	property name="tasks" type="struct";
 
 	/**
 	 * The Scheduled Executor we are bound to
 	 */
-	property name = "executor";
+	property name="executor";
 
 	/**
 	 * The default timezone to use for task executions
 	 */
-	property name = "timezone";
+	property name="timezone";
 
 	/**
 	 * The default timeout to use when gracefully shutting down this scheduler. Default is 30 seconds.
 	 */
 	property
-		name    = "shutdownTimeout"
-		type    = "numeric"
-		default = "30";
+		name   ="shutdownTimeout"
+		type   ="numeric"
+		default="30";
 
 	/**
 	 * Constructor
@@ -52,17 +52,17 @@ component accessors="true" singleton {
 	 */
 	function init( required name, required asyncManager ){
 		// Utility class
-		variables.util = new coldbox.system.core.util.Util();
+		variables.util            = new coldbox.system.core.util.Util();
 		// Default shutdown timeout
 		variables.shutdownTimeout = 30;
 		// Name
-		variables.name = arguments.name;
+		variables.name            = arguments.name;
 		// The async manager
-		variables.asyncManager = arguments.asyncManager;
+		variables.asyncManager    = arguments.asyncManager;
 		// The collection of tasks we will run
-		variables.tasks = structNew( "ordered" );
+		variables.tasks           = structNew( "ordered" );
 		// Default TimeZone to UTC for all tasks
-		variables.timezone = createObject( "java", "java.time.ZoneId" ).systemDefault();
+		variables.timezone        = createObject( "java", "java.time.ZoneId" ).systemDefault();
 		// Build out the executor for this scheduler
 		createSchedulerExecutor();
 		// Bit that denotes if this scheduler has been started or not
@@ -136,16 +136,17 @@ component accessors="true" singleton {
 	 * <p>
 	 * If the task has an error scheduling, it will be marked as such.
 	 *
+	 *  name, task, future, registeredAt, scheduledAt, disabled, error, errorMessage, stacktrace, inetHost, localIp
+	 * }
+	 *
 	 * @task The task name or task object to startup
 	 *
 	 * @return The task record struct: {
-	 *  name, task, future, registeredAt, scheduledAt, disabled, error, errorMessage, stacktrace, inetHost, localIp
-	 * }
 	 */
 	struct function startupTask( any task ){
 		var taskRecord = getTaskRecord(
-			isSimpleValue( arguments.task ) ? arguments.task: arguments.task.getName()
-			);
+			isSimpleValue( arguments.task ) ? arguments.task : arguments.task.getName()
+		);
 
 		// Verify we can start it up the task or not
 		if ( taskRecord.task.isDisabled() ) {
@@ -173,9 +174,7 @@ component accessors="true" singleton {
 		try {
 			taskRecord.future      = taskRecord.task.start();
 			taskRecord.scheduledAt = now();
-			variables.asyncManager.out(
-				"√ Task (#taskRecord.task.getName()#) scheduled successfully."
-			);
+			variables.asyncManager.out( "√ Task (#taskRecord.task.getName()#) scheduled successfully." );
 		} catch ( any e ) {
 			variables.asyncManager.err(
 				"X Error scheduling task (#taskRecord.task.getName()#) => #e.message# #e.detail#"
@@ -307,7 +306,7 @@ component accessors="true" singleton {
 		return this;
 	}
 
-	 /**
+	/**
 	 * Register a new task in this scheduler but disable it immediately.  This is useful
 	 * when debugging tasks and have the easy ability to disable them.
 	 *
@@ -345,27 +344,27 @@ component accessors="true" singleton {
 		// Create the task record.
 		variables.tasks[ arguments.name ] = {
 			// task name
-			"name": arguments.name,
+			"name"         : arguments.name,
 			// task object
-			"task": oTask,
+			"task"         : oTask,
 			// task scheduled future object
-			"future": "",
+			"future"       : "",
 			// when it registers
-			"registeredAt": now(),
+			"registeredAt" : now(),
 			// when it's scheduled, else its empty
-			"scheduledAt": "",
+			"scheduledAt"  : "",
 			// Tracks if the task has been disabled for startup purposes
-			"disabled": false,
+			"disabled"     : false,
 			// If there is an error scheduling the task
-			"error": false,
+			"error"        : false,
 			// Any error messages when scheduling
-			"errorMessage": "",
+			"errorMessage" : "",
 			// The exception stacktrace if something went wrong scheduling the task
-			"stacktrace": "",
+			"stacktrace"   : "",
 			// Server Host
-			"inetHost": variables.util.discoverInetHost(),
+			"inetHost"     : variables.util.discoverInetHost(),
 			// Server IP
-			"localIp": variables.util.getServerIp()
+			"localIp"      : variables.util.getServerIp()
 		};
 
 		return oTask;
