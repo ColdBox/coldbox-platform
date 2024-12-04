@@ -373,17 +373,12 @@ component serializable="false" accessors="true" {
 		}
 
 		// Find the path of the proxy component being called
-		var contextRoot   = getContextRoot();
-		var componentPath = replaceNoCase(
-			mid(
-				scriptName,
-				len( contextRoot ) + 2,
-				len( scriptName ) - len( contextRoot ) - 5
-			),
-			"/",
-			".",
-			"all"
-		);
+		// replace the context root at the beginning of the script
+		var componentPath = replaceNoCase( scriptName, getContextRoot(), "", "one" );
+		// remove the extension, if any
+		componentPath     = reReplaceNoCase( componentPath, "\..+$", "", "one" );
+		// replace all slashes with dots
+		componentPath     = reReplaceNoCase( componentPath, "\/+", ".", "all" );
 
 		var injector = getWirebox();
 		var binder   = injector.getBinder();
