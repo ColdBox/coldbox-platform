@@ -415,20 +415,22 @@ component serializable="false" accessors="true" {
 		var iData = { injector : this };
 
 		// Log
-		if ( variables.log.canInfo() ) {
+		if ( !isNull( variables.log ) && variables.log.canInfo() ) {
 			variables.log.info( "Shutdown of Injector: #getInjectorID()# requested and started." );
 		}
 
 		// Notify Listeners
-		variables.eventManager.announce( "beforeInjectorShutdown", iData );
+		if ( !isNull( variables.eventManager ) ) {
+			variables.eventManager.announce( "beforeInjectorShutdown", iData );
+		}
 
 		// Check if binder has onShutdown convention
-		if ( structKeyExists( variables.binder, "onShutdown" ) ) {
+		if ( !isNull( variables.binder ) && structKeyExists( variables.binder, "onShutdown" ) ) {
 			variables.binder.onShutdown( this );
 		}
 
 		// Do we have children?
-		if ( structCount( variables.childInjectors ) ) {
+		if ( !isNull( variables.childInjectors ) && structCount( variables.childInjectors ) ) {
 			variables.childInjectors.each( function( childName, childInstance ){
 				arguments.childInstance.shutdown( this );
 			} );
@@ -440,24 +442,28 @@ component serializable="false" accessors="true" {
 		}
 
 		// Remove from scope
-		removeFromScope();
+		if ( !isNull( variables.binder ) ) {
+			removeFromScope();
+		}
 
 		// Notify Listeners
-		variables.eventManager.announce( "afterInjectorShutdown", iData );
+		if ( !isNull( variables.eventManager ) ) {
+			variables.eventManager.announce( "afterInjectorShutdown", iData );
+		}
 
 		// Log shutdown complete
-		if ( variables.log.canInfo() ) {
+		if ( !isNull( variables.log ) && variables.log.canInfo() ) {
 			variables.log.info( "Shutdown of injector: #getInjectorID()# completed." );
 		}
 
 		// Shutdown LogBox last if not in ColdBox Mode
-		if ( !isColdBoxLinked() ) {
+		if ( !isColdBoxLinked() && !isNull( variables.logBox ) ) {
 			variables.logBox.shutdown();
 		}
 
 		// Shutdown Executors if not in ColdBox Mode
 		// This needs to happen AFTER logbox is shutdown since they share the taskScheduler
-		if ( !isColdBoxLinked() ) {
+		if ( !isColdBoxLinked() && !isNull( variables.asyncManager ) ) {
 			variables.asyncManager.shutdownAllExecutors( force = true );
 		}
 
@@ -547,9 +553,11 @@ component serializable="false" accessors="true" {
 				}
 
 				// We could not find it
-				variables.log.error(
-					"Requested instance:#arguments.name# was not located in any declared scan location(s): #structKeyList( variables.binder.getScanLocations() )#, or by path or by hierarchy."
-				);
+				if ( !isNull( variables.log ) && variables.log.canError() ) {
+					variables.log.error(
+						"Requested instance:#arguments.name# was not located in any declared scan location(s): #structKeyList( variables.binder.getScanLocations() )#, or by path or by hierarchy."
+					);
+				}
 				throw(
 					message     : "Instance not found: '#arguments.name#'",
 					detail      : "The instance could not be located in any declared scan location(s) (#structKeyList( variables.binder.getScanLocations() )#) or full path location or parent or children",
@@ -670,7 +678,7 @@ component serializable="false" accessors="true" {
 		}
 
 		// log data
-		if ( variables.log.canDebug() ) {
+		if ( !isNull( variables.log ) && variables.log.canDebug() ) {
 			variables.log.debug(
 				"Instance object built: #arguments.mapping.getName()#:#arguments.mapping.getPath().toString()# by (#getName()#) injector"
 			);
@@ -801,7 +809,7 @@ component serializable="false" accessors="true" {
 		}
 
 		// debug info, NADA found!
-		if ( variables.log.canDebug() ) {
+		if ( !isNull( variables.log ) && variables.log.canDebug() ) {
 			variables.log.debug( "Instance: #arguments.name# was not located anywhere by (#getName()#) injector" );
 		}
 
@@ -951,7 +959,7 @@ component serializable="false" accessors="true" {
 			variables.eventManager.announce( "afterInstanceAutowire", iData );
 
 			// Debug Data
-			if ( variables.log.canDebug() ) {
+			if ( !isNull( variables.log ) && variables.log.canDebug() ) {
 				variables.log.debug(
 					"Finalized Autowire for: #arguments.targetID#:#arguments.mapping.getName()#:#arguments.mapping.getPath().toString()#"
 				);
@@ -1010,7 +1018,7 @@ component serializable="false" accessors="true" {
 	 * @doc_generic boolean
 	 */
 	boolean function isColdBoxLinked(){
-		return isObject( variables.coldbox );
+		return !isNull( variables.coldbox ) && isObject( variables.coldbox );
 	}
 
 	/**
@@ -1019,7 +1027,7 @@ component serializable="false" accessors="true" {
 	 * @doc_generic boolean
 	 */
 	boolean function isCacheBoxLinked(){
-		return isObject( variables.cacheBox );
+		return !isNull( variables.cacheBox ) && isObject( variables.cacheBox );
 	}
 
 	/**
@@ -1032,7 +1040,7 @@ component serializable="false" accessors="true" {
 			variables.scopeStorage.delete( scopeInfo.key, scopeInfo.scope );
 
 			// Log info
-			if ( variables.log.canDebug() ) {
+			if ( !isNull( variables.log ) && variables.log.canDebug() ) {
 				variables.log.debug( "Injector (#getName()#) removed from scope: #scopeInfo.toString()#" );
 			}
 		}
@@ -1323,12 +1331,12 @@ component serializable="false" accessors="true" {
 				}
 
 				// some debugging goodness
-				if ( variables.log.canDebug() ) {
+				if ( !isNull( variables.log ) && variables.log.canDebug() ) {
 					variables.log.debug(
 						"Dependency: #thisDIData.toString()# --> injected into #arguments.targetID# by (#getName()#) injector"
 					);
 				}
-			} else if ( variables.log.canDebug() ) {
+			} else if ( !isNull( variables.log ) && variables.log.canDebug() ) {
 				variables.log.debug(
 					"Dependency: #thisDIData.toString()# Not Found when wiring #arguments.targetID#. Registered mappings are: #structKeyList( variables.binder.getMappings() )# by (#getName()#) injector"
 				);
@@ -1349,7 +1357,9 @@ component serializable="false" accessors="true" {
 			lock name="wirebox:transientcache" type="exclusive" throwontimeout="true" timeout="15" {
 				if ( !request.keyExists( "cbTransientDICache" ) ) {
 					request.cbTransientDICache = createObject( "java", "java.util.concurrent.ConcurrentHashMap" ).init();
-					variables.log.debug( () => "WireBox Transient Cache Created" );
+					if ( !isNull( variables.log ) ) {
+						variables.log.debug( () => "WireBox Transient Cache Created" );
+					}
 				}
 			}
 		}
@@ -1371,7 +1381,9 @@ component serializable="false" accessors="true" {
 						arguments.targetID.lcase(),
 						{ "injections" : {}, "delegations" : {} }
 					);
-					variables.log.debug( () => "WireBox Transient Cache Storage for #targetId# Created" );
+					if ( !isNull( variables.log ) ) {
+						variables.log.debug( () => "WireBox Transient Cache Storage for #targetId# Created" );
+					}
 				}
 			}
 		}
@@ -1501,7 +1513,7 @@ component serializable="false" accessors="true" {
 		for ( var key in customScopes ) {
 			variables.scopes[ key ] = createObject( "component", customScopes[ key ] ).init( this );
 			// Debugging
-			if ( variables.log.canDebug() ) {
+			if ( !isNull( variables.log ) && variables.log.canDebug() ) {
 				variables.log.debug( "Registered custom scope: #key# (#customScopes[ key ]#)" );
 			}
 		}
@@ -1521,9 +1533,11 @@ component serializable="false" accessors="true" {
 		}
 		// If we have any aspects defined but no mixer, auto-add it
 		if ( !aopMixerAdded && variables.binder.hasAspects() ) {
-			variables.log.info(
-				"AOP aspects detected but no Mixer listener found, auto-adding it with defaults..."
-			);
+			if ( !isNull( variables.log ) && variables.log.canInfo() ) {
+				variables.log.info(
+					"AOP aspects detected but no Mixer listener found, auto-adding it with defaults..."
+				);
+			}
 			registerListener( { class : "coldbox.system.aop.Mixer", name : "aopMixer" } );
 		}
 		return this;
@@ -1542,7 +1556,9 @@ component serializable="false" accessors="true" {
 			// configure it
 			thisListener.configure( this, listener.properties );
 		} catch ( Any e ) {
-			variables.log.error( "Error creating listener: #listener.toString()#", e );
+			if ( !isNull( variables.log ) && variables.log.canError() ) {
+				variables.log.error( "Error creating listener: #listener.toString()#", e );
+			}
 			throw(
 				message     : "Error creating listener: #listener.toString()#",
 				detail      : "#e.message# #e.detail# #e.stackTrace#",
@@ -1562,7 +1578,7 @@ component serializable="false" accessors="true" {
 		}
 
 		// debugging
-		if ( variables.log.canDebug() ) {
+		if ( !isNull( variables.log ) && variables.log.canDebug() ) {
 			variables.log.debug(
 				"Injector (#getName()#) has just registered a new listener: #listener.toString()#"
 			);
@@ -1585,7 +1601,7 @@ component serializable="false" accessors="true" {
 		);
 
 		// Log info
-		if ( variables.log.canDebug() ) {
+		if ( !isNull( variables.log ) && variables.log.canDebug() ) {
 			variables.log.debug(
 				"Scope Registration enabled and Injector (#getName()#) scoped to: #arguments.scopeInfo.toString()#"
 			);
@@ -1609,7 +1625,7 @@ component serializable="false" accessors="true" {
 		if ( isObject( arguments.config.cacheFactory ) ) {
 			variables.cacheBox = arguments.config.cacheFactory;
 			// debugging
-			if ( variables.log.canDebug() ) {
+			if ( !isNull( variables.log ) && variables.log.canDebug() ) {
 				variables.log.debug(
 					"Configured Injector #getName()# with direct CacheBox instance: #variables.cacheBox.getFactoryID()#"
 				);
@@ -1629,7 +1645,7 @@ component serializable="false" accessors="true" {
 			);
 
 			// debugging
-			if ( variables.log.canDebug() ) {
+			if ( !isNull( variables.log ) && variables.log.canDebug() ) {
 				variables.log.debug(
 					"Configured Injector #getName()# with CacheBox instance: #variables.cacheBox.getFactoryID()# and configuration file: #arguments.config.configFile#"
 				);
@@ -1640,7 +1656,7 @@ component serializable="false" accessors="true" {
 		// No config file, plain vanilla cachebox
 		variables.cacheBox = createObject( "component", "#arguments.config.classNamespace#.CacheFactory" ).init();
 		// debugging
-		if ( variables.log.canDebug() ) {
+		if ( !isNull( variables.log ) && variables.log.canDebug() ) {
 			variables.log.debug(
 				"Configured Injector #getName()# with vanilla CacheBox instance: #variables.cacheBox.getFactoryID()#"
 			);

@@ -350,12 +350,16 @@ component accessors=true serializable=false {
 	 */
 	CacheFactory function shutdown(){
 		// Log startup
-		if ( variables.log.canDebug() ) {
-			variables.log.debug( "Shutdown of cache factory: #getFactoryID()# requested and started." );
+		if ( !isNull( variables.log ) ) {
+			if ( variables.log.canDebug() ) {
+				variables.log.debug( "Shutdown of cache factory: #getFactoryID()# requested and started." );
+			}
 		}
 
 		// Notify Listeners
-		variables.eventManager.announce( "beforeCacheFactoryShutdown", { cacheFactory : this } );
+		if ( !isNull( variables.eventManager ) ) {
+			variables.eventManager.announce( "beforeCacheFactoryShutdown", { cacheFactory : this } );
+		}
 
 		// safely iterate and shutdown caches
 		getCacheNames().each( function( item ){
@@ -363,8 +367,10 @@ component accessors=true serializable=false {
 			var cache = getCache( item );
 
 			// Log it
-			if ( variables.log.canDebug() ) {
-				variables.log.debug( "Shutting down cache: #item# on factoryID: #getFactoryID()#." );
+			if ( !isNull( variables.log ) ) {
+				if ( variables.log.canDebug() ) {
+					variables.log.debug( "Shutting down cache: #item# on factoryID: #getFactoryID()#." );
+				}
 			}
 
 			// process listeners
@@ -377,8 +383,10 @@ component accessors=true serializable=false {
 			variables.eventManager.announce( "afterCacheShutdown", { cache : cache } );
 
 			// log
-			if ( variables.log.canDebug() ) {
-				variables.log.debug( "Cache: #item# was shut down on factoryID: #getFactoryID()#." );
+			if ( !isNull( variables.log ) ) {
+				if ( variables.log.canDebug() ) {
+					variables.log.debug( "Cache: #item# was shut down on factoryID: #getFactoryID()#." );
+				}
 			}
 		} );
 
@@ -389,7 +397,11 @@ component accessors=true serializable=false {
 		removeFromScope();
 
 		// Shutdown LogBox and Executors if not in ColdBox Mode or WireBox mode
-		if ( !isObject( variables.coldbox ) && !isObject( variables.wirebox ) ) {
+		if (
+			!isNull( variables.coldbox ) && !isObject( variables.coldbox ) && !isNull( variables.wirebox ) && !isObject(
+				variables.wirebox
+			)
+		) {
 			if ( isObject( variables.logBox ) ) {
 				variables.logBox.shutdown();
 			}
@@ -397,11 +409,15 @@ component accessors=true serializable=false {
 		}
 
 		// Notify Listeners
-		variables.eventManager.announce( "afterCacheFactoryShutdown", { cacheFactory : this } );
+		if ( !isNull( variables.eventManager ) ) {
+			variables.eventManager.announce( "afterCacheFactoryShutdown", { cacheFactory : this } );
+		}
 
 		// Log shutdown complete
-		if ( variables.log.canDebug() ) {
-			variables.log.debug( "Shutdown of cache factory: #getFactoryID()# completed." );
+		if ( !isNull( variables.log ) ) {
+			if ( variables.log.canDebug() ) {
+				variables.log.debug( "Shutdown of cache factory: #getFactoryID()# completed." );
+			}
 		}
 
 		return this;
@@ -438,7 +454,9 @@ component accessors=true serializable=false {
 		}
 
 		// Notify Listeners
-		variables.eventManager.announce( "beforeCacheShutdown", { cache : cache } );
+		if ( !isNull( variables.eventManager ) ) {
+			variables.eventManager.announce( "beforeCacheShutdown", { cache : cache } );
+		}
 
 		// Shutdown the cache
 		cache.shutdown();
@@ -463,6 +481,10 @@ component accessors=true serializable=false {
 	 * Remove the cache factory from scope registration if enabled, else does nothing
 	 */
 	CacheFactory function removeFromScope(){
+		if ( isNull( variables.config ) ) {
+			return this;
+		}
+
 		var scopeInfo = variables.config.getScopeRegistration();
 		if ( scopeInfo.enabled ) {
 			new coldbox.system.core.collections.ScopeStorage().delete( scopeInfo.key, scopeInfo.scope );
@@ -524,8 +546,10 @@ component accessors=true serializable=false {
 	 * Remove all the registered caches in this factory, this triggers individual cache shutdowns
 	 */
 	CacheFactory function removeAll(){
-		if ( variables.log.canDebug() ) {
-			variables.log.debug( "Removal of all caches requested on factoryID: #getFactoryID()#" );
+		if ( !isNull( variables.log ) ) {
+			if ( variables.log.canDebug() ) {
+				variables.log.debug( "Removal of all caches requested on factoryID: #getFactoryID()#" );
+			}
 		}
 
 		getCacheNames().each( function( item ){
@@ -533,8 +557,10 @@ component accessors=true serializable=false {
 		} );
 
 
-		if ( variables.log.canDebug() ) {
-			variables.log.debug( "All caches removed." );
+		if ( !isNull( variables.log ) ) {
+			if ( variables.log.canDebug() ) {
+				variables.log.debug( "All caches removed." );
+			}
 		}
 
 		return this;
@@ -640,8 +666,14 @@ component accessors=true serializable=false {
 	 * Get the array of caches registered with this factory
 	 */
 	array function getCacheNames(){
-		lock name="#variables.lockName#" type="readonly" timeout="20" throwontimeout="true" {
+		if ( !isNull( variables.lockName ) ) {
+			lock name="#variables.lockName#" type="readonly" timeout="20" throwontimeout="true" {
+				return structKeyArray( variables.caches );
+			}
+		} else if ( !isNull( variables.caches ) ) {
 			return structKeyArray( variables.caches );
+		} else {
+			return [];
 		}
 	}
 
