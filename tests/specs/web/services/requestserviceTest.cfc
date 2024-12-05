@@ -37,7 +37,10 @@
 				/* Tests */
 				try {
 					expect( context ).toBeComponent();
-					expect( dateCompare( url.today, context.getValue( "today" ), "s" ) ).toBe( 0, "dates should match to the second" );
+					expect( dateCompare( url.today, context.getValue( "today" ), "s" ) ).toBe(
+						0,
+						"dates should match to the second"
+					);
 					expect( url.name ).toBe( context.getValue( "name" ) );
 					expect( context.valueExists( "event" ) ).toBeTrue();
 				} finally {
