@@ -149,7 +149,7 @@
 		this.state.register( this.key, mockInterceptor, mockMetadata );
 
 		// Invoke
-		makepublic( this.state, "invokerAsync" );
+		makePublic( this.state, "invokerAsync" );
 		assertTrue( mockInterceptor.$never( "unittest" ) );
 		this.state.invokerAsync(
 			getMockRequestContext(),

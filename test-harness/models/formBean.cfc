@@ -79,7 +79,7 @@
 
 	<!--- ************************************************************* --->
 	<cffunction name="setinitDate" access="public" return="void" output="false" hint="Set initDate">
-		<cfargument name="initDate" type="string">
+		<cfargument name="initDate" type="any">
 		<cfset variables.instance.initDate = arguments.initDate>
 	</cffunction>
 	<!--- ************************************************************* --->
