@@ -144,8 +144,7 @@ component accessors="true" {
 
 		throw(
 			type    = "InvalidProperty",
-			message = "Invalid property requested: #arguments.property#",
-			detail  = "Valid properties are: #structKeyList( metadata )#"
+			message = "Invalid property requested: [#arguments.property#]. Valid properties are: [#structKeyList( metadata )#]"
 		);
 	}
 
@@ -176,8 +175,8 @@ component accessors="true" {
 	 * Get an array of sorted keys for this indexer according to parameters
 	 *
 	 * @objectKey
-	 * @property 
-	 * @value    
+	 * @property
+	 * @value
 	 */
 	array function getSortedKeys(
 		required property,
