@@ -27,8 +27,17 @@
 		cache.setCacheFactory( mockFactory );
 		cache.setEventManager( mockEventManager );
 
+		// Mock The Scheduler, we don't need any reaping async
+		var mockSchedule = prepareMock(
+			mockExecutor.newSchedule( function(){
+				debug( "In Mock Executor" );
+			} )
+		);
+		mockExecutor.$( "newSchedule", mockSchedule );
 		// Configure the provider
 		cache.configure();
+		// Clear everything first
+		cache.clearAll();
 	}
 
 }

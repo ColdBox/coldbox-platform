@@ -21,6 +21,8 @@
 
 		// Configure the provider
 		cache.configure();
+		// Clear everything first
+		cache.clearAll();
 	}
 
 	function testPrefixes(){
