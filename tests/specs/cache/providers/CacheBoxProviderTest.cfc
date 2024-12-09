@@ -211,14 +211,14 @@
 	}
 
 	function testsetQuiet(){
-		testVal = { name : "luis", age : 32 };
+		var testVal = { name : "luis", age : 32 };
 		cache.setQuiet( "test", testVal, 20 );
 
 		assertEquals( testVal, cache.get( "test" ) );
 	}
 
 	function testSetMulti(){
-		test = { key1 : { name : "luis", age : 2 }, key2 : "hello" };
+		var test = { key1 : { name : "luis", age : 2 }, key2 : "hello" };
 		cache.setMulti( test );
 
 		assertEquals( test.key1, cache.get( "key1" ) );
@@ -226,7 +226,7 @@
 	}
 
 	function testClearMulti(){
-		test = { key1 : { name : "luis", age : 2 }, key2 : "hello" };
+		var test = { key1 : { name : "luis", age : 2 }, key2 : "hello" };
 		cache.setMulti( test );
 
 		cache.clearMulti( "key1,key2" );
@@ -236,7 +236,7 @@
 	}
 
 	function testClearQuiet(){
-		test = {
+		var test = {
 			key1 : now(),
 			key2 : { name : "Pio", age : "32", cool : "beyond belief" }
 		};
@@ -248,7 +248,7 @@
 	}
 
 	function testClear(){
-		test = {
+		var test = {
 			key1 : now(),
 			key2 : { name : "Pio", age : "32", cool : "beyond belief" }
 		};
@@ -260,7 +260,7 @@
 	}
 
 	function testClearAll(){
-		test = {
+		var test = {
 			key1 : now(),
 			key2 : { name : "Pio", age : "32", cool : "beyond belief" }
 		};
@@ -273,7 +273,7 @@
 	}
 
 	function testGetSize(){
-		test = {
+		var test = {
 			key1 : now(),
 			key2 : { age : "32", name : "Lui Mahoney" }
 		};
@@ -284,7 +284,7 @@
 	}
 
 	function testExpireObjectAndIsExpired(){
-		test = {
+		var test = {
 			key1 : now(),
 			key2 : { name : "Pio", age : "32", cool : "beyond belief" }
 		};
@@ -298,7 +298,7 @@
 	}
 
 	function testExpireByKeySnippet(){
-		test = {
+		var test = {
 			key1 : now(),
 			key2 : { name : "Pio", age : "32", cool : "beyond belief" }
 		};
@@ -312,7 +312,7 @@
 	}
 
 	function testExpireAll(){
-		test = {
+		var test = {
 			key1 : now(),
 			key2 : { name : "Pio", age : "32", cool : "beyond belief" }
 		};

@@ -11,7 +11,7 @@
 		// init injector
 		injector.init( { scopeRegistration : { enabled : false } } );
 
-		mockLogger = createStub().$( "canDebug", false ).$( "error" );
+		mockLogger = createStub().$( "canDebug", false ).$( "canError", true ).$( "error" );
 		util       = createMock( "coldbox.system.core.util.Util" )
 			.$( "getInheritedMetaData" )
 			.$results( { path : "path.to.object" } );
