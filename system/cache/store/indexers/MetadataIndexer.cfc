@@ -175,8 +175,8 @@ component accessors="true" {
 	 * Get an array of sorted keys for this indexer according to parameters
 	 *
 	 * @objectKey
-	 * @property
-	 * @value
+	 * @property 
+	 * @value    
 	 */
 	array function getSortedKeys(
 		required property,
