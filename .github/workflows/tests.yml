@@ -19,18 +19,18 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        commandbox_version: [ "6.0.1" ]
+        commandbox_version: [ "6.1.0" ]
         cfengine: [ "lucee@5", "adobe@2018", "adobe@2021", "adobe@2023" ]
         jdkVersion: [ "11" ]
         experimental: [false]
         include:
           - cfengine: "lucee@6"
             jdkVersion: "17"
-            commandbox_version: "6.0.1"
+            commandbox_version: "6.1.0"
             experimental: true
           - cfengine: "adobe@2023"
             jdkVersion: "17"
-            commandbox_version: "6.0.1"
+            commandbox_version: "6.1.0"
             experimental: false
     steps:
       - name: Checkout Repository
