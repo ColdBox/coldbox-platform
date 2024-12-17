@@ -15,7 +15,7 @@
 			.$( "canDebug", false )
 			.$( "canError", true )
 			.$( "error" );
-		util       = createMock( "coldbox.system.core.util.Util" )
+		util = createMock( "coldbox.system.core.util.Util" )
 			.$( "getInheritedMetaData" )
 			.$results( { path : "path.to.object" } );
 		injector.setUtility( util );

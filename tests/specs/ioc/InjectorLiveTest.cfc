@@ -33,7 +33,6 @@ component extends="tests.resources.BaseIntegrationTest" {
 				variables.injector = createMock( "coldbox.system.ioc.Injector" ).init(
 					"tests.specs.ioc.config.samples.InjectorCreationTestsBinder"
 				);
-
 			} );
 
 			story( "I want to get instances from specific child injectors via getInstance()", function(){
@@ -118,7 +117,6 @@ component extends="tests.resources.BaseIntegrationTest" {
 
 			story( "I want to retrieve root injectors via DSL", function(){
 				beforeEach( function( currentSpec ){
-
 					var child = new coldbox.system.ioc.Injector(
 						"coldbox.tests.specs.ioc.config.samples.NoScopeBinder"
 					).setRoot( variables.injector );
