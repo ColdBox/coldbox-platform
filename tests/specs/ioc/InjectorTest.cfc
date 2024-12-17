@@ -117,7 +117,7 @@
 			injector.registerListeners();
 		} catch ( "Injector.ListenerCreationException" e ) {
 		} catch ( Any e ) {
-			fail( e );
+			fail( e.getMessage() );
 		}
 	}
 
