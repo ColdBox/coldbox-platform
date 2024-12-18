@@ -26,6 +26,7 @@ component extends="coldbox.system.cache.policies.AbstractEvictionPolicy" {
 	 * Execute the policy
 	 */
 	void function execute(){
+		var e = {};
 		// Get searchable index
 		try {
 			var index = getAssociatedCache()
@@ -35,7 +36,7 @@ component extends="coldbox.system.cache.policies.AbstractEvictionPolicy" {
 			// process evictions
 			processEvictions( index );
 		} catch ( Any e ) {
-			getLogger().error( "Error sorting via store indexer #e.message# #e.detail# #e.stackTrace#." );
+			getLogger().error( "Error sorting via store indexer #e.message#", e );
 		}
 	}
 
