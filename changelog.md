@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [7.3.0] - 2024-12-18
+
 ## [7.3.0] - 2024-05-13
 
 ### New Feature
@@ -302,9 +304,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * * *
 
-[Unreleased]: https://github.com/ColdBox/coldbox-platform/compare/v7.3.0...HEAD
+[Unreleased]: https://github.com/GunnarLieb/coldbox-platform/compare/v7.3.0...HEAD
 
-[7.3.0]: https://github.com/ColdBox/coldbox-platform/compare/v7.2.1...v7.3.0
+[7.3.0]: https://github.com/GunnarLieb/coldbox-platform/compare/v7.3.0...v7.3.0
+
 
 [7.2.1]: https://github.com/ColdBox/coldbox-platform/compare/v7.2.0...v7.2.1
 
