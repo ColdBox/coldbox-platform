@@ -1,7 +1,7 @@
 ﻿component
 	extends="CFProviderTest"
 	output ="false"
-	skip   ="isAdobe"
+	skip   ="notAdobe"
 {
 
 	function setup(){
