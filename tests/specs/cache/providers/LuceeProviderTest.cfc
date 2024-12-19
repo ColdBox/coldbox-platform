@@ -1,9 +1,9 @@
-﻿component extends="tests.resources.BaseIntegrationTest" skip="isLucee" {
+﻿component extends="tests.resources.BaseIntegrationTest" skip="notLucee" {
 
 	this.loadColdBox = false;
 
-	boolean function isLucee(){
-		return listFindNoCase( "Lucee", server.coldfusion.productname ) ? false : true;
+	boolean function notLucee(){
+		return isAdobe() || isBoxLang();
 	}
 
 	function setup(){

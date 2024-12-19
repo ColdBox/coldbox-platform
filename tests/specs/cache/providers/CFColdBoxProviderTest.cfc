@@ -1,5 +1,4 @@
 ﻿component
-	name   ="cacheTest"
 	extends="CFProviderTest"
 	output ="false"
 	skip   ="isAdobe"

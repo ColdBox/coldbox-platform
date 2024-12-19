@@ -1,4 +1,4 @@
-﻿component name="cacheTest" extends="CacheBoxProviderTest" {
+﻿component extends="CacheBoxProviderTest" {
 
 	function setup(){
 		super.setup();
