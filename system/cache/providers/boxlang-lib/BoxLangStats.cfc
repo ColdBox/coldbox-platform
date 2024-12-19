@@ -26,7 +26,10 @@ component implements="coldbox.system.cache.util.IStats" accessors="true" {
 	 * Get the cache's performance ratio
 	 */
 	numeric function getCachePerformanceRatio(){
-		return getCacheProvider().getCache().getStats().hitRate();
+		return getCacheProvider()
+			.getCache()
+			.getStats()
+			.hitRate();
 	}
 
 	/**
@@ -50,28 +53,40 @@ component implements="coldbox.system.cache.util.IStats" accessors="true" {
 	 * Get the total cache's garbage collections
 	 */
 	numeric function getGarbageCollections(){
-		return getCacheProvider().getCache().getStats().garbageCollections();
+		return getCacheProvider()
+			.getCache()
+			.getStats()
+			.garbageCollections();
 	}
 
 	/**
 	 * Get the total cache's eviction count
 	 */
 	numeric function getEvictionCount(){
-		return getCacheProvider().getCache().getStats().evictionCount();
+		return getCacheProvider()
+			.getCache()
+			.getStats()
+			.evictionCount();
 	}
 
 	/**
 	 * Get the total cache's hits
 	 */
 	numeric function getHits(){
-		return getCacheProvider().getCache().getStats().hits();
+		return getCacheProvider()
+			.getCache()
+			.getStats()
+			.hits();
 	}
 
 	/**
 	 * Get the total cache's misses
 	 */
 	numeric function getMisses(){
-		return getCacheProvider().getCache().getStats().misses();
+		return getCacheProvider()
+			.getCache()
+			.getStats()
+			.misses();
 	}
 
 	/**
@@ -80,21 +95,30 @@ component implements="coldbox.system.cache.util.IStats" accessors="true" {
 	 * @return date/time or empty
 	 */
 	function getLastReapDatetime(){
-		return getCacheProvider().getCache().getStats().lastReapDatetime();
+		return getCacheProvider()
+			.getCache()
+			.getStats()
+			.lastReapDatetime();
 	}
 
 	/**
 	 * Get the total cache's reap count
 	 */
 	numeric function getReapCount(){
-		return getCacheProvider().getCache().getStats().reapCount();
+		return getCacheProvider()
+			.getCache()
+			.getStats()
+			.reapCount();
 	}
 
 	/**
 	 * When the cache was started
 	 */
 	function getStarted(){
-		return getCacheProvider().getCache().getStats().started();
+		return getCacheProvider()
+			.getCache()
+			.getStats()
+			.started();
 	}
 
 }
