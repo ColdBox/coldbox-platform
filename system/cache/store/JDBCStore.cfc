@@ -417,18 +417,15 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true" 
 	 * @objectKey The object key to clear
 	 */
 	function clear( required objectKey ){
-		var localQueryOptions         = duplicate( variables.queryOptions );
-		localQueryOptions[ "result" ] = "local.q";
-
+		var options = { "result" : "local.q" };
 		queryExecute(
 			"DELETE
 			   FROM #variables.table#
 			  WHERE id = ?
 			",
 			[ getNormalizedID( arguments.objectKey ) ],
-			localQueryOptions
+			options.append( variables.queryOptions )
 		);
-
 		return ( q.recordCount ? true : false );
 	}
 
