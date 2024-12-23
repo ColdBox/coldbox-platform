@@ -1,15 +1,5 @@
-﻿<!-----------------------------------------------------------------------
-********************************************************************************
-Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.coldbox.org | www.luismajano.com | www.ortussolutions.com
-********************************************************************************
-Author                         :	Luis Majano
-Date                                    :	9/3/2007
-Description :
-object pool test
------------------------------------------------------------------------>
-<cfcomponent extends="coldbox.system.testing.BaseModelTest">
-	<cfscript>
+﻿component extends="coldbox.system.testing.BaseModelTest"{
+
 	function setup(){
 		config = {
 			dsn                  : "coolblog",
@@ -97,9 +87,9 @@ object pool test
 		assertFalse( store.clear( "invalid" ) );
 
 		store.set( "test", now(), 20 );
-		results = store.clear( "test" );
-
-		assertTrue( results );
+		store.clear( "test" );
+		var results = store.lookup( "test" );
+		expect( results ).toBeFalse();
 	}
 
 	function testGetSize(){
@@ -108,5 +98,6 @@ object pool test
 		store.set( "test", now(), 0 );
 		assertTrue( store.getSize() eq 1 );
 	}
-	</cfscript>
-</cfcomponent>
+
+
+}
