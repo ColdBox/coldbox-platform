@@ -1,4 +1,4 @@
-﻿component extends="coldbox.system.testing.BaseModelTest"{
+﻿component extends="coldbox.system.testing.BaseModelTest" {
 
 	function setup(){
 		config = {
@@ -98,6 +98,5 @@
 		store.set( "test", now(), 0 );
 		assertTrue( store.getSize() eq 1 );
 	}
-
 
 }
