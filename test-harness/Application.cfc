@@ -14,6 +14,9 @@ component {
 	this.timezone 			= "UTC";
 	this.enableNullSupport = shouldEnableFullNullSupport();
 
+	// Turn on/off remote cfc content whitespace
+	this.suppressRemoteComponentContent = false;
+
 	// COLDBOX STATIC PROPERTY, DO NOT CHANGE UNLESS THIS IS NOT THE ROOT OF YOUR COLDBOX APP
 	COLDBOX_APP_ROOT_PATH = getDirectoryFromPath( getCurrentTemplatePath() );
 	// The web server mapping to this application. Used for remote purposes or static purposes
