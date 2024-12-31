@@ -17,6 +17,9 @@ component{
 	// Turn on/off white space management
 	this.whiteSpaceManagement = "smart";
 
+	// Turn on/off remote cfc content whitespace
+	this.suppressRemoteComponentContent = false;
+
 	// setup test path
 	this.mappings[ "/tests" ] = getDirectoryFromPath( getCurrentTemplatePath() );
 	// setup root path
