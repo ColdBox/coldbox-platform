@@ -194,7 +194,7 @@ component
 	 * This is ONLY called by the routing services and only ONCE in the Application Life-Cycle
 	 */
 	function startup(){
-		var frontController = findNoCase( ".cfm", cgi.script_name ) ? "index.cfm" : "index.bxm";
+		var frontController = findNoCase( ".bx", cgi.script_name ) ? "index.bxm" : "index.cfm";
 
 		// Verify baseUrl is still empty to default it for operation
 		if ( !len( variables.baseUrl ) ) {
@@ -2074,7 +2074,7 @@ component
 	 * Composes the base routing path with no host or protocol
 	 */
 	string function composeRoutingPath(){
-		var base = findNoCase( ".cfm", cgi.script_name ) ? "index.cfm" : "index.bxm";
+		var base = findNoCase( ".bx", cgi.script_name ) ? "index.bxm" : "index.cfm";
 		return variables.controller.getSetting( "RoutingAppMapping" ) & // routing app mapping
 		( variables.fullRewrites ? "" : base ); // full or controller routing
 	}
