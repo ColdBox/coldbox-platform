@@ -351,7 +351,7 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true" 
 			throwonTimeout="true" {
 			if ( fileExists( thisFilePath ) ) {
 				// else we deserialize
-				var results      = variables.converter.deserializeObject( filePath = thisFilePath );
+				var results = variables.converter.deserializeObject( filePath = thisFilePath );
 				if ( isStruct( results ) ) {
 					return {
 						"hits"              : results.hits,
