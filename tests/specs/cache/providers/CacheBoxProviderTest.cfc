@@ -2,6 +2,27 @@
 
 	this.loadColdBox = false;
 
+	// Default Config To Test
+	variables.config = {
+		objectDefaultTimeout           : 60,
+		objectDefaultLastAccessTimeout : 30,
+		useLastAccessTimeouts          : true,
+		reapFrequency                  : 2,
+		freeMemoryPercentageThreshold  : 0,
+		evictionPolicy                 : "LRU",
+		evictCount                     : 1,
+		maxObjects                     : 200,
+		objectStore                    : "ConcurrentSoftReferenceStore",
+		// This switches the internal provider from normal cacheBox to coldbox enabled cachebox
+		coldboxEnabled                 : false
+	};
+
+	/**
+	 * ------------------------------------------------------
+	 * Life-Cycle Methods
+	 * ------------------------------------------------------
+	 */
+
 	function setup(){
 		super.setup();
 
@@ -29,21 +50,6 @@
 			.$( "canError", true );
 		mockEventManager.$( "announce" );
 
-		// Config
-		config = {
-			objectDefaultTimeout           : 60,
-			objectDefaultLastAccessTimeout : 30,
-			useLastAccessTimeouts          : true,
-			reapFrequency                  : 2,
-			freeMemoryPercentageThreshold  : 0,
-			evictionPolicy                 : "LRU",
-			evictCount                     : 1,
-			maxObjects                     : 200,
-			objectStore                    : "ConcurrentSoftReferenceStore",
-			// This switches the internal provider from normal cacheBox to coldbox enabled cachebox
-			coldboxEnabled                 : false
-		};
-
 		// Create Provider
 		cache = createMock( "coldbox.system.cache.providers.CacheBoxProvider" ).init();
 		// Decorate it
@@ -66,6 +72,18 @@
 	function teardown(){
 		cache.clearAll();
 	}
+
+	/**
+	 * ------------------------------------------------------
+	 * Helpers
+	 * ------------------------------------------------------
+	 */
+
+	/**
+	 * ------------------------------------------------------
+	 * Testing Methods
+	 * ------------------------------------------------------
+	 */
 
 	function testShutdown(){
 		cache.shutdown();

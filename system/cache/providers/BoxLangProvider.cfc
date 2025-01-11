@@ -84,7 +84,7 @@ component
 	 * @return coldbox.system.cache.util.IStats
 	 */
 	function getStats(){
-		return new "coldbox.system.cache.providers.boxlang-lib.BoxLangStats"( this );
+		return new "coldbox.system.cache.providers.stats.BoxLangStats"( this );
 	}
 
 	/**
