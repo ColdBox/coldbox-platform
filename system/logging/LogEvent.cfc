@@ -94,9 +94,9 @@ component accessors="true" {
 			structKeyExists( variables.extraInfo, "detail" )
 		) {
 			var messageString = [
-				"Message: #variables.extraInfo.message#",
-				"Detail: #variables.extraInfo.detail#",
-				"Stacktrace: #variables.extraInfo.stacktrace#"
+				"[Message] 		: #variables.extraInfo.message#",
+				"[Detail] 		: #variables.extraInfo.detail#",
+				"[Stacktrace] 	: #variables.extraInfo.stacktrace#"
 			];
 			return arrayToList( messageString, chr( 13 ) & chr( 10 ) );
 		}
@@ -107,7 +107,7 @@ component accessors="true" {
 		}
 
 		// Complex values, return serialized in json
-		return getUtil().toPrettyJson( variables.extraInfo );
+		return getUtil().toJSON( variables.extraInfo );
 	}
 
 }
