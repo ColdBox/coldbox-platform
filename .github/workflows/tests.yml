@@ -30,10 +30,11 @@ jobs:
             commandbox_version: "6.1.0"
             experimental: true
           # Experimental Lucee 6
-          - cfengine: "lucee@6"
-            jdkVersion: "17"
-            commandbox_version: "6.1.0"
-            experimental: true
+          # COMMENTED OUT BECAUSE THEY NEVER COMPLETE IN LUCEE 6 FOR SOME REASON
+          #- cfengine: "lucee@6"
+          #  jdkVersion: "17"
+          #  commandbox_version: "6.1.0"
+          #  experimental: true
           # JDK17 Engines
           - cfengine: "adobe@2023"
             jdkVersion: "17"
