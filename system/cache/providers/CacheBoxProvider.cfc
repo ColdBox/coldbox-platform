@@ -254,13 +254,7 @@ component
 	struct function getCachedObjectMetadata( required objectKey ){
 		// Cleanup the key
 		arguments.objectKey = lCase( arguments.objectKey );
-
-		// Check if in the pool first
-		if ( variables.objectStore.getIndexer().objectExists( arguments.objectKey ) ) {
-			return variables.objectStore.getIndexer().getObjectMetadata( arguments.objectKey );
-		}
-
-		return {};
+		return variables.objectStore.getCachedObjectMetadata( arguments.objectKey );
 	}
 
 	/**
@@ -500,9 +494,16 @@ component
 
 	/**
 	 * Get a structure of all the keys in the cache with their appropriate metadata structures. This is used to build the reporting.[keyX->[metadataStructure]]
+	 * <strong>ALERT:</strong> Please be aware that this method can be very expensive in large caches, use with caution.
 	 */
 	struct function getStoreMetadataReport(){
-		return variables.objectStore.getIndexer().getPoolMetadata();
+		var results = {};
+		variables.objectStore
+			.getKeys()
+			.each( ( key ) => {
+				results[ key ] = getCachedObjectMetadata( key );
+			} );
+		return results;
 	}
 
 	/**
@@ -583,7 +584,10 @@ component
 				var thisMD = getCachedObjectMetadata( thisKey );
 
 				// Check if found, else continue, already reaped.
+				// Clear again just in case, something is corrupt.
+				// This can take care of scenarios where the object is not found in the store but in the keys
 				if ( structIsEmpty( thisMD ) ) {
+					clear( thisKey );
 					continue;
 				}
 

@@ -26,13 +26,6 @@ interface {
 	void function clearAll();
 
 	/**
-	 * Get the store's pool metadata indexer structure
-	 *
-	 * @return coldbox.system.cache.store.indexers.MetadataIndexer
-	 */
-	function getIndexer();
-
-	/**
 	 * Get all the store's object keys array
 	 *
 	 * @return array
@@ -106,5 +99,25 @@ interface {
 	 * Get the size of the store
 	 */
 	function getSize();
+
+	/**
+	 * This method sorts the pool keys by a property in the metadata, for example: hits, created, lastAccessed
+	 *
+	 * @property  The property to sort by: hits, created, lastAccessed
+	 * @sortType  The sort type: text, numeric, date
+	 * @sortOrder The sort order: asc, desc
+	 */
+	array function getSortedKeys(
+		required property,
+		sortType  = "text",
+		sortOrder = "asc"
+	);
+
+	/**
+	 * Get the metadata of an object
+	 *
+	 * @objectKey The key to retrieve
+	 */
+	struct function getCachedObjectMetadata( required objectKey );
 
 }

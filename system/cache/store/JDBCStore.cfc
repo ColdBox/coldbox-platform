@@ -453,6 +453,34 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true" 
 		return hash( arguments.objectKey );
 	}
 
+	/**
+	 * This method sorts the pool keys by a property in the metadata, for example: hits, created, lastAccessed
+	 *
+	 * @property  The property to sort by: hits, created, lastAccessed
+	 * @sortType  The sort type: text, numeric, date
+	 * @sortOrder The sort order: asc, desc
+	 */
+	array function getSortedKeys(
+		required property,
+		sortType  = "text",
+		sortOrder = "asc"
+	){
+		return variables.indexer.getSortedKeys(
+			arguments.property,
+			arguments.sortType,
+			arguments.sortOrder
+		);
+	}
+
+	/**
+	 * Get the metadata of an object
+	 *
+	 * @objectKey The key to retrieve
+	 */
+	struct function getCachedObjectMetadata( required objectKey ){
+		return variables.indexer.getObjectMetadata( arguments.objectKey );
+	}
+
 	// ********************************* PRIVATE ************************************//
 
 	/**

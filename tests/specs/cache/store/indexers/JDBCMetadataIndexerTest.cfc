@@ -1,5 +1,5 @@
-﻿<cfcomponent extends="coldbox.system.testing.BaseModelTest">
-	<cfscript>
+﻿component extends="coldbox.system.testing.BaseModelTest" {
+
 	function setup(){
 		config       = { dsn : "coolblog", table : "cacheBox" };
 		mockProvider = createMock( "coldbox.system.cache.providers.MockProvider" );
@@ -44,5 +44,5 @@
 		// debug(keys);
 		assertEquals( "test2", keys[ 1 ] );
 	}
-	</cfscript>
-</cfcomponent>
+
+}

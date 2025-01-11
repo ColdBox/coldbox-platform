@@ -8,7 +8,12 @@
  *
  * @author Luis Majano
  */
-component extends="coldbox.system.cache.store.indexers.MetadataIndexer" accessors="true" {
+component accessors="true" {
+
+	/**
+	 * The fields indexed
+	 */
+	property name="fields";
 
 	/**
 	 * The SQL Type: Defaults to MySQL
@@ -37,8 +42,8 @@ component extends="coldbox.system.cache.store.indexers.MetadataIndexer" accessor
 		required struct config,
 		required store
 	){
-		// Super init
-		super.init( arguments.fields );
+		// Store fields
+		variables.fields = arguments.fields;
 
 		// Get db data
 		cfdbinfo(

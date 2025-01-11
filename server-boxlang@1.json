@@ -1,6 +1,6 @@
 {
     "app":{
-        "cfengine":"boxlang@be",
+        "cfengine":"/Users/lmajano/Sites/projects/boxlang-servlet/build/distributions/boxlang-servlet-1.0.0-snapshot.zip",
         "serverHomeDirectory":".engine/boxlang"
     },
     "name":"coldbox-boxlang",
@@ -20,16 +20,16 @@
     },
     "JVM":{
         "heapSize":"1024",
-		"javaVersion":"openjdk21_jdk",
-		"args": "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=9999"
+        "javaVersion":"openjdk21_jdk",
+        "args":"-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=9999"
     },
     "cfconfig":{
         "file":".cfconfig.json"
     },
     "env":{
-		"BOXLANG_DEBUG": true
+        "BOXLANG_DEBUG":true
     },
-	"scripts" : {
-		"onServerInitialInstall":"install bx-orm,bx-mail,bx-mysql,bx-derby,bx-compat-cfml@be,bx-unsafe-evaluate,bx-esapi --noSave"
-	}
+    "scripts":{
+        "onServerInitialInstall":"install bx-orm,bx-mail,bx-mysql,bx-derby,bx-compat-cfml@be,bx-unsafe-evaluate,bx-esapi --noSave"
+    }
 }

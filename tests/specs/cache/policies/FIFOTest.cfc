@@ -19,12 +19,14 @@
 			}
 		};
 
+		mockStore = createStub();
 		mockCM.$( "getConfiguration", config );
-		mockIndexer.$( "getPoolMetadata", pool ).$( "objectExists", true );
-		keys = structSort( pool, "numeric", "asc", "created" );
+		mockCM.$( "getObjectStore", mockStore );
+		mockCM.$( "lookupQuiet", true );
+		mockCM.$( "getCachedObjectMetadata" ).$results( pool.obj2, pool.obj3, pool.obj1 );
 
-		mockIndexer.$( "getSortedKeys", keys );
-		mockIndexer.$( "getObjectMetadata" ).$results( pool.obj2, pool.obj3, pool.obj1 );
+		keys = structSort( pool, "numeric", "asc", "created" );
+		mockStore.$( "getSortedKeys", keys );
 
 		fifo = createMock( "coldbox.system.cache.policies.FIFO" ).init( mockCM );
 	}

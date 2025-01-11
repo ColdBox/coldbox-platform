@@ -30,9 +30,6 @@ component extends="coldbox.system.cache.store.ConcurrentStore" accessors=true {
 		// Super size me
 		super.init( arguments.cacheProvider );
 
-		// Override Fields
-		variables.indexer.setFields( variables.indexer.getFields() & ",isSoftReference" );
-
 		// Prepare soft reference lookup maps
 		variables.softRefKeyMap  = createObject( "java", "java.util.concurrent.ConcurrentHashMap" ).init();
 		variables.referenceQueue = createObject( "java", "java.lang.ref.ReferenceQueue" ).init();
@@ -62,7 +59,6 @@ component extends="coldbox.system.cache.store.ConcurrentStore" accessors=true {
 				if ( softRefLookup( collected ) ) {
 					// expire it
 					expireObject( getSoftRefKey( collected ) );
-
 					// GC Collection Hit
 					variables.cacheProvider.getStats().gcHit();
 				}
@@ -87,12 +83,7 @@ component extends="coldbox.system.cache.store.ConcurrentStore" accessors=true {
 		}
 
 		// get quiet to test it as it might be a soft reference
-		if ( isNull( getQuiet( arguments.objectKey ) ) ) {
-			return false;
-		}
-
-		// if we get here, it is found
-		return true;
+		return isNull( getQuiet( arguments.objectKey ) ) ? false : true;
 	}
 
 	/**
@@ -103,12 +94,11 @@ component extends="coldbox.system.cache.store.ConcurrentStore" accessors=true {
 	function get( required objectKey ){
 		// Get via concurrent store
 		var target = super.get( arguments.objectKey );
-		if ( !isNull( local.target ) ) {
+		if ( !isNull( target ) ) {
 			// Validate if SR or normal object
 			if ( isInstanceOf( target, "java.lang.ref.SoftReference" ) ) {
 				return target.get();
 			}
-
 			return target;
 		}
 	}
@@ -119,14 +109,12 @@ component extends="coldbox.system.cache.store.ConcurrentStore" accessors=true {
 	 * @objectKey The key to retrieve
 	 */
 	function getQuiet( required objectKey ){
-		// Get via concurrent store
 		var target = super.getQuiet( arguments.objectKey );
 		if ( !isNull( local.target ) ) {
 			// Validate if SR or normal object
 			if ( isInstanceOf( target, "java.lang.ref.SoftReference" ) ) {
 				return target.get();
 			}
-
 			return target;
 		}
 	}
@@ -158,17 +146,17 @@ component extends="coldbox.system.cache.store.ConcurrentStore" accessors=true {
 			target = arguments.object;
 		}
 
-		// Store it
-		super.set(
-			objectKey         = arguments.objectKey,
-			object            = target,
-			timeout           = arguments.timeout,
-			lastAccessTimeout = arguments.lastAccessTimeout,
-			extras            = arguments.extras
-		);
-
-		// Set extra md in indexer
-		variables.indexer.setObjectMetadataProperty( arguments.objectKey, "isSoftReference", isSR );
+		var data = {
+			"object"            : target,
+			"hits"              : 1,
+			"timeout"           : arguments.timeout,
+			"lastAccessTimeout" : arguments.lastAccessTimeout,
+			"created"           : now(),
+			"lastAccessed"      : now(),
+			"isExpired"         : false,
+			"isSoftReference"   : isSR
+		};
+		variables.pool.put( arguments.objectKey, data );
 	}
 
 	/**
@@ -186,17 +174,32 @@ component extends="coldbox.system.cache.store.ConcurrentStore" accessors=true {
 		var softRef = variables.pool.get( arguments.objectKey );
 
 		// Removal of Soft Ref Lookup
-		if (
-			!isNull( local.softRef ) && variables.indexer.getObjectMetadataProperty(
-				arguments.objectKey,
-				"isSoftReference",
-				false
-			)
-		) {
+		if ( !isNull( local.softRef ) ) {
 			variables.softRefKeyMap.remove( softRef.hashCode() );
 		}
 
 		return super.clear( arguments.objectKey );
+	}
+
+	/**
+	 * Get the metadata of an object
+	 *
+	 * @objectKey The key to retrieve
+	 */
+	struct function getCachedObjectMetadata( required objectKey ){
+		var results = variables.pool.get( arguments.objectKey );
+		if ( isNull( local.results ) ) {
+			return {};
+		}
+		return {
+			"hits"              : results.hits,
+			"timeout"           : results.timeout,
+			"lastAccessTimeout" : results.lastAccessTimeout,
+			"created"           : results.created,
+			"lastAccessed"      : results.lastAccessed,
+			"isExpired"         : results.isExpired,
+			"isSoftReference"   : results.isSoftReference
+		}
 	}
 
 	/****************************************************************************************/

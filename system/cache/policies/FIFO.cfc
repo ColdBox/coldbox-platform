@@ -29,7 +29,6 @@ component extends="coldbox.system.cache.policies.AbstractEvictionPolicy" {
 		try {
 			var index = getAssociatedCache()
 				.getObjectStore()
-				.getIndexer()
 				.getSortedKeys( "created", "numeric", "asc" );
 			// process evictions
 			processEvictions( index );
