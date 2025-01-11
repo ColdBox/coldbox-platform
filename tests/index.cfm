@@ -94,7 +94,7 @@
 			<cfif runners.recordCount eq 0>
 				<p class="alert alert-warning">No runners found in this directory</p>
 			<cfelse>
-				<cloop query="runners">
+				<cfloop query="runners">
 					<a
 						href="#runners.name#"
 						target="_blank"
@@ -106,7 +106,7 @@
 					>
 						#runners.name#
 					</a>
-				</cloop>
+				</cfloop>
 			</cfif>
 		</div>
 	</div>
