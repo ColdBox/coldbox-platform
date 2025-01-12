@@ -1,5 +1,4 @@
-﻿
-component extends="tests.resources.BaseIntegrationTest" {
+﻿component extends="tests.resources.BaseIntegrationTest" {
 
 	/*********************************** LIFE CYCLE Methods ***********************************/
 

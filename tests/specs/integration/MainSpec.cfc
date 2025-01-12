@@ -1,5 +1,4 @@
-﻿
-component extends="tests.resources.BaseIntegrationTest" autowire {
+﻿component extends="tests.resources.BaseIntegrationTest" autowire {
 
 	property name="logger" inject="logbox:logger:{this}";
 
