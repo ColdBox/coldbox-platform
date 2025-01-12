@@ -9,8 +9,8 @@ component{
 	this.sessionManagement  = true;
 	this.setClientCookies   = true;
 	this.clientManagement   = true;
-	this.sessionTimeout     = createTimeSpan( 0, 0, 1, 0 );
-	this.applicationTimeout = createTimeSpan( 0, 0, 1, 0 );
+	this.sessionTimeout     = createTimeSpan( 0, 1, 0, 0 );
+	this.applicationTimeout = createTimeSpan( 0, 1, 0, 0 );
 	this.timezone 			= "UTC";
 	this.enableNullSupport = shouldEnableFullNullSupport();
 
