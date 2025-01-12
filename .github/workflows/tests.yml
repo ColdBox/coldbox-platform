@@ -33,7 +33,6 @@ jobs:
             experimental: true
             timeoutMinutes: 10
           # Experimental Lucee 6
-          # COMMENTED OUT BECAUSE THEY NEVER COMPLETE IN LUCEE 6 FOR SOME REASON
           - cfengine: "lucee@6"
             jdkVersion: "17"
             commandbox_version: "6.1.0"
