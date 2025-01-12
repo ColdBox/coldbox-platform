@@ -118,24 +118,15 @@ component
 	 */
 	struct function getStoreMetadataKeyMap(){
 		return {
-			"cacheName",
-			"cacheName",
-			"hits",
-			"hits",
-			"timeout",
-			"timeout",
-			"lastAccessTimeout",
-			"lastAccessTimeout",
-			"created",
-			"created",
-			"lastAccessed",
-			"lastAccessed",
-			"metadata",
-			"metadata",
-			"key",
-			"key",
-			"isEternal",
-			"isEternal"
+			cacheName : "cacheName",
+			hits : "hits",
+			timeout : "timeout",
+			lastAccessTimeout : "lastAccessTimeout",
+			created : "created",
+			lastAccessed : "lastAccessed",
+			metadata : "metadata",
+			key : "key",
+			isEternal : "isEternal"
 		};
 	}
 
