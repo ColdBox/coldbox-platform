@@ -12,6 +12,7 @@ jobs:
   tests:
     name: Test Suites
     runs-on: ubuntu-20.04
+    timeout-minutes: ${{ matrix.timeoutMinutes }}
     env:
       DB_USER: root
       DB_PASSWORD: root
@@ -23,23 +24,27 @@ jobs:
         cfengine: [ "lucee@5", "adobe@2018", "adobe@2021", "adobe@2023" ]
         jdkVersion: [ "11" ]
         experimental: [false]
+        timeoutMinutes: [ 8 ]
         include:
           # Experimental BoxLang
           - cfengine: "boxlang@1"
             jdkVersion: "21"
             commandbox_version: "6.1.0"
             experimental: true
+            timeoutMinutes: 10
           # Experimental Lucee 6
           # COMMENTED OUT BECAUSE THEY NEVER COMPLETE IN LUCEE 6 FOR SOME REASON
-          #- cfengine: "lucee@6"
-          #  jdkVersion: "17"
-          #  commandbox_version: "6.1.0"
-          #  experimental: true
+          - cfengine: "lucee@6"
+            jdkVersion: "17"
+            commandbox_version: "6.1.0"
+            experimental: true
+            timeoutMinutes: 10
           # JDK17 Engines
           - cfengine: "adobe@2023"
             jdkVersion: "17"
             commandbox_version: "6.1.0"
             experimental: false
+            timeoutMinutes: 10
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
