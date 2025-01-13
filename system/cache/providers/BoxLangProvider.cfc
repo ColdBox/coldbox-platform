@@ -152,7 +152,7 @@ component
 	 * @objectKey The key to retrieve
 	 */
 	function get( required objectKey ){
-		return cache( getConfiguration().cacheName ).get( arguments.objectKey );
+		return cache( getConfiguration().cacheName ).get( arguments.objectKey ).get();
 	}
 
 	/**

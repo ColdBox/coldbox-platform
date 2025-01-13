@@ -87,7 +87,7 @@
 		cache.clearStatistics();
 
 		results = cache.get( "test" );
-		assertEquals( results, testval );
+		assertEquals( testval, results );
 		// assertEquals( 0, cache.getStats().getMisses() );
 		// assertEquals( 1, cache.getStats().getHits() );
 
