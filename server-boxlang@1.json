@@ -27,9 +27,9 @@
         "file":".cfconfig.json"
     },
     "env":{
-		"BOXLANG_DEBUG": true
+        "BOXLANG_DEBUG":true
     },
-	"scripts" : {
-		"onServerInitialInstall":"install bx-mail,bx-mysql,bx-derby,bx-compat-cfml,bx-unsafe-evaluate,bx-esapi --noSave"
-	}
+    "scripts":{
+        "onServerInitialInstall":"install bx-mail,bx-mysql,bx-derby,bx-compat-cfml,bx-unsafe-evaluate,bx-esapi --noSave"
+    }
 }
