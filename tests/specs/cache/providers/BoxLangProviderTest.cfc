@@ -131,8 +131,8 @@
 		);
 		assertEquals( testVal, cache.get( "test" ) );
 		md = cache.getCachedObjectMetadata( "test" );
-		assertEquals( 60 * 1000, md.idleTime );
-		assertEquals( 120 * 1000, md.timespan );
+		assertEquals( 60, md.lastAccessTimeout );
+		assertEquals( 120, md.timeout );
 		// debug(md);
 	}
 
@@ -148,8 +148,8 @@
 		);
 		assertEquals( testVal, cache.get( "test" ) );
 		md = cache.getCachedObjectMetadata( "test" );
-		assertEquals( 60 * 1000, md.idleTime );
-		assertEquals( 120 * 1000, md.timespan );
+		assertEquals( 60, md.lastAccessTimeout );
+		assertEquals( 120, md.timeout );
 		// debug(md);
 	}
 

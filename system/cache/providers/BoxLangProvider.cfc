@@ -152,7 +152,7 @@ component
 	 * @objectKey The key to retrieve
 	 */
 	function get( required objectKey ){
-		return cache( getConfiguration().cacheName ).get( arguments.objectKey ).get();
+		return cache( getConfiguration().cacheName ).get( arguments.objectKey ).getOrDefault( nullValue() );
 	}
 
 	/**
@@ -161,7 +161,7 @@ component
 	 * @objectKey The key to retrieve
 	 */
 	function getQuiet( required objectKey ){
-		return cache( getConfiguration().cacheName ).getQuiet( arguments.objectKey );
+		return cache( getConfiguration().cacheName ).getQuiet( arguments.objectKey ).getOrDefault( nullValue() );
 	}
 
 	/**
