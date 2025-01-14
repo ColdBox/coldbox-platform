@@ -1,5 +1,5 @@
 ﻿// Skipped until ORM is done
-component extends="tests.resources.BaseIntegrationTest" skip="isBoxLang" {
+component extends="tests.resources.BaseIntegrationTest" {
 
 	/*********************************** LIFE CYCLE Methods ***********************************/
 
@@ -15,6 +15,9 @@ component extends="tests.resources.BaseIntegrationTest" skip="isBoxLang" {
 	}
 
 	function run( testResults, testBox ){
+		if( isBoxLang() ){
+			return;
+		}
 		// all your suites go here.
 		describe( "Object Populator", function(){
 			beforeEach( function( currentSpec ){
