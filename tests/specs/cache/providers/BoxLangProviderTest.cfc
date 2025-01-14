@@ -131,6 +131,8 @@
 		);
 		assertEquals( testVal, cache.get( "test" ) );
 		md = cache.getCachedObjectMetadata( "test" );
+		debug( md );
+
 		assertEquals( 60, md.lastAccessTimeout );
 		assertEquals( 120, md.timeout );
 		// debug(md);
