@@ -15,7 +15,7 @@ component extends="tests.resources.BaseIntegrationTest" {
 	}
 
 	function run( testResults, testBox ){
-		if( isBoxLang() ){
+		if ( isBoxLang() ) {
 			return;
 		}
 		// all your suites go here.
