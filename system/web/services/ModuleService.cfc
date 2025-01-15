@@ -1430,7 +1430,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		| Module Settings Config Seeding
 		|--------------------------------------------------------------------------
 		*/
-		mConfig.settings.append( oConfig.configure(), true );
+		mConfig.settings.append( oConfig.configure( mConfig.settings ), true );
 
 		/*
 		|--------------------------------------------------------------------------
