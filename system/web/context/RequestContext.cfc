@@ -94,12 +94,18 @@ component serializable="false" accessors="true" {
 	 * The last status code
 	 * This is used mostly for mocking and tracking multi-step responses in case repsonses are committed.
 	 */
-	property name="statusCode" type="numeric" default="0";
+	property
+		name   ="statusCode"
+		type   ="numeric"
+		default="0";
 
 	/**
 	 * The last status text
 	 */
-	property name="statusText" type="string" default="";
+	property
+		name   ="statusText"
+		type   ="string"
+		default="";
 
 	/************************************** STATIC CONSTRUCTS *********************************************/
 
