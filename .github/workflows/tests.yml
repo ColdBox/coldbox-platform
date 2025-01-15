@@ -64,6 +64,7 @@ jobs:
         uses: Ortus-Solutions/setup-commandbox@v2.0.1
         with:
           version: ${{ matrix.commandbox_version }}
+          install: commandbox-boxlang
 
       - name: Setup .env For Runner
         run: |
