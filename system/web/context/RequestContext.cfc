@@ -90,6 +90,17 @@ component serializable="false" accessors="true" {
 		type   ="numeric"
 		default="0";
 
+	/**
+	 * The last status code
+	 * This is used mostly for mocking and tracking multi-step responses in case repsonses are committed.
+	 */
+	property name="statusCode" type="numeric" default="0";
+
+	/**
+	 * The last status text
+	 */
+	property name="statusText" type="string" default="";
+
 	/************************************** STATIC CONSTRUCTS *********************************************/
 
 	// HTTP VERB ALIASES
@@ -1879,6 +1890,9 @@ component serializable="false" accessors="true" {
 			getPageContext()
 				.getResponse()
 				.setStatus( javacast( "int", arguments.statusCode ), javacast( "string", arguments.statusText ) );
+			// set it locally, last one wins
+			variables.statusCode = arguments.statusCode;
+			variables.statusText = arguments.statusText;
 		}
 		// Name Exists and not already set.
 		else if ( !isNull( arguments.name ) ) {

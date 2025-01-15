@@ -23,8 +23,9 @@ component
 	 */
 	function setHTTPHeader( statusCode, statusText = "", name, value = "" ){
 		// status code?
-		if ( structKeyExists( arguments, "statusCode" ) ) {
-			setValue( "cbox_statusCode", arguments.statusCode );
+		if ( !isNull( arguments.statusCode ) ) {
+			setStatusCode( arguments.statusCode );
+			setStatusText( arguments.statusText );
 		}
 		// Name Exists
 		else if ( structKeyExists( arguments, "name" ) ) {

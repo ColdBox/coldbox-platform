@@ -497,7 +497,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 					renderData = requestContext.getRenderData();
 					if ( isStruct( renderData ) and NOT structIsEmpty( renderData ) ) {
 						requestContext.setValue( "cbox_render_data", renderData );
-						requestContext.setValue( "cbox_statusCode", renderData.statusCode );
+						requestContext.setStatusCode( renderData.statusCode );
 						renderedContent = cbController
 							.getDataMarshaller()
 							.marshallData( argumentCollection = renderData );
@@ -506,7 +506,6 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 					else if ( !isNull( local.handlerResults ) ) {
 						// Store raw results
 						requestContext.setValue( "cbox_handler_results", handlerResults );
-						requestContext.setValue( "cbox_statusCode", getNativeStatusCode() );
 						if ( isSimpleValue( handlerResults ) ) {
 							renderedContent = handlerResults;
 						} else {
@@ -519,7 +518,6 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 					}
 					// render layout/view pair
 					else {
-						requestContext.setValue( "cbox_statusCode", getNativeStatusCode() );
 						renderedContent = cbcontroller
 							.getRenderer()
 							.layout(
@@ -574,7 +572,6 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 		requestContext.getRenderedContent = variables.getRenderedContent;
 		requestContext.getHandlerResults  = variables.getHandlerResults;
 		requestContext.getRenderData      = variables.getRenderData;
-		requestContext.getStatusCode      = variables.getStatusCode;
 		return requestContext;
 	}
 
@@ -750,15 +747,6 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 */
 	function getRenderData(){
 		return getPrivateValue( name = "cbox_renderdata", defaultValue = structNew() );
-	}
-
-	/**
-	 * Get the status code for a ColdBox integration test
-	 *
-	 * @return cbox_statusCode or 200
-	 */
-	function getStatusCode(){
-		return getValue( "relocate_STATUSCODE", getValue( "cbox_statusCode", 200 ) );
 	}
 
 	/**
