@@ -74,12 +74,13 @@ component accessors="true" {
 	 * @targetObject The target object we are building the DSL dependency for. If empty, means we are just requesting building
 	 */
 	private function getColdBoxDSL( required definition, targetObject ){
-		var thisName         = arguments.definition.name;
-		var thisType         = arguments.definition.dsl;
-		var thisTypeLen      = listLen( thisType, ":" );
-		var thisLocationType = "";
-		var thisLocationKey  = "";
-		var moduleSettings   = "";
+		var thisName          = arguments.definition.name;
+		var thisType          = arguments.definition.dsl;
+		var thisTypeLen       = listLen( thisType, ":" );
+		var thisLocationType  = "";
+		var thisLocationKey   = "";
+		var thisLocationToken = "";
+		var moduleSettings    = "";
 
 		// Support shortcut for specifying name in the definition instead of the DSl for supporting namespaces
 		if (
