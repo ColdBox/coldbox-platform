@@ -58,7 +58,7 @@ component extends="tests.resources.BaseIntegrationTest" {
 						);
 						expect( e.getPrivateValue( "exception" ).getType() ).toBe( "CustomException" );
 						expect( e.getPrivateValue( "exception" ).getMessage() ).toInclude( "Whoops" );
-						expect( getNativeStatusCode() ).toBe( 500 );
+						expect( e.getStatusCode() ).toBe( 500 );
 					} );
 				} );
 			} );
@@ -91,17 +91,6 @@ component extends="tests.resources.BaseIntegrationTest" {
 				} );
 			} );
 		} );
-	}
-
-	private function getNativeStatusCode(){
-		if ( structKeyExists( server, "lucee" ) ) {
-			return getPageContext().getResponse().getStatus();
-		} else {
-			return getPageContext()
-				.getResponse()
-				.getResponse()
-				.getStatus();
-		}
 	}
 
 }
