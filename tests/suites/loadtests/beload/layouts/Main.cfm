@@ -8,8 +8,8 @@
 		<meta name="description" content="ColdBox Application Template">
 		<meta name="author" content="Ortus Solutions, Corp">
 
-		<!---Base URL --->
-		<base href="#event.getHTMLBaseURL()#" />
+		<!---Base URL
+		<base href="#event.getHTMLBaseURL()#" />--->
 
 		<!---css --->
 		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
@@ -85,7 +85,6 @@
 										<hr class="dropdown-divider">
 									</li>
 									<li class="p-2">
-										<img class="rounded mx-auto block" width="150" src="includes/images/ColdBoxLogo2015_300.png" alt="logo"/>
 									</li>
 								</ul>
 							</li>

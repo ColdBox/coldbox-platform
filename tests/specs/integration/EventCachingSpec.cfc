@@ -38,10 +38,10 @@
 					data  = { format : thisFormat },
 					body  = function( data ){
 						// TODO: Jon Clausen waiting for a fix on the PDF rendering
-						if ( data.format == "pdf" && isBoxLang() ) {
-							// Skip PDF tests
-							return;
-						}
+						// if ( data.format == "pdf" && isBoxLang() ) {
+						// 	// Skip PDF tests
+						// 	return;
+						// }
 
 						getRequestContext().setValue( "format", data.format );
 						var event = execute( event = "eventcaching", renderResults = true );

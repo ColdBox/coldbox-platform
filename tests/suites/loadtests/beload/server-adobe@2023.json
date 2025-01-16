@@ -1,8 +1,8 @@
 {
     "app":{
-        "cfengine":"adobe@2021"
+        "cfengine":"adobe@2023"
     },
-    "name":"beload-acf2021",
+    "name":"beload-acf2023",
     "JVM":{
         "heapSize":"512"
     },

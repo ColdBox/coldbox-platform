@@ -1,0 +1,21 @@
+{
+    "app":{
+        "cfengine":"boxlang@be"
+    },
+    "name":"beload-boxlang",
+    "JVM":{
+        "heapSize":"512",
+        "javaVersion":"openjdk21_jre"
+    },
+	"web":{
+        "rewrites":{
+            "enable":"false"
+        },
+        "http":{
+            "port":"8701"
+        }
+    },
+    "scripts":{
+        "onServerInitialInstall":"install bx-compat-cfml --noSave"
+    }
+}
