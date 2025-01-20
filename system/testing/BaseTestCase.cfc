@@ -601,14 +601,18 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 			.each( function( name ){
 				mockedEvent.setValue( arguments.name, params[ arguments.name ] );
 			} );
-		arguments.headers
-			.keyArray()
-			.each( function( name ){
-				mockedEvent
-					.$( "getHTTPHeader" )
-					.$args( arguments.name )
-					.$results( headers[ arguments.name ] );
-			} );
+		mockedEvent
+			.$(
+				method="getHTTPHeader",
+				callback=function( name, defaultValue ){
+					if( headers.keyExists( arguments.name ) ){
+						return headers[ arguments.name ];
+					}
+					if( !isNull( arguments.defaultValue ) ){
+						return arguments.defaultValue;
+					}
+				}
+			);
 		return this.execute( argumentCollection = arguments );
 	}
 
