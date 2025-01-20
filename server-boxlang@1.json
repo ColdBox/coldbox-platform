@@ -1,6 +1,6 @@
 {
     "app":{
-        "cfengine":"/Users/lmajano/Sites/projects/boxlang-servlet/build/distributions/boxlang-servlet-1.0.0-snapshot.zip",
+        "cfengine":"boxlang@snapshot",
         "serverHomeDirectory":".engine/boxlang"
     },
     "name":"coldbox-boxlang",
