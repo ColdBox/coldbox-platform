@@ -1,6 +1,6 @@
 {
     "app":{
-        "cfengine":"boxlang@snapshot",
+        "cfengine":"boxlang@be",
         "serverHomeDirectory":".engine/boxlang"
     },
     "name":"coldbox-boxlang",
