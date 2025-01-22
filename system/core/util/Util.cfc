@@ -63,7 +63,7 @@ component {
 	boolean function inThread(){
 		var engine = "ADOBE";
 
-		if( server.keyExists( "boxlang" ) ){
+		if ( server.keyExists( "boxlang" ) ) {
 			engine = "BOXLANG";
 		} else if ( server.coldfusion.productname eq "Lucee" ) {
 			engine = "LUCEE";

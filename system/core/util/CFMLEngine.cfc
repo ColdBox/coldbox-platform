@@ -66,7 +66,9 @@ component {
 	 * Verify if this is an adobe server
 	 */
 	boolean function isAdobe(){
-		return !isBoxlang() && server.keyExists( "coldfusion" ) && server.coldfusion.productName.findNoCase( "ColdFusion" );
+		return !isBoxlang() && server.keyExists( "coldfusion" ) && server.coldfusion.productName.findNoCase(
+			"ColdFusion"
+		);
 	}
 
 	/**
