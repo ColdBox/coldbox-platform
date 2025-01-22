@@ -81,7 +81,7 @@ jobs:
       - name: Install Dependencies
         run: |
           # Core dependencies
-          box install
+          box install --verbose
 
       - name: Start ${{ matrix.cfengine }} Server
         run: |
