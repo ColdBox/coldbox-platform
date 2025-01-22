@@ -11,7 +11,7 @@ component {
 		// Lazy load the helper
 		if ( isNull( variables.engineMappingHelper ) ) {
 			// Detect server
-			if ( listFindNoCase( "Lucee", server.coldfusion.productname ) ) {
+			if ( !server.keyExists( "boxlang" ) && listFindNoCase( "Lucee", server.coldfusion.productname ) ) {
 				variables.engineMappingHelper = new LuceeMappingHelper();
 			} else {
 				variables.engineMappingHelper = new CFMappingHelper();
@@ -63,7 +63,9 @@ component {
 	boolean function inThread(){
 		var engine = "ADOBE";
 
-		if ( server.coldfusion.productname eq "Lucee" ) {
+		if( server.keyExists( "boxlang" ) ){
+			engine = "BOXLANG";
+		} else if ( server.coldfusion.productname eq "Lucee" ) {
 			engine = "LUCEE";
 		}
 
@@ -82,6 +84,7 @@ component {
 				}
 				break;
 			}
+			case "BOXLANG":
 			case "LUCEE": {
 				return isInThread();
 			}
@@ -234,7 +237,7 @@ component {
 		return serializeJSON(
 			arguments.obj,
 			"struct",
-			listFindNoCase( "Lucee", server.coldfusion.productname ) ? "utf-8" : false
+			!server.keyExists( "boxlang" ) && listFindNoCase( "Lucee", server.coldfusion.productname ) ? "utf-8" : false
 		);
 	}
 

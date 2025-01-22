@@ -43,8 +43,11 @@
 			}
 		};
 
+
 		// Add caches per engine
-		if ( listFindNoCase( "Lucee", server.coldfusion.productname ) ) {
+		if( server.keyExists( "boxlang" ) ){
+			cachebox.caches.cfCache = { provider : "coldbox.system.cache.providers.BoxlangProvider" };
+		} else if ( listFindNoCase( "Lucee", server.coldfusion.productname ) ) {
 			cachebox.caches.luceeCache = { provider : "coldbox.system.cache.providers.LuceeProvider" };
 		} else {
 			cachebox.caches.cfCache = { provider : "coldbox.system.cache.providers.CFColdBoxProvider" };

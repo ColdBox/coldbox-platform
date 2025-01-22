@@ -59,14 +59,14 @@ component {
 	 * Verify if this is a lucee server
 	 */
 	boolean function isLucee(){
-		return server.keyExists( "lucee" ) && !server.keyExists( "boxlang" );
+		return !server.keyExists( "boxlang" ) && server.keyExists( "lucee" );
 	}
 
 	/**
 	 * Verify if this is an adobe server
 	 */
 	boolean function isAdobe(){
-		return server.keyExists( "coldfusion" ) && server.coldfusion.productName.findNoCase( "ColdFusion" );
+		return !isBoxlang() && server.keyExists( "coldfusion" ) && server.coldfusion.productName.findNoCase( "ColdFusion" );
 	}
 
 	/**
