@@ -328,6 +328,9 @@ component serializable="false" accessors="true" {
 					}
 
 					// ****** PRE-RENDER EVENTS *******/
+					if(isStruct(renderedContent)){
+						renderedContent = SerializeJSON(renderedContent);
+					}
 					var interceptorData = { renderedContent : renderedContent };
 					interceptorService.announce( "preRender", interceptorData );
 					// replace back content in case of modification, strings passed by value
