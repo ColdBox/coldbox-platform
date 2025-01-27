@@ -328,6 +328,7 @@ component serializable="false" accessors="true" {
 					}
 
 					// ****** PRE-RENDER EVENTS *******/
+					// If we received .html page request then renderedContent is struct instead of JSON String.
 					if(isStruct(renderedContent)){
 						renderedContent = SerializeJSON(renderedContent);
 					}
