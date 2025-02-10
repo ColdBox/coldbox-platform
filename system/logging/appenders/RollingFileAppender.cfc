@@ -42,7 +42,7 @@ component accessors="true" extends="coldbox.system.logging.appenders.FileAppende
 		if ( !propertyExists( "archiveLayout" ) ) {
 			setProperty( "archiveLayout", variables.getDefaultArchiveLayout );
 		}
-		if( !propertyExists( "rotatorSchedulerMinutes" ) ){
+		if ( !propertyExists( "rotatorSchedulerMinutes" ) ) {
 			setProperty( "rotatorSchedulerMinutes", 10 );
 		}
 
