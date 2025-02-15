@@ -1895,7 +1895,7 @@ component serializable="false" accessors="true" {
 		if ( !isNull( arguments.statusCode ) ) {
 			getPageContext()
 				.getResponse()
-				.setStatus( javacast( "int", arguments.statusCode ), javacast( "string", arguments.statusText ) );
+				.setStatus( javacast( "int", arguments.statusCode ) );
 			// set it locally, last one wins
 			variables.statusCode = arguments.statusCode;
 			variables.statusText = arguments.statusText;

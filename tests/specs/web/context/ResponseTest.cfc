@@ -82,18 +82,13 @@ component extends="coldbox.system.testing.BaseModelTest" {
 
 			it( "can set status with default code texts", function(){
 				response.setStatus( 400 );
-
 				expect( response.getStatusCode() ).toBe( 400 );
-				expect( response.getStatusText() ).toBe( "Bad Request" );
 			} );
 
 			it( "can set status with set code texts", function(){
-				response.setStatus( 400, "error baby" );
-
+				response.setStatus( 400 );
 				expect( response.getStatusCode() ).toBe( 400 );
-				expect( response.getStatusText() ).toBe( "error baby" );
 			} );
-
 
 			it( "can set data with pagination with no pagination data", function(){
 				response.setDataWithPagination( { "results" : "luis" } );

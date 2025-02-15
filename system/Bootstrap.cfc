@@ -644,7 +644,7 @@ component serializable="false" accessors="true" {
 		event.setPrivateValue( "exception", oException );
 
 		// Set Exception Header
-		getPageContextResponse().setStatus( 500, "Internal Server Error" );
+		getPageContextResponse().setStatus( 500 );
 
 		// Run custom Exception handler if Found, else run default exception routines
 		if ( len( arguments.controller.getSetting( "ExceptionHandler" ) ) ) {
@@ -719,7 +719,7 @@ component serializable="false" accessors="true" {
 		required encoding
 	){
 		// Status Codes
-		getPageContextResponse().setStatus( arguments.statusCode, arguments.statusText );
+		getPageContextResponse().setStatus( arguments.statusCode );
 		// Render the Data Content Type
 		controller
 			.getDataMarshaller()

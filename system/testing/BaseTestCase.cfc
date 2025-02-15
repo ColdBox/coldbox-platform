@@ -923,7 +923,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 		event.setPrivateValue( "exception", oException );
 
 		// Set Exception Header
-		event.setStatusCode( 500, "Internal Server Error" );
+		event.setStatusCode( 500 );
 
 		// Run custom Exception handler if Found, else run default exception routines
 		if ( len( arguments.controller.getSetting( "ExceptionHandler" ) ) ) {
