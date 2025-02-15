@@ -1893,9 +1893,7 @@ component serializable="false" accessors="true" {
 	function setHTTPHeader( statusCode, statusText = "", name, value = "" ){
 		// status code? We do not add to response headers as this is a separate marker identifier to the response
 		if ( !isNull( arguments.statusCode ) ) {
-			getPageContext()
-				.getResponse()
-				.setStatus( javacast( "int", arguments.statusCode ) );
+			getPageContext().getResponse().setStatus( javacast( "int", arguments.statusCode ) );
 			// set it locally, last one wins
 			variables.statusCode = arguments.statusCode;
 			variables.statusText = arguments.statusText;
