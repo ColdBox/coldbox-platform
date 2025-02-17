@@ -33,9 +33,9 @@ Holy Ghost which is given unto us. ." Romans 5:5
 
 ----
 
-# Welcome to ColdBox
+# Welcome to ColdBox HMVC
 
-ColdBox *Hierarchical* MVC is the de-facto enterprise-level [HMVC](https://en.wikipedia.org/wiki/Hierarchical_model%E2%80%93view%E2%80%93controller) framework for ColdFusion (CFML) developers. It's professionally backed, conventions-based, modular, highly extensible, and productive. Getting started with ColdBox is quick and painless.  ColdBox takes the pain out of development by giving you a standardized methodology for modern ColdFusion (CFML) development with features such as:
+ColdBox *Hierarchical* MVC is the de-facto enterprise-level [HMVC](https://en.wikipedia.org/wiki/Hierarchical_model%E2%80%93view%E2%80%93controller) framework for the [BoxLang](https://www.boxlang.io) JVM Language and for the ColdFusion (CFML) Language. It's professionally backed, conventions-based, modular, highly extensible, and productive. Getting started with ColdBox is quick and painless.  ColdBox takes the pain out of development by giving you a standardized methodology for modern web development with features such as:
 
 * [Conventions instead of configuration](https://coldbox.ortusbooks.com/getting-started/conventions)
 * [Modern URL routing](https://coldbox.ortusbooks.com/the-basics/routing)
@@ -54,14 +54,15 @@ ColdBox *Hierarchical* MVC is the de-facto enterprise-level [HMVC](https://en.wi
 
 For all ColdBox releases, updates are provided for 12 months and security fixes are provided for 2 years after the next major release.
 
-**ColdBox 6.x will receive bug fixes until 2024 and security fixes until 2025.**
+* **ColdBox 6.x will receive bug fixes until 2024 and security fixes until 2025.**
+* **ColdBox 7.x will receive bug fixes until 2025 and security fixes until 2026.**
 
 | Version | Release | Updates 	| Security Fixes |
 | ------- | ------- | --------- | -------------- |
 | 6.x     | 2022    | 2023      | 2025           |
-| 7.x     | 2023    | 2024      | 2026           |
-| 8.x     | 2024    | 2025      | 2027           |
-| 9.x     | 2025    | 2026      | 2028           |
+| 7.x     | 2023    | 2025      | 2026           |
+| 8.x     | 2025    | 2026      | 2027           |
+| 9.x     | 2026    | 2027      | 2028           |
 
 
 ## License
@@ -113,6 +114,7 @@ And constructed with the following guidelines:
 
 ## System Requirements
 
+* BoxLang 1+
 * Lucee 5+
 * Adobe ColdFusion 2018+
 
@@ -122,7 +124,7 @@ Please go to our [documentation](https://coldbox.ortusbooks.com) for expanded in
 
 **CommandBox (Recommended)**
 
-We recommend you use [CommandBox](https://www.ortussolutions.com/products/commandbox), our CFML CLI and package manager, to install ColdBox.
+We recommend you use [CommandBox](https://www.ortussolutions.com/products/commandbox), our CLI and package manager, to install ColdBox.
 
 **Stable Release**
 
@@ -138,7 +140,7 @@ Bleeding edge releases are updated automatically when code is committed.
 
 First, read our [contributing](CONTRIBUTING.md) guidelines, then you will need to download [CommandBox](https://www.ortussolutions.com/products/commandbox) so you can install dependencies, run the development server and much more.
 
-Then you need to install some CommandBox modules in order to work with environment variables and CFML engine configuration. Once you fork/clone the repository, startup a CommandBox shell in the root of the project via `box` and then install all of the project development dependencies:
+Then you need to install some CommandBox modules in order to work with environment variables and engine configuration. Once you fork/clone the repository, startup a CommandBox shell in the root of the project via `box` and then install all of the project development dependencies:
 
 ```bash
 install
