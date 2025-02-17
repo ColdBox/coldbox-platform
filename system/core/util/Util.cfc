@@ -10,8 +10,9 @@ component {
 	private function getEngineMappingHelper(){
 		// Lazy load the helper
 		if ( isNull( variables.engineMappingHelper ) ) {
-			// Detect server
-			if ( !server.keyExists( "boxlang" ) && listFindNoCase( "Lucee", server.coldfusion.productname ) ) {
+			if( server.keyExists( "boxlang" ) ) {
+				variables.engineMappingHelper = new BoxLangMappingHelper();
+			} else if ( listFindNoCase( "Lucee", server.coldfusion.productname ) ) {
 				variables.engineMappingHelper = new LuceeMappingHelper();
 			} else {
 				variables.engineMappingHelper = new CFMappingHelper();
