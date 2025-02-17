@@ -34,9 +34,7 @@ component {
 	 * @mappings A struct of mappings to register: { name : path }
 	 */
 	BoxLangMappingHelper function addMappings( required struct mappings ){
-		application
-			action        ="update"
-			mappings     =getApplicationSettings().mappings.append( arguments.mappings );
+		application action="update" mappings=getApplicationSettings().mappings.append( arguments.mappings );
 		return this;
 	}
 
