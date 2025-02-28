@@ -1,4 +1,4 @@
-﻿/**
+/**
  * The main ColdBox utility library.
  */
 component {
@@ -485,6 +485,9 @@ component {
 	 * Get the Hibernate version string from Hibernate or Hibernate bundle version
 	 */
 	public string function getHibernateVersion(){
+		if ( server.keyExists( "boxlang" ) ) {
+			return getHibernateVersion();
+		}
 		var version = createObject( "java", "org.hibernate.Version" );
 
 		if ( version.getVersionString() != "[WORKING]" ) {
