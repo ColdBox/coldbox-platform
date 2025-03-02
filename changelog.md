@@ -9,22 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [7.3.1] - 2025-03-02
+
 ### Bug
 
-[COLDBOX-1293](https://ortussolutions.atlassian.net/browse/COLDBOX-1293) DBAppender with SQL Server Not Compatible with Adobe 2023
+- [COLDBOX-1293](https://ortussolutions.atlassian.net/browse/COLDBOX-1293) DBAppender with SQL Server Not Compatible with Adobe 2023
 
-
-## [7.3.0] - 2024-05-14
+## [7.3.0] - 2024-05-13
 
 ### New Feature
 
 - Prettier SQL printing in `StringUtil.prettySQL()`
-- [COLDBOX-1270](https://ortussolutions.atlassian.net/browse/COLDBOX-1270) Abililty to restart schedulers with a \`restart\(\)\` method
+- [COLDBOX-1270](https://ortussolutions.atlassian.net/browse/COLDBOX-1270) Abililty to restart schedulers with a \`restart()\` method
 
 ### Improvement
 
 - [COLDBOX-1268](https://ortussolutions.atlassian.net/browse/COLDBOX-1268) WireBox Singleton auto reload now only affects app singletons and not core singletons
-- [COLDBOX-1269](https://ortussolutions.atlassian.net/browse/COLDBOX-1269) Do not add double headers if \`event.setHTTPHeader\(\)\` is called more than once
+- [COLDBOX-1269](https://ortussolutions.atlassian.net/browse/COLDBOX-1269) Do not add double headers if \`event.setHTTPHeader()\` is called more than once
 - [COLDBOX-1273](https://ortussolutions.atlassian.net/browse/COLDBOX-1273) Removal of deprecated CFML functions in core
 - [COLDBOX-1275](https://ortussolutions.atlassian.net/browse/COLDBOX-1275) Improved engine detection by the CFMLEngine feature class
 - [COLDBOX-1278](https://ortussolutions.atlassian.net/browse/COLDBOX-1278) Remove unsafe evaluate function usage
@@ -307,7 +308,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * * *
 
-[Unreleased]: https://github.com/ColdBox/coldbox-platform/compare/v7.2.1...HEAD
+[Unreleased]: https://github.com/ColdBox/coldbox-platform/compare/v7.3.1...HEAD
+
+[7.3.1]: https://github.com/ColdBox/coldbox-platform/compare/v7.3.0...v7.3.1
+
+[7.3.0]: https://github.com/ColdBox/coldbox-platform/compare/v7.2.1...v7.3.0
 
 [7.2.1]: https://github.com/ColdBox/coldbox-platform/compare/v7.2.0...v7.2.1
 

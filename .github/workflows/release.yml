@@ -196,9 +196,11 @@ jobs:
 
       - name: Copy Changelog
         run: |
-          cp .tmp/changelog.md changelog.md
+          ls -lR .tmp/
+          cp .tmp/changelog.md changelog.md || true
 
       - name: Bump Version
+        if: ${{ always() }}
         run: |
           if [ $LTS == 'true' ]
           then
@@ -210,6 +212,7 @@ jobs:
 
       - name: Commit Version Bump
         uses: EndBug/add-and-commit@v9.1.4
+        if: ${{ always() }}
         with:
           author_name: Github Actions
           author_email: info@ortussolutions.com
