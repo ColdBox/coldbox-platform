@@ -848,8 +848,7 @@ component serializable="false" accessors="true" {
 				)
 			) {
 				oRequestContext.setHTTPHeader(
-					statusCode = 405,
-					statusText = "Invalid HTTP Method: '#oRequestContext.getHTTPMethod()#'"
+					statusCode = 405
 				);
 				// set Invalid HTTP method in context
 				oRequestContext.setIsInvalidHTTPMethod();
@@ -899,8 +898,7 @@ component serializable="false" accessors="true" {
 
 				// Throw Exception, no handlers defined
 				oRequestContext.setHTTPHeader(
-					statusCode = 405,
-					statusText = "Invalid HTTP Method: '#oRequestContext.getHTTPMethod()#'"
+					statusCode = 405
 				);
 				throw(
 					message = "Invalid HTTP Method: '#oRequestContext.getHTTPMethod()#'",

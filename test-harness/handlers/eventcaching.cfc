@@ -71,7 +71,7 @@
 	 * This should not cache the output
 	 */
 	function produceError( event, rc, prc ) cache="true" cacheTimeout="10"{
-		event.setHTTPHeader( statusCode = 500, statusText = "error" );
+		event.setHTTPHeader( statusCode = 500 );
 		return {
 			error    : false,
 			messages : "Test",

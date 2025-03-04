@@ -21,10 +21,10 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				flashScope         = createEmptyMock( "coldbox.system.web.flash.MockFlash" );
 				mockRequestContext = createMock( "coldbox.system.web.context.RequestContext" ).init(
 					{
-						eventName     : "event",
-						modules       : {},
-						defaultLayout : "",
-						defaultView   : ""
+						eventName    : "event",
+						modules      : {},
+						defaultLayout: "",
+						defaultView  : ""
 					},
 					mockController
 				);
@@ -75,7 +75,6 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				handler.onExpectationFailed();
 				var response = handler.getRequestContext().getResponse();
 				expect( response.getError() ).toBeTrue();
-				expect( response.getStatusText() ).toBe( "Expectation Failed" );
 				expect( response.getStatusCode() ).toBe( 417 );
 			} );
 
@@ -87,7 +86,6 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				);
 				var response = mockRequestContext.getResponse();
 				expect( response.getError() ).toBeTrue();
-				expect( response.getStatusText() ).toBe( "Not Found" );
 				expect( response.getStatusCode() ).toBe( 404 );
 			} );
 
@@ -99,7 +97,6 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				);
 				var response = mockRequestContext.getResponse();
 				expect( response.getError() ).toBeTrue();
-				expect( response.getStatusText() ).toBe( "Unauthorized Resource" );
 				expect( response.getStatusCode() ).toBe( 403 );
 			} );
 
@@ -115,7 +112,6 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				);
 				var response = mockRequestContext.getResponse();
 				expect( response.getError() ).toBeTrue();
-				expect( response.getStatusText() ).toBe( "Unauthorized Resource" );
 				expect( response.getStatusCode() ).toBe( 403 );
 				expect( response.getMessagesString() ).toInclude( "Invalid Access!" );
 			} );
@@ -128,7 +124,6 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				);
 				var response = mockRequestContext.getResponse();
 				expect( response.getError() ).toBeTrue();
-				expect( response.getStatusText() ).toBe( "Invalid or Missing Credentials" );
 				expect( response.getStatusCode() ).toBe( 401 );
 			} );
 
@@ -144,7 +139,6 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				);
 				var response = mockRequestContext.getResponse();
 				expect( response.getError() ).toBeTrue();
-				expect( response.getStatusText() ).toBe( "Expired Authentication Credentials" );
 				expect( response.getStatusCode() ).toBe( 401 );
 				expect( response.getMessagesString() ).toInclude( "Expired Authentication Credentials" );
 			} );
@@ -159,7 +153,6 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				);
 				var response = mockRequestContext.getResponse();
 				expect( response.getError() ).toBeTrue();
-				expect( response.getStatusText() ).toBe( "Invalid Action" );
 				expect( response.getStatusCode() ).toBe( 404 );
 			} );
 
@@ -173,7 +166,6 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				);
 				var response = mockRequestContext.getResponse();
 				expect( response.getError() ).toBeTrue();
-				expect( response.getStatusText() ).toBe( "Invalid HTTP Method" );
 				expect( response.getStatusCode() ).toBe( 405 );
 			} );
 
@@ -186,7 +178,6 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				);
 				var response = mockRequestContext.getResponse();
 				expect( response.getError() ).toBeTrue();
-				expect( response.getStatusText() ).toBe( "Not Found" );
 				expect( response.getStatusCode() ).toBe( 404 );
 			} );
 
@@ -200,7 +191,6 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				);
 				var response = mockRequestContext.getResponse();
 				expect( response.getError() ).toBeTrue();
-				expect( response.getStatusText() ).toBe( "Invalid Request" );
 				expect( response.getStatusCode() ).toBe( 400 );
 			} );
 
@@ -215,15 +205,14 @@ component extends="coldbox.system.testing.BaseModelTest" {
 					mockRequestContext.getPrivateCollection(),
 					"badAction",
 					{
-						message    : "Invalid syntax",
-						detail     : "oooops!",
-						stackTrace : callStackGet().toString()
+						message   : "Invalid syntax",
+						detail    : "oooops!",
+						stackTrace: callStackGet().toString()
 					},
 					{}
 				);
 				var response = mockRequestContext.getResponse();
 				expect( response.getError() ).toBeTrue();
-				expect( response.getStatusText() ).toBe( "General application error" );
 				expect( response.getStatusCode() ).toBe( 500 );
 			} );
 		} );

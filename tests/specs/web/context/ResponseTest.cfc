@@ -68,7 +68,6 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				expect( response.getError() ).toBeTrue();
 				expect( response.getMessagesString() ).toInclude( "unit test" );
 				expect( response.getStatusCode() ).toBe( 400 );
-				expect( response.getStatusText() ).toBe( "Bad Request" );
 			} );
 
 			it( "can set error messages with accompanied code and text", function(){
@@ -77,7 +76,6 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				expect( response.getError() ).toBeTrue();
 				expect( response.getMessagesString() ).toInclude( "unit test" );
 				expect( response.getStatusCode() ).toBe( 400 );
-				expect( response.getStatusText() ).toBe( "error baby" );
 			} );
 
 			it( "can set status with default code texts", function(){

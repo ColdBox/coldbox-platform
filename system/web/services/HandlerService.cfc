@@ -501,7 +501,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		controller
 			.getRequestService()
 			.getContext()
-			.setHTTPHeader( statusCode = 404, statusText = "Not Found" );
+			.setHTTPHeader( statusCode = 404 );
 
 		// Invalid Event Detected, log it in the Application log, not a coldbox log but an app log
 		variables.log.error(

@@ -508,7 +508,6 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		assertEquals( rd.contenttype, "application/json" );
 		assertEquals( rd.type, "json" );
 		assertEquals( rd.statusCode, "200" );
-		assertEquals( rd.statusText, "" );
 
 		// JSONP
 		event.renderData(
@@ -549,12 +548,10 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		// Test StatusCodes
 		event.renderData(
 			data       = "hello",
-			statusCode = "400",
-			statusText = "Invalid Call!"
+			statusCode = "400"
 		);
 		rd = event.getRenderData();
 		assertEquals( rd.statusCode, "400" );
-		assertEquals( rd.statusText, "Invalid Call!" );
 	}
 
 	function testNoExecution(){
@@ -592,7 +589,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 	function testsetHTTPHeader(){
 		var event = getRequestContext();
 
-		event.setHTTPHeader( statusCode = "200", statusText = "Hello" );
+		event.setHTTPHeader( statusCode = "200" );
 
 		event.setHTTPHeader( name = "expires", value = "#now()#" );
 	}

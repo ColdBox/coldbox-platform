@@ -693,7 +693,6 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				return left( requestString, len( arguments.requestString ) - extensionLen - 1 );
 			} else if ( variables.router.getThrowOnInvalidExtension() ) {
 				event.setHTTPHeader(
-					statusText = "Invalid Requested Format Extension: #extension#",
 					statusCode = 406
 				);
 				throw(
@@ -749,9 +748,6 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		if ( !structKeyExists( aRoute, "statusCode" ) ) {
 			aRoute.statusCode = 200;
 		}
-		if ( !structKeyExists( aRoute, "statusText" ) ) {
-			aRoute.statusText = "Ok";
-		}
 
 		// simple values
 		if ( isSimpleValue( aRoute.response ) ) {
@@ -785,8 +781,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			.renderdata(
 				type       = isSimpleValue( theResponse ) ? "HTML" : "JSON",
 				data       = theResponse,
-				statusCode = aRoute.statusCode,
-				statusText = aRoute.statusText
+				statusCode = aRoute.statusCode
 			)
 			.noExecution();
 	}

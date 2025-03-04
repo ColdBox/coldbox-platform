@@ -83,14 +83,6 @@ component accessors="true" {
 		default="200";
 
 	/**
-	 * The status text of the response
-	 */
-	property
-		name   ="statusText"
-		type   ="string"
-		default="OK";
-
-	/**
 	 * The response time
 	 */
 	property
@@ -106,6 +98,7 @@ component accessors="true" {
 	/**
 	 * Helper Status Texts Lookups
 	 */
+	// TODO: REMOVE BY 8
 	this.STATUS_TEXTS = {
 		"100" : "Continue",
 		"101" : "Switching Protocols",
@@ -186,7 +179,6 @@ component accessors="true" {
 		variables.jsonCallBack = "";
 		variables.contentType  = "";
 		variables.statusCode   = 200;
-		variables.statusText   = "OK";
 		variables.responsetime = 0;
 		variables.headers      = [];
 
@@ -288,20 +280,14 @@ component accessors="true" {
 	}
 
 	/**
-	 * Sets the status code with a statusText for the API response
+	 * Sets the status code for the API response
 	 *
 	 * @code The status code to be set
-	 * @text The status text to be set
 	 *
 	 * @return Returns the Response object for chaining
 	 */
-	Response function setStatus( required code, text ){
-		if ( isNull( arguments.text ) OR !len( arguments.text ) ) {
-			arguments.text = this.STATUS_TEXTS[ arguments.code ] ?: "";
-		}
-
+	Response function setStatus( required code ){
 		variables.statusCode = arguments.code;
-		variables.statusText = arguments.text;
 		return this;
 	}
 
@@ -328,20 +314,18 @@ component accessors="true" {
 	 *
 	 * @errorMessage The error message to set
 	 * @statusCode   The status code to set, if any
-	 * @statusText   The status text to set, if any
 	 *
 	 * @return Returns the Response object for chaining
 	 */
 	Response function setErrorMessage(
 		required errorMessage,
-		statusCode,
-		statusText = ""
+		statusCode
 	){
 		setError( true );
 		addMessage( arguments.errorMessage );
 
 		if ( !isNull( arguments.statusCode ) ) {
-			setStatus( arguments.statusCode, arguments.statusText );
+			setStatus( arguments.statusCode );
 		}
 
 		return this;

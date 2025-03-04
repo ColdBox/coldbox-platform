@@ -101,6 +101,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * The last status text
+	 * @REMOVED by Jakarta EE, remove by 8
 	 */
 	property
 		name   ="statusText"
@@ -141,6 +142,7 @@ component serializable="false" accessors="true" {
 	};
 
 	// HTTP STATUS TEXTS
+	// TODO: REMOVE BY 8
 	this.STATUS_TEXTS = {
 		"100" : "Continue",
 		"101" : "Switching Protocols",

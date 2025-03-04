@@ -16,7 +16,6 @@ component
 	 * return RequestContext
 	 *
 	 * @statusCode.hint the status code
-	 * @statusText.hint the status text
 	 * @name.hint       The header name
 	 * @value.hint      The header value
 	 * @charset.hint    The charset to use, defaults to UTF-8
@@ -25,7 +24,6 @@ component
 		// status code?
 		if ( !isNull( arguments.statusCode ) ) {
 			setStatusCode( arguments.statusCode );
-			setStatusText( arguments.statusText );
 		}
 		// Name Exists
 		else if ( structKeyExists( arguments, "name" ) ) {
