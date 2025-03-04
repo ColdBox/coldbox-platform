@@ -847,9 +847,7 @@ component serializable="false" accessors="true" {
 					oRequestContext.getHTTPMethod()
 				)
 			) {
-				oRequestContext.setHTTPHeader(
-					statusCode = 405
-				);
+				oRequestContext.setHTTPHeader( statusCode = 405 );
 				// set Invalid HTTP method in context
 				oRequestContext.setIsInvalidHTTPMethod();
 				// Do we have a local handler for this exception, if so, call it
@@ -897,9 +895,7 @@ component serializable="false" accessors="true" {
 				}
 
 				// Throw Exception, no handlers defined
-				oRequestContext.setHTTPHeader(
-					statusCode = 405
-				);
+				oRequestContext.setHTTPHeader( statusCode = 405 );
 				throw(
 					message = "Invalid HTTP Method: '#oRequestContext.getHTTPMethod()#'",
 					detail  = "The requested URL: #oRequestContext.getCurrentRoutedURL()# cannot be executed using the incoming HTTP request method '#oRequestContext.getHTTPMethod()#'",

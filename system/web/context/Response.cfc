@@ -317,10 +317,7 @@ component accessors="true" {
 	 *
 	 * @return Returns the Response object for chaining
 	 */
-	Response function setErrorMessage(
-		required errorMessage,
-		statusCode
-	){
+	Response function setErrorMessage( required errorMessage, statusCode ){
 		setError( true );
 		addMessage( arguments.errorMessage );
 

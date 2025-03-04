@@ -101,6 +101,7 @@ component serializable="false" accessors="true" {
 
 	/**
 	 * The last status text
+	 *
 	 * @REMOVED by Jakarta EE, remove by 8
 	 */
 	property

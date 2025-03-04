@@ -692,9 +692,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				// remove it from the string and return string for continued parsing.
 				return left( requestString, len( arguments.requestString ) - extensionLen - 1 );
 			} else if ( variables.router.getThrowOnInvalidExtension() ) {
-				event.setHTTPHeader(
-					statusCode = 406
-				);
+				event.setHTTPHeader( statusCode = 406 );
 				throw(
 					message = "Invalid requested format extendion: #extension#",
 					detail  = "Invalid Request Format Extension Detected: #extension#. Valid extensions are: #variables.router.getValidExtensions()#",

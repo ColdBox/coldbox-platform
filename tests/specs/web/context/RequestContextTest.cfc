@@ -546,10 +546,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		assertEquals( rd.contenttype, "application/ms-excel" );
 
 		// Test StatusCodes
-		event.renderData(
-			data       = "hello",
-			statusCode = "400"
-		);
+		event.renderData( data = "hello", statusCode = "400" );
 		rd = event.getRenderData();
 		assertEquals( rd.statusCode, "400" );
 	}

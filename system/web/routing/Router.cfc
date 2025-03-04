@@ -22,12 +22,12 @@ component
 	 ****************************************************************/
 
 	property
-		name    ="cachebox"
+		name    ="cachebox"  
 		inject  ="cachebox"
 		delegate="getCache";
 	property
 		name    ="controller"
-		inject  ="coldbox"
+		inject  ="coldbox" 
 		delegate="relocate,runEvent,runRoute";
 	property name="flash"  inject="coldbox:flash";
 	property name="logBox" inject="logbox";
@@ -1967,10 +1967,7 @@ component
 	 *
 	 * @throws InvalidArgumentException
 	 */
-	function toResponse(
-		required body,
-		numeric statusCode = 200
-	){
+	function toResponse( required body, numeric statusCode = 200 ){
 		// Arg Check
 		if ( !isClosure( arguments.body ) && !isCustomFunction( arguments.body ) && !isSimpleValue( arguments.body ) ) {
 			throw(

@@ -426,9 +426,7 @@ component extends="EventHandler" {
 		 */
 		if ( arguments.abort ) {
 			event.setHTTPHeader( name = "Content-Type", value = "application/json" );
-			event.setHTTPHeader(
-				statusCode = "#arguments.event.STATUS.NOT_AUTHENTICATED#"
-			);
+			event.setHTTPHeader( statusCode = "#arguments.event.STATUS.NOT_AUTHENTICATED#" );
 
 			writeOutput( toJson( prc.response.getDataPacket( reset = this.resetDataOnError ) ) );
 
@@ -480,9 +478,7 @@ component extends="EventHandler" {
 		 */
 		if ( arguments.abort ) {
 			event.setHTTPHeader( name = "Content-Type", value = "application/json" );
-			event.setHTTPHeader(
-				statusCode = "#arguments.event.STATUS.NOT_AUTHORIZED#"
-			);
+			event.setHTTPHeader( statusCode = "#arguments.event.STATUS.NOT_AUTHORIZED#" );
 
 			writeOutput( serializeJSON( prc.response.getDataPacket( reset = this.resetDataOnError ) ) );
 

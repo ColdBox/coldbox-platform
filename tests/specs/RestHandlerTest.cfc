@@ -21,10 +21,10 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				flashScope         = createEmptyMock( "coldbox.system.web.flash.MockFlash" );
 				mockRequestContext = createMock( "coldbox.system.web.context.RequestContext" ).init(
 					{
-						eventName    : "event",
-						modules      : {},
-						defaultLayout: "",
-						defaultView  : ""
+						eventName     : "event",
+						modules       : {},
+						defaultLayout : "",
+						defaultView   : ""
 					},
 					mockController
 				);
@@ -205,9 +205,9 @@ component extends="coldbox.system.testing.BaseModelTest" {
 					mockRequestContext.getPrivateCollection(),
 					"badAction",
 					{
-						message   : "Invalid syntax",
-						detail    : "oooops!",
-						stackTrace: callStackGet().toString()
+						message    : "Invalid syntax",
+						detail     : "oooops!",
+						stackTrace : callStackGet().toString()
 					},
 					{}
 				);
