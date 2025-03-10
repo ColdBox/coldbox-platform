@@ -51,8 +51,7 @@ A reporting template about exceptions in your ColdBox Apps
 			</cfif>
 			<tr>
 				<td align="right" class="info"><strong>Message:</strong></td>
-				<!--- Using HTMLEditFormat() on purpose so my line breaks aren't encoded! --->
-				<td>#HTMLEditFormat( oException.getmessage() ).listChangeDelims( '<br>', chr(13)&chr(10) )#</td>
+				<td>#encodeForHTML( oException.getmessage() ).listChangeDelims( '<br>', chr(13)&chr(10) )#</td>
 			</tr>
 			<cfif oException.getExtendedInfo() neq "">
 				<tr>
@@ -64,8 +63,7 @@ A reporting template about exceptions in your ColdBox Apps
 		 	<cfif len( oException.getDetail() ) neq 0>
 				<tr>
 					<td align="right" class="info"><strong>Detail:</strong></td>
-					<!--- Using HTMLEditFormat() on purpose so my line breaks aren't encoded! --->
-					<td>#HTMLEditFormat( oException.getDetail() ).listChangeDelims( '<br>', chr(13)&chr(10) )#</td>
+					<td>#encodeForHTML( oException.getDetail() ).listChangeDelims( '<br>', chr(13)&chr(10) )#</td>
 				</tr>
 			 </cfif>
 			<tr>

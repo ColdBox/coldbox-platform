@@ -298,8 +298,7 @@ component accessors="true" {
 	function processStackTrace( required str ){
 		// cfformat-ignore-start
 
-		// Not using encodeForHTML() as it is too destructive and ruins whitespace chars and other stuff
-		arguments.str = HTMLEditFormat( arguments.str );
+		arguments.str = encodeForHTML( arguments.str );
 		// process functions e.g. $funcINDEX.runFunction(
 		arguments.str = reReplaceNoCase( arguments.str, "\$([^(\(|\:)]+)(\:|\()", "<span class='method'>$\1</span>(", "ALL" );
 		// process characters within parentheses e.g. (ServletAuthenticationCallHandler.java:57)
