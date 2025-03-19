@@ -151,7 +151,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 */
 	function afterTests(){
 		if ( this.unLoadColdbox ) {
-			reset();
+			reset( wipeRequest: true );
 		}
 	}
 
@@ -185,7 +185,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 */
 	function reset( boolean orm = false, boolean wipeRequest = true ){
 		// Shutdown gracefully ColdBox
-		getColdBoxVirtualApp().shutdown();
+		getColdBoxVirtualApp().shutdown( force: true );
 
 		// Lucee Cleanups
 		if ( server.keyExists( "lucee" ) ) {
