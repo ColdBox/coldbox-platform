@@ -144,9 +144,6 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 
 			structDelete( request, "_lastInvalidEvent" );
 		}
-
-		// make sure all references to the request context are using the MockContext
-		getRequestContext();
 	}
 
 	/**

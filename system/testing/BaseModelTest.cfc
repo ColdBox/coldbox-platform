@@ -15,7 +15,10 @@ component extends="coldbox.system.testing.BaseTestCase" {
 		var md      = getMetadata( this );
 		var mockBox = getMockBox();
 
-		super.setup();
+		// Load ColdBox?
+		if ( this.loadColdBox ) {
+			super.setup();
+		}
 
 		// Check for model path annotation, and use it if declared.
 		if ( structKeyExists( md, "model" ) ) {

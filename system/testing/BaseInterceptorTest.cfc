@@ -16,7 +16,10 @@ component extends="coldbox.system.testing.BaseTestCase" {
 		var mockBox           = getMockBox();
 		var applicationHelper = [];
 
-		super.setup();
+		// Load ColdBox?
+		if ( this.loadColdBox ) {
+			super.setup();
+		}
 
 		// Check for interceptor else throw exception
 		if ( NOT structKeyExists( md, "interceptor" ) ) {
