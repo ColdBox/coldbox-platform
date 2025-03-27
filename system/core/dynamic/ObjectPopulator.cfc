@@ -440,8 +440,8 @@ component accessors="true" singleton {
 			}
 			throw(
 				type    = "ObjectPopulator.PopulateObjectException",
-				message = "Error populating bean #getMetadata( arguments.target ).name# with argument #propertyName# of type #arguments.keyTypeAsString#.",
-				detail  = "#e.Detail#<br>#e.message#<br>#e.tagContext.toString()#"
+				message = "#e.message# : Error populating bean #getMetadata( arguments.target ).name# with argument #propertyName# of type #arguments.keyTypeAsString#.",
+				detail  = "#e.stacktrace#"
 			);
 		}
 	}
