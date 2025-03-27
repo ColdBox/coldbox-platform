@@ -486,7 +486,7 @@ component {
 	 */
 	public string function getHibernateVersion(){
 		// BoxLang Detection
-		if( server.keyExists( "boxlang" ) ) {
+		if ( server.keyExists( "boxlang" ) ) {
 			return ORMGetHibernateVersion();
 		}
 
