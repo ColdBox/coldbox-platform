@@ -15,9 +15,6 @@ component extends="tests.resources.BaseIntegrationTest" {
 	}
 
 	function run( testResults, testBox ){
-		if ( isBoxLang() ) {
-			return;
-		}
 		// all your suites go here.
 		describe( "Object Populator", function(){
 			beforeEach( function( currentSpec ){
