@@ -42,9 +42,8 @@
         "cbproxies":"^1"
     },
     "devDependencies":{
-        "testbox":"be",
-        "commandbox-dotenv":"*",
-        "commandbox-cfconfig":"*",
+        "testbox":"*",
+		"commandbox-boxlang":"*",
         "commandbox-cfformat":"*"
     },
     "scripts":{
@@ -64,15 +63,12 @@
         "format:check":"cfformat check system/**/*.cfc,tests/specs/**/*.cfc ./.cfformat.json",
         "start:lucee":"server start serverConfigFile='server-lucee@5.json' --force",
         "start:boxlang":"server start serverConfigFile='server-boxlang@1.json' --force",
-        "start:2021":"server start serverConfigFile='server-adobe@2021.json' --force",
         "start:2023":"server start serverConfigFile='server-adobe@2023.json' --force",
         "stop:lucee":"server stop serverConfigFile='server-lucee@5.json' --force",
         "stop:boxlang":"server stop serverConfigFile='server-boxlang@1.json' --force",
-        "stop:2021":"server stop serverConfigFile='server-adobe@2021.json' --force",
         "stop:2023":"server stop serverConfigFile='server-adobe@2023.json' --force",
         "log:lucee":"server log coldbox-lucee@5 --follow",
         "log:boxlang":"server log coldbox-boxlang@1 --follow",
-        "log:2021":"server log coldbox-adobe@2021 --follow",
         "log:2023":"server log coldbox-adobe@2023 --follow"
     },
     "installPaths":{
