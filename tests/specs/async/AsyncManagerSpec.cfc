@@ -4,7 +4,7 @@
 component extends="BaseAsyncSpec" {
 
 	function beforeAll(){
-		asyncManager = new coldbox.system.async.AsyncManager( debug = true );
+		variables.asyncManager = new coldbox.system.async.AsyncManager( debug = true );
 	}
 
 	function run( testResults, testBox ){
@@ -133,7 +133,7 @@ component extends="BaseAsyncSpec" {
 			} );
 
 			it( "can combine two futures together into a single result", function(){
-				if ( !server.keyExists( "lucee" ) ) {
+				if ( isAdobe() ) {
 					// ACF is inconsistent, I have no clue why.
 					// Combining futures for some reason fails on ACF
 					return;
