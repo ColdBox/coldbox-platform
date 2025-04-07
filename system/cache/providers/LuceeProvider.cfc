@@ -288,15 +288,18 @@ component
 		struct extra
 	){
 		// check if incoming timoeut is a timespan or minute to convert to timespan
-		if ( !findNoCase( "timespan", arguments.timeout.getClass().getName() )
-			AND !findNoCase( "duration", arguments.timeout.getClass().getName() ) ) {
+		if (
+			!findNoCase( "timespan", arguments.timeout.getClass().getName() )
+			AND !findNoCase( "duration", arguments.timeout.getClass().getName() )
+		) {
 			if ( !isNumeric( arguments.timeout ) ) {
 				arguments.timeout = 0;
 			}
 			arguments.timeout = createTimespan( 0, 0, arguments.timeout, 0 );
 		}
 
-		if ( !findNoCase( "timespan", arguments.lastAccessTimeout.getClass().getName() )
+		if (
+			!findNoCase( "timespan", arguments.lastAccessTimeout.getClass().getName() )
 			AND !findNoCase( "duration", arguments.lastAccessTimeout.getClass().getName() )
 		) {
 			if ( !isNumeric( arguments.lastAccessTimeout ) ) {

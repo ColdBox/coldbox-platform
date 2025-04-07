@@ -495,7 +495,7 @@ component {
 		if ( server.keyExists( "boxlang" ) ) {
 			return ORMGetHibernateVersion();
 		}
-		
+
 		var version = createObject( "java", "org.hibernate.Version" );
 
 		if ( version.getVersionString() != "[WORKING]" ) {
