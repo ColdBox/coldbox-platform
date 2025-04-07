@@ -1,12 +1,9 @@
-﻿component extends="tests.resources.BaseIntegrationTest" skip="notLucee" {
+component extends="tests.resources.BaseIntegrationTest" skip="notBoxlang" {
 
 	this.loadColdBox = false;
 
-	boolean function notLucee(){
-		if ( isBoxLang() || isAdobe() ) {
-			return true;
-		}
-		return false;
+	boolean function notBoxlang(){
+		return !isBoxLang();
 	}
 
 	function setup(){
@@ -32,7 +29,7 @@
 		config = {};
 
 		// Create Provider
-		cache = createMock( "coldbox.system.cache.providers.LuceeProvider" ).init();
+		cache = createMock( "coldbox.system.cache.providers.BoxLangProvider" ).init();
 
 		// Decorate it
 		cache.setConfiguration( config );
@@ -41,6 +38,8 @@
 
 		// Configure the provider
 		cache.configure();
+		// Clear everything first
+		cache.clearAll();
 	}
 
 	function teardown(){
@@ -88,7 +87,7 @@
 		cache.clearStatistics();
 
 		results = cache.get( "test" );
-		assertEquals( results, testval );
+		assertEquals( testval, results );
 		// assertEquals( 0, cache.getStats().getMisses() );
 		// assertEquals( 1, cache.getStats().getHits() );
 
@@ -132,8 +131,10 @@
 		);
 		assertEquals( testVal, cache.get( "test" ) );
 		md = cache.getCachedObjectMetadata( "test" );
-		assertEquals( 60 * 1000, md.idleTime );
-		assertEquals( 120 * 1000, md.timespan );
+		debug( md );
+
+		assertEquals( 60, md.lastAccessTimeout );
+		assertEquals( 120, md.timeout );
 		// debug(md);
 	}
 
@@ -149,8 +150,8 @@
 		);
 		assertEquals( testVal, cache.get( "test" ) );
 		md = cache.getCachedObjectMetadata( "test" );
-		assertEquals( 60 * 1000, md.idleTime );
-		assertEquals( 120 * 1000, md.timespan );
+		assertEquals( 60, md.lastAccessTimeout );
+		assertEquals( 120, md.timeout );
 		// debug(md);
 	}
 

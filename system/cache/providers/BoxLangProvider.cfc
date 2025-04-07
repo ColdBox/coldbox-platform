@@ -1,9 +1,9 @@
-﻿/**
+/**
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
  *
- * This CacheBox provider communicates with the built in caches in the Lucee Engine
+ * This CacheBox provider communicates with the built in caches in the BoxLang Runtime
  *
  * @author Luis Majano
  */
@@ -20,7 +20,7 @@ component
 	property name="elementCleaner";
 
 	// Provider Property Defaults STATIC
-	variables.DEFAULTS = { cacheName : "object" };
+	variables.DEFAULTS = { cacheName : "default" };
 
 	/**
 	 * Constructor
@@ -37,16 +37,16 @@ component
 	/**
 	 * configure the cache for operation
 	 *
-	 * @return LuceeProvider
+	 * @return BoxLangProvider
 	 */
 	function configure(){
-		lock name="LuceeProvider.config.#variables.cacheID#" type="exclusive" throwontimeout="true" timeout="30" {
+		lock name="BoxLangProvider.config.#variables.cacheID#" type="exclusive" throwontimeout="true" timeout="30" {
 			// Prepare the logger
 			variables.logger = getCacheFactory().getLogBox().getLogger( this );
 
 			if ( variables.logger.canDebug() ) {
 				variables.logger.debug(
-					"Starting up LuceeProvider Cache: #getName()# with configuration: #variables.configuration.toString()#"
+					"Starting up BoxLangProvider Cache: #getName()# with configuration: #variables.configuration.toString()#"
 				);
 			}
 
@@ -68,12 +68,12 @@ component
 	/**
 	 * Shutdown command issued when CacheBox is going through shutdown phase
 	 *
-	 * @return LuceeProvider
+	 * @return BoxLangProvider
 	 */
 	function shutdown(){
-		// nothing to shutdown
+		// nothing to shutdown, the runtime takes care of it.
 		if ( variables.logger.canDebug() ) {
-			variables.logger.debug( "LuceeProvider Cache: #getName()# has been shutdown." );
+			variables.logger.debug( "BoxLangProvider Cache: #getName()# has been shutdown." );
 		}
 		return this;
 	}
@@ -84,7 +84,7 @@ component
 	 * @return coldbox.system.cache.util.IStats
 	 */
 	function getStats(){
-		return new "coldbox.system.cache.providers.lucee-lib.LuceeStats"( this );
+		return new "coldbox.system.cache.providers.stats.BoxLangStats"( this );
 	}
 
 	/**
@@ -94,7 +94,7 @@ component
 	 * @return ICacheProvider
 	 */
 	function clearStatistics(){
-		// not yet posible with lucee
+		return cache( getConfiguration().cacheName ).clearStats();
 	}
 
 	/**
@@ -103,18 +103,14 @@ component
 	 * @return coldbox.system.cache.store.IObjectStore or any depending on the cache implementation
 	 */
 	function getObjectStore(){
-		// not yet possible with lucee
-		// return cacheGetSession( getConfiguration().cacheName );
+		return cache( getConfiguration().cacheName ).getObjectStore();
 	}
 
 	/**
 	 * Get a structure of all the keys in the cache with their appropriate metadata structures. This is used to build the reporting.[keyX->[metadataStructure]]
 	 */
 	struct function getStoreMetadataReport(){
-		return getKeys().reduce( function( result, item ){
-			result[ item ] = getCachedObjectMetadata( item );
-			return result;
-		}, {} );
+		return cache( getConfiguration().cacheName ).getStoreMetadataReport();
 	}
 
 	/**
@@ -122,11 +118,15 @@ component
 	 */
 	struct function getStoreMetadataKeyMap(){
 		return {
-			timeout           : "timespan",
-			hits              : "hitcount",
-			lastAccessTimeout : "idleTime",
-			created           : "createdtime",
-			lastAccessed      : "lasthit"
+			cacheName         : "cacheName",
+			hits              : "hits",
+			timeout           : "timeout",
+			lastAccessTimeout : "lastAccessTimeout",
+			created           : "created",
+			lastAccessed      : "lastAccessed",
+			metadata          : "metadata",
+			key               : "key",
+			isEternal         : "isEternal"
 		};
 	}
 
@@ -134,16 +134,7 @@ component
 	 * Returns a list of all elements in the cache, whether or not they are expired
 	 */
 	array function getKeys(){
-		try {
-			if ( isDefaultCache() ) {
-				return cacheGetAllIds();
-			}
-
-			return cacheGetAllIds( "", getConfiguration().cacheName );
-		} catch ( Any e ) {
-			variables.logger.error( "Error retrieving all keys from cache: #e.message# #e.detail#", e.stacktrace );
-			return [ "Error retrieving keys from cache: #e.message#" ];
-		}
+		return cache( getConfiguration().cacheName ).getKeys();
 	}
 
 	/**
@@ -152,11 +143,7 @@ component
 	 * @objectKey The key to retrieve
 	 */
 	struct function getCachedObjectMetadata( required objectKey ){
-		if ( isDefaultCache() ) {
-			return cacheGetMetadata( arguments.objectKey );
-		}
-
-		return cacheGetMetadata( arguments.objectKey, getConfiguration().cacheName );
+		return cache( getConfiguration().cacheName ).getCachedObjectMetadata( arguments.objectKey );
 	}
 
 	/**
@@ -165,14 +152,7 @@ component
 	 * @objectKey The key to retrieve
 	 */
 	function get( required objectKey ){
-		if ( isDefaultCache() ) {
-			return cacheGet( arguments.objectKey );
-		}
-		return cacheGet(
-			arguments.objectKey,
-			false,
-			getConfiguration().cacheName
-		);
+		return cache( getConfiguration().cacheName ).get( arguments.objectKey ).getOrDefault( nullValue() );
 	}
 
 	/**
@@ -181,7 +161,7 @@ component
 	 * @objectKey The key to retrieve
 	 */
 	function getQuiet( required objectKey ){
-		return get( arguments.objectKey );
+		return cache( getConfiguration().cacheName ).getQuiet( arguments.objectKey ).getOrDefault( nullValue() );
 	}
 
 	/**
@@ -199,10 +179,7 @@ component
 	 * @objectKey The key to retrieve
 	 */
 	boolean function lookup( required objectKey ){
-		if ( isDefaultCache() ) {
-			return cacheKeyExists( arguments.objectKey );
-		}
-		return cacheKeyExists( arguments.objectKey, getConfiguration().cacheName );
+		return cache( getConfiguration().cacheName ).lookup( arguments.objectKey );
 	}
 
 	/**
@@ -211,8 +188,7 @@ component
 	 * @objectKey The key to retrieve
 	 */
 	boolean function lookupQuiet( required objectKey ){
-		// not possible yet on lucee
-		return lookup( arguments.objectKey );
+		return cache( getConfiguration().cacheName ).lookupQuiet( arguments.objectKey );
 	}
 
 	/**
@@ -233,7 +209,13 @@ component
 		any lastAccessTimeout = "0",
 		any extra             = {}
 	){
-		return super.getOrSet( argumentCollection = arguments );
+		return cache( getConfiguration().cacheName ).getOrSet(
+			arguments.objectKey,
+			arguments.produce,
+			arguments.timeout,
+			arguments.lastAccessTimeout,
+			arguments.extra
+		);
 	}
 
 	/**
@@ -254,7 +236,13 @@ component
 		lastAccessTimeout = 0,
 		struct extra
 	){
-		setQuiet( argumentCollection = arguments );
+		cache( getConfiguration().cacheName ).set(
+			arguments.objectKey,
+			arguments.object,
+			arguments.timeout,
+			arguments.lastAccessTimeout,
+			arguments.extra
+		);
 
 		// ColdBox events
 		var iData = {
@@ -287,40 +275,13 @@ component
 		lastAccessTimeout = 0,
 		struct extra
 	){
-		// check if incoming timoeut is a timespan or minute to convert to timespan
-		if ( !findNoCase( "timespan", arguments.timeout.getClass().getName() )
-			AND !findNoCase( "duration", arguments.timeout.getClass().getName() ) ) {
-			if ( !isNumeric( arguments.timeout ) ) {
-				arguments.timeout = 0;
-			}
-			arguments.timeout = createTimespan( 0, 0, arguments.timeout, 0 );
-		}
-
-		if ( !findNoCase( "timespan", arguments.lastAccessTimeout.getClass().getName() )
-			AND !findNoCase( "duration", arguments.lastAccessTimeout.getClass().getName() )
-		) {
-			if ( !isNumeric( arguments.lastAccessTimeout ) ) {
-				arguments.lastAccessTimeout = 0;
-			}
-			arguments.lastAccessTimeout = createTimespan( 0, 0, arguments.lastAccessTimeout, 0 );
-		}
-		// Cache it
-		if ( isDefaultCache() ) {
-			cachePut(
-				arguments.objectKey,
-				arguments.object,
-				arguments.timeout,
-				arguments.lastAccessTimeout
-			);
-		} else {
-			cachePut(
-				arguments.objectKey,
-				arguments.object,
-				arguments.timeout,
-				arguments.lastAccessTimeout,
-				getConfiguration().cacheName
-			);
-		}
+		cache( getConfiguration().cacheName ).set(
+			arguments.objectKey,
+			arguments.object,
+			arguments.timeout,
+			arguments.lastAccessTimeout,
+			arguments.extra
+		);
 
 		return this;
 	}
@@ -329,10 +290,7 @@ component
 	 * Get the number of elements in the cache
 	 */
 	numeric function getSize(){
-		if ( isDefaultCache() ) {
-			return cacheCount();
-		}
-		return cacheCount( getConfiguration().cacheName );
+		return cache( getConfiguration().cacheName ).getSize();
 	}
 
 	/**
@@ -341,6 +299,7 @@ component
 	 * @return ICacheProvider
 	 */
 	function reap(){
+		cache( getConfiguration().cacheName ).reap();
 		return this;
 	}
 
@@ -350,15 +309,9 @@ component
 	 * @return ICacheProvider
 	 */
 	function clearAll(){
-		if ( isDefaultCache() ) {
-			cacheClear();
-		} else {
-			cacheClear( "", getConfiguration().cacheName );
-		}
-
+		cache( getConfiguration().cacheName ).clearAll();
 		// notify listeners
 		getEventManager().announce( "afterCacheClearAll", { cache : this } );
-
 		return this;
 	}
 
@@ -368,15 +321,7 @@ component
 	 * @objectKey The object cache key
 	 */
 	boolean function clear( required objectKey ){
-		if ( isDefaultCache() ) {
-			cacheRemove( arguments.objectKey );
-		} else {
-			cacheRemove(
-				arguments.objectKey,
-				false,
-				getConfiguration().cacheName
-			);
-		}
+		var results = cache( getConfiguration().cacheName ).clear( arguments.objectKey );
 
 		// ColdBox events
 		getEventManager().announce(
@@ -384,7 +329,7 @@ component
 			{ cache : this, cacheObjectKey : arguments.objectKey }
 		);
 
-		return true;
+		return results;
 	}
 
 	/**
@@ -394,7 +339,7 @@ component
 	 */
 	boolean function clearQuiet( required objectKey ){
 		// normal clear, not implemented by lucee
-		return clear( arguments.objectKey );
+		return cache( getConfiguration().cacheName ).clearQuiet( arguments.objectKey );
 	}
 
 	/**
@@ -419,19 +364,19 @@ component
 		return this;
 	}
 
-	/******************************** PRIVATE ********************************/
-
 	/**
-	 * Checks if the default cache is in use or another cache region
+	 * Get the underlying BoxLang cache object
 	 */
-	private boolean function isDefaultCache(){
-		return ( getConfiguration().cacheName EQ variables.DEFAULTS.cacheName );
+	function getCache(){
+		return getCache( getConfiguration().cacheName );
 	}
+
+	/******************************** PRIVATE ********************************/
 
 	/**
 	 * Validate the incoming configuration and make necessary defaults
 	 *
-	 * @return LuceeProvider
+	 * @return BoxLangProvider
 	 **/
 	private function validateConfiguration(){
 		// Add in settings not discovered

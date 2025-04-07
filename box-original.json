@@ -33,7 +33,7 @@
         "*/.md"
     ],
     "devDependencies": {
-        "testbox": "^3.0.0"
+        "testbox": "*"
     },
     "installPaths": {
         "testbox": "testbox"

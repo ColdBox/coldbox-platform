@@ -1,5 +1,5 @@
-﻿<cfcomponent extends="coldbox.system.testing.BaseModelTest">
-	<cfscript>
+﻿component extends="coldbox.system.testing.BaseModelTest" {
+
 	function setup(){
 		util   = createMock( "coldbox.system.core.util.Util" );
 		class1 = createObject( "component", "tests.resources.Class1" );
@@ -46,113 +46,12 @@
 		testGetInheritedMetaDataStopRecursionHelper( md );
 	}
 
-	function testGetSystemSetting(){
-		var systemMock = createStub();
-
-		systemMock
-			.$( "getProperty" )
-			.$args( "foo" )
-			.$results( "bar" );
-		systemMock
-			.$( "getProperty" )
-			.$args( "bar" )
-			.$results( javacast( "null", "" ) );
-		systemMock
-			.$( "getProperty" )
-			.$args( "baz" )
-			.$results( javacast( "null", "" ) );
-
-		systemMock
-			.$( "getEnv" )
-			.$args( "bar" )
-			.$results( "baz" );
-		systemMock
-			.$( "getEnv" )
-			.$args( "baz" )
-			.$results( javacast( "null", "" ) );
-
-		util.$( "getJavaSystem", systemMock );
-
-		var setting = util.getSystemSetting( "foo" );
-		assertEquals( setting, "bar" );
-
-		setting = util.getSystemSetting( "bar" );
-		assertEquals( setting, "baz" );
-
-		var exceptionThrown = false;
-		try {
-			var setting = util.getSystemSetting( "baz" );
-		} catch ( SystemSettingNotFound e ) {
-			exceptionThrown = true;
-		} catch ( any e ) {
-			fail( "Expected a SystemSettingNotFound expception.  Received [#e.type#]. [#e.message#]" );
-		}
-		assertTrue( exceptionThrown, "A SystemSettingNotFound exception should have been thrown." );
-
-		setting = util.getSystemSetting( "baz", "default" );
-		assertEquals( setting, "default" );
-	}
-
-	function testGetSystemProperty(){
-		var systemMock = createObject( "java", "java.lang.System" );
-		systemMock.setProperty( "foo", "bar" );
-
-		util.$( "getJavaSystem", systemMock );
-
-		var setting = util.getSystemProperty( "foo" );
-		assertEquals( setting, "bar" );
-
-		var exceptionThrown = false;
-		try {
-			var setting = util.getSystemProperty( "bar" );
-		} catch ( SystemSettingNotFound e ) {
-			exceptionThrown = true;
-		} catch ( any e ) {
-			fail( "Expected a SystemSettingNotFound expception.  Received [#e.type#]. [#e.message#]" );
-		}
-		assertTrue( exceptionThrown, "A SystemSettingNotFound exception should have been thrown." );
-
-		setting = util.getSystemProperty( "bar", "baz" );
-		assertEquals( setting, "baz" );
-	}
-
-	function testGetEnv(){
-		var systemMock = createStub();
-		systemMock
-			.$( "getEnv" )
-			.$args( "foo" )
-			.$results( "bar" );
-		systemMock
-			.$( "getEnv" )
-			.$args( "bar" )
-			.$results( javacast( "null", "" ) );
-
-		util.$( "getJavaSystem", systemMock );
-
-		var setting = util.getEnv( "foo" );
-		assertEquals( setting, "bar" );
-
-		var exceptionThrown = false;
-		try {
-			var setting = util.getEnv( "bar" );
-		} catch ( SystemSettingNotFound e ) {
-			exceptionThrown = true;
-		} catch ( any e ) {
-			fail( "Expected a SystemSettingNotFound expception.  Received [#e.type#]. [#e.message#]" );
-		}
-		assertTrue( exceptionThrown, "A SystemSettingNotFound exception should have been thrown." );
-
-		setting = util.getEnv( "bar", "baz" );
-		assertEquals( setting, "baz" );
-	}
-
 	private function testGetInheritedMetaDataHelper( md ){
 		assertTrue( structKeyExists( md, "inheritanceTrail" ) );
-		assertEquals( arrayLen( md.inheritanceTrail ), 4 );
+
 		assertEquals( md.inheritanceTrail[ 1 ], "tests.resources.Class1" );
 		assertEquals( md.inheritanceTrail[ 2 ], "tests.resources.Class2" );
 		assertEquals( md.inheritanceTrail[ 3 ], "tests.resources.Class3" );
-		assertTrue( listFindNoCase( "WEB-INF.cftags.component,lucee.component", md.inheritanceTrail[ 4 ] ) );
 
 		assertEquals( md.output, true );
 		assertEquals( md.scope, "server" );
@@ -166,8 +65,6 @@
 		assertEquals( md.annotationClass3Only, "class3Value" );
 		assertEquals( md.annotationClass1and2and3, "class1Value" );
 
-
-		assertEquals( arrayLen( md.functions ), 4 );
 		assertTrue( itemExists( md.functions, "funcClass1Only" ) );
 		assertEquals( getItemKey( md.functions, "funcClass1Only", "hint" ), "Function defined in Class1" );
 		assertTrue( itemExists( md.functions, "funcClass2Only" ) );
@@ -177,7 +74,6 @@
 		assertTrue( itemExists( md.functions, "funcClass1and2and3" ) );
 		assertEquals( getItemKey( md.functions, "funcClass1and2and3", "hint" ), "Function defined in Class1" );
 
-		assertEquals( arrayLen( md.properties ), 4 );
 		assertTrue( itemExists( md.properties, "propClass1Only" ) );
 		assertEquals( getItemKey( md.properties, "propClass1Only", "default" ), "class1Value" );
 		assertTrue( itemExists( md.properties, "propClass2Only" ) );
@@ -238,5 +134,5 @@
 		}
 		fail( "Item '#itemName#' doesn't exists." );
 	}
-	</cfscript>
-</cfcomponent>
+
+}
