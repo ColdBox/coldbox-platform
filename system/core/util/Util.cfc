@@ -413,12 +413,12 @@ component {
 
 		// First time through, get metaData of component by path or instance
 		if ( arguments.md.isEmpty() ) {
-			if( isObject( arguments.component ) ){
+			if ( isObject( arguments.component ) ) {
 				arguments.md = getMetadata( arguments.component );
 			} else {
-				arguments.md = server.keyExists( "boxlang" ) ?
-					getClassMetadata( arguments.component ) :
-					getComponentMetadata( arguments.component );
+				arguments.md = server.keyExists( "boxlang" ) ? getClassMetadata( arguments.component ) : getComponentMetadata(
+					arguments.component
+				);
 			}
 		}
 
