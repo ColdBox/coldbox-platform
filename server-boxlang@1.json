@@ -19,8 +19,7 @@
         }
     },
     "JVM":{
-        "heapSize":"1024",
-        "javaVersion":"openjdk21_jre",
+        "heapSize":"768",
         "args":"-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=9999"
     },
     "cfconfig":{
