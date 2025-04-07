@@ -28,31 +28,16 @@ component extends="BaseProxy" {
 	 * Represents a function that accepts one argument and produces a result.
 	 */
 	function apply( t ){
-		loadContext();
-		try {
-			lock name="#getConcurrentEngineLockName()#" type="exclusive" timeout="60" {
-				if ( isNull( arguments.t ) ) {
+		return execute(
+			( struct args ) => {
+				if ( isNull( args.t ) ) {
 					return variables.target();
 				}
-				return variables.target( arguments.t );
-			}
-		} catch ( any e ) {
-			// Log it, so it doesn't go to ether
-			err( "Error running Function: #e.message & e.detail#" );
-			err( "Stacktrace for Function: #e.stackTrace#" );
-			rethrow;
-		} finally {
-			unLoadContext();
-		}
-	}
-
-	function andThen( after ){
-	}
-
-	function compose( before ){
-	}
-
-	function identity(){
+				return variables.target( args.t );
+			},
+			"Function",
+			arguments
+		);
 	}
 
 }

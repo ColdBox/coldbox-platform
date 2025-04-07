@@ -19,25 +19,16 @@ component extends="BaseProxy" {
 	 * See https://docs.oracle.com/javase/8/docs/api/java/util/function/BiFunction.html#apply-T-U-
 	 */
 	function apply( t, u ){
-		loadContext();
-		try {
-			lock name="#getConcurrentEngineLockName()#" type="exclusive" timeout="60" {
+		return execute(
+			( struct args ) => {
 				return variables.target(
-					isNull( arguments.t ) ? javacast( "null", "" ) : arguments.t,
-					isNull( arguments.u ) ? javacast( "null", "" ) : arguments.u
+					isNull( args.t ) ? javacast( "null", "" ) : args.t,
+					isNull( args.u ) ? javacast( "null", "" ) : args.u
 				);
-			}
-		} catch ( any e ) {
-			// Log it, so it doesn't go to ether
-			err( "Error running BiFunction: #e.message & e.detail#" );
-			err( "Stacktrace for BiFunction: #e.stackTrace#" );
-			rethrow;
-		} finally {
-			unLoadContext();
-		}
-	}
-
-	function andThen( required after ){
+			},
+			"BiFunction",
+			arguments
+		);
 	}
 
 }

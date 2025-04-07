@@ -28,23 +28,17 @@ component extends="BaseProxy" {
 	}
 
 	function run(){
-		loadContext();
-		try {
-			lock name="#getConcurrentEngineLockName()#" type="exclusive" timeout="60" {
+		return execute(
+			( struct args ) => {
 				if ( isClosure( variables.target ) || isCustomFunction( variables.target ) ) {
 					variables.target();
 				} else {
 					invoke( variables.target, variables.method );
 				}
-			}
-		} catch ( any e ) {
-			// Log it, so it doesn't go to ether
-			err( "Error running runnable: #e.message & e.detail#" );
-			err( "Stacktrace for runnable: #e.stackTrace#" );
-			rethrow;
-		} finally {
-			unLoadContext();
-		}
+			},
+			"Runnable",
+			arguments
+		);
 	}
 
 }

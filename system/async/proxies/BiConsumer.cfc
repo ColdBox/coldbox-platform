@@ -18,23 +18,14 @@ component extends="BaseProxy" {
 	 * Performs this operation on the given arguments.
 	 * See https://docs.oracle.com/javase/8/docs/api/java/util/function/BiConsumer.html#accept-T-U-
 	 */
-	function accept( required t, required u ){
-		loadContext();
-		try {
-			lock name="#getConcurrentEngineLockName()#" type="exclusive" timeout="60" {
-				variables.target( arguments.t, arguments.u );
-			}
-		} catch ( any e ) {
-			// Log it, so it doesn't go to ether
-			err( "Error running BiConsumer: #e.message & e.detail#" );
-			err( "Stacktrace for BiConsumer: #e.stackTrace#" );
-			rethrow;
-		} finally {
-			unLoadContext();
-		}
-	}
-
-	function andThen( required after ){
+	function accept( t, u ){
+		return execute(
+			( struct args ) => {
+				variables.target( args.t ?: javacast( "null", "" ), args.u ?: javacast( "null", "" ) );
+			},
+			"BiConsumer",
+			arguments
+		);
 	}
 
 }

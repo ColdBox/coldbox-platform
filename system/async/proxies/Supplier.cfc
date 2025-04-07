@@ -28,23 +28,17 @@ component extends="BaseProxy" {
 	 * See https://docs.oracle.com/javase/8/docs/api/java/util/function/Supplier.html
 	 */
 	function get(){
-		loadContext();
-		try {
-			lock name="#getConcurrentEngineLockName()#" type="exclusive" timeout="60" {
+		return execute(
+			( struct args ) => {
 				if ( isClosure( variables.target ) || isCustomFunction( variables.target ) ) {
 					return variables.target();
 				} else {
 					return invoke( variables.target, variables.method );
 				}
-			}
-		} catch ( any e ) {
-			// Log it, so it doesn't go to ether
-			err( "Error running Supplier: #e.message & e.detail#" );
-			err( "Stacktrace for Supplier: #e.stackTrace#" );
-			rethrow;
-		} finally {
-			unLoadContext();
-		}
+			},
+			"Supplier",
+			arguments
+		);
 	}
 
 }
