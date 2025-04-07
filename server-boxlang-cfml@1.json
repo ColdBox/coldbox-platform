@@ -1,9 +1,9 @@
 {
     "app":{
-        "cfengine":"adobe@2021",
-        "serverHomeDirectory":".engine/adobe2021"
+        "cfengine":"boxlang@be",
+        "serverHomeDirectory":".engine/boxlang"
     },
-    "name":"coldbox-adobe@2021",
+    "name":"coldbox-boxlang",
     "force":true,
     "openBrowser":false,
     "web":{
@@ -20,12 +20,16 @@
     },
     "JVM":{
         "heapSize":"1024",
-		"javaVersion":"openjdk11_jre"
+        "javaVersion":"openjdk21_jre",
+        "args":"-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=9999"
     },
     "cfconfig":{
         "file":".cfconfig.json"
     },
+    "env":{
+        "BOXLANG_DEBUG":true
+    },
     "scripts":{
-        "onServerInstall":"cfpm install caching,zip,orm,mysql,postgresql,sqlserver,document,feed,mail,debugger"
+        "onServerInitialInstall":"install bx-mail,bx-pdf,bx-mysql,bx-compat-cfml,bx-esapi,bx-orm@be --noSave"
     }
 }
