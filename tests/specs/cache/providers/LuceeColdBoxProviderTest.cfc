@@ -2,7 +2,7 @@
 	name   ="cacheTest"
 	extends="LuceeProviderTest"
 	output ="false"
-	skip   ="isLucee"
+	skip   ="notLucee"
 {
 
 	function setup(){
