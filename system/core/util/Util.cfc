@@ -416,9 +416,7 @@ component {
 			if ( isObject( arguments.component ) ) {
 				arguments.md = getMetadata( arguments.component );
 			} else {
-				arguments.md = getComponentMetadata(
-					arguments.component
-				);
+				arguments.md = getComponentMetadata( arguments.component );
 			}
 		}
 

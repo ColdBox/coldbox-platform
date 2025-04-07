@@ -566,9 +566,9 @@ component accessors="true" singleton {
 		// 3.) component lookup
 		else {
 			try {
-				targetEntityName = server.keyExists( "boxlang" ) ?
-				getClassMetadata( arguments.relationalMeta.properties[ key ].cfc ).entityName :
-				getComponentMetadata( arguments.relationalMeta.properties[ key ].cfc ).entityName;
+				targetEntityName = server.keyExists( "boxlang" ) ? getClassMetadata(
+					arguments.relationalMeta.properties[ key ].cfc
+				).entityName : getComponentMetadata( arguments.relationalMeta.properties[ key ].cfc ).entityName;
 			} catch ( any e ) {
 				throw(
 					type    = "ObjectPopulator.PopulateObjectException",
