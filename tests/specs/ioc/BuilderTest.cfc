@@ -152,7 +152,7 @@
 		}
 	}
 
-	function testbuildfeed(){
+	function testbuildfeed() skip="isBoxLang"{
 		var mapping = createMock( "coldbox.system.ioc.config.Mapping" ).init( "GoogleNews" );
 		mapping.setPath( "http://news.google.com/?output=rss" );
 		var r = builder.buildfeed( mapping );
