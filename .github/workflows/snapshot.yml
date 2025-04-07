@@ -7,7 +7,7 @@ on:
     branches:
       - development
 
-#Cancel running builds if another push to branch is made while this build is running
+# Unique group name per workflow-branch/tag combo
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -30,12 +30,12 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Auto-format
-        uses: Ortus-Solutions/commandbox-action@v1.0.3
+        uses: Ortus-Solutions/commandbox-action@v1.0.2
         with:
           cmd: run-script format
 
       - name: Commit Format Changes
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: Apply cfformat changes
           push_options: --force
