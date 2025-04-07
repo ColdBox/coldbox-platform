@@ -491,6 +491,11 @@ component {
 	 * Get the Hibernate version string from Hibernate or Hibernate bundle version
 	 */
 	public string function getHibernateVersion(){
+		// BoxLang Detection
+		if ( server.keyExists( "boxlang" ) ) {
+			return ORMGetHibernateVersion();
+		}
+		
 		var version = createObject( "java", "org.hibernate.Version" );
 
 		if ( version.getVersionString() != "[WORKING]" ) {
