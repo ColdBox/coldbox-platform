@@ -414,16 +414,20 @@ component {
 							}
 							// 3.) component lookup
 							else {
-								var annotations = server.keyExists( "boxlang" ) ? getClassMetadata( arguments.relationalMeta.properties[ key ].cfc ).annotations : getComponentMetadata( arguments.relationalMeta.properties[ key ].cfc );
-								if( annotations.keyExists( "entityName" ) ){
+								var annotations = server.keyExists( "boxlang" ) ? getClassMetadata(
+									arguments.relationalMeta.properties[ key ].cfc
+								).annotations : getComponentMetadata(
+									arguments.relationalMeta.properties[ key ].cfc
+								);
+								if ( annotations.keyExists( "entityName" ) ) {
 									targetEntityName = annotations.entityName;
 								}
 							}
 
-							if( !len( targetEntityName ) ){
+							if ( !len( targetEntityName ) ) {
 								throw(
 									type    = "ObjectPopulator.PopulateObjectException",
-									message = "Error populating object [#getMetadata( arguments.target ).name#] relationship of [#key#]. The class [#arguments.relationalMeta.properties[ key ].cfc#] could not be found.",
+									message = "Error populating object [#getMetadata( arguments.target ).name#] relationship of [#key#]. The class [#arguments.relationalMeta.properties[ key ].cfc#] could not be found."
 								);
 							}
 
