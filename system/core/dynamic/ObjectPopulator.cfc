@@ -597,7 +597,6 @@ component accessors="true" singleton {
 				variables.ormEntityMap = structKeyArray( ormGetSessionFactory().getAllClassMetadata() );
 			}
 		}
-
 		return variables.ormEntityMap;
 	}
 
