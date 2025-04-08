@@ -2,7 +2,7 @@
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * The system web renderer
+ * The system web renderer. In charge of location views/layouts and rendering them.
  *
  * @author Luis Majano <lmajano@ortussolutions.com>
  */
@@ -10,17 +10,19 @@ component
 	accessors   ="true"
 	serializable="false"
 	extends     ="coldbox.system.FrameworkSupertype"
+	threadSafe
 	singleton
 {
 
-	/************************************** DI *********************************************/
+	/****************************************************************
+	 * DI *
+	 ****************************************************************/
 
-	/**
-	 * Template cache provider
-	 */
 	property name="templateCache" inject="cachebox:template";
 
-	/************************************** PROPERTIES *********************************************/
+	/****************************************************************
+	 * Rendering Properties *
+	 ****************************************************************/
 
 	// Location of layouts
 	property name="layoutsConvention";
@@ -33,7 +35,7 @@ component
 	// Location of application
 	property name="appMapping";
 	// Modules configuration
-	property name="moduleConfig" type="struct";
+	property name="modulesConfig" type="struct";
 	// Views Helper Setting
 	property name="viewsHelper";
 	// Internal locking name
@@ -41,30 +43,45 @@ component
 	// Discovery caching is tied to handlers for discovery.
 	property name="isDiscoveryCaching";
 
-	property name="html";
-
-	/************************************** CONSTRUCTOR *********************************************/
-
 	/**
 	 * Constructor
-	 *
-	 * @controller        The ColdBox main controller
-	 * @controller.inject coldbox
 	 */
-	function init( required controller ){
-		// Register the Controller
-		variables.controller = arguments.controller;
-		// Register LogBox
-		variables.logBox     = arguments.controller.getLogBox();
-		// Register Log object
-		variables.log        = variables.logBox.getLogger( this );
-		// Register Flash RAM
-		variables.flash      = arguments.controller.getRequestService().getFlashScope();
-		// Register CacheBox
-		variables.cacheBox   = arguments.controller.getCacheBox();
-		// Register WireBox
-		variables.wireBox    = arguments.controller.getWireBox();
+	function init(){
+		// Layouts + Views Reference Maps
+		variables.layoutsRefMap = {};
+		variables.viewsRefMap   = {};
+		super.init();
+		return this;
+	}
 
+	/****************************************************************
+	 * Deprecated/Removed Methods *
+	 ****************************************************************/
+
+	function renderview(){
+		variables.log.warn( "renderview() has been deprecated, please update your code to view()", callStackGet() );
+		return this.view( argumentCollection = arguments );
+	}
+	function renderLayout(){
+		variables.log.warn(
+			"renderLayout() has been deprecated, please update your code to layout()",
+			callStackGet()
+		);
+		return this.layout( argumentCollection = arguments );
+	}
+	function renderExternalView(){
+		variables.log.warn(
+			"renderExternalView() has been deprecated, please update your code to externalView()",
+			callStackGet()
+		);
+		return this.externalView( argumentCollection = arguments );
+	}
+
+	/**
+	 * This is the startup procedures for the renderer. This is called after all modules, interceptions and contributions have been done
+	 * in order to allow for all chicken and the egg issues are not relevant.
+	 */
+	function startup(){
 		// Set Conventions, Settings and Properties
 		variables.layoutsConvention       = variables.controller.getColdBoxSetting( "layoutsConvention" );
 		variables.viewsConvention         = variables.controller.getColdBoxSetting( "viewsConvention" );
@@ -74,36 +91,29 @@ component
 		variables.modulesConfig           = variables.controller.getSetting( "modules" );
 		variables.viewsHelper             = variables.controller.getSetting( "viewsHelper" );
 		variables.viewCaching             = variables.controller.getSetting( "viewCaching" );
-		// Layouts + Views Reference Maps
-		variables.layoutsRefMap           = {};
-		variables.viewsRefMap             = {};
 
-		// Verify View Helper Template extension + location
+		// Global View Helper
 		if ( len( variables.viewsHelper ) ) {
-			// extension detection
-			variables.viewsHelper = (
-				listLast( variables.viewsHelper, "." ) eq "cfm" ? variables.viewsHelper : variables.viewsHelper & ".cfm"
-			);
-			// Append mapping to it.
-			variables.viewsHelper = "/#variables.appMapping#/#variables.viewsHelper#";
+			var viewHelperPath = "/#variables.appMapping#/#variables.viewsHelper.listFirst( "." )#";
+			if ( fileExists( expandPath( viewHelperPath & ".cfm" ) ) ) {
+				variables.viewsHelper = viewHelperPath & ".cfm";
+			}
+			if ( fileExists( expandPath( viewHelperPath & ".bxm" ) ) ) {
+				variables.viewsHelper = viewHelperPath & ".bxm";
+			}
 		}
 
 		// Template Cache & Caching Maps
 		variables.lockName = "rendering.#variables.controller.getAppHash()#";
 
 		// Discovery caching
-		variables.isDiscoveryCaching = controller.getSetting( "viewCaching" );
+		variables.isDiscoveryCaching = variables.controller.getSetting( "viewCaching" );
 
-		// HTML Helper
-		variables.html = variables.wirebox.getInstance( dsl = "@HTMLHelper" );
-
-		// Load global UDF Libraries into target
+		// Load Application helpers
 		loadApplicationHelpers();
 
 		// Announce interception
 		announce( "afterRendererInit", { variables : variables, this : this } );
-
-		return this;
 	}
 
 	/************************************** VIEW METHODS *********************************************/
@@ -111,23 +121,26 @@ component
 	/**
 	 * set the explicit view bit, used mostly internally
 	 *
-	 * @view   The name of the view to render
-	 * @module The name of the module this view comes from
-	 * @args   The view/layout passthrough arguments
+	 * @view          The name of the view to render
+	 * @module        The name of the module this view comes from
+	 * @args          The view/layout passthrough arguments
+	 * @viewVariables The view variables in the variables scope
 	 *
 	 * @return Renderer
 	 */
 	function setExplicitView(
 		required string view,
-		module      = "",
-		struct args = {}
+		module               = "",
+		struct args          = {},
+		struct viewVariables = {}
 	){
 		getRequestContext().setPrivateValue(
 			"_explicitView",
 			{
-				"view"   : arguments.view,
-				"module" : arguments.module,
-				"args"   : arguments.args
+				"view"          : arguments.view,
+				"module"        : arguments.module,
+				"args"          : arguments.args,
+				"viewVariables" : arguments.viewVariables
 			}
 		);
 		return this;
@@ -138,15 +151,6 @@ component
 	 */
 	function getExplicitView(){
 		return getRequestContext().getPrivateValue( "_explicitView", {} );
-	}
-
-	/**
-	 * Render out a view
-	 *
-	 * @deprecated Use `view()` instead
-	 */
-	function renderView(){
-		return this.view( argumentCollection = arguments );
 	}
 
 	/**
@@ -167,6 +171,9 @@ component
 	 * @collectionDelim        A string to delimit the collection renderings by
 	 * @prePostExempt          If true, pre/post view interceptors will not be fired. By default they do fire
 	 * @name                   The name of the rendering region to render out, Usually all arguments are coming from the stored region but you override them using this function's arguments.
+	 * @viewVariables          A struct of variables to incorporate into the view's variables scope.
+	 *
+	 * @throws ViewNotSetException If no view is set to render or none found
 	 */
 	function view(
 		view                   = "",
@@ -183,7 +190,8 @@ component
 		numeric collectionMaxRows  = 0,
 		collectionDelim            = "",
 		boolean prePostExempt      = false,
-		name
+		name,
+		viewVariables = {}
 	){
 		var event             = getRequestContext();
 		var viewCacheKey      = "";
@@ -191,27 +199,14 @@ component
 		var viewCacheProvider = variables.templateCache;
 		var iData             = arguments;
 		var explicitModule    = false;
-		var viewLocations     = "";
 
 		// Rendering Region call?
 		if ( !isNull( arguments.name ) and len( arguments.name ) ) {
-			var regions = event.getRenderingRegions();
-			// Verify Region
-			if ( !structKeyExists( regions, arguments.name ) ) {
-				throw(
-					message = "Invalid rendering region: #arguments.name#",
-					detail  = "Valid regions are: #structKeyList( regions )#",
-					type    = "InvalidRenderingRegion"
-				);
-			}
-			// Incorporate region data
-			structAppend( arguments, regions[ arguments.name ] );
-			// Clean yourself like a ninja
-			structDelete( arguments, "name" );
+			arguments = incorporateRenderingRegion( arguments.name, event, arguments );
 		}
 
 		// Rendering an explicit view or do we need to get the view from the context or explicit context?
-		if ( NOT len( arguments.view ) ) {
+		if ( isNull( arguments.view ) || NOT len( arguments.view ) ) {
 			var explicitView = getExplicitView();
 			// Rendering an explicit Renderer view/layout combo?
 			if ( explicitView.keyExists( "view" ) && explicitView.view.len() ) {
@@ -219,7 +214,7 @@ component
 				arguments.view   = explicitView.view;
 				arguments.module = explicitView.module;
 				arguments.args.append( explicitView.args, false );
-
+				arguments.viewVariables.append( explicitView.viewVariables, false );
 				// clear the explicit view now that it has been used
 				getRequestContext().removePrivateValue( "_explicitView" );
 			}
@@ -252,7 +247,7 @@ component
 		}
 
 		// Cleanup leading / in views, just in case
-		arguments.view = reReplace( arguments.view, "^(\\|/)", "" );
+		arguments.view = reReplace( arguments.view, "^(\\|//)", "" );
 
 		// Announce preViewRender interception
 		if ( NOT arguments.prepostExempt ) {
@@ -299,7 +294,7 @@ component
 
 		// No caching, just render
 		// Discover and cache view/helper locations
-		viewLocations = discoverViewPaths(
+		var viewLocations = discoverViewPaths(
 			view           = arguments.view,
 			module         = arguments.module,
 			explicitModule = explicitModule
@@ -308,7 +303,7 @@ component
 		// Render collection views
 		if ( !isNull( arguments.collection ) ) {
 			// render collection in next context
-			iData.renderedView = getRenderer().renderViewCollection(
+			iData.renderedView = renderViewCollection(
 				arguments.view,
 				viewLocations.viewPath,
 				viewLocations.viewHelperPath,
@@ -317,7 +312,8 @@ component
 				arguments.collectionAs,
 				arguments.collectionStartRow,
 				arguments.collectionMaxRows,
-				arguments.collectionDelim
+				arguments.collectionDelim,
+				arguments.viewVariables
 			);
 		}
 		// Render simple composite view
@@ -326,13 +322,14 @@ component
 				arguments.view,
 				viewLocations.viewPath,
 				viewLocations.viewHelperPath,
-				arguments.args
+				arguments.args,
+				arguments.viewVariables
 			);
 		}
 
 		// Post View Render Interception point
 		if ( NOT arguments.prepostExempt ) {
-			announce( "postViewRender", local.iData );
+			announce( "postViewRender", local.iData.append( { viewPath : viewLocations.viewPath } ) );
 		}
 
 		// Are we caching view
@@ -361,98 +358,72 @@ component
 		collectionAs,
 		numeric collectionStartRow = 1,
 		numeric collectionMaxRows  = 0,
-		collectionDelim            = ""
+		collectionDelim            = "",
+		viewVariables              = {}
 	){
 		var buffer = createObject( "java", "java.lang.StringBuilder" ).init();
-		var x      = 1;
-		var recLen = 0;
 
 		// Determine the collectionAs key
 		if ( NOT len( arguments.collectionAs ) ) {
 			arguments.collectionAs = listLast( arguments.view, "/" );
 		}
 
-		// Array Rendering
-		if ( isArray( arguments.collection ) ) {
-			recLen = arrayLen( arguments.collection );
-			// is max rows passed?
-			if ( arguments.collectionMaxRows NEQ 0 AND arguments.collectionMaxRows LTE recLen ) {
-				recLen = arguments.collectionMaxRows;
-			}
-			// Create local marker
-			variables._items = recLen;
-			// iterate and present
-			for ( x = arguments.collectionStartRow; x lte recLen; x++ ) {
-				// setup local variables
-				variables._counter                  = x;
-				variables[ arguments.collectionAs ] = arguments.collection[ x ];
-				// prepend the delim
-				if ( x NEQ arguments.collectionStartRow ) {
-					buffer.append( arguments.collectionDelim );
-				}
-				// render item composite
-				buffer.append(
-					renderViewComposite(
-						arguments.view,
-						arguments.viewPath,
-						arguments.viewHelperPath,
-						arguments.args
-					)
-				);
-			}
-			return buffer.toString();
+		// Is this a query?
+		if ( isQuery( arguments.collection ) ) {
+			arguments.collection = arguments.collection.reduce( function( result, row ){
+				arguments.result.append( arguments.row );
+				return arguments.result;
+			}, [] );
 		}
 
-		// Query Rendering
-		variables._items = arguments.collection.recordCount;
-
-		// Max Rows
-		if ( arguments.collectionMaxRows NEQ 0 AND arguments.collectionMaxRows LTE arguments.collection.recordCount ) {
-			variables._items = arguments.collectionMaxRows;
+		var records = arrayLen( arguments.collection );
+		// is max rows passed?
+		if ( arguments.collectionMaxRows NEQ 0 AND arguments.collectionMaxRows LTE records ) {
+			records = arguments.collectionMaxRows;
 		}
-
-		// local counter when using startrow is greater than one and x values is reletive to lookup
-		var _localCounter = 1;
-		for ( x = arguments.collectionStartRow; x lte ( arguments.collectionStartRow + variables._items ) - 1; x++ ) {
-			// setup local cvariables
-			variables._counter = _localCounter;
-
-			var columnList = arguments.collection.columnList;
-			for ( var j = 1; j <= listLen( columnList ); j++ ) {
-				variables[ arguments.collectionAs ][ listGetAt( columnList, j ) ] = arguments.collection[
-					listGetAt( columnList, j )
-				][ x ];
-			}
-
+		// iterate and present
+		for ( var x = arguments.collectionStartRow; x lte records; x++ ) {
 			// prepend the delim
-			if ( variables._counter NEQ 1 ) {
+			if ( x NEQ arguments.collectionStartRow ) {
 				buffer.append( arguments.collectionDelim );
 			}
 
 			// render item composite
 			buffer.append(
 				renderViewComposite(
-					arguments.view,
-					arguments.viewPath,
-					arguments.viewHelperPath,
-					arguments.args
+					view          : arguments.view,
+					viewPath      : arguments.viewPath,
+					viewHelperPath: arguments.viewHelperPath,
+					args          : arguments.args,
+					viewVariables : arguments.viewVariables.append( {
+						"_items"                   : records,
+						"_counter"                 : x,
+						"#arguments.collectionAs#" : arguments.collection[ x ]
+					} )
 				)
 			);
-			_localCounter++;
 		}
-
 		return buffer.toString();
 	}
 
 	/**
 	 * Render a view alongside its helpers, used mostly internally, use at your own risk.
 	 *
-	 * @view           The view to render
+	 * @view           The view name to render
 	 * @viewPath       The path of the view to render
 	 * @viewHelperPath The helpers for the view to load before it
-	 * @args           The view arguments
+	 * @args           The view arguments structure
+	 * @variables      The struct of variables to incorporate into the view's `variables` scope
+	 *
+	 * @return The rendered view string
 	 */
-	private function renderViewComposite( view, viewPath, viewHelperPath, args ){
+	private function renderViewComposite(
+		view,
+		viewPath,
+		viewHelperPath,
+		args,
+		viewVariables = {}
+	){
 		var cbox_renderedView = "";
 		var event             = getRequestContext();
 
@@ -466,7 +437,8 @@ component
 				rendererVariables = ( isNull( attributes.rendererVariables ) ? variables : attributes.rendererVariables ),
 				event             = event,
 				rc                = event.getCollection(),
-				prc               = event.getPrivateCollection()
+				prc               = event.getPrivateCollection(),
+				viewVariables     = arguments.viewVariables
 			);
 		}
 
@@ -474,24 +446,16 @@ component
 	}
 
 	/**
-	 * Render an external view
-	 *
-	 * @deprecated Use `externalView()` instead
-	 */
-	function renderExternalView(){
-		return this.externalView( argumentCollection = arguments );
-	}
-
-	/**
 	 * Renders an external view anywhere that cfinclude works.
 	 *
 	 * @view                   The the view to render
-	 * @args                   A struct of arguments to pass into the view for rendering, will be available as 'args' in the view.
+	 * @args                   A struct of arguments to pass into the view for rendering, will be available as 'args' iview.
 	 * @cache                  Cached the view output or not, defaults to false
 	 * @cacheTimeout           The time in minutes to cache the view
 	 * @cacheLastAccessTimeout The time in minutes the view will be removed from cache if idle or requested
 	 * @cacheSuffix            The suffix to add into the cache entry for this view rendering
 	 * @cacheProvider          The provider to cache this view in, defaults to 'template'
+	 * @viewVariables          A struct of variables to incorporate into the view's variables scope.
 	 */
 	function externalView(
 		required view,
@@ -500,14 +464,14 @@ component
 		cacheTimeout           = "",
 		cacheLastAccessTimeout = "",
 		cacheSuffix            = "",
-		cacheProvider          = "template"
+		cacheProvider          = "template",
+		viewVariables          = {}
 	){
 		var cbox_renderedView  = "";
 		// Cache Entries
 		var cbox_cacheKey      = "";
 		var cbox_cacheEntry    = "";
 		var cbox_cacheProvider = variables.templateCache;
-		var viewLocations      = "";
 
 		// Setup the cache key
 		cbox_cacheKey = variables.templateCache.VIEW_CACHEKEY_PREFIX & "external-" & arguments.view & arguments.cacheSuffix;
@@ -520,21 +484,25 @@ component
 		if ( !isNull( local.cbox_renderedView ) ) {
 			return cbox_renderedView;
 		}
+
 		// Not in cache, render it
 		// Get view locations
-		viewLocations = discoverViewPaths(
+		var viewLocations = discoverViewPaths(
 			view           = arguments.view,
 			module         = "",
 			explicitModule = false
 		);
+
 		// Render External View
 		cbox_renderedView = renderViewComposite(
 			view           = view,
 			viewPath       = viewLocations.viewPath,
 			viewHelperPath = viewLocations.viewHelperPath,
 			args           = args,
-			renderer       = this
+			renderer       = this,
+			viewVariables  = arguments.viewVariables
 		);
+
 		// Are we caching it
 		if ( arguments.cache && variables.viewCaching ) {
 			cbox_cacheProvider.set(
@@ -550,15 +518,6 @@ component
 	/************************************** LAYOUT METHODS *********************************************/
 
 	/**
-	 * Render a layout
-	 *
-	 * @deprecated Use `layout()` instead
-	 */
-	function renderLayout(){
-		return this.layout( argumentCollection = arguments );
-	}
-
-	/**
 	 * Render a layout or a layout + view combo
 	 *
 	 * @layout        The layout to render out
@@ -567,6 +526,7 @@ component
 	 * @args          An optional set of arguments that will be available to this layouts/view rendering ONLY
 	 * @viewModule    The module to explicitly render the view from
 	 * @prePostExempt If true, pre/post layout interceptors will not be fired. By default they do fire
+	 * @viewVariables A struct of variables to incorporate into the view's variables scope.
 	 */
 	function layout(
 		layout,
@@ -574,7 +534,8 @@ component
 		view                  = "",
 		struct args           = getRequestContext().getCurrentViewArgs(),
 		viewModule            = "",
-		boolean prePostExempt = false
+		boolean prePostExempt = false,
+		viewVariables         = {}
 	){
 		var event                  = getRequestContext();
 		var cbox_locateUDF         = variables.locateLayout;
@@ -582,7 +543,6 @@ component
 		var cbox_layoutLocationKey = "";
 		var cbox_layoutLocation    = "";
 		var iData                  = arguments;
-		var viewLocations          = "";
 		var explicitView           = getExplicitView();
 
 		// Are we discovering implicit views: setting must be on and no view set.
@@ -604,28 +564,28 @@ component
 			return controller
 				.getRenderer()
 				.setExplicitView(
-					arguments.view,
-					arguments.viewModule,
-					arguments.args
+					view         : arguments.view,
+					module       : arguments.viewModule,
+					args         : arguments.args,
+					viewVariables: arguments.viewVariables
 				)
-				.renderLayout( argumentCollection = arguments );
+				.layout( argumentCollection = arguments );
 		}
 
 		// If no passed layout, then get it from implicit values
 		if ( isNull( arguments.layout ) ) {
-			// Strip off the .cfm extension if it is set
-			if ( len( cbox_implicitLayout ) GT 4 AND right( cbox_implicitLayout, 4 ) eq ".cfm" ) {
-				cbox_implicitLayout = left( cbox_implicitLayout, len( cbox_implicitLayout ) - 4 );
-			}
-			arguments.layout   = cbox_implicitLayout;
-			cbox_currentLayout = arguments.layout;
+			arguments.layout = cbox_implicitLayout;
 		}
 
-		// module default value
+		// Are we in an explicit or current module call?
 		if ( not len( arguments.module ) ) {
 			arguments.module = event.getCurrentModule();
 		} else {
 			cbox_explicitModule = true;
+		}
+		// Choose location algorithm if in module mode
+		if ( len( arguments.module ) ) {
+			cbox_locateUDF = variables.locateModuleLayout;
 		}
 
 		// Announce
@@ -639,67 +599,38 @@ component
 			if ( len( arguments.layout ) ) {
 				// Cleanup leading / in views, just in case
 				arguments.layout   = reReplace( arguments.layout, "^(\\|/)", "" );
-				cbox_currentLayout = arguments.layout & ".cfm";
+				cbox_currentLayout = arguments.layout;
 			} else {
 				cbox_currentLayout = "";
 			}
 		}
 
-		// Choose location algorithm if in module mode
-		if ( len( arguments.module ) ) {
-			cbox_locateUDF = variables.locateModuleLayout;
-		}
-
 		// If Layout is blank, then just delegate to the view
+		// No layout rendering.
 		if ( len( cbox_currentLayout ) eq 0 ) {
-			iData.renderedLayout = renderView();
+			iData.renderedLayout = this.view();
 		} else {
-			// Layout location key
-			cbox_layoutLocationKey = cbox_currentLayout & arguments.module & cbox_explicitModule;
-
-			// Check cached paths first
-			if (
-				structKeyExists( variables.layoutsRefMap, cbox_layoutLocationKey )
-				AND
-				variables.isDiscoveryCaching
-			) {
-				lock name="#cbox_layoutLocationKey#.#lockName#" type="readonly" timeout="15" throwontimeout="true" {
-					cbox_layoutLocation = structFind( variables.layoutsRefMap, cbox_layoutLocationKey );
-				}
-			} else {
-				lock name="#cbox_layoutLocationKey#.#lockname#" type="exclusive" timeout="15" throwontimeout="true" {
-					cbox_layoutLocation = cbox_locateUDF(
-						layout         = cbox_currentLayout,
-						module         = arguments.module,
-						explicitModule = cbox_explicitModule
-					);
-					structInsert(
-						variables.layoutsRefMap,
-						cbox_layoutLocationKey,
-						cbox_layoutLocation,
-						true
-					);
-				}
-			}
-			// Get the view locations
-			var viewLocations = discoverViewPaths(
-				view           = reverse( listRest( reverse( cbox_layoutLocation ), "." ) ),
-				module         = arguments.module,
-				explicitModule = cbox_explicitModule
+			// Discover the layout location + helpers
+			var layoutLocations = discoverViewPaths(
+				view          : cbox_currentLayout,
+				module        : arguments.module,
+				explicitModule: cbox_explicitModule,
+				isLayout      : true
 			);
 
-			// RenderLayout
+			// Render the layout with it's helpers
 			iData.renderedLayout = renderViewComposite(
-				view           = cbox_currentLayout,
-				viewPath       = viewLocations.viewPath,
-				viewHelperPath = viewLocations.viewHelperPath,
-				args           = args
+				view          : cbox_currentLayout,
+				viewPath      : layoutLocations.viewPath,
+				viewHelperPath: layoutLocations.viewHelperPath,
+				args          : args,
+				viewVariables : arguments.viewVariables
 			);
 		}
 
 		// Announce
 		if ( not arguments.prePostExempt ) {
-			announce( "postLayoutRender", iData );
+			announce( "postLayoutRender", iData.append( { viewPath : layoutLocations.viewPath } ) );
 		}
 
 		return iData.renderedLayout;
@@ -711,31 +642,32 @@ component
 	 * @layout The layout name
 	 */
 	function locateLayout( required layout ){
-		// Default path is the conventions
-		var event            = getRequestContext();
-		var layoutPath       = "/#variables.appMapping#/#variables.layoutsConvention#/#arguments.layout#";
-		var extLayoutPath    = "#variables.layoutsExternalLocation#/#arguments.layout#";
-		var moduleName       = event.getCurrentModule();
-		var moduleLayoutPath = "";
+		// Remove extension: We need to test cfm vs bxm
+		arguments.layout = reReplace( arguments.layout, "\.(cfm|bxm)$", "", "one" );
 
-		// If layout exists in module and this is a module call, then use module layout.
-		if ( len( moduleName ) ) {
-			moduleLayoutPath = "#variables.modulesConfig[ moduleName ].mapping#/#variables.layoutsConvention#/#arguments.layout#";
-			if ( fileExists( expandPath( moduleLayoutPath ) ) ) {
-				return moduleLayoutPath;
+		// Default path is the conventions location
+		var layoutPaths = [
+			"/#variables.appMapping#/#variables.layoutsConvention#/#arguments.layout#",
+			"#variables.layoutsExternalLocation#/#arguments.layout#"
+		];
+
+		// Try to locate the view
+		for ( var thisLayoutPath in layoutPaths ) {
+			reReplace( thisLayoutPath, "//", "/", "all" );
+			if ( fileExists( expandPath( thisLayoutPath & ".cfm" ) ) ) {
+				return thisLayoutPath & ".cfm";
+			}
+			if ( fileExists( expandPath( thisLayoutPath & ".bxm" ) ) ) {
+				return thisLayoutPath & ".bxm";
 			}
 		}
 
-		// Check if layout does not exists in Conventions, but in the ext location
-		if ( NOT fileExists( expandPath( layoutPath ) ) AND fileExists( expandPath( extLayoutPath ) ) ) {
-			return extLayoutPath;
-		}
-
-		return layoutPath;
+		// If all fails, return the path as is
+		return arguments.layout;
 	}
 
 	/**
-	 * Locate a layout in the conventions system
+	 * Locate a layout in the module system
 	 *
 	 * @layout         The layout name
 	 * @module         The name of the module we are searching for
@@ -746,53 +678,88 @@ component
 		module                 = "",
 		boolean explicitModule = false
 	){
-		var event                  = getRequestContext();
-		var parentModuleLayoutPath = "";
-		var parentCommonLayoutPath = "";
-		var moduleLayoutPath       = "";
-		var moduleName             = "";
+		var event = getRequestContext();
+
+		// Remove extension: We need to test cfm vs bxm
+		arguments.layout = reReplace( arguments.layout, "\.(cfm|bxm)$", "", "one" );
 
 		// Explicit Module layout lookup?
 		if ( len( arguments.module ) and arguments.explicitModule ) {
-			return "#variables.modulesConfig[ arguments.module ].mapping#/#variables.modulesConfig[ arguments.module ].conventions.layoutsLocation#/#arguments.layout#";
+			var explicitLayout = "#variables.modulesConfig[ arguments.module ].mapping#/#variables.modulesConfig[ arguments.module ].conventions.layoutsLocation#/#arguments.layout#";
+			if ( fileExists( expandPath( explicitLayout & ".cfm" ) ) ) {
+				return explicitLayout & ".cfm";
+			}
+			if ( fileExists( expandPath( explicitLayout & ".bxm" ) ) ) {
+				return explicitLayout & ".bxm";
+			}
+			throw(
+				message = "The layout [#arguments.layout#] was not found in the module path: [#explicitLayout#]",
+				detail  = "Please verify the layout exists in the module.",
+				type    = "Renderer.LayoutNotFoundException"
+			)
 		}
 
 		// Declare Locations
-		moduleName             = event.getCurrentModule();
-		parentModuleLayoutPath = "/#variables.appMapping#/#variables.layoutsConvention#/modules/#moduleName#/#arguments.layout#";
-		parentCommonLayoutPath = "/#variables.appMapping#/#variables.layoutsConvention#/modules/#arguments.layout#";
-		moduleLayoutPath       = "#variables.modulesConfig[ moduleName ].mapping#/#variables.modulesConfig[ moduleName ].conventions.layoutsLocation#/#arguments.layout#";
+		var moduleName             = event.getCurrentModule();
+		var parentModuleLayoutPath = "/#variables.appMapping#/#variables.layoutsConvention#/modules/#moduleName#/#arguments.layout#";
+		var parentCommonLayoutPath = "/#variables.appMapping#/#variables.layoutsConvention#/modules/#arguments.layout#";
+		var moduleLayoutPath       = "#variables.modulesConfig[ moduleName ].mapping#/#variables.modulesConfig[ moduleName ].conventions.layoutsLocation#/#arguments.layout#";
+
 
 		// Check parent view order setup
 		if ( variables.modulesConfig[ moduleName ].layoutParentLookup ) {
 			// We check if layout is overridden in parent first.
-			if ( fileExists( expandPath( parentModuleLayoutPath ) ) ) {
-				return parentModuleLayoutPath;
+			if ( fileExists( expandPath( parentModuleLayoutPath & ".cfm" ) ) ) {
+				return parentModuleLayoutPath & ".cfm";
 			}
+			if ( fileExists( expandPath( parentModuleLayoutPath & ".bxm" ) ) ) {
+				return parentModuleLayoutPath & ".bxm";
+			}
+
 			// Check if parent has a common layout override
-			if ( fileExists( expandPath( parentCommonLayoutPath ) ) ) {
-				return parentCommonLayoutPath;
+			if ( fileExists( expandPath( parentCommonLayoutPath & ".cfm" ) ) ) {
+				return parentCommonLayoutPath & ".cfm";
 			}
+			if ( fileExists( expandPath( parentCommonLayoutPath & ".bxm" ) ) ) {
+				return parentCommonLayoutPath & ".bxm";
+			}
+
 			// Check module
-			if ( fileExists( expandPath( moduleLayoutPath ) ) ) {
-				return moduleLayoutPath;
+			if ( fileExists( expandPath( moduleLayoutPath & ".cfm" ) ) ) {
+				return moduleLayoutPath & ".cfm";
 			}
+			if ( fileExists( expandPath( moduleLayoutPath & ".bxm" ) ) ) {
+				return moduleLayoutPath & ".bxm";
+			}
+
 			// Return normal layout lookup
 			return locateLayout( arguments.layout );
 		}
 
 		// If we reach here then we are doing module lookup first then if not parent.
-		if ( fileExists( expandPath( moduleLayoutPath ) ) ) {
-			return moduleLayoutPath;
+		if ( fileExists( expandPath( moduleLayoutPath & ".cfm" ) ) ) {
+			return moduleLayoutPath & ".cfm";
 		}
+		if ( fileExists( expandPath( moduleLayoutPath & ".bxm" ) ) ) {
+			return moduleLayoutPath & ".bxm";
+		}
+
 		// We check if layout is overridden in parent first.
-		if ( fileExists( expandPath( parentModuleLayoutPath ) ) ) {
-			return parentModuleLayoutPath;
+		if ( fileExists( expandPath( parentModuleLayoutPath & ".cfm" ) ) ) {
+			return parentModuleLayoutPath & ".cfm";
 		}
+		if ( fileExists( expandPath( parentModuleLayoutPath & ".bxm" ) ) ) {
+			return parentModuleLayoutPath & ".bxm";
+		}
+
 		// Check if parent has a common layout override
-		if ( fileExists( expandPath( parentCommonLayoutPath ) ) ) {
-			return parentCommonLayoutPath;
+		if ( fileExists( expandPath( parentCommonLayoutPath & ".cfm" ) ) ) {
+			return parentCommonLayoutPath & ".cfm";
 		}
+		if ( fileExists( expandPath( parentCommonLayoutPath & ".bxm" ) ) ) {
+			return parentCommonLayoutPath & ".bxm";
+		}
+
 		// Return normal layout lookup
 		return locateLayout( arguments.layout );
 	}
@@ -803,20 +770,33 @@ component
 	 * @view The view to locate
 	 */
 	function locateView( required view ){
-		// Default path is the conventions
-		var viewPath    = "/#variables.appMapping#/#variables.viewsConvention#/#arguments.view#";
-		var extViewPath = "#variables.viewsExternalLocation#/#arguments.view#";
+		// Remove extension: We need to test cfm vs bxm
+		arguments.view = reReplace( arguments.view, "\.(cfm|bxm)$", "", "one" );
 
-		// Check if view does not exists in Conventions
-		if ( NOT fileExists( expandPath( viewPath & ".cfm" ) ) AND fileExists( expandPath( extViewPath & ".cfm" ) ) ) {
-			return extViewPath;
+		// Default path is the conventions location, then the external location
+		var viewPaths = [
+			"/#variables.appMapping#/#variables.viewsConvention#/#arguments.view#",
+			"#variables.viewsExternalLocation#/#arguments.view#",
+			arguments.view
+		];
+
+		// Try to locate the view
+		for ( var thisViewPath in viewPaths ) {
+			reReplace( thisViewPath, "//", "/", "all" );
+			if ( fileExists( expandPath( thisViewPath & ".cfm" ) ) ) {
+				return thisViewPath & ".cfm";
+			}
+			if ( fileExists( expandPath( thisViewPath & ".bxm" ) ) ) {
+				return thisViewPath & ".bxm";
+			}
 		}
 
-		return viewPath;
+		// If all fails, return the path as is
+		return arguments.view;
 	}
 
 	/**
-	 * Locate a view in the conventions system
+	 * Locate a view in the module system
 	 *
 	 * @view           The view name
 	 * @module         The name of the module we are searching for
@@ -827,51 +807,83 @@ component
 		module                 = "",
 		boolean explicitModule = false
 	){
-		var parentModuleViewPath = "";
-		var parentCommonViewPath = "";
-		var moduleViewPath       = "";
-		var moduleName           = "";
+		// Remove extension: We need to test cfm vs bxm
+		arguments.view = reReplace( arguments.view, "\.(cfm|bxm)$", "", "one" );
 
 		// Explicit Module view lookup?
 		if ( len( arguments.module ) and arguments.explicitModule ) {
-			return "#variables.modulesConfig[ arguments.module ].mapping#/#variables.modulesConfig[ arguments.module ].conventions.viewsLocation#/#arguments.view#";
+			var explicitView = "#variables.modulesConfig[ arguments.module ].mapping#/#variables.modulesConfig[ arguments.module ].conventions.viewsLocation#/#arguments.view#";
+			if ( fileExists( expandPath( explicitView & ".cfm" ) ) ) {
+				return explicitView & ".cfm";
+			}
+			if ( fileExists( expandPath( explicitView & ".bxm" ) ) ) {
+				return explicitView & ".bxm";
+			}
+			throw(
+				message = "The view [#arguments.view#] was not found in the module path: [#explicitView#]",
+				detail  = "Please verify the view exists in the module.",
+				type    = "Renderer.ViewNotFoundException"
+			)
 		}
 
 		// Declare Locations
-		moduleName           = arguments.module;
-		parentModuleViewPath = "/#variables.appMapping#/#variables.viewsConvention#/modules/#moduleName#/#arguments.view#";
-		parentCommonViewPath = "/#variables.appMapping#/#variables.viewsConvention#/modules/#arguments.view#";
-		moduleViewPath       = "#variables.modulesConfig[ moduleName ].mapping#/#variables.modulesConfig[ moduleName ].conventions.viewsLocation#/#arguments.view#";
+		var moduleName           = arguments.module;
+		var parentModuleViewPath = "/#variables.appMapping#/#variables.viewsConvention#/modules/#moduleName#/#arguments.view#";
+		var parentCommonViewPath = "/#variables.appMapping#/#variables.viewsConvention#/modules/#arguments.view#";
+		var moduleViewPath       = "#variables.modulesConfig[ moduleName ].mapping#/#variables.modulesConfig[ moduleName ].conventions.viewsLocation#/#arguments.view#";
 
 		// Check parent view order setup
 		if ( variables.modulesConfig[ moduleName ].viewParentLookup ) {
 			// We check if view is overridden in parent first.
 			if ( fileExists( expandPath( parentModuleViewPath & ".cfm" ) ) ) {
-				return parentModuleViewPath;
+				return parentModuleViewPath & ".cfm";
 			}
+			if ( fileExists( expandPath( parentModuleViewPath & ".bxm" ) ) ) {
+				return parentModuleViewPath & ".bxm";
+			}
+
 			// Check if parent has a common view override
 			if ( fileExists( expandPath( parentCommonViewPath & ".cfm" ) ) ) {
-				return parentCommonViewPath;
+				return parentCommonViewPath & ".cfm";
 			}
+			if ( fileExists( expandPath( parentCommonViewPath & ".bxm" ) ) ) {
+				return parentCommonViewPath & ".bxm";
+			}
+
 			// Check module for view
 			if ( fileExists( expandPath( moduleViewPath & ".cfm" ) ) ) {
-				return moduleViewPath;
+				return moduleViewPath & ".cfm";
 			}
+			if ( fileExists( expandPath( moduleViewPath & ".bxm" ) ) ) {
+				return moduleViewPath & ".bxm";
+			}
+
 			// Return normal view lookup
 			return locateView( arguments.view );
 		}
 
-		// If we reach here then we are doing module lookup first then if not parent.
+		// If we reach here then we are doing module lookup first then if not the parent.
 		if ( fileExists( expandPath( moduleViewPath & ".cfm" ) ) ) {
-			return moduleViewPath;
+			return moduleViewPath & ".cfm";
 		}
+		if ( fileExists( expandPath( moduleViewPath & ".bxm" ) ) ) {
+			return moduleViewPath & ".bxm";
+		}
+
 		// We check if view is overridden in parent first.
 		if ( fileExists( expandPath( parentModuleViewPath & ".cfm" ) ) ) {
-			return parentModuleViewPath;
+			return parentModuleViewPath & ".cfm";
 		}
+		if ( fileExists( expandPath( parentModuleViewPath & ".bxm" ) ) ) {
+			return parentModuleViewPath & ".bxm";
+		}
+
 		// Check if parent has a common view override
 		if ( fileExists( expandPath( parentCommonViewPath & ".cfm" ) ) ) {
-			return parentCommonViewPath;
+			return parentCommonViewPath & ".cfm";
+		}
+		if ( fileExists( expandPath( parentCommonViewPath & ".bxm" ) ) ) {
+			return parentCommonViewPath & ".bxm";
 		}
 
 		// Return normal view lookup
@@ -879,72 +891,71 @@ component
 	}
 
 	/**
-	 * Discover view+helper path locations
+	 * Discover view+helper path locations.  The returned helper and view locations will have the appropriate extension.
 	 *
 	 * @view           The view to discover
 	 * @module         The module address
 	 * @explicitModule Is the module explicit or discoverable.
+	 * @isLayout       Are we discovering a layout or a view
 	 *
 	 * @return struct  = { viewPath:string, viewHelperPath:string }
 	 */
 	function discoverViewPaths(
 		required view,
 		module,
-		boolean explicitModule = false
+		boolean explicitModule = false,
+		boolean isLayout       = false
 	){
-		var locationKey = arguments.view & arguments.module & arguments.explicitModule;
-		var locationUDF = variables.locateView;
-		var refMap      = { viewPath : "", viewHelperPath : [] };
+		var locationKey = "#arguments.view#-#arguments.module#-#arguments.explicitModule#-#arguments.isLayout#";
+		var results     = { "viewPath" : "", "viewHelperPath" : [] };
+		// If you are in layout mode, then use the layout reference map, else use the view reference map
+		var cacheMap    = arguments.isLayout ? variables.layoutsRefMap : variables.viewsRefMap;
+		// The UDF is determined if you are in layout or view mode and if you are in module mode
+		var locationUDF = len( arguments.module ) ? variables[
+			arguments.isLayout ? "locateModuleLayout" : "locateModuleView"
+		] : variables[ arguments.isLayout ? "locateLayout" : "locateView" ];
 
-		// Check cached paths first --->
-		if ( structKeyExists( variables.viewsRefMap, locationKey ) AND variables.isDiscoveryCaching ) {
-			return structFind( variables.viewsRefMap, locationKey );
+		// Check cached paths first
+		if ( structKeyExists( cacheMap, locationKey ) AND variables.isDiscoveryCaching ) {
+			return cacheMap[ locationKey ];
 		}
 
-		if ( left( arguments.view, 1 ) EQ "/" ) {
-			refMap = { viewPath : arguments.view, viewHelperPath : [] };
+		// If already a full path, then just return it
+		// Else go locate it according to the locationUDF
+		if ( fileExists( arguments.view ) ) {
+			results.viewPath = arguments.view;
 		} else {
-			// view discovery based on relative path
-
-			// module change mode
-			if ( len( arguments.module ) ) {
-				locationUDF = variables.locateModuleView;
-			}
-
-			// Locate the view to render according to discovery algorithm and create cache map
-			refMap = {
-				viewPath : locationUDF(
-					arguments.view,
-					arguments.module,
-					arguments.explicitModule
-				),
-				viewHelperPath : []
-			};
-		}
-
-		var dPath = getDirectoryFromPath( refMap.viewPath );
-
-		// Check for directory helper convention first
-		if ( fileExists( expandPath( dPath & listLast( dPath, "/" ) & "Helper.cfm" ) ) ) {
-			refMap.viewHelperPath.append( dPath & listLast( dPath, "/" ) & "Helper.cfm" );
-		}
-
-		// Check for view helper convention second
-		if ( fileExists( expandPath( refMap.viewPath & "Helper.cfm" ) ) ) {
-			refMap.viewHelperPath.append( refMap.viewPath & "Helper.cfm" );
-		}
-
-		// Lock and create view entry
-		if ( NOT structKeyExists( variables.viewsRefMap, locationKey ) ) {
-			structInsert(
-				variables.viewsRefMap,
-				locationKey,
-				refMap,
-				true
+			results.viewPath = locationUDF(
+				arguments.view,
+				arguments.module,
+				arguments.explicitModule
 			);
 		}
 
-		return refMap;
+		// Check for directory helper convention first
+		var dPath = getDirectoryFromPath( results.viewPath );
+		if ( fileExists( expandPath( dPath & listLast( dPath, "\/" ) & "Helper.cfm" ) ) ) {
+			results.viewHelperPath.append( dPath & listLast( dPath, "\/" ) & "Helper.cfm" );
+		}
+		if ( fileExists( expandPath( dPath & listLast( dPath, "\/" ) & "Helper.bxm" ) ) ) {
+			results.viewHelperPath.append( dPath & listLast( dPath, "\/" ) & "Helper.bxm" );
+		}
+
+		// Check for view helper convention second
+		var vPath = results.viewPath.listFirst( "." );
+		if ( fileExists( expandPath( vPath & "Helper.cfm" ) ) ) {
+			results.viewHelperPath.append( vPath & "Helper.cfm" );
+		}
+		if ( fileExists( expandPath( vPath & "Helper.bxm" ) ) ) {
+			results.viewHelperPath.append( vPath & "Helper.bxm" );
+		}
+
+		// Create the cache entry
+		if ( NOT structKeyExists( cacheMap, locationKey ) ) {
+			cacheMap[ locationKey ] = results;
+		}
+
+		return results;
 	}
 
 	/************************************** PRIVATE *********************************************/
@@ -975,6 +986,34 @@ component
 		}
 
 		return this;
+	}
+
+	/**
+	 * Incorporate a rendering region into the arguments struct
+	 *
+	 * @name  The name of the rendering region
+	 * @event The request context
+	 * @args  The arguments struct to incorporate the rendering region into
+	 *
+	 * @return The arguments processed
+	 *
+	 * @throws InvalidRenderingRegion - If the region name does not exist
+	 */
+	private function incorporateRenderingRegion( required name, required event, any args ){
+		var regions = event.getRenderingRegions();
+		// Verify Region
+		if ( !structKeyExists( regions, arguments.name ) ) {
+			throw(
+				message = "Invalid rendering region: #arguments.name#",
+				detail  = "Valid regions are: #structKeyList( regions )#",
+				type    = "InvalidRenderingRegion"
+			);
+		}
+		// Incorporate region data
+		structAppend( arguments.args, regions[ arguments.name ] );
+		// Clean yourself like a ninja
+		structDelete( arguments.args, "name" );
+		return arguments.args;
 	}
 
 }
