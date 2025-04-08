@@ -414,16 +414,19 @@ component {
 							}
 							// 3.) component lookup
 							else {
-								try {
-									targetEntityName = getComponentMetadata( relationalMeta[ key ].cfc ).entityName;
-								} catch ( any e ) {
-									throw(
-										type    = "BeanPopulator.PopulateBeanException",
-										message = "Error populating bean #getMetadata( beanInstance ).name# relationship of #key#. The component #relationalMeta[ key ].cfc# could not be found.",
-										detail  = "#e.Detail#<br>#e.message#<br>#e.tagContext.toString()#"
-									);
+								var annotations = server.keyExists( "boxlang" ) ? getClassMetadata( arguments.relationalMeta.properties[ key ].cfc ).annotations : getComponentMetadata( arguments.relationalMeta.properties[ key ].cfc );
+								if( annotations.keyExists( "entityName" ) ){
+									targetEntityName = annotations.entityName;
 								}
 							}
+
+							if( !len( targetEntityName ) ){
+								throw(
+									type    = "ObjectPopulator.PopulateObjectException",
+									message = "Error populating object [#getMetadata( arguments.target ).name#] relationship of [#key#]. The class [#arguments.relationalMeta.properties[ key ].cfc#] could not be found.",
+								);
+							}
+
 							// if targetEntityName was successfully found
 							if ( len( targetEntityName ) ) {
 								// array or struct type (one-to-many, many-to-many)
