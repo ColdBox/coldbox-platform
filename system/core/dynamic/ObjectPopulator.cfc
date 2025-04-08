@@ -541,6 +541,7 @@ component accessors="true" singleton {
 	){
 		var validEntityNames = getORMEntityMap();
 		var targetEntityName = "";
+
 		/**
 		 * The only info we know about the relationships are the property names and the cfcs
 		 * CFC setting can be relative, so can't assume that component lookup will work
@@ -565,18 +566,19 @@ component accessors="true" singleton {
 		}
 		// 3.) component lookup
 		else {
-			try {
-				targetEntityName = server.keyExists( "boxlang" ) ? getClassMetadata(
-					arguments.relationalMeta.properties[ key ].cfc
-				).entityName : getComponentMetadata( arguments.relationalMeta.properties[ key ].cfc ).entityName;
-			} catch ( any e ) {
-				throw(
-					type    = "ObjectPopulator.PopulateObjectException",
-					message = "Error populating object #getMetadata( arguments.target ).name# relationship of #arguments.key#. The component #arguments.relationalMeta.properties[ arguments.key ].cfc# could not be found.",
-					detail  = "#e.Detail#<br>#e.message#"
-				);
+			var annotations = server.keyExists( "boxlang" ) ? getClassMetadata( arguments.relationalMeta.properties[ key ].cfc ).annotations : getComponentMetadata( arguments.relationalMeta.properties[ key ].cfc );
+			if( annotations.keyExists( "entityName" ) ){
+				targetEntityName = annotations.entityName;
 			}
 		}
+
+		if( !len( targetEntityName ) ){
+			throw(
+				type    = "ObjectPopulator.PopulateObjectException",
+				message = "Error populating object [#getMetadata( arguments.target ).name#] relationship of [#arguments.key#]. The class [#arguments.relationalMeta.properties[ arguments.key ].cfc#] could not be found.",
+			);
+		}
+
 		return targetEntityName;
 	}
 
