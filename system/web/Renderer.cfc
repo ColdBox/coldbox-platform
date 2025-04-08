@@ -642,6 +642,9 @@ component
 	 * @layout The layout name
 	 */
 	function locateLayout( required layout ){
+		// Remove extension: We need to test cfm vs bxm
+		arguments.layout = reReplace( arguments.layout, "\.(cfm|bxm)$", "", "one" );
+
 		// Default path is the conventions location
 		var layoutPaths = [
 			"/#variables.appMapping#/#variables.layoutsConvention#/#arguments.layout#",
@@ -677,6 +680,9 @@ component
 	){
 		var event = getRequestContext();
 
+		// Remove extension: We need to test cfm vs bxm
+		arguments.layout = reReplace( arguments.layout, "\.(cfm|bxm)$", "", "one" );
+
 		// Explicit Module layout lookup?
 		if ( len( arguments.module ) and arguments.explicitModule ) {
 			var explicitLayout = "#variables.modulesConfig[ arguments.module ].mapping#/#variables.modulesConfig[ arguments.module ].conventions.layoutsLocation#/#arguments.layout#";
@@ -698,6 +704,7 @@ component
 		var parentModuleLayoutPath = "/#variables.appMapping#/#variables.layoutsConvention#/modules/#moduleName#/#arguments.layout#";
 		var parentCommonLayoutPath = "/#variables.appMapping#/#variables.layoutsConvention#/modules/#arguments.layout#";
 		var moduleLayoutPath       = "#variables.modulesConfig[ moduleName ].mapping#/#variables.modulesConfig[ moduleName ].conventions.layoutsLocation#/#arguments.layout#";
+
 
 		// Check parent view order setup
 		if ( variables.modulesConfig[ moduleName ].layoutParentLookup ) {
@@ -763,6 +770,9 @@ component
 	 * @view The view to locate
 	 */
 	function locateView( required view ){
+		// Remove extension: We need to test cfm vs bxm
+		arguments.view = reReplace( arguments.view, "\.(cfm|bxm)$", "", "one" );
+
 		// Default path is the conventions location, then the external location
 		var viewPaths = [
 			"/#variables.appMapping#/#variables.viewsConvention#/#arguments.view#",
@@ -797,6 +807,9 @@ component
 		module                 = "",
 		boolean explicitModule = false
 	){
+		// Remove extension: We need to test cfm vs bxm
+		arguments.view = reReplace( arguments.view, "\.(cfm|bxm)$", "", "one" );
+
 		// Explicit Module view lookup?
 		if ( len( arguments.module ) and arguments.explicitModule ) {
 			var explicitView = "#variables.modulesConfig[ arguments.module ].mapping#/#variables.modulesConfig[ arguments.module ].conventions.viewsLocation#/#arguments.view#";
