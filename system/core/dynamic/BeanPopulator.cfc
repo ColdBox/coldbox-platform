@@ -281,253 +281,238 @@ component {
 		var propertyValue  = "";
 		var relationalMeta = "";
 
-		try {
-			// Determine Method of population
-			if ( structKeyExists( arguments, "scope" ) and len( trim( arguments.scope ) ) neq 0 ) {
-				scopeInjection = true;
-				mixerUtil.start( beanInstance );
+		// Determine Method of population
+		if ( structKeyExists( arguments, "scope" ) and len( trim( arguments.scope ) ) neq 0 ) {
+			scopeInjection = true;
+			mixerUtil.start( beanInstance );
+		}
+
+		// If composing relationships, get target metadata
+		if ( arguments.composeRelationships ) {
+			relationalMeta = getRelationshipMetaData( arguments.target );
+		}
+
+		// Populate Bean
+		for ( key in arguments.memento ) {
+			// init population flag
+			pop = true;
+			// init nullValue flag and shortcut to property value
+			// conditional with StructKeyExist, to prevent language issues with Null value checking of struct keys in ACF
+			if ( structKeyExists( arguments.memento, key ) ) {
+				nullValue     = false;
+				propertyValue = arguments.memento[ key ];
+			} else {
+				nullValue     = true;
+				propertyValue = javacast( "null", "" );
 			}
 
-			// If composing relationships, get target metadata
-			if ( arguments.composeRelationships ) {
-				relationalMeta = getRelationshipMetaData( arguments.target );
+			// Include List?
+			if ( len( arguments.include ) AND NOT listFindNoCase( arguments.include, key ) ) {
+				pop = false;
+			}
+			// Exclude List?
+			if ( len( arguments.exclude ) AND listFindNoCase( arguments.exclude, key ) ) {
+				pop = false;
+			}
+			// Ignore Empty? Check added for real Null value
+			if (
+				arguments.ignoreEmpty and not isNull( local.propertyValue ) and isSimpleValue(
+					arguments.memento[ key ]
+				) and not len( trim( arguments.memento[ key ] ) )
+			) {
+				pop = false;
 			}
 
-			// Populate Bean
-			for ( key in arguments.memento ) {
-				// init population flag
-				pop = true;
-				// init nullValue flag and shortcut to property value
-				// conditional with StructKeyExist, to prevent language issues with Null value checking of struct keys in ACF
-				if ( structKeyExists( arguments.memento, key ) ) {
-					nullValue     = false;
-					propertyValue = arguments.memento[ key ];
-				} else {
-					nullValue     = true;
-					propertyValue = javacast( "null", "" );
+			// Pop?
+			if ( pop ) {
+				// Scope Injection?
+				if ( scopeInjection ) {
+					beanInstance.injectPropertyMixin(
+						propertyName  = key,
+						propertyValue = propertyValue,
+						scope         = arguments.scope
+					);
 				}
-
-				// Include List?
-				if ( len( arguments.include ) AND NOT listFindNoCase( arguments.include, key ) ) {
-					pop = false;
-				}
-				// Exclude List?
-				if ( len( arguments.exclude ) AND listFindNoCase( arguments.exclude, key ) ) {
-					pop = false;
-				}
-				// Ignore Empty? Check added for real Null value
-				if (
-					arguments.ignoreEmpty and not isNull( local.propertyValue ) and isSimpleValue(
-						arguments.memento[ key ]
-					) and not len( trim( arguments.memento[ key ] ) )
-				) {
-					pop = false;
-				}
-
-				// Pop?
-				if ( pop ) {
-					// Scope Injection?
-					if ( scopeInjection ) {
-						beanInstance.injectPropertyMixin(
-							propertyName  = key,
-							propertyValue = propertyValue,
-							scope         = arguments.scope
-						);
+				// Check if setter exists, evaluate is used, so it can call on java/groovy objects
+				else if ( structKeyExists( beanInstance, "set" & key ) or arguments.trustedSetter ) {
+					// top-level null settings
+					if ( arguments.nullEmptyInclude == "*" ) {
+						nullValue = true;
 					}
-					// Check if setter exists, evaluate is used, so it can call on java/groovy objects
-					else if ( structKeyExists( beanInstance, "set" & key ) or arguments.trustedSetter ) {
-						// top-level null settings
-						if ( arguments.nullEmptyInclude == "*" ) {
-							nullValue = true;
-						}
-						if ( arguments.nullEmptyExclude == "*" ) {
-							nullValue = false;
-						}
-						// Is property in empty-to-null include list?
-						if (
-							(
-								len( arguments.nullEmptyInclude ) && listFindNoCase(
-									arguments.nullEmptyInclude,
-									key
-								)
-							)
-						) {
-							nullValue = true;
-						}
-						// Is property in empty-to-null exclude list, or is exclude list "*"?
-						if (
-							(
-								len( arguments.nullEmptyExclude ) AND listFindNoCase(
-									arguments.nullEmptyExclude,
-									key
-								)
-							)
-						) {
-							nullValue = false;
-						}
-						// Is value nullable (e.g., simple, empty string)? If so, set null...
-						// short circuit evaluation of IsNull added, so it won't break IsSimpleValue with Real null values. Real nulls are already set.
-						if (
-							!isNull( local.propertyValue ) && isSimpleValue( propertyValue ) && !len(
-								trim( propertyValue )
-							) && nullValue
-						) {
-							propertyValue = javacast( "null", "" );
-						}
-
-						var getEntityMap = function(){
-							if ( listFirst( variables.util.getHibernateVersion(), "." ) >= 5 ) {
-								// Double array functions to convert from native java to cf java
-								return arrayToList( ormGetSessionFactory().getMetaModel().getAllEntityNames() ).listToArray();
-							} else {
-								// Hibernate v4 and older
-								return structKeyArray( ormGetSessionFactory().getAllClassMetadata() );
-							}
-						};
-
-						// If property isn't null, try to compose the relationship
-						if (
-							!isNull( local.propertyValue ) && composeRelationships && structKeyExists(
-								relationalMeta,
+					if ( arguments.nullEmptyExclude == "*" ) {
+						nullValue = false;
+					}
+					// Is property in empty-to-null include list?
+					if (
+						(
+							len( arguments.nullEmptyInclude ) && listFindNoCase(
+								arguments.nullEmptyInclude,
 								key
 							)
-						) {
-							// get valid, known entity name list
-							var validEntityNames = getEntityMap();
-							var targetEntityName = "";
-							/**
-							 * The only info we know about the relationships are the property names and the cfcs
-							 * CFC setting can be relative, so can't assume that component lookup will work
-							 * APPROACH
-							 * 1.) Easy: If property name of relationship is a valid entity name, use that
-							 * 2.) Harder: If property name is not a valid entity name (e.g., one-to-many, many-to-many), use cfc name
-							 * 3.) Nuclear: If neither above works, try by component meta data lookup. Won't work if using relative paths!!!!
-							 */
+						)
+					) {
+						nullValue = true;
+					}
+					// Is property in empty-to-null exclude list, or is exclude list "*"?
+					if (
+						(
+							len( arguments.nullEmptyExclude ) AND listFindNoCase(
+								arguments.nullEmptyExclude,
+								key
+							)
+						)
+					) {
+						nullValue = false;
+					}
+					// Is value nullable (e.g., simple, empty string)? If so, set null...
+					// short circuit evaluation of IsNull added, so it won't break IsSimpleValue with Real null values. Real nulls are already set.
+					if (
+						!isNull( local.propertyValue ) && isSimpleValue( propertyValue ) && !len(
+							trim( propertyValue )
+						) && nullValue
+					) {
+						propertyValue = javacast( "null", "" );
+					}
 
-							// 1.) name match
-							if ( validEntityNames.findNoCase( key ) ) {
-								targetEntityName = key;
+					var getEntityMap = function(){
+						if ( listFirst( variables.util.getHibernateVersion(), "." ) >= 5 ) {
+							// Double array functions to convert from native java to cf java
+							return arrayToList( ormGetSessionFactory().getMetaModel().getAllEntityNames() ).listToArray();
+						} else {
+							// Hibernate v4 and older
+							return structKeyArray( ormGetSessionFactory().getAllClassMetadata() );
+						}
+					};
+
+					// If property isn't null, try to compose the relationship
+					if (
+						!isNull( local.propertyValue ) && composeRelationships && structKeyExists(
+							relationalMeta,
+							key
+						)
+					) {
+						// get valid, known entity name list
+						var validEntityNames = getEntityMap();
+						var targetEntityName = "";
+						/**
+						 * The only info we know about the relationships are the property names and the cfcs
+						 * CFC setting can be relative, so can't assume that component lookup will work
+						 * APPROACH
+						 * 1.) Easy: If property name of relationship is a valid entity name, use that
+						 * 2.) Harder: If property name is not a valid entity name (e.g., one-to-many, many-to-many), use cfc name
+						 * 3.) Nuclear: If neither above works, try by component meta data lookup. Won't work if using relative paths!!!!
+						 */
+
+						// 1.) name match
+						if ( validEntityNames.findNoCase( key ) ) {
+							targetEntityName = key;
+						}
+						// 2.) attempt match on CFC metadata
+						else if ( validEntityNames.findNoCase( listLast( relationalMeta[ key ].cfc, "." ) ) ) {
+							targetEntityName = listLast( relationalMeta[ key ].cfc, "." );
+						}
+						// 3.) component lookup
+						else {
+							var annotations = server.keyExists( "boxlang" ) ? getClassMetadata(
+								arguments.relationalMeta.properties[ key ].cfc
+							).annotations : getComponentMetadata(
+								arguments.relationalMeta.properties[ key ].cfc
+							);
+							if ( annotations.keyExists( "entityName" ) ) {
+								targetEntityName = annotations.entityName;
 							}
-							// 2.) attempt match on CFC metadata
-							else if ( validEntityNames.findNoCase( listLast( relationalMeta[ key ].cfc, "." ) ) ) {
-								targetEntityName = listLast( relationalMeta[ key ].cfc, "." );
-							}
-							// 3.) component lookup
-							else {
-								var annotations = server.keyExists( "boxlang" ) ? getClassMetadata(
-									arguments.relationalMeta.properties[ key ].cfc
-								).annotations : getComponentMetadata(
-									arguments.relationalMeta.properties[ key ].cfc
-								);
-								if ( annotations.keyExists( "entityName" ) ) {
-									targetEntityName = annotations.entityName;
+						}
+
+						if ( !len( targetEntityName ) ) {
+							throw(
+								type    = "ObjectPopulator.PopulateObjectException",
+								message = "Error populating object [#getMetadata( arguments.target ).name#] relationship of [#key#]. The class [#arguments.relationalMeta.properties[ key ].cfc#] could not be found."
+							);
+						}
+
+						// if targetEntityName was successfully found
+						if ( len( targetEntityName ) ) {
+							// array or struct type (one-to-many, many-to-many)
+							if (
+								listContainsNoCase(
+									"one-to-many,many-to-many",
+									relationalMeta[ key ].fieldtype
+								)
+							) {
+								// Support straight-up lists and convert to array
+								if ( isSimpleValue( propertyValue ) ) {
+									propertyValue = listToArray( propertyValue );
 								}
-							}
-
-							if ( !len( targetEntityName ) ) {
-								throw(
-									type    = "ObjectPopulator.PopulateObjectException",
-									message = "Error populating object [#getMetadata( arguments.target ).name#] relationship of [#key#]. The class [#arguments.relationalMeta.properties[ key ].cfc#] could not be found."
-								);
-							}
-
-							// if targetEntityName was successfully found
-							if ( len( targetEntityName ) ) {
-								// array or struct type (one-to-many, many-to-many)
-								if (
-									listContainsNoCase(
-										"one-to-many,many-to-many",
-										relationalMeta[ key ].fieldtype
-									)
-								) {
-									// Support straight-up lists and convert to array
-									if ( isSimpleValue( propertyValue ) ) {
-										propertyValue = listToArray( propertyValue );
+								var relType = structKeyExists( relationalMeta[ key ], "type" ) && relationalMeta[
+									key
+								].type != "any" ? relationalMeta[ key ].type : "array";
+								var manyMap = reltype == "struct" ? {} : [];
+								// loop over array
+								for ( var relValue in propertyValue ) {
+									// for type of array
+									if ( relType == "array" ) {
+										// add composed relationship to array
+										arrayAppend( manyMap, entityLoadByPK( targetEntityName, relValue ) );
 									}
-									var relType = structKeyExists( relationalMeta[ key ], "type" ) && relationalMeta[
-										key
-									].type != "any" ? relationalMeta[ key ].type : "array";
-									var manyMap = reltype == "struct" ? {} : [];
-									// loop over array
-									for ( var relValue in propertyValue ) {
-										// for type of array
-										if ( relType == "array" ) {
-											// add composed relationship to array
-											arrayAppend( manyMap, entityLoadByPK( targetEntityName, relValue ) );
-										}
-										// for type of struct
-										else {
-											// make sure structKeyColumn is defined in meta
-											if ( structKeyExists( relationalMeta[ key ], "structKeyColumn" ) ) {
-												// load the value
-												var item            = entityLoadByPK( targetEntityName, relValue );
-												var structKeyColumn = relationalMeta[ key ].structKeyColumn;
-												var keyValue        = "";
-												// try to get struct key value from entity
-												if ( !isNull( local.item ) ) {
-													try {
-														keyValue = invoke( item, "get#structKeyColumn#" );
-													} catch ( Any e ) {
-														throw(
-															type    = "BeanPopulator.PopulateBeanException",
-															message = "Error populating bean #getMetadata( beanInstance ).name# relationship of #key#. The structKeyColumn #structKeyColumn# could not be resolved.",
-															detail  = "#e.Detail#<br>#e.message#<br>#e.tagContext.toString()#"
-														);
-													}
+									// for type of struct
+									else {
+										// make sure structKeyColumn is defined in meta
+										if ( structKeyExists( relationalMeta[ key ], "structKeyColumn" ) ) {
+											// load the value
+											var item            = entityLoadByPK( targetEntityName, relValue );
+											var structKeyColumn = relationalMeta[ key ].structKeyColumn;
+											var keyValue        = "";
+											// try to get struct key value from entity
+											if ( !isNull( local.item ) ) {
+												try {
+													keyValue = invoke( item, "get#structKeyColumn#" );
+												} catch ( Any e ) {
+													throw(
+														type    = "BeanPopulator.PopulateBeanException",
+														message = "Error populating bean #getMetadata( beanInstance ).name# relationship of #key#. The structKeyColumn #structKeyColumn# could not be resolved.",
+														detail  = "#e.Detail#<br>#e.message#<br>#e.tagContext.toString()#"
+													);
 												}
-												// if the structKeyColumn value was found...
-												if ( len( keyValue ) ) {
-													manyMap[ keyValue ] = item;
-												}
+											}
+											// if the structKeyColumn value was found...
+											if ( len( keyValue ) ) {
+												manyMap[ keyValue ] = item;
 											}
 										}
 									}
-									// set main property value to the full array of entities
-									propertyValue = manyMap;
 								}
-								// otherwise, simple value; load relationship (one-to-one, many-to-one)
-								else {
-									if ( isSimpleValue( propertyValue ) && trim( propertyValue ) != "" ) {
-										propertyValue = entityLoadByPK( targetEntityName, propertyValue );
-									}
+								// set main property value to the full array of entities
+								propertyValue = manyMap;
+							}
+							// otherwise, simple value; load relationship (one-to-one, many-to-one)
+							else {
+								if ( isSimpleValue( propertyValue ) && trim( propertyValue ) != "" ) {
+									propertyValue = entityLoadByPK( targetEntityName, propertyValue );
 								}
 							}
-							// if target entity name found
 						}
-						// Populate the property as a null value
-						if ( isNull( local.propertyValue ) ) {
-							// Finally...set the value
-							invoke(
-								beanInstance,
-								"set#key#",
-								[ javacast( "null", "" ) ]
-							);
-						}
-						// Populate the property as the value obtained whether simple or related
-						else {
-							invoke( beanInstance, "set#key#", [ propertyValue ] );
-						}
+						// if target entity name found
 					}
-					// end if setter or scope injection
+					// Populate the property as a null value
+					if ( isNull( local.propertyValue ) ) {
+						// Finally...set the value
+						invoke(
+							beanInstance,
+							"set#key#",
+							[ javacast( "null", "" ) ]
+						);
+					}
+					// Populate the property as the value obtained whether simple or related
+					else {
+						invoke( beanInstance, "set#key#", [ propertyValue ] );
+					}
 				}
-				// end if prop ignored
+				// end if setter or scope injection
 			}
-			// end for loop
-			return beanInstance;
-		} catch ( Any e ) {
-			if ( isNull( local.propertyValue ) ) {
-				arguments.keyTypeAsString = "NULL";
-			} else if ( isObject( propertyValue ) OR isCustomFunction( propertyValue ) ) {
-				arguments.keyTypeAsString = getMetadata( propertyValue ).name;
-			} else {
-				arguments.keyTypeAsString = propertyValue.getClass().toString();
-			}
-			throw(
-				type    = "BeanPopulator.PopulateBeanException",
-				message = "Error populating bean #getMetadata( beanInstance ).name# with argument #key# of type #arguments.keyTypeAsString#.",
-				detail  = "#e.Detail#<br>#e.message#<br>#e.tagContext.toString()#"
-			);
+			// end if prop ignored
 		}
+		// end for loop
+		return beanInstance;
 	}
 
 	/**
