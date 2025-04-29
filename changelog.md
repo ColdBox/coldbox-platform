@@ -9,6 +9,65 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### ColdBox HMVC
+
+#### Improvement
+
+- [COLDBOX-1286](https://ortussolutions.atlassian.net/browse/COLDBOX-1286) Make sure global scheduler is loaded after modules load.
+- [COLDBOX-1287](https://ortussolutions.atlassian.net/browse/COLDBOX-1287) If running scheduled tasks manually with a \`force\` then do not set the next run since this is a forced run.
+- [COLDBOX-1288](https://ortussolutions.atlassian.net/browse/COLDBOX-1288) Allow Disabling of PrettyJson in Log Output
+- [COLDBOX-1294](https://ortussolutions.atlassian.net/browse/COLDBOX-1294) Call \`reset\(\)\` when testing and unloadColdbox is true in the \`afterTests\(\)\` to make sure the reset procedures are done, not only the shutdown.
+- [COLDBOX-1305](https://ortussolutions.atlassian.net/browse/COLDBOX-1305) Improvement: Update Config Seeding to Include Original Module Settings
+
+#### New Features
+
+- [COLDBOX-1285](https://ortussolutions.atlassian.net/browse/COLDBOX-1285) BoxLang Support so you can write your ColdBox apps in BoxLang
+- [COLDBOX-1296](https://ortussolutions.atlassian.net/browse/COLDBOX-1296) New flow peek\(\) method to do fluent peeks in objects
+- [COLDBOX-1297](https://ortussolutions.atlassian.net/browse/COLDBOX-1297) Schedulers now have a startupTask\( task \) to dynamically startup a task by name or task object
+- [COLDBOX-1306](https://ortussolutions.atlassian.net/browse/COLDBOX-1306) Better tracking of status code and text on the request context so integration tests are not corrupted by response commitment: getStatusCode\(\), getStatusText\(\) accessors
+
+#### Bugs
+
+- [COLDBOX-1280](https://ortussolutions.atlassian.net/browse/COLDBOX-1280) coldbox.system.cache.policies.LRU cleanup errors
+- [COLDBOX-1281](https://ortussolutions.atlassian.net/browse/COLDBOX-1281) DateTimeHelper.validateTime Regression
+- [COLDBOX-1282](https://ortussolutions.atlassian.net/browse/COLDBOX-1282) ScheduledTasks Bug - java.util.concurrent.TimeUnit type error
+- [COLDBOX-1289](https://ortussolutions.atlassian.net/browse/COLDBOX-1289) Directory Helper Logic in Renderer.cfc is Incorrect and Generates Bad Path On Windows
+- [COLDBOX-1295](https://ortussolutions.atlassian.net/browse/COLDBOX-1295) Dumps in BugReport.cfm need top attributes
+- [COLDBOX-1304](https://ortussolutions.atlassian.net/browse/COLDBOX-1304) thisLocationToken is not var scoped
+- [COLDBOX-1311](https://ortussolutions.atlassian.net/browse/COLDBOX-1311) Remove direct calls to the servlet response.setStatus\( int, String \) methods due to jakarta removing statusText
+- [COLDBOX-1317](https://ortussolutions.atlassian.net/browse/COLDBOX-1317) ACF 2025 has removed htmlEditFormat
+- [COLDBOX-1326](https://ortussolutions.atlassian.net/browse/COLDBOX-1326) populator discover entity name not accouting for missing entityname
+- [COLDBOX-1327](https://ortussolutions.atlassian.net/browse/COLDBOX-1327) \`layoutLocations\` variable error when using event.noLayout\(\)
+
+### CacheBox
+
+#### New Feature
+
+- [CACHEBOX-87](https://ortussolutions.atlassian.net/browse/CACHEBOX-87) BoxLang Providers
+- [CACHEBOX-88](https://ortussolutions.atlassian.net/browse/CACHEBOX-88) New approach for indexing objects on object stores to allow for concurrency and without separating indexers
+
+#### Bug
+
+- [CACHEBOX-86](https://ortussolutions.atlassian.net/browse/CACHEBOX-86) JDBCStore has double now overrides when doing insert/updates on caching.  Remove one of them
+
+#### Improvement
+
+- [CACHEBOX-42](https://ortussolutions.atlassian.net/browse/CACHEBOX-42) Rewrite CacheBox DiskStore to not rely on in-memory indexer
+
+### LogBox
+
+#### Bug
+
+- [LOGBOX-81](https://ortussolutions.atlassian.net/browse/LOGBOX-81) Make the Rolling File Appender rotator task timer configurable: rotatorSchedulerMinutes property
+- [LOGBOX-82](https://ortussolutions.atlassian.net/browse/LOGBOX-82) LogBox Rolling file threads rotator running on an insane millisecond timer instead of minutes
+
+### WireBox
+
+#### Bug
+
+- [WIREBOX-155](https://ortussolutions.atlassian.net/browse/WIREBOX-155) ExceptionBean is referenced but not shipped with Standalone install
+
+
 ## [7.3.1] - 2025-03-02
 
 ### Bug
