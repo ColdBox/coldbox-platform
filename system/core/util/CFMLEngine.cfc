@@ -24,9 +24,8 @@ component {
 	function init(){
 		// Features map by engine
 		variables.features = {
-			adobe2018 : { invokeArray : false },
-			adobe2021 : { invokeArray : false },
 			adobe2023 : { invokeArray : false },
+			adobe2025 : { invokeArray : true },
 			lucee     : { invokeArray : true },
 			boxlang   : { invokeArray : true }
 		};
