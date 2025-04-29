@@ -331,7 +331,7 @@ component accessors="true" {
 	/**
 	 * This is a no-op since newer servlet specs do not support setting the status text
 	 */
-	Response function setStatusText() {
+	Response function setStatusText(){
 		return this;
 	}
 
