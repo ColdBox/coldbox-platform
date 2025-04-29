@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [7.4.1] - 2025-04-29
+
 ## [7.4.0] - 2025-04-29
 
 ### ColdBox HMVC
@@ -368,7 +370,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * * *
 
-[Unreleased]: https://github.com/ColdBox/coldbox-platform/compare/v7.4.0...HEAD
+[Unreleased]: https://github.com/ColdBox/coldbox-platform/compare/v7.4.1...HEAD
+
+[7.4.1]: https://github.com/ColdBox/coldbox-platform/compare/v7.4.0...v7.4.1
 
 [7.4.0]: https://github.com/ColdBox/coldbox-platform/compare/v7.3.1...v7.4.0
 
