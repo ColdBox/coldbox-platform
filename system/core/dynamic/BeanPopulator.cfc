@@ -343,25 +343,11 @@ component {
 						nullValue = false;
 					}
 					// Is property in empty-to-null include list?
-					if (
-						(
-							len( arguments.nullEmptyInclude ) && listFindNoCase(
-								arguments.nullEmptyInclude,
-								key
-							)
-						)
-					) {
+					if ( ( len( arguments.nullEmptyInclude ) && listFindNoCase( arguments.nullEmptyInclude, key ) ) ) {
 						nullValue = true;
 					}
 					// Is property in empty-to-null exclude list, or is exclude list "*"?
-					if (
-						(
-							len( arguments.nullEmptyExclude ) AND listFindNoCase(
-								arguments.nullEmptyExclude,
-								key
-							)
-						)
-					) {
+					if ( ( len( arguments.nullEmptyExclude ) AND listFindNoCase( arguments.nullEmptyExclude, key ) ) ) {
 						nullValue = false;
 					}
 					// Is value nullable (e.g., simple, empty string)? If so, set null...
@@ -415,9 +401,7 @@ component {
 						else {
 							var annotations = server.keyExists( "boxlang" ) ? getClassMetadata(
 								arguments.relationalMeta.properties[ key ].cfc
-							).annotations : getComponentMetadata(
-								arguments.relationalMeta.properties[ key ].cfc
-							);
+							).annotations : getComponentMetadata( arguments.relationalMeta.properties[ key ].cfc );
 							if ( annotations.keyExists( "entityName" ) ) {
 								targetEntityName = annotations.entityName;
 							}
@@ -433,19 +417,14 @@ component {
 						// if targetEntityName was successfully found
 						if ( len( targetEntityName ) ) {
 							// array or struct type (one-to-many, many-to-many)
-							if (
-								listContainsNoCase(
-									"one-to-many,many-to-many",
-									relationalMeta[ key ].fieldtype
-								)
-							) {
+							if ( listContainsNoCase( "one-to-many,many-to-many", relationalMeta[ key ].fieldtype ) ) {
 								// Support straight-up lists and convert to array
 								if ( isSimpleValue( propertyValue ) ) {
 									propertyValue = listToArray( propertyValue );
 								}
-								var relType = structKeyExists( relationalMeta[ key ], "type" ) && relationalMeta[
+								var relType = structKeyExists( relationalMeta[ key ], "type" ) && relationalMeta[ key ].type != "any" ? relationalMeta[
 									key
-								].type != "any" ? relationalMeta[ key ].type : "array";
+								].type : "array";
 								var manyMap = reltype == "struct" ? {} : [];
 								// loop over array
 								for ( var relValue in propertyValue ) {
