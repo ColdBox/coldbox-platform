@@ -7,8 +7,13 @@
 component {
 
 	// setup the engine properties
-	this.ADOBE = "adobe";
-	this.LUCEE = "lucee";
+	this.ADOBE   = "adobe";
+	this.LUCEE   = "lucee";
+	this.BOXLANG = "boxlang";
+
+	// BoxLang Detection
+	this.IS_BOXLANG = server.keyExists( "boxlang" );
+	this.IS_CLI     = this.IS_BOXLANG && server.boxlang.cliMode ? true : false;
 
 	// JDK Version
 	this.JDK_VERSION = createObject( "java", "java.lang.System" ).getProperty( "java.version" );
@@ -22,9 +27,9 @@ component {
 			adobe2018 : { invokeArray : false },
 			adobe2021 : { invokeArray : false },
 			adobe2023 : { invokeArray : false },
-			lucee     : { invokeArray : true }
+			lucee     : { invokeArray : true },
+			boxlang   : { invokeArray : true }
 		};
-		variables.productVersion = listFirst( server.coldfusion.productversion );
 
 		return this;
 	}
@@ -32,47 +37,70 @@ component {
 	/**
 	 * Returns the current running CFML major version level
 	 */
-	numeric function getVersion(){
-		return variables.productVersion;
+	function getVersion(){
+		return listFirst( getFullVersion(), "," );
 	}
 
 	/**
 	 * Returns the current running CFML full version
 	 */
-	string function getFullVersion(){
-		return server.coldfusion.productversion;
+	function getFullVersion(){
+		switch ( getEngine() ) {
+			case "adobe":
+				return server.coldfusion.productVersion;
+			case "lucee":
+				return server.lucee.version;
+			case "boxlang":
+				return server.boxlang.version;
+		}
 	}
 
 	/**
 	 * Verify if this is a lucee server
 	 */
 	boolean function isLucee(){
-		return structKeyExists( server, "lucee" );
+		return !server.keyExists( "boxlang" ) && server.keyExists( "lucee" );
 	}
 
 	/**
 	 * Verify if this is an adobe server
 	 */
 	boolean function isAdobe(){
-		return server.keyExists( "coldfusion" ) && server.coldfusion.productName.findNoCase( "ColdFusion" );
+		return !isBoxlang() && server.keyExists( "coldfusion" ) && server.coldfusion.productName.findNoCase(
+			"ColdFusion"
+		);
+	}
+
+	/**
+	 * Verify if this is a boxlang server
+	 */
+	boolean function isBoxLang(){
+		return server.keyExists( "boxlang" );
 	}
 
 	/**
 	 * Get the current CFML Engine name
 	 *
-	 * @return Either 'lucee' or 'adobe'
+	 * @return Either 'lucee' or 'adobe' or 'boxlang'
 	 */
 	string function getEngine(){
-		return ( isLucee() ? this.lucee : this.adobe );
+		if ( isLucee() ) {
+			return this.lucee;
+		} else if ( isAdobe() ) {
+			return this.adobe;
+		} else if ( isBoxLang() ) {
+			return this.boxlang;
+		}
 	}
 
 	/**
 	 * Discover the running engine slug for feature checks
 	 *
-	 * @return lucee, adobe{version}
+	 * @return lucee, adobe{version}, boxlang
 	 */
 	string function getFeatureEngineSlug(){
-		return isLucee() ? this.lucee : this.adobe & getVersion();
+		var engine = getEngine();
+		return isAdobe() ? engine & getVersion() : engine;
 	}
 
 	/**

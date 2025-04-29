@@ -84,7 +84,7 @@ component
 	 * @return coldbox.system.cache.util.IStats
 	 */
 	function getStats(){
-		return new "coldbox.system.cache.providers.lucee-lib.LuceeStats"( this );
+		return new "coldbox.system.cache.providers.stats.LuceeStats"( this );
 	}
 
 	/**

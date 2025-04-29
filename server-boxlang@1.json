@@ -1,9 +1,9 @@
 {
     "app":{
-        "cfengine":"lucee@be",
-        "serverHomeDirectory":".engine/luceebe"
+        "cfengine":"boxlang@be",
+        "serverHomeDirectory":".engine/boxlang"
     },
-    "name":"coldbox-lucee@be",
+    "name":"coldbox-boxlang",
     "force":true,
     "openBrowser":false,
     "web":{
@@ -19,12 +19,16 @@
         }
     },
     "JVM":{
-        "heapSize":"1024"
+        "heapSize":"768",
+        "args":"-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=9999"
     },
     "cfconfig":{
         "file":".cfconfig.json"
     },
     "env":{
-        "lucee-extensions":"D062D72F-F8A2-46F0-8CBC91325B2F067B"
+        "BOXLANG_DEBUG":true
+    },
+    "scripts":{
+        "onServerInitialInstall":"install bx-mail,bx-pdf,bx-mysql,bx-esapi,bx-orm@be --noSave"
     }
 }

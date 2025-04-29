@@ -1,0 +1,39 @@
+class{
+
+	property name="asyncManager" inject="coldbox:asyncManager";
+
+	this.allowedMethods = { "index" : "GET" };
+
+	function index( event, rc, prc ){
+		prc.welcomeMessage = "Welcome to BoxLang!";
+
+		log.info( "Executing index action", { name : "Test", when : now(), arcs = [1,2,3,4], test : "Message goes here" } );
+
+		getInstance( "LazyModel" ).getUtil();
+		getInstance( "LazyModel" ).getUtil2();
+		getInstance( "LazyModel" ).getLazyData();
+		getInstance( "LazyModel" ).getLazyData2();
+
+		unless( false, function(){
+			prc.whenFalse = true;
+		})
+		.when( true, function(){
+			prc.when = true;
+		});
+
+		event.setView( "bl/index" );
+	}
+
+	/**
+	 * actionAllowedMethod
+	 */
+	function actionAllowedMethod( event, rc, prc ) allowedMethods="GET"{
+		return "Executed!";
+	}
+
+	// Do something
+	function doSomething( event, rc, prc ){
+		relocate( "bl.index" );
+	}
+
+}

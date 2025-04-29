@@ -175,7 +175,7 @@ component
 	 * @return coldbox.system.cache.util.IStats
 	 */
 	function getStats(){
-		return new "coldbox.system.cache.providers.cf-lib.CFStats"( getObjectStore().getStatistics() );
+		return new "coldbox.system.cache.providers.stats.CFStats"( getObjectStore().getStatistics() );
 	}
 
 	/**
@@ -534,4 +534,3 @@ component
 	}
 
 }
-

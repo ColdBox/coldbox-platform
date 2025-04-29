@@ -43,8 +43,7 @@
 
 		// expire SR
 		store.set( "test", now(), 10 );
-		pool = store.getPool();
-		pool[ "test" ].clear();
+		store.clear( "test" );
 		assertEquals( false, store.lookup( "test" ) );
 	}
 
@@ -53,13 +52,17 @@
 		// non-sr
 		store.set( "test", test, 0 );
 		assertEquals( test, store.get( "test" ) );
-		assertEquals( 2, store.getIndexer().getObjectMetadataProperty( "test", "hits" ) );
+		md = store.getCachedObjectMetadata( "test" );
+		assertEquals( 2, md.hits );
 
 		// sr
 		store.set( "test", test, 10 );
 		assertEquals( test, store.get( "test" ) );
-		assertEquals( true, store.getIndexer().getObjectMetadataProperty( "test", "isSoftReference" ) );
-		assertEquals( 2, store.getIndexer().getObjectMetadataProperty( "test", "hits" ) );
+
+		md = store.getCachedObjectMetadata( "test" );
+
+		assertEquals( true, md.isSoftReference );
+		assertEquals( 2, md.hits );
 	}
 
 	function testGetQuiet(){
@@ -67,13 +70,17 @@
 		// non-sr
 		store.set( "test", test, 0 );
 		assertEquals( test, store.getQuiet( "test" ) );
-		assertEquals( 1, store.getIndexer().getObjectMetadataProperty( "test", "hits" ) );
+
+		md = store.getCachedObjectMetadata( "test" );
+		assertEquals( 1, md.hits );
 
 		// sr
 		store.set( "test", test, 10 );
 		assertEquals( test, store.getQuiet( "test" ) );
-		assertEquals( true, store.getIndexer().getObjectMetadataProperty( "test", "isSoftReference" ) );
-		assertEquals( 1, store.getIndexer().getObjectMetadataProperty( "test", "hits" ) );
+
+		md = store.getCachedObjectMetadata( "test" );
+		assertEquals( 1, md.hits );
+		assertEquals( true, md.isSoftReference );
 	}
 
 	function testExpirations(){
@@ -86,14 +93,13 @@
 	function testSet(){
 		// 1:Timeout = 0 (Eternal)
 		store.set( "test", "123", 0, 0 );
-		data = store.getPool();
-		assertEquals( data[ "test" ], "123" );
+		assertEquals( store.getQuiet( "test" ), "123" );
+		assertEquals( 0, store.getCachedObjectMetadata( "test" ).timeout );
 
 		// 2:Timeout = X
-		store.$( "createSoftReference", "MySoftReference" );
 		store.set( "test", "123", 20, 20 );
-		data = store.getPool();
-		assertEquals( data[ "test" ], "MySoftReference" );
+		assertEquals( store.getQuiet( "test" ), "123" );
+		assertEquals( 20, store.getCachedObjectMetadata( "test" ).timeout );
 	}
 
 	function testClear(){
@@ -113,7 +119,6 @@
 		store.set( "test", now(), 0 );
 		assertTrue( store.getSize() eq 1 );
 	}
-
 
 	function testgetReferenceQueue(){
 		assertEquals( getMetadata( store.getReferenceQueue() ).name, "java.lang.ref.ReferenceQueue" );

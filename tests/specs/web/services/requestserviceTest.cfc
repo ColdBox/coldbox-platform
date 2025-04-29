@@ -29,7 +29,7 @@
 				url.name  = "pio majano";
 				url.today = today;
 
-				/* Catpure the request */
+				/* Capture the request */
 				var context = requestService.requestCapture();
 
 				// debug(context.getCollection());
@@ -37,7 +37,10 @@
 				/* Tests */
 				try {
 					expect( context ).toBeComponent();
-					expect( url.today ).toBe( context.getValue( "today" ) );
+					expect( dateCompare( url.today, context.getValue( "today" ), "s" ) ).toBe(
+						0,
+						"dates should match to the second"
+					);
 					expect( url.name ).toBe( context.getValue( "name" ) );
 					expect( context.valueExists( "event" ) ).toBeTrue();
 				} finally {

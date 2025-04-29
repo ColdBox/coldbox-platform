@@ -93,7 +93,12 @@ component accessors="true" {
 			structKeyExists( variables.extraInfo, "message" ) &&
 			structKeyExists( variables.extraInfo, "detail" )
 		) {
-			return new coldbox.system.web.context.ExceptionBean( variables.extraInfo ).$toString();
+			var messageString = [
+				"[Message] 		: #variables.extraInfo.message#",
+				"[Detail] 		: #variables.extraInfo.detail#",
+				"[Stacktrace] 	: #variables.extraInfo.stacktrace#"
+			];
+			return arrayToList( messageString, chr( 13 ) & chr( 10 ) );
 		}
 
 		// Component XML conversion
@@ -102,7 +107,7 @@ component accessors="true" {
 		}
 
 		// Complex values, return serialized in json
-		return getUtil().toPrettyJson( variables.extraInfo );
+		return getUtil().toJSON( variables.extraInfo );
 	}
 
 }

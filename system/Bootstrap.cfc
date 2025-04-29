@@ -354,7 +354,6 @@ component serializable="false" accessors="true" {
 							contentType     : !isNull( renderData.contentType ) ? renderData.contentType : getPageContextResponse().getContentType(),
 							encoding        : "UTF-8",
 							statusCode      : getPageContextResponse().getStatus(),
-							statusText      : "",
 							isBinary        : false,
 							responseHeaders : event.getResponseHeaders()
 						};
@@ -492,7 +491,7 @@ component serializable="false" accessors="true" {
 			else if ( isBoolean( variables.COLDBOX_FAIL_FAST ) && variables.COLDBOX_FAIL_FAST ) {
 				writeOutput( "Oops! Seems ColdBox is still not ready to serve requests, please try again." );
 				// You don't have to return a 500, I just did this so JMeter would report it differently than a 200
-				cfheader( statusCode = "503", statustext = "ColdBox Not Available Yet!" );
+				cfheader( statusCode = "503" );
 				// Break up!
 				return false;
 			}
@@ -502,9 +501,11 @@ component serializable="false" accessors="true" {
 		reloadChecks();
 
 		// Process A ColdBox Request Only
-		if ( findNoCase( "index.cfm", listLast( arguments.targetPage, "/" ) ) ) {
+		// If the file is "index.(cfm|bxm)" then we will process it
+		if ( reFindNoCase( "index\.(cfm|bxm)", listLast( arguments.targetPage, "/" ) ) ) {
 			processColdBoxRequest();
 		}
+
 		return true;
 	}
 
@@ -524,8 +525,14 @@ component serializable="false" accessors="true" {
 					cbController.getSetting( "EventName" ),
 					cbController.getSetting( "MissingTemplateHandler" )
 				);
+
 			// Process it
-			onRequestStart( "index.cfm" );
+			if ( fileExists( cbController.locateFilePath( "index.bxm" ) ) ) {
+				onRequestStart( "index.bxm" );
+			} else {
+				onRequestStart( "index.cfm" );
+			}
+
 			// Return processed
 			return true;
 		}
@@ -636,7 +643,7 @@ component serializable="false" accessors="true" {
 		event.setPrivateValue( "exception", oException );
 
 		// Set Exception Header
-		getPageContextResponse().setStatus( 500, "Internal Server Error" );
+		getPageContextResponse().setStatus( 500 );
 
 		// Run custom Exception handler if Found, else run default exception routines
 		if ( len( arguments.controller.getSetting( "ExceptionHandler" ) ) ) {
@@ -699,19 +706,17 @@ component serializable="false" accessors="true" {
 	 *
 	 * @controller  The ColdBox controller
 	 * @statusCode  The status code to send
-	 * @statusText  The status text to send
 	 * @contentType The content type to send
 	 * @encoding    The content encoding
 	 */
 	private Bootstrap function renderDataSetup(
 		required controller,
 		required statusCode,
-		required statusText,
 		required contentType,
 		required encoding
 	){
 		// Status Codes
-		getPageContextResponse().setStatus( arguments.statusCode, arguments.statusText );
+		getPageContextResponse().setStatus( arguments.statusCode );
 		// Render the Data Content Type
 		controller
 			.getDataMarshaller()

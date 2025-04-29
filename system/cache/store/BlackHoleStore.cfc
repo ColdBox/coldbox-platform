@@ -26,8 +26,6 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors=true {
 	 * @cacheprovider.doc_generic coldbox.system.cache.providers.ICacheProvider
 	 */
 	function init( required cacheProvider ){
-		// Store Fields
-		var fields = "hits,timeout,lastAccessTimeout,created,LastAccessed,isExpired,isSimple";
 		var config = arguments.cacheProvider.getConfiguration();
 
 		// Prepare instance
@@ -55,15 +53,6 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors=true {
 	 * Clear all the elements in the store
 	 */
 	void function clearAll(){
-		return;
-	}
-
-	/**
-	 * Get the store's pool metadata indexer structure
-	 *
-	 * @return coldbox.system.cache.store.indexers.MetadataIndexer
-	 */
-	function getIndexer(){
 		return;
 	}
 
@@ -158,6 +147,30 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors=true {
 	 */
 	function getSize(){
 		return 0;
+	}
+
+	/**
+	 * This method sorts the pool keys by a property in the metadata, for example: hits, created, lastAccessed
+	 *
+	 * @property  The property to sort by: hits, created, lastAccessed
+	 * @sortType  The sort type: text, numeric, date
+	 * @sortOrder The sort order: asc, desc
+	 */
+	array function getSortedKeys(
+		required property,
+		sortType  = "text",
+		sortOrder = "asc"
+	){
+		return [];
+	}
+
+	/**
+	 * Get the metadata of an object
+	 *
+	 * @objectKey The key to retrieve
+	 */
+	struct function getCachedObjectMetadata( required objectKey ){
+		return {};
 	}
 
 }

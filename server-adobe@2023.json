@@ -19,12 +19,13 @@
         }
     },
     "JVM":{
-        "heapSize":"1024"
+        "heapSize":"1024",
+		"javaVersion":"openjdk11_jre"
     },
-	"cfconfig": {
-		"file" : ".cfconfig.json"
-	},
-	"scripts" : {
-		"onServerInstall":"cfpm install caching,zip,orm,mysql,postgresql,sqlserver,document,feed,mail,debugger"
-	}
+    "cfconfig":{
+        "file":".cfconfig.json"
+    },
+    "scripts":{
+        "onServerInstall":"cfpm install caching,zip,orm,mysql,postgresql,sqlserver,document,feed,mail,debugger"
+    }
 }

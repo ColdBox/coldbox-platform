@@ -7,7 +7,6 @@
 		mockLogger  = createMock( "coldbox.system.logging.Logger" );
 		mockPool    = createMock( "coldbox.system.cache.store.ConcurrentStore" );
 		mockStats   = createMock( "coldbox.system.cache.util.CacheStats" );
-		mockIndexer = createMock( "coldbox.system.cache.store.indexers.MetadataIndexer" );
 
 		// Mocks
 		mockCM
@@ -16,7 +15,6 @@
 			.$( "getName", "MockCache" )
 			.$( "getObjectStore", mockPool )
 			.$( "clear", true );
-		mockPool.$( "getIndexer", mockIndexer );
 		mockFactory.setLogBox( mockLogBox );
 		mockLogBox.$( "getLogger", mockLogger );
 		mockLogger

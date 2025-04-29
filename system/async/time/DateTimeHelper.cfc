@@ -294,7 +294,7 @@ component singleton {
 	 */
 	string function validateTime( required string time ){
 		if ( !reFind( "^([0-1][0-9]|[2][0-3])\:[0-5][0-9]$", arguments.time ) ) {
-			if ( arguments.time.findOneOf( ":" ) > 0 ) {
+			if ( findOneOf( arguments.time.toString(), ":" ) > 0 ) {
 				throw(
 					message = "Invalid time representation (#arguments.time#). Time is represented in 24 hour minute format => HH:mm",
 					type    = "InvalidTimeException"
@@ -302,7 +302,7 @@ component singleton {
 			}
 
 			// There were no minutes, so let's add them
-			return validateTime( arguments.time + ":00" );
+			return validateTime( arguments.time & ":00" );
 		}
 
 		return arguments.time;

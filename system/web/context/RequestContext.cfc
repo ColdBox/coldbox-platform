@@ -90,6 +90,25 @@ component serializable="false" accessors="true" {
 		type   ="numeric"
 		default="0";
 
+	/**
+	 * The last status code
+	 * This is used mostly for mocking and tracking multi-step responses in case repsonses are committed.
+	 */
+	property
+		name   ="statusCode"
+		type   ="numeric"
+		default="0";
+
+	/**
+	 * The last status text
+	 *
+	 * @REMOVED by Jakarta EE, remove by 8
+	 */
+	property
+		name   ="statusText"
+		type   ="string"
+		default="";
+
 	/************************************** STATIC CONSTRUCTS *********************************************/
 
 	// HTTP VERB ALIASES
@@ -124,6 +143,7 @@ component serializable="false" accessors="true" {
 	};
 
 	// HTTP STATUS TEXTS
+	// TODO: REMOVE BY 8
 	this.STATUS_TEXTS = {
 		"100" : "Continue",
 		"101" : "Switching Protocols",
@@ -248,7 +268,9 @@ component serializable="false" accessors="true" {
 		return this;
 	}
 
+	/***********************************************************************************************************/
 	/************************************** COLLECTION METHODS *********************************************/
+	/***********************************************************************************************************/
 
 	/**
 	 * Get a representation of this instance
@@ -379,7 +401,9 @@ component serializable="false" accessors="true" {
 		return getSize( private = true );
 	}
 
-	/************************************** KEY METHODS *********************************************/
+	/***********************************************************************************************************/
+	/************************************** VALUE METHODS *********************************************/
+	/***********************************************************************************************************/
 
 	/**
 	 * Get a value from the public or private request collection.
@@ -589,7 +613,73 @@ component serializable="false" accessors="true" {
 		return paramValue( argumentCollection = arguments );
 	}
 
-	/************************************** CURRENT CONTEXT METHODS *********************************************/
+	/**
+	 * Filters the collection or private collection down to only the provided keys.
+	 *
+	 * @keys    A list or array of keys to bring back from the collection or private collection.
+	 * @private Private or public, defaults public request collection
+	 */
+	struct function getOnly( required keys, boolean private = false ){
+		if ( isSimpleValue( arguments.keys ) ) {
+			arguments.keys = listToArray( arguments.keys );
+		}
+		// determine target context
+		var thisContext = arguments.private ? variables.privateContext : variables.context;
+
+		var returnStruct = {};
+		for ( var key in arguments.keys ) {
+			if ( structKeyExists( thisContext, key ) ) {
+				returnStruct[ key ] = thisContext[ key ];
+			}
+		}
+
+		return returnStruct;
+	}
+
+	/**
+	 * Filters the private collection down to only the provided keys.
+	 *
+	 * @keys A list or array of keys to bring back from the private collection.
+	 */
+	struct function getPrivateOnly( required keys ){
+		return getOnly( keys = keys, private = true );
+	}
+
+	/**
+	 * Filters the collection or private collection down to all keys except the provided keys.
+	 *
+	 * @keys    A list or array of keys to exclude from the results of the collection or private collection.
+	 * @private Private or public, defaults public request collection
+	 */
+	struct function getExcept( required keys, boolean private = false ){
+		if ( isSimpleValue( arguments.keys ) ) {
+			arguments.keys = listToArray( arguments.keys );
+		}
+		// determine target context
+		var thisContext = arguments.private ? variables.privateContext : variables.context;
+
+		var returnStruct = {};
+		for ( var key in thisContext ) {
+			if ( !arrayContains( arguments.keys, key ) ) {
+				returnStruct[ key ] = thisContext[ key ];
+			}
+		}
+
+		return returnStruct;
+	}
+
+	/**
+	 * Filters the private collection down to all keys except the provided keys.
+	 *
+	 * @keys A list or array of keys to exclude from the results of the private collection.
+	 */
+	struct function getPrivateExcept( required keys ){
+		return getExcept( keys = keys, private = true );
+	}
+
+	/***********************************************************************************************************/
+	/************************************** CURRENT CONTEXT METHODS **************************************/
+	/***********************************************************************************************************/
 
 	/**
 	 * Gets the current set view the framework will try to render for this request
@@ -854,7 +944,9 @@ component serializable="false" accessors="true" {
 		return this;
 	}
 
-	/************************************** VIEW-LAYOUT METHODS *********************************************/
+	/***********************************************************************************************************/
+	/************************************** VIEW-LAYOUT METHODS *******************************************/
+	/***********************************************************************************************************/
 
 	/**
 	 * Set the view to render in this request. Private Request Collection Name: currentView, currentLayout
@@ -1038,7 +1130,9 @@ component serializable="false" accessors="true" {
 		return this;
 	}
 
-	/************************************** EVENT METHODS *********************************************/
+	/***********************************************************************************************************/
+	/************************************** EVENT METHODS **************************************************/
+	/***********************************************************************************************************/
 
 	/**
 	 * Override the current event in the request collection. This method does not execute the event, it just replaces the event to be executed by the framework's RunEvent() method. This method is usually called from an onRequestStart or onApplicationStart method
@@ -1099,7 +1193,9 @@ component serializable="false" accessors="true" {
 		return this;
 	}
 
-	/************************************** URL METHODS *********************************************/
+	/***********************************************************************************************************/
+	/************************************** URL METHODS ****************************************************/
+	/***********************************************************************************************************/
 
 	/**
 	 * Setter for verifying SES mode
@@ -1403,7 +1499,9 @@ component serializable="false" accessors="true" {
 		}
 	}
 
-	/************************************** CACHING *********************************************/
+	/***********************************************************************************************************/
+	/************************************** CACHING **********************************************************/
+	/***********************************************************************************************************/
 
 	/**
 	 * Check wether the incoming event has been flagged for caching
@@ -1464,8 +1562,9 @@ component serializable="false" accessors="true" {
 		return getPrivateValue( name = "cbox_viewCacheableEntry", defaultValue = structNew() );
 	}
 
-
-	/************************************** RESTFUL *********************************************/
+	/***********************************************************************************************************/
+	/************************************** RESTFUL **********************************************************/
+	/***********************************************************************************************************/
 
 	/**
 	 * Get the response object for the current request. If there is none, then return a new one
@@ -1797,9 +1896,10 @@ component serializable="false" accessors="true" {
 	function setHTTPHeader( statusCode, statusText = "", name, value = "" ){
 		// status code? We do not add to response headers as this is a separate marker identifier to the response
 		if ( !isNull( arguments.statusCode ) ) {
-			getPageContext()
-				.getResponse()
-				.setStatus( javacast( "int", arguments.statusCode ), javacast( "string", arguments.statusText ) );
+			getPageContext().getResponse().setStatus( javacast( "int", arguments.statusCode ) );
+			// set it locally, last one wins
+			variables.statusCode = arguments.statusCode;
+			variables.statusText = arguments.statusText;
 		}
 		// Name Exists and not already set.
 		else if ( !isNull( arguments.name ) ) {
@@ -1850,71 +1950,9 @@ component serializable="false" accessors="true" {
 		return ( getHTTPHeader( "X-Requested-With", "" ) eq "XMLHttpRequest" );
 	}
 
-	/**
-	 * Filters the collection or private collection down to only the provided keys.
-	 *
-	 * @keys    A list or array of keys to bring back from the collection or private collection.
-	 * @private Private or public, defaults public request collection
-	 */
-	struct function getOnly( required keys, boolean private = false ){
-		if ( isSimpleValue( arguments.keys ) ) {
-			arguments.keys = listToArray( arguments.keys );
-		}
-		// determine target context
-		var thisContext = arguments.private ? variables.privateContext : variables.context;
-
-		var returnStruct = {};
-		for ( var key in arguments.keys ) {
-			if ( structKeyExists( thisContext, key ) ) {
-				returnStruct[ key ] = thisContext[ key ];
-			}
-		}
-
-		return returnStruct;
-	}
-
-	/**
-	 * Filters the private collection down to only the provided keys.
-	 *
-	 * @keys A list or array of keys to bring back from the private collection.
-	 */
-	struct function getPrivateOnly( required keys ){
-		return getOnly( keys = keys, private = true );
-	}
-
-	/**
-	 * Filters the collection or private collection down to all keys except the provided keys.
-	 *
-	 * @keys    A list or array of keys to exclude from the results of the collection or private collection.
-	 * @private Private or public, defaults public request collection
-	 */
-	struct function getExcept( required keys, boolean private = false ){
-		if ( isSimpleValue( arguments.keys ) ) {
-			arguments.keys = listToArray( arguments.keys );
-		}
-		// determine target context
-		var thisContext = arguments.private ? variables.privateContext : variables.context;
-
-		var returnStruct = {};
-		for ( var key in thisContext ) {
-			if ( !arrayContains( arguments.keys, key ) ) {
-				returnStruct[ key ] = thisContext[ key ];
-			}
-		}
-
-		return returnStruct;
-	}
-
-	/**
-	 * Filters the private collection down to all keys except the provided keys.
-	 *
-	 * @keys A list or array of keys to exclude from the results of the private collection.
-	 */
-	struct function getPrivateExcept( required keys ){
-		return getExcept( keys = keys, private = true );
-	}
-
-	/************************************** RESTFUL *********************************************/
+	/***********************************************************************************************************/
+	/************************************** PRIVATE METHODS ************************************************/
+	/***********************************************************************************************************/
 
 	/**
 	 * Render data with formats
@@ -1976,8 +2014,6 @@ component serializable="false" accessors="true" {
 			);
 		}
 	}
-
-	//  getFileMimeType
 
 	/**
 	 * Get's the file mime type for a given file extension, this is mostly used for file delivery.

@@ -29,11 +29,14 @@
 			}
 		};
 
+		mockStore = createStub();
 		mockCM.$( "getConfiguration", config );
-		mockIndexer.$( "getPoolMetadata", pool ).$( "objectExists", true );
+		mockCM.$( "getObjectStore", mockStore );
+		mockCM.$( "lookupQuiet", true );
+		mockCM.$( "getCachedObjectMetadata" ).$results( pool.obj2, pool.obj3, pool.obj1 );
+
 		keys = structSort( pool, "numeric", "desc", "created" );
-		mockIndexer.$( "getSortedKeys", keys );
-		mockIndexer.$( "getObjectMetadata" ).$results( pool.obj2, pool.obj3, pool.obj1 );
+		mockStore.$( "getSortedKeys", keys );
 
 		lifo = createMock( "coldbox.system.cache.policies.LIFO" ).init( mockCM );
 	}

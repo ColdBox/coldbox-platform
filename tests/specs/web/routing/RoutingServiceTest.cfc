@@ -316,7 +316,6 @@
 				"response"              : "", // Do we have an inline response closure
 				"ssl"                   : false, // Are we forcing SSL
 				"statusCode"            : 200, // The response status code
-				"statusText"            : "Ok", // The response status text
 				"valuePairTranslation"  : true, // If we translate name-value pairs in the URL by convention
 				"verbs"                 : "", // The HTTP Verbs allowed
 				"view"                  : "", // The view to proxy to

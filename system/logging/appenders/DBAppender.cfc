@@ -116,7 +116,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 		var category = getProperty( "defaultCategory" );
 
 		// Check Category Sent?
-		if ( NOT arguments.logEvent.getCategory() eq "" ) {
+		if ( !arguments.logEvent.getCategory().isEmpty() ) {
 			category = arguments.logEvent.getCategory();
 		}
 

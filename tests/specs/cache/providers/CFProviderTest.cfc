@@ -1,9 +1,9 @@
-﻿component extends="tests.resources.BaseIntegrationTest" skip="isAdobe" {
+﻿component extends="tests.resources.BaseIntegrationTest" skip="notAdobe" {
 
 	this.loadColdBox = false;
 
-	boolean function isAdobe(){
-		return server.keyExists( "lucee" );
+	boolean function notAdobe(){
+		return isLucee() || isBoxLang();
 	}
 
 	function setup(){
@@ -42,6 +42,8 @@
 
 		// Configure the provider
 		cache.configure();
+		// Clear everything first
+		cache.clearAll();
 	}
 
 	function teardown(){

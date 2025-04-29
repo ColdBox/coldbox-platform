@@ -1,9 +1,9 @@
 {
     "app":{
-        "cfengine":"lucee-light@5",
-        "serverHomeDirectory":".engine/lucee-light5"
+        "cfengine":"adobe@2025",
+        "serverHomeDirectory":".engine/adobe2025"
     },
-    "name":"coldbox-lucee-light@5",
+    "name":"coldbox-adobe@2025",
     "force":true,
     "openBrowser":false,
     "web":{
@@ -19,12 +19,13 @@
         }
     },
     "JVM":{
-        "heapSize":"1024"
+        "heapSize":"1024",
+		"javaVersion":"openjdk21_jre"
     },
     "cfconfig":{
         "file":".cfconfig.json"
     },
-    "env":{
-        "lucee-extensions":"D062D72F-F8A2-46F0-8CBC91325B2F067B,37C61C0A-5D7E-4256-8572639BE0CF5838 "
+    "scripts":{
+        "onServerInstall":"cfpm install caching,zip,orm,mysql,postgresql,sqlserver,document,feed,mail,debugger"
     }
 }

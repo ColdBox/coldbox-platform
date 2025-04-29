@@ -86,6 +86,10 @@ component serializable="false" accessors="true" {
 	 */
 	property name="asyncManager";
 
+	// BoxLang Detection
+	variables.IS_BOXLANG = server.keyExists( "boxlang" );
+	variables.IS_CLI     = variables.IS_BOXLANG && server.boxlang.cliMode ? true : false;
+
 	/**
 	 * Constructor
 	 *
@@ -415,7 +419,7 @@ component serializable="false" accessors="true" {
 	 * @persist           What request collection keys to persist in flash RAM automatically for you
 	 * @persistStruct     A structure of key-value pairs to persist in flash RAM automatically for you
 	 * @ssl               Whether to relocate in SSL or not. You need to explicitly say TRUE or FALSE if going out from SSL. If none passed, we look at the even's SES base URL (if in SES mode)
-	 * @baseURL           Use this baseURL instead of the index.cfm that is used by default. You can use this for SSL or any full base url you would like to use. Ex: https://mysite.com/index.cfm
+	 * @baseURL           Use this baseURL instead of the index that is used by default. You can use this for SSL or any full base url you would like to use. Ex: https://mysite.com/index.cfm/bxm
 	 * @postProcessExempt Do not fire the postProcess interceptors, by default it does
 	 * @URL               The full URL you would like to relocate to instead of an event: ex: URL='http://www.google.com'
 	 * @URI               The relative URI you would like to relocate to instead of an event: ex: URI='/mypath/awesome/here'
@@ -843,10 +847,7 @@ component serializable="false" accessors="true" {
 					oRequestContext.getHTTPMethod()
 				)
 			) {
-				oRequestContext.setHTTPHeader(
-					statusCode = 405,
-					statusText = "Invalid HTTP Method: '#oRequestContext.getHTTPMethod()#'"
-				);
+				oRequestContext.setHTTPHeader( statusCode = 405 );
 				// set Invalid HTTP method in context
 				oRequestContext.setIsInvalidHTTPMethod();
 				// Do we have a local handler for this exception, if so, call it
@@ -894,10 +895,7 @@ component serializable="false" accessors="true" {
 				}
 
 				// Throw Exception, no handlers defined
-				oRequestContext.setHTTPHeader(
-					statusCode = 405,
-					statusText = "Invalid HTTP Method: '#oRequestContext.getHTTPMethod()#'"
-				);
+				oRequestContext.setHTTPHeader( statusCode = 405 );
 				throw(
 					message = "Invalid HTTP Method: '#oRequestContext.getHTTPMethod()#'",
 					detail  = "The requested URL: #oRequestContext.getCurrentRoutedURL()# cannot be executed using the incoming HTTP request method '#oRequestContext.getHTTPMethod()#'",

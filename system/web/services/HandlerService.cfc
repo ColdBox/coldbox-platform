@@ -411,8 +411,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			targetView = renderer.locateView( cEvent );
 		}
 
-		// Validate Target View
-		if ( fileExists( expandPath( targetView & ".cfm" ) ) ) {
+		// CFML View
+		if ( fileExists( expandPath( targetView ) ) ) {
 			arguments.ehBean.setViewDispatch( true );
 			return true;
 		}
@@ -501,7 +501,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		controller
 			.getRequestService()
 			.getContext()
-			.setHTTPHeader( statusCode = 404, statusText = "Not Found" );
+			.setHTTPHeader( statusCode = 404 );
 
 		// Invalid Event Detected, log it in the Application log, not a coldbox log but an app log
 		variables.log.error(
@@ -593,7 +593,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// Convert windows \ to java /
 		arguments.directory = replace( arguments.directory, "\", "/", "all" );
 
-		return directoryList( arguments.directory, true, "array", "*.cfc" ).map( function( item ){
+		return directoryList(
+			arguments.directory,
+			true,
+			"array",
+			"*.cfc|*.bx"
+		).map( function( item ){
 			var thisAbsolutePath = replace( item, "\", "/", "all" );
 			var cleanHandler     = replaceNoCase( thisAbsolutePath, directory, "", "all" );
 			// Clean OS separators to dot notation.

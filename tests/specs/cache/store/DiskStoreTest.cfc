@@ -1,15 +1,5 @@
-﻿<!-----------------------------------------------------------------------
-********************************************************************************
-Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.coldbox.org | www.luismajano.com | www.ortussolutions.com
-********************************************************************************
-Author                         :	Luis Majano
-Date                                    :	9/3/2007
-Description :
-object pool test
------------------------------------------------------------------------>
-<cfcomponent extends="coldbox.system.testing.BaseModelTest">
-	<cfscript>
+﻿component extends="coldbox.system.testing.BaseModelTest" {
+
 	function setup(){
 		config = {
 			autoExpandPath       : true,
@@ -27,14 +17,13 @@ object pool test
 			fail( e );
 		}
 
-
 		// good directory
 		config.directoryPath = "/coldbox/tests/tmp/cacheDepot";
 		store                = createMock( className = "coldbox.system.cache.store.DiskStore" ).init( mockProvider );
 	}
 
 	function tearDown(){
-		if ( structKeyExists( variables, "store" ) ) {
+		if ( !isNull( store ) ) {
 			store.clearAll();
 		}
 	}
@@ -44,10 +33,6 @@ object pool test
 		assertEquals( 1, store.getSize() );
 		store.clearAll();
 		assertEquals( 0, store.getSize() );
-	}
-
-	function testGetIndexer(){
-		assertTrue( isObject( store.getIndexer() ) );
 	}
 
 	function testGetKeys(){
@@ -62,11 +47,9 @@ object pool test
 		assertFalse( store.lookup( "nada" ) );
 
 		store.set( "myKey", "hello" );
-
 		assertTrue( store.lookup( "myKey" ) );
 
-		store.getIndexer().setObjectMetadataProperty( "myKey", "isExpired", true );
-
+		store.expireObject( "myKey" );
 		assertFalse( store.lookup( "myKey" ) );
 	}
 
@@ -90,18 +73,17 @@ object pool test
 	function testSet(){
 		// 1:Timeout = 0 (Eternal)
 		store.set( "test", "123", 0, 0 );
-		assertEquals( 0, store.getIndexer().getObjectMetadataProperty( "test", "timeout" ) );
-		assertEquals( "123", store.get( "test" ) );
+		assertEquals( store.getQuiet( "test" ), "123" );
+		assertEquals( 0, store.getCachedObjectMetadata( "test" ).timeout );
 
 		// 2:Timeout = X
 		store.set( "test", "123", 20, 20 );
-		assertEquals( 20, store.getIndexer().getObjectMetadataProperty( "test", "timeout" ) );
-		assertEquals( "123", store.get( "test" ) );
+		assertEquals( store.getQuiet( "test" ), "123" );
+		assertEquals( 20, store.getCachedObjectMetadata( "test" ).timeout );
 	}
 
 	function testClear(){
 		assertFalse( store.clear( "invalid" ) );
-
 		store.set( "test", now(), 20 );
 		results = store.clear( "test" );
 		assertTrue( results );
@@ -112,5 +94,5 @@ object pool test
 		store.set( "test", now(), 0 );
 		assertTrue( store.getSize() eq 1 );
 	}
-	</cfscript>
-</cfcomponent>
+
+}

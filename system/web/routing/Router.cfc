@@ -102,7 +102,7 @@ component
 	property name="baseURL" type="string";
 
 	/**
-	 * This flag denotes if full URL rewrites are enabled or not. Meaning if the `index.cfm` is in the path of the rewriter or not.
+	 * This flag denotes if full URL rewrites are enabled or not. Meaning if the `index` is in the path of the rewriter or not.
 	 * The default value is **false**.
 	 */
 	property
@@ -194,14 +194,16 @@ component
 	 * This is ONLY called by the routing services and only ONCE in the Application Life-Cycle
 	 */
 	function startup(){
+		var frontController = findNoCase( ".bx", cgi.script_name ) ? "index.bxm" : "index.cfm";
+
 		// Verify baseUrl is still empty to default it for operation
 		if ( !len( variables.baseUrl ) ) {
 			variables.baseUrl = composeRoutingUrl();
 		}
 
-		// Check if rewrites turned off. If so, append the `index.cfm` to it.
-		if ( !variables.fullRewrites AND !findNoCase( "index.cfm", variables.baseURL ) ) {
-			variables.baseURL &= "/index.cfm";
+		// Check if rewrites turned off. If so, append the `index` to it.
+		if ( !variables.fullRewrites AND !findNoCase( frontController, variables.baseURL ) ) {
+			variables.baseURL &= "/#frontController#";
 		}
 
 		// Remove any double slashes: sometimes proxies can interfere
@@ -211,8 +213,8 @@ component
 		variables.controller
 			.setSetting( "SESBaseURL", variables.baseURL )
 			.setSetting( "SESBasePath", composeRoutingPath() )
-			.setSetting( "HTMLBaseURL", replaceNoCase( variables.baseURL, "index.cfm", "" ) )
-			.setSetting( "HTMLBasePath", replaceNoCase( composeRoutingPath(), "index.cfm", "" ) );
+			.setSetting( "HTMLBaseURL", replaceNoCase( variables.baseURL, frontController, "" ) )
+			.setSetting( "HTMLBasePath", replaceNoCase( composeRoutingPath(), frontController, "" ) );
 	}
 
 	/**
@@ -246,20 +248,14 @@ component
 	// DEPRECATED FUNCTIONALITY: Remove in later release
 
 	/**
-	 *
 	 * Includes a routes configuration file as an added import and returns itself after import
 	 *
-	 * @deprecated Please use the Routes.cfc approach instead
-	 * @location   The include location of the routes configuration template. Do not add '.cfm'
+	 * @deprecated Please use the Routes class approach instead
+	 * @location   The include location of the routes configuration template.
 	 *
 	 * @return Router
 	 */
 	function includeRoutes( required location ){
-		// verify .cfm or not
-		if ( listLast( arguments.location, "." ) NEQ "cfm" ) {
-			arguments.location &= ".cfm";
-		}
-
 		// We are ready to roll
 		try {
 			// Try to remove pathInfoProvider, just in case
@@ -826,7 +822,6 @@ component
 	 * @append                Whether the route should be appended or pre-pended to the array. By default we append to the end of the array
 	 * @response              An HTML response string to send back or a closure to be executed that should return the response. The closure takes in a 'params' struct of all matched params and the string will be parsed with the named value pairs as ${param}
 	 * @statusCode            The HTTP status code to send to the browser response.
-	 * @statusText            Explains the HTTP status code sent to the browser response.
 	 * @condition             A closure or UDF to execute that MUST return true to use route if matched or false and continue.
 	 * @name                  The name of the route
 	 * @domain                The domain to match, including wildcards
@@ -861,7 +856,6 @@ component
 		boolean append                = "true",
 		any response                  = "",
 		numeric statusCode            = 200,
-		string statusText             = "",
 		any condition                 = "",
 		string name                   = "",
 		string domain                 = "",
@@ -1247,7 +1241,6 @@ component
 			"response"              : "", // Do we have an inline response closure
 			"ssl"                   : false, // Are we forcing SSL
 			"statusCode"            : 200, // The response status code
-			"statusText"            : "Ok", // The response status text
 			"valuePairTranslation"  : true, // If we translate name-value pairs in the URL by convention
 			"verbs"                 : "", // The HTTP Verbs allowed
 			"view"                  : "", // The view to proxy to
@@ -1971,15 +1964,10 @@ component
 	 *
 	 * @body       The body of the response a lambda or closure
 	 * @statusCode The status code to use, defaults to 200
-	 * @statusText The status text to use, defaults to 'OK'
 	 *
 	 * @throws InvalidArgumentException
 	 */
-	function toResponse(
-		required body,
-		numeric statusCode = 200,
-		statusText         = "Ok"
-	){
+	function toResponse( required body, numeric statusCode = 200 ){
 		// Arg Check
 		if ( !isClosure( arguments.body ) && !isCustomFunction( arguments.body ) && !isSimpleValue( arguments.body ) ) {
 			throw(
@@ -1995,8 +1983,7 @@ component
 		variables.thisRoute.append(
 			{
 				response   : arguments.body,
-				statusCode : arguments.statusCode,
-				statusText : arguments.statusText
+				statusCode : arguments.statusCode
 			},
 			true
 		);
@@ -2078,8 +2065,9 @@ component
 	 * Composes the base routing path with no host or protocol
 	 */
 	string function composeRoutingPath(){
+		var base = findNoCase( ".bx", cgi.script_name ) ? "index.bxm" : "index.cfm";
 		return variables.controller.getSetting( "RoutingAppMapping" ) & // routing app mapping
-		( variables.fullRewrites ? "" : "index.cfm" ); // full or controller routing
+		( variables.fullRewrites ? "" : base ); // full or controller routing
 	}
 
 	/*****************************************************************************************/

@@ -16,10 +16,6 @@
 		assertTrue( isStruct( store.getpool() ) );
 	}
 
-	function testGetIndexer(){
-		assertTrue( isObject( store.getIndexer() ) );
-	}
-
 	function testGetKeys(){
 		assertEquals( [], store.getKeys() );
 		store.set( "test", now() );
@@ -32,11 +28,10 @@
 		assertFalse( store.lookup( "nada" ) );
 
 		store.set( "myKey", "hello" );
-
 		assertTrue( store.lookup( "myKey" ) );
 
-		store.getIndexer().setObjectMetadataProperty( "myKey", "isExpired", true );
-
+		// Expire it
+		store.getPool().get( "myKey" ).isExpired = true;
 		assertFalse( store.lookup( "myKey" ) );
 	}
 
@@ -46,9 +41,7 @@
 	}
 
 	function testGetQuiet(){
-		map = { myKey : "123" };
-		store.$property( "pool", "variables", map );
-
+		store.set( "myKey", "123" );
 		assertEquals( store.getQuiet( "myKey" ), "123" );
 	}
 
@@ -62,20 +55,18 @@
 	function testSet(){
 		// 1:Timeout = 0 (Eternal)
 		store.set( "test", "123", 0, 0 );
-		data = store.getPool();
-		assertEquals( data[ "test" ], "123" );
-		assertEquals( 0, store.getIndexer().getObjectMetadataProperty( "test", "timeout" ) );
+		assertEquals( store.getQuiet( "test" ), "123" );
+		assertEquals( 0, store.getCachedObjectMetadata( "test" ).timeout );
 
 		// 2:Timeout = X
 		store.set( "test", "123", 20, 20 );
-		data = store.getPool();
-		assertEquals( data[ "test" ], "123" );
-		assertEquals( 20, store.getIndexer().getObjectMetadataProperty( "test", "timeout" ) );
+		assertEquals( store.getQuiet( "test" ), "123" );
+		assertEquals( 20, store.getCachedObjectMetadata( "test" ).timeout );
 	}
 
 	function testSetEternals(){
-		obj = { name : "luis", date : now() };
-		key = "myObj";
+		var obj = { name : "luis", date : now() };
+		var key = "myObj";
 
 		store.set( key, obj, 0 );
 		assertSame( store.get( key ), obj );
@@ -83,12 +74,14 @@
 		assertTrue( store.lookup( key ) );
 		assertFalse( store.lookup( "nothing" ) );
 
-		assertEquals( 0, store.getIndexer().getObjectMetadataProperty( key, "timeout" ) );
-		assertEquals( 2, store.getIndexer().getObjectMetadataProperty( key, "hits" ) );
-		assertEquals( false, store.getIndexer().getObjectMetadataProperty( key, "isExpired" ) );
-		assertEquals( "", store.getIndexer().getObjectMetadataProperty( key, "LastAccessTimeout" ) );
-		assertTrue( isDate( store.getIndexer().getObjectMetadataProperty( key, "Created" ) ) );
-		assertTrue( isDate( store.getIndexer().getObjectMetadataProperty( key, "lastAccessed" ) ) );
+		metadata = store.getCachedObjectMetadata( key );
+
+		assertEquals( 0, metadata.timeout );
+		assertEquals( 2, metadata.hits );
+		assertEquals( false, metadata.isExpired );
+		assertEquals( "", metadata.LastAccessTimeout );
+		assertTrue( isDate( metadata.Created ) );
+		assertTrue( isDate( metadata.lastAccessed ) );
 
 		store.clear( key );
 		assertFalse( store.lookup( key ) );

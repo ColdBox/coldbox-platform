@@ -136,7 +136,12 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 			}
 			// remove context + reset headers
 			variables.controller.getRequestService().removeContext();
-			getPageContextResponse().reset();
+
+			// Reset the buffer if not committed
+			if ( !getPageContextResponse().isCommitted() ) {
+				getPageContextResponse().reset();
+			}
+
 			structDelete( request, "_lastInvalidEvent" );
 		}
 	}
@@ -146,7 +151,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 */
 	function afterTests(){
 		if ( this.unLoadColdbox ) {
-			getColdBoxVirtualApp().shutdown();
+			reset( wipeRequest: true );
 		}
 	}
 
@@ -180,7 +185,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 */
 	function reset( boolean orm = false, boolean wipeRequest = true ){
 		// Shutdown gracefully ColdBox
-		getColdBoxVirtualApp().shutdown();
+		getColdBoxVirtualApp().shutdown( force: true );
 
 		// Lucee Cleanups
 		if ( server.keyExists( "lucee" ) ) {
@@ -407,7 +412,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 				.$args( "server_name", requestContext )
 				.$results( arguments.domain );
 
-			// If the route is for the home page, use the default event in the config/ColdBox.cfc
+			// If the route is for the home page, use the default event in the config/ColdBox
 			if ( arguments.route == "/" ) {
 				// Set the default app event
 				arguments.event = getController().getSetting( "defaultEvent" );
@@ -492,7 +497,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 					renderData = requestContext.getRenderData();
 					if ( isStruct( renderData ) and NOT structIsEmpty( renderData ) ) {
 						requestContext.setValue( "cbox_render_data", renderData );
-						requestContext.setValue( "cbox_statusCode", renderData.statusCode );
+						requestContext.setStatusCode( renderData.statusCode );
 						renderedContent = cbController
 							.getDataMarshaller()
 							.marshallData( argumentCollection = renderData );
@@ -501,7 +506,6 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 					else if ( !isNull( local.handlerResults ) ) {
 						// Store raw results
 						requestContext.setValue( "cbox_handler_results", handlerResults );
-						requestContext.setValue( "cbox_statusCode", getNativeStatusCode() );
 						if ( isSimpleValue( handlerResults ) ) {
 							renderedContent = handlerResults;
 						} else {
@@ -514,7 +518,6 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 					}
 					// render layout/view pair
 					else {
-						requestContext.setValue( "cbox_statusCode", getNativeStatusCode() );
 						renderedContent = cbcontroller
 							.getRenderer()
 							.layout(
@@ -569,7 +572,6 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 		requestContext.getRenderedContent = variables.getRenderedContent;
 		requestContext.getHandlerResults  = variables.getHandlerResults;
 		requestContext.getRenderData      = variables.getRenderData;
-		requestContext.getStatusCode      = variables.getStatusCode;
 		return requestContext;
 	}
 
@@ -748,15 +750,6 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	}
 
 	/**
-	 * Get the status code for a ColdBox integration test
-	 *
-	 * @return cbox_statusCode or 200
-	 */
-	function getStatusCode(){
-		return getValue( "relocate_STATUSCODE", getValue( "cbox_statusCode", 200 ) );
-	}
-
-	/**
 	 * Get the status code set in the CFML engine.
 	 *
 	 * @return The CFML status code.
@@ -930,7 +923,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 		event.setPrivateValue( "exception", oException );
 
 		// Set Exception Header
-		getPageContextResponse().setStatus( 500, "Internal Server Error" );
+		event.setStatusCode( 500 );
 
 		// Run custom Exception handler if Found, else run default exception routines
 		if ( len( arguments.controller.getSetting( "ExceptionHandler" ) ) ) {
@@ -992,7 +985,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * Helper method to deal with ACF's overload of the page context response, come on Adobe, get your act together!
 	 */
 	private function getPageContextResponse(){
-		return server.keyExists( "lucee" ) ? getPageContext().getResponse() : getPageContext()
+		return server.keyExists( "lucee" ) || server.keyExists( "boxlang" ) ? getPageContext().getResponse() : getPageContext()
 			.getResponse()
 			.getResponse();
 	}

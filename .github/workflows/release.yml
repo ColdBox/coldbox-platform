@@ -37,7 +37,7 @@ jobs:
   #############################################
   build:
     name: Build & Publish Release
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -51,6 +51,7 @@ jobs:
       - name: Setup CommandBox
         uses: Ortus-Solutions/setup-commandbox@v2.0.1
         with:
+          install: commandbox-boxlang
           forgeboxAPIKey: ${{ secrets.FORGEBOX_API_TOKEN }}
 
       - name: Setup Environment Variables For Build Process
@@ -195,9 +196,11 @@ jobs:
 
       - name: Copy Changelog
         run: |
-          cp .tmp/changelog.md changelog.md
+          ls -lR .tmp/
+          cp .tmp/changelog.md changelog.md || true
 
       - name: Bump Version
+        if: ${{ always() }}
         run: |
           if [ $LTS == 'true' ]
           then
@@ -209,6 +212,7 @@ jobs:
 
       - name: Commit Version Bump
         uses: EndBug/add-and-commit@v9.1.4
+        if: ${{ always() }}
         with:
           author_name: Github Actions
           author_email: info@ortussolutions.com

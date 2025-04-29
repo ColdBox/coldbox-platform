@@ -39,7 +39,7 @@ component extends="tests.resources.BaseIntegrationTest" {
 				} );
 			} );
 
-			xstory( "I want to execute a global invalid event handler", function(){
+			story( "I want to execute a global invalid event handler", function(){
 				given( "an invalid event", function(){
 					then( "it should fire the global invalid event handler", function(){
 						var e = this.get( "does.not.exist" );
@@ -56,9 +56,9 @@ component extends="tests.resources.BaseIntegrationTest" {
 							renderResults         = true,
 							withExceptionHandling = true
 						);
-						expecT( e.getPrivateValue( "exception" ).getType() ).toBe( "CustomException" );
-						expecT( e.getPrivateValue( "exception" ).getMessage() ).toInclude( "Whoops" );
-						expect( getNativeStatusCode() ).toBe( 500 );
+						expect( e.getPrivateValue( "exception" ).getType() ).toBe( "CustomException" );
+						expect( e.getPrivateValue( "exception" ).getMessage() ).toInclude( "Whoops" );
+						expect( e.getStatusCode() ).toBe( 500 );
 					} );
 				} );
 			} );
@@ -91,17 +91,6 @@ component extends="tests.resources.BaseIntegrationTest" {
 				} );
 			} );
 		} );
-	}
-
-	private function getNativeStatusCode(){
-		if ( structKeyExists( server, "lucee" ) ) {
-			return getPageContext().getResponse().getStatus();
-		} else {
-			return getPageContext()
-				.getResponse()
-				.getResponse()
-				.getStatus();
-		}
 	}
 
 }

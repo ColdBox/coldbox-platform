@@ -1,22 +1,19 @@
 ﻿component extends="coldbox.system.testing.BaseModelTest" {
 
 	function setup(){
-		cfmlengine = new coldbox.system.core.util.CFMLEngine();
+		target = new coldbox.system.core.util.CFMLEngine();
 	}
 
-	function testCFMLEngine(){
-		version = listFirst( server.coldfusion.productversion );
-		engine  = server.coldfusion.productname;
+	function testGetVersion(){
+		expect( target.getVersion() ).notToBeEmpty();
+	}
 
-		if ( findNoCase( "coldfusion", engine ) ) {
-			enginetype = "adobe";
-		} else if ( findNoCase( "lucee", engine ) ) {
-			enginetype = "lucee";
-		}
+	function testGetFullVersion(){
+		expect( target.getFullVersion() ).toBeString( target.getFullVersion() );
+	}
 
-		assertTrue( len( cfmlengine.getEngine() ) gt 0, "Engine test" );
-
-		assertTrue( isNumeric( cfmlengine.getVersion() ), "Version Test" );
+	function testGetEngine(){
+		expect( target.getEngine() ).toBeString( target.getEngine() );
 	}
 
 }

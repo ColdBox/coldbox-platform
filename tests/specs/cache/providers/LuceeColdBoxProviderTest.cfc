@@ -1,8 +1,7 @@
 ﻿component
-	name   ="cacheTest"
 	extends="LuceeProviderTest"
 	output ="false"
-	skip   ="isLucee"
+	skip   ="notLucee"
 {
 
 	function setup(){
@@ -21,6 +20,8 @@
 
 		// Configure the provider
 		cache.configure();
+		// Clear everything first
+		cache.clearAll();
 	}
 
 	function testPrefixes(){

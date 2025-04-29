@@ -1,7 +1,10 @@
-﻿component extends="coldbox.system.testing.BaseModelTest" skip="isLucee" {
+﻿component extends="coldbox.system.testing.BaseModelTest" skip="notLucee" {
 
-	boolean function isLucee(){
-		return listFindNoCase( "Lucee", server.coldfusion.productname ) ? false : true;
+	boolean function notLucee(){
+		if ( isBoxLang() || isAdobe() ) {
+			return true;
+		}
+		return false;
 	}
 
 	function setup(){

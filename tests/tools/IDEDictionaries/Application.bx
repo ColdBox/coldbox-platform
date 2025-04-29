@@ -1,4 +1,4 @@
-component {
+class {
 
 	this.name = "Builder Dictionaries";
 
@@ -11,5 +11,6 @@ component {
 
 	// ColdBox Root path
 	this.mappings[ "/coldbox" ] = rootPath;
+	this.mappings[ "/testbox" ] = expandPath( "../../../testbox");
 
 }

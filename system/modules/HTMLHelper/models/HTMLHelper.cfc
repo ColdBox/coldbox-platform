@@ -2937,7 +2937,7 @@ component
 	private string function prepareBaseLink( boolean noBaseURL = false, src ){
 		var baseURL = replaceNoCase(
 			requestService.getContext().getSESbaseURL(),
-			"index.cfm",
+			findNoCase( ".bx", cgi.script_name ) ? "index.bxm" : "index.cfm",
 			""
 		);
 		// return if base is eempty

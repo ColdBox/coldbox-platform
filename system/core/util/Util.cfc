@@ -10,8 +10,9 @@ component {
 	private function getEngineMappingHelper(){
 		// Lazy load the helper
 		if ( isNull( variables.engineMappingHelper ) ) {
-			// Detect server
-			if ( listFindNoCase( "Lucee", server.coldfusion.productname ) ) {
+			if ( server.keyExists( "boxlang" ) ) {
+				variables.engineMappingHelper = new BoxLangMappingHelper();
+			} else if ( listFindNoCase( "Lucee", server.coldfusion.productname ) ) {
 				variables.engineMappingHelper = new LuceeMappingHelper();
 			} else {
 				variables.engineMappingHelper = new CFMappingHelper();
@@ -63,7 +64,9 @@ component {
 	boolean function inThread(){
 		var engine = "ADOBE";
 
-		if ( server.coldfusion.productname eq "Lucee" ) {
+		if ( server.keyExists( "boxlang" ) ) {
+			engine = "BOXLANG";
+		} else if ( server.coldfusion.productname eq "Lucee" ) {
 			engine = "LUCEE";
 		}
 
@@ -82,6 +85,7 @@ component {
 				}
 				break;
 			}
+			case "BOXLANG":
 			case "LUCEE": {
 				return isInThread();
 			}
@@ -234,7 +238,7 @@ component {
 		return serializeJSON(
 			arguments.obj,
 			"struct",
-			listFindNoCase( "Lucee", server.coldfusion.productname ) ? "utf-8" : false
+			!server.keyExists( "boxlang" ) && listFindNoCase( "Lucee", server.coldfusion.productname ) ? "utf-8" : false
 		);
 	}
 
@@ -409,11 +413,11 @@ component {
 
 		// First time through, get metaData of component by path or instance
 		if ( arguments.md.isEmpty() ) {
-			arguments.md = (
-				isObject( arguments.component ) ? getMetadata( arguments.component ) : getComponentMetadata(
-					arguments.component
-				)
-			);
+			if ( isObject( arguments.component ) ) {
+				arguments.md = getMetadata( arguments.component );
+			} else {
+				arguments.md = getComponentMetadata( arguments.component );
+			}
 		}
 
 		// If it has a parent, stop and calculate it first, unless of course, we've reached a class we shouldn't recurse into.
@@ -478,9 +482,15 @@ component {
 	}
 
 	/**
-	 * Get the Hibernate version string from Hibernate or Hibernate bundle version
+	 * Get the Hibernate version string from the running engine
 	 */
 	public string function getHibernateVersion(){
+		// BoxLang Detection
+		if ( server.keyExists( "boxlang" ) ) {
+			return ORMGetHibernateVersion();
+		}
+
+		// Adobe + Lucee Convuluted ways
 		var version = createObject( "java", "org.hibernate.Version" );
 
 		if ( version.getVersionString() != "[WORKING]" ) {

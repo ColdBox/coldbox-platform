@@ -26,7 +26,7 @@
         "*/.md"
     ],
 	"dependencies":{
-        "cbproxies":"^1.0.1+13"
+        "cbproxies":"^1"
     },
 	"installPaths":{
         "cbproxies":"system/async/cbproxies/"

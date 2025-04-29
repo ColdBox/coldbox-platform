@@ -30,7 +30,7 @@ component extends="tests.resources.BaseIntegrationTest" {
 		feature( "WireBox Child Injectors", function(){
 			beforeEach( function( currentSpec ){
 				// Build out the global injector
-				injector = createMock( "coldbox.system.ioc.Injector" ).init(
+				variables.injector = createMock( "coldbox.system.ioc.Injector" ).init(
 					"tests.specs.ioc.config.samples.InjectorCreationTestsBinder"
 				);
 			} );
@@ -119,7 +119,7 @@ component extends="tests.resources.BaseIntegrationTest" {
 				beforeEach( function( currentSpec ){
 					var child = new coldbox.system.ioc.Injector(
 						"coldbox.tests.specs.ioc.config.samples.NoScopeBinder"
-					).setRoot( getWireBox() );
+					).setRoot( variables.injector );
 					injector.registerChildInjector( "myChild", child );
 				} );
 				given( "An object with a wirebox:root dsl", function(){

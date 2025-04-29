@@ -666,7 +666,12 @@ component accessors="true" {
 	}
 
 	/**
-	 * This is the runnable proxy method that executes your code by the executors
+	 * This is the runnable proxy method that executes your code by the executors.
+	 * You can call this task manually if you want to execute it outside of the executor.
+	 * If you do, then use the `force` argument to bypass constraints and to not set
+	 * the next run time, as it is not scheduled.
+	 *
+	 * @force Force the task to run even if it is disabled or constrained
 	 */
 	function run( boolean force = false ){
 		debugLog( "run( #arguments.force# )" );
@@ -761,7 +766,10 @@ component accessors="true" {
 			// Call internal cleanups event
 			cleanupTaskRun();
 			// set next run time based on timeUnit and period
-			setNextRunTime();
+			// ONLY if we are not forcing the task to run
+			if ( !arguments.force ) {
+				setNextRunTime();
+			}
 		}
 	}
 
@@ -1531,7 +1539,7 @@ component accessors="true" {
 		// Set the period to be every hour in seconds
 		variables.period = variables.timeUnitHelper
 			.get( arguments.periodValue )
-			.toSeconds( arguments.periodMultiplier );
+			.toSeconds( javacast( "long", arguments.periodMultiplier ) );
 		variables.timeUnit = "seconds";
 	}
 

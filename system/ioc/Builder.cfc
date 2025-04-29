@@ -266,16 +266,12 @@ component serializable="false" accessors="true" {
 			);
 
 			try {
-				// Invoke constructor, we do this because using invoke() can be slow
-				if ( constructorName eq "init" ) {
-					oModel.init( argumentCollection = constructorArgCollection );
-				} else {
-					invoke(
-						oModel,
-						constructorName,
-						constructorArgCollection
-					);
-				}
+				// Invoke constructor
+				invoke(
+					oModel,
+					constructorName,
+					constructorArgCollection
+				);
 			} catch ( any e ) {
 				var reducedTagContext = e.tagContext
 					.reduce( function( result, file ){

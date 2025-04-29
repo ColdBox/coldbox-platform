@@ -6,6 +6,8 @@ www.ortussolutions.com
 A reporting template about exceptions in your ColdBox Apps
 ----------------------------------------------------------------------->
 <cfscript>
+	// Max Top
+	local.maxTop = 10;
 	// Detect Session Scope
 	local.sessionScopeExists = true;
 	try { structKeyExists( session ,'x' ); }
@@ -49,8 +51,7 @@ A reporting template about exceptions in your ColdBox Apps
 			</cfif>
 			<tr>
 				<td align="right" class="info"><strong>Message:</strong></td>
-				<!--- Using HTMLEditFormat() on purpose so my line breaks aren't encoded! --->
-				<td>#HTMLEditFormat( oException.getmessage() ).listChangeDelims( '<br>', chr(13)&chr(10) )#</td>
+				<td>#encodeForHTML( oException.getmessage() ).listChangeDelims( '<br>', chr(13)&chr(10) )#</td>
 			</tr>
 			<cfif oException.getExtendedInfo() neq "">
 				<tr>
@@ -62,8 +63,7 @@ A reporting template about exceptions in your ColdBox Apps
 		 	<cfif len( oException.getDetail() ) neq 0>
 				<tr>
 					<td align="right" class="info"><strong>Detail:</strong></td>
-					<!--- Using HTMLEditFormat() on purpose so my line breaks aren't encoded! --->
-					<td>#HTMLEditFormat( oException.getDetail() ).listChangeDelims( '<br>', chr(13)&chr(10) )#</td>
+					<td>#encodeForHTML( oException.getDetail() ).listChangeDelims( '<br>', chr(13)&chr(10) )#</td>
 				</tr>
 			 </cfif>
 			<tr>
@@ -247,37 +247,49 @@ A reporting template about exceptions in your ColdBox Apps
 				  </tr>
 			  </cfif>
 			</cfif>
-			 <tr >
+
+			<tr>
 				<th colspan="2" >Form variables:</th>
-			 </tr>
-			 <cfloop collection="#form#" item="key">
-			 	<cfif key neq "fieldnames">
-				 <tr>
-				   <td align="right" class="info">#encodeForHTML(  key )#:</td>
-				   <cfif isSimpleValue( form[ key ] )>
-				   <td>#encodeForHTML(  form[ key ] )#</td>
-				   <cfelse>
-				   <td><cfdump var="#form[ key ]#"></td>
-				   </cfif>
-				 </tr>
-			 	</cfif>
-			 </cfloop>
-			 <tr >
+			</tr>
+
+			<cfloop collection="#form#" item="key">
+				<cfif key neq "fieldnames">
+					<tr>
+						<td align="right" class="info">#encodeForHTML(  key )#:</td>
+						<cfif isSimpleValue( form[ key ] )>
+							<td>#encodeForHTML(  form[ key ] )#</td>
+						<cfelse>
+							<td>
+								<cfdump var="#form[ key ]#" top="#local.maxTop#">
+							</td>
+						</cfif>
+					</tr>
+				</cfif>
+			</cfloop>
+
+			<tr>
 				<th colspan="2" >Session Storage:</th>
 			 </tr>
-			 <cfif local.sessionScopeExists>
-				 <cfloop collection="#session#" item="key">
-				 <tr>
-				   <td align="right" class="info"> #encodeForHTML( key )#: </td>
-				   <td><cfif isSimpleValue( session[ key ] )>#encodeForHTML(  session[ key ] )#<cfelse>#encodeForHTML( key )# <cfdump var="#session[ key ]#"></cfif></td>
-				 </tr>
-				 </cfloop>
-			 <cfelse>
-				 <tr>
-				   <td align="right" class="info"> N/A </td>
-				   <td >Session Scope Not Enabled</td>
-				 </tr>
-			 </cfif>
+
+			<cfif local.sessionScopeExists>
+				<cfloop collection="#session#" item="key">
+					<tr>
+						<td align="right" class="info">#encodeForHTML( key )#:</td>
+						<td>
+							<cfif isSimpleValue( session[ key ] )>
+								#encodeForHTML(  session[ key ] )#
+							<cfelse>
+								#encodeForHTML( key )# <cfdump var="#session[ key ]#" top="#local.maxTop#">
+							</cfif>
+						</td>
+					</tr>
+				</cfloop>
+			<cfelse>
+				<tr>
+					<td align="right" class="info"> N/A </td>
+					<td >Session Scope Not Enabled</td>
+				</tr>
+			</cfif>
 			 <tr >
 				<th colspan="2" >Cookies:</th>
 			 </tr>
@@ -297,7 +309,11 @@ A reporting template about exceptions in your ColdBox Apps
 			    <cfif isSimpleValue( oException.getExtraInfo() )>
 			   		<cfif not len(oException.getExtraInfo())>[N/A]<cfelse>#encodeForHTML( oException.getExtraInfo() )#</cfif>
 			   	<cfelse>
-			   		<cfdump var="#oException.getExtraInfo()#" expand="false">
+			   		<cfdump
+						var="#oException.getExtraInfo()#"
+						expand="false"
+						label="Extra Info"
+					>
 				</cfif>
 			    </td>
 			 </tr>

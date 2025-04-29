@@ -1,7 +1,7 @@
 {
 	"adminPassword" : "coldbox",
 	"ajaxDebugWindowEnabled": false,
-	"debuggingEnabled": false,
+	"debuggingEnabled": true,
 	"debuggingReportExecutionTimes": false,
 	"debuggingShowDatabase" : true,
 	"inspectTemplate":"once",
@@ -23,6 +23,10 @@
         }
     },
     "cacheDefaultObject": "default",
+	"experimental" : {
+		"ASTCapture": false,
+		"compiler": "asm"
+	},
     "datasources": {
         "coolblog": {
 			"allowAlter":true,
@@ -40,7 +44,7 @@
             "class":"${DB_CLASS}",
 			"dbdriver": "MySQL",
 			"dsn":"jdbc:mysql://{host}:{port}/{database}",
-            "custom":"useUnicode=true&characterEncoding=UTF8&serverTimezone=UTC&useLegacyDatetimeCode=true&autoReconnect=true&useSSL=false",
+            "custom":"useUnicode=true&characterEncoding=UTF8&serverTimezone=UTC&useLegacyDatetimeCode=true&autoReconnect=true&useSSL=false&allowPublicKeyRetrieval=true",
             "host":"${DB_HOST:127.0.0.1}",
             "username": "${DB_USER}",
             "password": "${DB_PASSWORD}",

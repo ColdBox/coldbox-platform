@@ -1,23 +1,29 @@
 <cfscript>
 	// No cf debugging
 	cfsetting( showdebugoutput="false" );
-	// Path Navigation
-	param name="url.path" default="";
-	// Root Tests Directory
-	rootMapping = "/tests/specs";
+	// GLOBAL VARIABLES
+	ASSETS_DIR = expandPath( "/testbox/system/reports/assets" );
+	TESTBOX_VERSION = new testBox.system.TestBox().getVersion();
+	// TEST LOCATIONS -> UPDATE AS YOU SEE FIT
+	rootMapping = "/tests";
+
+	// Local Variables
 	rootPath 	= expandPath( rootMapping );
 	targetPath 	= rootPath;
-	// Append navigation path
+
+	// Incoming Navigation
+	param name="url.path" default="";
 	if( len( url.path ) ){
 		targetPath = getCanonicalPath( rootpath & "/" & url.path );
-		// Avoid traversals
+		// Avoid traversals, reset to root
 		if( !findNoCase( rootpath, targetPath ) ){
 			targetPath = rootpath;
 		}
 	}
+
 	// Get the actual execution path
 	executePath = rootMapping & ( len( url.path ) ? "/#url.path#" : "/" );
-	// Directory Runner
+	// Execute an incoming path
 	if( !isNull( url.action ) ){
 		if( directoryExists( targetPath ) ){
 			writeOutput( "#new testbox.system.TestBox( directory=executePath ).run()#" );
@@ -26,17 +32,16 @@
 		}
 		abort;
 	}
-	// Get target path listing
+
+	// Get the tests to navigate
 	qResults = directoryList( targetPath, false, "query", "", "name" );
-	// Get the back path
+
+	// Calculate the back navigation path
 	if( len( url.path ) ){
 		backPath = url.path.listToArray( "/\" );
 		backPath.pop();
 		backPath = backPath.toList( "/" );
 	}
-	// TestBox Assets
-	ASSETS_DIR = expandPath( "/testbox/system/reports/assets" );
-	TESTBOX_VERSION = new testBox.system.TestBox().getVersion();
 </cfscript>
 <!DOCTYPE html>
 <html>
@@ -82,13 +87,27 @@
 		<div class="col-md-12 mb-4">
 			<h2>Availble Test Runners: </h2>
 			<p>
-				Below is a listing of the runners matching the "runner*.cfm" pattern.
+				Below is a listing of the runners matching the "runner*.(cfm|bxm)" pattern.
 			</p>
 
-			<cfset runners = directoryList( expandPath( "./" ), false, "query", "runner*.cfm" )>
-			<cfoutput query="runners">
-				<a href="#runners.name#" target="_blank" class="btn btn-secondary btn-sm my-1 mx-1">#runners.name#</a>
-			</cfoutput>
+			<cfset runners = directoryList( targetPath, false, "query", "runner*.cfm|runner*.bxm" )>
+			<cfif runners.recordCount eq 0>
+				<p class="alert alert-warning">No runners found in this directory</p>
+			<cfelse>
+				<cfloop query="runners">
+					<a
+						href="#runners.name#"
+						target="_blank"
+						<cfif listLast( runners.name, "." ) eq "bxm">
+							class="btn btn-success btn-sm my-1 mx-1"
+						<cfelse>
+							class="btn btn-info btn-sm my-1 mx-1"
+						</cfif>
+					>
+						#runners.name#
+					</a>
+				</cfloop>
+			</cfif>
 		</div>
 	</div>
 
@@ -116,8 +135,14 @@
 					</cfif>
 
 					<cfloop query="qResults">
-						<!--- Skip . folder file names --->
-						<cfif refind( "^\.", qResults.name )>
+						<!--- Skip . folder file names and runners and Application.bx, cfc--->
+						<cfif
+							refind( "^\.", qResults.name )
+							OR
+							( listLast( qresults.name, ".") eq "cfm" OR listLast( qresults.name, ".") eq "bxm" )
+							OR
+							( qResults.name eq "Application.cfc" OR qResults.name eq "Application.bx" )
+						>
 							<cfcontinue>
 						</cfif>
 
@@ -129,7 +154,7 @@
 								&##x271A; #qResults.name#
 							</a>
 							<br />
-						<cfelseif listLast( qresults.name, ".") eq "cfm">
+						<cfelseif listLast( qresults.name, ".") eq "cfm" OR listLast( qresults.name, ".") eq "bxm">
 							<a
 								class="btn btn-primary btn-sm my-1"
 								href="#executePath & "/" & qResults.name#"
@@ -138,18 +163,23 @@
 								#qResults.name#
 							</a>
 							<br />
-						<cfelseif listLast( qresults.name, ".") eq "cfc" and qresults.name neq "Application.cfc">
+						<cfelseif
+							listLast( qresults.name, ".") eq "cfc" OR listLast( qresults.name, ".") eq "bx"
+						>
 							<a
-								class="btn btn-primary btn-sm my-1"
+								<cfif listLast( qresults.name, ".") eq "bx">
+									data-bx="true"
+									class="btn btn-success btn-sm my-1"
+								<cfelse>
+									data-bx="false"
+									class="btn btn-info btn-sm my-1"
+								</cfif>
 								href="#executePath & "/" & qResults.name#?method=runRemote"
 								target="_blank"
 							>
 								#qResults.name#
 							</a>
 							<br />
-						<cfelse>
-							#qResults.name#
-							<br/>
 						</cfif>
 
 					</cfloop>

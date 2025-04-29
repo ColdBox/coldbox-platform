@@ -11,7 +11,8 @@ on:
 jobs:
   tests:
     name: Test Suites
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
+    timeout-minutes: ${{ matrix.timeoutMinutes }}
     env:
       DB_USER: root
       DB_PASSWORD: root
@@ -19,19 +20,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        commandbox_version: [ "6.0.1" ]
-        cfengine: [ "lucee@5", "adobe@2018", "adobe@2021", "adobe@2023" ]
-        jdkVersion: [ "11" ]
+        commandbox_version: [ "6.2.0" ]
+        cfengine: [ "boxlang-cfml@1", "lucee@5", "lucee@6", "adobe@2021", "adobe@2023" ]
+        jdkVersion: [ "21" ]
         experimental: [false]
+        timeoutMinutes: [ 8 ]
         include:
-          - cfengine: "lucee@6"
-            jdkVersion: "17"
-            commandbox_version: "6.0.1"
+          - cfengine: "adobe@2025"
+            jdkVersion: "21"
+            commandbox_version: "6.2.0"
             experimental: true
-          - cfengine: "adobe@2023"
-            jdkVersion: "17"
-            commandbox_version: "6.0.1"
-            experimental: false
+            timeoutMinutes: 8
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -52,6 +51,7 @@ jobs:
         uses: Ortus-Solutions/setup-commandbox@v2.0.1
         with:
           version: ${{ matrix.commandbox_version }}
+          install: commandbox-boxlang
 
       - name: Setup .env For Runner
         run: |
@@ -68,7 +68,7 @@ jobs:
       - name: Install Dependencies
         run: |
           # Core dependencies
-          box install
+          box install --verbose
 
       - name: Start ${{ matrix.cfengine }} Server
         run: |

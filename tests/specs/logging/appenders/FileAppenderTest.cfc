@@ -22,10 +22,6 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		logBox       = new coldbox.system.logging.LogBox();
 		fileappender = createMock( "coldbox.system.logging.appenders.FileAppender" ).setLogBox( logBox );
 
-		// mock LogBox
-		logBox              = createMock( classname = "coldbox.system.logging.LogBox", clearMethod = true );
-		fileAppender.logBox = logBox;
-
 		fileappender.init( "MyFileAppender", props );
 
 		loge = createMock( "coldbox.system.logging.LogEvent" );

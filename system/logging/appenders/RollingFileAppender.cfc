@@ -42,6 +42,9 @@ component accessors="true" extends="coldbox.system.logging.appenders.FileAppende
 		if ( !propertyExists( "archiveLayout" ) ) {
 			setProperty( "archiveLayout", variables.getDefaultArchiveLayout );
 		}
+		if ( !propertyExists( "rotatorSchedulerMinutes" ) ) {
+			setProperty( "rotatorSchedulerMinutes", 10 );
+		}
 
 		variables.fileRotator = new coldbox.system.logging.util.FileRotator();
 
@@ -80,9 +83,8 @@ component accessors="true" extends="coldbox.system.logging.appenders.FileAppende
 				task  : this,
 				method: "logRotation"
 			)
-			.inMinutes()
-			.delay( 5 ) // Don't start immediately, give it a breathing room
-			.spacedDelay( 1 ) // Runs again, after this spaced delay once each reap finalizes
+			.delay( 5, "minutes" ) // Don't start immediately, give it a breathing room
+			.spacedDelay( getProperty( "rotatorSchedulerMinutes" ), "minutes" ) // Runs again, after this spaced delay once each rotation finalizes
 			.start();
 
 		return this;

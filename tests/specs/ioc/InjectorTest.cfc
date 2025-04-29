@@ -11,8 +11,11 @@
 		// init injector
 		injector.init( { scopeRegistration : { enabled : false } } );
 
-		mockLogger = createStub().$( "canDebug", false ).$( "error" );
-		util       = createMock( "coldbox.system.core.util.Util" )
+		mockLogger = createStub()
+			.$( "canDebug", false )
+			.$( "canError", true )
+			.$( "error" );
+		util = createMock( "coldbox.system.core.util.Util" )
 			.$( "getInheritedMetaData" )
 			.$results( { path : "path.to.object" } );
 		injector.setUtility( util );
@@ -114,7 +117,7 @@
 			injector.registerListeners();
 		} catch ( "Injector.ListenerCreationException" e ) {
 		} catch ( Any e ) {
-			fail( e );
+			fail( e.getMessage() );
 		}
 	}
 

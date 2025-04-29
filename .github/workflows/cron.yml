@@ -1,0 +1,10 @@
+name: Daily Test Run
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Runs at 00:00 UTC every day
+
+jobs:
+  tests:
+    uses: ./.github/workflows/tests.yml
+    secrets: inherit

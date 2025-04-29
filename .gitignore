@@ -39,3 +39,4 @@ test-harness/config/runtime.properties.cfm
 .env
 /settings.xml
 /.settings/
+grapher/data/**

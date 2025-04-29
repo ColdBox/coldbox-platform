@@ -55,5 +55,5 @@
 	}
 
 	// Include the actual view requested
-	include "#arguments.viewPath#.cfm";
+	include "#arguments.viewPath#";
 </cfscript>

@@ -33,7 +33,7 @@
 		"*/.md"
 	],
 	"dependencies": {
-		"cbproxies": "^1.0.1+13"
+		"cbproxies":"^1"
 	},
 	"devDependencies": {
 	},

@@ -83,8 +83,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		var baseRouter   = "coldbox.system.web.routing.Router";
 
 		// Discover router: app or base
-		var configFilePath = variables.routingAppMapping & modernRouter.replace( ".", "/", "all" ) & ".cfc";
-		var routerType     = fileExists( expandPath( configFilePath ) ) ? "modern" : "base";
+		var configFilePath = variables.routingAppMapping & modernRouter.replace( ".", "/", "all" );
+		var routerType     = (
+			fileExists( expandPath( configFilePath & ".cfc" ) ) || fileExists(
+				expandPath( configFilePath & ".bx" )
+			)
+		) ? "modern" : "base";
 
 		// Check if base router mapped?
 		if ( NOT wirebox.getBinder().mappingExists( baseRouter ) ) {
@@ -688,10 +692,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				// remove it from the string and return string for continued parsing.
 				return left( requestString, len( arguments.requestString ) - extensionLen - 1 );
 			} else if ( variables.router.getThrowOnInvalidExtension() ) {
-				event.setHTTPHeader(
-					statusText = "Invalid Requested Format Extension: #extension#",
-					statusCode = 406
-				);
+				event.setHTTPHeader( statusCode = 406 );
 				throw(
 					message = "Invalid requested format extendion: #extension#",
 					detail  = "Invalid Request Format Extension Detected: #extension#. Valid extensions are: #variables.router.getValidExtensions()#",
@@ -745,9 +746,6 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		if ( !structKeyExists( aRoute, "statusCode" ) ) {
 			aRoute.statusCode = 200;
 		}
-		if ( !structKeyExists( aRoute, "statusText" ) ) {
-			aRoute.statusText = "Ok";
-		}
 
 		// simple values
 		if ( isSimpleValue( aRoute.response ) ) {
@@ -781,8 +779,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			.renderdata(
 				type       = isSimpleValue( theResponse ) ? "HTML" : "JSON",
 				data       = theResponse,
-				statusCode = aRoute.statusCode,
-				statusText = aRoute.statusText
+				statusCode = aRoute.statusCode
 			)
 			.noExecution();
 	}
@@ -977,7 +974,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		results[ "scriptName" ] = trim(
 			reReplaceNoCase(
 				getCGIElement( "script_name", arguments.event ),
-				"[/\\]index\.cfm",
+				"[/\\]index\.(cfm|bxm)",
 				""
 			)
 		);
@@ -995,8 +992,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			results[ "scriptName" ] = replaceNoCase( results[ "scriptName" ], getContextRoot(), "" );
 		}
 
-		// Clean up the path_info from index.cfm
-		results[ "pathInfo" ] = reReplaceNoCase( results[ "pathInfo" ], "^[/\\]index\.cfm", "" );
+		// Clean up the path_info from index
+		results[ "pathInfo" ] = reReplaceNoCase(
+			results[ "pathInfo" ],
+			"^[/\\]index\.(cfm|bxm)",
+			""
+		);
 
 		// Clean the scriptname from the pathinfo if it is the first item in case this is a nested application
 		if ( len( results[ "scriptName" ] ) ) {

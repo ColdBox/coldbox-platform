@@ -2,6 +2,27 @@
 
 	this.loadColdBox = false;
 
+	// Default Config To Test
+	variables.config = {
+		objectDefaultTimeout           : 60,
+		objectDefaultLastAccessTimeout : 30,
+		useLastAccessTimeouts          : true,
+		reapFrequency                  : 2,
+		freeMemoryPercentageThreshold  : 0,
+		evictionPolicy                 : "LRU",
+		evictCount                     : 1,
+		maxObjects                     : 200,
+		objectStore                    : "ConcurrentSoftReferenceStore",
+		// This switches the internal provider from normal cacheBox to coldbox enabled cachebox
+		coldboxEnabled                 : false
+	};
+
+	/**
+	 * ------------------------------------------------------
+	 * Life-Cycle Methods
+	 * ------------------------------------------------------
+	 */
+
 	function setup(){
 		super.setup();
 
@@ -29,28 +50,12 @@
 			.$( "canError", true );
 		mockEventManager.$( "announce" );
 
-		// Config
-		config = {
-			objectDefaultTimeout           : 60,
-			objectDefaultLastAccessTimeout : 30,
-			useLastAccessTimeouts          : true,
-			reapFrequency                  : 2,
-			freeMemoryPercentageThreshold  : 0,
-			evictionPolicy                 : "LRU",
-			evictCount                     : 1,
-			maxObjects                     : 200,
-			objectStore                    : "ConcurrentSoftReferenceStore",
-			// This switches the internal provider from normal cacheBox to coldbox enabled cachebox
-			coldboxEnabled                 : false
-		};
-
 		// Create Provider
 		cache = createMock( "coldbox.system.cache.providers.CacheBoxProvider" ).init();
 		// Decorate it
 		cache.setConfiguration( config );
 		cache.setCacheFactory( mockFactory );
 		cache.setEventManager( mockEventManager );
-
 		// Mock The Scheduler, we don't need any reaping async
 		var mockSchedule = prepareMock(
 			mockExecutor.newSchedule( function(){
@@ -58,10 +63,8 @@
 			} )
 		);
 		mockExecutor.$( "newSchedule", mockSchedule );
-
 		// Configure the provider
 		cache.configure();
-
 		// Clear everything first
 		cache.clearAll();
 	}
@@ -69,6 +72,18 @@
 	function teardown(){
 		cache.clearAll();
 	}
+
+	/**
+	 * ------------------------------------------------------
+	 * Helpers
+	 * ------------------------------------------------------
+	 */
+
+	/**
+	 * ------------------------------------------------------
+	 * Testing Methods
+	 * ------------------------------------------------------
+	 */
 
 	function testShutdown(){
 		cache.shutdown();
@@ -211,14 +226,14 @@
 	}
 
 	function testsetQuiet(){
-		testVal = { name : "luis", age : 32 };
+		var testVal = { name : "luis", age : 32 };
 		cache.setQuiet( "test", testVal, 20 );
 
 		assertEquals( testVal, cache.get( "test" ) );
 	}
 
 	function testSetMulti(){
-		test = { key1 : { name : "luis", age : 2 }, key2 : "hello" };
+		var test = { key1 : { name : "luis", age : 2 }, key2 : "hello" };
 		cache.setMulti( test );
 
 		assertEquals( test.key1, cache.get( "key1" ) );
@@ -226,7 +241,7 @@
 	}
 
 	function testClearMulti(){
-		test = { key1 : { name : "luis", age : 2 }, key2 : "hello" };
+		var test = { key1 : { name : "luis", age : 2 }, key2 : "hello" };
 		cache.setMulti( test );
 
 		cache.clearMulti( "key1,key2" );
@@ -236,7 +251,7 @@
 	}
 
 	function testClearQuiet(){
-		test = {
+		var test = {
 			key1 : now(),
 			key2 : { name : "Pio", age : "32", cool : "beyond belief" }
 		};
@@ -248,7 +263,7 @@
 	}
 
 	function testClear(){
-		test = {
+		var test = {
 			key1 : now(),
 			key2 : { name : "Pio", age : "32", cool : "beyond belief" }
 		};
@@ -260,7 +275,7 @@
 	}
 
 	function testClearAll(){
-		test = {
+		var test = {
 			key1 : now(),
 			key2 : { name : "Pio", age : "32", cool : "beyond belief" }
 		};
@@ -273,7 +288,7 @@
 	}
 
 	function testGetSize(){
-		test = {
+		var test = {
 			key1 : now(),
 			key2 : { age : "32", name : "Lui Mahoney" }
 		};
@@ -284,7 +299,7 @@
 	}
 
 	function testExpireObjectAndIsExpired(){
-		test = {
+		var test = {
 			key1 : now(),
 			key2 : { name : "Pio", age : "32", cool : "beyond belief" }
 		};
@@ -298,7 +313,7 @@
 	}
 
 	function testExpireByKeySnippet(){
-		test = {
+		var test = {
 			key1 : now(),
 			key2 : { name : "Pio", age : "32", cool : "beyond belief" }
 		};
@@ -312,7 +327,7 @@
 	}
 
 	function testExpireAll(){
-		test = {
+		var test = {
 			key1 : now(),
 			key2 : { name : "Pio", age : "32", cool : "beyond belief" }
 		};

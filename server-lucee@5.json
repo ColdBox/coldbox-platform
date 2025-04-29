@@ -19,7 +19,8 @@
         }
     },
     "JVM":{
-        "heapSize":"1024"
+        "heapSize":"1024",
+        "javaVersion":"openjdk11_jre"
     },
     "cfconfig":{
         "file":".cfconfig.json"

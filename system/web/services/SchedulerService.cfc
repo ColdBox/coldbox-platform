@@ -72,7 +72,11 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		}
 
 		// Check if the convention exists, else just build out a simple scheduler
-		if ( fileExists( variables.appPath & "config/Scheduler.cfc" ) ) {
+		if (
+			fileExists( variables.appPath & "config/Scheduler.cfc" ) || fileExists(
+				variables.appPath & "config/Scheduler.bx"
+			)
+		) {
 			schedulerPath = (
 				variables.appMapping.len() ? "#variables.appMapping#.#appSchedulerConvention#" : appSchedulerConvention
 			);
@@ -99,7 +103,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	){
 		// Log it
 		variables.log.info( "Loading ColdBox Task Scheduler (#arguments.name#) at => #arguments.path#..." );
-		// Process as a Scheduler.cfc with virtual inheritance
+		// Process as a Scheduler with virtual inheritance
 		wirebox
 			.registerNewInstance( name = arguments.name, instancePath = arguments.path )
 			.setVirtualInheritance( variables.baseScheduler )

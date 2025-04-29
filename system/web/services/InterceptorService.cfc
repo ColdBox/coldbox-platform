@@ -672,7 +672,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 		// Start Registering inheritances
 		if (
-			structKeyExists( arguments.metadata, "extends" )
+			arguments.metadata.keyExists( "extends" )
 			&&
 			arguments.metadata.extends.name neq "coldbox.system.EventHandler"
 		) {

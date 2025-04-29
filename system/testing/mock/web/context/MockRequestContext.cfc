@@ -16,15 +16,14 @@ component
 	 * return RequestContext
 	 *
 	 * @statusCode.hint the status code
-	 * @statusText.hint the status text
 	 * @name.hint       The header name
 	 * @value.hint      The header value
 	 * @charset.hint    The charset to use, defaults to UTF-8
 	 */
 	function setHTTPHeader( statusCode, statusText = "", name, value = "" ){
 		// status code?
-		if ( structKeyExists( arguments, "statusCode" ) ) {
-			setValue( "cbox_statusCode", arguments.statusCode );
+		if ( !isNull( arguments.statusCode ) ) {
+			setStatusCode( arguments.statusCode );
 		}
 		// Name Exists
 		else if ( structKeyExists( arguments, "name" ) ) {

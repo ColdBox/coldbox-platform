@@ -7,7 +7,7 @@ component{
 	// Application properties
 	this.name = hash( getCurrentTemplatePath() );
 	this.sessionManagement = true;
-	this.sessionTimeout = createTimeSpan(0,0,30,0);
+	this.sessionTimeout = createTimeSpan(0,0,5,0);
 	this.setClientCookies = true;
 
 	// COLDBOX STATIC PROPERTY, DO NOT CHANGE UNLESS THIS IS NOT THE ROOT OF YOUR COLDBOX APP

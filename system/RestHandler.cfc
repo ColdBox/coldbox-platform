@@ -135,7 +135,6 @@ component extends="EventHandler" {
 				data         = responseData,
 				contentType  = arguments.prc.response.getContentType(),
 				statusCode   = arguments.prc.response.getStatusCode(),
-				statusText   = arguments.prc.response.getStatusText(),
 				location     = arguments.prc.response.getLocation(),
 				isBinary     = arguments.prc.response.getBinary(),
 				jsonCallback = arguments.prc.response.getJsonCallback()
@@ -203,8 +202,7 @@ component extends="EventHandler" {
 			.setError( true )
 			.setData( {} )
 			.addMessage( "Base Handler Application Error: #arguments.exception.message#" )
-			.setStatusCode( arguments.event.STATUS.INTERNAL_ERROR )
-			.setStatusText( "General application error" );
+			.setStatusCode( arguments.event.STATUS.INTERNAL_ERROR );
 
 		// Development additions Great for Testing
 		if ( inDebugMode() ) {
@@ -222,7 +220,6 @@ component extends="EventHandler" {
 			data        = prc.response.getDataPacket( reset = this.resetDataOnError ),
 			contentType = prc.response.getContentType(),
 			statusCode  = prc.response.getStatusCode(),
-			statusText  = prc.response.getStatusText(),
 			location    = prc.response.getLocation(),
 			isBinary    = prc.response.getBinary()
 		);
@@ -255,8 +252,7 @@ component extends="EventHandler" {
 				isJSON( arguments.exception.extendedInfo ) ? deserializeJSON( arguments.exception.extendedInfo ) : ""
 			)
 			.addMessage( "Validation exceptions occurred, please see the data" )
-			.setStatusCode( arguments.event.STATUS.BAD_REQUEST )
-			.setStatusText( "Invalid Request" );
+			.setStatusCode( arguments.event.STATUS.BAD_REQUEST );
 
 		// Render Error Out
 		arguments.event.renderData(
@@ -264,7 +260,6 @@ component extends="EventHandler" {
 			data        = arguments.prc.response.getDataPacket( reset = this.resetDataOnError ),
 			contentType = arguments.prc.response.getContentType(),
 			statusCode  = arguments.prc.response.getStatusCode(),
-			statusText  = arguments.prc.response.getStatusText(),
 			location    = arguments.prc.response.getLocation(),
 			isBinary    = arguments.prc.response.getBinary()
 		);
@@ -301,8 +296,7 @@ component extends="EventHandler" {
 			.addMessage(
 				len( exception.message ) ? exception.message : "The record you requested cannot be found in this system"
 			)
-			.setStatusCode( arguments.event.STATUS.NOT_FOUND )
-			.setStatusText( "Not Found" );
+			.setStatusCode( arguments.event.STATUS.NOT_FOUND );
 
 		// Render Error Out
 		arguments.event.renderData(
@@ -310,7 +304,6 @@ component extends="EventHandler" {
 			data        = arguments.prc.response.getDataPacket( reset = this.resetDataOnError ),
 			contentType = arguments.prc.response.getContentType(),
 			statusCode  = arguments.prc.response.getStatusCode(),
-			statusText  = arguments.prc.response.getStatusText(),
 			location    = arguments.prc.response.getLocation(),
 			isBinary    = arguments.prc.response.getBinary()
 		);
@@ -339,8 +332,7 @@ component extends="EventHandler" {
 			.addMessage(
 				"InvalidHTTPMethod Execution of (#arguments.faultAction#): #arguments.event.getHTTPMethod()#"
 			)
-			.setStatusCode( arguments.event.STATUS.NOT_ALLOWED )
-			.setStatusText( "Invalid HTTP Method" );
+			.setStatusCode( arguments.event.STATUS.NOT_ALLOWED );
 
 		// Render Error Out
 		arguments.event.renderData(
@@ -348,7 +340,6 @@ component extends="EventHandler" {
 			data        = arguments.prc.response.getDataPacket( reset = this.resetDataOnError ),
 			contentType = arguments.prc.response.getContentType(),
 			statusCode  = arguments.prc.response.getStatusCode(),
-			statusText  = arguments.prc.response.getStatusText(),
 			location    = arguments.prc.response.getLocation(),
 			isBinary    = arguments.prc.response.getBinary()
 		);
@@ -369,8 +360,7 @@ component extends="EventHandler" {
 			.getResponse()
 			.setError( true )
 			.addMessage( "Action '#arguments.missingAction#' could not be found" )
-			.setStatusCode( arguments.event.STATUS.NOT_FOUND )
-			.setStatusText( "Invalid Action" );
+			.setStatusCode( arguments.event.STATUS.NOT_FOUND );
 
 		// Render Error Out
 		arguments.event.renderData(
@@ -378,7 +368,6 @@ component extends="EventHandler" {
 			data        = arguments.prc.response.getDataPacket( reset = this.resetDataOnError ),
 			contentType = arguments.prc.response.getContentType(),
 			statusCode  = arguments.prc.response.getStatusCode(),
-			statusText  = arguments.prc.response.getStatusText(),
 			location    = arguments.prc.response.getLocation(),
 			isBinary    = arguments.prc.response.getBinary()
 		);
@@ -422,7 +411,6 @@ component extends="EventHandler" {
 				.getResponse()
 				.setError( true )
 				.setStatusCode( arguments.event.STATUS.NOT_AUTHENTICATED )
-				.setStatusText( "Expired Authentication Credentials" )
 				.addMessage( "Expired Authentication Credentials" );
 			return;
 		}
@@ -431,7 +419,6 @@ component extends="EventHandler" {
 			.getResponse()
 			.setError( true )
 			.setStatusCode( arguments.event.STATUS.NOT_AUTHENTICATED )
-			.setStatusText( "Invalid or Missing Credentials" )
 			.addMessage( "Invalid or Missing Authentication Credentials" );
 
 		/**
@@ -439,10 +426,7 @@ component extends="EventHandler" {
 		 */
 		if ( arguments.abort ) {
 			event.setHTTPHeader( name = "Content-Type", value = "application/json" );
-			event.setHTTPHeader(
-				statusCode = "#arguments.event.STATUS.NOT_AUTHENTICATED#",
-				statusText = "Invalid or Missing Credentials"
-			);
+			event.setHTTPHeader( statusCode = "#arguments.event.STATUS.NOT_AUTHENTICATED#" );
 
 			writeOutput( toJson( prc.response.getDataPacket( reset = this.resetDataOnError ) ) );
 
@@ -482,7 +466,6 @@ component extends="EventHandler" {
 			.getResponse()
 			.setError( true )
 			.setStatusCode( arguments.event.STATUS.NOT_AUTHORIZED )
-			.setStatusText( "Unauthorized Resource" )
 			.addMessage( "You are not allowed to access this resource" );
 
 		// Check for validator results
@@ -495,10 +478,7 @@ component extends="EventHandler" {
 		 */
 		if ( arguments.abort ) {
 			event.setHTTPHeader( name = "Content-Type", value = "application/json" );
-			event.setHTTPHeader(
-				statusCode = "#arguments.event.STATUS.NOT_AUTHORIZED#",
-				statusText = "Not Authorized"
-			);
+			event.setHTTPHeader( statusCode = "#arguments.event.STATUS.NOT_AUTHORIZED#" );
 
 			writeOutput( serializeJSON( prc.response.getDataPacket( reset = this.resetDataOnError ) ) );
 
@@ -527,7 +507,6 @@ component extends="EventHandler" {
 			.getResponse()
 			.setError( true )
 			.setStatusCode( arguments.event.STATUS.NOT_FOUND )
-			.setStatusText( "Not Found" )
 			.addMessage( "The resource requested (#event.getCurrentRoutedURL()#) could not be found" );
 	}
 
@@ -586,8 +565,7 @@ component extends="EventHandler" {
 				} : {}
 			)
 			.addMessage( "An exception ocurred: #arguments.exception.message#" )
-			.setStatusCode( arguments.event.STATUS.INTERNAL_ERROR )
-			.setStatusText( "General application error" );
+			.setStatusCode( arguments.event.STATUS.INTERNAL_ERROR );
 	}
 
 	/**
@@ -613,7 +591,6 @@ component extends="EventHandler" {
 			.getResponse()
 			.setError( true )
 			.setStatusCode( arguments.event.STATUS.EXPECTATION_FAILED )
-			.setStatusText( "Expectation Failed" )
 			.addMessage( arguments.message );
 	}
 

@@ -473,7 +473,7 @@ component accessors="true" {
 			targetDirectory, // path
 			true, // recurse
 			"path", // list info
-			"*.cfc" // filter
+			"*.cfc|*.bx" // filter
 		)
 			// Skip hidden files/dirs and also paths not in the include/exclude lists
 			.filter( function( thisPath ){
@@ -503,7 +503,7 @@ component accessors="true" {
 				arguments.thisPath = replaceNoCase( arguments.thisPath, targetDirectory, "" );
 				// Process rest of manips
 				return reReplace(
-					reReplace( packagePath, "^/", "" ) & replaceNoCase( arguments.thisPath, ".cfc", "" ),
+					reReplace( packagePath, "^/", "" ) & listFirst( arguments.thisPath, "." ),
 					"(/|\\)",
 					".",
 					"all"

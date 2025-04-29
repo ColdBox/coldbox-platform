@@ -72,17 +72,17 @@ component
 	 * @index The array of metadata keys used for processing evictions
 	 */
 	private function processEvictions( required array index ){
-		var indexer        = variables.cacheProvider.getObjectStore().getIndexer();
 		var evictCount     = variables.cacheProvider.getConfiguration().evictCount;
 		var evictedCounter = 0;
 
-		// TODO: Move to streams : Loop Through Metadata
 		for ( var item in arguments.index ) {
-			// verify object in indexer
-			if ( NOT indexer.objectExists( item ) ) {
+			// skip if not found
+			if ( NOT variables.cacheProvider.lookupQuiet( item ) ) {
 				continue;
 			}
-			var md = indexer.getObjectMetadata( item );
+
+			// skip if no timeout or no isExpired keys
+			var md = variables.cacheProvider.getCachedObjectMetadata( item );
 			if ( NOT md.keyExists( "timeout" ) || NOT md.keyExists( "isExpired" ) ) {
 				continue;
 			}

@@ -2,7 +2,7 @@
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * This service loads all application configuration from conventions or a ColdBox.cfc
+ * This service loads all application configuration from conventions or a ColdBox config
  */
 component accessors="true" {
 
@@ -576,7 +576,11 @@ component accessors="true" {
 			}
 		}
 		// Check if LogBoxConfig.cfc exists in the config conventions
-		else if ( fileExists( variables.controller.getAppRootPath() & "config/CacheBox.cfc" ) ) {
+		else if (
+			fileExists( variables.controller.getAppRootPath() & "config/CacheBox.cfc" ) || fileExists(
+				variables.controller.getAppRootPath() & "config/CacheBox.bx"
+			)
+		) {
 			configStruct.cacheBox.configFile = loadCacheBoxByConvention( configStruct );
 		}
 		// else, load the default coldbox cachebox config
@@ -658,7 +662,11 @@ component accessors="true" {
 			arguments.config[ "LogBoxConfig" ] = logBoxConfig.getMemento();
 		}
 		// Check if LogBoxConfig.cfc exists in the config conventions and load it.
-		else if ( fileExists( variables.controller.getAppRootPath() & "config/LogBox.cfc" ) ) {
+		else if (
+			fileExists( variables.controller.getAppRootPath() & "config/LogBox.cfc" ) || fileExists(
+				variables.controller.getAppRootPath() & "config/LogBox.bx"
+			)
+		) {
 			loadLogBoxByConvention( logBoxConfig, arguments.config );
 		}
 		// Check if hash changed by means of programmatic object config
@@ -688,7 +696,11 @@ component accessors="true" {
 			arguments.config.wirebox.binderPath = wireBoxDSL.binder;
 		}
 		// Check if WireBox.cfc exists in the config conventions, if so create binder
-		else if ( fileExists( variables.controller.getAppRootPath() & "config/WireBox.cfc" ) ) {
+		else if (
+			fileExists( variables.controller.getAppRootPath() & "config/WireBox.cfc" ) || fileExists(
+				variables.controller.getAppRootPath() & "config/WireBox.bx"
+			)
+		) {
 			arguments.config.wirebox.binderPath = "config.WireBox";
 			if ( len( arguments.config.appMapping ) ) {
 				arguments.config.wirebox.binderPath = arguments.config.appMapping & ".#arguments.config.wirebox.binderPath#";

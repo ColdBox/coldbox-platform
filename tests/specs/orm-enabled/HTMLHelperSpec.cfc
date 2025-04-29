@@ -1,4 +1,5 @@
-﻿component extends="tests.resources.BaseIntegrationTest" {
+﻿// Skipped until ORM is ready
+component extends="tests.resources.BaseIntegrationTest" {
 
 	/*********************************** LIFE CYCLE Methods ***********************************/
 

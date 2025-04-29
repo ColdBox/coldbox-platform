@@ -15,8 +15,8 @@
 		"Error Code"    : ( oException.getErrorCode() != 0 ) ? oException.getErrorCode() : "",
 		"Type"          : oException.gettype(),
 		"Extended Info" : ( oException.getExtendedInfo() != "" ) ? oException.getExtendedInfo() : "",
-		"Message"       : htmlEditFormat( oException.getmessage() ).listChangeDelims( "<br>", chr( 13 ) & chr( 10 ) ),
-		"Detail"        : htmlEditFormat( oException.getDetail() ).listChangeDelims( "<br>", chr( 13 ) & chr( 10 ) ),
+		"Message"       : encodeForHTML( oException.getmessage() ).listChangeDelims( "<br>", chr( 13 ) & chr( 10 ) ),
+		"Detail"        : encodeForHTML( oException.getDetail() ).listChangeDelims( "<br>", chr( 13 ) & chr( 10 ) ),
 		"Environment"	: controller.getSetting( "environment" ),
 		"Event"         : ( event.getCurrentEvent() != "" ) ? event.getCurrentEvent() : "",
 		"Route"         : ( event.getCurrentRoute() != "" ) ? event.getCurrentRoute() & (
@@ -250,7 +250,7 @@
 										<cfif structKeyExists( instance, "codePrintPlain" ) && local.inDebugMode>
 											<cfset codesnippet = instance.codePrintPlain>
 											<cfset codesnippet = reReplace( codesnippet, "\n\t", " ", "All" )>
-											<cfset codesnippet = htmlEditFormat( codesnippet )>
+											<cfset codesnippet = encodeForHTML( codesnippet )>
 											<cfset codesnippet = reReplace(
 												codesnippet,
 												"([0-9]+:)",
@@ -427,7 +427,7 @@
 					<!--- Verify if File Exists: Just in case it's a core CFML engine file, else don't add it --->
 					<cfif fileExists( thisTagContext.template )>
 						<!--- Determine Source Highlighter --->
-						<cfset highlighter = ( listLast( thisTagContext.template, "." ) eq "cfm" ? "cf" : "js" )/>
+						<cfset highlighter = ( listFindNoCase( "cfm,bxm", listLast( thisTagContext.template, "." ) ) ? "cf" : "js" )/>
 						<cfset spacing = "#chr( 20 )##chr( 20 )##chr( 20 )##chr( 20 )#">
 						<!--- Output code only once per instance found --->
 						<cfset filecontent = []>

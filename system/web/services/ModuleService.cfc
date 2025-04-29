@@ -225,9 +225,15 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		var isBundle              = listLast( modLocation, "-" ) eq "bundle";
 
 		// Check if module config exists, or we have a module.
-		if ( NOT fileExists( modLocation & "/ModuleConfig.cfc" ) && NOT isBundle ) {
+		if (
+			NOT isBundle
+			&&
+			NOT fileExists( modLocation & "/ModuleConfig.cfc" )
+			&&
+			NOT fileExists( modLocation & "/ModuleConfig.bx" )
+		) {
 			variables.logger.WARN(
-				"The module (#modName#) cannot be loaded as it does not have a ModuleConfig.cfc in its root. Path Checked: #modLocation#"
+				"The module (#modName#) cannot be loaded as it does not have a ModuleConfig class in its root. Path Checked: #modLocation#"
 			);
 			return false;
 		}
@@ -443,10 +449,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			mConfig.modelsPhysicalPath &= "/#mConfig.conventions.modelsLocation#";
 			// Router
 			mConfig.routerInvocationPath &= ".#mConfig.conventions.routerLocation#";
-			mConfig.routerPhysicalPath &= "/#mConfig.conventions.routerLocation.replace( ".", "/", "all" )#.cfc";
+			mConfig.routerPhysicalPath &= "/#mConfig.conventions.routerLocation.replace( ".", "/", "all" )#";
 			// Scheduler
 			mConfig.schedulerInvocationPath &= ".#mConfig.conventions.schedulerLocation#";
-			mConfig.schedulerPhysicalPath &= "/#mConfig.conventions.schedulerLocation.replace( ".", "/", "all" )#.cfc";
+			mConfig.schedulerPhysicalPath &= "/#mConfig.conventions.schedulerLocation.replace( ".", "/", "all" )#";
 
 			// Register CFML Mapping if it exists, for loading purposes
 			// TODO: If a duplicate mapping is detected, warn it to logs
@@ -481,7 +487,11 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 						// cleanup module name
 						var childName = listLast( thisChild, "/\" );
 						// verify ModuleConfig exists, else skip
-						if ( fileExists( thisChild & "/ModuleConfig.cfc" ) ) {
+						if (
+							fileExists( thisChild & "/ModuleConfig.cfc" ) || fileExists(
+								thisChild & "/ModuleConfig.bx"
+							)
+						) {
 							// add to parent children
 							arrayAppend( mConfig.childModules, childname );
 							// register child
@@ -683,7 +693,11 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				}
 
 				// Register Default Module Export if it exists as @moduleName, so you can do getInstance( "@moduleName" )
-				if ( fileExists( mconfig.modelsPhysicalPath & "/#arguments.moduleName#.cfc" ) ) {
+				if (
+					fileExists( mconfig.modelsPhysicalPath & "/#arguments.moduleName#.cfc" ) || fileExists(
+						mconfig.modelsPhysicalPath & "/#arguments.moduleName#.bx"
+					)
+				) {
 					mConfig.injector
 						.getBinder()
 						.map( [
@@ -745,8 +759,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 					append  = false
 				);
 
-				// config/Router.cfc Conventions
-				if ( fileExists( mConfig.routerPhysicalPath ) ) {
+				// config/Router Conventions
+				if (
+					fileExists( mConfig.routerPhysicalPath & ".cfc" ) || fileExists(
+						mConfig.routerPhysicalPath & ".bx"
+					)
+				) {
 					// Process as a Router.cfc with virtual inheritance
 					mConfig.injector
 						.registerNewInstance(
@@ -817,7 +835,11 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			| Module Schedulers
 			|--------------------------------------------------------------------------
 			*/
-			if ( fileExists( mConfig.schedulerPhysicalPath ) ) {
+			if (
+				fileExists( mConfig.schedulerPhysicalPath & ".cfc" ) || fileExists(
+					mConfig.schedulerPhysicalPath & ".bx"
+				)
+			) {
 				mConfig.scheduler = variables.controller
 					.getSchedulerService()
 					.loadScheduler(
@@ -1272,7 +1294,11 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			mConfig.settings.append( globalModuleSettings[ mConfig.modelNamespace ], true );
 
 			// config/{mConfig.modelNamespace}.cfc overrides
-			if ( fileExists( "#appSettings.applicationPath#config/modules/#mConfig.modelnamespace#.cfc" ) ) {
+			if (
+				fileExists( "#appSettings.applicationPath#config/modules/#mConfig.modelnamespace#.cfc" ) || fileExists(
+					"#appSettings.applicationPath#config/modules/#mConfig.modelnamespace#.bx"
+				)
+			) {
 				loadModuleSettingsOverride( mConfig, mConfig.modelNamespace );
 			}
 		}
@@ -1404,7 +1430,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		| Module Settings Config Seeding
 		|--------------------------------------------------------------------------
 		*/
-		mConfig.settings.append( oConfig.configure(), true );
+		mConfig.settings.append( oConfig.configure( mConfig.settings ), true );
 
 		/*
 		|--------------------------------------------------------------------------

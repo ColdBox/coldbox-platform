@@ -1,7 +1,18 @@
-component {
+class {
 
 	variables.ignoreMethods = "init,$init,configure";
 	variables.outFile 		= "ColdBox.sublime-completions";
+
+	function main( args= [] ){
+		println( "********************************************" );
+		println( "Starting ColdBox Sublime Completions Generator..." );
+		println( "********************************************" );
+		// Run the generator
+		run();
+		println( "********************************************" );
+		println( "ColdBox Sublime Completions Generator Finished!" );
+		println( "********************************************" );
+	}
 
 	/**
 	 * Generate the ColdBox Sublime Completions
@@ -15,16 +26,15 @@ component {
 		" );
 
 		// Transpile Globals + Scopes
+		println( "√ Transpiling Global Scopes..." )
 		out.append( transpileGlobals() );
 		out.append( "," );
+		println( "√ Transpiling Normal Scopes..." )
 		out.append( transpileScopes() );
-
 		// Close it out
 		out.append( "]}" );
-
 		// Write it out
 		fileWrite( variables.outFile, out.toString() );
-
 		// Return data
 		return out.toString();
 	}
@@ -38,18 +48,19 @@ component {
 			"BaseSpec"           : "testbox.system.BaseSpec"
 		}
 		// discover each components' function collection
-		.map( ( k, v ) => getComponentMetadata( v ).functions )
+		.map( ( k, v ) => getClassMetadata( v ).functions )
 		// process each function set
-		.map( ( cfcName, functions ) => {
+		.map( ( className, functions ) => {
+			println( "√ Transpiling [#className#]..." );
 			return functions
 				// Ignore reserved methods
 				.filter( ( thisFunction ) => !listFindNoCase( variables.ignoreMethods, thisFunction.name ) )
 				// Transpile function and parameters
 				.map( ( thisFunction ) => {
-					var fwName = ( findNoCase( "BaseSpec", cfcName ) ? "TestBox" : "ColdBox" );
+					var fwName = ( findNoCase( "BaseSpec", className ) ? "TestBox" : "ColdBox" );
 					return
 						"{
-							""trigger"": ""#thisFunction.name#\tfn. (#fwName#:#cfcName#)"",
+							""trigger"": ""#thisFunction.name#\tfn. (#fwName#:#className#)"",
 							""contents"": ""#thisFunction.name#(#processParams( thisFunction.parameters )# )""
 					}";
 				})
@@ -63,7 +74,6 @@ component {
 		}, [] )
 		// Flatten it
 		.toList();
-		;
 	}
 
 	private function processParams( parameters ){
@@ -102,9 +112,10 @@ component {
 			"assert"     : "testbox.system.Assertion"
 		}
 		// discover each components' function collection
-		.map( ( k, v ) => getComponentMetadata( v ).functions )
+		.map( ( k, v ) => getClassMetadata( v ).functions )
 		// process each function set
 		.map( ( thisScope, functions ) => {
+			println( "√ Processing Scope [#thisScope#]..." );
 			return functions
 				// Ignore reserved methods
 				.filter( ( thisFunction ) => !listFindNoCase( variables.ignoreMethods, thisFunction.name ) )
