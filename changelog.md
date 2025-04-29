@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [7.4.0] - 2025-04-29
+
 ### ColdBox HMVC
 
 #### Improvement
@@ -16,15 +18,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [COLDBOX-1286](https://ortussolutions.atlassian.net/browse/COLDBOX-1286) Make sure global scheduler is loaded after modules load.
 - [COLDBOX-1287](https://ortussolutions.atlassian.net/browse/COLDBOX-1287) If running scheduled tasks manually with a \`force\` then do not set the next run since this is a forced run.
 - [COLDBOX-1288](https://ortussolutions.atlassian.net/browse/COLDBOX-1288) Allow Disabling of PrettyJson in Log Output
-- [COLDBOX-1294](https://ortussolutions.atlassian.net/browse/COLDBOX-1294) Call \`reset\(\)\` when testing and unloadColdbox is true in the \`afterTests\(\)\` to make sure the reset procedures are done, not only the shutdown.
+- [COLDBOX-1294](https://ortussolutions.atlassian.net/browse/COLDBOX-1294) Call \`reset()\` when testing and unloadColdbox is true in the \`afterTests()\` to make sure the reset procedures are done, not only the shutdown.
 - [COLDBOX-1305](https://ortussolutions.atlassian.net/browse/COLDBOX-1305) Improvement: Update Config Seeding to Include Original Module Settings
 
 #### New Features
 
 - [COLDBOX-1285](https://ortussolutions.atlassian.net/browse/COLDBOX-1285) BoxLang Support so you can write your ColdBox apps in BoxLang
-- [COLDBOX-1296](https://ortussolutions.atlassian.net/browse/COLDBOX-1296) New flow peek\(\) method to do fluent peeks in objects
-- [COLDBOX-1297](https://ortussolutions.atlassian.net/browse/COLDBOX-1297) Schedulers now have a startupTask\( task \) to dynamically startup a task by name or task object
-- [COLDBOX-1306](https://ortussolutions.atlassian.net/browse/COLDBOX-1306) Better tracking of status code and text on the request context so integration tests are not corrupted by response commitment: getStatusCode\(\), getStatusText\(\) accessors
+- [COLDBOX-1296](https://ortussolutions.atlassian.net/browse/COLDBOX-1296) New flow peek() method to do fluent peeks in objects
+- [COLDBOX-1297](https://ortussolutions.atlassian.net/browse/COLDBOX-1297) Schedulers now have a startupTask( task ) to dynamically startup a task by name or task object
+- [COLDBOX-1306](https://ortussolutions.atlassian.net/browse/COLDBOX-1306) Better tracking of status code and text on the request context so integration tests are not corrupted by response commitment: getStatusCode(), getStatusText() accessors
 
 #### Bugs
 
@@ -34,10 +36,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [COLDBOX-1289](https://ortussolutions.atlassian.net/browse/COLDBOX-1289) Directory Helper Logic in Renderer.cfc is Incorrect and Generates Bad Path On Windows
 - [COLDBOX-1295](https://ortussolutions.atlassian.net/browse/COLDBOX-1295) Dumps in BugReport.cfm need top attributes
 - [COLDBOX-1304](https://ortussolutions.atlassian.net/browse/COLDBOX-1304) thisLocationToken is not var scoped
-- [COLDBOX-1311](https://ortussolutions.atlassian.net/browse/COLDBOX-1311) Remove direct calls to the servlet response.setStatus\( int, String \) methods due to jakarta removing statusText
+- [COLDBOX-1311](https://ortussolutions.atlassian.net/browse/COLDBOX-1311) Remove direct calls to the servlet response.setStatus( int, String ) methods due to jakarta removing statusText
 - [COLDBOX-1317](https://ortussolutions.atlassian.net/browse/COLDBOX-1317) ACF 2025 has removed htmlEditFormat
 - [COLDBOX-1326](https://ortussolutions.atlassian.net/browse/COLDBOX-1326) populator discover entity name not accouting for missing entityname
-- [COLDBOX-1327](https://ortussolutions.atlassian.net/browse/COLDBOX-1327) \`layoutLocations\` variable error when using event.noLayout\(\)
+- [COLDBOX-1327](https://ortussolutions.atlassian.net/browse/COLDBOX-1327) \`layoutLocations\` variable error when using event.noLayout()
 
 ### CacheBox
 
@@ -66,7 +68,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Bug
 
 - [WIREBOX-155](https://ortussolutions.atlassian.net/browse/WIREBOX-155) ExceptionBean is referenced but not shipped with Standalone install
-
 
 ## [7.3.1] - 2025-03-02
 
@@ -367,7 +368,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * * *
 
-[Unreleased]: https://github.com/ColdBox/coldbox-platform/compare/v7.3.1...HEAD
+[Unreleased]: https://github.com/ColdBox/coldbox-platform/compare/v7.4.0...HEAD
+
+[7.4.0]: https://github.com/ColdBox/coldbox-platform/compare/v7.3.1...v7.4.0
 
 [7.3.1]: https://github.com/ColdBox/coldbox-platform/compare/v7.3.0...v7.3.1
 
