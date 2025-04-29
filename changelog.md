@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.10.1] - 2025-04-29
+
 ## [6.11.0] - 2025-04-28
 
 ### New Feature
@@ -291,7 +293,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - [WIREBOX-123](https://ortussolutions.atlassian.net/browse/WIREBOX-123) Removal of usage of Injector dsl interface due to so many issues with multiple engines
 
-[Unreleased]: https://github.com/ColdBox/coldbox-platform/compare/v6.10.0...HEAD
+[Unreleased]: https://github.com/ColdBox/coldbox-platform/compare/v6.10.1...HEAD
+
+[6.10.1]: https://github.com/ColdBox/coldbox-platform/compare/v6.10.0...v6.10.1
 
 [6.10.0]: https://github.com/ColdBox/coldbox-platform/compare/v6.9.0...v6.10.0
 
