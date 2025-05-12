@@ -1,9 +1,9 @@
 {
     "app":{
-        "cfengine":"boxlang@1",
-        "serverHomeDirectory":".engine/boxlang-cfml-1"
+        "cfengine":"boxlang@be",
+        "serverHomeDirectory":".engine/boxlang-cfml-be"
     },
-    "name":"coldbox-boxlang-cfml-1",
+    "name":"coldbox-boxlang-cfml-be",
     "force":true,
     "openBrowser":false,
     "web":{

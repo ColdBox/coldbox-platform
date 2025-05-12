@@ -116,7 +116,7 @@ And constructed with the following guidelines:
 
 * BoxLang 1+
 * Lucee 5+
-* Adobe ColdFusion 2018+
+* Adobe ColdFusion 2023+
 
 ## Quick Installation
 

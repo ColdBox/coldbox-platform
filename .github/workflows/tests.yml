@@ -25,6 +25,12 @@ jobs:
         jdkVersion: [ "21" ]
         experimental: [ false ]
         timeoutMinutes: [ 8 ]
+        include:
+          - commandbox_version: "6.2.0"
+            cfengine: "boxlang-cfml@be"
+            jdkVersion: "21"
+            experimental: true
+            timeoutMinutes: 8
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
