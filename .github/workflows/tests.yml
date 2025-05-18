@@ -18,19 +18,23 @@ jobs:
     env:
       DB_USER: root
       DB_PASSWORD: root
+      COMMANDBOX_VERSION: 6.2.1
     continue-on-error: ${{ matrix.experimental }}
     strategy:
       fail-fast: false
       matrix:
-        commandbox_version: [ "6.2.0" ]
-        cfengine: [ "boxlang-cfml@1", "lucee@5", "lucee@6", "adobe@2023", "adobe@2025" ]
+        cfengine: [ "boxlang-cfml@1", "lucee@5", "lucee@6", "adobe@2025" ]
         jdkVersion: [ "21" ]
         experimental: [ false ]
         timeoutMinutes: [ 8 ]
         include:
-          - commandbox_version: "6.2.0"
-            cfengine: "boxlang-cfml@be"
+          - cfengine: "boxlang-cfml@be"
             jdkVersion: "21"
+            experimental: true
+            timeoutMinutes: 8
+          # Added here, due to cfpm crapping out too often, and I can't build
+          - cfengine: "adobe@2023"
+            jdkVersion: "11"
             experimental: true
             timeoutMinutes: 8
     steps:
@@ -52,7 +56,7 @@ jobs:
       - name: Setup CommandBox CLI
         uses: Ortus-Solutions/setup-commandbox@v2.0.1
         with:
-          version: ${{ matrix.commandbox_version }}
+          version: ${{ env.COMMANDBOX_VERSION }}
           install: commandbox-boxlang
 
       - name: Setup .env For Runner
