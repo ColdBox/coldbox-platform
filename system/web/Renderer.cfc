@@ -702,18 +702,18 @@ component
 		// Declare Locations
 		var moduleName             = event.getCurrentModule();
 		var parentModuleLayoutPath = reReplace(
-				"/#variables.appMapping#/#variables.layoutsConvention#/modules/#moduleName#/#arguments.layout#",
-				"//",
-				"/",
-				"all"
-			);
+			"/#variables.appMapping#/#variables.layoutsConvention#/modules/#moduleName#/#arguments.layout#",
+			"//",
+			"/",
+			"all"
+		);
 		var parentCommonLayoutPath = reReplace(
-				"/#variables.appMapping#/#variables.layoutsConvention#/modules/#arguments.layout#",
-				"//",
-				"/",
-				"all"
-			);
-		var moduleLayoutPath       = "#variables.modulesConfig[ moduleName ].mapping#/#variables.modulesConfig[ moduleName ].conventions.layoutsLocation#/#arguments.layout#";
+			"/#variables.appMapping#/#variables.layoutsConvention#/modules/#arguments.layout#",
+			"//",
+			"/",
+			"all"
+		);
+		var moduleLayoutPath = "#variables.modulesConfig[ moduleName ].mapping#/#variables.modulesConfig[ moduleName ].conventions.layoutsLocation#/#arguments.layout#";
 
 		// Check parent view order setup
 		if ( variables.modulesConfig[ moduleName ].layoutParentLookup ) {
@@ -838,18 +838,18 @@ component
 		// Declare Locations
 		var moduleName           = arguments.module;
 		var parentModuleViewPath = reReplace(
-				"/#variables.appMapping#/#variables.viewsConvention#/modules/#moduleName#/#arguments.view#",
-				"//",
-				"/",
-				"all"
-			);
+			"/#variables.appMapping#/#variables.viewsConvention#/modules/#moduleName#/#arguments.view#",
+			"//",
+			"/",
+			"all"
+		);
 		var parentCommonViewPath = reReplace(
-				"/#variables.appMapping#/#variables.viewsConvention#/modules/#arguments.view#",
-				"//",
-				"/",
-				"all"
-			);
-		var moduleViewPath       = "#variables.modulesConfig[ moduleName ].mapping#/#variables.modulesConfig[ moduleName ].conventions.viewsLocation#/#arguments.view#";
+			"/#variables.appMapping#/#variables.viewsConvention#/modules/#arguments.view#",
+			"//",
+			"/",
+			"all"
+		);
+		var moduleViewPath = "#variables.modulesConfig[ moduleName ].mapping#/#variables.modulesConfig[ moduleName ].conventions.viewsLocation#/#arguments.view#";
 
 		// Check parent view order setup
 		if ( variables.modulesConfig[ moduleName ].viewParentLookup ) {
