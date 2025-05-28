@@ -653,7 +653,7 @@ component
 
 		// Try to locate the view
 		for ( var thisLayoutPath in layoutPaths ) {
-			reReplace( thisLayoutPath, "//", "/", "all" );
+			thisLayoutPath = reReplace( thisLayoutPath, "//", "/", "all" );
 			if ( fileExists( expandPath( thisLayoutPath & ".cfm" ) ) ) {
 				return thisLayoutPath & ".cfm";
 			}
@@ -701,10 +701,19 @@ component
 
 		// Declare Locations
 		var moduleName             = event.getCurrentModule();
-		var parentModuleLayoutPath = "/#variables.appMapping#/#variables.layoutsConvention#/modules/#moduleName#/#arguments.layout#";
-		var parentCommonLayoutPath = "/#variables.appMapping#/#variables.layoutsConvention#/modules/#arguments.layout#";
+		var parentModuleLayoutPath = reReplace(
+				"/#variables.appMapping#/#variables.layoutsConvention#/modules/#moduleName#/#arguments.layout#",
+				"//",
+				"/",
+				"all"
+			);
+		var parentCommonLayoutPath = reReplace(
+				"/#variables.appMapping#/#variables.layoutsConvention#/modules/#arguments.layout#",
+				"//",
+				"/",
+				"all"
+			);
 		var moduleLayoutPath       = "#variables.modulesConfig[ moduleName ].mapping#/#variables.modulesConfig[ moduleName ].conventions.layoutsLocation#/#arguments.layout#";
-
 
 		// Check parent view order setup
 		if ( variables.modulesConfig[ moduleName ].layoutParentLookup ) {
@@ -782,7 +791,7 @@ component
 
 		// Try to locate the view
 		for ( var thisViewPath in viewPaths ) {
-			reReplace( thisViewPath, "//", "/", "all" );
+			thisViewPath = reReplace( thisViewPath, "//", "/", "all" );
 			if ( fileExists( expandPath( thisViewPath & ".cfm" ) ) ) {
 				return thisViewPath & ".cfm";
 			}
@@ -828,8 +837,18 @@ component
 
 		// Declare Locations
 		var moduleName           = arguments.module;
-		var parentModuleViewPath = "/#variables.appMapping#/#variables.viewsConvention#/modules/#moduleName#/#arguments.view#";
-		var parentCommonViewPath = "/#variables.appMapping#/#variables.viewsConvention#/modules/#arguments.view#";
+		var parentModuleViewPath = reReplace(
+				"/#variables.appMapping#/#variables.viewsConvention#/modules/#moduleName#/#arguments.view#",
+				"//",
+				"/",
+				"all"
+			);
+		var parentCommonViewPath = reReplace(
+				"/#variables.appMapping#/#variables.viewsConvention#/modules/#arguments.view#",
+				"//",
+				"/",
+				"all"
+			);
 		var moduleViewPath       = "#variables.modulesConfig[ moduleName ].mapping#/#variables.modulesConfig[ moduleName ].conventions.viewsLocation#/#arguments.view#";
 
 		// Check parent view order setup
