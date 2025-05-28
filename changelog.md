@@ -9,9 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [7.4.2] - 2025-05-28
+
 ### Bugs
 
-- [COLDBOX-1311](https://ortussolutions.atlassian.net/browse/COLDBOX-1311) Remove direct calls to the servlet response.setStatus\( int, String \) methods due to jakarta removing statusText
+- [COLDBOX-1311](https://ortussolutions.atlassian.net/browse/COLDBOX-1311) Remove direct calls to the servlet response.setStatus( int, String ) methods due to jakarta removing statusText
 - [COLDBOX-1330](https://ortussolutions.atlassian.net/browse/COLDBOX-1330) missing replacement of double // on layouts/views on new rendering schemas
 
 ## [7.4.1] - 2025-04-29
@@ -375,7 +377,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * * *
 
-[Unreleased]: https://github.com/ColdBox/coldbox-platform/compare/v7.4.1...HEAD
+[Unreleased]: https://github.com/ColdBox/coldbox-platform/compare/v7.4.2...HEAD
+
+[7.4.2]: https://github.com/ColdBox/coldbox-platform/compare/v7.4.1...v7.4.2
 
 [7.4.1]: https://github.com/ColdBox/coldbox-platform/compare/v7.4.0...v7.4.1
 
