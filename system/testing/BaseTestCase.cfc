@@ -256,7 +256,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 		mockRC.init( properties = rcProps, controller = mockController );
 
 		// return decorator context
-		if ( structKeyExists( arguments, "decorator" ) ) {
+		if ( structKeyExists( arguments, "decorator" ) && !isNull( arguments.decorator ) ) {
 			return getMockBox().createMock( arguments.decorator ).init( mockRC, mockController );
 		}
 

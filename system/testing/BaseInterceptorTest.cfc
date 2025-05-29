@@ -22,7 +22,11 @@ component extends="coldbox.system.testing.BaseTestCase" {
 		}
 
 		// Check for interceptor else throw exception
-		if ( NOT structKeyExists( md, "interceptor" ) ) {
+		if (
+			NOT structKeyExists( md, "interceptor" ) && NOT (
+				structKeyExists( md, "annotations" ) && structKeyExists( md.annotations, "interceptor" )
+			)
+		) {
 			throw(
 				"interceptor annotation not found on component tag",
 				"Please declare a 'interceptor=path' annotation",
@@ -30,15 +34,23 @@ component extends="coldbox.system.testing.BaseTestCase" {
 			);
 		}
 		// Check for application helper
-		if ( structKeyExists( md, "applicationHelper" ) ) {
+		if (
+			structKeyExists( md, "applicationHelper" ) || (
+				structKeyExists( md, "annotations" ) && structKeyExists( md.annotations, "applicationHelper" )
+			)
+		) {
 			// inflate it, since it can't be an array in metadata
-			applicationHelper = listToArray( md.applicationHelper );
+			applicationHelper = listToArray(
+				structKeyExists( md, "annotations" ) ? md.annotations.applicationHelper : md.applicationHelper
+			);
 		}
 		// Check if user setup interceptor properties on scope
 		param variables.configProperties = {};
 
 		// Create interceptor with Mocking capabilities
-		variables.interceptor = mockBox.createMock( md.interceptor );
+		variables.interceptor = mockBox.createMock(
+			structKeyExists( md, "annotations" ) ? md.annotations.interceptor : md.interceptor
+		);
 
 		// Create Mock Objects
 		variables.mockController         = mockBox.createMock( "coldbox.system.testing.mock.web.MockController" );

@@ -230,6 +230,8 @@ component accessors="true" {
 		if (
 			structKeyExists( arguments.metadata, "extends" )
 			AND
+			!structIsEmpty( arguments.metadata.extends )
+			AND
 			NOT listFindNoCase( getStopRecursionClasses(), arguments.metadata.extends.name )
 		) {
 			parseMetadata( arguments.metadata.extends, arguments.eventsFound );

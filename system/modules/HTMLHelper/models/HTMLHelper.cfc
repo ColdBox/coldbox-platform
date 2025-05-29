@@ -205,16 +205,21 @@ component
 			buffer   = buffer
 		);
 
-		// Prepare content output
-		if ( len( arguments.content ) ) {
-			// Value Encoding
-			if ( variables.settings.encodeValues ) {
-				arguments.content = encodeForHTML( arguments.content );
+		try {
+			// Prepare content output
+			if ( len( arguments.content ) ) {
+				// Value Encoding
+				if ( variables.settings.encodeValues ) {
+					arguments.content = encodeForHTML( arguments.content );
+				}
+				// Output tag + content
+				buffer.append( ">#arguments.content#</#arguments.tag#>" );
+			} else {
+				buffer.append( "></#arguments.tag#>" );
 			}
-			// Output tag + content
-			buffer.append( ">#arguments.content#</#arguments.tag#>" );
-		} else {
-			buffer.append( "></#arguments.tag#>" );
+		} catch ( any e ) {
+			writeDump( var = arguments );
+			rethrow;
 		}
 
 		// Return HTML

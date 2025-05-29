@@ -416,13 +416,16 @@ component {
 			if ( isObject( arguments.component ) ) {
 				arguments.md = getMetadata( arguments.component );
 			} else {
-				arguments.md = getComponentMetadata( arguments.component );
+				arguments.md = server.keyExists( "boxlang" ) ? getClassMetadata( arguments.component ) : getComponentMetadata(
+					arguments.component
+				);
 			}
 		}
 
 		// If it has a parent, stop and calculate it first, unless of course, we've reached a class we shouldn't recurse into.
 		if (
 			structKeyExists( arguments.md, "extends" ) &&
+			!structIsEmpty( arguments.md.extends ) &&
 			arguments.md.type eq "component" &&
 			stopClassRecursion( md.extends.name, arguments.stopRecursions ) EQ FALSE
 		) {

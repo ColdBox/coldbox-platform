@@ -622,17 +622,20 @@ component accessors="true" {
 			// Process persistence if not set already by configuration as it takes precedence
 			if ( !len( variables.scope ) ) {
 				// Singleton Processing
-				if ( structKeyExists( md, "singleton" ) ) {
+				if ( hasAnnotationValue( md, "singleton" ) ) {
 					variables.scope = arguments.binder.SCOPES.SINGLETON;
 				}
 				// Registered Scope Processing
-				if ( structKeyExists( md, "scope" ) ) {
-					variables.scope = md.scope;
+				if ( hasAnnotationValue( md, "scope" ) ) {
+					variables.scope = getAnnotationValue( md, "scope" );
 				}
 				// CacheBox scope processing if cachebox annotation found, or cache annotation found
 				if (
-					structKeyExists( md, "cacheBox" ) OR (
-						structKeyExists( md, "cache" ) AND isBoolean( md.cache ) AND md.cache
+					hasAnnotationValue( md, "cacheBox" ) OR (
+						hasAnnotationValue( md, "cache" ) AND isBoolean( getAnnotationValue( md, "cache", "" ) ) AND getAnnotationValue(
+							md,
+							"cache"
+						)
 					)
 				) {
 					variables.scope = arguments.binder.SCOPES.CACHEBOX;
@@ -655,29 +658,37 @@ component accessors="true" {
 					// default it first
 					variables.cache.provider = "default";
 					// Now check the annotations for the provider
-					if ( structKeyExists( md, "cacheBox" ) AND len( md.cacheBox ) ) {
-						variables.cache.provider = md.cacheBox;
+					if ( hasAnnotationValue( md, "cacheBox" ) AND len( getAnnotationValue( md, "cacheBox", "" ) ) ) {
+						variables.cache.provider = getAnnotationValue( md, "cacheBox" );
 					}
 				}
 				// Check if timeouts set by configuration or discovery
 				if ( !len( variables.cache.timeout ) ) {
 					// Discovery by annocations
-					if ( structKeyExists( md, "cachetimeout" ) AND isNumeric( md.cacheTimeout ) ) {
-						variables.cache.timeout = md.cacheTimeout;
+					if (
+						hasAnnotationValue( md, "cachetimeout" ) AND isNumeric(
+							getAnnotationValue( md, "cacheTimeout", "" )
+						)
+					) {
+						variables.cache.timeout = getAnnotationValue( md, "cacheTimeout" );
 					}
 				}
 				// Check if lastAccessTimeout set by configuration or discovery
 				if ( !len( variables.cache.lastAccessTimeout ) ) {
 					// Discovery by annocations
-					if ( structKeyExists( md, "cacheLastAccessTimeout" ) AND isNumeric( md.cacheLastAccessTimeout ) ) {
-						variables.cache.lastAccessTimeout = md.cacheLastAccessTimeout;
+					if (
+						hasAnnotationValue( md, "cacheLastAccessTimeout" ) AND isNumeric(
+							getAnnotationValue( md, "cacheLastAccessTimeout", "" )
+						)
+					) {
+						variables.cache.lastAccessTimeout = getAnnotationValue( md, "cacheLastAccessTimeout" );
 					}
 				}
 			}
 
 			// Alias annotations if found, then append them as aliases.
-			if ( structKeyExists( md, "alias" ) ) {
-				var thisAliases = listToArray( md.alias );
+			if ( hasAnnotationValue( md, "alias" ) ) {
+				var thisAliases = listToArray( getAnnotationValue( md, "alias", "" ) );
 				variables.alias.addAll( thisAliases );
 				// register alias references on binder
 				var mappings = arguments.binder.getMappings();
@@ -688,7 +699,7 @@ component accessors="true" {
 
 			// eagerInit annotation only if not overridden
 			if ( !len( variables.eagerInit ) ) {
-				if ( structKeyExists( md, "eagerInit" ) ) {
+				if ( hasAnnotationValue( md, "eagerInit" ) ) {
 					variables.eagerInit = true;
 				} else {
 					// defaults to lazy loading
@@ -698,10 +709,18 @@ component accessors="true" {
 
 			// threadSafe wiring annotation
 			if ( !len( variables.threadSafe ) ) {
-				if ( structKeyExists( md, "threadSafe" ) AND NOT len( md.threadSafe ) ) {
+				if (
+					hasAnnotationValue( md, "threadSafe" ) AND NOT len(
+						getAnnotationValue( md, "threadSafe", "" )
+					)
+				) {
 					variables.threadSafe = true;
-				} else if ( structKeyExists( md, "threadSafe" ) AND len( md.threadSafe ) AND isBoolean( md.threadSafe ) ) {
-					variables.threadSafe = md.threadSafe;
+				} else if (
+					hasAnnotationValue( md, "threadSafe" ) AND len( getAnnotationValue( md, "threadSafe", "" ) ) AND isBoolean(
+						getAnnotationValue( md, "threadSafe", "" )
+					)
+				) {
+					variables.threadSafe = getAnnotationValue( md, "threadSafe" );
 				} else {
 					// defaults to non thread safe wiring
 					variables.threadSafe = false;
@@ -710,14 +729,14 @@ component accessors="true" {
 
 			// mixins annotation only if not overridden
 			if ( NOT arrayLen( variables.mixins ) ) {
-				if ( structKeyExists( md, "mixins" ) ) {
-					variables.mixins = listToArray( md.mixins );
+				if ( hasAnnotationValue( md, "mixins" ) ) {
+					variables.mixins = listToArray( getAnnotationValue( md, "mixins", "" ) );
 				}
 			}
 
 			// Delegates by Metadata and by Explicit Definition
-			if ( md.keyExists( "delegates" ) && len( md.delegates.trim() ) ) {
-				processComponentDelegates( md.delegates.trim() );
+			if ( hasAnnotationValue( md, "delegates" ) && len( getAnnotationValue( md, "delegates" ).trim() ) ) {
+				processComponentDelegates( getAnnotationValue( md, "delegates" ).trim() );
 			}
 			if ( hasDelegates() ) {
 				processComponentDelegates( variables.delegates );
@@ -726,8 +745,8 @@ component accessors="true" {
 			// autowire only if not overridden
 			if ( !len( variables.autowire ) ) {
 				// Check if autowire annotation found or autowire already set
-				if ( structKeyExists( md, "autowire" ) and isBoolean( md.autowire ) ) {
-					variables.autoWire = md.autowire;
+				if ( hasAnnotationValue( md, "autowire" ) and isBoolean( getAnnotationValue( md, "autowire", "" ) ) ) {
+					variables.autoWire = getAnnotationValue( md, "autowire" );
 				} else {
 					// default to true
 					variables.autoWire = true;
@@ -736,8 +755,8 @@ component accessors="true" {
 
 			// look for parent metadata referring to an abstract parent (by alias) to copy
 			// dependencies and definitions from
-			if ( structKeyExists( md, "parent" ) and len( trim( md.parent ) ) ) {
-				arguments.binder.parent( alias: md.parent );
+			if ( hasAnnotationValue( md, "parent" ) and len( trim( getAnnotationValue( md, "parent" ) ) ) ) {
+				arguments.binder.parent( alias: getAnnotationValue( md, "parent" ) );
 			}
 
 			// Only process if autowiring
@@ -748,7 +767,7 @@ component accessors="true" {
 
 			// AOP AutoBinding only if both @classMatcher and @methodMatcher exist
 			if (
-				isAspectAutoBinding() AND structKeyExists( md, "classMatcher" ) AND structKeyExists(
+				isAspectAutoBinding() AND hasAnnotationValue( md, "classMatcher" ) AND hasAnnotationValue(
 					md,
 					"methodMatcher"
 				)
@@ -964,46 +983,55 @@ component accessors="true" {
 	 */
 	private function processPropertyMetadata( required metadata ){
 		// Injection / Delegation Definition
-		if ( arguments.metadata.keyExists( "inject" ) ) {
+		if ( hasAnnotationValue( arguments.metadata, "inject" ) ) {
 			addDIProperty(
-				name          : arguments.metadata.name,
-				dsl           : ( len( arguments.metadata.inject ) ? arguments.metadata.inject : "model" ),
-				scope         : ( arguments.metadata.keyExists( "scope" ) ? arguments.metadata.scope : "variables" ),
-				required      : ( arguments.metadata.keyExists( "required" ) ? arguments.metadata.required : true ),
-				type          : ( arguments.metadata.keyExists( "type" ) ? arguments.metadata.type : "any" ),
-				delegate      : arguments.metadata.keyExists( "delegate" ),
+				name: arguments.metadata.name,
+				dsl : (
+					len( getAnnotationValue( arguments.metadata, "inject" ) ) ? getAnnotationValue(
+						arguments.metadata,
+						"inject"
+					) : "model"
+				),
+				scope         : getAnnotationValue( arguments.metadata, "scope", "variables" ),
+				required      : getAnnotationValue( arguments.metadata, "required", true ),
+				type          : getAnnotationValue( arguments.metadata, "type", "any" ),
+				delegate      : hasAnnotationValue( arguments.metadata, "delegate" ),
 				delegatePrefix: (
 					// Verify it exists, if it does and no length then use the property name by convention
-					arguments.metadata.keyExists( "delegatePrefix" ) ? (
-						len( arguments.metadata.delegatePrefix ) ? arguments.metadata.delegatePrefix : arguments.metadata.name
+					hasAnnotationValue( arguments.metadata, "delegatePrefix" ) ? (
+						len( getAnnotationValue( arguments.metadata, "delegatePrefix" ) ) ? getAnnotationValue(
+							arguments.metadata,
+							"delegatePrefix"
+						) : arguments.metadata.name
 					)
 					 : ""
 				),
 				delegateSuffix: (
 					// Verify it exists, if it does and no length then use the property name by convention
-					arguments.metadata.keyExists( "delegateSuffix" ) ? (
-						len( arguments.metadata.delegateSuffix ) ? arguments.metadata.delegateSuffix : arguments.metadata.name
+					hasAnnotationValue( arguments.metadata, "delegateSuffix" ) ? (
+						len( getAnnotationValue( arguments.metadata, "delegateSuffix" ) ) ? getAnnotationValue(
+							arguments.metadata,
+							"delegateSuffix"
+						) : arguments.metadata.name
 					)
 					 : ""
 				),
-				delegateExcludes: (
-					arguments.metadata.keyExists( "delegateExcludes" ) ? arguments.metadata.delegateExcludes.listToArray() : []
-				),
-				delegateIncludes: arguments.metadata.keyExists( "delegate" ) ? arguments.metadata.delegate.listToArray() : []
+				delegateExcludes: getAnnotationValue( arguments.metadata, "delegateExcludes", "" ).listToArray(),
+				delegateIncludes: getAnnotationValue( arguments.metadata, "delegate", "" ).listToArray()
 			);
 		}
 		// end injection processing
 
 		// Lazy processes
-		var isLazy         = arguments.metadata.keyExists( "lazy" );
-		var isLazyUnlocked = arguments.metadata.keyExists( "lazyNoLock" )
+		var isLazy         = hasAnnotationValue( arguments.metadata, "lazy" );
+		var isLazyUnlocked = hasAnnotationValue( arguments.metadata, "lazyNoLock" )
 		if ( isLazy || isLazyUnlocked ) {
 			// Detect Builder Name
 			var builderName = "";
-			if ( isLazy && len( arguments.metadata.lazy ) ) {
-				builderName &= arguments.metadata.lazy;
-			} else if ( isLazyUnlocked && len( arguments.metadata.lazyNoLock ) ) {
-				builderName &= arguments.metadata.lazyNoLock;
+			if ( isLazy && len( getAnnotationValue( arguments.metadata, "lazy" ) ) ) {
+				builderName &= getAnnotationValue( arguments.metadata, "lazy" );
+			} else if ( isLazyUnlocked && len( getAnnotationValue( arguments.metadata, "lazyNoLock" ) ) ) {
+				builderName &= getAnnotationValue( arguments.metadata, "lazyNoLock" );
 			} else {
 				// By convention build{propertyName}
 				builderName &= "build#arguments.metadata.name#";
@@ -1017,13 +1045,59 @@ component accessors="true" {
 		}
 
 		// Observer Properties
-		if ( arguments.metadata.keyExists( "observed" ) ) {
+		if ( hasAnnotationValue( arguments.metadata, "observed" ) ) {
 			// Register it
 			variables.observedProperties.append( {
 				"name"     : arguments.metadata.name,
-				"observer" : len( arguments.metadata.observed ) ? arguments.metadata.observed : "#arguments.metadata.name#Observer"
+				"observer" : len( getAnnotationValue( arguments.metadata, "observed", "" ) ) ? getAnnotationValue(
+					arguments.metadata,
+					"observed",
+					""
+				) : "#arguments.metadata.name#Observer"
 			} );
 		}
+	}
+
+	private boolean function hasAnnotationValue( required struct metadata, required string key ){
+		// Check if the property has an annotations struct
+		if ( structKeyExists( metadata, "annotations" ) && structKeyExists( metadata.annotations, key ) ) {
+			return true;
+		}
+
+		// Check if the property has a documentation struct
+		if ( structKeyExists( metadata, "documentation" ) && structKeyExists( metadata.documentation, key ) ) {
+			return true;
+		}
+
+		// Check if the property has the key directly
+		else if ( structKeyExists( metadata, key ) ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	private any function getAnnotationValue(
+		required struct metadata,
+		required string key,
+		any defaultValue
+	){
+		// Check if the property has an annotations struct
+		if ( structKeyExists( metadata, "annotations" ) && structKeyExists( metadata.annotations, key ) ) {
+			return metadata.annotations[ key ];
+		}
+
+		// Check if the property has an documentation struct
+		if ( structKeyExists( metadata, "documentation" ) && structKeyExists( metadata.documentation, key ) ) {
+			return metadata.documentation[ key ];
+		}
+
+		// Check if the property has the key directly
+		else if ( structKeyExists( metadata, key ) ) {
+			return metadata[ key ];
+		}
+		// Return default value
+		return defaultValue;
 	}
 
 	/**
@@ -1037,13 +1111,18 @@ component accessors="true" {
 			// Process parameters for constructor injection
 			for ( var thisParam in arguments.metadata.parameters ) {
 				// Check injection annotation, if not found then no injection
-				if ( structKeyExists( thisParam, "inject" ) ) {
+				if ( hasAnnotationValue( thisParam, "inject" ) ) {
 					// ADD Constructor argument
 					addDIConstructorArgument(
-						name    : thisParam.name,
-						dsl     : ( len( thisParam.inject ) ? thisParam.inject : "model" ),
-						required: ( structKeyExists( thisParam, "required" ) ? thisParam.required : false ),
-						type    : ( structKeyExists( thisParam, "type" ) ? thisParam.type : "any" )
+						name: thisParam.name,
+						dsl : (
+							len( getAnnotationValue( thisParam, "inject" ) ) ? getAnnotationValue(
+								thisParam,
+								"inject"
+							) : "model"
+						),
+						required: getAnnotationValue( thisParam, "required", false ),
+						type    : getAnnotationValue( thisParam, "type", "any" )
 					);
 				}
 			}
@@ -1052,23 +1131,32 @@ component accessors="true" {
 		}
 
 		// Setter discovery, MUST be inject annotation marked to be processed.
-		if ( left( arguments.metadata.name, 3 ) eq "set" AND structKeyExists( arguments.metadata, "inject" ) ) {
+		if ( left( arguments.metadata.name, 3 ) eq "set" AND hasAnnotationValue( arguments.metadata, "inject" ) ) {
 			// Add to setter to mappings and recursion lookup
 			addDISetter(
 				name: right( arguments.metadata.name, len( arguments.metadata.name ) - 3 ),
-				dsl : ( len( arguments.metadata.inject ) ? arguments.metadata.inject : "model" )
+				dsl : (
+					len( getAnnotationValue( arguments.metadata, "inject" ) ) ? getAnnotationValue(
+						arguments.metadata,
+						"inject"
+					) : "model"
+				)
 			);
 			dependencies[ arguments.metadata.name ] = "setter";
 		}
 
 		// Provider Methods Discovery
-		if ( structKeyExists( arguments.metadata, "provider" ) AND len( arguments.metadata.provider ) ) {
-			addProviderMethod( arguments.metadata.name, arguments.metadata.provider );
+		if (
+			hasAnnotationValue( arguments.metadata, "provider" ) AND len(
+				getAnnotationValue( arguments.metadata, "provider" )
+			)
+		) {
+			addProviderMethod( arguments.metadata.name, getAnnotationValue( arguments.metadata, "provider" ) );
 			dependencies[ arguments.metadata.name ] = "provider";
 		}
 
 		// onDIComplete Method Discovery
-		if ( structKeyExists( arguments.metadata, "onDIComplete" ) ) {
+		if ( hasAnnotationValue( arguments.metadata, "onDIComplete" ) ) {
 			arrayAppend( variables.onDIComplete, arguments.metadata.name );
 			dependencies[ arguments.metadata.name ] = "onDIComplete";
 		}
@@ -1093,10 +1181,10 @@ component accessors="true" {
 		arguments.metadata.properties
 			// Only process wirebox properties
 			.filter( function( thisProperty ){
-				return arguments.thisProperty.keyExists( "inject" ) ||
-				arguments.thisProperty.keyExists( "lazyNoLock" ) ||
-				arguments.thisProperty.keyExists( "observed" ) ||
-				( arguments.thisProperty.keyExists( "lazy" ) && !arguments.thisProperty.keyExists( "fieldType" ) )
+				return hasAnnotationValue( thisProperty, "inject" ) ||
+				hasAnnotationValue( thisProperty, "lazyNoLock" ) ||
+				hasAnnotationValue( thisProperty, "observed" ) ||
+				( hasAnnotationValue( thisProperty, "lazy" ) && !hasAnnotationValue( thisProperty, "fieldType" ) )
 			} )
 			// Process each property
 			.each( processPropertyMetadata );
