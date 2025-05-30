@@ -46,6 +46,76 @@
 		return prc.data;
 	}
 
+    // cacheIncludeRcKeys (all keys)
+	function withIncludeAllRcKeys( event, rc, prc )
+        cache        ="true"
+        cacheTimeout ="10"
+        cacheIncludeRcKeys="*"
+    {
+
+        prc.data = [
+            { id : createUUID(), name : "luis" },
+            { id : createUUID(), name : "lucas" },
+            { id : createUUID(), name : "fernando" }
+        ];
+
+        return prc.data;
+    }
+
+    // cacheIncludeRcKeys (no keys)
+    function withIncludeNoRcKeys( event, rc, prc )
+        cache        ="true"
+        cacheTimeout ="10"
+        cacheIncludeRcKeys=""
+    {
+
+        prc.data = [
+            { id : createUUID(), name : "luis" },
+            { id : createUUID(), name : "lucas" },
+            { id : createUUID(), name : "fernando" }
+        ];
+
+        return prc.data;
+    }
+
+    // cacheIncludeRcKeys (1 RC key)
+    function withIncludeOneRcKey( event, rc, prc )
+        cache        ="true"
+        cacheTimeout ="10"
+        cacheIncludeRcKeys="slug"
+    {
+
+        param rc.slug = "";
+
+        prc.data = [
+            { id : createUUID(), name : "luis" },
+            { id : createUUID(), name : "lucas" },
+            { id : createUUID(), name : "fernando" }
+        ];
+
+        return prc.data;
+    }
+
+    // cacheIncludeRcKeys (RC 2 keys)
+    function withIncludeRcKeyList( event, rc, prc )
+        cache        ="true"
+        cacheTimeout ="10"
+        cacheIncludeRcKeys="slug,id"
+    {
+
+        param rc.slug = "";
+        param rc.id = "";
+
+        prc.data = [
+            { id : createUUID(), name : "luis" },
+            { id : createUUID(), name : "lucas" },
+            { id : createUUID(), name : "fernando" }
+        ];
+
+        return prc.data;
+    }
+
+
 	function cacheKeys( event, rc, prc ){
 		var keys = {
 			"template" : getCache( "template" ).getKeys(),
