@@ -78,7 +78,7 @@ component accessors="true" singleton {
 	 * @threads        How many threads to assign to the thread scheduler, default is 20
 	 * @debug          Add output debugging
 	 * @loadAppContext Load the CFML App contexts or not, disable if not used
-	 * @parallelism	The number of parallel tasks to run at the same time, default is 0 which means no parallelism, only applies to work stealing executors
+	 * @parallelism    The number of parallel tasks to run at the same time, default is 0 which means no parallelism, only applies to work stealing executors
 	 *
 	 * @return The ColdBox Schedule class to work with the schedule: coldbox.system.async.executors.Executor
 	 */
@@ -88,7 +88,7 @@ component accessors="true" singleton {
 		numeric threads        = this.$executors.DEFAULT_THREADS,
 		boolean debug          = false,
 		boolean loadAppContext = true,
-		numeric parallelism = 0
+		numeric parallelism    = 0
 	){
 		// Build it if not found
 		if ( !variables.executors.keyExists( arguments.name ) ) {
@@ -104,7 +104,6 @@ component accessors="true" singleton {
 	 * Build a Java executor according to passed type and threads
 	 *
 	 * @see            https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/Executors.html
-	 *
 	 * @type           Available types are: fixed, fork_join, cached, single, scheduled, work_stealing, virtual, {WireBoxID}
 	 * @threads        The number of threads to seed the executor with, if it allows it
 	 * @debug          Add output debugging
@@ -117,7 +116,7 @@ component accessors="true" singleton {
 		numeric threads,
 		boolean debug          = false,
 		boolean loadAppContext = true,
-		numeric parallelism = 0
+		numeric parallelism    = 0
 	){
 		// Factory to build the right executor
 		switch ( arguments.type ) {
@@ -145,7 +144,7 @@ component accessors="true" singleton {
 				arguments.executor = this.$executors.newWorkStealingPoolExecutor( arguments.parallelism );
 				return new executors.Executor( argumentCollection = arguments );
 			}
-			case "virtual" : {
+			case "virtual": {
 				arguments.executor = this.$executors.newVirtualThreadExecutor();
 				return new executors.Executor( argumentCollection = arguments );
 			}

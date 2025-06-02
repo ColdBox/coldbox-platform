@@ -55,28 +55,27 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * Called by loader service when configuration file loads
 	 */
 	ModuleService function onConfigurationLoad(){
-		variables.logger  = variables.controller.getLogBox().getLogger( this );
-		variables.wirebox = variables.controller.getWireBox();
+		variables.logger            = variables.controller.getLogBox().getLogger( this );
+		variables.wirebox           = variables.controller.getWireBox();
 		variables.registeredModules = variables.controller.getSetting( "modules" );
 		variables.appRouter         = variables.wirebox.getInstance( "router@coldbox" );
 
 		// Load up the config overrides registry
-		var appSettings = controller.getConfigSettings();
+		var appSettings            = controller.getConfigSettings();
 		variables.appConfigModules = directoryList(
-				appSettings.applicationPath & "config/modules",
-				false,
-				"path",
-				"*.cfc|*.bx"
-			)
-			.map( ( item ) => {
-				var fileName  = getFileFromPath( item );
+			appSettings.applicationPath & "config/modules",
+			false,
+			"path",
+			"*.cfc|*.bx"
+		).map( ( item ) => {
+				var fileName        = getFileFromPath( item );
 				var invocationClass = fileName.listFirst( "." );
 				return {
-					"path" : item,
-					"invocationPath": len( appSettings.appMapping ) ? "#appSettings.appMapping#.config.modules.#invocationClass#" : "config.modules.#invocationClass#",
-					"name" : invocationClass,
-					"isCFC": fileName.findNoCase( ".cfc" ) > 0,
-					"isBoxLang": fileName.findNoCase( ".bx" ) > 0
+					"path"           : item,
+					"invocationPath" : len( appSettings.appMapping ) ? "#appSettings.appMapping#.config.modules.#invocationClass#" : "config.modules.#invocationClass#",
+					"name"           : invocationClass,
+					"isCFC"          : fileName.findNoCase( ".cfc" ) > 0,
+					"isBoxLang"      : fileName.findNoCase( ".bx" ) > 0
 				}
 			} )
 			.reduce( ( acc, item ) => {
@@ -1321,9 +1320,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			mConfig.settings.append( globalModuleSettings[ mConfig.modelNamespace ], true );
 
 			// config/{mConfig.modelNamespace}.cfc overrides
-			if (
-				variables.appConfigModules.keyExists( mConfig.modelNamespace )
-			) {
+			if ( variables.appConfigModules.keyExists( mConfig.modelNamespace ) ) {
 				loadModuleSettingsOverride( mConfig, mConfig.modelNamespace );
 			}
 		}
@@ -1421,17 +1418,17 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * @moduleName The target module name
 	 */
 	private function loadModuleSettingsOverride( required struct config, required moduleName ){
-		var mConfig     = arguments.config;
-		var appSettings = controller.getConfigSettings();
+		var mConfig        = arguments.config;
+		var appSettings    = controller.getConfigSettings();
 		var overrideRecord = variables.appConfigModules[ arguments.moduleName ];
 
 		// Verify BoxLang class and running BoxLang, else ignore.
-		if( overrideRecord.isBoxlang && !server.keyExists( "boxlang" ) ){
+		if ( overrideRecord.isBoxlang && !server.keyExists( "boxlang" ) ) {
 			return;
 		}
 
-		var oConfig     = variables.wirebox.getInstance( overrideRecord.invocationPath );
-		var envUtil     = variables.wirebox.getInstance( "Env@coreDelegates" );
+		var oConfig = variables.wirebox.getInstance( overrideRecord.invocationPath );
+		var envUtil = variables.wirebox.getInstance( "Env@coreDelegates" );
 
 		/*
 		|--------------------------------------------------------------------------

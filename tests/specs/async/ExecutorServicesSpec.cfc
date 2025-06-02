@@ -57,7 +57,9 @@ component extends="BaseAsyncSpec" {
 				// Skip on Adobe as their dumb reflection does not support virtual threads
 				it(
 					title: "can create a virtual thread executor",
-					skip: ( server.keyExists( "coldfusion" ) && server.coldfusion.productName.findNoCase( "ColdFusion" ) ),
+					skip : (
+						server.keyExists( "coldfusion" ) && server.coldfusion.productName.findNoCase( "ColdFusion" )
+					),
 					body: function(){
 						var executor = asyncManager.newExecutor( name: "virtual", type: "virtual" );
 						expect( executor.getName() ).toBe( "virtual" );
