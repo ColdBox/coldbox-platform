@@ -7,6 +7,10 @@ component extends="BaseAsyncSpec" {
 		.getProperty( "java.version" )
 		.listFirst( "." )
 
+	variables.javaMajorVersion = createObject( "java", "java.lang.System" )
+		.getProperty( "java.version" )
+		.listFirst( "." )
+
 	function run( testResults, testBox ){
 		// all your suites go here.
 		describe( "ColdBox Async Executor Services", function(){

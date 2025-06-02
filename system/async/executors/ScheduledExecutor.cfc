@@ -60,13 +60,17 @@ component extends="Executor" accessors="true" singleton {
 			this.$timeUnit.get( arguments.timeUnit )
 		);
 
+		// Update the last activity time
+		variables.lastActivity = now();
+		variables.taskSubmissionCount++;
+
 		// Return the results
 		return new coldbox.system.async.tasks.ScheduledFuture( jScheduledFuture );
 	}
 
 	/**
-	 * Creates and executes a periodic action that becomes enabled first after
-	 * the given initial delay, and subsequently with the given period;
+	 * Creates and executes a periodic action that becomes enabled first after the given
+	 * initial delay, and subsequently with the given period;
 	 * that is executions will commence after delay then delay+every, then delay + 2 * every,
 	 * and so on.
 	 *
@@ -100,6 +104,10 @@ component extends="Executor" accessors="true" singleton {
 			javacast( "long", arguments.every ),
 			this.$timeUnit.get( arguments.timeUnit )
 		);
+
+		// Update the last activity time
+		variables.lastActivity = now();
+		variables.taskSubmissionCount++;
 
 		// Return the results
 		return new coldbox.system.async.tasks.ScheduledFuture( jScheduledFuture );
@@ -139,6 +147,10 @@ component extends="Executor" accessors="true" singleton {
 			javacast( "long", arguments.spacedDelay ),
 			this.$timeUnit.get( arguments.timeUnit )
 		);
+
+		// Update the last activity time
+		variables.lastActivity = now();
+		variables.taskSubmissionCount++;
 
 		// Return the results
 		return new coldbox.system.async.tasks.ScheduledFuture( jScheduledFuture );
