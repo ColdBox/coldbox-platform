@@ -1,5 +1,6 @@
 component{
 
 	function configure(){
+		return {};
 	}
 }
