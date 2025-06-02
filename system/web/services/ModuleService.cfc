@@ -1424,6 +1424,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		var mConfig     = arguments.config;
 		var appSettings = controller.getConfigSettings();
 		var overrideRecord = variables.appConfigModules[ arguments.moduleName ];
+
+		// Verify BoxLang class and running BoxLang, else ignore.
+		if( overrideRecord.isBoxlang && !server.keyExists( "boxlang" ) ){
+			return;
+		}
+
 		var oConfig     = variables.wirebox.getInstance( overrideRecord.invocationPath );
 		var envUtil     = variables.wirebox.getInstance( "Env@coreDelegates" );
 
