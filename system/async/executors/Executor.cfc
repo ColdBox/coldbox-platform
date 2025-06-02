@@ -36,22 +36,26 @@ component accessors="true" singleton {
 		"ScheduledThreadPoolExecutor" : {
 			"pool"          : true,
 			"taskMethods"   : true,
-			"isTerminating" : true
+			"isTerminating" : true,
+			"queue"        : true
 		},
 		"ThreadPoolExecutor" : {
 			"pool"          : true,
 			"taskMethods"   : true,
-			"isTerminating" : true
+			"isTerminating" : true,
+			"queue"        : true
 		},
 		"ForkJoinPool" : {
 			"pool"          : false,
 			"taskMethods"   : false,
-			"isTerminating" : true
+			"isTerminating" : true,
+			"queue"        : false
 		},
 		"ThreadPerTaskExecutor" : {
 			"pool"          : false,
 			"taskMethods"   : false,
-			"isTerminating" : false
+			"isTerminating" : false,
+			"queue"        : false
 		}
 	};
 
@@ -89,7 +93,7 @@ component accessors="true" singleton {
 	 * The result of this call is a ColdBox FutureTask from which you can monitor,
 	 * cancel, or get the result of the  the executing task.
 	 *
-	 * @callable THe callable closure/lambda/cfc to execute
+	 * @callable The callable closure/lambda/cfc to execute
 	 * @method   The default method to execute if the runnable is a CFC, defaults to `run()`
 	 *
 	 * @return A ColdBox Future Task object
@@ -173,9 +177,9 @@ component accessors="true" singleton {
 
 	/**
 	 * Shuts down the executor in two phases, first by calling the shutdown() and rejecting all incoming tasks.
-	 * Second, calling shutdownNow() aggresively if tasks did not shutdown on time to cancel any lingering tasks.
+	 * Second, calling shutdownNow() aggressively if tasks did not shutdown on time to cancel any lingering tasks.
 	 *
-	 * @timeout The timeout in seconds to wait for the shutdown.  By deafult we use the default on the property shutdownTimeout (30s)
+	 * @timeout The timeout in seconds to wait for the shutdown.  By default we use the default on the property shutdownTimeout (30s)
 	 */
 	Executor function shutdownAndAwaitTermination( numeric timeout = variables.shutdownTimeout ){
 		var sTime = getTickCount();
@@ -242,9 +246,14 @@ component accessors="true" singleton {
 
 	/**
 	 * Returns the task queue used by this executor.
+	 * If the executor has no queue, an empty LinkedBlockingQueue is returned.
+	 *
+	 * @return A queue that holds the tasks submitted to this executor.
 	 */
 	any function getQueue(){
-		return variables.native.getQueue();
+		return hasFeature( "queue" )
+			? variables.native.getQueue()
+			 : createObject( "java", "java.util.concurrent.LinkedBlockingQueue" ).init();
 	}
 
 	/**
@@ -315,12 +324,13 @@ component accessors="true" singleton {
 			"isTerminated"       : isTerminated(),
 			"isTerminating"      : isTerminating(),
 			"isShutdown"         : isShutdown(),
-			"type"               : variables.native.getClass().getName()
+			"type"               : variables.native.getClass().getName(),
+			"queue": getQueue().toString()
 		};
 	}
 
 	/**
-	 * Utility to send to output to the output stream
+	 * Utility to send output to the output stream
 	 *
 	 * @var Variable/Message to send
 	 */

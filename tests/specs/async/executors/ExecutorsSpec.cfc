@@ -3,6 +3,8 @@
  */
 component extends="tests.specs.async.BaseAsyncSpec" {
 
+	variables.javaMajorVersion = createObject( "java", "java.lang.System" ).getProperty( "java.version" ).listFirst( "." )
+
 	/*********************************** BDD SUITES ***********************************/
 
 	function run( testResults, testBox ){
@@ -45,7 +47,8 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 				it(
 					title: "can create a virtual thread executor",
 					skip : (
-						server.keyExists( "coldfusion" ) && server.coldfusion.productName.findNoCase( "ColdFusion" )
+						( server.keyExists( "coldfusion" ) && server.coldfusion.productName.findNoCase( "ColdFusion" ) ) ||
+						( variables.javaMajorVersion < 21 )
 					),
 					body: () => {
 						var executor = executors.newVirtualThreadExecutor();
