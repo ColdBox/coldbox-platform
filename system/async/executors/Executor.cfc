@@ -399,7 +399,9 @@ component accessors="true" singleton {
 			"queueRemainingCapacity"    : 0,
 			"queueSize"                 : 0,
 			"queueType"                 : 0,
-			"queueUtilization"          : 0
+			"queueUtilization"          : 0,
+			"healthStatus"             : "unknown",
+			"healthReport"              : {}
 		};
 
 		// Pool Stats
