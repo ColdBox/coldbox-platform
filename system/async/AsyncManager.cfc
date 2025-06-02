@@ -98,15 +98,16 @@ component accessors="true" singleton {
 	/**
 	 * Build a Java executor according to passed type and threads
 	 *
-	 * @see            https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executors.html
+	 * @see            https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/Executors.html
+	 *
 	 * @type           Available types are: fixed, cached, single, scheduled, {WireBoxID}
 	 * @threads        The number of threads to seed the executor with, if it allows it
 	 * @debug          Add output debugging
 	 * @loadAppContext Load the CFML App contexts or not, disable if not used
 	 *
-	 * @return A Java ExecutorService: https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ExecutorService.html
+	 * @return A Java ExecutorService wrapped in a ColdBox Executor object
 	 */
-	private function buildExecutor(
+	Executor function buildExecutor(
 		required type,
 		numeric threads,
 		boolean debug          = false,
