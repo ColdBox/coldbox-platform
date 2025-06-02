@@ -8,7 +8,7 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 	function run( testResults, testBox ){
 		// all your suites go here.
 		describe( "Executors", () => {
-			beforeEach(  ( currentSpec ) =>{
+			beforeEach( ( currentSpec ) => {
 				executors = new coldbox.system.async.executors.ExecutorBuilder();
 			} );
 
@@ -44,12 +44,15 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 				// Skip on Adobe as their dumb reflection does not support virtual threads
 				it(
 					title: "can create a virtual thread executor",
-					skip: ( server.keyExists( "coldfusion" ) && server.coldfusion.productName.findNoCase( "ColdFusion" ) ),
+					skip : (
+						server.keyExists( "coldfusion" ) && server.coldfusion.productName.findNoCase( "ColdFusion" )
+					),
 					body: () => {
 						var executor = executors.newVirtualThreadExecutor();
 						expect( executor.isTerminated() ).toBeFalse();
-					} );
-				} );
+					}
+				);
+			} );
 		} );
 	}
 
