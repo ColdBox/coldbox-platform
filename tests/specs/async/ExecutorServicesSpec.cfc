@@ -3,7 +3,9 @@
  */
 component extends="BaseAsyncSpec" {
 
-	variables.javaMajorVersion = createObject( "java", "java.lang.System" ).getProperty( "java.version" ).listFirst( "." )
+	variables.javaMajorVersion = createObject( "java", "java.lang.System" )
+		.getProperty( "java.version" )
+		.listFirst( "." )
 
 	function run( testResults, testBox ){
 		// all your suites go here.
@@ -67,7 +69,9 @@ component extends="BaseAsyncSpec" {
 				it(
 					title: "can create a virtual thread executor",
 					skip : (
-						( server.keyExists( "coldfusion" ) && server.coldfusion.productName.findNoCase( "ColdFusion" ) ) ||
+						(
+							server.keyExists( "coldfusion" ) && server.coldfusion.productName.findNoCase( "ColdFusion" )
+						) ||
 						( variables.javaMajorVersion < 21 )
 					),
 					body: function(){

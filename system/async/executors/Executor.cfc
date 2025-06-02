@@ -37,25 +37,25 @@ component accessors="true" singleton {
 			"pool"          : true,
 			"taskMethods"   : true,
 			"isTerminating" : true,
-			"queue"        : true
+			"queue"         : true
 		},
 		"ThreadPoolExecutor" : {
 			"pool"          : true,
 			"taskMethods"   : true,
 			"isTerminating" : true,
-			"queue"        : true
+			"queue"         : true
 		},
 		"ForkJoinPool" : {
 			"pool"          : false,
 			"taskMethods"   : false,
 			"isTerminating" : true,
-			"queue"        : false
+			"queue"         : false
 		},
 		"ThreadPerTaskExecutor" : {
 			"pool"          : false,
 			"taskMethods"   : false,
 			"isTerminating" : false,
-			"queue"        : false
+			"queue"         : false
 		}
 	};
 
@@ -118,12 +118,12 @@ component accessors="true" singleton {
 	 ****************************************************************/
 
 	/**
-	  * Checks if the executor has a feature based on the type and feature name.
+	 * Checks if the executor has a feature based on the type and feature name.
 	 *
 	 * @feature The feature to check for, e.g., "hasPool", "hasTaskMethods", "hasIsTerminating"
 	 *
 	 * @return true if the feature exists for the type, false otherwise
-	  */
+	 */
 	private boolean function hasFeature( required string feature ){
 		var classType = variables.native.getClass().getSimpleName();
 		if ( !variables.features.keyExists( classType ) ) {
@@ -252,8 +252,8 @@ component accessors="true" singleton {
 	 */
 	any function getQueue(){
 		return hasFeature( "queue" )
-			? variables.native.getQueue()
-			 : createObject( "java", "java.util.concurrent.LinkedBlockingQueue" ).init();
+		 ? variables.native.getQueue()
+		 : createObject( "java", "java.util.concurrent.LinkedBlockingQueue" ).init();
 	}
 
 	/**
@@ -325,7 +325,7 @@ component accessors="true" singleton {
 			"isTerminating"      : isTerminating(),
 			"isShutdown"         : isShutdown(),
 			"type"               : variables.native.getClass().getName(),
-			"queue": getQueue().toString()
+			"queue"              : getQueue().toString()
 		};
 	}
 
