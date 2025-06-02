@@ -50,7 +50,9 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 					title: "can create a virtual thread executor",
 					skip : (
 						(
-							server.keyExists( "coldfusion" ) && server.coldfusion.productName.findNoCase( "ColdFusion" )
+							server.keyExists( "coldfusion" ) && server.coldfusion.productName.findNoCase(
+								"ColdFusion"
+							)
 						) ||
 						( variables.javaMajorVersion < 21 )
 					),

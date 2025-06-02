@@ -563,7 +563,9 @@ component accessors="true" singleton {
 
 		// Analyze thread utilization
 		if ( arguments.stats.threadsUtilization > thresholds.threadUtilization.critical ) {
-			issues.append( "Critical thread utilization: #numberFormat( arguments.stats.threadsUtilization, "0.0" )#%" );
+			issues.append(
+				"Critical thread utilization: #numberFormat( arguments.stats.threadsUtilization, "0.0" )#%"
+			);
 			recommendations.append( "All threads busy - consider increasing pool size or optimizing tasks" );
 			alerts.append( {
 				"level"  : "critical",
@@ -571,7 +573,9 @@ component accessors="true" singleton {
 				"value"  : arguments.stats.threadsUtilization
 			} );
 		} else if ( arguments.stats.threadsUtilization > thresholds.threadUtilization.degraded ) {
-			issues.append( "High thread utilization: #numberFormat( arguments.stats.threadsUtilization, "0.0" )#%" );
+			issues.append(
+				"High thread utilization: #numberFormat( arguments.stats.threadsUtilization, "0.0" )#%"
+			);
 			recommendations.append( "Monitor thread usage patterns and consider capacity planning" );
 			alerts.append( {
 				"level"  : "warning",
@@ -590,7 +594,9 @@ component accessors="true" singleton {
 				"value"  : true
 			} );
 		} else if ( arguments.stats.queueUtilization > thresholds.queueUtilization.critical ) {
-			issues.append( "Queue near capacity: #numberFormat( arguments.stats.queueUtilization, "0.0" )#% (#arguments.stats.queueSize#/#arguments.stats.queueCapacity#)" );
+			issues.append(
+				"Queue near capacity: #numberFormat( arguments.stats.queueUtilization, "0.0" )#% (#arguments.stats.queueSize#/#arguments.stats.queueCapacity#)"
+			);
 			recommendations.append( "Queue filling up - monitor for processing bottlenecks" );
 			alerts.append( {
 				"level"  : "critical",
@@ -598,7 +604,9 @@ component accessors="true" singleton {
 				"value"  : arguments.stats.queueUtilization
 			} );
 		} else if ( arguments.stats.queueUtilization > thresholds.queueUtilization.degraded ) {
-			issues.append( "Queue utilization elevated: #numberFormat( arguments.stats.queueUtilization, "0.0" )#% (#arguments.stats.queueSize#/#arguments.stats.queueCapacity#)" );
+			issues.append(
+				"Queue utilization elevated: #numberFormat( arguments.stats.queueUtilization, "0.0" )#% (#arguments.stats.queueSize#/#arguments.stats.queueCapacity#)"
+			);
 			recommendations.append( "Monitor queue growth trends" );
 			alerts.append( {
 				"level"  : "warning",
@@ -610,7 +618,9 @@ component accessors="true" singleton {
 		// Analyze task completion rates
 		if ( arguments.stats.taskCount >= thresholds.minimumTasksForCompletion ) {
 			if ( arguments.stats.taskCompletionRate < thresholds.taskCompletionRate.critical ) {
-				issues.append( "Very low task completion rate: #numberFormat( arguments.stats.taskCompletionRate, "0.0" )#%" );
+				issues.append(
+					"Very low task completion rate: #numberFormat( arguments.stats.taskCompletionRate, "0.0" )#%"
+				);
 				recommendations.append( "Investigate task failures or performance issues" );
 				alerts.append( {
 					"level"  : "critical",
@@ -618,7 +628,9 @@ component accessors="true" singleton {
 					"value"  : arguments.stats.taskCompletionRate
 				} );
 			} else if ( arguments.stats.taskCompletionRate < thresholds.taskCompletionRate.degraded ) {
-				issues.append( "Low task completion rate: #numberFormat( arguments.stats.taskCompletionRate, "0.0" )#%" );
+				issues.append(
+					"Low task completion rate: #numberFormat( arguments.stats.taskCompletionRate, "0.0" )#%"
+				);
 				recommendations.append( "Monitor task success patterns" );
 				alerts.append( {
 					"level"  : "warning",
@@ -637,7 +649,9 @@ component accessors="true" singleton {
 		// Performance insights
 		var insights = [];
 		if ( arguments.stats.averageTasksPerSecond > 0 ) {
-			insights.append( "Processing rate: #numberFormat( arguments.stats.averageTasksPerSecond, "0.00" )# tasks/second" );
+			insights.append(
+				"Processing rate: #numberFormat( arguments.stats.averageTasksPerSecond, "0.00" )# tasks/second"
+			);
 		}
 		if ( arguments.stats.uptimeDays > 0 ) {
 			insights.append( "Uptime: #arguments.stats.uptimeDays# days" );
