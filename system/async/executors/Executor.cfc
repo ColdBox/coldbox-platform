@@ -400,7 +400,7 @@ component accessors="true" singleton {
 			"queueSize"                 : 0,
 			"queueType"                 : 0,
 			"queueUtilization"          : 0,
-			"healthStatus"             : "unknown",
+			"healthStatus"              : "unknown",
 			"healthReport"              : {}
 		};
 
