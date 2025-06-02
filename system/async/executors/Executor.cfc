@@ -30,7 +30,10 @@ component accessors="true" singleton {
 	/**
 	 * Task submission count
 	 */
-	property name="taskSubmissionCount" type="numeric" default=0;
+	property
+		name   ="taskSubmissionCount"
+		type   ="numeric"
+		default=0;
 
 	/**
 	 * The native Java executor class modeled in this executor
@@ -76,6 +79,15 @@ component accessors="true" singleton {
 		}
 	};
 
+	variables.healthThresholds = {
+		"poolUtilization"           : { "degraded" : 75, "critical" : 95 },
+		"threadUtilization"         : { "degraded" : 75, "critical" : 95 },
+		"queueUtilization"          : { "degraded" : 70, "critical" : 95 },
+		"taskCompletionRate"        : { "degraded" : 50, "critical" : 25 },
+		"inactivityMinutes"         : 30,
+		"minimumTasksForCompletion" : 10
+	};
+
 	/**
 	 * Constructor
 	 *
@@ -92,13 +104,13 @@ component accessors="true" singleton {
 		boolean loadAppContext  = true,
 		numeric shutdownTimeout = 30
 	){
-		variables.name            = arguments.name;
-		variables.native          = arguments.executor;
-		variables.debug           = arguments.debug;
-		variables.loadAppContext  = arguments.loadAppContext;
-		variables.shutdownTimeout = arguments.shutdownTimeout;
-		variables.created         = now();
-		variables.lastActivity    = variables.created;
+		variables.name                = arguments.name;
+		variables.native              = arguments.executor;
+		variables.debug               = arguments.debug;
+		variables.loadAppContext      = arguments.loadAppContext;
+		variables.shutdownTimeout     = arguments.shutdownTimeout;
+		variables.created             = now();
+		variables.lastActivity        = variables.created;
 		variables.taskSubmissionCount = 0;
 
 		return this;
@@ -113,7 +125,6 @@ component accessors="true" singleton {
 	 * The result of this call is a ColdBox FutureTask from which you can monitor,
 	 * cancel, or get the result of the  the executing task.
 	 *
-	 * @callable The callable closure/lambda/cfc to execute
 	 * @callable The callable closure/lambda/cfc to execute
 	 * @method   The default method to execute if the runnable is a CFC, defaults to `run()`
 	 *
@@ -349,80 +360,82 @@ component accessors="true" singleton {
 	 */
 	struct function getStats(){
 		var uptimeSeconds = dateDiff( "s", variables.created, now() );
-		var stats =  {
-			"created": dateTimeFormat( variables.created, "iso" ),
-			"features" : variables.features[ variables.native.getClass().getSimpleName() ],
-			"lastActivity": dateTimeFormat( variables.lastActivity, "iso" ),
-			"lastActivityMinutesAgo" : dateDiff( "n", variables.lastActivity, now() ),
-			"lastActivitySecondsAgo" : dateDiff( "s", variables.lastActivity, now() ),
-			"name"               : getName(),
-			"thresholds" : variables.healthThresholds,
-			"type"               : variables.native.getClass().getName(),
-			"uptimeDays"           : dateDiff( "d", variables.created, now() ),
-			"uptimeSeconds"         : uptimeSeconds,
+		var stats         = {
+			"created"                   : dateTimeFormat( variables.created, "iso" ),
+			"features"                  : variables.features[ variables.native.getClass().getSimpleName() ],
+			"lastActivity"              : dateTimeFormat( variables.lastActivity, "iso" ),
+			"lastActivityMinutesAgo"    : dateDiff( "n", variables.lastActivity, now() ),
+			"lastActivitySecondsAgo"    : dateDiff( "s", variables.lastActivity, now() ),
+			"name"                      : getName(),
+			"thresholds"                : variables.healthThresholds,
+			"type"                      : variables.native.getClass().getName(),
+			"uptimeDays"                : dateDiff( "d", variables.created, now() ),
+			"uptimeSeconds"             : uptimeSeconds,
 			// Pool Stats
-			"corePoolSize"       : 0,
-			"largestPoolSize"    : 0,
-			"maximumPoolSize"    : 0,
-			"poolSize"           : 0,
-			"poolUtilization" : 0,
+			"corePoolSize"              : 0,
+			"largestPoolSize"           : 0,
+			"maximumPoolSize"           : 0,
+			"poolSize"                  : 0,
+			"poolUtilization"           : 0,
 			// Task Stats
-			"activeCount"        : 0,
-			"allowsCoreThreadTimeOut" : false,
-			"averageTasksPerMinute"  : uptimeSeconds > 0 ? ( variables.taskSubmissionCount / uptimeSeconds ) * 60 : 0,
-			"averageTasksPerSecond"  : uptimeSeconds > 0 ? variables.taskSubmissionCount / uptimeSeconds : 0,
-			"completedTaskCount" : 0,
+			"activeCount"               : 0,
+			"allowsCoreThreadTimeOut"   : false,
+			"averageTasksPerMinute"     : uptimeSeconds > 0 ? ( variables.taskSubmissionCount / uptimeSeconds ) * 60 : 0,
+			"averageTasksPerSecond"     : uptimeSeconds > 0 ? variables.taskSubmissionCount / uptimeSeconds : 0,
+			"completedTaskCount"        : 0,
 			"keepAliveTimeoutInSeconds" : 0,
-			"taskCompletionRate" : 0,
-			"taskCount"          : 0,
-			"taskSubmissionCount"    : variables.taskSubmissionCount,
-			"threadsUtilization" : 0,
+			"taskCompletionRate"        : 0,
+			"taskCount"                 : 0,
+			"taskSubmissionCount"       : variables.taskSubmissionCount,
+			"threadsUtilization"        : 0,
 			// States
-			"isShutdown"         : isShutdown(),
-			"isTerminated"       : isTerminated(),
-			"isTerminating"      : isTerminating(),
+			"isShutdown"                : isShutdown(),
+			"isTerminated"              : isTerminated(),
+			"isTerminating"             : isTerminating(),
 			// Queue Stats
-			"queueCapacity": 0,
-			"queueIsEmpty":0,
-			"queueIsFull":0,
-			"queueRemainingCapacity":0,
-			"queueSize":0,
-			"queueType":0,
-			"queueUtilization" : 0
+			"queueCapacity"             : 0,
+			"queueIsEmpty"              : 0,
+			"queueIsFull"               : 0,
+			"queueRemainingCapacity"    : 0,
+			"queueSize"                 : 0,
+			"queueType"                 : 0,
+			"queueUtilization"          : 0
 		};
 
 		// Pool Stats
-		if( hasFeature( "pool" ) ){
-			stats[ "corePoolSize" ]       		= getCorePoolSize();
-			stats[ "largestPoolSize" ]    	   = getLargestPoolSize();
-			stats[ "maximumPoolSize" ]    = getMaximumPoolSize();
-			stats[ "poolSize" ]           			= getPoolSize();
+		if ( hasFeature( "pool" ) ) {
+			stats[ "corePoolSize" ]    = getCorePoolSize();
+			stats[ "largestPoolSize" ] = getLargestPoolSize();
+			stats[ "maximumPoolSize" ] = getMaximumPoolSize();
+			stats[ "poolSize" ]        = getPoolSize();
 			stats[ "poolUtilization" ] = getMaximumPoolSize() > 0 ? ( getPoolSize() / getMaximumPoolSize() ) * 100 : 0;
 		}
 
 		// Task Stats
-		if( hasFeature( "taskMethods" ) ){
-			stats[ "activeCount" ]        = getActiveCount();
-			stats[ "allowsCoreThreadTimeOut" ] = variables.native.allowsCoreThreadTimeOut();
-			stats[ "completedTaskCount" ] = getCompletedTaskCount();
-			stats[ "keepAliveTimeoutInSeconds" ] = variables.native.getKeepAliveTime( this.$timeUnit.get( "seconds" ) );
+		if ( hasFeature( "taskMethods" ) ) {
+			stats[ "activeCount" ]               = getActiveCount();
+			stats[ "allowsCoreThreadTimeOut" ]   = variables.native.allowsCoreThreadTimeOut();
+			stats[ "completedTaskCount" ]        = getCompletedTaskCount();
+			stats[ "keepAliveTimeoutInSeconds" ] = variables.native.getKeepAliveTime(
+				this.$timeUnit.get( "seconds" )
+			);
 			stats[ "taskCompletionRate" ] = getTaskCount() > 0 ? ( getCompletedTaskCount() / getTaskCount() ) * 100 : 0;
 			stats[ "taskCount" ]          = getTaskCount();
 			stats[ "threadsUtilization" ] = getPoolSize() > 0 ? ( getActiveCount() / getPoolSize() ) * 100 : 0;
 		}
 
 		// Queue Stats
-		if( hasFeature( "queue" ) ){
-			stats[ "queueCapacity" ]            = getQueue().size() + getQueue().remainingCapacity();
-			stats[ "queueIsEmpty" ]             = getQueue().isEmpty();
+		if ( hasFeature( "queue" ) ) {
+			stats[ "queueCapacity" ] = getQueue().size() + getQueue().remainingCapacity();
+			stats[ "queueIsEmpty" ]  = getQueue().isEmpty();
 			// Check unbounded queues
-			stats[ "queueIsFull" ]              =  stats.maximumPoolSize >= 2147483647
-				? false
-				: ( getQueue().remainingCapacity() == 0 );
-			stats[ "queueRemainingCapacity" ]   =  getQueue().remainingCapacity();
-			stats[ "queueSize" ]                = getQueue().size();
-			stats[ "queueType" ]                = getQueue().getClass().getSimpleName();
-			stats[ "queueUtilization" ]         = stats.queueCapacity > 0 ? ( stats.queueSize / stats.queueCapacity) * 100 : 0;
+			stats[ "queueIsFull" ]   = stats.maximumPoolSize >= 2147483647
+			 ? false
+			 : ( getQueue().remainingCapacity() == 0 );
+			stats[ "queueRemainingCapacity" ] = getQueue().remainingCapacity();
+			stats[ "queueSize" ]              = getQueue().size();
+			stats[ "queueType" ]              = getQueue().getClass().getSimpleName();
+			stats[ "queueUtilization" ]       = stats.queueCapacity > 0 ? ( stats.queueSize / stats.queueCapacity ) * 100 : 0;
 		}
 
 		// Add health status to stats (this must come last after all stats are calculated)
@@ -439,7 +452,7 @@ component accessors="true" singleton {
 	 * @return string The health status of the executor
 	 */
 	private function getHealthStatus( required struct stats ){
-		var thresholds = variables.healthThresholds;
+		var thresholds     = variables.healthThresholds;
 		var criticalIssues = [];
 		var degradedIssues = [];
 
@@ -467,8 +480,10 @@ component accessors="true" singleton {
 		}
 
 		// Task completion rate critical
-		if ( arguments.stats.taskCount >= thresholds.minimumTasksForCompletion &&
-			 arguments.stats.taskCompletionRate < thresholds.taskCompletionRate.critical ) {
+		if (
+			arguments.stats.taskCount >= thresholds.minimumTasksForCompletion &&
+			arguments.stats.taskCompletionRate < thresholds.taskCompletionRate.critical
+		) {
 			criticalIssues.append( "task_completion_critical" );
 		}
 
@@ -487,17 +502,21 @@ component accessors="true" singleton {
 		}
 
 		// Task completion rate degraded
-		if ( arguments.stats.taskCount >= thresholds.minimumTasksForCompletion &&
-			 arguments.stats.taskCompletionRate < thresholds.taskCompletionRate.degraded ) {
+		if (
+			arguments.stats.taskCount >= thresholds.minimumTasksForCompletion &&
+			arguments.stats.taskCompletionRate < thresholds.taskCompletionRate.degraded
+		) {
 			degradedIssues.append( "task_completion_degraded" );
 		}
 
 		// Check for idle state (no activity, no work)
-		if ( arguments.stats.lastActivityMinutesAgo > thresholds.inactivityMinutes &&
-			 arguments.stats.activeCount == 0 &&
-			 arguments.stats.queueSize == 0 &&
-			 !arguments.stats.isShutdown &&
-			 !arguments.stats.isTerminating ) {
+		if (
+			arguments.stats.lastActivityMinutesAgo > thresholds.inactivityMinutes &&
+			arguments.stats.activeCount == 0 &&
+			arguments.stats.queueSize == 0 &&
+			!arguments.stats.isShutdown &&
+			!arguments.stats.isTerminating
+		) {
 			return "idle";
 		}
 
@@ -517,91 +536,127 @@ component accessors="true" singleton {
 	 * @return struct Detailed health report
 	 */
 	struct function getHealthReport( required struct stats ){
-		var status = arguments.stats.healthStatus;
-		var thresholds = variables.healthThresholds;
-		var issues = [];
+		var status          = arguments.stats.healthStatus;
+		var thresholds      = variables.healthThresholds;
+		var issues          = [];
 		var recommendations = [];
-		var alerts = [];
+		var alerts          = [];
 
 		// Analyze pool utilization
 		if ( arguments.stats.poolUtilization > thresholds.poolUtilization.critical ) {
-			issues.append("Critical pool utilization: #numberFormat(arguments.stats.poolUtilization, '0.0')#%");
-			recommendations.append("Immediately increase maximum pool size or reduce workload");
-			alerts.append({ "level": "critical", "metric": "poolUtilization", "value": arguments.stats.poolUtilization });
+			issues.append( "Critical pool utilization: #numberFormat( arguments.stats.poolUtilization, "0.0" )#%" );
+			recommendations.append( "Immediately increase maximum pool size or reduce workload" );
+			alerts.append( {
+				"level"  : "critical",
+				"metric" : "poolUtilization",
+				"value"  : arguments.stats.poolUtilization
+			} );
 		} else if ( arguments.stats.poolUtilization > thresholds.poolUtilization.degraded ) {
-			issues.append("High pool utilization: #numberFormat(arguments.stats.poolUtilization, '0.0')#%");
-			recommendations.append("Consider increasing maximum pool size");
-			alerts.append({ "level": "warning", "metric": "poolUtilization", "value": arguments.stats.poolUtilization });
+			issues.append( "High pool utilization: #numberFormat( arguments.stats.poolUtilization, "0.0" )#%" );
+			recommendations.append( "Consider increasing maximum pool size" );
+			alerts.append( {
+				"level"  : "warning",
+				"metric" : "poolUtilization",
+				"value"  : arguments.stats.poolUtilization
+			} );
 		}
 
 		// Analyze thread utilization
 		if ( arguments.stats.threadsUtilization > thresholds.threadUtilization.critical ) {
-			issues.append("Critical thread utilization: #numberFormat(arguments.stats.threadsUtilization, '0.0')#%");
-			recommendations.append("All threads busy - consider increasing pool size or optimizing tasks");
-			alerts.append({ "level": "critical", "metric": "threadsUtilization", "value": arguments.stats.threadsUtilization });
+			issues.append( "Critical thread utilization: #numberFormat( arguments.stats.threadsUtilization, "0.0" )#%" );
+			recommendations.append( "All threads busy - consider increasing pool size or optimizing tasks" );
+			alerts.append( {
+				"level"  : "critical",
+				"metric" : "threadsUtilization",
+				"value"  : arguments.stats.threadsUtilization
+			} );
 		} else if ( arguments.stats.threadsUtilization > thresholds.threadUtilization.degraded ) {
-			issues.append("High thread utilization: #numberFormat(arguments.stats.threadsUtilization, '0.0')#%");
-			recommendations.append("Monitor thread usage patterns and consider capacity planning");
-			alerts.append({ "level": "warning", "metric": "threadsUtilization", "value": arguments.stats.threadsUtilization });
+			issues.append( "High thread utilization: #numberFormat( arguments.stats.threadsUtilization, "0.0" )#%" );
+			recommendations.append( "Monitor thread usage patterns and consider capacity planning" );
+			alerts.append( {
+				"level"  : "warning",
+				"metric" : "threadsUtilization",
+				"value"  : arguments.stats.threadsUtilization
+			} );
 		}
 
 		// Analyze queue health
 		if ( arguments.stats.queueIsFull ) {
-			issues.append("Queue is full: #arguments.stats.queueSize#/#arguments.stats.queueCapacity# capacity");
-			recommendations.append("Queue rejecting tasks - increase capacity or improve processing speed");
-			alerts.append({ "level": "critical", "metric": "queueFull", "value": true });
+			issues.append( "Queue is full: #arguments.stats.queueSize#/#arguments.stats.queueCapacity# capacity" );
+			recommendations.append( "Queue rejecting tasks - increase capacity or improve processing speed" );
+			alerts.append( {
+				"level"  : "critical",
+				"metric" : "queueFull",
+				"value"  : true
+			} );
 		} else if ( arguments.stats.queueUtilization > thresholds.queueUtilization.critical ) {
-			issues.append("Queue near capacity: #numberFormat(arguments.stats.queueUtilization, '0.0')#% (#arguments.stats.queueSize#/#arguments.stats.queueCapacity#)");
-			recommendations.append("Queue filling up - monitor for processing bottlenecks");
-			alerts.append({ "level": "critical", "metric": "queueUtilization", "value": arguments.stats.queueUtilization });
+			issues.append( "Queue near capacity: #numberFormat( arguments.stats.queueUtilization, "0.0" )#% (#arguments.stats.queueSize#/#arguments.stats.queueCapacity#)" );
+			recommendations.append( "Queue filling up - monitor for processing bottlenecks" );
+			alerts.append( {
+				"level"  : "critical",
+				"metric" : "queueUtilization",
+				"value"  : arguments.stats.queueUtilization
+			} );
 		} else if ( arguments.stats.queueUtilization > thresholds.queueUtilization.degraded ) {
-			issues.append("Queue utilization elevated: #numberFormat(arguments.stats.queueUtilization, '0.0')#% (#arguments.stats.queueSize#/#arguments.stats.queueCapacity#)");
-			recommendations.append("Monitor queue growth trends");
-			alerts.append({ "level": "warning", "metric": "queueUtilization", "value": arguments.stats.queueUtilization });
+			issues.append( "Queue utilization elevated: #numberFormat( arguments.stats.queueUtilization, "0.0" )#% (#arguments.stats.queueSize#/#arguments.stats.queueCapacity#)" );
+			recommendations.append( "Monitor queue growth trends" );
+			alerts.append( {
+				"level"  : "warning",
+				"metric" : "queueUtilization",
+				"value"  : arguments.stats.queueUtilization
+			} );
 		}
 
 		// Analyze task completion rates
 		if ( arguments.stats.taskCount >= thresholds.minimumTasksForCompletion ) {
 			if ( arguments.stats.taskCompletionRate < thresholds.taskCompletionRate.critical ) {
-				issues.append("Very low task completion rate: #numberFormat(arguments.stats.taskCompletionRate, '0.0')#%");
-				recommendations.append("Investigate task failures or performance issues");
-				alerts.append({ "level": "critical", "metric": "taskCompletionRate", "value": arguments.stats.taskCompletionRate });
+				issues.append( "Very low task completion rate: #numberFormat( arguments.stats.taskCompletionRate, "0.0" )#%" );
+				recommendations.append( "Investigate task failures or performance issues" );
+				alerts.append( {
+					"level"  : "critical",
+					"metric" : "taskCompletionRate",
+					"value"  : arguments.stats.taskCompletionRate
+				} );
 			} else if ( arguments.stats.taskCompletionRate < thresholds.taskCompletionRate.degraded ) {
-				issues.append("Low task completion rate: #numberFormat(arguments.stats.taskCompletionRate, '0.0')#%");
-				recommendations.append("Monitor task success patterns");
-				alerts.append({ "level": "warning", "metric": "taskCompletionRate", "value": arguments.stats.taskCompletionRate });
+				issues.append( "Low task completion rate: #numberFormat( arguments.stats.taskCompletionRate, "0.0" )#%" );
+				recommendations.append( "Monitor task success patterns" );
+				alerts.append( {
+					"level"  : "warning",
+					"metric" : "taskCompletionRate",
+					"value"  : arguments.stats.taskCompletionRate
+				} );
 			}
 		}
 
 		// Analyze activity patterns
 		if ( status == "idle" ) {
-			issues.append("Executor idle for #arguments.stats.lastActivityMinutesAgo# minutes");
-			recommendations.append("Verify if inactivity is expected or indicates a problem");
+			issues.append( "Executor idle for #arguments.stats.lastActivityMinutesAgo# minutes" );
+			recommendations.append( "Verify if inactivity is expected or indicates a problem" );
 		}
 
 		// Performance insights
 		var insights = [];
 		if ( arguments.stats.averageTasksPerSecond > 0 ) {
-			insights.append("Processing rate: #numberFormat(arguments.stats.averageTasksPerSecond, '0.00')# tasks/second");
+			insights.append( "Processing rate: #numberFormat( arguments.stats.averageTasksPerSecond, "0.00" )# tasks/second" );
 		}
 		if ( arguments.stats.uptimeDays > 0 ) {
-			insights.append("Uptime: #arguments.stats.uptimeDays# days");
+			insights.append( "Uptime: #arguments.stats.uptimeDays# days" );
 		}
 
 		// Resource efficiency analysis
 		if ( arguments.stats.poolSize > 0 && arguments.stats.averageTasksPerSecond > 0 ) {
 			var tasksPerThread = arguments.stats.averageTasksPerSecond / arguments.stats.poolSize;
-			insights.append("Efficiency: #numberFormat(tasksPerThread, '0.00')# tasks/second per thread");
+			insights.append( "Efficiency: #numberFormat( tasksPerThread, "0.00" )# tasks/second per thread" );
 		}
 
 		return {
-			"status": status,
-			"summary": issues.len() == 0 ? "Executor operating normally" : "#issues.len()# issue#issues.len() == 1 ? '' : 's'# detected",
-			"issues": issues,
-			"recommendations": recommendations,
-			"alerts": alerts,
-			"insights": insights,
-			"lastChecked": dateTimeFormat(now(), "iso")
+			"status"          : status,
+			"summary"         : issues.len() == 0 ? "Executor operating normally" : "#issues.len()# issue#issues.len() == 1 ? "" : "s"# detected",
+			"issues"          : issues,
+			"recommendations" : recommendations,
+			"alerts"          : alerts,
+			"insights"        : insights,
+			"lastChecked"     : dateTimeFormat( now(), "iso" )
 		};
 	}
 
