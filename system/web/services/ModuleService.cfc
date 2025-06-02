@@ -27,6 +27,11 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	property name="cfmappingRegistry";
 
 	/**
+	 * App config overrides registry
+	 */
+	property name="appConfigModules";
+
+	/**
 	 * Constructor
 	 */
 	function init( required controller ){
@@ -39,6 +44,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		variables.mConfigCache      = {};
 		variables.moduleRegistry    = structNew( "ordered" );
 		variables.cfmappingRegistry = {};
+		variables.appConfigModules  = {};
 
 		return this;
 	}
@@ -49,13 +55,34 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * Called by loader service when configuration file loads
 	 */
 	ModuleService function onConfigurationLoad(){
-		// Get Local Logger Now Configured
 		variables.logger  = variables.controller.getLogBox().getLogger( this );
 		variables.wirebox = variables.controller.getWireBox();
-
-		// Setup more properties for usage
 		variables.registeredModules = variables.controller.getSetting( "modules" );
 		variables.appRouter         = variables.wirebox.getInstance( "router@coldbox" );
+
+		// Load up the config overrides registry
+		var appSettings = controller.getConfigSettings();
+		variables.appConfigModules = directoryList(
+				appSettings.applicationPath & "config/modules",
+				false,
+				"path",
+				"*.cfc|*.bx"
+			)
+			.map( ( item ) => {
+				var fileName  = getFileFromPath( item );
+				var invocationClass = fileName.listFirst( "." );
+				return {
+					"path" : item,
+					"invocationPath": len( appSettings.appMapping ) ? "#appSettings.appMapping#.config.modules.#invocationClass#" : "config.modules.#invocationClass#",
+					"name" : invocationClass,
+					"isCFC": fileName.findNoCase( ".cfc" ) > 0,
+					"isBoxLang": fileName.findNoCase( ".bx" ) > 0
+				}
+			} )
+			.reduce( ( acc, item ) => {
+				acc[ item.name ] = item;
+				return acc;
+			}, {} );
 
 		// Register All Modules
 		registerAllModules();
@@ -1295,9 +1322,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 			// config/{mConfig.modelNamespace}.cfc overrides
 			if (
-				fileExists( "#appSettings.applicationPath#config/modules/#mConfig.modelnamespace#.cfc" ) || fileExists(
-					"#appSettings.applicationPath#config/modules/#mConfig.modelnamespace#.bx"
-				)
+				variables.appConfigModules.keyExists( mConfig.modelNamespace )
 			) {
 				loadModuleSettingsOverride( mConfig, mConfig.modelNamespace );
 			}
@@ -1398,8 +1423,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	private function loadModuleSettingsOverride( required struct config, required moduleName ){
 		var mConfig     = arguments.config;
 		var appSettings = controller.getConfigSettings();
-		var configPath  = len( appSettings.appMapping ) ? "#appSettings.appMapping#.config.modules.#arguments.moduleName#" : "config.modules.#arguments.moduleName#";
-		var oConfig     = variables.wirebox.getInstance( configPath );
+		var overrideRecord = variables.appConfigModules[ arguments.moduleName ];
+		var oConfig     = variables.wirebox.getInstance( overrideRecord.invocationPath );
 		var envUtil     = variables.wirebox.getInstance( "Env@coreDelegates" );
 
 		/*
