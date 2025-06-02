@@ -15,28 +15,56 @@ component extends="BaseAsyncSpec" {
 					var executor = asyncManager.newExecutor( "unitTest" );
 					expect( executor.getName() ).toBe( "unitTest" );
 					expect( executor.getCorePoolSize() ).toBe( 20 );
+					expect( executor.getStats() ).toBeStruct();
 				} );
 				it( "can create the default fixed executor with custom threads", function(){
 					var executor = asyncManager.newExecutor( name: "unitTest", threads: 100 );
 					expect( executor.getName() ).toBe( "unitTest" );
 					expect( executor.getCorePoolSize() ).toBe( 100 );
+					expect( executor.getStats() ).toBeStruct();
 				} );
 				it( "can create the a single executor", function(){
 					var executor = asyncManager.newExecutor( name: "unitTest", type: "single" );
 					expect( executor.getName() ).toBe( "unitTest" );
 					expect( executor.getCorePoolSize() ).toBe( 1 );
+					expect( executor.getStats() ).toBeStruct();
 				} );
 				it( "can create the a cached executor", function(){
 					var executor = asyncManager.newExecutor( name: "unitTest", type: "cached" );
 					expect( executor.getName() ).toBe( "unitTest" );
 					expect( executor.getPoolSize() ).toBe( 0 );
+					expect( executor.getStats() ).toBeStruct();
+				} );
+				it( "can create a fork_join executor", function(){
+					var executor = asyncManager.newExecutor( name: "fork_join", type: "fork_join" );
+					expect( executor.getName() ).toBe( "fork_join" );
+					expect( executor.getPoolSize() ).toBe( 0 );
+					expect( executor.getStats() ).toBeStruct();
+				} );
+				it( "can create a work_stealing executor", function(){
+					var executor = asyncManager.newExecutor( name: "work_stealing", type: "work_stealing" );
+					expect( executor.getName() ).toBe( "work_stealing" );
+					expect( executor.getPoolSize() ).toBe( 0 );
+					expect( executor.getStats() ).toBeStruct();
 				} );
 				it( "can create a scheduled executor", function(){
 					var executor = asyncManager.newExecutor( name: "unitTest", type: "scheduled" );
 					expect( executor.getName() ).toBe( "unitTest" );
 					expect( executor.getCorePoolSize() ).toBe( 20 );
 					expect( executor.getNative().toString() ).toInclude( "ScheduledThreadPoolExecutor" );
+					expect( executor.getStats() ).toBeStruct();
 				} );
+				// Skip on Adobe as their dumb reflection does not support virtual threads
+				it(
+					title: "can create a virtual thread executor",
+					skip: ( server.keyExists( "coldfusion" ) && server.coldfusion.productName.findNoCase( "ColdFusion" ) ),
+					body: function(){
+						var executor = asyncManager.newExecutor( name: "virtual", type: "virtual" );
+						expect( executor.getName() ).toBe( "virtual" );
+						expect( executor.getPoolSize() ).toBe( 0 );
+						expect( executor.getStats() ).toBeStruct();
+					}
+				);
 				it( "can throw an exception if the wrong type is passed", function(){
 					expect( function(){
 						asyncManager.newExecutor( name: "unitTest", type: "bogus" );
@@ -117,7 +145,7 @@ component extends="BaseAsyncSpec" {
 					var executor1 = asyncManager.newExecutor( "unitTest1" );
 					var statusMap = asyncManager.getExecutorStatusMap( "unitTest1" );
 
-					// debug( statusMap );
+					debug( statusMap );
 					expect( statusMap.isShutdown ).toBeFalse();
 				} );
 			} );

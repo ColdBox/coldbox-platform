@@ -64,17 +64,21 @@ component accessors="true" singleton {
 	 * scheduled executor then actually execute scheduled tasks.
 	 *
 	 * Types of Executors:
-	 * - fixed : By default it will build one with 20 threads on it. Great for multiple task execution and worker processing
-	 * - single : A great way to control that submitted tasks will execute in the order of submission: FIFO
 	 * - cached : An unbounded pool where the number of threads will grow according to the tasks it needs to service. The threads are killed by a default 60 second timeout if not used and the pool shrinks back
+	 * - fixed : By default it will build one with 20 threads on it. Great for multiple task execution and worker processing
+	 * - fork_join : A pool that uses the ForkJoinPool.commonPool() by default, it is great for parallel tasks and recursive tasks
+	 * - single : A great way to control that submitted tasks will execute in the order of submission: FIFO
 	 * - scheduled : A pool to use for scheduled tasks that can run one time or periodically
+	 * - work_stealing : A pool that allows you to run parallel tasks, it will use the ForkJoinPool.commonPool() by default
+	 * - virtual : A pool that uses the VirtualThreadPerTaskExecutor, it is great for IO bound tasks and can run many tasks in parallel without blocking, requires Java 19+.
 	 *
 	 * @see            https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ExecutorService.html
 	 * @name           The name of the executor used for registration
-	 * @type           The type of executor to build fixed, cached, single, scheduled
+	 * @type           The type of executor to build fixed, cached, single, scheduled, work_stealing, virtual
 	 * @threads        How many threads to assign to the thread scheduler, default is 20
 	 * @debug          Add output debugging
 	 * @loadAppContext Load the CFML App contexts or not, disable if not used
+	 * @parallelism	The number of parallel tasks to run at the same time, default is 0 which means no parallelism, only applies to work stealing executors
 	 *
 	 * @return The ColdBox Schedule class to work with the schedule: coldbox.system.async.executors.Executor
 	 */
@@ -83,7 +87,8 @@ component accessors="true" singleton {
 		type                   = "fixed",
 		numeric threads        = this.$executors.DEFAULT_THREADS,
 		boolean debug          = false,
-		boolean loadAppContext = true
+		boolean loadAppContext = true,
+		numeric parallelism = 0
 	){
 		// Build it if not found
 		if ( !variables.executors.keyExists( arguments.name ) ) {
@@ -100,7 +105,7 @@ component accessors="true" singleton {
 	 *
 	 * @see            https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/Executors.html
 	 *
-	 * @type           Available types are: fixed, cached, single, scheduled, {WireBoxID}
+	 * @type           Available types are: fixed, fork_join, cached, single, scheduled, work_stealing, virtual, {WireBoxID}
 	 * @threads        The number of threads to seed the executor with, if it allows it
 	 * @debug          Add output debugging
 	 * @loadAppContext Load the CFML App contexts or not, disable if not used
@@ -111,25 +116,38 @@ component accessors="true" singleton {
 		required type,
 		numeric threads,
 		boolean debug          = false,
-		boolean loadAppContext = true
+		boolean loadAppContext = true,
+		numeric parallelism = 0
 	){
 		// Factory to build the right executor
 		switch ( arguments.type ) {
-			case "fixed": {
-				arguments.executor = this.$executors.newFixedThreadPool( arguments.threads );
-				return new executors.Executor( argumentCollection = arguments );
-			}
 			case "cached": {
 				arguments.executor = this.$executors.newCachedThreadPool();
 				return new executors.Executor( argumentCollection = arguments );
 			}
-			case "single": {
-				arguments.executor = this.$executors.newFixedThreadPool( 1 );
+			case "fixed": {
+				arguments.executor = this.$executors.newFixedThreadPool( arguments.threads );
+				return new executors.Executor( argumentCollection = arguments );
+			}
+			case "fork_join": {
+				arguments.executor = this.$executors.newForkJoinPool( arguments.threads );
 				return new executors.Executor( argumentCollection = arguments );
 			}
 			case "scheduled": {
 				arguments.executor = this.$executors.newScheduledThreadPool( arguments.threads );
 				return new executors.ScheduledExecutor( argumentCollection = arguments );
+			}
+			case "single": {
+				arguments.executor = this.$executors.newFixedThreadPool( 1 );
+				return new executors.Executor( argumentCollection = arguments );
+			}
+			case "work_stealing": {
+				arguments.executor = this.$executors.newWorkStealingPoolExecutor( arguments.parallelism );
+				return new executors.Executor( argumentCollection = arguments );
+			}
+			case "virtual" : {
+				arguments.executor = this.$executors.newVirtualThreadExecutor();
+				return new executors.Executor( argumentCollection = arguments );
 			}
 			default: {
 			}
@@ -137,7 +155,7 @@ component accessors="true" singleton {
 		throw(
 			type    = "InvalidExecutorType",
 			message = "The executor you requested :#arguments.type# does not exist.",
-			detail  = "Valid executors are: fixed, cached, single, scheduled"
+			detail  = "Valid executors are: fixed, fork_join, cached, single, scheduled, virtual, work_stealing, {WireBoxID}"
 		);
 	}
 

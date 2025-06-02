@@ -32,6 +32,29 @@ component accessors="true" singleton {
 	// Prepare the static time unit class
 	this.$timeUnit = new coldbox.system.async.time.TimeUnit();
 
+	variables.features = {
+		"ScheduledThreadPoolExecutor": {
+			"pool": true,
+			"taskMethods": true,
+			"isTerminating": true
+		},
+		"ThreadPoolExecutor": {
+			"pool": true,
+			"taskMethods": true,
+			"isTerminating": true
+		},
+		"ForkJoinPool": {
+			"pool": false,
+			"taskMethods": false,
+			"isTerminating": true
+		},
+		"ThreadPerTaskExecutor": {
+			"pool": false,
+			"taskMethods": false,
+			"isTerminating": false
+		}
+	};
+
 	/**
 	 * Constructor
 	 *
@@ -90,6 +113,21 @@ component accessors="true" singleton {
 	 * Executor Utility Methods *
 	 ****************************************************************/
 
+	 /**
+	  * Checks if the executor has a feature based on the type and feature name.
+
+	  * @feature The feature to check for, e.g., "hasPool", "hasTaskMethods", "hasIsTerminating"
+	 *
+	 * @return  true if the feature exists for the type, false otherwise
+	  */
+	 private boolean function hasFeature( required string feature ){
+		var classType = variables.native.getClass().getSimpleName();
+		if( !variables.features.keyExists( classType ) ){
+			return false;
+		}
+		return variables.features[ classType ][ feature ];
+	}
+
 	/**
 	 * Returns true if all tasks have completed following shut down.
 	 */
@@ -102,7 +140,10 @@ component accessors="true" singleton {
 	 * not completely terminated.
 	 */
 	boolean function isTerminating(){
-		return variables.native.isTerminating();
+		if( hasFeature( "isTerminating" ) ){
+			return variables.native.isTerminating();
+		}
+		return false;
 	}
 
 	/**
@@ -210,49 +251,49 @@ component accessors="true" singleton {
 	 * Returns the approximate number of threads that are actively executing tasks.
 	 */
 	numeric function getActiveCount(){
-		return variables.native.getActiveCount();
+		return hasFeature( "taskMethods") ? variables.native.getActiveCount() : 0;
 	}
 
 	/**
 	 * Returns the approximate total number of tasks that have ever been scheduled for execution.
 	 */
 	numeric function getTaskCount(){
-		return variables.native.getTaskCount();
+		return hasFeature( "taskMethods") ? variables.native.getTaskCount() : 0;
 	}
 
 	/**
 	 * Returns the approximate total number of tasks that have completed execution.
 	 */
 	numeric function getCompletedTaskCount(){
-		return variables.native.getCompletedTaskCount();
+		return hasFeature( "taskMethods") ? variables.native.getCompletedTaskCount() : 0;
 	}
 
 	/**
 	 * Returns the core number of threads.
 	 */
 	numeric function getCorePoolSize(){
-		return variables.native.getCorePoolSize();
+		return hasFeature( "pool") ? variables.native.getCorePoolSize() : 0;
 	}
 
 	/**
 	 * Returns the largest number of threads that have ever simultaneously been in the pool.
 	 */
 	numeric function getLargestPoolSize(){
-		return variables.native.getLargestPoolSize();
+		return hasFeature( "pool") ? variables.native.getLargestPoolSize() : 0;
 	}
 
 	/**
 	 * Returns the maximum allowed number of threads.
 	 */
 	numeric function getMaximumPoolSize(){
-		return variables.native.getMaximumPoolSize();
+		return hasFeature( "pool") ? variables.native.getMaximumPoolSize() : 0;
 	}
 
 	/**
 	 * Returns the current number of threads in the pool.
 	 */
 	numeric function getPoolSize(){
-		return variables.native.getPoolSize();
+		return hasFeature( "pool") ? variables.native.getPoolSize() : 0;
 	}
 
 	/**
@@ -273,7 +314,8 @@ component accessors="true" singleton {
 			"activeCount"        : getActiveCount(),
 			"isTerminated"       : isTerminated(),
 			"isTerminating"      : isTerminating(),
-			"isShutdown"         : isShutdown()
+			"isShutdown"         : isShutdown(),
+			"type" : variables.native.getClass().getName()
 		};
 	}
 
