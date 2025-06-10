@@ -20,6 +20,7 @@
     },
     "JVM":{
         "heapSize":"768",
+        "javaVersion":"openjdk21_jre",
         "args":"-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=9999"
     },
     "cfconfig":{
@@ -29,6 +30,7 @@
         "BOXLANG_DEBUG":true
     },
     "scripts":{
-        "onServerInitialInstall":"install bx-mail,bx-pdf,bx-mysql,bx-esapi,testbox@be --noSave"
-    }
+        "onServerInitialInstall":"install bx-mail,bx-pdf,bx-mysql,bx-esapi,bx-orm@be --noSave"
+    },
+    "conosole":true
 }

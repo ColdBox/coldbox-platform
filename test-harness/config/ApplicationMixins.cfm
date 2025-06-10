@@ -1,6 +1,6 @@
 <cfscript>
 
-	// Lucee 5 Cache Definition
+	// Lucee Cache Definition
 	this.cache.connections[ "default" ] = {
 		  "class" = 'lucee.runtime.cache.ram.RamCache'
 		, "storage" = false
@@ -15,7 +15,10 @@
     this.ormEnabled 	  = true;
     this.datasource		  = "coolblog";
     this.ormSettings	  = {
+		// CFML Approach
     	cfclocation 		= "/cbtestharness/models/entities",
+		// BoxLang approach
+		entityPaths = "/cbtestharness/models/entities",
     	logSQL 				= false,
     	flushAtRequestEnd 	= false,
     	autoManageSession 	= false,
