@@ -23,8 +23,12 @@
     	flushAtRequestEnd 	= false,
     	autoManageSession 	= false,
     	eventHandling 	  	= true,
-		eventHandler 		= "cbtestharness.models.entities.EventHandler",
     	dialect				= 'MySQL'
     };
+	if( server.keyExists( "boxlang" ) ){
+		this.ormSettings.eventHandler = "cbtestharness.models.entities.BoxLangEventHandler";
+	} else {
+		this.ormSettings.eventHandler = "cbtestharness.models.entities.EventHandler";
+	}
 
 </cfscript>
