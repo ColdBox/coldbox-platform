@@ -1,5 +1,5 @@
-﻿<cfcomponent extends="coldbox.system.testing.BaseModelTest">
-	<cfscript>
+﻿component extends="coldbox.system.testing.BaseModelTest" {
+
 	function setup(){
 		mockLogger = createEmptyMock( "coldbox.system.logging.Logger" )
 			.$( "canDebug", true )
@@ -184,5 +184,5 @@
 		c = builder.getColdBoxDSL( def );
 		assertEquals( this, c );
 	}
-	</cfscript>
-</cfcomponent>
+
+}

@@ -175,27 +175,34 @@ component accessors="true" {
 						// module setting?
 						if ( find( "@", thisLocationKey ) ) {
 							moduleSettings = variables.coldbox.getSetting( "modules" );
-							if (
-								structKeyExists( moduleSettings, listLast( thisLocationKey, "@" ) )
-								and structKeyExists(
-									moduleSettings[ listLast( thisLocationKey, "@" ) ],
-									"settings"
-								)
-								and structKeyExists(
-									moduleSettings[ listLast( thisLocationKey, "@" ) ].settings,
-									listFirst( thisLocationKey, "@" )
-								)
-							) {
-								return moduleSettings[ listLast( thisLocationKey, "@" ) ].settings[
-									listFirst( thisLocationKey, "@" )
-								];
-							} else {
+							var moduleName = listLast( thisLocationKey, "@" );
+							if ( !structKeyExists( moduleSettings, moduleName ) ) {
 								throw(
 									type    = "ColdBoxDSL.InvalidDSL",
 									message = "The DSL provided was not valid: #arguments.definition.toString()#",
-									detail  = "The module requested: #listLast( thisLocationKey, "@" )# does not exist in the loaded modules. Loaded modules are #structKeyList( moduleSettings )#"
+									detail  = "The module requested: #moduleName# does not exist in the loaded modules. Loaded modules are #structKeyList( moduleSettings )#"
 								);
 							}
+
+							if ( !structKeyExists( moduleSettings[ moduleName ], "settings" ) ) {
+								throw(
+									type    = "ColdBoxDSL.InvalidDSL",
+									message = "The DSL provided was not valid: #arguments.definition.toString()#",
+									detail  = "The module requested: #moduleName# does not have any settings defined."
+								);
+							}
+
+							var settingName = listFirst( thisLocationKey, "@" )
+
+							if ( !structKeyExists( moduleSettings[ moduleName ].settings, settingName ) ) {
+								throw(
+									type    = "ColdBoxDSL.InvalidDSL",
+									message = "The DSL provided was not valid: #arguments.definition.toString()#",
+									detail  = "The module requested: #moduleName# does not have the setting [#settingName#] defined. Available settings are: [#moduleSettings[ moduleName ].settings.keyList( ", " )#]"
+								);
+							}
+
+							return moduleSettings[ moduleName ].settings[ settingName ];
 						}
 						// just get setting
 						return variables.coldbox.getSetting( thisLocationKey );
