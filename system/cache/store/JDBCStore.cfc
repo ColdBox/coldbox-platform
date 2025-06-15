@@ -237,9 +237,9 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true" 
 				var qStats = queryExecute(
 					"#targetSQL#",
 					{
-						lastAccessed : { value : "#now()#", cfsqltype : "timestamp" },
-						id           : { value : "#normalizedID#", cfsqltype : "varchar" },
-						created      : { value : "#now()#", cfsqltype : "timestamp" }
+						lastAccessed : { value : "#now()#", sqltype : "timestamp" },
+						id           : { value : "#normalizedID#", sqltype : "varchar" },
+						created      : { value : "#now()#", sqltype : "timestamp" }
 					},
 					variables.queryOptions
 				);
@@ -360,18 +360,18 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true" 
 					)
 					",
 					{
-						id                : { value : "#normalizedId#", cfsqltype : "varchar" },
-						objectKey         : { value : "#arguments.objectKey#", cfsqltype : "varchar" },
-						objectValue       : { value : "#arguments.object#", cfsqltype : "longvarchar" },
-						hits              : { value : "1", cfsqltype : "integer" },
-						timeout           : { value : "#arguments.timeout#", cfsqltype : "integer" },
+						id                : { value : "#normalizedId#", sqltype : "varchar" },
+						objectKey         : { value : "#arguments.objectKey#", sqltype : "varchar" },
+						objectValue       : { value : "#arguments.object#", sqltype : "longvarchar" },
+						hits              : { value : "1", sqltype : "integer" },
+						timeout           : { value : "#arguments.timeout#", sqltype : "integer" },
 						lastAccessTimeout : {
 							value     : "#arguments.lastAccessTimeout#",
-							cfsqltype : "integer"
+							sqltype : "integer"
 						},
-						now       : { value : now(), cfsqltype : "timestamp" },
-						isExpired : { value : "0", cfsqltype : "bit" },
-						isSimple  : { value : "#isSimple#", cfsqltype : "bit" }
+						now       : { value : now(), sqltype : "timestamp" },
+						isExpired : { value : "0", sqltype : "bit" },
+						isSimple  : { value : "#isSimple#", sqltype : "bit" }
 					},
 					variables.queryOptions
 				);
@@ -393,18 +393,18 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true" 
 					WHERE id = :id
 				",
 				{
-					id                : { value : "#normalizedId#", cfsqltype : "varchar" },
-					objectKey         : { value : "#arguments.objectKey#", cfsqltype : "varchar" },
-					objectValue       : { value : "#arguments.object#", cfsqltype : "longvarchar" },
-					hits              : { value : "1", cfsqltype : "integer" },
-					timeout           : { value : "#arguments.timeout#", cfsqltype : "integer" },
+					id                : { value : "#normalizedId#", sqltype : "varchar" },
+					objectKey         : { value : "#arguments.objectKey#", sqltype : "varchar" },
+					objectValue       : { value : "#arguments.object#", sqltype : "longvarchar" },
+					hits              : { value : "1", sqltype : "integer" },
+					timeout           : { value : "#arguments.timeout#", sqltype : "integer" },
 					lastAccessTimeout : {
 						value     : "#arguments.lastAccessTimeout#",
-						cfsqltype : "integer"
+						sqltype : "integer"
 					},
-					now       : { value : now(), cfsqltype : "timestamp" },
-					isExpired : { value : "0", cfsqltype : "bit" },
-					isSimple  : { value : "#isSimple#", cfsqltype : "bit" }
+					now       : { value : now(), sqltype : "timestamp" },
+					isExpired : { value : "0", sqltype : "bit" },
+					isSimple  : { value : "#isSimple#", sqltype : "bit" }
 				},
 				variables.queryOptions
 			);

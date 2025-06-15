@@ -169,7 +169,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 			",
 			{
 				datetime : {
-					cfsqltype : variables.queryParamDataTimeType,
+					sqltype : variables.queryParamDataTimeType,
 					value     : "#dateFormat( targetDate, "mm/dd/yyyy" )#"
 				}
 			},
@@ -230,31 +230,31 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 			",
 			{
 				uuid : {
-					cfsqltype : "varchar",
+					sqltype : "varchar",
 					value     : "#variables.uuid.randomUUID().toString()#"
 				},
 				severity : {
-					cfsqltype : "varchar",
+					sqltype : "varchar",
 					value     : "#arguments.data.severity#"
 				},
 				category : {
-					cfsqltype : "varchar",
+					sqltype : "varchar",
 					value     : "#arguments.data.category#"
 				},
 				timestamp : {
-					cfsqltype : variables.queryParamDataTimeType,
+					sqltype : variables.queryParamDataTimeType,
 					value     : "#arguments.data.timestamp#"
 				},
 				name : {
-					cfsqltype : "varchar",
+					sqltype : "varchar",
 					value     : "#left( getName(), 100 )#"
 				},
 				message : {
-					cfsqltype : "varchar",
+					sqltype : "varchar",
 					value     : "#arguments.data.message#"
 				},
 				extraInfo : {
-					cfsqltype : "varchar",
+					sqltype : "varchar",
 					value     : "#arguments.data.extraInfo#"
 				}
 			},
