@@ -209,10 +209,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 				// Create the Cache Key to save
                 eventCachingData.cacheKey = oEventURLFacade.buildEventKey(
-                    keySuffix           = eventDictionaryEntry.suffix,
                     targetEvent         = arguments.ehBean.getFullEvent(),
                     targetContext       = oRequestContext,
-                    cacheIncludeRcKeys  = eventDictionaryEntry.cacheIncludeRcKeys
+                    eventDictionary     = eventDictionaryEntry
                 );
 
 				// Event is cacheable and we need to flag it so the Renderer caches it
@@ -656,7 +655,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			"cacheKey"          : "",
 			"suffix"            : "",
 			"provider"          : "template",
-            "cacheIncludeRcKeys": "*"
+            "cacheInclude"      : "*",
+            "cacheExclude"      : "",
+            "cacheFilter"       : "",
 		};
 	}
 
@@ -691,7 +692,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 							""
 						);
 						mdEntry.provider = arguments.ehBean.getActionMetadata( "cacheProvider", "template" );
-                        mdEntry.cacheIncludeRcKeys = arguments.ehBean.getActionMetadata( "cacheIncludeRcKeys", "*" );
+                        mdEntry.cacheInclude = arguments.ehBean.getActionMetadata( "cacheInclude", "*" );
+                        mdEntry.cacheExclude = arguments.ehBean.getActionMetadata( "cacheExclude", "" );
+                        mdEntry.cacheFilter = arguments.ehBean.getActionMetadata( "cacheFilter", "" );
 
 						// Handler Event Cache Key Suffix, this is global to the event
 						if (

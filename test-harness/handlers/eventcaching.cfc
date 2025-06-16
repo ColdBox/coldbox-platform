@@ -22,7 +22,8 @@
 
 	// Default Action
 	function index( event, rc, prc ) cache="true" cacheTimeout="10"{
-		prc.data = [
+
+        prc.data = [
 			{ id : createUUID(), name : "luis" },
 			{ id : createUUID(), name : "lucas" },
 			{ id : createUUID(), name : "fernando" }
@@ -46,11 +47,12 @@
 		return prc.data;
 	}
 
-    // cacheIncludeRcKeys (all keys)
+    // CacheInclude
+
+    // Default (all keys used for cache)
 	function withIncludeAllRcKeys( event, rc, prc )
         cache        ="true"
         cacheTimeout ="10"
-        cacheIncludeRcKeys="*"
     {
 
         prc.data = [
@@ -62,11 +64,11 @@
         return prc.data;
     }
 
-    // cacheIncludeRcKeys (no keys)
+    // cacheInclude (no keys)
     function withIncludeNoRcKeys( event, rc, prc )
         cache        ="true"
         cacheTimeout ="10"
-        cacheIncludeRcKeys=""
+        cacheInclude=""
     {
 
         prc.data = [
@@ -78,11 +80,11 @@
         return prc.data;
     }
 
-    // cacheIncludeRcKeys (1 RC key)
+    // cacheInclude (1 RC key)
     function withIncludeOneRcKey( event, rc, prc )
         cache        ="true"
         cacheTimeout ="10"
-        cacheIncludeRcKeys="slug"
+        cacheInclude="slug"
     {
 
         param rc.slug = "";
@@ -96,11 +98,11 @@
         return prc.data;
     }
 
-    // cacheIncludeRcKeys (RC 2 keys)
+    // cacheInclude (RC 2 keys)
     function withIncludeRcKeyList( event, rc, prc )
         cache        ="true"
         cacheTimeout ="10"
-        cacheIncludeRcKeys="slug,id"
+        cacheInclude="slug,id"
     {
 
         param rc.slug = "";
@@ -113,6 +115,113 @@
         ];
 
         return prc.data;
+    }
+
+    // CacheExclude
+
+    // cacheExclude (nothing will be filtered)
+    function withExcludeNoRcKeys( event, rc, prc )
+        cache        ="true"
+        cacheTimeout ="10"
+        cacheExclude=""
+    {
+
+        prc.data = [
+            { id : createUUID(), name : "luis" },
+            { id : createUUID(), name : "lucas" },
+            { id : createUUID(), name : "fernando" }
+        ];
+
+        return prc.data;
+    }
+
+    // cacheExclude (1 RC key)
+    function withExcludeOneRcKey( event, rc, prc )
+        cache        ="true"
+        cacheTimeout ="10"
+        cacheExclude="slug"
+    {
+
+        param rc.slug = "";
+
+        prc.data = [
+            { id : createUUID(), name : "luis" },
+            { id : createUUID(), name : "lucas" },
+            { id : createUUID(), name : "fernando" }
+        ];
+
+        return prc.data;
+    }
+
+    // cacheExclude (RC 2 keys)
+    function withExcludeRcKeyList( event, rc, prc )
+        cache        ="true"
+        cacheTimeout ="10"
+        cacheExclude="slug,id"
+    {
+
+        param rc.slug = "";
+        param rc.id = "";
+
+        prc.data = [
+            { id : createUUID(), name : "luis" },
+            { id : createUUID(), name : "lucas" },
+            { id : createUUID(), name : "fernando" }
+        ];
+
+        return prc.data;
+    }
+
+
+    // cacheFilter (closure)
+    function withFilterClosure( event, rc, prc ) 
+        cache        ="true"
+        cacheTimeout ="10"
+        cacheFilter  = "filterUtmParams"
+    {
+
+        param rc.slug = "";
+
+        prc.data = [
+            { id : createUUID(), name : "luis" },
+            { id : createUUID(), name : "lucas" },
+            { id : createUUID(), name : "fernando" }
+        ];
+
+        return prc.data;
+    }
+
+    private function filterUtmParams( rcTarget) {
+        return rcTarget.filter( ( key, value ) => {
+            // Filter out UTM parameters
+            return !listFindNoCase( "utm_source,utm_medium,utm_campaign", key );
+        });
+    }
+
+    // all filters
+    function withAllFilters( event, rc, prc ) 
+        cache        ="true"
+        cacheTimeout ="10"
+        cacheFilter  ="filterMutateParams" // mutate params
+        cacheInclude ="slug,id" // include slug and id
+        cacheExclude ="id"  // exclude id
+    {
+
+        param rc.slug = "";
+
+        prc.data = [
+            { id : createUUID(), name : "luis" },
+            { id : createUUID(), name : "lucas" },
+            { id : createUUID(), name : "fernando" }
+        ];
+
+        return prc.data;
+    }
+
+    private function filterMutateParams( rcTarget) {
+        rcTarget[ "slug" ] = createUuid(); // randomize slug
+        rcTarget[ "id" ] = createUuid(); // randomize id
+        return rcTarget;
     }
 
 
