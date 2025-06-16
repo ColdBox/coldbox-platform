@@ -657,7 +657,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			"provider"          : "template",
             "cacheInclude"      : "*",
             "cacheExclude"      : "",
-            "cacheFilter"       : "",
+            "cacheFilter"       : ""
 		};
 	}
 
