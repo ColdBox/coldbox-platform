@@ -327,7 +327,7 @@
 
                 var prc2 = event2.getPrivateCollection();
 
-                expect( prc2.cbox_eventCacheableEntry ).toBeStruct().toHaveKey( "cacheExclude" );
+                expect( prc2.cbox_eventCacheableEntry ).toBeStruct().toHaveKey( "cacheFilter" );
 				expect( prc2.cbox_eventCacheableEntry.cacheFilter ).toBe( "filterUtmParams" );
 
                 // because we ignored 'all utm params in the method', the cache key should match
