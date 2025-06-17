@@ -70,7 +70,7 @@ component accessors="true" {
         
         // Cache Includes
         // only process if cacheInclude isn't set to "*"
-        if ( !arguments.eventDictionary.cacheInclude == "*" ) {
+        if ( arguments.eventDictionary.cacheInclude != "*" ) {
             // Whitelist specific keys
             var includeKeys = arguments.eventDictionary.cacheInclude.listToArray();
             rcTarget = rcTarget.filter( ( key, value ) => { 
