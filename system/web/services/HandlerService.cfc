@@ -698,14 +698,24 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 						// Handler Event Cache Key Suffix, this is global to the event
 						if (
-							isClosure( arguments.oEventHandler.EVENT_CACHE_SUFFIX ) || isCustomFunction(
-								arguments.oEventHandler.EVENT_CACHE_SUFFIX
-							)
+							isClosure( arguments.oEventHandler.EVENT_CACHE_SUFFIX ) || 
+                            isCustomFunction( arguments.oEventHandler.EVENT_CACHE_SUFFIX )
 						) {
 							mdEntry.suffix = oEventHandler.EVENT_CACHE_SUFFIX( arguments.ehBean );
 						} else {
 							mdEntry.suffix = arguments.oEventHandler.EVENT_CACHE_SUFFIX;
 						}
+
+                        // if the cacheFilter is a closure or UDF, then we store it
+                        if ( 
+                            len( mdEntry.cacheFilter ) &&
+                            (
+                                isClosure( arguments.oEventHandler[ mdEntry.cacheFilter ] ) || 
+                                isCustomFunction( arguments.oEventHandler[ mdEntry.cacheFilter ] )
+                            )
+                        ) {
+                            mdEntry.cacheFilter = arguments.oEventHandler[ mdEntry.cacheFilter ];
+                        }
 					}
 					// end cache metadata is true
 

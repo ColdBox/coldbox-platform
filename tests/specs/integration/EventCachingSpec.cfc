@@ -299,7 +299,7 @@
 				var prc1 = event1.getPrivateCollection();
 
                 expect( prc1.cbox_eventCacheableEntry ).toBeStruct().toHaveKey( "cacheFilter" );
-				expect( prc1.cbox_eventCacheableEntry.cacheFilter ).toBe( "filterUtmParams" );
+				expect( isCustomFunction( prc1.cbox_eventCacheableEntry.cacheFilter ) ).toBeTrue();
 
 			} );
 
@@ -315,7 +315,7 @@
 				var prc1 = event1.getPrivateCollection();
 
                 expect( prc1.cbox_eventCacheableEntry ).toBeStruct().toHaveKey( "cacheFilter" );
-				expect( prc1.cbox_eventCacheableEntry.cacheFilter ).toBe( "filterUtmParams" );
+				expect( isCustomFunction( prc1.cbox_eventCacheableEntry.cacheFilter ) ).toBeTrue();
 
                 setup();
 
@@ -328,7 +328,7 @@
                 var prc2 = event2.getPrivateCollection();
 
                 expect( prc2.cbox_eventCacheableEntry ).toBeStruct().toHaveKey( "cacheFilter" );
-				expect( prc2.cbox_eventCacheableEntry.cacheFilter ).toBe( "filterUtmParams" );
+				expect( isCustomFunction( prc2.cbox_eventCacheableEntry.cacheFilter ) ).toBeTrue();
 
                 // because we ignored 'all utm params in the method', the cache key should match
                 expect( prc1.cbox_eventCacheableEntry.cacheKey ).toBe( prc2.cbox_eventCacheableEntry.cacheKey );
@@ -348,7 +348,7 @@
 				var prc1 = event1.getPrivateCollection();
 
                 expect( prc1.cbox_eventCacheableEntry ).toBeStruct().toHaveKey( "cacheFilter,cacheInclude,cacheExclude" );
-				expect( prc1.cbox_eventCacheableEntry.cacheFilter ).toBe( "filterMutateParams" );
+				expect( isCustomFunction( prc1.cbox_eventCacheableEntry.cacheFilter ) ).toBeTrue();
                 expect( prc1.cbox_eventCacheableEntry.cacheInclude ).toBe( "slug,id" );
                 expect( prc1.cbox_eventCacheableEntry.cacheExclude ).toBe( "id" );
 
@@ -363,7 +363,7 @@
                 var prc2 = event2.getPrivateCollection();
 
                 expect( prc2.cbox_eventCacheableEntry ).toBeStruct().toHaveKey( "cacheExclude,cacheInclude,cacheExclude" );
-				expect( prc2.cbox_eventCacheableEntry.cacheFilter ).toBe( "filterMutateParams" );
+				expect( isCustomFunction( prc2.cbox_eventCacheableEntry.cacheFilter ) ).toBeTrue();
                 expect( prc2.cbox_eventCacheableEntry.cacheInclude ).toBe( "slug,id" );
                 expect( prc2.cbox_eventCacheableEntry.cacheExclude ).toBe( "id" );
 

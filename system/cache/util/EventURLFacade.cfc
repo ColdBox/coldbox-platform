@@ -57,15 +57,12 @@ component accessors="true" {
         // 2. Include specific keys (if `cacheInclude` is not "*")
         // 3. Exclude specific keys (if `cacheExclude` is provided and not empty)
         
-        // Use custom filter closure stored in dictionary
-        if ( len( arguments.eventDictionary?.cacheFilter ) ) {
-			rcTarget = arguments.event.getController()
-				.runEvent(
-					event = arguments.event.getCurrentHandler() & "." & arguments.eventDictionary.cacheFilter,
-					eventArguments = { rcTarget : rcTarget },
-					private   = true,
-					requestContext = arguments.event
-				);
+        // Use custom filter closure/UDF stored in dictionary
+        if ( 
+            isClosure( arguments.eventDictionary.cacheFilter ) || 
+            isCustomFunction( arguments.eventDictionary.cacheFilter )
+        ) {
+			rcTarget = arguments.eventDictionary.cacheFilter( rcTarget );
         } 
         
         // Cache Includes

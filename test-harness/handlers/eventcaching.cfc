@@ -191,7 +191,7 @@
         return prc.data;
     }
 
-    private function filterUtmParams( rcTarget) {
+    function filterUtmParams( rcTarget) {
         return rcTarget.filter( ( key, value ) => {
             // Filter out UTM parameters
             return !listFindNoCase( "utm_source,utm_medium,utm_campaign", key );
@@ -218,7 +218,7 @@
         return prc.data;
     }
 
-    private function filterMutateParams( rcTarget) {
+    function filterMutateParams( rcTarget ) {
         rcTarget[ "slug" ] = createUuid(); // randomize slug
         rcTarget[ "id" ] = createUuid(); // randomize id
         return rcTarget;
