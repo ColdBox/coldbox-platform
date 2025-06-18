@@ -569,6 +569,8 @@ component accessors="true" singleton {
 			var annotations = server.keyExists( "boxlang" ) ? getClassMetadata(
 				arguments.relationalMeta.properties[ key ].cfc
 			).annotations : getComponentMetadata( arguments.relationalMeta.properties[ key ].cfc );
+
+			// Verify if the entityName annotation exists
 			if ( annotations.keyExists( "entityName" ) ) {
 				targetEntityName = annotations.entityName;
 			}

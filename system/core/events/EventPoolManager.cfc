@@ -230,7 +230,7 @@ component accessors="true" {
 		if (
 			arguments.metadata.keyExists( "extends" )
 			AND
-			!isNull( arguments.metadata.extends )
+			!arguments.metadata.extends.isEmpty()
 			AND
 			!listFindNoCase( getStopRecursionClasses(), arguments.metadata.extends.name )
 		) {
