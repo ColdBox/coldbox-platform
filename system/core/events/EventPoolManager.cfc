@@ -228,11 +228,11 @@ component accessors="true" {
 
 		// Start Registering inheritances?
 		if (
-			structKeyExists( arguments.metadata, "extends" )
+			arguments.metadata.keyExists( "extends" )
 			AND
-			!structIsEmpty( arguments.metadata.extends )
+			!isNull( arguments.metadata.extends )
 			AND
-			NOT listFindNoCase( getStopRecursionClasses(), arguments.metadata.extends.name )
+			!listFindNoCase( getStopRecursionClasses(), arguments.metadata.extends.name )
 		) {
 			parseMetadata( arguments.metadata.extends, arguments.eventsFound );
 		}

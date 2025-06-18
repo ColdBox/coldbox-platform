@@ -674,7 +674,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		if (
 			arguments.metadata.keyExists( "extends" )
 			&&
-			!structIsEmpty( arguments.metadata.extends )
+			!arguments.metadata.extends.isEmpty()
 			&&
 			arguments.metadata.extends.name neq "coldbox.system.EventHandler"
 		) {

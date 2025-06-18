@@ -354,7 +354,7 @@ component accessors="true" {
 		// check if already registered, if it is, just return
 		for ( var x = 1; x lte arrayLen( variables.DIConstructorArguments ); x++ ) {
 			if (
-				structKeyExists( arguments, "name" ) AND
+				!isNull( arguments.name ) AND
 				structKeyExists( variables.DIConstructorArguments[ x ], "name" ) AND
 				variables.DIConstructorArguments[ x ].name == arguments.name
 			) {
@@ -492,7 +492,10 @@ component accessors="true" {
 		// Remove scope for setter injection
 		definition.scope = "";
 		// Verify argument name, if not default it to setter name
-		if ( NOT structKeyExists( arguments, "argName" ) OR len( arguments.argName ) EQ 0 ) {
+		if (
+			isNull( arguments.argName ) OR
+			len( arguments.argName ) EQ 0
+		) {
 			arguments.argName = arguments.name;
 		}
 		// save incoming params
@@ -1058,44 +1061,58 @@ component accessors="true" {
 		}
 	}
 
+	/**
+	 * Checks if the property has an annotation value for the key
+	 *
+	 * @metadata The metadata to check
+	 * @key      The key to look for in the annotations or documentation
+	 *
+	 * @return boolean
+	 */
 	private boolean function hasAnnotationValue( required struct metadata, required string key ){
-		// Check if the property has an annotations struct
-		if ( structKeyExists( metadata, "annotations" ) && structKeyExists( metadata.annotations, key ) ) {
+		var annotations = arguments.metadata.keyExists( "annotations" ) ? arguments.metadata.annotations : arguments.metadata;
+		var documentation = arguments.metadata.keyExists( "documentation" ) ? arguments.metadata.documentation : arguments.metadata;
+
+		// Check in the annotations struct first
+		if ( structKeyExists( annotations, key ) ) {
 			return true;
 		}
 
-		// Check if the property has a documentation struct
-		if ( structKeyExists( metadata, "documentation" ) && structKeyExists( metadata.documentation, key ) ) {
-			return true;
-		}
-
-		// Check if the property has the key directly
-		else if ( structKeyExists( metadata, key ) ) {
+		// Check in the documentation struct second, to support CFML engines
+		if ( structKeyExists( documentation, key ) ) {
 			return true;
 		}
 
 		return false;
 	}
 
+	/**
+	 * Get the annotation value for a given key in the metadata
+	 *
+	 * @metadata      The metadata to check
+	 * @key           The key to look for in the annotations or documentation
+	 * @defaultValue  The default value to return if the key is not found
+	 *
+	 * @return any
+	 */
 	private any function getAnnotationValue(
 		required struct metadata,
 		required string key,
 		any defaultValue
 	){
+		var annotations = arguments.metadata.keyExists( "annotations" ) ? arguments.metadata.annotations : arguments.metadata;
+		var documentation = arguments.metadata.keyExists( "documentation" ) ? arguments.metadata.documentation : arguments.metadata;
+
 		// Check if the property has an annotations struct
-		if ( structKeyExists( metadata, "annotations" ) && structKeyExists( metadata.annotations, key ) ) {
-			return metadata.annotations[ key ];
+		if ( structKeyExists( annotations, key ) ) {
+			return annotations[ key ];
 		}
 
 		// Check if the property has an documentation struct
-		if ( structKeyExists( metadata, "documentation" ) && structKeyExists( metadata.documentation, key ) ) {
-			return metadata.documentation[ key ];
+		if ( structKeyExists( documentation, key ) ) {
+			return documentation[ key ];
 		}
 
-		// Check if the property has the key directly
-		else if ( structKeyExists( metadata, key ) ) {
-			return metadata[ key ];
-		}
 		// Return default value
 		return defaultValue;
 	}
