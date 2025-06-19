@@ -706,15 +706,32 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 							mdEntry.suffix = arguments.oEventHandler.EVENT_CACHE_SUFFIX;
 						}
 
-                        // if the cacheFilter is a closure or UDF, then we store it
-                        if ( 
-                            len( mdEntry.cacheFilter ) &&
-                            (
-                                isClosure( arguments.oEventHandler[ mdEntry.cacheFilter ] ) || 
-                                isCustomFunction( arguments.oEventHandler[ mdEntry.cacheFilter ] )
-                            )
-                        ) {
-                            mdEntry.cacheFilter = arguments.oEventHandler[ mdEntry.cacheFilter ];
+                        // if the cacheFilter has a length and is a method, then we need to verify and store the resulting closure
+                        if ( len( mdEntry.cacheFilter ) ) {
+
+                            // if the method doesn't exist, then throw an exception
+                            if ( !arguments.oEventHandler._actionExists( mdEntry.cacheFilter ) ) {
+                                throw( 
+                                    message = "CacheFilter expected a private method '#mdEntry.cacheFilter#'",
+                                    type = "HandlerInvalidCacheFilterException", 
+                                    detail = "CacheFilter method '#mdEntry.cacheFilter#' does not exist in handler '#getMetaData( oEventHandler ).name#'. Please verify your cacheFilter annotation."
+                                );
+                            }
+
+                            mdEntry.cacheFilter = arguments.oEventHandler._privateInvoker( mdEntry.cacheFilter, {} );
+
+                            // if the cacheFilter isn't a closure, throw an exception
+                            // We check for isClosure and isCustomFunction for ACF/Lucee compatibility
+                            if ( 
+                                !isClosure( mdEntry.cacheFilter ) && 
+                                !isCustomFunction( mdEntry.cacheFilter )
+                            ) {
+                                throw( 
+                                    message = "CacheFilter expected a closure.",
+                                    type = "HandlerInvalidCacheFilterException", 
+                                    detail = "Please verify your cacheFilter annotation in handler '#getMetaData( oEventHandler ).name# to ensure it returns a closure."
+                                );
+                            }
                         }
 					}
 					// end cache metadata is true

@@ -57,11 +57,8 @@ component accessors="true" {
         // 2. Include specific keys (if `cacheInclude` is not "*")
         // 3. Exclude specific keys (if `cacheExclude` is provided and not empty)
         
-        // Use custom filter closure/UDF stored in dictionary
-        if ( 
-            isClosure( arguments.eventDictionary.cacheFilter ) || 
-            isCustomFunction( arguments.eventDictionary.cacheFilter )
-        ) {
+        // If cacheFilter isn't a simple value, we assume it's a closure and call it
+        if ( !isSimpleValue( arguments.eventDictionary.cacheFilter ) ) {
 			rcTarget = arguments.eventDictionary.cacheFilter( rcTarget );
         } 
         

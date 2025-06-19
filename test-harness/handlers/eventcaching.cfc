@@ -191,11 +191,15 @@
         return prc.data;
     }
 
-    function filterUtmParams( rcTarget) {
-        return rcTarget.filter( ( key, value ) => {
-            // Filter out UTM parameters
-            return !listFindNoCase( "utm_source,utm_medium,utm_campaign", key );
-        });
+    // cacheFilter (returns a closure with rcTarget as argument)
+    private function filterUtmParams() {
+        var ignoreKeys = [ "utm_source", "utm_medium", "utm_campaign" ];
+        return ( rcTarget ) => {
+            return rcTarget.filter( ( key, value ) => {
+                // Filter out UTM parameters
+                return !ignoreKeys.findNoCase( key );
+            } );
+        }
     }
 
     // all filters
@@ -218,10 +222,40 @@
         return prc.data;
     }
 
-    function filterMutateParams( rcTarget ) {
-        rcTarget[ "slug" ] = createUuid(); // randomize slug
-        rcTarget[ "id" ] = createUuid(); // randomize id
-        return rcTarget;
+    // cacheFilter: Returns a closure that mutates the rcTarget
+    private function filterMutateParams() {
+        return ( rcTarget ) => {
+            rcTarget[ "slug" ] = createUuid(); // randomize slug
+            rcTarget[ "id" ] = createUuid(); // randomize id
+            return rcTarget;
+        };
+    }
+
+
+    // withBadCacheFilter (returns something other than a closure)
+    function withBadCacheFilter( event, rc, prc ) 
+        cache        ="true"
+        cacheTimeout ="10"
+        cacheFilter  ="filterNoClosure" 
+    {
+
+        param rc.slug = "";
+
+        prc.data = [
+            { id : createUUID(), name : "luis" },
+            { id : createUUID(), name : "lucas" },
+            { id : createUUID(), name : "fernando" }
+        ];
+
+        return prc.data;
+    }
+
+    // filterNoClosure: returns something other than a closure
+    private function filterNoClosure() {
+        return {
+            "slug" : "foo",
+            "id"   : 1
+        };
     }
 
 

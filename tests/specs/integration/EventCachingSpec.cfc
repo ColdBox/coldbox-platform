@@ -303,6 +303,17 @@
 
 			} );
 
+            it( "requires cacheFilter to be a closure", function(){
+                
+                expect( () => {
+                    execute( 
+                        event = "eventcaching.withBadCacheFilter", 
+                        renderResults = true
+                    )
+                } ).toThrow( type="HandlerInvalidCacheFilterException" );
+
+			} );
+
 
             it( "can filter RC keys based on cacheFilter", function(){
 
