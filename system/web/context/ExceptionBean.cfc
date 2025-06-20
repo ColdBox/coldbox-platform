@@ -387,7 +387,7 @@ component accessors="true" {
 				);
 				list.append(
 					"<td class="" overflow-scroll "">" &
-					dateFormat( arguments.scope[ i ], "mm/dd/yyyy" ) & " " &
+					dateFormat( arguments.scope[ i ], "MM/dd/yyyy" ) & " " &
 					timeFormat( arguments.scope[ i ], "HH:mm:ss" ) & "</td>
 			"
 				);

@@ -53,7 +53,7 @@ component accessors="true" extends="coldbox.system.logging.appenders.FileAppende
 
 	/**
 	 * Get the default archive layout:
-	 * <code>#filename#-#yyy-mm-dd#-#hh-mm#-#archiveNumber#</code>
+	 * <code>#filename#-#yyy-MM-dd#-#hh-mm#-#archiveNumber#</code>
 	 * DO NOT ADD EXTENSION TO IT, WE WILL ADD IT
 	 *
 	 * @filename     The filename to use for the archive layout
@@ -64,7 +64,7 @@ component accessors="true" extends="coldbox.system.logging.appenders.FileAppende
 	function getDefaultArchiveLayout( required filename, required archiveCount ){
 		return arguments.fileName &
 		"-" &
-		dateFormat( now(), "yyyy-mm-dd" ) &
+		dateFormat( now(), "yyyy-MM-dd" ) &
 		"-" &
 		timeFormat( now(), "HH-mm" ) &
 		"-#arguments.archiveCount + 1#";

@@ -53,7 +53,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 			}
 
 			// Entry string
-			entry = "#dateFormat( timestamp, "yyyy-mm-dd" )# #timeFormat( timestamp, "HH:MM:SS" )# #arguments.logEvent.getCategory()# #message#";
+			entry = "#dateFormat( timestamp, "yyyy-MM-dd" )# #timeFormat( timestamp, "HH:mm:ss" )# #arguments.logEvent.getCategory()# #message#";
 		}
 
 		// Log it

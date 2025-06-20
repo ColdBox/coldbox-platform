@@ -464,14 +464,14 @@ component accessors="true" {
 	/**
 	 * Set when this task should start execution on. By default it starts automatically.
 	 *
-	 * @date The date when this task should start execution on => yyyy-mm-dd format is preferred.
+	 * @date The date when this task should start execution on => yyyy-MM-dd format is preferred.
 	 * @time The specific time using 24 hour format => HH:mm, defaults to 00:00
 	 */
 	ScheduledTask function startOn( required date, string time = "00:00" ){
 		debugLog( "startOn", arguments );
 
 		variables.startOnDateTime = variables.dateTimeHelper.parse(
-			"#dateFormat( arguments.date, "yyyy-mm-dd" )#T#arguments.time#"
+			"#dateFormat( arguments.date, "yyyy-MM-dd" )#T#arguments.time#"
 		);
 		return this;
 	}
@@ -479,14 +479,14 @@ component accessors="true" {
 	/**
 	 * Set when this task should stop execution on. By default it never ends
 	 *
-	 * @date The date when this task should stop execution on => yyyy-mm-dd format is preferred.
+	 * @date The date when this task should stop execution on => yyyy-MM-dd format is preferred.
 	 * @time The specific time using 24 hour format => HH:mm, defaults to 00:00
 	 */
 	ScheduledTask function endOn( required date, string time = "00:00" ){
 		debugLog( "endOn", arguments );
 
 		variables.endOnDateTime = variables.dateTimeHelper.parse(
-			"#dateFormat( arguments.date, "yyyy-mm-dd" )#T#arguments.time#"
+			"#dateFormat( arguments.date, "yyyy-MM-dd" )#T#arguments.time#"
 		);
 		return this;
 	}
@@ -648,12 +648,12 @@ component accessors="true" {
 			len( variables.endTime )
 		) {
 			var _startTime = variables.dateTimeHelper.parse(
-				dateFormat( getJavaNow().toString(), "yyyy-mm-dd" ) & "T" & (
+				dateFormat( getJavaNow().toString(), "yyyy-MM-dd" ) & "T" & (
 					len( variables.startTime ) ? variables.startTime : "00:00:00"
 				)
 			);
 			var _endTime = variables.dateTimeHelper.parse(
-				dateFormat( getJavaNow().toString(), "yyyy-mm-dd" ) & "T" & (
+				dateFormat( getJavaNow().toString(), "yyyy-MM-dd" ) & "T" & (
 					len( variables.endTime ) ? variables.endTime : "23:59:59"
 				)
 			);
@@ -1662,7 +1662,7 @@ component accessors="true" {
 	function debugLog( required string caller, struct args = {} ){
 		if ( variables.debug ) {
 			var message = [
-				dateTimeFormat( now(), "yyyy-mm-dd hh:nn:ss" ),
+				dateTimeFormat( now(), "yyyy-MM-dd hh:mm:ss" ),
 				"ScheduledTask",
 				"group: #getGroup()#",
 				"name: #getName()#",

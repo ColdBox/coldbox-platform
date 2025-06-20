@@ -40,7 +40,7 @@
 	  Last Reap
 	</div>
 	<div class="cachebox_debugContentCell">
-	 #DateFormat(cacheStats.getlastReapDatetime(),"mmm-dd-yyyy")#
+	 #DateFormat(cacheStats.getlastReapDatetime(),"MMM-dd-yyyy")#
 	 #TimeFormat(cacheStats.getlastReapDatetime(),"hh:mm:ss tt")#
 	</div>
 </cfif>

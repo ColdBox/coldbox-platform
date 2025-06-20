@@ -34,14 +34,14 @@
 		<!--- Created --->
 		<td align="center" >
 			<cfif !isNull( cacheMetadata[thisKey][ cacheMDKeyLookup.Created ] )>
-			#dateformat( cacheMetadata[thisKey][ cacheMDKeyLookup.Created ], "mmm-dd" )# <br/>
+			#dateformat( cacheMetadata[thisKey][ cacheMDKeyLookup.Created ], "MMM-dd" )# <br/>
 			#timeformat( cacheMetadata[thisKey][ cacheMDKeyLookup.created ], "hh:mm:ss tt" )#
 			</cfif>
 		</td>
 		<!--- Last Accessed --->
 		<td align="center">
 			<cfif !isNull( cacheMetadata[thisKey][ cacheMDKeyLookup.LastAccessed ] )>
-			#dateformat(cacheMetadata[thisKey][ cacheMDKeyLookup.LastAccessed ],"mmm-dd")# <br/>
+			#dateformat(cacheMetadata[thisKey][ cacheMDKeyLookup.LastAccessed ],"MMM-dd")# <br/>
 			#timeformat(cacheMetadata[thisKey][ cacheMDKeyLookup.LastAccessed ],"hh:mm:ss tt")#
 			</cfif>
 		</td>

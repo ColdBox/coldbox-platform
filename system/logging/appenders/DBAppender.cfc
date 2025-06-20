@@ -171,7 +171,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 				datetime : {
 					cfsqltype : variables.queryParamDataTimeType,
 					sqltype : variables.queryParamDataTimeType,
-					value     : "#dateFormat( targetDate, "mm/dd/yyyy" )#"
+					value     : "#dateFormat( targetDate, "MM/dd/yyyy" )#"
 				}
 			},
 			{ datasource : dsn }
