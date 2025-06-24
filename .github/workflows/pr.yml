@@ -24,6 +24,6 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - uses: Ortus-Solutions/commandbox-action@v1.0.2
+      - uses: Ortus-Solutions/commandbox-action@v1.0.3
         with:
           cmd: run-script format:check
