@@ -21,7 +21,7 @@
     "JVM":{
         "heapSize":"768",
         "javaVersion":"openjdk21_jre",
-        "args":"-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=9999"
+        "args":"-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=9997"
     },
     "cfconfig":{
         "file":".cfconfig.json"
