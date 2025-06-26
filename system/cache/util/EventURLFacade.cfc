@@ -73,7 +73,7 @@ component accessors="true" {
         } 
 
         // Cache Excludes
-        if ( len( arguments.eventDictionary?.cacheExclude ) ) {
+        if ( len( arguments.eventDictionary.cacheExclude ) ) {
             // Blacklist specific keys
             var excludeKeys = arguments.eventDictionary.cacheExclude.listToArray();
             rcTarget = rcTarget.filter( ( key, value ) => {
