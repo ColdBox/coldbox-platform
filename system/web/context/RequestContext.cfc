@@ -93,11 +93,12 @@ component serializable="false" accessors="true" {
 	/**
 	 * The last status code
 	 * This is used mostly for mocking and tracking multi-step responses in case repsonses are committed.
+     * Defaults to 200 (OK)
 	 */
 	property
 		name   ="statusCode"
 		type   ="numeric"
-		default="0";
+		default="200";
 
 	/**
 	 * The last status text
