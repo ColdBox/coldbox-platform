@@ -35,19 +35,19 @@
 				var context = createMock( "coldbox.system.web.context.RequestContext" )
 					.setRoutedStruct( routedStruct )
 					.setContext( { event : "main.index", id : "123" } );
-                
-                // Since everything is mocked and you don't have a real HandlerService or ehBean here,
-                // you can simulate the eventDictionary as it would be returned from getEventCachingMetadata.
-                // This is a simplified version, assuming you have a method to get the event metadata.
-                var eventDictionary = {
-                    "context"      : context.getContext(),
-                    "cacheFilter": "",
-                    "cacheInclude" : "*", // Assuming you want to include all keys
-                    "cacheExclude" : "", // Assuming no keys to exclude
-                    "suffix" : "unittest"
-                };
 
-                // Optionally, if your facade expects more keys, add them here.
+				// Since everything is mocked and you don't have a real HandlerService or ehBean here,
+				// you can simulate the eventDictionary as it would be returned from getEventCachingMetadata.
+				// This is a simplified version, assuming you have a method to get the event metadata.
+				var eventDictionary = {
+					"context"      : context.getContext(),
+					"cacheFilter"  : "",
+					"cacheInclude" : "*", // Assuming you want to include all keys
+					"cacheExclude" : "", // Assuming no keys to exclude
+					"suffix"       : "unittest"
+				};
+
+				// Optionally, if your facade expects more keys, add them here.
 
 				var testHash = facade.getUniqueHash( context, eventDictionary );
 				expect( testhash ).notToBeEmpty();
@@ -76,20 +76,20 @@
 				context.setRoutedStruct( { "name" : "majano" } ).setContext( { event : "main.index", id : "123" } );
 
 				// Since everything is mocked and you don't have a real HandlerService or ehBean here,
-                // you can simulate the eventDictionary as it would be returned from getEventCachingMetadata.
-                // This is a simplified version, assuming you have a method to get the event metadata.
-                var eventDictionary = {
-                    "context"      : context.getContext(),
-                    "cacheFilter": "",
-                    "cacheInclude" : "*", // Assuming you want to include all keys
-                    "cacheExclude" : "", // Assuming no keys to exclude
-                    "suffix" : "unittest"
-                };
-                
-                var testCacheKey = facade.buildEventKey( "main.index", context, eventDictionary );
+				// you can simulate the eventDictionary as it would be returned from getEventCachingMetadata.
+				// This is a simplified version, assuming you have a method to get the event metadata.
+				var eventDictionary = {
+					"context"      : context.getContext(),
+					"cacheFilter"  : "",
+					"cacheInclude" : "*", // Assuming you want to include all keys
+					"cacheExclude" : "", // Assuming no keys to exclude
+					"suffix"       : "unittest"
+				};
 
-				var uniqueHash   = facade.getUniqueHash( context, eventDictionary );
-				var targetKey    = cm.getEventCacheKeyPrefix() & "main.index-unittest-" & uniqueHash;
+				var testCacheKey = facade.buildEventKey( "main.index", context, eventDictionary );
+
+				var uniqueHash = facade.getUniqueHash( context, eventDictionary );
+				var targetKey  = cm.getEventCacheKeyPrefix() & "main.index-unittest-" & uniqueHash;
 
 				expect( testCacheKey ).toBe( targetKey );
 			} );
