@@ -35,36 +35,66 @@ component accessors="true" {
 
 	/**
 	 * Build a unique hash from an incoming request context
+     * Note: the 'event' key is always ignored from the request collection
 	 *
 	 * @event A request context object
+     * @targetContext The targeted request context object
+     * @eventDictionary The event metadata containing cache annotations
 	 */
-	string function getUniqueHash( required event ){
-		var rcTarget = arguments.event
-			.getCollection()
-			.filter( function( key, value ){
-				// Remove event, not needed for hashing purposes
-				return ( key != "event" );
-			} );
+	string function getUniqueHash( 
+        required event,
+        required struct eventDictionary
+    ){
+        
+        // Assign the RC struct and filter out the "event" key, which is not needed for cache keys
+        var rcTarget = arguments.event.getCollection().filter( ( key, value ) => { 
+            return key != "event";
+        } );
+        
+        // Apply cache key filtering based on annotations
+        // We apply them in the following order:
+        // 1. Custom filter closure (if provided)
+        // 2. Include specific keys (if `cacheInclude` is not "*")
+        // 3. Exclude specific keys (if `cacheExclude` is provided and not empty)
+        
+        // If cacheFilter isn't a simple value, we assume it's a closure and call it
+        if ( !isSimpleValue( arguments.eventDictionary.cacheFilter ) ) {
+			rcTarget = arguments.eventDictionary.cacheFilter( rcTarget );
+        } 
+        
+        // Cache Includes
+        // only process if cacheInclude isn't set to "*"
+        if ( arguments.eventDictionary.cacheInclude != "*" ) {
+            // Whitelist specific keys
+            var includeKeys = arguments.eventDictionary.cacheInclude.listToArray();
+            rcTarget = rcTarget.filter( ( key, value ) => { 
+                return includeKeys.findNoCase( key ) > 0;
+            });
+        } 
 
-		// systemOutput( "=====> uniquehash-rcTarget: #variables.jTreeMap.init( rcTarget ).toString()#", true );
-		// systemOutput( "=====> uniquehash-rcTargetHash: #hash( variables.jTreeMap.init( rcTarget ).toString() )#", true );
+        // Cache Excludes
+        if ( len( arguments.eventDictionary.cacheExclude ) ) {
+            // Blacklist specific keys
+            var excludeKeys = arguments.eventDictionary.cacheExclude.listToArray();
+            rcTarget = rcTarget.filter( ( key, value ) => {
+                return excludeKeys.findNoCase( key ) == 0;
+            });
+        }
 
-		var targetMixer = {
-			// Get the original incoming context hash
-			"incomingHash" : hash( variables.jTreeMap.init( rcTarget ).toString() ),
-			// Multi-Host support
-			"cgihost"      : buildAppLink()
-		};
+        var targetMixer = {
+            // Get the original incoming context hash
+            "incomingHash" : hash( variables.jTreeMap.init( rcTarget ).toString() ),
+            // Multi-Host support
+            "cgihost"      : buildAppLink()
+        };
 
-		// Incorporate Routed Structs
-		structAppend(
-			targetMixer,
-			arguments.event.getRoutedStruct(),
-			true
-		);
+        // Incorporate Routed Structs
+        targetMixer.append( arguments.event.getRoutedStruct(), true );
 
-		// Return unique identifier
-		return hash( targetmixer.toString() );
+        
+
+        // Return unique identifier
+        return hash( targetmixer.toString() );
 	}
 
 	/**
@@ -101,16 +131,19 @@ component accessors="true" {
 	/**
 	 * Build an event key according to passed in params
 	 *
-	 * @keySuffix     The key suffix used in the cache key
 	 * @targetEvent   The targeted ColdBox event executed
 	 * @targetContext The targeted request context object
+     * @eventDictionary The event metadata containing cache annotations
 	 */
-	string function buildEventKey(
-		required keySuffix,
-		required targetEvent,
-		required targetContext
-	){
-		return buildBasicCacheKey( argumentCollection = arguments ) & getUniqueHash( arguments.targetContext );
+	string function buildEventKey( 
+        required targetEvent, 
+        required targetContext, 
+        required struct eventDictionary
+    ){
+		return buildBasicCacheKey( 
+            keySuffix   = arguments.eventDictionary.suffix,
+            targetEvent = arguments.targetEvent 
+        ) & getUniqueHash( arguments.targetContext, arguments.eventDictionary );
 	}
 
 	/**
