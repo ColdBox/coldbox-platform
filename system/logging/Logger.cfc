@@ -31,6 +31,14 @@ component accessors="true" {
 	 */
 	property name="levelMax";
 
+	/**
+	 * Allow Serializing Complex Objects
+	 */
+	property
+		name   ="allowSerializingComplexObjects"
+		type   ="boolean"
+		default="true";
+
 	// The log levels enum as a public property
 	this.logLevels = new coldbox.system.logging.LogLevels();
 
@@ -44,14 +52,16 @@ component accessors="true" {
 	 */
 	function init(
 		required category,
-		numeric levelMin = 0,
-		numeric levelMax = 4,
-		struct appenders = {}
+		numeric levelMin                       = 0,
+		numeric levelMax                       = 4,
+		struct appenders                       = {},
+		boolean allowSerializingComplexObjects = true
 	){
 		// Save Properties
-		variables.rootLogger = "";
-		variables.category   = arguments.category;
-		variables.appenders  = arguments.appenders;
+		variables.rootLogger                     = "";
+		variables.category                       = arguments.category;
+		variables.appenders                      = arguments.appenders;
+		variables.allowSerializingComplexObjects = arguments.allowSerializingComplexObjects;
 
 		// Logger Logging Level defaults, which is wideeeee open!
 		variables.levelMin = arguments.levelMin;
@@ -326,6 +336,14 @@ component accessors="true" {
 		required severity,
 		extraInfo = ""
 	){
+		if ( !variables.allowSerializingComplexObjects && checkForComplexObjects( arguments.extraInfo ) ) {
+			throw(
+				message = "Attempted to log a complex object in the extraInfo parameter, but it is disallowed.",
+				detail  = "Log Message: #arguments.message#; Log Severity: #arguments.severity#",
+				type    = "Logger.SerializingComplexObjectException"
+			);
+		}
+
 		var target = this;
 
 		// Verify severity, if invalid, default to INFO
@@ -454,6 +472,48 @@ component accessors="true" {
 	 */
 	boolean function canDebug(){
 		return canLog( this.logLevels.DEBUG );
+	}
+
+	private boolean function checkForComplexObjects( required any value ){
+		if ( isNull( arguments.value ) ) {
+			return false;
+		}
+
+		if ( isSimpleValue( arguments.value ) ) {
+			return false;
+		}
+
+		// If the object has a $toString() method, then we consider it safe
+		if ( isObject( arguments.value ) AND structKeyExists( arguments.value, "$toString" ) ) {
+			return false;
+		}
+
+		// CFML Exceptions are safe
+		if ( isCFMLException( arguments.value ) ) {
+			return false;
+		}
+
+		if ( isArray( arguments.value ) ) {
+			return arraySome( arguments.value, function( v ){
+				return checkForComplexObjects( v );
+			} );
+		}
+
+		if ( isStruct( arguments.value ) ) {
+			return structSome( arguments.value, function( k, v ){
+				return checkForComplexObjects( v );
+			} );
+		}
+
+		return true;
+	}
+
+	private boolean function isCFMLException( required any value ){
+		return ( isObject( arguments.value ) || isStruct( arguments.value ) ) && (
+			structKeyExists( arguments.value, "stacktrace" ) &&
+			structKeyExists( arguments.value, "message" ) &&
+			structKeyExists( arguments.value, "detail" )
+		);
 	}
 
 }

@@ -128,6 +128,69 @@
 					expect( mockAppender.$callLog().logmessage ).toBeEmpty();
 				} );
 			} );
+
+			describe( "can control serializing complex objects", function(){
+				beforeEach( function( currentSpec ){
+					// MockAppender
+					mockAppender = createStub()
+						.$( "getName", "MockAppender" )
+						.$( "isInitialized", true )
+						.$( "canLog", true )
+						.$( "getProperty", false )
+						.$( "logmessage" );
+					logger.addAppender( mockAppender );
+				} );
+
+				afterEach( function(){
+					logger.setAllowSerializingComplexObjects( true ); // reset to default
+				} );
+
+				it( "allows serializing complex objects by default", function(){
+					expect( function(){
+						logger.logMessage(
+							"This is a closure message",
+							"info",
+							new tests.resources.base1()
+						);
+					} ).notToThrow( type = "Logger.SerializingComplexObjectException" );
+				} );
+
+				it( "can disallow serializing complex objects", function(){
+					logger.setAllowSerializingComplexObjects( false );
+					expect( function(){
+						logger.logMessage(
+							"This is a closure message",
+							"info",
+							new tests.resources.base1()
+						);
+					} ).toThrow( type = "Logger.SerializingComplexObjectException" );
+				} );
+
+				it( "can find complex objects inside structs", () => {
+					logger.setAllowSerializingComplexObjects( false );
+					expect( function(){
+						logger.logMessage(
+							"This is a closure message",
+							"info",
+							{
+								"simple" : "value",
+								"nested" : { "array" : [ "values", "are", "okay" ] }
+							}
+						);
+					} ).notToThrow( type = "Logger.SerializingComplexObjectException" );
+
+					expect( function(){
+						logger.logMessage(
+							"This is a closure message",
+							"info",
+							{
+								"simple" : "value",
+								"nested" : { "complex" : new tests.resources.base1() }
+							}
+						);
+					} ).toThrow( type = "Logger.SerializingComplexObjectException" );
+				} );
+			} );
 		} );
 	}
 

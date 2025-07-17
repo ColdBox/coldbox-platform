@@ -179,10 +179,11 @@ component accessors="true" {
 		var rootConfig = variables.config.getRoot();
 		// Create Root Logger
 		var args       = {
-			category  : "ROOT",
-			levelMin  : rootConfig.levelMin,
-			levelMax  : rootConfig.levelMax,
-			appenders : getAppendersMap( rootConfig.appenders )
+			category                       : "ROOT",
+			levelMin                       : rootConfig.levelMin,
+			levelMax                       : rootConfig.levelMax,
+			appenders                      : getAppendersMap( rootConfig.appenders ),
+			allowSerializingComplexObjects : variables.config.getAllowSerializingComplexObjects()
 		};
 
 		// Save in Registry
@@ -257,9 +258,10 @@ component accessors="true" {
 			root = locateCategoryParentLogger( arguments.category );
 			// Build it out as per Root logger
 			args = {
-				category : arguments.category,
-				levelMin : root.getLevelMin(),
-				levelMax : root.getLevelMax()
+				category                       : arguments.category,
+				levelMin                       : root.getLevelMin(),
+				levelMax                       : root.getLevelMax(),
+				allowSerializingComplexObjects : variables.config.getAllowSerializingComplexObjects()
 			};
 		}
 

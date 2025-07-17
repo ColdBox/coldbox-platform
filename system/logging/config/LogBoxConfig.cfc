@@ -26,6 +26,14 @@ component accessors="true" {
 	 */
 	property name="rootLogger" type="struct";
 
+	/**
+	 * Flag to allow serializing complex objects in `extraInfo`.
+	 */
+	property
+		name   ="allowSerializingComplexObjects"
+		type   ="boolean"
+		default="true";
+
 	// The log levels enum as a public property
 	this.logLevels = new coldbox.system.logging.LogLevels();
 	// Startup the configuration
@@ -126,6 +134,10 @@ component accessors="true" {
 		}
 		if ( structKeyExists( logBoxDSL, "off" ) ) {
 			OFF( argumentCollection = getUtil().arrayToStruct( logBoxDSL.off ) );
+		}
+
+		if ( structKeyExists( logBoxDSL, "allowSerializingComplexObjects" ) ) {
+			variables.allowSerializingComplexObjects = logBoxDSL.allowSerializingComplexObjects;
 		}
 
 		return this;
