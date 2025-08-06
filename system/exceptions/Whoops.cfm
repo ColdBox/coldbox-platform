@@ -1,3 +1,10 @@
+<!-----------------------------------------------------------------------
+********************************************************************************
+Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+www.ortussolutions.com
+********************************************************************************
+An enhanced error reporting and debugging tool for ColdBox Framework
+----------------------------------------------------------------------->
 <cfprocessingdirective pageEncoding="utf-8">
 <cfscript>
 	// Local raw exception structure
@@ -50,7 +57,7 @@
 
 	// Build framework snapshot
 	local.frameworkSnapshot = {
-		"Coldfusion ID"  : "Session Scope Not Enabled",
+		"Session ID"  : "Session Scope Not Enabled",
 		"Template Path"  : CGI.CF_TEMPLATE_PATH,
 		"Path Info"      : CGI.PATH_INFO,
 		"Host"           : CGI.HTTP_HOST,
@@ -60,7 +67,7 @@
 		"Browser"        : CGI.HTTP_USER_AGENT,
 		"Remote Address" : CGI.REMOTE_ADDR,
 		"itemorder"      : [
-			"Coldfusion ID",
+			"Session ID",
 			"Template Path",
 			"Path Info",
 			"Host",
@@ -73,19 +80,19 @@
 	};
 
 	// Detect Session Scope
-	local.sessionScopeExists = getApplicationMetadata().sessionManagement;
+	local.sessionScopeExists = getApplicationMetadata()?.sessionManagement;
 	if ( local.sessionScopeExists ) {
 		local.fwString = "";
-		if ( getApplicationMetadata().clientManagement  && isDefined( "client" ) ) {
+		if ( getApplicationMetadata()?.clientManagement  && isDefined( "client" ) ) {
 			if ( structKeyExists( client, "cfid" ) ) fwString &= "CFID=" & client.CFID;
 			if ( structKeyExists( client, "CFToken" ) ) fwString &= "<br/>CFToken=" & client.CFToken;
 		}
-		if ( getApplicationMetadata().sessionManagement && isDefined( "session" ) ) {
+		if ( getApplicationMetadata()?.sessionManagement && isDefined( "session" ) ) {
 			if ( structKeyExists( session, "cfid" ) ) fwString &= "CFID=" & session.CFID;
 			if ( structKeyExists( session, "CFToken" ) ) fwString &= "<br/>CFToken=" & session.CFToken;
 			if ( structKeyExists( session, "sessionID" ) ) fwString &= "<br/>JSessionID=" & session.sessionID;
 		}
-		frameworkSnapshot[ "Coldfusion ID" ] = fwString;
+		frameworkSnapshot[ "Session ID" ] = fwString;
 	}
 
 	// Database Info

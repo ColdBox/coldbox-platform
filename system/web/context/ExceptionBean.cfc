@@ -10,10 +10,12 @@ component accessors="true" {
 	 * Exception Struct
 	 */
 	property name="exceptionStruct";
+
 	/**
 	 * Custom error messages
 	 */
 	property name="extraMessage";
+
 	/**
 	 * Extra info for exception tracking
 	 */

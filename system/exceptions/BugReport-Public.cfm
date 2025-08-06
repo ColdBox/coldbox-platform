@@ -8,17 +8,21 @@ A public error template that just shows that an exception occurred.
 <cfoutput>
 <!--- StyleSheets --->
 <style type="text/css"><cfinclude template="/coldbox/system/exceptions/css/cbox-debugger.css.cfm"></style>
+<!--- Exception Container --->
 <div class="cb-container">
 	<h1>
+		<!--- Exception Error Code --->
 		<cfif oException.geterrorCode() neq "" AND oException.getErrorCode() neq 0>
 			#oException.getErrorCode()# :
 		</cfif>
-		Oopsy! Something went wrong!</h1>
+		Oopsy! Something went wrong!
+	</h1>
 
+	<!--- The error notice --->
 	<div class="notice">
-		<cfif oException.getExtraMessage() neq "">
 		<!--- CUSTOM SET MESSAGE --->
-		<h3>#oException.getExtramessage()#</h3>
+		<cfif oException.getExtraMessage() neq "">
+			<h3>#oException.getExtramessage()#</h3>
 		</cfif>
 
 		<!--- ERROR TYPE --->
@@ -26,16 +30,15 @@ A public error template that just shows that an exception occurred.
 			<strong>Type: </strong> #oException.gettype()# <br>
 		</cfif>
 
-		<!--- ERROR oExceptionS --->
-		<cfif isStruct(oException.getExceptionStruct()) >
+		<!--- ERROR exception struct --->
+		<cfif isStruct( oException.getExceptionStruct() ) >
 			<strong>Messages:</strong>
-			#oException.getmessage()#
+			#oException.getMessage()#
 		</cfif>
 	</div>
 
 	<div style="margin:10px; color:gray">
-		<em>* The full robust errors can be seen by switching the <strong>coldbox.customErrorTemplate</strong> in your configuration file (/config/ColdBox) to
-			"/coldbox/system/exceptions/BugReport.cfm" or "/coldbox/system/exceptions/Whoops.cfm" and reloading the application.</em>
+		<em>* The full robust errors can be seen by switching the <strong>customErrorTemplate</strong> in your configuration file</em>
 	</div>
 </div>
 </cfoutput>
