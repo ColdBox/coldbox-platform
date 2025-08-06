@@ -152,24 +152,29 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 	<html>
 		<head>
 			<title>ColdBox Whoops! An error occurred!</title>
+			<meta charset="utf-8">
+			<meta name="viewport" content="width=device-width, initial-scale=1.0">
+			<!--- JavaScript --->
 			<script src="/coldbox/system/exceptions/js/eva.min.js"></script>
 			<script src="/coldbox/system/exceptions/js/syntaxhighlighter.js"></script>
 			<script src="/coldbox/system/exceptions/js/javascript-brush.js"></script>
+			<script src="/coldbox/system/exceptions/js/boxlang-brush.js"></script>
 			<script src="/coldbox/system/exceptions/js/coldfusion-brush.js"></script>
 			<script src="/coldbox/system/exceptions/js/sql-brush.js"></script>
+			<!--- CSS --->
 			<link type="text/css" rel="stylesheet" href="/coldbox/system/exceptions/css/syntaxhighlighter-theme.css">
 			<link type="text/css" rel="stylesheet" href="/coldbox/system/exceptions/css/whoops.css">
 			<script>
 				SyntaxHighlighter.defaults[ 'gutter' ] 		= true;
 				SyntaxHighlighter.defaults[ 'smart-tabs' ] 	= false;
 				SyntaxHighlighter.defaults[ 'tab-size' ]   	=  4;
-
 				//SyntaxHighlighter.all();
 			</script>
 		</head>
 		<body>
 			<div class="whoops">
 
+				<!--- Navigation --->
 				<div class="whoops__nav">
 
 					<!----------------------------------------------------------------------------------------->
@@ -290,7 +295,6 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 						</ul>
 					</div>
 				</div>
-
 
 				<!----------------------------------------------------------------------------------------->
 				<!--- Details Pane --->
@@ -431,13 +435,25 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 			<cfif local.inDebugMode>
 				<cfset stackRenderings = {}>
 				<cfloop array="#local.exception.tagContext#" item="thisTagContext" index="i">
-					<!--- Verify if File Exists: Just in case it's a core CFML engine file, else don't add it --->
+					<!--- Verify if File Exists: Just in case it's a core engine file, else don't add it --->
 					<cfif fileExists( thisTagContext.template )>
+
 						<!--- Determine Source Highlighter --->
-						<cfset highlighter = ( listFindNoCase( "cfm,bxm", listLast( thisTagContext.template, "." ) ) ? "cf" : "js" )/>
+						<cfset ext = listLast( thisTagContext.template, "." )>
+						<cfif listFindNoCase( "bxm,bxs,bx,cfc", ext )>
+							<cfset highlighter = "bx">
+						<cfelseif listFindNoCase( "cfm", ext )>
+							<cfset highlighter = "cf">
+						<cfelse>
+							<cfset highlighter = "js">
+						</cfif>
+
+						<!--- Add spacing for indentation --->
 						<cfset spacing = "#chr( 20 )##chr( 20 )##chr( 20 )##chr( 20 )#">
+
 						<!--- Output code only once per instance found --->
 						<cfset filecontent = []>
+
 						<!--- Replace spaces with space charaters for correct indentation --->
 						<cfloop file="#thisTagContext.template#" index="line">
 							<cfset findInitalSpaces = reFind( "^[\s\t]+", line, 0, true, "All" )>
@@ -451,6 +467,8 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 								<cfset arrayAppend( filecontent, "#chr( 20 )##line#" )>
 							</cfif>
 						</cfloop>
+
+						<!--- If we have content, then render it --->
 						<cfif NOT structKeyExists( stackRenderings, thisTagContext.template )>
 							<script
 								id="stackframe-#hash( thisTagContext.template )#"
@@ -486,10 +504,9 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 			<script>
 				// activate icons
 				eva.replace();
-
-				SyntaxHighlighter.highlight('brush:sql');
+				SyntaxHighlighter.highlight( 'brush:sql' );
 				<cfif local.exception.type == 'database'>
-					var buttonEl = document.querySelector(".button.database_scope");
+					var buttonEl = document.querySelector( ".button.database_scope" );
 					filterScopes( buttonEl, 'database_scope' );
 					toggleCodePreview();
 				</cfif>
