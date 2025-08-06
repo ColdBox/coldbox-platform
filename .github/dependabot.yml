@@ -4,10 +4,10 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"                  # Where your .github/workflows/ folder is
     schedule:
-      interval: "weekly"
+      interval: "monthly"
   
   # NPM
   - package-ecosystem: "npm"
     directory: "/system/exceptions"  # adjust if needed
     schedule:
-      interval: "weekly"
+      interval: "monthly"
