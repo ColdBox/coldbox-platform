@@ -149,11 +149,13 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 	}
 </cfscript>
 <cfoutput>
-	<html>
+	<!DOCTYPE html>
+	<html lang="en">
 		<head>
-			<title>ColdBox Whoops! An error occurred!</title>
 			<meta charset="utf-8">
 			<meta name="viewport" content="width=device-width, initial-scale=1.0">
+			<meta name="robots" content="noindex, nofollow">
+			<title>ColdBox Exception Report - #encodeForHTML(oException.getType())#</title>
 			<!--- JavaScript --->
 			<script src="/coldbox/system/exceptions/js/eva.min.js"></script>
 			<script src="/coldbox/system/exceptions/js/syntaxhighlighter.js"></script>
@@ -183,32 +185,36 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 					<div class="exception">
 
 						<div class="exception__logo">
-							<img src="/coldbox/system/exceptions/images/coldbox-logo.png" width="40" />
-							<span>ColdBox Exception</span>
-							<form
-								name="reinitForm"
-								id="reinitForm"
-								action="#event.buildLink(
-									to : event.getCurrentRoutedURL(),
-									queryString : cgi.QUERY_STRING,
-									translate : false
-								)#"
-								method="POST"
-							>
-								<input
-									type="hidden"
-									name="fwreinit"
-									id="fwreinit"
-									value="">
-								<a
-									title="Reinitialize the framework and reload the page"
-									class="button"
-									href="javascript:reinitframework( #iif( controller.getSetting( "ReinitPassword" ).length(), 'true', 'false' )# )"
+							<div class="exception__logo-content">
+								<img src="/coldbox/system/exceptions/images/coldbox-logo.png" width="40" />
+								<span>ColdBox Exception</span>
+							</div>
+							<div class="exception__reinit">
+								<form
+									name="reinitForm"
+									id="reinitForm"
+									action="#event.buildLink(
+										to : event.getCurrentRoutedURL(),
+										queryString : cgi.QUERY_STRING,
+										translate : false
+									)#"
+									method="POST"
 								>
-									<i data-eva="flash-outline" data-eva-height="14" data-eva-fill="red"></i>
-								</a>
+									<input
+										type="hidden"
+										name="fwreinit"
+										id="fwreinit"
+										value="">
+									<a
+										title="Reinitialize the framework and reload the page"
+										class="button"
+										href="javascript:reinitframework( #iif( controller.getSetting( "ReinitPassword" ).length(), 'true', 'false' )# )"
+									>
+										<i data-eva="flash-outline" data-eva-height="14" data-eva-fill="red"></i>
+									</a>
 
-							</form>
+								</form>
+							</div>
 						</div>
 
 						<h1 class="exception__timestamp" title="Time of exception">
@@ -225,13 +231,20 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 							class="exception__message"
 							title="Exception Message - Click to copy"
 							id="exceptionMessage"
+							role="button"
+							tabindex="0"
+							aria-label="Exception message. Click or press Enter to copy to clipboard"
 						>
 							<i
 								onclick="copyToClipboard( 'exceptionMessage' )"
+								onkeydown="if(event.key==='Enter'||event.key===' ') copyToClipboard( 'exceptionMessage' )"
 								data-eva="clipboard"
 								data-eva-fill="white"
 								data-eva-height="16"
-								style="cursor: pointer; float: right"></i>
+								style="cursor: pointer; float: right"
+								tabindex="0"
+								aria-label="Copy to clipboard"
+								role="button"></i>
 
 							#oException.processMessage( local.exception.message )#
 						</div>
@@ -242,20 +255,26 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 					<!--- Stack Frames --->
 					<!----------------------------------------------------------------------------------------->
 
-					<div class="whoops_stacktrace_panel_info">Stack Frame(s): #stackFrames#</div>
+					<div class="whoops_stacktrace_panel_info">
+						<i data-eva="list-outline" data-eva-height="16" data-eva-fill="white"></i>
+						Stack Frame(s): #stackFrames#
+					</div>
 					<div class="whoops__stacktrace_panel">
-						<ul class="stacktrace__list">
+						<ul class="stacktrace__list" role="list" aria-label="Stack trace frames">
 							<cfset root = expandPath( "/" )/>
 							<cfloop from="1" to="#arrayLen( local.exception.TagContext )#" index="i">
 								<cfset instance = local.exception.TagContext[ i ]/>
-								<!--- <cfdump var="#instance#"> --->
 								<li
-									id   ="stack#stackFrames - i + 1#"
+									id="stack#stackFrames - i + 1#"
 									class="stacktrace <cfif i EQ 1>stacktrace--active</cfif>"
+									role="listitem"
+									tabindex="0"
+									aria-describedby="frame-#stackFrames - i + 1#-description"
 								>
-									<span class="badge">#stackFrames - i + 1#</span>
-									<div class="stacktrace__info">
+									<span class="badge" aria-label="Frame number">#stackFrames - i + 1#</span>
+									<div class="stacktrace__info" id="frame-#stackFrames - i + 1#-description">
 										<h3 class="stacktrace__location">
+											<span class="sr-only">File: </span>
 											#replace( instance.template, root, "" )#:<span class="stacktrace__line-number">#instance.line#</span>
 										</h3>
 
@@ -281,12 +300,14 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 									<cfif oException.openInEditorURL( event, instance ) NEQ "">
 										<a
 											target="_self"
-											rel   ="noreferrer noopener"
-											href  ="#oException.openInEditorURL( event, instance )#"
-											class ="editorLink__btn"
+											rel="noreferrer noopener"
+											href="#oException.openInEditorURL( event, instance )#"
+											class="editorLink__btn"
 											title="Open in Editor"
+											aria-label="Open #replace( instance.template, root, "" )# line #instance.line# in editor"
 										>
-											<i data-eva="code-download-outline" height="20"></i>
+											<i data-eva="code-download-outline" height="20" aria-hidden="true"></i>
+											<span class="sr-only">Open in Editor</span>
 										</a>
 									</cfif>
 
@@ -339,17 +360,17 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 							</h2>
 							<div class="data-filter" title="Filter Scopes">
 								<i data-eva="funnel-outline" fill="white"></i>
-								<a class="button all active"				href="javascript:void(0);" onclick="filterScopes( this, '' );">All</a>
-								<a class="button eventdetails" 				href="javascript:void(0);" onclick="filterScopes( this, 'eventdetails' );">Error Details</a>
-								<a class="button frameworksnapshot_scope" 	href="javascript:void(0);" onclick="filterScopes( this, 'frameworksnapshot_scope' );">Framework Snapshot</a>
-								<a class="button database_scope" 			href="javascript:void(0);" onclick="filterScopes( this, 'database_scope' );">Database</a>
-								<a class="button rc_scope" 					href="javascript:void(0);" onclick="filterScopes( this, 'rc_scope' );">RC</a>
-								<a class="button prc_scope" 				href="javascript:void(0);" onclick="filterScopes( this, 'prc_scope' );">PRC</a>
-								<a class="button headers_scope" 			href="javascript:void(0);" onclick="filterScopes( this, 'headers_scope' );">Headers</a>
-								<a class="button session_scope" 			href="javascript:void(0);" onclick="filterScopes( this, 'session_scope' );">Session</a>
-								<a class="button application_scope" 		href="javascript:void(0);" onclick="filterScopes( this, 'application_scope' );">Application</a>
-								<a class="button cookies_scope" 			href="javascript:void(0);" onclick="filterScopes( this, 'cookies_scope' );">Cookies</a>
-								<a class="button stacktrace_scope" 			href="javascript:void(0);" onclick="filterScopes( this, 'stacktrace_scope' );">Raw Stack Trace</a>
+								<a class="button all active"				href="javascript:void(0);" onclick="filterScopes( this, '' );">📊 All</a>
+								<a class="button eventdetails" 				href="javascript:void(0);" onclick="filterScopes( this, 'eventdetails' );">❌ Error Details</a>
+								<a class="button frameworksnapshot_scope" 	href="javascript:void(0);" onclick="filterScopes( this, 'frameworksnapshot_scope' );">🏗️ Framework Snapshot</a>
+								<a class="button database_scope" 			href="javascript:void(0);" onclick="filterScopes( this, 'database_scope' );">🗄️ Database</a>
+								<a class="button rc_scope" 					href="javascript:void(0);" onclick="filterScopes( this, 'rc_scope' );">📨 RC</a>
+								<a class="button prc_scope" 				href="javascript:void(0);" onclick="filterScopes( this, 'prc_scope' );">📬 PRC</a>
+								<a class="button headers_scope" 			href="javascript:void(0);" onclick="filterScopes( this, 'headers_scope' );">📋 Headers</a>
+								<a class="button session_scope" 			href="javascript:void(0);" onclick="filterScopes( this, 'session_scope' );">👤 Session</a>
+								<a class="button application_scope" 		href="javascript:void(0);" onclick="filterScopes( this, 'application_scope' );">🏢 Application</a>
+								<a class="button cookies_scope" 			href="javascript:void(0);" onclick="filterScopes( this, 'cookies_scope' );">🍪 Cookies</a>
+								<a class="button stacktrace_scope" 			href="javascript:void(0);" onclick="filterScopes( this, 'stacktrace_scope' );">📚 Raw Stack Trace</a>
 							</div>
 						</div>
 

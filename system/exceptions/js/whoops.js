@@ -33,9 +33,25 @@ function toggleCodePreview() {
  * @param {number} line - The line number to scroll to and highlight
  */
 function scrollToLine( line ) {
-    var selectedLine = codeContainer.querySelector( ".line.number" + line );
-    var top = selectedLine.documentOffsetTop() - codeWrapper.offsetHeight / 2;
-    codeWrapper.scrollTop = top;
+    if (!codeContainer || !line) return;
+
+    // Wait for SyntaxHighlighter to complete rendering
+    setTimeout(function() {
+        var selectedLine = codeContainer.querySelector( ".line.number" + line );
+        if (selectedLine) {
+            var codeWrapper = document.querySelector('.code-preview');
+            if (codeWrapper) {
+                var top = selectedLine.offsetTop - (codeWrapper.offsetHeight / 2);
+                codeWrapper.scrollTop = Math.max(0, top);
+
+                // Highlight the line temporarily
+                selectedLine.style.backgroundColor = 'rgba(235, 76, 76, 0.3)';
+                setTimeout(function() {
+                    selectedLine.style.backgroundColor = '';
+                }, 2000);
+            }
+        }
+    }, 100);
 }
 
 /**
@@ -171,13 +187,22 @@ var codeWrapper 	= document.querySelector( ".code-preview" );  // Code preview c
 var codeContainer 	= document.getElementById( "code-container" );  // Main code display container
 
 /**
- * Initialize stack trace click handlers
- * Binds click events to all stack trace elements for interactive code preview
+ * Initialize stack trace keyboard navigation
+ * Adds keyboard support for accessibility (Enter and Space keys)
  */
 Array.from( document.querySelectorAll( ".stacktrace" ) )
     .forEach( function( stackTrace ) {
+        // Mouse click handler
         stackTrace.addEventListener( "click", function( e ) {
             changeCodePanel( stackTrace.id );
+        }, false );
+
+        // Keyboard handler for accessibility
+        stackTrace.addEventListener( "keydown", function( e ) {
+            if ( e.key === "Enter" || e.key === " " ) {
+                e.preventDefault();
+                changeCodePanel( stackTrace.id );
+            }
         }, false );
     } );
 
