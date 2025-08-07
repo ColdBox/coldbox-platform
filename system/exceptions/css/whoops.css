@@ -515,6 +515,7 @@ a.button-icononly {
     padding: var(--spacing-xs) var(--spacing-sm) var(--spacing-xs) var(--spacing-lg);
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: var(--spacing-sm);
     background: var(--bg-panel);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -523,21 +524,41 @@ a.button-icononly {
     z-index: 5;
 }
 
-/* Data Filter */
-.data-filter {
+.control-bar {
     display: flex;
     align-items: center;
-    gap: var(--spacing-sm);
-    padding: var(--spacing-lg);
-    background: var(--bg-panel);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    font-size: var(--text-sm);
-    flex-wrap: wrap;
+    gap: var(--spacing-md);
+    margin-left: auto;
 }
 
-.data-filter i {
-    margin-right: var(--spacing-sm);
-    opacity: 0.8;
+.scope-dropdown {
+    background: var(--bg-darker);
+    color: var(--text-light);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: var(--text-xs);
+    font-family: var(--font-ui);
+    min-width: 180px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.scope-dropdown:hover {
+    border-color: var(--accent-teal);
+    background: var(--bg-panel);
+}
+
+.scope-dropdown:focus {
+    outline: 2px solid var(--accent-teal);
+    outline-offset: 2px;
+    border-color: var(--accent-teal);
+}
+
+.scope-dropdown option {
+    background: var(--bg-darker);
+    color: var(--text-light);
+    padding: var(--spacing-xs);
 }
 
 /* Data Tables */
@@ -552,7 +573,7 @@ a.button-icononly {
     font-size: 1rem;
     color: var(--success-green);
     font-weight: 600;
-    margin: var(--spacing-lg) 0 var(--spacing-sm) 0;
+    margin: var(--spacing-lg) 0 var(--spacing-sm) var(--spacing-sm);
     padding-bottom: var(--spacing-sm);
     border-bottom: 2px solid rgba(192, 209, 76, 0.3);
 }

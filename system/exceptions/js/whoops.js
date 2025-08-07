@@ -163,6 +163,30 @@ function filterScopes(linkEl, filterID ) {
 }
 
 /**
+ * Handles dropdown-based filtering for scope sections
+ * @param {HTMLSelectElement} selectEl - The dropdown select element
+ */
+function filterScopesFromDropdown(selectEl) {
+    var filterID = selectEl.value;
+    var sections = document.querySelectorAll('div.data-table');
+
+    if(filterID != ""){
+        // Hide all sections and show only the selected one
+        for (var i = 0; i < sections.length; i++){
+            sections[i].classList.add('hidden');
+        }
+        document.getElementById(filterID).classList.remove('hidden');
+    } else {
+        // Show all sections when no filter is selected
+        for (var i = 0; i < sections.length; i++){
+            sections[i].classList.remove('hidden');
+        }
+    }
+    // Reset scroll position to top after filtering
+    document.getElementById('request-info-details').scrollTop = 0;
+}
+
+/**
  * Copies the text content of a specified element to the system clipboard
  * Supports both Internet Explorer and modern browsers with different clipboard APIs
  * @param {string} id - The ID of the element whose content should be copied

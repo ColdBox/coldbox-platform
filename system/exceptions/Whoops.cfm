@@ -341,61 +341,29 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 						<div>
 							<h2 class="details-heading">
 								Exception Details
-								<!--- Only Show Code Preview Button in Debug Mode --->
-								<cfif stackFrames gt 0 AND local.inDebugMode>
-									<a href="javascript:void(0);" onclick="toggleCodePreview()" class="button button-icononly" style="margin-left: auto;" title="Toggle Code Preview">
-										<i id="codetoggle-up" data-eva="arrowhead-up-outline"></i>
-										<i id="codetoggle-down" class="hidden" data-eva="arrowhead-down-outline"></i>
-									</a>
-								</cfif>
+								<div class="control-bar">
+									<select id="scope-filter" onchange="filterScopesFromDropdown(this)" class="scope-dropdown" title="Filter Scopes">
+										<option value="">📊 Show All Scopes</option>
+										<option value="eventdetails">❌ Error Details</option>
+										<option value="serverinfo_scope">🏗️ Server Info</option>
+										<option value="database_scope">🗄️ Database</option>
+										<option value="rc_scope">📨 Request Collection (RC)</option>
+										<option value="prc_scope">📬 Private Request Collection (PRC)</option>
+										<option value="headers_scope">📋 Headers</option>
+										<option value="session_scope">👤 Session</option>
+										<option value="application_scope">🏢 Application</option>
+										<option value="cookies_scope">🍪 Cookies</option>
+										<option value="stacktrace_scope">📚 Stacktrace</option>
+									</select>
+									<!--- Only Show Code Preview Button in Debug Mode --->
+									<cfif stackFrames gt 0 AND local.inDebugMode>
+										<a href="javascript:void(0);" onclick="toggleCodePreview()" class="button button-icononly" title="Toggle Code Preview">
+											<i id="codetoggle-up" data-eva="arrowhead-up-outline"></i>
+											<i id="codetoggle-down" class="hidden" data-eva="arrowhead-down-outline"></i>
+										</a>
+									</cfif>
+								</div>
 							</h2>
-							<div class="data-filter" title="Filter Scopes">
-								<i data-eva="funnel-outline" fill="white"></i>
-								<a
-									class="button all active"
-									href="javascript:void(0);"
-									onclick="filterScopes( this, '' );">📊 All</a>
-								<a
-									class="button eventdetails"
-									href="javascript:void(0);"
-									onclick="filterScopes( this, 'eventdetails' );">❌ Error</a>
-								<a
-									class="button serverinfo_scope"
-									href="javascript:void(0);"
-									onclick="filterScopes( this, 'serverinfo_scope' );">🏗️ Server info</a>
-								<a
-									class="button database_scope"
-									href="javascript:void(0);"
-									onclick="filterScopes( this, 'database_scope' );">🗄️ Database</a>
-								<a
-									class="button rc_scope"
-									href="javascript:void(0);"
-									onclick="filterScopes( this, 'rc_scope' );">📨 RC</a>
-								<a
-									class="button prc_scope"
-									href="javascript:void(0);"
-									onclick="filterScopes( this, 'prc_scope' );">📬 PRC</a>
-								<a
-									class="button headers_scope"
-									href="javascript:void(0);"
-									onclick="filterScopes( this, 'headers_scope' );">📋 Headers</a>
-								<a
-									class="button session_scope"
-									href="javascript:void(0);"
-									onclick="filterScopes( this, 'session_scope' );">👤 Session</a>
-								<a
-									class="button application_scope"
-									href="javascript:void(0);"
-									onclick="filterScopes( this, 'application_scope' );">🏢 Application</a>
-								<a
-									class="button cookies_scope"
-									href="javascript:void(0);"
-									onclick="filterScopes( this, 'cookies_scope' );">🍪 Cookies</a>
-								<a
-									class="button stacktrace_scope"
-									href="javascript:void(0);"
-									onclick="filterScopes( this, 'stacktrace_scope' );">📚 Stacktrace</a>
-							</div>
 						</div>
 
 						<!----------------------------------------------------------------------------------------->
