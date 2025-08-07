@@ -42,7 +42,7 @@
         "cbproxies":"^1"
     },
     "devDependencies":{
-        "testbox":"*",
+        "testbox":"be",
 		"commandbox-boxlang":"*",
         "commandbox-cfformat":"*"
     },

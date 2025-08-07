@@ -1,4 +1,8 @@
-﻿component extends="tests.resources.BaseIntegrationTest" skip="notAdobe" {
+﻿component 
+	extends="tests.resources.BaseIntegrationTest" 
+	skip="notAdobe" 
+	displayName="ColdFusion Cache Provider Test"
+{
 
 	this.loadColdBox = false;
 
