@@ -1,4 +1,5 @@
-﻿component extends="coldbox.system.testing.BaseModelTest" skip="notLucee" {
+﻿// TestBox ISSUE: skip is not working properly
+component extends="coldbox.system.testing.BaseModelTest"{
 
 	boolean function notLucee(){
 		if ( isBoxLang() || isAdobe() ) {
@@ -8,6 +9,9 @@
 	}
 
 	function setup(){
+		if( notLucee() ){
+			return;
+		}
 		// Mocks
 		mockFactory      = createMock( "coldbox.system.cache.CacheFactory" );
 		mockEventManager = createMock( "coldbox.system.core.events.EventPoolManager" );
@@ -40,10 +44,16 @@
 	}
 
 	function teardown(){
+		if( notLucee() ){
+			return;
+		}
 		cache.clearAll();
 	}
 
 	function testTimeouts(){
+		if( notLucee() ){
+			skip( "Lucee only test" );
+		}
 		testVal = { name : "luis", age : 32 };
 		cache.clearAll();
 
