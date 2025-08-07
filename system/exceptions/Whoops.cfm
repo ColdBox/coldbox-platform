@@ -340,19 +340,25 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 
 						<div>
 							<h2 class="details-heading">
-								Exception Details
+								🔍 Exception Details
 								<div class="control-bar">
-									<select id="scope-filter" onchange="filterScopesFromDropdown(this)" class="scope-dropdown" title="Filter Scopes">
-										<option value="">📊 Show All Scopes</option>
-										<option value="eventdetails">❌ Error Details</option>
-										<option value="serverinfo_scope">🏗️ Server Info</option>
-										<option value="database_scope">🗄️ Database</option>
-										<option value="rc_scope">📨 Request Collection (RC)</option>
-										<option value="prc_scope">📬 Private Request Collection (PRC)</option>
-										<option value="headers_scope">📋 Headers</option>
-										<option value="session_scope">👤 Session</option>
+									<select
+										id="scope-filter"
+										onchange="filterScopesFromDropdown(this)"
+										class="scope-dropdown"
+										title="Filter Scopes"
+										aria-label="Filter Scopes"
+									>
+										<option value="">📊 All</option>
 										<option value="application_scope">🏢 Application</option>
 										<option value="cookies_scope">🍪 Cookies</option>
+										<option value="database_scope">🗄️ Database</option>
+										<option value="eventdetails">❌ Error Details</option>
+										<option value="headers_scope">📋 Headers</option>
+										<option value="prc_scope">📬 Private Request Collection (PRC)</option>
+										<option value="rc_scope">📨 Request Collection (RC)</option>
+										<option value="serverinfo_scope">🏗️ Server Info</option>
+										<option value="session_scope">👤 Session</option>
 										<option value="stacktrace_scope">📚 Stacktrace</option>
 									</select>
 									<!--- Only Show Code Preview Button in Debug Mode --->
