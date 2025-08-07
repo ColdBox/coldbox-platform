@@ -56,8 +56,7 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 	};
 
 	// Build framework snapshot
-	local.frameworkSnapshot = {
-		"Session ID"  : "Session Scope Not Enabled",
+	local.serverInfo = {
 		"Template Path"  : CGI.CF_TEMPLATE_PATH,
 		"Path Info"      : CGI.PATH_INFO,
 		"Host"           : CGI.HTTP_HOST,
@@ -67,7 +66,6 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 		"Browser"        : CGI.HTTP_USER_AGENT,
 		"Remote Address" : CGI.REMOTE_ADDR,
 		"itemorder"      : [
-			"Session ID",
 			"Template Path",
 			"Path Info",
 			"Host",
@@ -92,7 +90,6 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 			if ( structKeyExists( session, "CFToken" ) ) fwString &= "<br/>CFToken=" & session.CFToken;
 			if ( structKeyExists( session, "sessionID" ) ) fwString &= "<br/>JSessionID=" & session.sessionID;
 		}
-		frameworkSnapshot[ "Session ID" ] = fwString;
 	}
 
 	// Database Info
@@ -361,11 +358,11 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 								<a
 									class="button eventdetails"
 									href="javascript:void(0);"
-									onclick="filterScopes( this, 'eventdetails' );">❌ Error Details</a>
+									onclick="filterScopes( this, 'eventdetails' );">❌ Error</a>
 								<a
-									class="button frameworksnapshot_scope"
+									class="button serverinfo_scope"
 									href="javascript:void(0);"
-									onclick="filterScopes( this, 'frameworksnapshot_scope' );">🏗️ Framework Snapshot</a>
+									onclick="filterScopes( this, 'serverinfo_scope' );">🏗️ Server info</a>
 								<a
 									class="button database_scope"
 									href="javascript:void(0);"
@@ -397,7 +394,7 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 								<a
 									class="button stacktrace_scope"
 									href="javascript:void(0);"
-									onclick="filterScopes( this, 'stacktrace_scope' );">📚 Raw Stack Trace</a>
+									onclick="filterScopes( this, 'stacktrace_scope' );">📚 Stacktrace</a>
 							</div>
 						</div>
 
@@ -411,9 +408,9 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 									#oException.displayScope( eventDetails )#
 								</div>
 
-								<div id="frameworksnapshot_scope" class="data-table">
-									<label>Framework Snapshot</label>
-									#oException.displayScope( frameworkSnapshot )#
+								<div id="serverinfo_scope" class="data-table">
+									<label>Server Info</label>
+									#oException.displayScope( serverInfo )#
 								</div>
 
 								<div id="database_scope" class="data-table">
@@ -458,16 +455,16 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 
 								<div id="stacktrace_scope" class="data-table">
 									<label title="Copy to clipboard">
-										Raw Stack Trace
+										Stacktrace
 										<i
-											onclick="copyToClipboard( 'rawStacktrace' )"
+											onclick="copyToClipboard( 'stacktrace' )"
 											data-eva="clipboard"
 											data-eva-fill="white"
 											data-eva-height="16"
 											style="cursor: pointer"></i>
 									</label>
 
-									<div id="rawStacktrace" class="data-stacktrace">#oException.processStackTrace( oException.getstackTrace() )#</div>
+									<div id="stacktrace" class="data-stacktrace">#oException.processStackTrace( oException.getstackTrace() )#</div>
 								</div>
 							</div>
 						</cfoutput>

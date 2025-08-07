@@ -359,8 +359,8 @@ component accessors="true" {
 	function displayScope( required scope ){
 		var list = createObject( "java", "java.lang.StringBuilder" ).init(
 			"<table class="" data-table "">
-	<tbody>
-		"
+				<tbody>
+			"
 		);
 		var orderedArr = arguments.scope;
 
