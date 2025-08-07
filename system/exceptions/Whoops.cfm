@@ -338,39 +338,66 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 					<div class="request-info data-table-container">
 
 						<!----------------------------------------------------------------------------------------->
-						<!--- Slide UP Button --->
-						<!----------------------------------------------------------------------------------------->
-
-						<cfif stackFrames gt 0 AND local.inDebugMode>
-							<div class="slideup_row">
-								<a href="javascript:void(0);" onclick="toggleCodePreview()" class="button button-icononly">
-									<i id="codetoggle-up" data-eva="arrowhead-up-outline"></i>
-									<i id="codetoggle-down" class="hidden" data-eva="arrowhead-down-outline"></i>
-								</a>
-							</div>
-						</cfif>
-
-						<!----------------------------------------------------------------------------------------->
 						<!--- Scope Filters --->
 						<!----------------------------------------------------------------------------------------->
 
 						<div>
 							<h2 class="details-heading">
 								Exception Details
+								<!--- Only Show Code Preview Button in Debug Mode --->
+								<cfif stackFrames gt 0 AND local.inDebugMode>
+									<a href="javascript:void(0);" onclick="toggleCodePreview()" class="button button-icononly" style="margin-left: auto;" title="Toggle Code Preview">
+										<i id="codetoggle-up" data-eva="arrowhead-up-outline"></i>
+										<i id="codetoggle-down" class="hidden" data-eva="arrowhead-down-outline"></i>
+									</a>
+								</cfif>
 							</h2>
 							<div class="data-filter" title="Filter Scopes">
 								<i data-eva="funnel-outline" fill="white"></i>
-								<a class="button all active"				href="javascript:void(0);" onclick="filterScopes( this, '' );">📊 All</a>
-								<a class="button eventdetails" 				href="javascript:void(0);" onclick="filterScopes( this, 'eventdetails' );">❌ Error Details</a>
-								<a class="button frameworksnapshot_scope" 	href="javascript:void(0);" onclick="filterScopes( this, 'frameworksnapshot_scope' );">🏗️ Framework Snapshot</a>
-								<a class="button database_scope" 			href="javascript:void(0);" onclick="filterScopes( this, 'database_scope' );">🗄️ Database</a>
-								<a class="button rc_scope" 					href="javascript:void(0);" onclick="filterScopes( this, 'rc_scope' );">📨 RC</a>
-								<a class="button prc_scope" 				href="javascript:void(0);" onclick="filterScopes( this, 'prc_scope' );">📬 PRC</a>
-								<a class="button headers_scope" 			href="javascript:void(0);" onclick="filterScopes( this, 'headers_scope' );">📋 Headers</a>
-								<a class="button session_scope" 			href="javascript:void(0);" onclick="filterScopes( this, 'session_scope' );">👤 Session</a>
-								<a class="button application_scope" 		href="javascript:void(0);" onclick="filterScopes( this, 'application_scope' );">🏢 Application</a>
-								<a class="button cookies_scope" 			href="javascript:void(0);" onclick="filterScopes( this, 'cookies_scope' );">🍪 Cookies</a>
-								<a class="button stacktrace_scope" 			href="javascript:void(0);" onclick="filterScopes( this, 'stacktrace_scope' );">📚 Raw Stack Trace</a>
+								<a
+									class="button all active"
+									href="javascript:void(0);"
+									onclick="filterScopes( this, '' );">📊 All</a>
+								<a
+									class="button eventdetails"
+									href="javascript:void(0);"
+									onclick="filterScopes( this, 'eventdetails' );">❌ Error Details</a>
+								<a
+									class="button frameworksnapshot_scope"
+									href="javascript:void(0);"
+									onclick="filterScopes( this, 'frameworksnapshot_scope' );">🏗️ Framework Snapshot</a>
+								<a
+									class="button database_scope"
+									href="javascript:void(0);"
+									onclick="filterScopes( this, 'database_scope' );">🗄️ Database</a>
+								<a
+									class="button rc_scope"
+									href="javascript:void(0);"
+									onclick="filterScopes( this, 'rc_scope' );">📨 RC</a>
+								<a
+									class="button prc_scope"
+									href="javascript:void(0);"
+									onclick="filterScopes( this, 'prc_scope' );">📬 PRC</a>
+								<a
+									class="button headers_scope"
+									href="javascript:void(0);"
+									onclick="filterScopes( this, 'headers_scope' );">📋 Headers</a>
+								<a
+									class="button session_scope"
+									href="javascript:void(0);"
+									onclick="filterScopes( this, 'session_scope' );">👤 Session</a>
+								<a
+									class="button application_scope"
+									href="javascript:void(0);"
+									onclick="filterScopes( this, 'application_scope' );">🏢 Application</a>
+								<a
+									class="button cookies_scope"
+									href="javascript:void(0);"
+									onclick="filterScopes( this, 'cookies_scope' );">🍪 Cookies</a>
+								<a
+									class="button stacktrace_scope"
+									href="javascript:void(0);"
+									onclick="filterScopes( this, 'stacktrace_scope' );">📚 Raw Stack Trace</a>
 							</div>
 						</div>
 
