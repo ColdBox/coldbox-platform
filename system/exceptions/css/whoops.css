@@ -511,7 +511,7 @@ a.button-icononly {
     color: var(--text-light);
     font-weight: 600;
     font-size: 1.25rem;
-    margin: 0 0 var(--spacing-md) 0;
+    margin: 0;
     padding: var(--spacing-xs) var(--spacing-sm) var(--spacing-xs) var(--spacing-lg);
     display: flex;
     align-items: center;
