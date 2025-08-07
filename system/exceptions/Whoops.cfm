@@ -203,7 +203,8 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 										id="fwreinit"
 										value="">
 									<a
-										title="Reinitialize the framework and reload the page"
+										data-tooltip="Reinitialize Framework"
+										data-tooltip-location="bottom"
 										class="button"
 										href="javascript:reinitframework( #iif( controller.getSetting( "ReinitPassword" ).length(), 'true', 'false' )# )"
 									>
@@ -214,19 +215,19 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 							</div>
 						</div>
 
-						<h1 class="exception__timestamp" title="Time of exception">
+						<h1 class="exception__timestamp" data-tooltip="Exception timestamp">
 							<i data-eva="clock-outline" fill="##7fcbe2"></i>
 							<span>#dateTimeFormat( now(), "MMM/dd/yyyy HH:mm:ss" )#</span>
 						</h1>
 
-						<h1 class="exception__type" title="Error Code and Exception Type">
+						<h1 class="exception__type" data-tooltip="Exception type and code">
 							<i data-eva="close-circle-outline" fill="red"></i>
 							<span>#trim( eventDetails[ "Error Code" ] & " " & local.exception.type )#</span>
 						</h1>
 
 						<div
 							class="exception__message"
-							title="Exception Message - Click to copy"
+							data-tooltip="Click to copy message"
 							id="exceptionMessage"
 							role="button"
 							tabindex="0"
@@ -241,7 +242,8 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 								style="cursor: pointer; float: right"
 								tabindex="0"
 								aria-label="Copy to clipboard"
-								role="button"></i>
+								role="button"
+								data-tooltip="Copy to clipboard"></i>
 
 							#oException.processMessage( local.exception.message )#
 						</div>
@@ -300,7 +302,8 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 											rel="noreferrer noopener"
 											href="#oException.openInEditorURL( event, instance )#"
 											class="editorLink__btn"
-											title="Open in Editor"
+											data-tooltip="Open in editor"
+											data-tooltip-location="left"
 											aria-label="Open #replace( instance.template, root, "" )# line #instance.line# in editor"
 										>
 											<i data-eva="code-download-outline" height="20" aria-hidden="true"></i>
@@ -346,7 +349,8 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 										id="scope-filter"
 										onchange="filterScopesFromDropdown(this)"
 										class="scope-dropdown"
-										title="Filter Scopes"
+										data-tooltip="Filter by scope"
+										data-tooltip-location="bottom"
 										aria-label="Filter Scopes"
 									>
 										<option value="">📊 All</option>
@@ -363,7 +367,12 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 									</select>
 									<!--- Only Show Code Preview Button in Debug Mode --->
 									<cfif stackFrames gt 0 AND local.inDebugMode>
-										<a href="javascript:void(0);" onclick="toggleCodePreview()" class="button button-icononly" title="Toggle Code Preview">
+										<a
+											href="javascript:void(0);"
+											onclick="toggleCodePreview()"
+											class="button button-icononly"
+											data-tooltip="Toggle"
+											data-tooltip-location="bottom">
 											<i id="codetoggle-up" data-eva="arrowhead-up-outline"></i>
 											<i id="codetoggle-down" class="hidden" data-eva="arrowhead-down-outline"></i>
 										</a>
@@ -428,14 +437,16 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 								</div>
 
 								<div id="stacktrace_scope" class="data-table">
-									<label title="Copy to clipboard">
+									<label data-tooltip="Copy stacktrace to clipboard" data-tooltip-location="left">
 										Stacktrace
 										<i
 											onclick="copyToClipboard( 'stacktrace' )"
 											data-eva="clipboard"
 											data-eva-fill="white"
 											data-eva-height="16"
-											style="cursor: pointer"></i>
+											style="cursor: pointer"
+											data-tooltip="Copy to clipboard"
+											data-tooltip-location="left"></i>
 									</label>
 
 									<div id="stacktrace" class="data-stacktrace">#oException.processStackTrace( oException.getstackTrace() )#</div>
