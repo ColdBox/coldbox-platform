@@ -33,25 +33,39 @@ function toggleCodePreview() {
  * @param {number} line - The line number to scroll to and highlight
  */
 function scrollToLine( line ) {
-    if (!codeContainer || !line) return;
+	if (!codeContainer || !line) return;
 
-    // Wait for SyntaxHighlighter to complete rendering
-    setTimeout(function() {
-        var selectedLine = codeContainer.querySelector( ".line.number" + line );
-        if (selectedLine) {
-            var codeWrapper = document.querySelector('.code-preview');
-            if (codeWrapper) {
-                var top = selectedLine.offsetTop - (codeWrapper.offsetHeight / 2);
-                codeWrapper.scrollTop = Math.max(0, top);
+	setTimeout( () => {
+		// Matches class like "line number24"
+		const selector = ".line.number" + line;
+		const selectedLine = codeContainer.querySelector( selector );
+		const scrollContainer = document.getElementById( "code-container" );
 
-                // Highlight the line temporarily
-                selectedLine.style.backgroundColor = 'rgba(235, 76, 76, 0.3)';
-                setTimeout(function() {
-                    selectedLine.style.backgroundColor = '';
-                }, 2000);
-            }
-        }
-    }, 100);
+		// Guard against missing elements
+		if ( !selectedLine || !scrollContainer ) {
+			return;
+		}
+
+		// Approach 1: Using scrollIntoView
+		selectedLine.scrollIntoView({
+			behavior: "smooth",
+			block: "center",
+			inline: "nearest"
+		});
+
+		// Approach 2: Direct scroll calculation as fallback
+		setTimeout(() => {
+			const lineRect = selectedLine.getBoundingClientRect();
+			const containerRect = scrollContainer.getBoundingClientRect();
+			const offset = lineRect.top - containerRect.top + scrollContainer.scrollTop;
+			const centerOffset = offset - (scrollContainer.clientHeight / 2);
+
+			scrollContainer.scrollTo({
+				top: Math.max(0, centerOffset),
+				behavior: "smooth"
+			});
+		}, 100);
+	}, 200 );
 }
 
 /**
@@ -98,6 +112,7 @@ function changeCodePanel( id ) {
 
 	// Inject the highlighted source to the code container for visualization
 	codeContainer.innerHTML = code.innerHTML;
+	//console.log(  "Scroll to line: " + code.getAttribute( "data-highlight-line" ) );
 	// Scroll to the highlighted error line
     scrollToLine( code.getAttribute( "data-highlight-line" ) );
 }
