@@ -256,8 +256,8 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 					<!----------------------------------------------------------------------------------------->
 
 					<div class="whoops_stacktrace_panel_info">
-						<i data-eva="list-outline" data-eva-height="16" data-eva-fill="white"></i>
-						Stack Frame(s): #stackFrames#
+						<i data-eva="list-outline" data-eva-height="20" data-eva-fill="white"></i>
+						Stack Frame(s)
 					</div>
 					<div class="whoops__stacktrace_panel">
 						<ul class="stacktrace__list" role="list" aria-label="Stack trace frames">

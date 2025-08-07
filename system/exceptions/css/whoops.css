@@ -38,7 +38,7 @@
     /* Font sizes - Increased for better readability */
     --text-xs: 0.875rem;       /* 14px */
     --text-sm: 1rem;           /* 16px */
-    --text-base: 1.125rem;     /* 18px */
+    --text-base: 1rem;     /* 18px */
     --text-lg: 1.25rem;        /* 20px */
     --text-xl: 1.375rem;       /* 22px */
     --text-2xl: 1.5rem;        /* 24px */
@@ -200,7 +200,7 @@ body {
 .stacktrace {
     display: flex;
     align-items: center;
-    padding: var(--spacing-lg);
+    padding: var(--spacing-md);
     background: var(--bg-lighter);
     color: var(--text-secondary);
     cursor: pointer;
