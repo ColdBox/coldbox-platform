@@ -153,6 +153,10 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 			<meta name="viewport" content="width=device-width, initial-scale=1.0">
 			<meta name="robots" content="noindex, nofollow">
 			<title>ColdBox Exception Report - #encodeForHTML(oException.getType())#</title>
+			<!--- Alpine.js --->
+			<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+			<!--- Whoops Alpine.js Component --->
+			<script src="/coldbox/system/exceptions/js/whoops.js"></script>
 			<!--- JavaScript --->
 			<script src="/coldbox/system/exceptions/js/eva.min.js"></script>
 			<script src="/coldbox/system/exceptions/js/syntaxhighlighter.js"></script>
@@ -163,15 +167,12 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 			<!--- CSS --->
 			<link type="text/css" rel="stylesheet" href="/coldbox/system/exceptions/css/syntaxhighlighter-theme.css">
 			<link type="text/css" rel="stylesheet" href="/coldbox/system/exceptions/css/whoops.css">
-			<script>
-				SyntaxHighlighter.defaults[ 'gutter' ] 		= true;
-				SyntaxHighlighter.defaults[ 'smart-tabs' ] 	= false;
-				SyntaxHighlighter.defaults[ 'tab-size' ]   	=  4;
-				//SyntaxHighlighter.all();
-			</script>
 		</head>
 		<body>
-			<div class="whoops">
+			<div
+				class="whoops"
+				x-data="whoopsReporter()"
+				x-init="init()">
 
 				<!--- Navigation --->
 				<div class="whoops__nav">
@@ -181,11 +182,14 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 					<!----------------------------------------------------------------------------------------->
 					<div class="exception">
 
+						<!--- Title Bar --->
 						<div class="exception__logo">
+							<!--- Logo + Title --->
 							<div class="exception__logo-content">
 								<img src="/coldbox/system/exceptions/images/coldbox-logo.png" width="40" />
 								<span>ColdBox Exception</span>
 							</div>
+							<!--- Reinit Method --->
 							<div class="exception__reinit">
 								<form
 									name="reinitForm"
@@ -206,7 +210,8 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 										data-tooltip="Reinitialize Framework"
 										data-tooltip-location="bottom"
 										class="button"
-										href="javascript:reinitframework( #iif( controller.getSetting( "ReinitPassword" ).length(), 'true', 'false' )# )"
+										@click="reinitFramework(#iif( controller.getSetting( "ReinitPassword" ).length(), 'true', 'false' )#)"
+										href="##"
 									>
 										<i data-eva="flash-outline" data-eva-height="14" data-eva-fill="red"></i>
 									</a>
@@ -215,27 +220,32 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 							</div>
 						</div>
 
+						<!--- Timestamp --->
 						<h1 class="exception__timestamp" data-tooltip="Exception timestamp">
 							<i data-eva="clock-outline" fill="##7fcbe2"></i>
 							<span>#dateTimeFormat( now(), "MMM/dd/yyyy HH:mm:ss" )#</span>
 						</h1>
 
-						<h1 class="exception__type" data-tooltip="Exception type and code">
+						<!--- Exception Type --->
+						<h1 class="exception__type" data-tooltip="Exception Type">
 							<i data-eva="close-circle-outline" fill="red"></i>
 							<span>#trim( eventDetails[ "Error Code" ] & " " & local.exception.type )#</span>
 						</h1>
 
+						<!--- Exception Message --->
 						<div
 							class="exception__message"
 							data-tooltip="Click to copy message"
+							data-tooltip-location="bottom"
 							id="exceptionMessage"
 							role="button"
 							tabindex="0"
-							aria-label="Exception message. Click or press Enter to copy to clipboard"
+							aria-label="Copy to clipboard"
+							@click="copyToClipboard( 'exceptionMessage' )"
+							@keydown.enter="copyToClipboard( 'exceptionMessage' )"
+							@keydown.space="copyToClipboard( 'exceptionMessage' )"
 						>
 							<i
-								onclick="copyToClipboard( 'exceptionMessage' )"
-								onkeydown="if(event.key==='Enter'||event.key===' ') copyToClipboard( 'exceptionMessage' )"
 								data-eva="clipboard"
 								data-eva-fill="white"
 								data-eva-height="16"
@@ -243,7 +253,8 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 								tabindex="0"
 								aria-label="Copy to clipboard"
 								role="button"
-								data-tooltip="Copy to clipboard"></i>
+								data-tooltip="Copy to clipboard"
+								data-tooltip-location="left"></i>
 
 							#oException.processMessage( local.exception.message )#
 						</div>
@@ -265,10 +276,14 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 								<cfset instance = local.exception.TagContext[ i ]/>
 								<li
 									id="stack#stackFrames - i + 1#"
-									class="stacktrace <cfif i EQ 1>stacktrace--active</cfif>"
+									class="stacktrace"
+									:class="{ 'stacktrace--active': activeFrame === 'stack#stackFrames - i + 1#' }"
 									role="listitem"
 									tabindex="0"
 									aria-describedby="frame-#stackFrames - i + 1#-description"
+									@click="changeCodePanel('stack#stackFrames - i + 1#')"
+									@keydown.enter="changeCodePanel('stack#stackFrames - i + 1#')"
+									@keydown.space="changeCodePanel('stack#stackFrames - i + 1#')"
 								>
 									<span class="badge" aria-label="Frame number">#stackFrames - i + 1#</span>
 									<div class="stacktrace__info" id="frame-#stackFrames - i + 1#-description">
@@ -326,7 +341,7 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 					<!--- Code Container --->
 					<!----------------------------------------------------------------------------------------->
 					<cfif stackFrames gt 0 AND local.inDebugMode>
-						<div class="code-preview">
+						<div class="code-preview" :class="{ 'hidePreview': !codePreviewShow }">
 							<cfset instance = local.exception.TagContext[ 1 ]/>
 							<div id="code-container"></div>
 						</div>
@@ -347,7 +362,7 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 								<div class="control-bar">
 									<select
 										id="scope-filter"
-										onchange="filterScopesFromDropdown(this)"
+										@change="filterScopesFromDropdown( $event.target )"
 										class="scope-dropdown"
 										data-tooltip="Filter by scope"
 										data-tooltip-location="bottom"
@@ -368,13 +383,13 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 									<!--- Only Show Code Preview Button in Debug Mode --->
 									<cfif stackFrames gt 0 AND local.inDebugMode>
 										<a
-											href="javascript:void(0);"
-											onclick="toggleCodePreview()"
+											@click.prevent="toggleCodePreview()"
 											class="button button-icononly"
-											data-tooltip="Toggle"
-											data-tooltip-location="bottom">
-											<i id="codetoggle-up" data-eva="arrowhead-up-outline"></i>
-											<i id="codetoggle-down" class="hidden" data-eva="arrowhead-down-outline"></i>
+											data-tooltip="Toggle code preview"
+											data-tooltip-location="bottom"
+											href="##">
+											<i id="codetoggle-up" data-eva="arrowhead-up-outline" x-show="codePreviewShow"></i>
+											<i id="codetoggle-down" data-eva="arrowhead-down-outline" x-show="!codePreviewShow"></i>
 										</a>
 									</cfif>
 								</div>
@@ -437,16 +452,17 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 								</div>
 
 								<div id="stacktrace_scope" class="data-table">
-									<label data-tooltip="Copy stacktrace to clipboard" data-tooltip-location="left">
+									<label
+										@click="copyToClipboard('stacktrace')"
+										data-tooltip="Copy to clipboard"
+										data-tooltip-location="top">
 										Stacktrace
 										<i
-											onclick="copyToClipboard( 'stacktrace' )"
 											data-eva="clipboard"
 											data-eva-fill="white"
 											data-eva-height="16"
 											style="cursor: pointer"
-											data-tooltip="Copy to clipboard"
-											data-tooltip-location="left"></i>
+											></i>
 									</label>
 
 									<div id="stacktrace" class="data-stacktrace">#oException.processStackTrace( oException.getstackTrace() )#</div>
@@ -530,16 +546,34 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 			<!----------------------------------------------------------------------------------------->
 			<!--- End JS Scripts --->
 			<!----------------------------------------------------------------------------------------->
-			<script src="/coldbox/system/exceptions/js/whoops.js"></script>
 			<script>
+			document.addEventListener( 'alpine:init', () => {
 				// activate icons
-				eva.replace();
-				SyntaxHighlighter.highlight( 'brush:sql' );
+				if ( window.eva ) {
+					eva.replace();
+				}
+
+				// SyntaxHighlighter defaults
+				SyntaxHighlighter.defaults[ 'gutter' ] 		= true;
+				SyntaxHighlighter.defaults[ 'smart-tabs' ] 	= false;
+				SyntaxHighlighter.defaults[ 'tab-size' ]   	=  4;
+
 				<cfif local.exception.type == 'database'>
-					var buttonEl = document.querySelector( ".button.database_scope" );
-					filterScopes( buttonEl, 'database_scope' );
-					toggleCodePreview();
+					setTimeout( () => {
+							const selectEl = document.querySelector( '##scope-filter' );
+							if ( selectEl ) {
+								selectEl.value = 'database_scope';
+								selectEl.dispatchEvent( new Event( 'change' ) );
+							}
+
+							// Toggle code preview closed for database errors
+							const whoopsEl = document.querySelector( '.whoops' );
+							if ( whoopsEl && whoopsEl._x_dataStack && whoopsEl._x_dataStack[ 0 ] && typeof whoopsEl._x_dataStack[ 0 ].toggleCodePreview === 'function' ) {
+								whoopsEl._x_dataStack[ 0 ].toggleCodePreview();
+							}
+						}, 800 );
 				</cfif>
+			});
 			</script>
 		</body>
 	</html>
