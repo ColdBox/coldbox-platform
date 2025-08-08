@@ -167,6 +167,99 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 			<!--- CSS --->
 			<link type="text/css" rel="stylesheet" href="/coldbox/system/exceptions/css/syntaxhighlighter-theme.css">
 			<link type="text/css" rel="stylesheet" href="/coldbox/system/exceptions/css/whoops.css">
+			<style>
+				/* Code Preview Slider Styles */
+				.code-preview-container {
+					position: relative;
+					border: 1px solid var(--color-border);
+					border-radius: 8px;
+					background: var(--color-background-secondary);
+					margin-bottom: 20px;
+					overflow: hidden;
+				}
+
+				.code-slider-handle {
+					position: absolute;
+					bottom: 0;
+					left: 50%;
+					transform: translateX(-50%);
+					width: 80px;
+					height: 20px;
+					background: var(--color-primary);
+					border-radius: 10px 10px 0 0;
+					cursor: ns-resize;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					transition: background-color 0.2s ease, transform 0.1s ease;
+					z-index: 10;
+				}
+
+				.code-slider-handle:hover {
+					background: var(--color-primary-dark);
+					transform: translateX(-50%) translateY(-2px);
+				}
+
+				.code-slider-handle.dragging {
+					background: var(--color-accent);
+					transform: translateX(-50%) scale(1.1);
+					box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+				}
+
+				.slider-grip {
+					display: flex;
+					flex-direction: column;
+					align-items: center;
+					gap: 2px;
+				}
+
+				.grip-line {
+					width: 20px;
+					height: 2px;
+					background: rgba(255, 255, 255, 0.8);
+					border-radius: 1px;
+				}
+
+				.code-toggle-container {
+					position: relative;
+					display: flex;
+					align-items: center;
+					gap: 10px;
+				}
+
+				.height-indicator {
+					background: var(--color-accent);
+					color: white;
+					padding: 4px 8px;
+					border-radius: 4px;
+					font-size: 12px;
+					font-weight: bold;
+					white-space: nowrap;
+					animation: fadeIn 0.2s ease;
+				}
+
+				@keyframes fadeIn {
+					from { opacity: 0; transform: scale(0.8); }
+					to { opacity: 1; transform: scale(1); }
+				}
+
+				/* Ensure smooth transitions */
+				.code-preview {
+					transition: height 0.1s ease;
+				}
+
+				/* Responsive adjustments */
+				@media (max-width: 768px) {
+					.code-slider-handle {
+						width: 60px;
+						height: 16px;
+					}
+					
+					.grip-line {
+						width: 16px;
+					}
+				}
+			</style>
 		</head>
 		<body>
 			<div
@@ -338,12 +431,37 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 				<div class="whoops__detail">
 
 					<!----------------------------------------------------------------------------------------->
-					<!--- Code Container --->
+					<!--- Code Container with Slider --->
 					<!----------------------------------------------------------------------------------------->
 					<cfif stackFrames gt 0 AND local.inDebugMode>
-						<div class="code-preview" :class="{ 'hidePreview': !codePreviewShow }">
-							<cfset instance = local.exception.TagContext[ 1 ]/>
-							<div id="code-container"></div>
+						<div class="code-preview-container" 
+							 x-show="codePreviewShow" 
+							 :style="'height: ' + codePreviewHeight + 'px'"
+							 x-transition:enter="transition ease-out duration-300"
+							 x-transition:enter-start="opacity-0 transform scale-95"
+							 x-transition:enter-end="opacity-100 transform scale-100"
+							 x-transition:leave="transition ease-in duration-200"
+							 x-transition:leave-start="opacity-100 transform scale-100"
+							 x-transition:leave-end="opacity-0 transform scale-95">
+							
+							<div class="code-preview" style="height: 100%; overflow: hidden;">
+								<cfset instance = local.exception.TagContext[ 1 ]/>
+								<div id="code-container" style="height: 100%; overflow: auto;"></div>
+							</div>
+							
+							<!-- Slider Handle -->
+							<div class="code-slider-handle"
+								 @mousedown="startDrag($event)"
+								 @click="handleSliderClick($event)"
+								 :class="{ 'dragging': isDragging }"
+								 data-tooltip="Drag to resize or click to toggle"
+								 data-tooltip-location="top">
+								<div class="slider-grip">
+									<div class="grip-line"></div>
+									<div class="grip-line"></div>
+									<div class="grip-line"></div>
+								</div>
+							</div>
 						</div>
 					</cfif>
 
@@ -382,15 +500,18 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 									</select>
 									<!--- Only Show Code Preview Button in Debug Mode --->
 									<cfif stackFrames gt 0 AND local.inDebugMode>
-										<a
-											@click.prevent="toggleCodePreview()"
-											class="button button-icononly"
-											data-tooltip="Toggle code preview"
-											data-tooltip-location="bottom"
-											href="##">
-											<i id="codetoggle-up" data-eva="arrowhead-up-outline" x-show="codePreviewShow"></i>
-											<i id="codetoggle-down" data-eva="arrowhead-down-outline" x-show="!codePreviewShow"></i>
-										</a>
+										<div class="code-toggle-container">
+											<a
+												@click.prevent="toggleCodePreview()"
+												class="button button-icononly"
+												data-tooltip="Toggle code preview"
+												data-tooltip-location="bottom"
+												href="##">
+												<i id="codetoggle-up" data-eva="arrowhead-up-outline" x-show="codePreviewShow"></i>
+												<i id="codetoggle-down" data-eva="arrowhead-down-outline" x-show="!codePreviewShow"></i>
+											</a>
+											<div class="height-indicator" x-show="codePreviewShow && isDragging" x-text="Math.round(codePreviewHeight) + 'px'"></div>
+										</div>
 									</cfif>
 								</div>
 							</h2>

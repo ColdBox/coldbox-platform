@@ -14,6 +14,12 @@ function whoopsReporter() {
         // State variables
         codePreviewShow: true,
         activeFrame: 'stack1',
+        codePreviewHeight: 600, // Default height in pixels
+        isDragging: false,
+        dragStartY: 0,
+        dragStartHeight: 0,
+        minHeight: 300,
+        maxHeight: 800,
 
         // DOM references
         codeContainer: null,
@@ -47,6 +53,90 @@ function whoopsReporter() {
          */
         toggleCodePreview() {
             this.codePreviewShow = !this.codePreviewShow;
+        },
+
+        /**
+         * Handles mouse down event on the slider handle
+         * @param {MouseEvent} event - The mouse down event
+         */
+        startDrag( event ) {
+            this.isDragging = true;
+            this.dragStartY = event.clientY;
+            this.dragStartHeight = this.codePreviewHeight;
+
+            // Prevent text selection during drag
+            event.preventDefault();
+            event.stopPropagation();
+
+            // Add global event listeners with bound context
+            this.boundHandleDrag = this.handleDrag.bind( this );
+            this.boundEndDrag = this.endDrag.bind( this );
+
+            document.addEventListener( 'mousemove', this.boundHandleDrag );
+            document.addEventListener( 'mouseup', this.boundEndDrag );
+
+            // Prevent page scrolling during drag
+            document.body.style.userSelect = 'none';
+        },
+
+        /**
+         * Handles mouse move during drag
+         * @param {MouseEvent} event - The mouse move event
+         */
+        handleDrag( event ) {
+            if ( !this.isDragging ) return;
+
+            event.preventDefault();
+
+            const deltaY = event.clientY - this.dragStartY;
+            const newHeight = Math.max(
+                this.minHeight,
+                Math.min( this.maxHeight, this.dragStartHeight + deltaY )
+            );
+
+            this.codePreviewHeight = newHeight;
+
+            // Ensure preview is shown when dragging
+            if ( !this.codePreviewShow ) {
+                this.codePreviewShow = true;
+            }
+        },
+
+        /**
+         * Handles mouse up to end drag
+         * @param {MouseEvent} event - The mouse up event
+         */
+        endDrag( event ) {
+            this.isDragging = false;
+
+            // Remove global event listeners
+            if ( this.boundHandleDrag ) {
+                document.removeEventListener( 'mousemove', this.boundHandleDrag );
+            }
+            if ( this.boundEndDrag ) {
+                document.removeEventListener( 'mouseup', this.boundEndDrag );
+            }
+
+            // Restore page interaction
+            document.body.style.userSelect = '';
+
+            // Clean up bound references
+            this.boundHandleDrag = null;
+            this.boundEndDrag = null;
+        },
+
+        /**
+         * Handles click on slider handle for full toggle
+         * @param {MouseEvent} event - The click event
+         */
+        handleSliderClick( event ) {
+            // Only toggle if we haven't moved significantly (not a drag)
+            const currentY = event.clientY;
+            const dragThreshold = 5; // pixels
+
+            if ( Math.abs( currentY - this.dragStartY ) < dragThreshold ) {
+                this.toggleCodePreview();
+            }
         },
 
         /**
