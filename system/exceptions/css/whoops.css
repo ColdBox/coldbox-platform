@@ -418,6 +418,124 @@ a.button:focus,
     overflow: auto;
 }
 
+/* Code Preview Slider Styles */
+.code-preview-container {
+    position: relative;
+    border: 1px solid var(--bg-panel);
+    border-radius: 8px;
+    background: var(--bg-darker);
+    overflow: visible; /* Allow handle to show when collapsed */
+    transition: height 0.2s ease;
+}
+
+.code-preview-container:hover {
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.code-slider-handle {
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 5px;
+    /* background: transparent; */
+    border: none;
+    border-bottom: 2px solid rgba(16, 107, 114, 0.1);
+    cursor: ns-resize;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    z-index: 10;
+    border-radius: 0;
+}
+
+.code-preview-container:hover .code-slider-handle,
+.code-slider-handle:hover {
+    border-bottom-color: rgba(82, 159, 231, 0.8);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.code-slider-handle.dragging {
+    border-bottom-color: rgb(77, 210, 222);
+    background: rgba(255, 255, 255, 0.1);
+    cursor: ns-resize;
+}
+
+.code-slider-handle.collapsed {
+    /* When collapsed, position handle at the top of the container */
+    bottom: auto;
+    top: 0px;
+    border-bottom: none;
+    border-top: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.code-preview-container:hover .code-slider-handle.collapsed,
+.code-slider-handle.collapsed:hover {
+    border-top-color: rgba(255, 255, 255, 0.8);
+}
+
+.code-slider-handle.collapsed.dragging {
+    border-top-color: white;
+}
+
+.slider-grip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    transition: color 0.2s ease;
+    width: 48px;
+    height: 20px;
+    background: #00b3d6;
+    border-radius: 4px;
+	cursor: pointer;
+    opacity: 50;
+    transition: all 0.2s ease;
+}
+
+.code-preview-container:hover .slider-grip,
+.code-slider-handle:hover .slider-grip {
+    opacity: 1;
+    color: rgba(19, 53, 111, 0.8);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.code-slider-handle.dragging .slider-grip {
+    opacity: 1;
+    color: white;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.code-toggle-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.height-indicator {
+    background: var(--accent-teal);
+    color: var(--text-dark);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: bold;
+    white-space: nowrap;
+    animation: fadeIn 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* Ensure smooth transitions for code preview */
+.code-preview {
+    transition: height 0.1s ease;
+}
+
 /* Control Buttons */
 .slideup_row {
     display: flex;
@@ -681,7 +799,11 @@ a.button-icononly {
         height: 300px;
     }
 
-    .data-filter {
+    /* Responsive slider adjustments */
+    .slider-grip {
+        width: 40px;
+        height: 10px;
+    }    .data-filter {
         flex-wrap: wrap;
         gap: var(--spacing-xs);
     }
