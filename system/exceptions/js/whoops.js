@@ -10,11 +10,18 @@
  */
 function whoopsReporter() {
     console.log( 'Initializing whoopsReporter Alpine.js component' );
+
     return {
         // State variables
         codePreviewShow: true,
         activeFrame: 'stack1',
-        codePreviewHeight: 600, // Default height in pixels
+        currentFilePath: '',
+        currentLineNumber: 0,
+		currentIdeLink: '',
+
+		 // Default height in pixels
+        codePreviewHeight: 600,
+		// Default dragging state + dimensions
         isDragging: false,
         dragStartY: 0,
         dragStartHeight: 0,
@@ -39,7 +46,7 @@ function whoopsReporter() {
                     const initialStackTrace = document.querySelector( '.stacktrace__list .stacktrace' );
                     if ( initialStackTrace ) {
                         setTimeout( () => {
-                            this.changeCodePanel( initialStackTrace.id );
+                        	 this.changeCodePanel( initialStackTrace.id );
                         }, 500 );
                     }
                 } );
@@ -181,24 +188,42 @@ function whoopsReporter() {
 
         /**
          * Updates the code preview panel when a stack trace entry is clicked
-         * @param {string} id - The ID of the stack trace frame to display
+		 *
+         * @param {string} target - The clicked stack trace frame element
          */
-        changeCodePanel( id ) {
+        changeCodePanel( target ) {
+
+			// The target can be an id or the actual currentTarget element
+			if ( typeof target === 'string' ) {
+				target = document.getElementById( target );
+			}
+
+			// Get the Info from the target element
+			const {
+				stackframe,
+				location,
+				idelink,
+				line
+			}  = target.dataset;
+
             try {
                 // Update active frame
-                this.activeFrame = id;
+                this.activeFrame = stackframe;
+				this.currentFilePath = location || '';
+				this.currentIdeLink = idelink || '';
+				this.currentLineNumber = parseInt( line ) || 0;
 
                 // Get access to pre tag so we can populate and highlight it
-                const code = document.getElementById( id + "-code" );
+                const code = document.getElementById( this.activeFrame + "-code" );
                 if ( !code ) {
-                    console.warn( 'Code element not found:', id + "-code" );
+                    console.warn( 'Code element not found:', this.activeFrame + "-code" );
                     return;
                 }
 
                 // Get access to pre > script tag so we can populate it with template code when needed
-                const codeScript = document.getElementById( id + "-script" );
+                const codeScript = document.getElementById( this.activeFrame + "-script" );
                 if ( !codeScript ) {
-                    console.warn( 'Code script element not found:', id + "-script" );
+                    console.warn( 'Code script element not found:', this.activeFrame + "-script" );
                     return;
                 }
 
@@ -223,7 +248,7 @@ function whoopsReporter() {
                     codeScript.setAttribute( "type", "syntaxhighlighter" );
                     // Activate SyntaxHighlighter for code formatting
                     if ( typeof SyntaxHighlighter !== 'undefined' ) {
-                        SyntaxHighlighter.highlight( {}, id + "-script" );
+                        SyntaxHighlighter.highlight( {}, this.activeFrame + "-script" );
                     }
                     // Mark as rendered to avoid re-processing
                     code.setAttribute( "data-template-rendered", "true" );

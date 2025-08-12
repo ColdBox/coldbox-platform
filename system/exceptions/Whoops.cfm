@@ -265,13 +265,20 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 					<!--- Stack Frames --->
 					<!----------------------------------------------------------------------------------------->
 
+					<!--- Stack Frames Title --->
 					<div class="whoops_stacktrace_panel_info">
 						<i data-eva="list-outline" data-eva-height="20" data-eva-fill="white"></i>
 						Stack Frame(s)
 					</div>
+
+					<!--- Stack Panel --->
 					<div class="whoops__stacktrace_panel">
 						<ul class="stacktrace__list" role="list" aria-label="Stack trace frames">
+
+							<!--- Root of the site --->
+							<!--- TODO: maybe get the app path? --->
 							<cfset root = expandPath( "/" )/>
+
 							<cfloop from="1" to="#arrayLen( local.exception.TagContext )#" index="i">
 								<cfset instance = local.exception.TagContext[ i ]/>
 								<li
@@ -281,17 +288,26 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 									role="listitem"
 									tabindex="0"
 									aria-describedby="frame-#stackFrames - i + 1#-description"
-									@click="changeCodePanel('stack#stackFrames - i + 1#')"
-									@keydown.enter="changeCodePanel('stack#stackFrames - i + 1#')"
-									@keydown.space="changeCodePanel('stack#stackFrames - i + 1#')"
+									<!--- Data Members --->
+									data-stackframe="stack#stackFrames - i + 1#"
+									data-location="#replace( instance.template, root, "" )#"
+									data-idelink="#oException.openInEditorURL( event, instance )#"
+									data-line="#instance.line#"
+									<!--- Alpine Events --->
+									@click="changeCodePanel( $event.currentTarget )"
+									@keydown.enter="changeCodePanel( $event.currentTarget )"
+									@keydown.space="changeCodePanel( $event.currentTarget )"
 								>
+									<!--- Stack Frame Number --->
 									<span class="badge" aria-label="Frame number">#stackFrames - i + 1#</span>
-									<div class="stacktrace__info" id="frame-#stackFrames - i + 1#-description">
-										<h3 class="stacktrace__location">
-											<span class="sr-only">File: </span>
-											#replace( instance.template, root, "" )#:<span class="stacktrace__line-number">#instance.line#</span>
-										</h3>
 
+									<!--- Stack Information --->
+									<div class="stacktrace__info" id="frame-#stackFrames - i + 1#-description">
+
+										<!--- Location + Line Number --->
+										<h3 class="stacktrace__location">#replace( instance.template, root, "" )#:<span class="stacktrace__line-number">#instance.line#</span></h3>
+
+										<!--- Code Print if it exists --->
 										<cfif structKeyExists( instance, "codePrintPlain" ) && local.inDebugMode>
 											<cfset codesnippet = instance.codePrintPlain>
 											<cfset codesnippet = reReplace( codesnippet, "\n\t", " ", "All" )>
@@ -311,6 +327,7 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 										</cfif>
 									</div>
 
+									<!---  Open in editor button--->
 									<cfif oException.openInEditorURL( event, instance ) NEQ "">
 										<a
 											target="_self"
@@ -322,10 +339,8 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 											aria-label="Open #replace( instance.template, root, "" )# line #instance.line# in editor"
 										>
 											<i data-eva="code-download-outline" height="20" aria-hidden="true"></i>
-											<span class="sr-only">Open in Editor</span>
 										</a>
 									</cfif>
-
 								</li>
 							</cfloop>
 						</ul>
@@ -350,13 +365,36 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 							 x-transition:leave-start="opacity-100 transform scale-100"
 							 x-transition:leave-end="opacity-0 transform scale-95"
 						>
+							<!-- Code Preview Header Bar -->
+							<div class="code-preview-header" x-show="codePreviewShow">
+								<!--- File Information --->
+								<div class="file-info">
+									<i data-eva="file-text-outline" data-eva-height="16" data-eva-fill="##7fcbe2"></i>
+									<span class="file-path" x-text="currentFilePath || 'Loading...'"></span>
+									<span class="line-number" x-show="currentLineNumber > 0" x-text="':' + currentLineNumber"></span>
+								</div>
 
-							<div class="code-preview" style="height: 100%; overflow: hidden;" x-show="codePreviewShow">
+								<!--- File Actions --->
+								<div class="file-actions">
+									<a
+										target="_self"
+										rel="noreferrer noopener"
+										href="#oException.openInEditorURL( event, instance )#"
+										data-tooltip="Open in Editor"
+										data-tooltip-location="left"
+									>
+										<i data-eva="code-download-outline" data-eva-height="25" data-eva-fill="##7fcbe2"></i>
+									</a>
+								</div>
+							</div>
+
+							<!--- Code Preview --->
+							<div class="code-preview" x-show="codePreviewShow">
 								<cfset instance = local.exception.TagContext[ 1 ]/>
 								<div id="code-container" style="height: 100%; overflow: auto;"></div>
 							</div>
 
-							<!-- Slider Handle - Always Visible -->
+							<!--- Slider Handle - Always Visible --->
 							<div class="code-slider-handle"
 								 @mousedown="startDrag( $event )"
 								 @click="handleSliderClick( $event )"
