@@ -438,7 +438,6 @@ a.button:focus,
 .file-info {
     display: flex;
     align-items: center;
-    gap: var(--spacing-sm);
     flex: 1;
     min-width: 0; /* Allow text to truncate */
 }
@@ -929,7 +928,7 @@ a.button-icononly {
 /* Enhanced Tooltips */
 [data-tooltip] {
     position: relative;
-    cursor: help;
+    cursor: pointer;
 }
 
 /* Default tooltip (top) */
