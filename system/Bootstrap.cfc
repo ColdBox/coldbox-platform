@@ -33,7 +33,7 @@ component serializable="false" accessors="true" {
 	param name="COLDBOX_APP_KEY"       default="cbController";
 	param name="COLDBOX_APP_MAPPING"   default="";
 	param name="COLDBOX_WEB_MAPPING"   default="";
-	param name="appHash"               default="#hash( getBaseTemplatePath() )#";
+	param name="appHash"               default="#hash( getBaseTemplatePath() & application.applicationname )#";
 	param name="lockTimeout" default="30" type="numeric";
 	param name="COLDBOX_FAIL_FAST" default="true";
 
