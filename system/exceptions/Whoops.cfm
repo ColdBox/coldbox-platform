@@ -379,7 +379,7 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 									<a
 										target="_self"
 										rel="noreferrer noopener"
-										href="#oException.openInEditorURL( event, instance )#"
+										:href="currentIdeLink"
 										data-tooltip="Open in Editor"
 										data-tooltip-location="left"
 									>
