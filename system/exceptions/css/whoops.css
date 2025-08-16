@@ -1040,3 +1040,33 @@ a.button-icononly {
     margin-bottom: 0;
     margin-left: 2px;
 }
+
+/* Copy to clipboard visual feedback animation */
+@keyframes copy-feedback {
+    0% {
+        border: 2px solid transparent;
+        box-shadow: none;
+    }
+    25% {
+        border: 2px solid #4CAF50;
+        box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+    }
+    50% {
+        border: 2px solid #4CAF50;
+        box-shadow: 0 0 15px rgba(76, 175, 80, 0.7);
+    }
+    75% {
+        border: 2px solid #4CAF50;
+        box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+    }
+    100% {
+        border: 2px solid transparent;
+        box-shadow: none;
+    }
+}
+
+.copy-success {
+    animation: copy-feedback 0.8s ease-in-out;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}

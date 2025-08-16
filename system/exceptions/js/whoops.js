@@ -306,22 +306,63 @@ function whoopsReporter() {
             const elm = document.getElementById( id );
             if ( !elm ) return;
 
+            // Copy to clipboard
+            const textToCopy = elm.textContent || elm.innerText;
+            let copySuccess = false;
+
             // Modern clipboard API
             if ( navigator.clipboard && window.isSecureContext ) {
-                navigator.clipboard.writeText( elm.textContent || elm.innerText );
+                navigator.clipboard.writeText( textToCopy ).then( () => {
+                    copySuccess = true;
+                    this.showCopyFeedback( elm );
+                }).catch( () => {
+                    // Fallback if modern API fails
+                    this.fallbackCopy( elm );
+                });
                 return;
             }
 
             // Fallback for older browsers
+            this.fallbackCopy( elm );
+        },
+
+        /**
+         * Fallback copy method for older browsers
+         * @param {HTMLElement} elm - The element to copy from
+         */
+        fallbackCopy( elm ) {
             if ( window.getSelection ) {
                 const selection = window.getSelection();
                 const range = document.createRange();
                 range.selectNodeContents( elm );
                 selection.removeAllRanges();
                 selection.addRange( range );
-                document.execCommand( "Copy" );
-                selection.removeAllRanges();
+
+                try {
+                    const success = document.execCommand( "Copy" );
+                    if ( success ) {
+                        this.showCopyFeedback( elm );
+                    }
+                } catch ( e ) {
+                    console.warn( 'Copy to clipboard failed:', e );
+                } finally {
+                    selection.removeAllRanges();
+                }
             }
+        },
+
+        /**
+         * Shows visual feedback when content is copied to clipboard
+         * @param {HTMLElement} elm - The element that was copied from
+         */
+        showCopyFeedback( elm ) {
+            // Add the success animation class
+            elm.classList.add( 'copy-success' );
+
+            // Remove the class after animation completes
+            setTimeout( () => {
+                elm.classList.remove( 'copy-success' );
+            }, 800 ); // Match the animation duration
         }
     };
 }
