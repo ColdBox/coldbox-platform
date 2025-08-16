@@ -551,6 +551,14 @@ a.button:focus,
     background: rgba(255, 255, 255, 0.2);
 }
 
+.slider-grip:hover {
+	opacity: 1;
+	color: #13356f;
+	background: rgba(255, 255, 255, 0.15);
+	box-shadow: 0 2px 8px rgba(66, 136, 206, 0.15);
+	border: 2px solid var(--accent-teal);
+}
+
 .code-toggle-container {
     position: relative;
     display: flex;
@@ -847,7 +855,9 @@ a.button-icononly {
     .slider-grip {
         width: 40px;
         height: 10px;
-    }    .data-filter {
+    }
+
+	.data-filter {
         flex-wrap: wrap;
         gap: var(--spacing-xs);
     }
