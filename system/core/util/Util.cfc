@@ -474,6 +474,12 @@ component {
 			// Add in anything that's not inheritance or implementation
 			else if ( NOT listFindNoCase( "extends,implements", thisKey ) ) {
 				loc.parent[ thisKey ] = arguments.md[ thisKey ];
+				// TODO: Remove this once we go full BoxLang only source
+				// I will have to merge the annotations to normalize them, to make it easier for ColdBox to deal with
+				// CFML + BoxLang.
+				if( loc.parent.keyExists( "annotations" ) ){
+					loc.parent.append( loc.parent.annotations, true );
+				}
 			}
 		}
 

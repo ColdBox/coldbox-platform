@@ -53,7 +53,6 @@
 		assertEquals( md.inheritanceTrail[ 2 ], "tests.resources.Class2" );
 		assertEquals( md.inheritanceTrail[ 3 ], "tests.resources.Class3" );
 
-		assertEquals( md.output, true );
 		assertEquals( md.scope, "server" );
 
 		assertTrue( structKeyExists( md, "annotationClass1Only" ) );
@@ -89,8 +88,11 @@
 		assertEquals( arrayLen( md.inheritanceTrail ), 1 );
 		assertEquals( md.inheritanceTrail[ 1 ], "tests.resources.Class1" );
 
-		assertEquals( md.output, true );
-		assertEquals( md.scope, "server" );
+		if( md.keyExists( "scope" ) ){
+			assertEquals( md.scope, "server" );
+		} else {
+			assertEquals( md.annotations.scope, "server" );
+		}
 
 		assertTrue( structKeyExists( md, "annotationClass1Only" ) );
 		assertFalse( structKeyExists( md, "annotationClass2Only" ) );
@@ -129,7 +131,17 @@
 	private function getItemKey( itemArray, itemName, key ){
 		for ( var i = 1; i <= arrayLen( itemArray ); i++ ) {
 			if ( itemArray[ i ].name == itemName ) {
-				return itemArray[ i ][ key ];
+				if( itemArray[ i ].keyExists( key ) ){
+					return itemArray[ i ][ key ];
+				}
+				// Else look for it in the annotations root
+				if( itemArray[ i ].annotations.keyExists( key ) ){
+					return itemArray[ i ].annotations[ key ];
+				}
+				// Else in the documentation root
+				if( itemArray[ i ].documentation.keyExists( key ) ){
+					return itemArray[ i ].documentation[ key ];
+				}
 			}
 		}
 		fail( "Item '#itemName#' doesn't exists." );

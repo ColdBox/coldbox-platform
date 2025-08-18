@@ -29,9 +29,7 @@
 
 		assertEquals( scope.get( key = "test", scope = "application" ), "test" );
 		structDelete( application, "test" );
-
 		assertEquals( scope.get( "test", "session", "false" ), false );
-		writeDump( var=session, top = 5, showUDFs = false );
 
 		try {
 			scope.get( "test", "session" );
