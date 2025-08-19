@@ -243,7 +243,7 @@ body {
 
 .stacktrace__code {
     font-family: var(--font-mono);
-    font-size: var(--text-code);
+    font-size: var(--text-base);
     color: var(--text-secondary);
     line-height: 1.5;
     margin-top: var(--spacing-sm);
@@ -1454,4 +1454,109 @@ a.button-icononly {
     .frame-actions {
         align-self: flex-end;
     }
+}
+
+/* AI Integration Styles */
+.stacktrace-action--ai {
+    background: linear-gradient(135deg, #7fcbe2, #4288CE) !important;
+    border-color: #7fcbe2 !important;
+    color: white !important;
+    font-weight: 600;
+    position: relative;
+    overflow: hidden;
+}
+
+.stacktrace-action--ai:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.stacktrace-action--ai:hover {
+    background: linear-gradient(135deg, #4288CE, #3377bb) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(127, 203, 226, 0.3);
+}
+
+.stacktrace-action--ai:hover:before {
+    left: 100%;
+}
+
+.stacktrace-action--ai i {
+    filter: drop-shadow(0 1px 1px rgba(0,0,0,0.3));
+}
+
+/* AI Modal Enhancements */
+.ai-modal {
+    animation: aiModalSlideIn 0.3s ease-out;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+}
+
+@keyframes aiModalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.ai-modal-overlay {
+    animation: aiOverlayFadeIn 0.3s ease-out;
+}
+
+@keyframes aiOverlayFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* AI Option Button Animations */
+.ai-options button {
+    position: relative;
+    overflow: hidden;
+}
+
+.ai-options button:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(127, 203, 226, 0.1), transparent);
+    transition: left 0.3s ease;
+}
+
+.ai-options button:hover:before {
+    left: 100%;
+}
+
+/* AI Prompt Preview Scrollbar */
+.ai-prompt-preview div::-webkit-scrollbar {
+    width: 6px;
+}
+
+.ai-prompt-preview div::-webkit-scrollbar-track {
+    background: #1a1a1a;
+    border-radius: 3px;
+}
+
+.ai-prompt-preview div::-webkit-scrollbar-thumb {
+    background: #444;
+    border-radius: 3px;
+}
+
+.ai-prompt-preview div::-webkit-scrollbar-thumb:hover {
+    background: #666;
 }
