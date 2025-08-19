@@ -312,29 +312,30 @@ function whoopsReporter() {
         /**
          * Copies the text content of a specified element to the system clipboard
          * @param {string} id - The ID of the element whose content should be copied
+		 * @param {string} highlightTargetId - Optional ID to highlight after copying
          */
-        copyToClipboard( id ) {
-            const elm = document.getElementById( id );
-            if ( !elm ) return;
+        copyToClipboard( id, highlightTargetId ) {
+            const target = document.getElementById( id );
+            if ( !target ) return;
 
             // Copy to clipboard
-            const textToCopy = elm.textContent || elm.innerText;
+            const textToCopy = target.textContent || target.innerText;
             let copySuccess = false;
 
             // Modern clipboard API
             if ( navigator.clipboard && window.isSecureContext ) {
                 navigator.clipboard.writeText( textToCopy ).then( () => {
                     copySuccess = true;
-                    this.showCopyFeedback( elm );
+                    this.showCopyFeedback( highlightTargetId ? document.getElementById( highlightTargetId ) : target );
                 }).catch( () => {
                     // Fallback if modern API fails
-                    this.fallbackCopy( elm );
+                    this.fallbackCopy( target );
                 });
                 return;
             }
 
             // Fallback for older browsers
-            this.fallbackCopy( elm );
+            this.fallbackCopy( target );
         },
 
         /**
@@ -455,7 +456,7 @@ function whoopsReporter() {
 				document.body.appendChild(tempEl);
 
 				// Use the existing copyToClipboard method
-				this.copyToClipboard('temp-frame-' + index);
+				this.copyToClipboard( 'temp-frame-' + index );
 
 				// Clean up
 				setTimeout(() => {
