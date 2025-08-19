@@ -829,12 +829,10 @@ component serializable="false" accessors="true" {
 		}
 
 		try {
-			// Determine allowed methods in action metadata
-			if ( structKeyExists( results.ehBean.getActionMetadata(), "allowedMethods" ) ) {
-				// incorporate it to the handler
-				oHandler.allowedMethods[ results.ehBean.getMethod() ] = results.ehBean.getActionMetadata(
-					"allowedMethods"
-				);
+			// Determine allowed methods in action metadata if found
+			var thisAllowedMethods = results.ehBean.getActionMetadata( "allowedMethods");
+			if( !thisAllowedMethods.isEmpty() ){
+				oHandler.allowedMethods[ results.ehBean.getMethod() ] = thisAllowedMethods;
 			}
 
 			// Determine if it is An allowed HTTP method to execute, else throw error
