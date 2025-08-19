@@ -798,15 +798,12 @@ a.button-icononly {
 .data-stacktrace {
     white-space: pre-wrap;
     font-family: var(--font-mono);
-    font-size: var(--text-sm);
+    font-size: var(--text-xs);
     line-height: 1.5;
     background: var(--code-bg);
     color: var(--code-text);
     padding: var(--spacing-lg);
     border-radius: 8px;
-    overflow-x: auto;
-    max-height: 500px;
-    overflow-y: auto;
 }
 
 /* Responsive Design */
