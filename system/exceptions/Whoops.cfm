@@ -453,56 +453,6 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 						<!----------------------------------------------------------------------------------------->
 						<cfoutput>
 							<div id="request-info-details">
-								<div id="eventdetails" class="data-table">
-									<label>Error Details</label>
-									#oException.displayScope( eventDetails )#
-								</div>
-
-								<div id="serverinfo_scope" class="data-table">
-									<label>Server Info</label>
-									#oException.displayScope( serverInfo )#
-								</div>
-
-								<div id="database_scope" class="data-table">
-									<label>Database</label>
-									#oException.displayScope( databaseInfo )#
-								</div>
-
-								<div id="rc_scope" class="data-table">
-									<label>RC</label>
-									#oException.displayScope( rc )#
-								</div>
-
-								<div id="prc_scope" class="data-table">
-									<label>PRC</label>
-									#oException.displayScope( prc )#
-								</div>
-
-								<div id="headers_scope" class="data-table">
-									<label>Headers</label>
-									#oException.displayScope( local.requestHeaders )#
-								</div>
-
-								<div id="session_scope" class="data-table">
-									<label>Session</label>
-									<cftry>
-										#oException.displayScope( session )#
-										<cfcatch>
-											<em>No Session</em>
-										</cfcatch>
-									</cftry>
-								</div>
-
-								<div id="application_scope" class="data-table">
-									<label>Application</label>
-									#oException.displayScope( application )#
-								</div>
-
-								<div id="cookies_scope" class="data-table">
-									<label>Cookies</label>
-									#oException.displayScope( cookie )#
-								</div>
-
 								<div id="stacktrace_scope" class="data-table">
 									<label>
 										Stacktrace
@@ -539,6 +489,16 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 												>
 													<i data-eva="email-outline" data-eva-height="16" data-eva-fill="currentColor"></i>
 													Email
+												</button>
+
+												<button
+													@click="askAI()"
+													class="stacktrace-action stacktrace-action--ai"
+													data-tooltip="Ask AI to analyze this error"
+													data-tooltip-location="bottom"
+												>
+													<i data-eva="bulb-outline" data-eva-height="16" data-eva-fill="currentColor"></i>
+													Ask AI
 												</button>
 											</div>
 
@@ -601,6 +561,56 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 										<!--- Hidden raw stacktrace for copying --->
 										<div id="stacktrace-raw" style="display: none;">#oException.processStackTrace( oException.getstackTrace() )#</div>
 									</div>
+
+								<div id="eventdetails" class="data-table">
+									<label>Error Details</label>
+									#oException.displayScope( eventDetails )#
+								</div>
+
+								<div id="serverinfo_scope" class="data-table">
+									<label>Server Info</label>
+									#oException.displayScope( serverInfo )#
+								</div>
+
+								<div id="database_scope" class="data-table">
+									<label>Database</label>
+									#oException.displayScope( databaseInfo )#
+								</div>
+
+								<div id="rc_scope" class="data-table">
+									<label>RC</label>
+									#oException.displayScope( rc )#
+								</div>
+
+								<div id="prc_scope" class="data-table">
+									<label>PRC</label>
+									#oException.displayScope( prc )#
+								</div>
+
+								<div id="headers_scope" class="data-table">
+									<label>Headers</label>
+									#oException.displayScope( local.requestHeaders )#
+								</div>
+
+								<div id="session_scope" class="data-table">
+									<label>Session</label>
+									<cftry>
+										#oException.displayScope( session )#
+										<cfcatch>
+											<em>No Session</em>
+										</cfcatch>
+									</cftry>
+								</div>
+
+								<div id="application_scope" class="data-table">
+									<label>Application</label>
+									#oException.displayScope( application )#
+								</div>
+
+								<div id="cookies_scope" class="data-table">
+									<label>Cookies</label>
+									#oException.displayScope( cookie )#
+								</div>
 							</div>
 						</cfoutput>
 					</div>
