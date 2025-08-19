@@ -10,38 +10,47 @@ component accessors="true" {
 	 * Any matcher
 	 */
 	property name="any";
+
 	/**
 	 * Matching returns
 	 */
 	property name="returns";
+
 	/**
 	 * Matching annotations
 	 */
 	property name="annotation";
+
 	/**
 	 * Matching annotation value
 	 */
 	property name="annotationValue";
+
 	/**
 	 * Matching mapping names
 	 */
 	property name="mappings";
+
 	/**
 	 * Matching instances
 	 */
 	property name="instanceOf";
+
 	/**
 	 * Matching regex
 	 */
 	property name="regex";
+
 	/**
 	 * Matching method names
 	 */
 	property name="methods";
+
 	/**
 	 * And operator
 	 */
 	property name="and";
+
 	/**
 	 * OR operator
 	 */
@@ -105,6 +114,7 @@ component accessors="true" {
 		if ( isObject( variables.and ) ) {
 			return ( results AND variables.and.matchClass( argumentCollection = arguments ) );
 		}
+
 		// OR matcher set?
 		if ( isObject( variables.or ) ) {
 			return ( results OR variables.or.matchClass( argumentCollection = arguments ) );
@@ -125,6 +135,7 @@ component accessors="true" {
 		if ( isObject( variables.and ) ) {
 			return ( results AND variables.and.matchMethod( arguments.metadata ) );
 		}
+
 		// OR matcher set?
 		if ( isObject( variables.or ) ) {
 			return ( results OR variables.or.matchMethod( arguments.metadata ) );
@@ -142,7 +153,9 @@ component accessors="true" {
 		// Some metadata defaults
 		var name    = arguments.metadata.name;
 		var returns = "any";
+		var annotations = arguments.metadata.keyExists( "annotations" ) ? arguments.metadata.annotations : arguments.metadata;
 
+		// Check if we have a return type
 		if ( structKeyExists( arguments.metadata, "returntype" ) ) {
 			returns = arguments.metadata.returntype;
 		}
@@ -151,28 +164,32 @@ component accessors="true" {
 		if ( variables.any ) {
 			return true;
 		}
+
 		// Check explicit methods
 		if ( len( variables.methods ) AND listFindNoCase( variables.methods, name ) ) {
 			return true;
 		}
+
 		// regex
 		if ( len( variables.regex ) AND reFindNoCase( variables.regex, name ) ) {
 			return true;
 		}
+
 		// returns
 		if ( len( variables.returns ) AND variables.returns EQ returns ) {
 			return true;
 		}
+
 		// annotation
-		if ( len( variables.annotation ) AND structKeyExists( arguments.metadata, variables.annotation ) ) {
+		if ( len( variables.annotation ) AND structKeyExists( annotations, variables.annotation ) ) {
 			// No annotation value
-			if ( NOT structKeyExists( variables, "annotationValue" ) ) {
+			if ( NOT structKeyExists( variables, "annotationValue" ) || isNull( variables.annotationValue ) ) {
 				return true;
 			}
 
 			// check annotation value
 			if (
-				structKeyExists( variables, "annotationValue" ) AND arguments.metadata[ variables.annotation ] EQ variables.annotationValue
+				structKeyExists( variables, "annotationValue" ) AND annotations[ variables.annotation ] EQ variables.annotationValue
 			) {
 				return true;
 			}
@@ -190,34 +207,39 @@ component accessors="true" {
 	 */
 	private boolean function matchClassRules( required target, required mapping ){
 		var md   = arguments.mapping.getObjectMetadata();
+		var annotations = md.keyExists( "annotations" ) ? md.annotations : md;
 		var path = reReplace( md.name, "(\/|\\)", ".", "all" );
 
 		// Start with any()
 		if ( variables.any ) {
 			return true;
 		}
+
 		// Check explicit mappings
 		if ( len( variables.mappings ) AND listFindNoCase( variables.mappings, arguments.mapping.getName() ) ) {
 			return true;
 		}
+
 		// regex
 		if ( len( variables.regex ) AND reFindNoCase( variables.regex, path ) ) {
 			return true;
 		}
+
 		// instanceOf
 		if ( len( variables.instanceOf ) AND isInstanceOf( arguments.target, variables.instanceOf ) ) {
 			return true;
 		}
+
 		// annotation
-		if ( len( variables.annotation ) AND structKeyExists( md, variables.annotation ) ) {
+		if ( len( variables.annotation ) AND structKeyExists( annotations, variables.annotation ) ) {
 			// No annotation value
-			if ( NOT structKeyExists( variables, "annotationValue" ) ) {
+			if ( NOT structKeyExists( variables, "annotationValue" ) || isNull( variables.annotationValue ) ) {
 				return true;
 			}
 
 			// check annotation value
 			if (
-				structKeyExists( variables, "annotationValue" ) AND md[ variables.annotation ] EQ variables.annotationValue
+				annotations[ variables.annotation ] EQ variables.annotationValue
 			) {
 				return true;
 			}

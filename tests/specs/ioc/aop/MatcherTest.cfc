@@ -150,7 +150,8 @@
 	function testAnnotatedWith(){
 		matcher.annotatedWith( "transactional" );
 		assertEquals( "transactional", matcher.getMemento().annotation );
-		assertFalse( structKeyExists( matcher.getMemento(), "annotationValue" ) );
+		var memento = matcher.getMemento();
+		expect( memento.annotationValue ).toBeNull();
 
 		matcher.annotatedWith( "transactional", true );
 		assertEquals( "transactional", matcher.getMemento().annotation );
