@@ -106,8 +106,8 @@
 	}
 
 	function testProviderMethods(){
-		// skip for lucee as they don"t have the context method
-		if ( listFindNoCase( "Lucee", server.coldfusion.productname ) ) {
+		if( isLucee() ){
+			skip( "Not available for lucee" );
 			return;
 		}
 
