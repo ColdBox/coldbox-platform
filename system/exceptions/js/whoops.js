@@ -449,19 +449,19 @@ function whoopsReporter() {
 		copyStacktraceFrame( index ) {
 			if (this.stacktraceData.filteredFrames[index]) {
 				// Create temporary element for copying
-				const tempEl = document.createElement('div');
-				tempEl.textContent = this.stacktraceData.filteredFrames[index];
+				const tempEl = document.createElement( 'div' );
+				tempEl.textContent = this.stacktraceData.filteredFrames[ index ];
 				tempEl.id = 'temp-frame-' + index;
 				tempEl.style.display = 'none';
-				document.body.appendChild(tempEl);
+				document.body.appendChild( tempEl );
 
 				// Use the existing copyToClipboard method
-				this.copyToClipboard( 'temp-frame-' + index );
+				this.copyToClipboard( 'temp-frame-' + index, 'stacktrace-frame-' + index );
 
 				// Clean up
 				setTimeout(() => {
-					if (document.body.contains(tempEl)) {
-						document.body.removeChild(tempEl);
+					if (document.body.contains( tempEl )) {
+						document.body.removeChild( tempEl );
 					}
 				}, 100);
 			}

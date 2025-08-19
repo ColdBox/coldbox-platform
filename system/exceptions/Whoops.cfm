@@ -565,12 +565,12 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 
 												<!-- Stacktrace frames -->
 												<template x-for="(frame, index) in stacktraceData.filteredFrames" :key="index">
-													<div class="stacktrace-frame">
+													<div class="stacktrace-frame" :id="'stacktrace-frame-' + index">
 														<div class="frame-header">
 															<span class="frame-number" x-text="index + 1"></span>
 															<div class="frame-actions">
 																<button
-																	@click="copyStacktraceFrame(index)"
+																	@click="copyStacktraceFrame( index )"
 																	class="frame-action"
 																	data-tooltip="Copy this frame"
 																	data-tooltip-location="left">
@@ -578,7 +578,7 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 																</button>
 															</div>
 														</div>
-														<div class="frame-content" x-html="highlightMatch(frame, stacktraceData.searchTerm)"></div>
+														<div class="frame-content" x-html="highlightMatch( frame, stacktraceData.searchTerm )"></div>
 													</div>
 												</template>
 											</div>
