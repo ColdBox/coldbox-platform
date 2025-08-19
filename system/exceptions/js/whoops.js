@@ -32,6 +32,14 @@ function whoopsReporter() {
         codeContainer: null,
 		reinitForm: null,
 
+		// Stacktrace state
+		stacktraceData: {
+			showRaw: false,
+			allFrames: [],
+			filteredFrames: [],
+			searchTerm: ''
+		},
+
         /**
          * Initialize the component when Alpine loads
          */
@@ -50,6 +58,9 @@ function whoopsReporter() {
                         }, 500 );
                     }
                 } );
+
+				// Initialize enhanced stacktrace
+				this.initializeStacktrace();
             } catch ( error ) {
                 console.error( 'Error in Alpine.js init:', error );
             }
@@ -363,6 +374,108 @@ function whoopsReporter() {
             setTimeout( () => {
                 elm.classList.remove( 'copy-success' );
             }, 800 ); // Match the animation duration
-        }
+        },
+
+		/**
+		 * Initialize stacktrace data from raw trace
+		 */
+		initializeStacktrace() {
+			const rawTrace = document.getElementById('stacktrace-raw');
+			if (rawTrace && rawTrace.textContent) {
+				const lines = rawTrace.textContent.split('\n').filter(line => line.trim() !== '');
+				this.stacktraceData.allFrames = lines;
+				this.stacktraceData.filteredFrames = lines;
+				this.renderStacktraceFrames();
+				this.updateFrameCount();
+			}
+		},
+
+		/**
+		 * Toggle between enhanced and raw stacktrace views
+		 */
+		toggleStacktraceView() {
+			this.stacktraceData.showRaw = !this.stacktraceData.showRaw;
+		},
+
+		/**
+		 * Filter stacktrace frames based on search input
+		 */
+		filterStacktraceFrames() {
+			const searchTerm = this.stacktraceData.searchTerm.toLowerCase();
+
+			if (searchTerm === '') {
+				this.stacktraceData.filteredFrames = this.stacktraceData.allFrames;
+			} else {
+				this.stacktraceData.filteredFrames = this.stacktraceData.allFrames.filter(frame =>
+					frame.toLowerCase().includes(searchTerm)
+				);
+			}
+
+			this.renderStacktraceFrames();
+			this.updateFrameCount();
+		},
+
+		/**
+		 * Render filtered stacktrace frames to the DOM
+		 */
+		renderStacktraceFrames() {
+			// This will be handled by Alpine.js template rendering
+			// The actual rendering happens in the HTML template
+			this.$nextTick(() => {
+				if (window.eva) eva.replace();
+			});
+		},
+
+		/**
+		 * Update the frame count display
+		 */
+		updateFrameCount() {
+			// This is reactive and handled by Alpine.js bindings
+		},
+
+		/**
+		 * Clear the search and reset filters
+		 */
+		clearSearch() {
+			this.stacktraceData.searchTerm = '';
+			this.filterStacktraceFrames();
+		},
+
+		/**
+		 * Copy a specific stacktrace frame to clipboard
+		 * @param {number} index - The index of the frame to copy
+		 */
+		copyStacktraceFrame( index ) {
+			if (this.stacktraceData.filteredFrames[index]) {
+				// Create temporary element for copying
+				const tempEl = document.createElement('div');
+				tempEl.textContent = this.stacktraceData.filteredFrames[index];
+				tempEl.id = 'temp-frame-' + index;
+				tempEl.style.display = 'none';
+				document.body.appendChild(tempEl);
+
+				// Use the existing copyToClipboard method
+				this.copyToClipboard('temp-frame-' + index);
+
+				// Clean up
+				setTimeout(() => {
+					if (document.body.contains(tempEl)) {
+						document.body.removeChild(tempEl);
+					}
+				}, 100);
+			}
+		},
+
+		/**
+		 * Highlight search matches in text
+		 * @param {string} text - The text to highlight
+		 * @param {string} searchTerm - The search term to highlight
+		 * @returns {string} - The text with highlighted matches
+		 */
+		highlightMatch( text, searchTerm ) {
+			if (!searchTerm || !text) return text;
+			const regex = new RegExp('(' + searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+			return text.replace(regex, '<mark class="stacktrace-highlight">$1</mark>');
+		}
     };
 }

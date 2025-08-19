@@ -420,7 +420,8 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 
 						<div>
 							<h2 class="details-heading">
-								🔍 Exception Details
+								<i data-eva="radio-outline" data-eva-height="25" data-eva-fill="##7fcbe2"></i>
+								Exception Details
 								<div class="control-bar">
 									<select
 										id="scope-filter"
@@ -430,17 +431,17 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 										data-tooltip-location="bottom"
 										aria-label="Filter Scopes"
 									>
-										<option value="">📊 All</option>
-										<option value="application_scope">🏢 Application</option>
-										<option value="cookies_scope">🍪 Cookies</option>
-										<option value="database_scope">🗄️ Database</option>
-										<option value="eventdetails">❌ Error Details</option>
-										<option value="headers_scope">📋 Headers</option>
-										<option value="prc_scope">📬 Private Request Collection (PRC)</option>
-										<option value="rc_scope">📨 Request Collection (RC)</option>
-										<option value="serverinfo_scope">🏗️ Server Info</option>
-										<option value="session_scope">👤 Session</option>
-										<option value="stacktrace_scope">📚 Stacktrace</option>
+										<option value="">All</option>
+										<option value="application_scope">Application</option>
+										<option value="cookies_scope">Cookies</option>
+										<option value="database_scope">Database</option>
+										<option value="eventdetails">Error Details</option>
+										<option value="headers_scope">Headers</option>
+										<option value="prc_scope">Private Request Collection (PRC)</option>
+										<option value="rc_scope">Request Collection (RC)</option>
+										<option value="serverinfo_scope">Server Info</option>
+										<option value="session_scope">Session</option>
+										<option value="stacktrace_scope">Stacktrace</option>
 									</select>
 									<!--- Height indicator shows during dragging --->
 									<div class="height-indicator" x-show="codePreviewShow && isDragging" x-text="Math.round(codePreviewHeight) + 'px'"></div>
@@ -504,20 +505,91 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 								</div>
 
 								<div id="stacktrace_scope" class="data-table">
-									<label
-										@click="copyToClipboard('stacktrace')"
-										data-tooltip="Copy to clipboard"
-										data-tooltip-location="top">
+									<label>
 										Stacktrace
-										<i
-											data-eva="clipboard"
-											data-eva-fill="white"
-											data-eva-height="16"
-											style="cursor: pointer"
-											></i>
 									</label>
 
-									<div id="stacktrace" class="data-stacktrace">#oException.processStackTrace( oException.getstackTrace() )#</div>
+									<!--- Simplified Enhanced Stacktrace Viewer --->
+									<div class="stacktrace-enhanced">
+									<!--- Stacktrace Controls --->
+									<div class="stacktrace-controls">
+										<div class="stacktrace-control-group">
+											<button
+												@click="toggleStacktraceView()"
+												class="stacktrace-toggle"
+												:class="{ 'active': stacktraceData.showRaw }"
+											>
+												<i data-eva="code-outline" data-eva-height="16" data-eva-fill="currentColor"></i>
+												<span x-text="stacktraceData.showRaw ? 'Enhanced View' : 'Raw View'"></span>
+											</button>
+
+											<button
+												@click="copyToClipboard('stacktrace-raw')"
+												class="stacktrace-action"
+											>
+												<i data-eva="copy-outline" data-eva-height="16" data-eva-fill="currentColor"></i>
+												Copy
+											</button>
+										</div>
+
+										<!--- Search Box --->
+										<div class="stacktrace-search" x-show="!stacktraceData.showRaw">
+											<input
+												type="text"
+												x-model="stacktraceData.searchTerm"
+												@input="filterStacktraceFrames()"
+												placeholder="Search stacktrace frames..."
+												class="stacktrace-search-input"
+												data-tooltip="Search through stacktrace frames"
+												data-tooltip-location="left">
+											<i data-eva="search-outline" data-eva-height="16" data-eva-fill="##7fcbe2"></i>
+										</div>
+									</div>
+
+									<!--- Enhanced Interactive View --->
+									<div x-show="!stacktraceData.showRaw" class="stacktrace-enhanced-view">
+										<div class="stacktrace-stats">
+											<span class="stat-item">
+												<i data-eva="layers-outline" data-eva-height="14" data-eva-fill="##7fcbe2"></i>
+												<span x-text="stacktraceData.filteredFrames.length + (stacktraceData.searchTerm && stacktraceData.filteredFrames.length !== stacktraceData.allFrames.length ? ' (filtered from ' + stacktraceData.allFrames.length + ')' : '')"></span> frames
+											</span>
+										</div>
+
+										<div class="stacktrace-frames">
+											<!-- No matches message -->
+											<div x-show="stacktraceData.filteredFrames.length === 0 && stacktraceData.searchTerm" class="no-matches">
+												<i data-eva="search-outline" data-eva-height="20" data-eva-fill="##7fcbe2"></i>
+												<p>No stacktrace frames match your search</p>
+												<button @click="clearSearch()" class="clear-search">Clear search</button>
+											</div>
+
+											<!-- Stacktrace frames -->
+											<template x-for="(frame, index) in stacktraceData.filteredFrames" :key="index">
+												<div class="stacktrace-frame">
+													<div class="frame-header">
+														<span class="frame-number" x-text="index + 1"></span>
+														<div class="frame-actions">
+															<button
+																@click="copyStacktraceFrame(index)"
+																class="frame-action"
+																data-tooltip="Copy this frame"
+																data-tooltip-location="left">
+																<i data-eva="copy-outline" data-eva-height="12" data-eva-fill="currentColor"></i>
+															</button>
+														</div>
+													</div>
+													<div class="frame-content" x-html="highlightMatch(frame, stacktraceData.searchTerm)"></div>
+												</div>
+											</template>
+										</div>
+									</div>
+
+									<!--- Raw View --->
+									<div x-show="stacktraceData.showRaw" class="data-stacktrace">#oException.processStackTrace( oException.getstackTrace() )#</div>
+									</div>
+
+									<!--- Hidden raw stacktrace for copying --->
+									<div id="stacktrace-raw" style="display: none;">#oException.processStackTrace( oException.getstackTrace() )#</div>
 								</div>
 							</div>
 						</cfoutput>
