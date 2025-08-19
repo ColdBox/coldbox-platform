@@ -9,6 +9,43 @@ ColdBox is an HMVC (Hierarchical Model-View-Controller) framework that supports 
 - **CacheBox**: Caching framework in `/system/cache/` - provides multi-provider caching abstraction and it's own caching engine
 - **LogBox**: Logging framework in `/system/logging/` - structured logging with multiple appenders
 
+## JavaScript Coding Standards
+
+### Spacing and Formatting
+- **Always add spaces inside parentheses**: Use `if ( condition )` not `if (condition)`
+- **Function parameters**: Use `functionName( param1, param2 )` with spaces
+- **Array/Object access**: Use `array[ index ]` and `object[ key ]` with spaces
+- **Method calls**: Use `obj.method( param )` with spaces in parentheses
+- **Template literals**: Use spaces in template expressions `${ variable }`
+- **Arrow functions**: Use `array.filter( item => condition )` with spaces
+- **Operators**: Always space around operators `a === b`, `x + y`, `result = value`
+
+### Structure and Organization
+- Use consistent indentation (tabs preferred to match CFML style)
+- Group related methods together
+- Add proper JSDoc comments for all functions
+- Use descriptive variable names
+- Separate logical sections with blank lines for readability
+
+### Examples
+```javascript
+// Good - ColdBox JavaScript Style
+if ( condition && anotherCondition ) {
+    const result = someFunction( param1, param2 );
+    array.forEach( item => {
+        processItem( item );
+    } );
+}
+
+// Bad - Inconsistent spacing
+if (condition&&anotherCondition) {
+    const result = someFunction(param1,param2);
+    array.forEach(item => {
+        processItem(item);
+    });
+}
+```
+
 ## Key Components
 
 - **Bootstrap.cfc**: Framework initialization and application lifecycle management

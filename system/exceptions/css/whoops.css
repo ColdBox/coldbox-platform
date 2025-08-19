@@ -1314,6 +1314,120 @@ a.button-icononly {
     color: white;
 }
 
+/* File Type Highlighting in Stacktrace */
+.file-type-cfc {
+    background: rgba(66, 136, 206, 0.2);
+    color: #4288CE;
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-weight: 600;
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    border: 1px solid rgba(66, 136, 206, 0.3);
+}
+
+.file-type-cfm {
+    background: rgba(192, 209, 76, 0.2);
+    color: #c0d14c;
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-weight: 600;
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    border: 1px solid rgba(192, 209, 76, 0.3);
+}
+
+.file-type-cfs {
+    background: rgba(235, 76, 76, 0.2);
+    color: #eb4c4c;
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-weight: 600;
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    border: 1px solid rgba(235, 76, 76, 0.3);
+}
+
+.file-type-bx {
+    background: rgba(127, 203, 226, 0.25);
+    color: #7fcbe2;
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-weight: 600;
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    border: 1px solid rgba(127, 203, 226, 0.4);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.file-type-bxm {
+    background: rgba(127, 203, 226, 0.2);
+    color: #5fb3d1;
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-weight: 600;
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    border: 1px solid rgba(127, 203, 226, 0.3);
+}
+
+.file-type-bxs {
+    background: rgba(95, 179, 209, 0.2);
+    color: #5fb3d1;
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-weight: 600;
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    border: 1px solid rgba(95, 179, 209, 0.3);
+}
+
+.file-type-java {
+    background: rgba(255, 165, 0, 0.2);
+    color: #ff8c00;
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-weight: 600;
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    border: 1px solid rgba(255, 165, 0, 0.3);
+}
+
+.file-path {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--accent-teal);
+    padding: 1px 3px;
+    border-radius: 2px;
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    word-break: break-all;
+    opacity: 0.9;
+}
+
+.line-number-highlight {
+    background: rgba(235, 76, 76, 0.2);
+    color: #ff6b6b;
+    padding: 1px 3px;
+    border-radius: 2px;
+    font-weight: 700;
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    margin-left: 2px;
+}
+
+/* Hover effects for file types */
+.file-type-cfc:hover,
+.file-type-cfm:hover,
+.file-type-cfs:hover,
+.file-type-bx:hover,
+.file-type-bxm:hover,
+.file-type-bxs:hover,
+.file-type-java:hover {
+    transform: scale(1.05);
+    transition: transform 0.1s ease;
+    cursor: help;
+}
+
 /* Responsive stacktrace adjustments */
 @media (max-width: 768px) {
     .stacktrace-controls {

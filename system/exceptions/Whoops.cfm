@@ -530,6 +530,16 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 													<i data-eva="copy-outline" data-eva-height="16" data-eva-fill="currentColor"></i>
 													Copy
 												</button>
+
+												<button
+													@click="emailStacktrace()"
+													class="stacktrace-action"
+													data-tooltip="Email Stacktrace"
+													data-tooltip-location="bottom"
+												>
+													<i data-eva="email-outline" data-eva-height="16" data-eva-fill="currentColor"></i>
+													Email
+												</button>
 											</div>
 
 											<!--- Search Box --->

@@ -381,9 +381,9 @@ function whoopsReporter() {
 		 * Initialize stacktrace data from raw trace
 		 */
 		initializeStacktrace() {
-			const rawTrace = document.getElementById('stacktrace-raw');
-			if (rawTrace && rawTrace.textContent) {
-				const lines = rawTrace.textContent.split('\n').filter(line => line.trim() !== '');
+			const rawTrace = document.getElementById( 'stacktrace-raw' );
+			if ( rawTrace && rawTrace.textContent ) {
+				const lines = rawTrace.textContent.split( '\n' ).filter( line => line.trim() !== '' );
 				this.stacktraceData.allFrames = lines;
 				this.stacktraceData.filteredFrames = lines;
 				this.renderStacktraceFrames();
@@ -404,11 +404,11 @@ function whoopsReporter() {
 		filterStacktraceFrames() {
 			const searchTerm = this.stacktraceData.searchTerm.toLowerCase();
 
-			if (searchTerm === '') {
+			if ( searchTerm === '' ) {
 				this.stacktraceData.filteredFrames = this.stacktraceData.allFrames;
 			} else {
-				this.stacktraceData.filteredFrames = this.stacktraceData.allFrames.filter(frame =>
-					frame.toLowerCase().includes(searchTerm)
+				this.stacktraceData.filteredFrames = this.stacktraceData.allFrames.filter( frame =>
+					frame.toLowerCase().includes( searchTerm )
 				);
 			}
 
@@ -422,9 +422,9 @@ function whoopsReporter() {
 		renderStacktraceFrames() {
 			// This will be handled by Alpine.js template rendering
 			// The actual rendering happens in the HTML template
-			this.$nextTick(() => {
-				if (window.eva) eva.replace();
-			});
+			this.$nextTick( () => {
+				if ( window.eva ) eva.replace();
+			} );
 		},
 
 		/**
@@ -447,7 +447,7 @@ function whoopsReporter() {
 		 * @param {number} index - The index of the frame to copy
 		 */
 		copyStacktraceFrame( index ) {
-			if (this.stacktraceData.filteredFrames[index]) {
+			if ( this.stacktraceData.filteredFrames[ index ] ) {
 				// Create temporary element for copying
 				const tempEl = document.createElement( 'div' );
 				tempEl.textContent = this.stacktraceData.filteredFrames[ index ];
@@ -459,11 +459,11 @@ function whoopsReporter() {
 				this.copyToClipboard( 'temp-frame-' + index, 'stacktrace-frame-' + index );
 
 				// Clean up
-				setTimeout(() => {
-					if (document.body.contains( tempEl )) {
+				setTimeout( () => {
+					if ( document.body.contains( tempEl ) ) {
 						document.body.removeChild( tempEl );
 					}
-				}, 100);
+				}, 100 );
 			}
 		},
 
@@ -474,9 +474,123 @@ function whoopsReporter() {
 		 * @returns {string} - The text with highlighted matches
 		 */
 		highlightMatch( text, searchTerm ) {
-			if (!searchTerm || !text) return text;
-			const regex = new RegExp('(' + searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
-			return text.replace(regex, '<mark class="stacktrace-highlight">$1</mark>');
+			if ( !text ) return text;
+
+			// First apply file type highlighting
+			let highlightedText = this.highlightFileTypes( text );
+
+			// Then apply search term highlighting if provided
+			if ( searchTerm ) {
+				const regex = new RegExp( '(' + searchTerm.replace( /[.*+?^${}()|[\]\\]/g, '\\$&' ) + ')', 'gi' );
+				highlightedText = highlightedText.replace( regex, '<mark class="stacktrace-highlight">$1</mark>' );
+			}
+
+			return highlightedText;
+		},
+
+		/**
+		 * Highlight file extensions and paths in stacktrace frames
+		 * @param {string} text - The text to highlight
+		 * @returns {string} - The text with file type highlights
+		 */
+		highlightFileTypes( text ) {
+			if ( !text ) return text;
+
+			// Define file type patterns and their corresponding classes
+			const filePatterns = [
+				{
+					regex: /(\b\w+\.cfc)(?=[\s:\)]|$)/gi,
+					class: 'file-type-cfc',
+					tooltip: 'CFML Component'
+				},
+				{
+					regex: /(\b\w+\.cfm)(?=[\s:\)]|$)/gi,
+					class: 'file-type-cfm',
+					tooltip: 'CFML Markup'
+				},
+				{
+					regex: /(\b\w+\.cfs)(?=[\s:\)]|$)/gi,
+					class: 'file-type-cfs',
+					tooltip: 'CFML Script'
+				},
+				{
+					regex: /(\b\w+\.bx)(?=[\s:\)]|$)/gi,
+					class: 'file-type-bx',
+					tooltip: 'BoxLang Class'
+				},
+				{
+					regex: /(\b\w+\.bxm)(?=[\s:\)]|$)/gi,
+					class: 'file-type-bxm',
+					tooltip: 'BoxLang Markup'
+				},
+				{
+					regex: /(\b\w+\.bxs)(?=[\s:\)]|$)/gi,
+					class: 'file-type-bxs',
+					tooltip: 'BoxLang Script'
+				},
+				{
+					regex: /(\b\w+\.java)(?=[\s:\)]|$)/gi,
+					class: 'file-type-java',
+					tooltip: 'Java Source'
+				}
+			];
+
+			let result = text;
+
+			// Apply each file type highlighting
+			filePatterns.forEach( pattern => {
+				result = result.replace(
+					pattern.regex,
+					`<span class="${ pattern.class }" title="${ pattern.tooltip }">$1</span>`
+				);
+			} );
+
+			// Highlight full file paths (anything that looks like a file path)
+			result = result.replace(
+				/(\/[^\s\)]+\.(cfc|cfm|cfs|bx|bxm|bxs|java))/gi,
+				'<span class="file-path" title="File Path">$1</span>'
+			);
+
+			// Highlight line numbers that follow file paths
+			result = result.replace(
+				/(:)(\d+)(?=[\s\)]|$)/g,
+				'$1<span class="line-number-highlight" title="Line Number">$2</span>'
+			);
+
+			return result;
+		},
+
+		/**
+		 * Open email client to send stacktrace
+		 */
+		emailStacktrace() {
+			const rawTrace = document.getElementById( 'stacktrace-raw' );
+			if ( !rawTrace ) return;
+
+			// Get the stacktrace content
+			const stacktraceContent = rawTrace.textContent || rawTrace.innerText;
+			// Get current page info for context
+			const currentUrl = window.location.href;
+			const timestamp = new Date().toLocaleString();
+			// Compose email content
+			const subject = encodeURIComponent( `ColdBox Exception Report` );
+			const body = encodeURIComponent(
+				`ColdBox Exception Report
+
+Timestamp: ${ timestamp }
+URL: ${ currentUrl }
+Stacktrace:
+${ stacktraceContent }
+
+---
+Generated by ColdBox Framework Error Reporter`
+			);
+
+			// Create mailto URL
+			const mailtoUrl = `mailto:?subject=${ subject }&body=${ body }`;
+
+			// Open email client
+			window.location.href = mailtoUrl;
 		}
     };
 }
