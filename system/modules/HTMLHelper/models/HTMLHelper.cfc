@@ -428,11 +428,13 @@ component
 		// Convert Array to Table Body
 		else if ( isArray( arguments.data ) and arrayLen( arguments.data ) ) {
 			var firstMetadata = getMetadata( arguments.data[ 1 ] );
+			var annotations = firstMetadata.keyExists( "annotations" ) ? firstMetadata.annotations : firstMetadata;
+
 			// Check for array of ORM Object
 			if (
 				isObject( arguments.data[ 1 ] )
 				AND
-				structKeyExists( firstMetadata, "persistent" ) && firstMetadata.persistent
+				structKeyExists( annotations, "persistent" ) && annotations.persistent
 			) {
 				arguments.data = entityToQuery( arguments.data );
 				queryToTable( argumentCollection = arguments );
@@ -2622,13 +2624,19 @@ component
 
 		// Metadata
 		var firstMetadata = {};
+		var annotations = {};
+
+		// Verify Annotations
 		if ( !isNull( arguments.data[ 1 ] ) ) {
 			firstMetadata = getMetadata( arguments.data[ 1 ] );
+			annotations   = firstMetadata.keyExists( "annotations" ) ? firstMetadata.annotations : firstMetadata;
 		}
+
 		// All properties
 		var properties     = structKeyExists( firstMetadata, "properties" ) ? firstMetadata.properties : [];
+
 		// Filtered properties
-		var showProperties = properties.filter( function( item ){
+		var showProperties = duplicate( properties ).filter( function( item ){
 			return ( passIncludeExclude( item.name, includes, excludes ) );
 		} );
 
