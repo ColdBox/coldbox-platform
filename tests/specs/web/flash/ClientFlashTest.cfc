@@ -1,4 +1,8 @@
-﻿component extends="tests.resources.BaseIntegrationTest" {
+﻿/**
+ * Skipped in BoxLang as this runs in the COMPAT mode only
+ * Client scope is old school and legacy
+ */
+component extends="tests.resources.BaseIntegrationTest" skip="isBoxLang"{
 
 	this.loadColdBox = false;
 
@@ -20,24 +24,29 @@
 			obj  : { content : obj, autoPurge : true, keep : true }
 		};
 	}
+
 	function teardown(){
 		structClear( client );
 	}
+
 	function testClearFlash(){
 		client[ flash.getFlashKey() ] = converter.serializeObject( testscope );
 		flash.clearFlash();
 		assertFalse( structKeyExists( client, flash.getFlashKey() ) );
 	}
+
 	function testSaveFlash(){
 		flash.$( "getScope", testscope );
 		flash.saveFlash();
 		assertTrue( len( client[ flash.getFlashKey() ] ) );
 	}
+
 	function testFlashExists(){
 		assertFalse( flash.flashExists() );
 		client[ flash.getFlashKey() ] = "NADA";
 		assertTrue( flash.flashExists() );
 	}
+
 	function testgetFlash(){
 		// assertEquals( flash.getFlash(), structNew() );
 
