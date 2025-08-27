@@ -428,7 +428,7 @@ component
 		// Convert Array to Table Body
 		else if ( isArray( arguments.data ) and arrayLen( arguments.data ) ) {
 			var firstMetadata = getMetadata( arguments.data[ 1 ] );
-			var annotations = firstMetadata.keyExists( "annotations" ) ? firstMetadata.annotations : firstMetadata;
+			var annotations = isStruct( firstMetadata ) && firstMetadata.keyExists( "annotations" ) ? firstMetadata.annotations : firstMetadata;
 
 			// Check for array of ORM Object
 			if (
