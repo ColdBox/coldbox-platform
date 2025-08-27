@@ -23,7 +23,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        cfengine: [ "boxlang-cfml@1", "lucee@5", "lucee@6", "adobe@2025" ]
+        cfengine: [ "boxlang@1", "boxlang-cfml@1", "lucee@5", "lucee@6", "adobe@2025" ]
         jdkVersion: [ "21" ]
         experimental: [ false ]
         timeoutMinutes: [ 8 ]
