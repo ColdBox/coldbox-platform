@@ -10,10 +10,12 @@ component accessors="true" {
 	 * Exception Struct
 	 */
 	property name="exceptionStruct";
+
 	/**
 	 * Custom error messages
 	 */
 	property name="extraMessage";
+
 	/**
 	 * Extra info for exception tracking
 	 */
@@ -357,8 +359,8 @@ component accessors="true" {
 	function displayScope( required scope ){
 		var list = createObject( "java", "java.lang.StringBuilder" ).init(
 			"<table class="" data-table "">
-	<tbody>
-		"
+				<tbody>
+			"
 		);
 		var orderedArr = arguments.scope;
 
@@ -387,7 +389,7 @@ component accessors="true" {
 				);
 				list.append(
 					"<td class="" overflow-scroll "">" &
-					dateFormat( arguments.scope[ i ], "mm/dd/yyyy" ) & " " &
+					dateFormat( arguments.scope[ i ], "MM/dd/yyyy" ) & " " &
 					timeFormat( arguments.scope[ i ], "HH:mm:ss" ) & "</td>
 			"
 				);

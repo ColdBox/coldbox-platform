@@ -2,7 +2,7 @@
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * A utility Facade to help in storing data in multiple CF Storages
+ * A utility Facade to help in storing data in multiple engine storages
  */
 component {
 
@@ -49,39 +49,48 @@ component {
 	 * @key          The key
 	 * @scope        The CF Scope
 	 * @defaultValue The default value
+	 *
+	 * @return The value if exists, or the default value if provided
+	 *
+	 * @throws ScopeStorage.KeyNotFound if the key does not exist and no default value is provided
 	 */
 	function get( required key, required scope, defaultValue ){
-		// Do stupid ACF Hack due to choking on `default` argument.
-		if ( structKeyExists( arguments, "default" ) ) {
-			arguments.defaultValue = arguments.default;
-		}
-
 		if ( exists( arguments.key, arguments.scope ) ) {
 			return structFind( getscope( arguments.scope ), arguments.key );
-		} else if ( structKeyExists( arguments, "defaultValue" ) ) {
+		} else if ( !isNull( arguments.defaultValue ) ) {
 			return arguments.defaultValue;
 		}
 
 		throw(
 			type    = "ScopeStorage.KeyNotFound",
-			message = "The key #arguments.key# does not exist in the #arguments.scope# scope."
+			message = "The key [#arguments.key#] does not exist in the [#arguments.scope#] scope."
 		);
 	}
 
 	/**
-	 * Check if a key exists
+	 * Check if a key exists and it's not null in a scope
 	 *
 	 * @key   The key
 	 * @scope The CF Scope
+	 *
+	 * @return true if exists and not null, false otherwise
+	 *
+	 * @throws ScopeStorage.KeyNotFound if the key does not exist
 	 */
 	boolean function exists( required key, required scope ){
-		return structKeyExists( getScope( arguments.scope ), arguments.key );
+		var targetScope = getScope( arguments.scope );
+		if ( targetScope.keyExists( arguments.key ) && !isNull( targetScope[ arguments.key ] ) ) {
+			return true;
+		}
+		return false;
 	}
 
 	/**
 	 * Get a scope reference
 	 *
 	 * @scope The CF Scope
+	 *
+	 * @return The scope reference
 	 */
 	any function getScope( required scope ){
 		scopeCheck( arguments.scope );

@@ -322,7 +322,7 @@ component accessors="true" singleton {
 				propertyName      = key;
 
 				// conditional with StructKeyExist, to prevent language issues with Null value checking of struct keys in ACF
-				if ( structKeyExists( arguments.memento, key ) ) {
+				if ( structKeyExists( arguments.memento, key ) && !isNull( arguments.memento[ key ] ) ) {
 					propertyValue = arguments.memento[ key ];
 				} else {
 					nullValue     = true;
@@ -348,10 +348,12 @@ component accessors="true" singleton {
 				if ( len( arguments.include ) AND NOT listFindNoCase( arguments.include, key ) ) {
 					pop = false;
 				}
+
 				// Exclude List?
 				if ( len( arguments.exclude ) AND listFindNoCase( arguments.exclude, key ) ) {
 					pop = false;
 				}
+
 				// Ignore Empty? Check added for real Null value
 				if (
 					arguments.ignoreEmpty and not isNull( local.propertyValue ) and isSimpleValue(
@@ -371,13 +373,16 @@ component accessors="true" singleton {
 				if ( arguments.nullEmptyInclude == "*" ) {
 					nullValue = true;
 				}
+
 				if ( arguments.nullEmptyExclude == "*" ) {
 					nullValue = false;
 				}
+
 				// Is property in empty-to-null include list?
 				if ( ( len( arguments.nullEmptyInclude ) && listFindNoCase( arguments.nullEmptyInclude, key ) ) ) {
 					nullValue = true;
 				}
+
 				// Is property in empty-to-null exclude list, or is exclude list "*"?
 				if ( ( len( arguments.nullEmptyExclude ) AND listFindNoCase( arguments.nullEmptyExclude, key ) ) ) {
 					nullValue = false;
@@ -395,10 +400,9 @@ component accessors="true" singleton {
 
 				// Is this a composable property?
 				if (
-					!isNull( propertyValue ) && arguments.composeRelationships && structKeyExists(
-						relationalMeta.properties,
-						key
-					)
+					!isNull( propertyValue ) &&
+					arguments.composeRelationships &&
+					structKeyExists( relationalMeta.properties, key )
 				) {
 					propertyValue = composeProperty(
 						key           : key,
@@ -543,32 +547,40 @@ component accessors="true" singleton {
 		var targetEntityName = "";
 
 		/**
-		 * The only info we know about the relationships are the property names and the cfcs
-		 * CFC setting can be relative, so can't assume that component lookup will work
+		 * The only info we know about the relationships are the property names and the class names
+		 * Object setting can be relative, so can't assume that component lookup will work
 		 * APPROACH
 		 * 1.) Easy: If property name of relationship is a valid entity name, use that: ex: setRole() and Role is the entity name
-		 * 2.) Harder: Use the `cfc` attribute on the property (e.g., one-to-many, many-to-many)
+		 * 2.) Harder: Use the `cfc` attribute on the property (e.g., one-to-many, many-to-many) or `class` if using BoxLang
 		 * 3.) Nuclear: If neither above works, try by component meta data lookup. Won't work if using relative paths!!!!
 		 */
+		var relationMetaClass = "";
+		// BoxLang Prime
+		if ( arguments.relationalMeta.properties[ arguments.key ].keyExists( "className" ) ) {
+			relationMetaClass = listLast( arguments.relationalMeta.properties[ arguments.key ].className, "." )
+		}
+		// CFML Legacy
+		if ( arguments.relationalMeta.properties[ arguments.key ].keyExists( "cfc" ) ) {
+			relationMetaClass = listLast( arguments.relationalMeta.properties[ arguments.key ].cfc, "." )
+		}
 
 		// 1.) name match
 		if ( validEntityNames.findNoCase( arguments.key ) ) {
 			targetEntityName = arguments.key;
 		}
-		// 2.) attempt match on CFC metadata on the property:
+		// 2.) attempt match on class metadata on the property:
 		// property name="role" cfc="security.Role"
-		else if (
-			validEntityNames.findNoCase(
-				listLast( arguments.relationalMeta.properties[ arguments.key ].cfc, "." )
-			)
-		) {
-			targetEntityName = listLast( arguments.relationalMeta.properties[ key ].cfc, "." );
+		// property name="role" class="security.Role"
+		else if ( validEntityNames.findNoCase( relationMetaClass ) ) {
+			targetEntityName = relationMetaClass;
 		}
-		// 3.) component lookup
+		// 3.) class lookup
 		else {
-			var annotations = server.keyExists( "boxlang" ) ? getClassMetadata(
-				arguments.relationalMeta.properties[ key ].cfc
-			).annotations : getComponentMetadata( arguments.relationalMeta.properties[ key ].cfc );
+			var annotations = server.keyExists( "boxlang" ) ? getClassMetadata( relationMetaClass ).annotations : getComponentMetadata(
+				relationMetaClass
+			);
+
+			// Verify if the entityName annotation exists
 			if ( annotations.keyExists( "entityName" ) ) {
 				targetEntityName = annotations.entityName;
 			}
@@ -577,7 +589,7 @@ component accessors="true" singleton {
 		if ( !len( targetEntityName ) ) {
 			throw(
 				type    = "ObjectPopulator.PopulateObjectException",
-				message = "Error populating object [#getMetadata( arguments.target ).name#] relationship of [#arguments.key#]. The class [#arguments.relationalMeta.properties[ arguments.key ].cfc#] could not be found."
+				message = "Error populating object [#getMetadata( arguments.target ).name#] relationship of [#arguments.key#]. The class [#relationMetaClass#] could not be found."
 			);
 		}
 
@@ -606,37 +618,47 @@ component accessors="true" singleton {
 	 *
 	 * @target The target to work on
 	 *
-	 * @return The metadata map of composable properties keyed by entity name: { cfc, path, entityname, persistent, properties }
+	 * @return The metadata map of composable properties keyed by entity name: { className, path, entityname, persistent, properties }
 	 */
 	private struct function getRelationshipMetaData( required target ){
 		var targetName = getTargetName( arguments.target );
+
+		// Check if we already have metadata for this target
 		if ( variables.entityMetadataMap.containsKey( targetName ) ) {
 			return variables.entityMetadataMap.get( targetName );
 		}
 
-		// get array of properties
+		// Get metadata
 		var stopRecursions = [ "lucee.Component", "WEB-INF.cftags.component" ];
 		var md             = variables.util.getInheritedMetaData( arguments.target, stopRecursions );
+		var annotations    = md.keyExists( "annotations" ) ? md.annotations : md;
 		var results        = {
-			"cfc"        : md.name,
+			"className"  : md.name,
 			"path"       : md.path,
-			"entityName" : md.keyExists( "entityName" ) ? md.entityName : listLast( md.name, "." ),
-			"persistent" : md.keyExists( "persistent" ) ? md.persistent : false,
+			"entityName" : annotations.keyExists( "entityName" ) ? annotations.entityName : listLast(
+				md.name,
+				"."
+			),
+			"persistent" : annotations.keyExists( "persistent" ) ? annotations.persistent : false,
 			"properties" : {}
 		};
 
 		// Collect property metadata
 		results.properties = md.properties
 			// Only relationships, no id's or columns
-			.filter( function( item ){
+			.filter( ( item ) => {
+				var annotations = item.keyExists( "annotations" ) ? item.annotations : item;
 				return (
-					arguments.item.keyExists( "name" ) &&
-					arguments.item.keyExists( "fieldType" ) &&
-					!listFindNoCase( "id,column", arguments.item.fieldtype )
+					annotations.keyExists( "name" ) &&
+					annotations.keyExists( "fieldType" ) &&
+					!listFindNoCase( "id,column", annotations.fieldtype )
 				);
 			} )
-			.reduce( function( result, item ){
-				result[ arguments.item.name ] = arguments.item;
+			.reduce( ( result, item ) => {
+				result[ item.name ] = item;
+				if ( item.keyExists( "annotations" ) ) {
+					result[ item.name ].append( item.annotations, true );
+				}
 				return result;
 			}, {} );
 
@@ -645,7 +667,7 @@ component accessors="true" singleton {
 	}
 
 	/**
-	 * Convenience method to get name from target CFC (Entity)
+	 * Convenience method to get name from target Entity
 	 *
 	 * @target The target to work on
 	 */

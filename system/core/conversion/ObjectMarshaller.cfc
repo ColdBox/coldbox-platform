@@ -2,7 +2,9 @@
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * Allows you to serialize/deserialize objects
+ * Allows you to serialize/deserialize objects according to the engine
+ * ColdBox is running on.  It uses objectSave() and objectLoad() for CFML engines
+ * and objectSerialize() and objectDeserialize() for BoxLang engines.
  */
 component accessors="true" {
 
@@ -56,6 +58,11 @@ component accessors="true" {
 	 * @target The complex object, such as a query or CFC, that will be serialized.
 	 */
 	function serializeWithObjectSave( any target ){
+		// Check if BoxLang Prime
+		if ( server.keyExists( "boxlang" ) ) {
+			return toBase64( objectSerialize( arguments.target ) );
+		}
+
 		return toBase64( objectSave( arguments.target ) );
 	}
 
@@ -68,6 +75,11 @@ component accessors="true" {
 		// check if string
 		if ( not isBinary( arguments.binaryObject ) ) {
 			arguments.binaryObject = toBinary( arguments.binaryObject );
+		}
+
+		// Check if BoxLang
+		if ( server.keyExists( "boxlang" ) ) {
+			return objectDeserialize( arguments.binaryObject );
 		}
 
 		return objectLoad( arguments.binaryObject );

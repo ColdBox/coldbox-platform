@@ -92,7 +92,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 
 		// DB Rotation Time
 		variables.lastDBRotation         = "";
-		variables.queryParamDataTimeType = variables.schemaInfo.getQueryParamDateTimeType( getProperty( "dsn" ) );
+		variables.queryParamDataTimeType = "timestamp";
 		return this;
 	}
 
@@ -170,7 +170,8 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 			{
 				datetime : {
 					cfsqltype : variables.queryParamDataTimeType,
-					value     : "#dateFormat( targetDate, "mm/dd/yyyy" )#"
+					sqltype   : variables.queryParamDataTimeType,
+					value     : "#dateFormat( targetDate, "MM/dd/yyyy" )#"
 				}
 			},
 			{ datasource : dsn }
@@ -230,31 +231,38 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 			",
 			{
 				uuid : {
-					cfsqltype : "cf_sql_varchar",
+					cfsqltype : "varchar",
+					sqltype   : "varchar",
 					value     : "#variables.uuid.randomUUID().toString()#"
 				},
 				severity : {
-					cfsqltype : "cf_sql_varchar",
+					cfsqltype : "varchar",
+					sqltype   : "varchar",
 					value     : "#arguments.data.severity#"
 				},
 				category : {
-					cfsqltype : "cf_sql_varchar",
+					cfsqltype : "varchar",
+					sqltype   : "varchar",
 					value     : "#arguments.data.category#"
 				},
 				timestamp : {
 					cfsqltype : variables.queryParamDataTimeType,
+					sqltype   : variables.queryParamDataTimeType,
 					value     : "#arguments.data.timestamp#"
 				},
 				name : {
-					cfsqltype : "cf_sql_varchar",
+					cfsqltype : "varchar",
+					sqltype   : "varchar",
 					value     : "#left( getName(), 100 )#"
 				},
 				message : {
-					cfsqltype : "cf_sql_varchar",
+					cfsqltype : "varchar",
+					sqltype   : "varchar",
 					value     : "#arguments.data.message#"
 				},
 				extraInfo : {
-					cfsqltype : "cf_sql_varchar",
+					cfsqltype : "varchar",
+					sqltype   : "varchar",
 					value     : "#arguments.data.extraInfo#"
 				}
 			},

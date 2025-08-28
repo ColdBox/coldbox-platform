@@ -12,8 +12,9 @@ component extends="coldbox.system.testing.BaseTestCase" {
 	 * Setup a model to test
 	 */
 	function setup(){
-		var md      = getMetadata( this );
-		var mockBox = getMockBox();
+		var md          = getMetadata( this );
+		var annotations = md.keyExists( "annotations" ) ? md.annotations : md;
+		var mockBox     = getMockBox();
 
 		// Load ColdBox?
 		if ( this.loadColdBox ) {
@@ -21,9 +22,9 @@ component extends="coldbox.system.testing.BaseTestCase" {
 		}
 
 		// Check for model path annotation, and use it if declared.
-		if ( structKeyExists( md, "model" ) ) {
-			// Create model with Mocking capabilities
-			variables.model = mockBox.createMock( md.model );
+		// Create model with Mocking capabilities
+		if ( annotations.keyExists( "model" ) ) {
+			variables.model = mockBox.createMock( annotations.model );
 		}
 
 		// Create Mock Objects

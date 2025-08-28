@@ -46,7 +46,6 @@ component {
 	this.mappings[ "/coldbox" ]       = rootPath;
 	// Test Harness Path
 	this.mappings[ "/cbtestharness" ] = COLDBOX_APP_ROOT_PATH;
-
 	// Core Application.cfc mixins - ORM Settings, etc
 	include "config/ApplicationMixins.cfm";
 

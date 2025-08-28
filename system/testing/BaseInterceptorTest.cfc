@@ -13,6 +13,7 @@ component extends="coldbox.system.testing.BaseTestCase" {
 	 */
 	function setup(){
 		var md                = getMetadata( this );
+		var annotations       = md.keyExists( "annotations" ) ? md.annotations : md;
 		var mockBox           = getMockBox();
 		var applicationHelper = [];
 
@@ -22,31 +23,30 @@ component extends="coldbox.system.testing.BaseTestCase" {
 		}
 
 		// Check for interceptor else throw exception
-		if ( NOT structKeyExists( md, "interceptor" ) ) {
+		if ( !annotations.keyExists( "interceptor" ) ) {
 			throw(
-				"interceptor annotation not found on component tag",
-				"Please declare a 'interceptor=path' annotation",
-				"BaseInterceptorTest.InvalidStateException"
+				message: "interceptor annotation not found on component tag",
+				detail : "Please declare a 'interceptor=path' annotation",
+				type   : "BaseInterceptorTest.InvalidStateException"
 			);
 		}
+
 		// Check for application helper
-		if ( structKeyExists( md, "applicationHelper" ) ) {
+		if ( annotations.keyExists( "applicationHelper" ) ) {
 			// inflate it, since it can't be an array in metadata
-			applicationHelper = listToArray( md.applicationHelper );
+			applicationHelper = listToArray( annotations.applicationHelper );
 		}
 		// Check if user setup interceptor properties on scope
 		param variables.configProperties = {};
 
 		// Create interceptor with Mocking capabilities
-		variables.interceptor = mockBox.createMock( md.interceptor );
+		variables.interceptor = mockBox.createMock( annotations.interceptor );
 
 		// Create Mock Objects
 		variables.mockController         = mockBox.createMock( "coldbox.system.testing.mock.web.MockController" );
-		variables.mockInterceptorService = mockbox.createEmptyMock(
-			"coldbox.system.web.services.InterceptorService"
-		);
-		variables.mockRequestContext = getMockRequestContext();
-		variables.mockRequestService = mockBox
+		variables.mockInterceptorService = mockBox.createEmptyMock( "coldbox.system.web.services.InterceptorService" );
+		variables.mockRequestContext     = getMockRequestContext();
+		variables.mockRequestService     = mockBox
 			.createEmptyMock( "coldbox.system.web.services.RequestService" )
 			.$( "getContext", variables.mockRequestContext );
 		variables.mockLogBox   = mockBox.createEmptyMock( "coldbox.system.logging.LogBox" );

@@ -373,7 +373,7 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 					} );
 					given( "an invalid start on constraint", function(){
 						then( "it should not allow the task to run yet", function(){
-							var targetDate = dateFormat( dateAdd( "d", 5, now() ), "yyyy-mm-dd" );
+							var targetDate = dateFormat( dateAdd( "d", 5, now() ), "yyyy-MM-dd" );
 							var t          = scheduler
 								.task( "test" )
 								.everyDay()
@@ -388,7 +388,7 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 				story( "can restrict tasks via a end on constraint", function(){
 					given( "a valid end on constraint", function(){
 						then( "it should run the task", function(){
-							var targetDate = dateFormat( dateAdd( "d", 5, now() ), "yyyy-mm-dd" );
+							var targetDate = dateFormat( dateAdd( "d", 5, now() ), "yyyy-MM-dd" );
 							var t          = scheduler
 								.task( "test" )
 								.everyDay()
@@ -400,7 +400,7 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 					} );
 					given( "an invalid end on constraint", function(){
 						then( "it should not allow the task to run yet", function(){
-							var targetDate = dateFormat( dateAdd( "d", -5, now() ), "yyyy-mm-dd" );
+							var targetDate = dateFormat( dateAdd( "d", -5, now() ), "yyyy-MM-dd" );
 							var t          = scheduler
 								.task( "test" )
 								.everyDay()

@@ -286,8 +286,8 @@ component extends="coldbox.system.web.services.BaseService" {
 				break;
 			}
 			case "client": {
-				flashpath = "coldbox.system.web.flash.ClientFlash";
-				break;
+				writeDump( "Client Flash Has Been Removed, Please use session or cache" );
+				abort;
 			}
 			case "cache": {
 				flashpath = "coldbox.system.web.flash.ColdboxCacheFlash";

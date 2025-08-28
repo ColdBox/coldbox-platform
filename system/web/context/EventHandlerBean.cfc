@@ -72,45 +72,6 @@ component accessors="true" {
 		return this;
 	}
 
-	/************************************** PUBLIC RETURN BACK SETTERS *********************************************/
-
-	function setIsPrivate( required isPrivate ){
-		variables.isPrivate = arguments.isPrivate;
-		return this;
-	}
-	function setHandler( required handler ){
-		variables.handler = arguments.handler;
-		return this;
-	}
-	function setMethod( required method ){
-		variables.method = arguments.method;
-		return this;
-	}
-	function setModule( required module ){
-		variables.module = arguments.module;
-		return this;
-	}
-	function setMissingAction( required missingAction ){
-		variables.missingAction = arguments.missingAction;
-		return this;
-	}
-	function setViewDispatch( required viewDispatch ){
-		variables.viewDispatch = arguments.viewDispatch;
-		return this;
-	}
-	function setInvocationPath( required invocationPath ){
-		variables.invocationPath = arguments.invocationPath;
-		return this;
-	}
-	function setActionMetadata( required actionMetadata ){
-		variables.actionMetadata = arguments.actionMetadata;
-		return this;
-	}
-	function setHandlerMetadata( required handlerMetadata ){
-		variables.handlerMetadata = arguments.handlerMetadata;
-		return this;
-	}
-
 	/************************************** UTILITY METHODS *********************************************/
 
 	/**
@@ -121,7 +82,8 @@ component accessors="true" {
 	 * @return True if the action has been annotated with the key, else false.
 	 */
 	boolean function actionMetadataExists( required key ){
-		return variables.actionMetadata.keyExists( arguments.key );
+		var annotations = variables.actionMetadata.keyExists( "annotations" ) ? variables.actionMetadata.annotations : variables.actionMetadata;
+		return annotations.keyExists( arguments.key );
 	}
 
 	/**
@@ -137,10 +99,13 @@ component accessors="true" {
 		if ( isNull( arguments.key ) || !len( arguments.key ) ) {
 			return variables.actionMetadata;
 		}
+
 		// Filter by key
-		if ( structKeyExists( variables.actionMetadata, arguments.key ) ) {
-			return variables.actionMetadata[ arguments.key ];
+		var annotations = variables.actionMetadata.keyExists( "annotations" ) ? variables.actionMetadata.annotations : variables.actionMetadata;
+		if ( structKeyExists( annotations, arguments.key ) ) {
+			return annotations[ arguments.key ];
 		}
+
 		// Nothing found, just return the default value of empty string
 		return arguments.defaultValue;
 	}

@@ -1,5 +1,5 @@
-﻿<cfcomponent name="cfmlengine" output="false" extends="coldbox.system.testing.BaseModelTest">
-	<cfscript>
+﻿component name="cfmlengine" extends="coldbox.system.testing.BaseModelTest" {
+
 	function setup(){
 		manager = createMock( "coldbox.system.core.events.EventPoolManager" );
 		manager.init( [ "onTest" ] );
@@ -83,5 +83,5 @@
 		debug( event.logs );
 		assertTrue( arrayLen( event.logs ) );
 	}
-	</cfscript>
-</cfcomponent>
+
+}
