@@ -322,7 +322,7 @@ component accessors="true" singleton {
 				propertyName      = key;
 
 				// conditional with StructKeyExist, to prevent language issues with Null value checking of struct keys in ACF
-				if ( structKeyExists( arguments.memento, key ) ) {
+				if ( structKeyExists( arguments.memento, key ) && !isNull( arguments.memento[ key ] ) ) {
 					propertyValue = arguments.memento[ key ];
 				} else {
 					nullValue     = true;
@@ -348,10 +348,12 @@ component accessors="true" singleton {
 				if ( len( arguments.include ) AND NOT listFindNoCase( arguments.include, key ) ) {
 					pop = false;
 				}
+
 				// Exclude List?
 				if ( len( arguments.exclude ) AND listFindNoCase( arguments.exclude, key ) ) {
 					pop = false;
 				}
+
 				// Ignore Empty? Check added for real Null value
 				if (
 					arguments.ignoreEmpty and not isNull( local.propertyValue ) and isSimpleValue(
@@ -371,13 +373,16 @@ component accessors="true" singleton {
 				if ( arguments.nullEmptyInclude == "*" ) {
 					nullValue = true;
 				}
+
 				if ( arguments.nullEmptyExclude == "*" ) {
 					nullValue = false;
 				}
+
 				// Is property in empty-to-null include list?
 				if ( ( len( arguments.nullEmptyInclude ) && listFindNoCase( arguments.nullEmptyInclude, key ) ) ) {
 					nullValue = true;
 				}
+
 				// Is property in empty-to-null exclude list, or is exclude list "*"?
 				if ( ( len( arguments.nullEmptyExclude ) AND listFindNoCase( arguments.nullEmptyExclude, key ) ) ) {
 					nullValue = false;
@@ -395,10 +400,9 @@ component accessors="true" singleton {
 
 				// Is this a composable property?
 				if (
-					!isNull( propertyValue ) && arguments.composeRelationships && structKeyExists(
-						relationalMeta.properties,
-						key
-					)
+					!isNull( propertyValue ) &&
+					arguments.composeRelationships &&
+					structKeyExists( relationalMeta.properties, key )
 				) {
 					propertyValue = composeProperty(
 						key           : key,
@@ -551,8 +555,13 @@ component accessors="true" singleton {
 		 * 3.) Nuclear: If neither above works, try by component meta data lookup. Won't work if using relative paths!!!!
 		 */
 		var relationMetaClass = "";
-		if( arguments.relationalMeta.properties[ key ].keyExists( "className" )  ){
+		// BoxLang Prime
+		if( arguments.relationalMeta.properties[ arguments.key ].keyExists( "className" )  ){
 			relationMetaClass = listLast( arguments.relationalMeta.properties[ arguments.key ].className, "." )
+		}
+		// CFML Legacy
+		if( arguments.relationalMeta.properties[ arguments.key ].keyExists( "cfc" )  ){
+			relationMetaClass = listLast( arguments.relationalMeta.properties[ arguments.key ].cfc, "." )
 		}
 
 		// 1.) name match
