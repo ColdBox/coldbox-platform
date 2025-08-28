@@ -416,9 +416,9 @@ component {
 			if ( isObject( arguments.component ) ) {
 				arguments.md = getMetadata( arguments.component );
 			} else {
-				arguments.md = server.keyExists( "boxlang" ) ?
-					getClassMetadata( arguments.component ) :
-					getComponentMetadata( arguments.component );
+				arguments.md = server.keyExists( "boxlang" ) ? getClassMetadata( arguments.component ) : getComponentMetadata(
+					arguments.component
+				);
 			}
 		}
 
@@ -477,7 +477,7 @@ component {
 				// TODO: Remove this once we go full BoxLang only source
 				// I will have to merge the annotations to normalize them, to make it easier for ColdBox to deal with
 				// CFML + BoxLang.
-				if( loc.parent.keyExists( "annotations" ) ){
+				if ( loc.parent.keyExists( "annotations" ) ) {
 					loc.parent.append( loc.parent.annotations, true );
 				}
 			}

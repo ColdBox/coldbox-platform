@@ -58,9 +58,8 @@ component accessors="true" {
 	 * @target The complex object, such as a query or CFC, that will be serialized.
 	 */
 	function serializeWithObjectSave( any target ){
-
 		// Check if BoxLang Prime
-		if( server.keyExists( "boxlang" ) ){
+		if ( server.keyExists( "boxlang" ) ) {
 			return toBase64( objectSerialize( arguments.target ) );
 		}
 
@@ -79,8 +78,8 @@ component accessors="true" {
 		}
 
 		// Check if BoxLang
-		if( server.keyExists( "boxlang" ) ){
-			return objectDeserialize(  arguments.binaryObject );
+		if ( server.keyExists( "boxlang" ) ) {
+			return objectDeserialize( arguments.binaryObject );
 		}
 
 		return objectLoad( arguments.binaryObject );

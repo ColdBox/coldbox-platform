@@ -1,4 +1,4 @@
-﻿component name="cfmlengine" extends="coldbox.system.testing.BaseModelTest"{
+﻿component name="cfmlengine" extends="coldbox.system.testing.BaseModelTest" {
 
 	function setup(){
 		manager = createMock( "coldbox.system.core.events.EventPoolManager" );
@@ -83,6 +83,5 @@
 		debug( event.logs );
 		assertTrue( arrayLen( event.logs ) );
 	}
-
 
 }

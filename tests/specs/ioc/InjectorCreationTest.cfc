@@ -106,7 +106,7 @@
 	}
 
 	function testProviderMethods(){
-		if( isLucee() ){
+		if ( isLucee() ) {
 			skip( "Not available for lucee" );
 			return;
 		}

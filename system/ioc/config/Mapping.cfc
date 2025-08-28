@@ -1070,7 +1070,7 @@ component accessors="true" {
 	 * @return boolean
 	 */
 	private boolean function hasAnnotationValue( required struct metadata, required string key ){
-		var annotations = arguments.metadata.keyExists( "annotations" ) ? arguments.metadata.annotations : arguments.metadata;
+		var annotations   = arguments.metadata.keyExists( "annotations" ) ? arguments.metadata.annotations : arguments.metadata;
 		var documentation = arguments.metadata.keyExists( "documentation" ) ? arguments.metadata.documentation : arguments.metadata;
 
 		// Check in the annotations struct first
@@ -1089,9 +1089,9 @@ component accessors="true" {
 	/**
 	 * Get the annotation value for a given key in the metadata
 	 *
-	 * @metadata      The metadata to check
-	 * @key           The key to look for in the annotations or documentation
-	 * @defaultValue  The default value to return if the key is not found
+	 * @metadata     The metadata to check
+	 * @key          The key to look for in the annotations or documentation
+	 * @defaultValue The default value to return if the key is not found
 	 *
 	 * @return any
 	 */
@@ -1100,7 +1100,7 @@ component accessors="true" {
 		required string key,
 		any defaultValue
 	){
-		var annotations = arguments.metadata.keyExists( "annotations" ) ? arguments.metadata.annotations : arguments.metadata;
+		var annotations   = arguments.metadata.keyExists( "annotations" ) ? arguments.metadata.annotations : arguments.metadata;
 		var documentation = arguments.metadata.keyExists( "documentation" ) ? arguments.metadata.documentation : arguments.metadata;
 
 		// Check if the property has an annotations struct

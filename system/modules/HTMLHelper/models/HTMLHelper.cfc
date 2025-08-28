@@ -428,7 +428,7 @@ component
 		// Convert Array to Table Body
 		else if ( isArray( arguments.data ) and arrayLen( arguments.data ) ) {
 			var firstMetadata = getMetadata( arguments.data[ 1 ] );
-			var annotations = isStruct( firstMetadata ) && firstMetadata.keyExists( "annotations" ) ? firstMetadata.annotations : firstMetadata;
+			var annotations   = isStruct( firstMetadata ) && firstMetadata.keyExists( "annotations" ) ? firstMetadata.annotations : firstMetadata;
 
 			// Check for array of ORM Object
 			if (
@@ -2624,7 +2624,7 @@ component
 
 		// Metadata
 		var firstMetadata = {};
-		var annotations = {};
+		var annotations   = {};
 
 		// Verify Annotations
 		if ( !isNull( arguments.data[ 1 ] ) ) {
@@ -2633,7 +2633,7 @@ component
 		}
 
 		// All properties
-		var properties     = structKeyExists( firstMetadata, "properties" ) ? firstMetadata.properties : [];
+		var properties = structKeyExists( firstMetadata, "properties" ) ? firstMetadata.properties : [];
 
 		// Filtered properties
 		var showProperties = duplicate( properties ).filter( function( item ){

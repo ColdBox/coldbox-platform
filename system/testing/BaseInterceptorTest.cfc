@@ -13,7 +13,7 @@ component extends="coldbox.system.testing.BaseTestCase" {
 	 */
 	function setup(){
 		var md                = getMetadata( this );
-		var annotations = md.keyExists( "annotations" ) ? md.annotations : md;
+		var annotations       = md.keyExists( "annotations" ) ? md.annotations : md;
 		var mockBox           = getMockBox();
 		var applicationHelper = [];
 
@@ -25,9 +25,9 @@ component extends="coldbox.system.testing.BaseTestCase" {
 		// Check for interceptor else throw exception
 		if ( !annotations.keyExists( "interceptor" ) ) {
 			throw(
-				message : "interceptor annotation not found on component tag",
+				message: "interceptor annotation not found on component tag",
 				detail : "Please declare a 'interceptor=path' annotation",
-				type: "BaseInterceptorTest.InvalidStateException"
+				type   : "BaseInterceptorTest.InvalidStateException"
 			);
 		}
 
@@ -45,8 +45,8 @@ component extends="coldbox.system.testing.BaseTestCase" {
 		// Create Mock Objects
 		variables.mockController         = mockBox.createMock( "coldbox.system.testing.mock.web.MockController" );
 		variables.mockInterceptorService = mockBox.createEmptyMock( "coldbox.system.web.services.InterceptorService" );
-		variables.mockRequestContext = getMockRequestContext();
-		variables.mockRequestService = mockBox
+		variables.mockRequestContext     = getMockRequestContext();
+		variables.mockRequestService     = mockBox
 			.createEmptyMock( "coldbox.system.web.services.RequestService" )
 			.$( "getContext", variables.mockRequestContext );
 		variables.mockLogBox   = mockBox.createEmptyMock( "coldbox.system.logging.LogBox" );

@@ -151,8 +151,8 @@ component accessors="true" {
 	 */
 	private boolean function matchMethodRules( required metadata ){
 		// Some metadata defaults
-		var name    = arguments.metadata.name;
-		var returns = "any";
+		var name        = arguments.metadata.name;
+		var returns     = "any";
 		var annotations = arguments.metadata.keyExists( "annotations" ) ? arguments.metadata.annotations : arguments.metadata;
 
 		// Check if we have a return type
@@ -206,9 +206,9 @@ component accessors="true" {
 	 * @mapping.doc_generic coldbox.system.ioc.config.Mapping
 	 */
 	private boolean function matchClassRules( required target, required mapping ){
-		var md   = arguments.mapping.getObjectMetadata();
+		var md          = arguments.mapping.getObjectMetadata();
 		var annotations = md.keyExists( "annotations" ) ? md.annotations : md;
-		var path = reReplace( md.name, "(\/|\\)", ".", "all" );
+		var path        = reReplace( md.name, "(\/|\\)", ".", "all" );
 
 		// Start with any()
 		if ( variables.any ) {
@@ -238,9 +238,7 @@ component accessors="true" {
 			}
 
 			// check annotation value
-			if (
-				annotations[ variables.annotation ] EQ variables.annotationValue
-			) {
+			if ( annotations[ variables.annotation ] EQ variables.annotationValue ) {
 				return true;
 			}
 		}

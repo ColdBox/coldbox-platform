@@ -88,7 +88,7 @@
 		assertEquals( arrayLen( md.inheritanceTrail ), 1 );
 		assertEquals( md.inheritanceTrail[ 1 ], "tests.resources.Class1" );
 
-		if( md.keyExists( "scope" ) ){
+		if ( md.keyExists( "scope" ) ) {
 			assertEquals( md.scope, "server" );
 		} else {
 			assertEquals( md.annotations.scope, "server" );
@@ -131,15 +131,15 @@
 	private function getItemKey( itemArray, itemName, key ){
 		for ( var i = 1; i <= arrayLen( itemArray ); i++ ) {
 			if ( itemArray[ i ].name == itemName ) {
-				if( itemArray[ i ].keyExists( key ) ){
+				if ( itemArray[ i ].keyExists( key ) ) {
 					return itemArray[ i ][ key ];
 				}
 				// Else look for it in the annotations root
-				if( itemArray[ i ].annotations.keyExists( key ) ){
+				if ( itemArray[ i ].annotations.keyExists( key ) ) {
 					return itemArray[ i ].annotations[ key ];
 				}
 				// Else in the documentation root
-				if( itemArray[ i ].documentation.keyExists( key ) ){
+				if ( itemArray[ i ].documentation.keyExists( key ) ) {
 					return itemArray[ i ].documentation[ key ];
 				}
 			}

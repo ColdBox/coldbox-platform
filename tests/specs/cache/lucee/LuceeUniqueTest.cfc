@@ -1,5 +1,5 @@
 ﻿// TestBox ISSUE: skip is not working properly
-component extends="coldbox.system.testing.BaseModelTest"{
+component extends="coldbox.system.testing.BaseModelTest" {
 
 	boolean function notLucee(){
 		if ( isBoxLang() || isAdobe() ) {
@@ -9,7 +9,7 @@ component extends="coldbox.system.testing.BaseModelTest"{
 	}
 
 	function setup(){
-		if( notLucee() ){
+		if ( notLucee() ) {
 			return;
 		}
 		// Mocks
@@ -44,14 +44,14 @@ component extends="coldbox.system.testing.BaseModelTest"{
 	}
 
 	function teardown(){
-		if( notLucee() ){
+		if ( notLucee() ) {
 			return;
 		}
 		cache.clearAll();
 	}
 
 	function testTimeouts(){
-		if( notLucee() ){
+		if ( notLucee() ) {
 			skip( "Lucee only test" );
 		}
 		testVal = { name : "luis", age : 32 };

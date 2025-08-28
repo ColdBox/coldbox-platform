@@ -1,8 +1,8 @@
-﻿component extends="coldbox.system.testing.BaseModelTest"{
+﻿component extends="coldbox.system.testing.BaseModelTest" {
 
 	function setup(){
 		this.loadColdbox = false;
-		variables.scope            = new coldbox.system.core.collections.ScopeStorage();
+		variables.scope  = new coldbox.system.core.collections.ScopeStorage();
 	}
 
 	function testPut(){
@@ -40,7 +40,6 @@
 				fail( "failed exception #e.type#" );
 			}
 		}
-
 	}
 
 

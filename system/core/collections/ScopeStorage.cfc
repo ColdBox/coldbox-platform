@@ -50,15 +50,14 @@ component {
 	 * @scope        The CF Scope
 	 * @defaultValue The default value
 	 *
-	 * @throws ScopeStorage.KeyNotFound if the key does not exist and no default value is provided
-	 *
 	 * @return The value if exists, or the default value if provided
+	 *
+	 * @throws ScopeStorage.KeyNotFound if the key does not exist and no default value is provided
 	 */
 	function get( required key, required scope, defaultValue ){
 		if ( exists( arguments.key, arguments.scope ) ) {
 			return structFind( getscope( arguments.scope ), arguments.key );
-		}
-		else if ( !isNull( arguments.defaultValue)) {
+		} else if ( !isNull( arguments.defaultValue ) ) {
 			return arguments.defaultValue;
 		}
 
@@ -75,11 +74,12 @@ component {
 	 * @scope The CF Scope
 	 *
 	 * @return true if exists and not null, false otherwise
+	 *
 	 * @throws ScopeStorage.KeyNotFound if the key does not exist
 	 */
 	boolean function exists( required key, required scope ){
 		var targetScope = getScope( arguments.scope );
-		if( targetScope.keyExists( arguments.key ) && !isNull( targetScope[ arguments.key ] ) ){
+		if ( targetScope.keyExists( arguments.key ) && !isNull( targetScope[ arguments.key ] ) ) {
 			return true;
 		}
 		return false;

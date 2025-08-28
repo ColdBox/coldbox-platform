@@ -830,8 +830,8 @@ component serializable="false" accessors="true" {
 
 		try {
 			// Determine allowed methods in action metadata if found
-			var thisAllowedMethods = results.ehBean.getActionMetadata( "allowedMethods");
-			if( !thisAllowedMethods.isEmpty() ){
+			var thisAllowedMethods = results.ehBean.getActionMetadata( "allowedMethods" );
+			if ( !thisAllowedMethods.isEmpty() ) {
 				oHandler.allowedMethods[ results.ehBean.getMethod() ] = thisAllowedMethods;
 			}
 

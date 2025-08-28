@@ -12,9 +12,9 @@ component extends="coldbox.system.testing.BaseTestCase" {
 	 * Setup a model to test
 	 */
 	function setup(){
-		var md      = getMetadata( this );
+		var md          = getMetadata( this );
 		var annotations = md.keyExists( "annotations" ) ? md.annotations : md;
-		var mockBox = getMockBox();
+		var mockBox     = getMockBox();
 
 		// Load ColdBox?
 		if ( this.loadColdBox ) {

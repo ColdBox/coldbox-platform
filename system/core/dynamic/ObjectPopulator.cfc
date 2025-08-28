@@ -556,11 +556,11 @@ component accessors="true" singleton {
 		 */
 		var relationMetaClass = "";
 		// BoxLang Prime
-		if( arguments.relationalMeta.properties[ arguments.key ].keyExists( "className" )  ){
+		if ( arguments.relationalMeta.properties[ arguments.key ].keyExists( "className" ) ) {
 			relationMetaClass = listLast( arguments.relationalMeta.properties[ arguments.key ].className, "." )
 		}
 		// CFML Legacy
-		if( arguments.relationalMeta.properties[ arguments.key ].keyExists( "cfc" )  ){
+		if ( arguments.relationalMeta.properties[ arguments.key ].keyExists( "cfc" ) ) {
 			relationMetaClass = listLast( arguments.relationalMeta.properties[ arguments.key ].cfc, "." )
 		}
 
@@ -571,14 +571,14 @@ component accessors="true" singleton {
 		// 2.) attempt match on class metadata on the property:
 		// property name="role" cfc="security.Role"
 		// property name="role" class="security.Role"
-		else if (
-			validEntityNames.findNoCase( relationMetaClass )
-		) {
+		else if ( validEntityNames.findNoCase( relationMetaClass ) ) {
 			targetEntityName = relationMetaClass;
 		}
 		// 3.) class lookup
 		else {
-			var annotations = server.keyExists( "boxlang" ) ? getClassMetadata( relationMetaClass ).annotations : getComponentMetadata( relationMetaClass );
+			var annotations = server.keyExists( "boxlang" ) ? getClassMetadata( relationMetaClass ).annotations : getComponentMetadata(
+				relationMetaClass
+			);
 
 			// Verify if the entityName annotation exists
 			if ( annotations.keyExists( "entityName" ) ) {
@@ -631,11 +631,14 @@ component accessors="true" singleton {
 		// Get metadata
 		var stopRecursions = [ "lucee.Component", "WEB-INF.cftags.component" ];
 		var md             = variables.util.getInheritedMetaData( arguments.target, stopRecursions );
-		var annotations = md.keyExists( "annotations" ) ? md.annotations : md;
+		var annotations    = md.keyExists( "annotations" ) ? md.annotations : md;
 		var results        = {
-			"className" : md.name,
+			"className"  : md.name,
 			"path"       : md.path,
-			"entityName" : annotations.keyExists( "entityName" ) ? annotations.entityName : listLast( md.name, "." ),
+			"entityName" : annotations.keyExists( "entityName" ) ? annotations.entityName : listLast(
+				md.name,
+				"."
+			),
 			"persistent" : annotations.keyExists( "persistent" ) ? annotations.persistent : false,
 			"properties" : {}
 		};
@@ -653,7 +656,7 @@ component accessors="true" singleton {
 			} )
 			.reduce( ( result, item ) => {
 				result[ item.name ] = item;
-				if( item.keyExists( "annotations" ) ){
+				if ( item.keyExists( "annotations" ) ) {
 					result[ item.name ].append( item.annotations, true );
 				}
 				return result;
