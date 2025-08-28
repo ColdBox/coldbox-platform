@@ -151,7 +151,7 @@
 		matcher.annotatedWith( "transactional" );
 		assertEquals( "transactional", matcher.getMemento().annotation );
 		var memento = matcher.getMemento();
-		expect( memento.annotationValue ).toBeNull();
+		expect( memento?.annotationValue ).toBeNull();
 
 		matcher.annotatedWith( "transactional", true );
 		assertEquals( "transactional", matcher.getMemento().annotation );

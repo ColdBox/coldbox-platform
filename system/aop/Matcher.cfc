@@ -106,6 +106,8 @@ component accessors="true" {
 	 * @target              The target to match against to
 	 * @mapping             The target mapping to match against
 	 * @mapping.doc_generic coldbox.system.ioc.config.Mapping
+	 *
+	 * @return boolean
 	 */
 	boolean function matchClass( required target, required mapping ){
 		var results = matchClassRules( argumentCollection = arguments );
@@ -127,6 +129,8 @@ component accessors="true" {
 	 * Matches a method to this matcher according to its criteria
 	 *
 	 * @metadata The UDF metadata to use for matching
+	 *
+	 * @return boolean
 	 */
 	boolean function matchMethod( required metadata ){
 		var results = matchMethodRules( arguments.metadata );
@@ -148,6 +152,8 @@ component accessors="true" {
 	 * Go through all the rules in this matcher and match
 	 *
 	 * @metadata The UDF metadata to use for matching
+	 *
+	 * @return boolean
 	 */
 	private boolean function matchMethodRules( required metadata ){
 		// Some metadata defaults
@@ -204,6 +210,8 @@ component accessors="true" {
 	 * @target              The target to match against to
 	 * @mapping             The target mapping to match against
 	 * @mapping.doc_generic coldbox.system.ioc.config.Mapping
+	 *
+	 * @return boolean
 	 */
 	private boolean function matchClassRules( required target, required mapping ){
 		var md          = arguments.mapping.getObjectMetadata();
@@ -248,6 +256,8 @@ component accessors="true" {
 
 	/**
 	 * Match against any method name or class path
+	 *
+	 * @return This matcher instance
 	 */
 	function any(){
 		variables.any = true;
@@ -258,6 +268,8 @@ component accessors="true" {
 	 * Match against return types in methods only
 	 *
 	 * @type The type of return to match against.  Only for method matching
+	 *
+	 * @return This matcher instance
 	 */
 	function returns( required type ){
 		variables.returns = arguments.type;
@@ -269,11 +281,13 @@ component accessors="true" {
 	 *
 	 * @annotation The annotation to discover
 	 * @value      The value of the annotation that must match. OPTIONAL
+	 *
+	 * @return This matcher instance
 	 */
 	function annotatedWith( required annotation, value ){
 		variables.annotation = arguments.annotation;
 		// the value of the annotation
-		if ( structKeyExists( arguments, "value" ) ) {
+		if ( structKeyExists( arguments, "value" ) && !isNull( arguments.value ) ) {
 			variables.annotationValue = arguments.value;
 		}
 		return this;
@@ -283,6 +297,8 @@ component accessors="true" {
 	 * Match one, list or array of mapping names. Class Matching Only.
 	 *
 	 * @mappings One, list or array of mappings to match
+	 *
+	 * @return This matcher instance
 	 */
 	function mappings( required mappings ){
 		if ( isArray( arguments.mappings ) ) {
@@ -296,6 +312,8 @@ component accessors="true" {
 	 * Matches against a family of components according to the passed classPath. Class Matching Only.
 	 *
 	 * @classPath The class path to verify instance of
+	 *
+	 * @return This matcher instance
 	 */
 	function instanceOf( required classPath ){
 		variables.instanceOf = arguments.classPath;
@@ -306,6 +324,8 @@ component accessors="true" {
 	 * Matches a class path or method name to this regular expression
 	 *
 	 * @regex The regular expression to match against
+	 *
+	 * @return This matcher instance
 	 */
 	function regex( required regex ){
 		variables.regex = arguments.regex;
@@ -316,6 +336,8 @@ component accessors="true" {
 	 * A list, one or an array of methods to explicitly match
 	 *
 	 * @methods One, list or array of methods to match
+	 *
+	 * @return This matcher instance
 	 */
 	function methods( required methods ){
 		if ( isArray( arguments.methods ) ) {
@@ -330,6 +352,8 @@ component accessors="true" {
 	 *
 	 * @matcher             The matcher to AND this matcher with
 	 * @matcher.doc_generic coldbox.system.aop.Matcher
+	 *
+	 * @return This matcher instance
 	 */
 	function andMatch( required matcher ){
 		variables.and = arguments.matcher;
@@ -341,6 +365,8 @@ component accessors="true" {
 	 *
 	 * @matcher             The matcher to AND this matcher with
 	 * @matcher.doc_generic coldbox.system.aop.Matcher
+	 *
+	 * @return This matcher instance
 	 */
 	function orMatch( required matcher ){
 		variables.or = arguments.matcher;
