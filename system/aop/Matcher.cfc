@@ -188,6 +188,7 @@ component accessors="true" {
 
 		// annotation
 		if ( len( variables.annotation ) AND structKeyExists( annotations, variables.annotation ) ) {
+
 			// No annotation value
 			if ( NOT structKeyExists( variables, "annotationValue" ) || isNull( variables.annotationValue ) ) {
 				return true;
@@ -286,10 +287,12 @@ component accessors="true" {
 	 */
 	function annotatedWith( required annotation, value ){
 		variables.annotation = arguments.annotation;
-		// the value of the annotation
-		if ( structKeyExists( arguments, "value" ) && !isNull( arguments.value ) ) {
+
+		// Do we have a value for the annotation?
+		if ( !isNull( arguments.value ) ) {
 			variables.annotationValue = arguments.value;
 		}
+
 		return this;
 	}
 
