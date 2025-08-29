@@ -27,7 +27,7 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 		"Environment"	: controller.getSetting( "environment" ),
 		"Event"         : ( event.getCurrentEvent() != "" ) ? event.getCurrentEvent() : "",
 		"Route"         : ( event.getCurrentRoute() != "" ) ? event.getCurrentRoute() & (
-			event.getCurrentRoutedModule() != "" ? " from the " & event.getCurrentRoutedModule() & "module router." : ""
+			event.getCurrentRoutedModule() != "" ? " from the " & event.getCurrentRoutedModule() & " module router." : ""
 		) : "",
 		"Route Name"       : ( event.getCurrentRouteName() != "" ) ? event.getCurrentRouteName() : "",
 		"Routed Module"    : ( event.getCurrentRoutedModule() != "" ) ? event.getCurrentRoutedModule() : "",
