@@ -188,7 +188,6 @@ component accessors="true" {
 
 		// annotation
 		if ( len( variables.annotation ) AND structKeyExists( annotations, variables.annotation ) ) {
-
 			// No annotation value
 			if ( NOT structKeyExists( variables, "annotationValue" ) || isNull( variables.annotationValue ) ) {
 				return true;

@@ -152,7 +152,7 @@
 
 		var memento = matcher.getMemento();
 		assertEquals( "transactional", memento.annotation );
-		if( memento.keyExists( "annotationValue" ) ){
+		if ( memento.keyExists( "annotationValue" ) ) {
 			expect( memento.annotationValue ).toBeNull();
 		}
 
