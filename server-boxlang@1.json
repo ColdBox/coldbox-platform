@@ -1,6 +1,6 @@
 {
     "app":{
-        "cfengine":"boxlang@be",
+        "cfengine":"boxlang@1",
         "serverHomeDirectory":".engine/boxlang"
     },
     "name":"coldbox-boxlang",
@@ -29,6 +29,6 @@
         "BOXLANG_DEBUG":true
     },
     "scripts":{
-        "onServerInitialInstall":"install bx-mail,bx-pdf,bx-mysql,bx-esapi,bx-orm@be --noSave"
+        "onServerInitialInstall":"install bx-mail,bx-pdf,bx-mysql,bx-esapi,bx-orm --noSave"
     }
 }
