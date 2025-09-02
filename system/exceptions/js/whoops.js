@@ -6,9 +6,10 @@
 
 /**
  * Main Alpine.js component for the Whoops error reporter
+ *
  * @returns {object} Alpine.js data object
  */
-function whoopsReporter() {
+function whoopsReporter( eventDetails, serverInfo, databaseInfo ) {
     console.log( 'Initializing whoopsReporter Alpine.js component' );
 
     return {
@@ -18,6 +19,11 @@ function whoopsReporter() {
         currentFilePath: '',
         currentLineNumber: 0,
 		currentIdeLink: '',
+
+		// Data Variables
+		eventDetails,
+		serverInfo,
+		databaseInfo,
 
 		 // Default height in pixels
         codePreviewHeight: 600,

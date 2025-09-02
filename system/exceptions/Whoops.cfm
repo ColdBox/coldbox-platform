@@ -7,6 +7,7 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 ----------------------------------------------------------------------->
 <cfprocessingdirective pageEncoding="utf-8">
 <cfscript>
+	local.cbUtil = new coldbox.system.core.util.Util();
 	// Local raw exception structure
 	local.exception = oException.getExceptionStruct();
 
@@ -171,7 +172,11 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 		<body>
 			<div
 				class="whoops"
-				x-data="whoopsReporter()"
+				x-data="whoopsReporter(
+					#encodeForHTMLAttribute( local.cbUtil.toJson( local.eventDetails ) )#,
+					#encodeForHTMLAttribute( local.cbUtil.toJson( local.serverInfo ) )#,
+					#encodeForHTMLAttribute( local.cbUtil.toJson( local.databaseInfo ) )#
+				)"
 				x-init="init()">
 
 				<!--- Navigation --->
