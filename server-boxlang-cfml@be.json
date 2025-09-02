@@ -19,7 +19,7 @@
         }
     },
     "JVM":{
-        "heapSize":"1024",
+        "heapSize":"768",
         "javaVersion":"openjdk21_jre"
     },
     "cfconfig":{
@@ -29,6 +29,6 @@
         "BOXLANG_DEBUG":true
     },
     "scripts":{
-        "onServerInitialInstall":"install bx-mail,bx-pdf,bx-mysql,bx-compat-cfml,bx-esapi,bx-orm@be --noSave"
+        "onServerInitialInstall":"install bx-mail,bx-pdf,bx-mysql,bx-compat-cfml,bx-esapi,bx-orm --noSave"
     }
 }
