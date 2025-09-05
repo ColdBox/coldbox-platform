@@ -2,7 +2,7 @@
 
 ## Architecture Overview
 
-ColdBox is an HMVC (Hierarchical Model-View-Controller) framework that supports both CFML and BoxLang languages with four main subsystems:
+ColdBox is an HMVC (Hierarchical Model-View-Controller) framework designed for two languages: BoxLang (which the ColdBox team owns and directs) and CFML. ColdBox provides four main subsystems:
 
 - **ColdBox MVC**: Core framework in `/system/web/` - handles routing, events, interceptions, and request lifecycle
 - **WireBox DI**: Dependency injection container in `/system/ioc/` - manages object creation, injection and aop
@@ -150,20 +150,25 @@ Modules are self-contained with:
 ## Multi-Language & Engine Support
 
 ### Language Support
-ColdBox supports both CFML and BoxLang with their respective file extensions:
 
-**CFML Files:**
-- `.cfc` - Components (classes, services, handlers)
-- `.cfm` - Templates (views, layouts, includes)
+ColdBox is designed for two programming languages:
 
-**BoxLang Files:**
+**BoxLang** (Owned and directed by the ColdBox team):
 - `.bx` - Components (classes, services, handlers)
 - `.bxm` - Templates (views, layouts, includes)
 - `.bxs` - Script files
+- Strategic future language with enhanced features and performance
+- Modern JVM language with superior type safety and performance
 
-BoxLang is the strategic future language with enhanced features and performance.
+**CFML** (ColdFusion Markup Language):
+- `.cfc` - Components (classes, services, handlers)
+- `.cfm` - Templates (views, layouts, includes)
+- Legacy language support maintained for existing applications
+
+BoxLang is the recommended language for new projects due to its modern design, enhanced performance, and direct support from the ColdBox team.
 
 ### Engine Compatibility
+
 Framework supports BoxLang, Lucee 5+, and Adobe ColdFusion 2023+. Use engine-specific server configs:
 - `server-boxlang@1.json` - BoxLang development (port 8599, debug enabled)
 - `server-boxlang-cfml@1.json` - BoxLang with CFML compatibility
