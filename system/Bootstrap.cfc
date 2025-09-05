@@ -474,7 +474,11 @@ component serializable="false" accessors="true" {
 	/************************************** APP.CFC FACADES *********************************************/
 
 	/**
-	 * On request start
+	 * This fire on every request, it will process a ColdBox request if the target page is index.cfm or index.bxm
+	 *
+	 * Also note that this method will output content directly so do not try to return anything from it.
+	 *
+	 * @targetPage The target page of the request
 	 */
 	boolean function onRequestStart( required targetPage ) output=true{
 		// Global flag to denote if we are in mid reinit or not.
@@ -504,6 +508,9 @@ component serializable="false" accessors="true" {
 		// If the file is "index.(cfm|bxm)" then we will process it
 		if ( reFindNoCase( "index\.(cfm|bxm)", listLast( arguments.targetPage, "/" ) ) ) {
 			processColdBoxRequest();
+		} else {
+			// Just load the module mappings in case we are in a module request or a web socket request.
+			application[ locateAppKey() ].getModuleService().loadMappings();
 		}
 
 		return true;
@@ -592,7 +599,7 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
-	 * ON application start
+	 *  When the application starts, ColdBox will be loaded into application scope
 	 */
 	boolean function onApplicationStart(){
 		// Load ColdBox
@@ -601,7 +608,7 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
-	 * ON application end
+	 * Tear down the application and execute shutdown procedures
 	 */
 	function onApplicationEnd( struct appScope ){
 		var cbController = arguments.appScope[ locateAppKey() ];
