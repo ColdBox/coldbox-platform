@@ -425,10 +425,7 @@ component
 	 * Get the number of elements in the cache
 	 */
 	numeric function getSize(){
-		if ( isDefaultCache() ) {
-			return cacheCount();
-		}
-		return cacheCount( getConfiguration().cacheName );
+		return getObjectStore().getSize();
 	}
 
 	/**
