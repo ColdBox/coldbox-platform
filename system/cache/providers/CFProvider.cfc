@@ -297,8 +297,7 @@ component
 	 * @objectKey The key to retrieve
 	 */
 	function getQuiet( required objectKey ){
-		var element = getObjectStore().getQuiet( arguments.objectKey );
-		return !isNull( local.element ) ? local.element.getValue() : javacast( "null", 0 );
+		return get( arguments.objectKey );
 	}
 
 	/**
@@ -426,7 +425,10 @@ component
 	 * Get the number of elements in the cache
 	 */
 	numeric function getSize(){
-		return getObjectStore().getSize();
+		if ( isDefaultCache() ) {
+			return cacheCount();
+		}
+		return cacheCount( getConfiguration().cacheName );
 	}
 
 	/**
@@ -483,7 +485,7 @@ component
 	 * @objectKey The object cache key
 	 */
 	boolean function clearQuiet( required objectKey ){
-		return getObjectStore().removeQuiet( arguments.objectKey );
+		return clear( arguments.objectKey );
 	}
 
 	/**

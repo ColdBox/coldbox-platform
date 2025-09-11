@@ -211,7 +211,6 @@ component
 	 * @objectKey The key to retrieve
 	 */
 	boolean function lookupQuiet( required objectKey ){
-		// not possible yet on lucee
 		return lookup( arguments.objectKey );
 	}
 
@@ -389,7 +388,6 @@ component
 	 * @objectKey The object cache key
 	 */
 	boolean function clearQuiet( required objectKey ){
-		// normal clear, not implemented by lucee
 		return clear( arguments.objectKey );
 	}
 
