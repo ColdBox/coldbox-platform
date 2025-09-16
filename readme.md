@@ -255,6 +255,8 @@ ColdBox follows a predictable release cycle with extensive support:
 - 🐛 **[Issue Tracker](https://ortussolutions.atlassian.net/browse/COLDBOX)** - Report bugs and request features
 - 💬 **[Community Slack](https://boxteam.ortussolutions.com/)** - Join the conversation
 - 📺 **[YouTube Channel](https://www.youtube.com/ortussolutions)** - Tutorials and presentations
+- 🎓 **[CFCasts](https://www.cfcasts.com)** - CFML Video Learning Platform
+- 🎓 **[BoxLang Academy](https://learn.boxlang.io)** - BoxLang Video Learning Platform
 
 ### Development Setup
 
@@ -327,6 +329,6 @@ Apache License, Version 2.0 - See [LICENSE](license.txt) file for details.
 
 ----
 
-### THE DAILY BREAD
+## THE DAILY BREAD
 
  > "I am the way, and the truth, and the life; no one comes to the Father, but by me (JESUS)" Jn 14:1-12
