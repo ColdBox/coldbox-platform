@@ -4,7 +4,7 @@
 	 */
 	function configure(){
 		// The CacheBox configuration structure DSL
-		cacheBox = {
+		variables.cacheBox = {
 			// LogBox config already in coldbox app, not needed
 			// logBoxConfig = "coldbox.system.web.config.LogBox",
 

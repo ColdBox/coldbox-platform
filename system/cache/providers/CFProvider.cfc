@@ -49,7 +49,7 @@ component
 
 			if ( variables.logger.canDebug() ) {
 				variables.logger.debug(
-					"Starting up CFProvider Cache: #getName()# with configuration: #config.toString()#"
+					"Starting up CFProvider Cache [#getName()#] with configuration: #config.toString()#"
 				);
 			}
 
@@ -63,60 +63,7 @@ component
 			} else {
 				// this force CF to create the user defined cache if it doesn't exist
 				get( "___invalid___" );
-
-				var cacheConfig = cacheGetSession( thisCacheName, true ).getCacheConfiguration();
-
-				// apply parameter configurations
-				if ( structKeyExists( config, "clearOnFlush" ) ) {
-					cacheConfig.setClearOnFlush( config.clearOnFlush );
-				}
-				if ( structKeyExists( config, "diskExpiryThreadIntervalSeconds" ) ) {
-					cacheConfig.setDiskExpiryThreadIntervalSeconds( config.diskExpiryThreadIntervalSeconds );
-				}
-				if ( structKeyExists( config, "diskPersistent" ) ) {
-					cacheConfig.setDiskPersistent( config.diskPersistent );
-				}
-				if ( structKeyExists( config, "diskSpoolBufferSizeMB" ) ) {
-					cacheConfig.setDiskSpoolBufferSizeMB( config.diskSpoolBufferSizeMB );
-				}
-				if ( structKeyExists( config, "eternal" ) ) {
-					cacheConfig.setEternal( config.eternal );
-				}
-				if ( structKeyExists( config, "maxElementsInMemory" ) ) {
-					cacheConfig.setMaxElementsInMemory( config.maxElementsInMemory );
-				}
-				if ( structKeyExists( config, "maxElementsOnDisk" ) ) {
-					cacheConfig.setMaxElementsOnDisk( config.maxElementsOnDisk );
-				}
-				if ( structKeyExists( config, "memoryEvictionPolicy" ) ) {
-					cacheConfig.setMemoryStoreEvictionPolicy( config.memoryEvictionPolicy );
-				}
-				if ( structKeyExists( config, "overflowToDisk" ) ) {
-					cacheConfig.setOverflowToDisk( config.overflowToDisk );
-				}
-				if ( structKeyExists( config, "timeToIdleSeconds" ) ) {
-					cacheConfig.setTimeToIdleSeconds( config.timeToIdleSeconds );
-				}
-				if ( structKeyExists( config, "timeToLiveSeconds" ) ) {
-					cacheConfig.setTimeToLiveSeconds( config.timeToLiveSeconds );
-				}
-
-				props = [
-					{
-						"objectType"                      : config.cacheName,
-						"clearOnFlush"                    : cacheConfig.isClearOnFlush(),
-						"diskExpiryThreadIntervalSeconds" : cacheConfig.getDiskExpiryThreadIntervalSeconds(),
-						"diskPersistent"                  : cacheConfig.isDiskPersistent(),
-						"diskSpoolBufferSizeMB"           : cacheConfig.getDiskSpoolBufferSizeMB(),
-						"eternal"                         : cacheConfig.isEternal(),
-						"maxElementsInMemory"             : cacheConfig.getMaxElementsInMemory(),
-						"maxElementsOnDisk"               : cacheConfig.getMaxElementsOnDisk(),
-						"memoryEvictionPolicy"            : cacheConfig.getMemoryStoreEvictionPolicy().toString(),
-						"overflowToDisk"                  : cacheConfig.isOverflowToDisk(),
-						"timeToIdleSeconds"               : cacheConfig.getTimeToIdleSeconds(),
-						"timeToLiveSeconds"               : cacheConfig.getTimeToLiveSeconds()
-					}
-				];
+				props = getCacheRegionProperties( thisCacheName, config );
 			}
 
 			for ( var key in props ) {
@@ -128,7 +75,7 @@ component
 			variables.reportingEnabled = true;
 
 			if ( variables.logger.canDebug() ) {
-				variables.logger.debug( "Cache #getName()# started up successfully" );
+				variables.logger.debug( "Cache [#getName()#] started up successfully" );
 			}
 		}
 
@@ -530,6 +477,79 @@ component
 			false
 		);
 		return this;
+	}
+
+	/**
+	 * This method returns the properties of the cache region
+	 * defined in the configuration.  This could be EHCache or another implementation.
+	 *
+	 * @name The name of the cache region
+	 * @config The configuration structure for the cache region (if any)
+	 *
+	 * @return An array of structures with the properties of the cache region
+	 */
+	private function getCacheRegionProperties( required name, required struct config  ){
+		var cacheSession = cacheGetSession( arguments.name, true );
+
+		// Other CF Caches do not support this
+		if( !isInstanceOf( cacheSession, "net.sf.ehcache.Cache" ) ){
+			return [];
+		}
+
+		// EHCache ONLY
+		var cacheConfig = cacheSession.getCacheConfiguration();
+
+		// apply parameter configurations
+		if ( structKeyExists( config, "clearOnFlush" ) ) {
+			cacheConfig.setClearOnFlush( config.clearOnFlush );
+		}
+		if ( structKeyExists( config, "diskExpiryThreadIntervalSeconds" ) ) {
+			cacheConfig.setDiskExpiryThreadIntervalSeconds( config.diskExpiryThreadIntervalSeconds );
+		}
+		if ( structKeyExists( config, "diskPersistent" ) ) {
+			cacheConfig.setDiskPersistent( config.diskPersistent );
+		}
+		if ( structKeyExists( config, "diskSpoolBufferSizeMB" ) ) {
+			cacheConfig.setDiskSpoolBufferSizeMB( config.diskSpoolBufferSizeMB );
+		}
+		if ( structKeyExists( config, "eternal" ) ) {
+			cacheConfig.setEternal( config.eternal );
+		}
+		if ( structKeyExists( config, "maxElementsInMemory" ) ) {
+			cacheConfig.setMaxElementsInMemory( config.maxElementsInMemory );
+		}
+		if ( structKeyExists( config, "maxElementsOnDisk" ) ) {
+			cacheConfig.setMaxElementsOnDisk( config.maxElementsOnDisk );
+		}
+		if ( structKeyExists( config, "memoryEvictionPolicy" ) ) {
+			cacheConfig.setMemoryStoreEvictionPolicy( config.memoryEvictionPolicy );
+		}
+		if ( structKeyExists( config, "overflowToDisk" ) ) {
+			cacheConfig.setOverflowToDisk( config.overflowToDisk );
+		}
+		if ( structKeyExists( config, "timeToIdleSeconds" ) ) {
+			cacheConfig.setTimeToIdleSeconds( config.timeToIdleSeconds );
+		}
+		if ( structKeyExists( config, "timeToLiveSeconds" ) ) {
+			cacheConfig.setTimeToLiveSeconds( config.timeToLiveSeconds );
+		}
+
+		return [
+			{
+				"objectType"                      : config.cacheName,
+				"clearOnFlush"                    : cacheConfig.isClearOnFlush(),
+				"diskExpiryThreadIntervalSeconds" : cacheConfig.getDiskExpiryThreadIntervalSeconds(),
+				"diskPersistent"                  : cacheConfig.isDiskPersistent(),
+				"diskSpoolBufferSizeMB"           : cacheConfig.getDiskSpoolBufferSizeMB(),
+				"eternal"                         : cacheConfig.isEternal(),
+				"maxElementsInMemory"             : cacheConfig.getMaxElementsInMemory(),
+				"maxElementsOnDisk"               : cacheConfig.getMaxElementsOnDisk(),
+				"memoryEvictionPolicy"            : cacheConfig.getMemoryStoreEvictionPolicy().toString(),
+				"overflowToDisk"                  : cacheConfig.isOverflowToDisk(),
+				"timeToIdleSeconds"               : cacheConfig.getTimeToIdleSeconds(),
+				"timeToLiveSeconds"               : cacheConfig.getTimeToLiveSeconds()
+			}
+		];
 	}
 
 }

@@ -7,37 +7,44 @@
  * is where you will get all the caches you need to work with or register more caches.
  *
  * @author Luis Majano
- **/
+ */
 component accessors=true serializable=false {
 
 	/**
 	 * The unique factory id
 	 */
 	property name="factoryId";
+
 	/**
 	 * The factory version
 	 */
 	property name="version";
+
 	/**
 	 * The CacheBox Configuration object linkage
 	 */
 	property name="config";
+
 	/**
 	 * The ColdBox object linkage
 	 */
 	property name="coldbox";
+
 	/**
 	 * The WireBox object linkage
 	 */
 	property name="wirebox";
+
 	/**
 	 * The LogBox object linkage
 	 */
 	property name="logbox";
+
 	/**
 	 * A configured log class
 	 */
 	property name="log";
+
 	/**
 	 * The Event Manager object linkage
 	 */
@@ -227,7 +234,7 @@ component accessors=true serializable=false {
 		// Register named caches
 		variables.config
 			.getCaches()
-			.each( function( key, def ){
+			.each( ( key, def ) => {
 				createCache(
 					name      : key,
 					provider  : def.provider,

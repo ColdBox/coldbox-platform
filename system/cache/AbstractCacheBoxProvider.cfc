@@ -468,7 +468,7 @@ component accessors=true serializable=false {
 	 * Validate the incoming configuration and make necessary defaults
 	 *
 	 * @return AbstractCacheProvider
-	 **/
+	 */
 	private function validateConfiguration(){
 		// Add in settings not discovered
 		structAppend(
@@ -476,6 +476,7 @@ component accessors=true serializable=false {
 			variables.DEFAULTS,
 			false
 		);
+
 		// Validate configuration values, if they don't exist, then default them to DEFAULTS
 		for ( var key in variables.DEFAULTS ) {
 			if ( NOT len( variables.configuration[ key ] ) ) {
