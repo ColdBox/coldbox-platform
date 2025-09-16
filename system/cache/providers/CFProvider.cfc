@@ -483,16 +483,16 @@ component
 	 * This method returns the properties of the cache region
 	 * defined in the configuration.  This could be EHCache or another implementation.
 	 *
-	 * @name The name of the cache region
+	 * @name   The name of the cache region
 	 * @config The configuration structure for the cache region (if any)
 	 *
 	 * @return An array of structures with the properties of the cache region
 	 */
-	private function getCacheRegionProperties( required name, required struct config  ){
+	private function getCacheRegionProperties( required name, required struct config ){
 		var cacheSession = cacheGetSession( arguments.name, true );
 
 		// Other CF Caches do not support this
-		if( !isInstanceOf( cacheSession, "net.sf.ehcache.Cache" ) ){
+		if ( !isInstanceOf( cacheSession, "net.sf.ehcache.Cache" ) ) {
 			return [];
 		}
 
