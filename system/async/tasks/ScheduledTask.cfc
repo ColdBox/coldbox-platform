@@ -778,8 +778,17 @@ component accessors="true" {
 	 *
 	 * @return The last result of the task as an Optional
 	 */
-	function getLastResult(){
-		return variables.stats.lastResult;
+	function getLastResult() {
+		var result = variables.lastResult;
+		// Unwrap Java Optional if present
+		if ( isObject( result ) && structKeyExists( result, "isPresent" ) && structKeyExists( result, "get" ) ) {
+			if ( result.isPresent() ) {
+				return result.get();
+			} else {
+				return "";
+			}
+		}
+		return result;
 	}
 
 	/**
