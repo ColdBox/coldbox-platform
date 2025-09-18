@@ -141,6 +141,7 @@ jobs:
         run: |
           ROOT_DIR=`pwd`
           cd $ROOT_DIR/.artifacts/coldbox/${{ env.COLDBOX_VERSION }} && box forgebox publish
+          cd $ROOT_DIR/.artifacts/bx-coldbox/${{ env.COLDBOX_VERSION }} && box forgebox publish
           cd $ROOT_DIR/.artifacts/cachebox/${{ env.COLDBOX_VERSION }} && box forgebox publish
           cd $ROOT_DIR/.artifacts/wirebox/${{ env.COLDBOX_VERSION }} && box forgebox publish
           cd $ROOT_DIR/.artifacts/logbox/${{ env.COLDBOX_VERSION }} && box forgebox publish
