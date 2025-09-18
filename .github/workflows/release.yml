@@ -83,8 +83,10 @@ jobs:
           # Fix changelog markdown
           npm install -g markdownlint-cli
           markdownlint changelog.md --fix
+
           # Startup the server for API Docs mostly.
           box server start serverConfigFile="server-lucee@5.json" --debug
+
           # Run the task
           box task run build/Build.cfc run ${{ env.COLDBOX_VERSION }} ${{ github.run_number }} ${{ env.BRANCH }}
 
