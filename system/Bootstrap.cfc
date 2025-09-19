@@ -83,18 +83,11 @@ component serializable="false" accessors="true" {
 		}
 
 		// Verify Mapping
-		if ( !fileExists( expandPath( "/coldbox/system/web/Controller.cfc" ) ) ) {
-			var coldboxDirectory = reReplaceNoCase(
-				getDirectoryFromPath( getCurrentTemplatePath() ),
-				"[\\/]system",
-				""
-			);
+		if ( !directoryExists( expandPath( "/coldbox/system/" ) ) ) {
 			throw(
-				message = "Cannot find the '/'coldbox' mapping",
+				message = "Cannot find the '/'coldbox' mapping or directory",
 				detail  = "It seems that you do not have a '/coldbox' mapping in your application and we cannot continue to process the request.
-				The good news is that you can easily resolve this by either creating a mapping in your Admnistrator or in this application's
-				Application.cfc that points to this directory: '#coldboxDirectory#'.  You can also copy the code snippet
-				below to add to your Application.cfc's pseudo constructor: this.mappings[ '/coldbox' ] = '#coldboxDirectory#'",
+				Make sure ColdBox is installed correctly or create a mapping to the ColdBox system folder.",
 				type = "InvalidColdBoxMapping"
 			);
 		}
