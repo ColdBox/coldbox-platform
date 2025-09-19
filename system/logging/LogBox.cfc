@@ -179,10 +179,10 @@ component accessors="true" {
 		var rootConfig = variables.config.getRoot();
 		// Create Root Logger
 		var args       = {
-			category  : "ROOT",
-			levelMin  : rootConfig.levelMin,
-			levelMax  : rootConfig.levelMax,
-			appenders : getAppendersMap( rootConfig.appenders ),
+			category           : "ROOT",
+			levelMin           : rootConfig.levelMin,
+			levelMax           : rootConfig.levelMax,
+			appenders          : getAppendersMap( rootConfig.appenders ),
 			serializeExtraInfo : variables.config.getSerializeExtraInfo()
 		};
 
@@ -248,10 +248,10 @@ component accessors="true" {
 			var categoryConfig = variables.config.getCategory( arguments.category );
 			// Setup creation arguments
 			args               = {
-				category  : categoryConfig.name,
-				levelMin  : categoryConfig.levelMin,
-				levelMax  : categoryConfig.levelMax,
-				appenders : getAppendersMap( categoryConfig.appenders ),
+				category           : categoryConfig.name,
+				levelMin           : categoryConfig.levelMin,
+				levelMax           : categoryConfig.levelMax,
+				appenders          : getAppendersMap( categoryConfig.appenders ),
 				serializeExtraInfo : variables.config.getSerializeExtraInfo()
 			};
 		} else {
@@ -259,9 +259,9 @@ component accessors="true" {
 			root = locateCategoryParentLogger( arguments.category );
 			// Build it out as per Root logger
 			args = {
-				category : arguments.category,
-				levelMin : root.getLevelMin(),
-				levelMax : root.getLevelMax(),
+				category           : arguments.category,
+				levelMin           : root.getLevelMin(),
+				levelMax           : root.getLevelMax(),
 				serializeExtraInfo : variables.config.getSerializeExtraInfo()
 			};
 		}
