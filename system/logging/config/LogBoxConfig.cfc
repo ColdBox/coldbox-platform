@@ -26,6 +26,14 @@ component accessors="true" {
 	 */
 	property name="rootLogger" type="struct";
 
+	/**
+	 * Flag to allow serializing complex objects in `extraInfo`.
+	 */
+	property
+		name   ="serializeExtraInfo"
+		type   ="boolean"
+		default="true";
+
 	// The log levels enum as a public property
 	this.logLevels = new coldbox.system.logging.LogLevels();
 	// Startup the configuration
@@ -95,13 +103,13 @@ component accessors="true" {
 		}
 
 		// Register Root Logger
-		if ( NOT structKeyExists( logBoxDSL, "root" ) ) {
+		if ( !isNull( logBoxDSL.root ) ) {
 			logBoxDSL.root = { appenders : "*" };
 		}
 		root( argumentCollection = logBoxDSL.root );
 
 		// Register Categories
-		if ( structKeyExists( logBoxDSL, "categories" ) ) {
+		if ( !isNull( logBoxDSL.categories ) ) {
 			for ( var key in logBoxDSL.categories ) {
 				logBoxDSL.categories[ key ].name = key;
 				category( argumentCollection = logBoxDSL.categories[ key ] );
@@ -109,23 +117,28 @@ component accessors="true" {
 		}
 
 		// Register Level Categories
-		if ( structKeyExists( logBoxDSL, "debug" ) ) {
+		if ( !isNull( logBoxDSL.debug ) ) {
 			DEBUG( argumentCollection = getUtil().arrayToStruct( logBoxDSL.debug ) );
 		}
-		if ( structKeyExists( logBoxDSL, "info" ) ) {
+		if ( !isNull( logBoxDSL.info ) ) {
 			INFO( argumentCollection = getUtil().arrayToStruct( logBoxDSL.info ) );
 		}
-		if ( structKeyExists( logBoxDSL, "warn" ) ) {
+		if ( !isNull( logBoxDSL.warn ) ) {
 			WARN( argumentCollection = getUtil().arrayToStruct( logBoxDSL.warn ) );
 		}
-		if ( structKeyExists( logBoxDSL, "error" ) ) {
+		if ( !isNull( logBoxDSL.error ) ) {
 			ERROR( argumentCollection = getUtil().arrayToStruct( logBoxDSL.error ) );
 		}
-		if ( structKeyExists( logBoxDSL, "fatal" ) ) {
+		if ( !isNull( logBoxDSL.fatal ) ) {
 			FATAL( argumentCollection = getUtil().arrayToStruct( logBoxDSL.fatal ) );
 		}
-		if ( structKeyExists( logBoxDSL, "off" ) ) {
+		if ( !isNull( logBoxDSL.off ) ) {
 			OFF( argumentCollection = getUtil().arrayToStruct( logBoxDSL.off ) );
+		}
+
+		// Register serializeExtraInfo
+		if ( !isNull( logBoxDSL.serializeExtraInfo ) ) {
+			variables.serializeExtraInfo = logBoxDSL.serializeExtraInfo;
 		}
 
 		return this;

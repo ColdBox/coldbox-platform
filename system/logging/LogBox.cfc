@@ -182,7 +182,8 @@ component accessors="true" {
 			category  : "ROOT",
 			levelMin  : rootConfig.levelMin,
 			levelMax  : rootConfig.levelMax,
-			appenders : getAppendersMap( rootConfig.appenders )
+			appenders : getAppendersMap( rootConfig.appenders ),
+			serializeExtraInfo : variables.config.getSerializeExtraInfo()
 		};
 
 		// Save in Registry
@@ -250,7 +251,8 @@ component accessors="true" {
 				category  : categoryConfig.name,
 				levelMin  : categoryConfig.levelMin,
 				levelMax  : categoryConfig.levelMax,
-				appenders : getAppendersMap( categoryConfig.appenders )
+				appenders : getAppendersMap( categoryConfig.appenders ),
+				serializeExtraInfo : variables.config.getSerializeExtraInfo()
 			};
 		} else {
 			// Do Category Inheritance? or else just return the root logger.
@@ -259,7 +261,8 @@ component accessors="true" {
 			args = {
 				category : arguments.category,
 				levelMin : root.getLevelMin(),
-				levelMax : root.getLevelMax()
+				levelMax : root.getLevelMax(),
+				serializeExtraInfo : variables.config.getSerializeExtraInfo()
 			};
 		}
 

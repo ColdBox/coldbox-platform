@@ -1,8 +1,8 @@
 ﻿component extends="coldbox.system.testing.BaseModelTest" {
 
 	function run(){
-		describe( "Logger", function(){
-			beforeEach( function( currentSpec ){
+		describe( "Logger", () =>{
+			beforeEach( ( currentSpec ) =>{
 				setup();
 
 				mockLB           = createMock( className = "coldbox.system.logging.LogBox", clearMethods = true );
@@ -15,11 +15,11 @@
 				logger.setRootLogger( rootLogger );
 			} );
 
-			it( "can create the logger", function(){
+			it( "can create the logger", () =>{
 				expect( logger ).toBeComponent();
 			} );
 
-			it( "can verify all canX Methods", function(){
+			it( "can verify all canX Methods", () =>{
 				logger.setLevelMin( 0 );
 				logger.setLevelMax( 3 );
 
@@ -30,7 +30,7 @@
 				assertFalse( logger.canDebug() );
 			} );
 
-			it( "can verify all canX Methods with values", function(){
+			it( "can verify all canX Methods with values", () =>{
 				logger.setLevelMin( 0 );
 				logger.setLevelMax( 3 );
 
@@ -40,7 +40,7 @@
 				assertFalse( logger.canLog( "asdfasfdsd" ) );
 			} );
 
-			it( "can execute all logging methods", function(){
+			it( "can execute all logging methods", () =>{
 				// has appenders
 				assertFalse( logger.hasAppenders() );
 				// get appenders
@@ -67,7 +67,7 @@
 				assertFalse( logger.hasAppenders() );
 			} );
 
-			it( "can verify logging levels", function(){
+			it( "can verify logging levels", () =>{
 				logger.setLevelMin( 0 );
 				logger.setLevelMax( 4 );
 
@@ -97,8 +97,8 @@
 				assertEquals( 1, arrayLen( newAppender.$callLog().logMessage ) );
 			} );
 
-			describe( "can do logging with closures and automated canX inclusions", function(){
-				beforeEach( function( currentSpec ){
+			describe( "can do logging with closures and automated canX inclusions", () =>{
+				beforeEach( ( currentSpec ) =>{
 					// MockAppender
 					mockAppender = createStub()
 						.$( "getName", "MockAppender" )
@@ -109,9 +109,9 @@
 					logger.addAppender( mockAppender );
 				} );
 
-				it( "can log with a valid severity", function(){
+				it( "can log with a valid severity", () =>{
 					// Test closure in logger
-					logger.logMessage( function(){
+					logger.logMessage( () =>{
 						return "This is a closure message";
 					}, "info" );
 					expect( mockAppender.$callLog().logMessage.first()[ "1" ].getMessage() ).toBe(
@@ -119,10 +119,10 @@
 					);
 				} );
 
-				it( "won't log with a non-loggable severity", function(){
+				it( "won't log with a non-loggable severity", () =>{
 					logger.setLevelMax( 1 );
 					// Test closure in logger
-					logger.logMessage( function(){
+					logger.logMessage( () =>{
 						return "This is a closure message";
 					}, "debug" );
 					expect( mockAppender.$callLog().logmessage ).toBeEmpty();

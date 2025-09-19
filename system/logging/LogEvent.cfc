@@ -32,18 +32,28 @@ component accessors="true" {
 	property name="extrainfo" default="";
 
 	/**
+	 * Flag to allow serializing complex objects in `extraInfo`.
+	 */
+	property
+		name   ="serializeExtraInfo"
+		type   ="boolean"
+		default="true";
+
+	/**
 	 * Constructor
 	 *
 	 * @message   The message to log.
 	 * @severity  The severity level to log.
 	 * @extraInfo Extra information to send to the loggers.
 	 * @category  The category to log this message under.  By default it is blank.
+	 * @serializeExtraInfo Flag to allow serializing complex objects in `extraInfo`. Default is true.
 	 */
 	function init(
 		required message,
 		required severity,
 		extraInfo = "",
-		category  = ""
+		category  = "",
+		boolean serializeExtraInfo = true
 	){
 		// Init event
 		variables.timestamp = now();
@@ -99,6 +109,11 @@ component accessors="true" {
 				"[Stacktrace] 	: #variables.extraInfo.stacktrace#"
 			];
 			return arrayToList( messageString, chr( 13 ) & chr( 10 ) );
+		}
+
+		// Are we serializing or not?
+		if ( NOT variables.serializeExtraInfo ) {
+			return toString( variables.extraInfo );
 		}
 
 		// Component XML conversion
