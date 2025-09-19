@@ -28,7 +28,7 @@ component {
 		variables.libraries = {
 			"bx-coldbox" : {
 				"standalone" : false,
-				"transpile" : true,
+				"transpile" : false,
 				// Don't compile until we fix a few sourceless deployment issues
 				"compile": false,
 				"apidocs" : false,
