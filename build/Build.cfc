@@ -28,7 +28,9 @@ component {
 		variables.libraries = {
 			"bx-coldbox" : {
 				"standalone" : false,
-				"compile": true,
+				"transpile" : true,
+				// Don't compile until we fix a few sourceless deployment issues
+				"compile": false,
 				"apidocs" : false,
 				"readme"     : "readme.md",
 				"boxjson"    : "build/resources/box-boxlang.json",
@@ -39,6 +41,7 @@ component {
 			},
 			"coldbox" : {
 				"standalone" : false,
+				"transpile" : false,
 				"compile": false,
 				"apidocs" : true,
 				"readme"     : "readme.md",
@@ -47,6 +50,7 @@ component {
 			},
 			"cachebox" : {
 				"standalone" : true,
+				"transpile" : false,
 				"compile": false,
 				"apidocs" : true,
 				"readme"     : "system/cache/readme.md",
@@ -60,6 +64,7 @@ component {
 			},
 			"logbox" : {
 				"standalone" : true,
+				"transpile" : false,
 				"compile": false,
 				"apidocs" : true,
 				"readme"     : "system/logging/readme.md",
@@ -72,6 +77,7 @@ component {
 			},
 			"wirebox" : {
 				"standalone" : true,
+				"transpile" : false,
 				"compile": false,
 				"apidocs" : true,
 				"readme"     : "system/ioc/readme.md",
@@ -318,10 +324,25 @@ component {
 
 		// Do we compile?
 		if( libRecord.compile ){
-			print.greenLine( "Compiling source code ..." ).toConsole();
+			print.greenLine( "🤖 Compiling source code to byte code ..." ).toConsole();
 			command( "run" )
 				.params( "boxlang compile --source #libBuildDir# --target #libBuildDir#" )
 				.run()
+		}
+
+		// Do we transpile?
+		if( libRecord.transpile ){
+			print.greenLine( "💫 Transpiling CFML to BoxLang ..." ).toConsole();
+			command( "run" )
+				.params( "boxlang cftranspile --verbose --source #libBuildDir# --target #libBuildDir#" )
+				.run()
+			// Remove now all the cfc, cfm files in the libBuildDir
+			directoryList( libBuildDir, true, "path", ( path ) => {
+				return listFindNoCase( "cfc,cfm", listLast( path, "." ) );
+			} ).each( ( item ) => {
+				print.blueLine( "🥊 Deleting Source File [#item#]" ).toConsole();
+				fileDelete( item );
+			} );
 		}
 
 		// Zip Bundle
