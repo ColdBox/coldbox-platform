@@ -103,7 +103,7 @@ component accessors="true" {
 		}
 
 		// Register Root Logger
-		if ( !isNull( logBoxDSL.root ) ) {
+		if ( isNull( logBoxDSL.root ) ) {
 			logBoxDSL.root = { appenders : "*" };
 		}
 		root( argumentCollection = logBoxDSL.root );
@@ -246,7 +246,7 @@ component accessors="true" {
 	 * @properties The structure of properties to configure this appender with.
 	 * @layout     The layout class path to use in this appender for custom message rendering.
 	 * @levelMin   The default log level for the root logger, by default it is 0 (FATAL). Optional. ex: config.logLevels.WARN
-	 * @levelMax   The default log level for the root logger, by default it is 4 (DEBUG). Optional. ex: config.logLevels.WARN
+	 * @levelMax   The default log level for the root logger, by default it is 3 (INFO). Optional. ex: config.logLevels.WARN
 	 */
 	LogBoxConfig function appender(
 		required name,
@@ -254,7 +254,7 @@ component accessors="true" {
 		struct properties = {},
 		layout            = "",
 		levelMin          = 0,
-		levelMax          = 4
+		levelMax          = 3
 	){
 		// Convert Levels
 		convertLevels( arguments );
