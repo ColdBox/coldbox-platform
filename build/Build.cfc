@@ -30,7 +30,7 @@ component {
 				"standalone" : false,
 				"transpile" : false,
 				// Don't compile until we fix a few sourceless deployment issues
-				"compile": false,
+				"compile": true,
 				"apidocs" : false,
 				"readme"     : "readme.md",
 				"boxjson"    : "build/resources/box-boxlang.json",
