@@ -1269,6 +1269,7 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
+	 * Remove by ColdBox 9
 	 * @deprecated Use `getUrl()` instead
 	 */
 	string function getFullUrl(){
@@ -1299,6 +1300,7 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
+	 * Remove by ColdBox 9
 	 * @Deprecated Use `getPath()` instead
 	 */
 	string function getFullPath(){
