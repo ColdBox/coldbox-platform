@@ -109,26 +109,17 @@ component {
 		// addNamespace( pattern="/luis", namespace="luis");
 
 		// Sample namespace
-		with( namespace = "luis" )
-			.addRoute(
-				pattern = "contactus",
-				view    = "simpleview"
-			)
-			.addRoute(
-				pattern      = "contactus2",
-				view         = "simpleview",
-				viewnoLayout = true
-			)
-			.endWith();
+		group( { namespace : "luis" }, ( options ) => {
+			route( pattern: "contactus" ).toView( view: "simpleview" );
+			route( pattern: "contactus2" ).toView( view: "simpleview", noLayout: true );
+		} );
 
-		// Test Simple With
-		with(
-			pattern = "/test",
-			handler = "ehGeneral",
-			action  = "dspHello"
-		).addRoute( pattern = "/:id-numeric{2}/:num-numeric/:name/:month{3}?" )
-			.addRoute( pattern = "/:id/:name{4}?" )
-			.endWith();
+		group(
+			{ pattern : "/test2", handler : "ehGeneral", action : "dspHello" },
+		 	( options ) =>{
+			route( "/:id-numeric{2}/:num-numeric/:name/:month{3}?" );
+			route( "/:id/:name{4}?" )
+		} );
 
 		// awn sync with contact manager
 		group( { pattern : "/runAWNsync", handler : "utilities.AWNsync" }, function( options ){
