@@ -515,32 +515,4 @@ component {
 		}
 	}
 
-	/**
-	 **************************************************************************************************************
-	 * DEPRECATED FUNCTIONS
-	 * TODO: REMOVE BY V8
-	 * **************************************************************************************************************
-	 */
-
-	/**
-	 * @deprecated Refactor to use the Env Delegate: coldbox.system.core.delegates.Env
-	 */
-	function getSystemSetting( required key, defaultValue ){
-		return new coldbox.system.core.delegates.Env().getSystemSetting( argumentCollection = arguments );
-	}
-
-	/**
-	 * @deprecated Refactor to use the Env Delegate: coldbox.system.core.delegates.Env
-	 */
-	function getSystemProperty( required key, defaultValue ){
-		return new coldbox.system.core.delegates.Env().getSystemProperty( argumentCollection = arguments );
-	}
-
-	/**
-	 * @deprecated Refactor to use the Env Delegate: coldbox.system.core.delegates.Env
-	 */
-	function getEnv( required key, defaultValue ){
-		return new coldbox.system.core.delegates.Env().getEnv( argumentCollection = arguments );
-	}
-
 }
