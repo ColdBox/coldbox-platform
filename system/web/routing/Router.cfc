@@ -22,12 +22,12 @@ component
 	 ****************************************************************/
 
 	property
-		name    ="cachebox"  
+		name    ="cachebox"
 		inject  ="cachebox"
 		delegate="getCache";
 	property
 		name    ="controller"
-		inject  ="coldbox" 
+		inject  ="coldbox"
 		delegate="relocate,runEvent,runRoute";
 	property name="flash"  inject="coldbox:flash";
 	property name="logBox" inject="logbox";
@@ -233,44 +233,6 @@ component
 	 */
 	boolean function isValidExtension( required extension ){
 		return variables.validExtensions.listFindNoCase( arguments.extension ) > 0;
-	}
-
-	/**
-	 * A quick ColdBox4 compatibility wrapper
-	 *
-	 * @deprecated Please use `getModuleRoutingTable()` instead.
-	 */
-	struct function getModulesRoutingTable(){
-		return getModuleRoutingTable();
-	}
-
-	/****************************************************************************************************************************/
-	// DEPRECATED FUNCTIONALITY: Remove in later release
-
-	/**
-	 * Includes a routes configuration file as an added import and returns itself after import
-	 *
-	 * @deprecated Please use the Routes class approach instead
-	 * @location   The include location of the routes configuration template.
-	 *
-	 * @return Router
-	 */
-	function includeRoutes( required location ){
-		// We are ready to roll
-		try {
-			// Try to remove pathInfoProvider, just in case
-			structDelete( variables, "pathInfoProvider" );
-			structDelete( this, "pathInfoProvider" );
-			// Import configuration
-			include arguments.location;
-		} catch ( Any e ) {
-			throw(
-				message = "Error importing routes configuration file: #e.message# #e.detail#",
-				detail  = e.tagContext.toString(),
-				type    = "SES.IncludeRoutingConfig"
-			);
-		}
-		return this;
 	}
 
 	/****************************************************************************************************************************/

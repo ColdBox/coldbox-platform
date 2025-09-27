@@ -83,7 +83,8 @@ component accessors="true" {
 		default="200";
 
 	/**
-	 * @deprecated The status text is not used in the servlet spec anymore. This will be removed in 8.0
+	 * Remove by ColdBox 9
+	 * @deprecated The status text is not used in the servlet spec anymore.
 	 */
 	property
 		name   ="statusText"
