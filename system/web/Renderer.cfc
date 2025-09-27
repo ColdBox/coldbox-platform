@@ -647,8 +647,14 @@ component
 
 		// Default path is the conventions location
 		var layoutPaths = [
+			// Conventions location first
 			"/#variables.appMapping#/#variables.layoutsConvention#/#arguments.layout#",
-			"#variables.layoutsExternalLocation#/#arguments.layout#"
+			// External location second
+			"#variables.layoutsExternalLocation#/#arguments.layout#",
+			// Application root last
+			"/#variables.appMapping#/#arguments.layout#",
+			// Absolute path last
+			"#arguments.layout#"
 		];
 
 		// Try to locate the view
@@ -784,8 +790,13 @@ component
 
 		// Default path is the conventions location, then the external location
 		var viewPaths = [
+			// Conventions location first
 			"/#variables.appMapping#/#variables.viewsConvention#/#arguments.view#",
+			// External location second
 			"#variables.viewsExternalLocation#/#arguments.view#",
+			// Application root
+			"/#variables.appMapping#/#arguments.view#",
+			// Absolute path last
 			arguments.view
 		];
 
