@@ -361,7 +361,7 @@ component serializable="false" accessors="true" {
 			// Running standalone, so create our own logging first
 			configureLogBox( variables.binder.getLogBoxConfig() );
 			// Create local CacheBox reference
-			configureCacheBox( variables.binder.getCacheBoxConfig() );
+			configureCacheBox( variables.binder.getCacheBox() );
 		}
 
 		// Create our object builder

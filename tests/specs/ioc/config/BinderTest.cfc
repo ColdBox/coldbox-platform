@@ -387,7 +387,7 @@
 	function testCacheBoxIntegration(){
 		// activate cachebox
 		config.cacheBox( configFile = "my.path.CacheBox" );
-		cbconfig = config.getCacheBoxConfig();
+		cbconfig = config.getCacheBox();
 		assertEquals( true, cbconfig.enabled );
 		assertEquals( "my.path.CacheBox", cbconfig.configFile );
 		assertEquals( "coldbox.system.cache", cbconfig.classNamespace );
