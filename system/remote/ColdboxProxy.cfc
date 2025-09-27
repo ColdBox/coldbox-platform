@@ -148,7 +148,7 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
-	 * @deprecated Please use the new `emit()` function
+	 * @deprecated Please use the new `announce()` function
 	 */
 	private function announceInterception(
 		required state,

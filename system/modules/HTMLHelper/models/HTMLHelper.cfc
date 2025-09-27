@@ -65,9 +65,6 @@ component
 	 * asset argument to try to load all of them.	You can also make this method return the string
 	 * that will be sent to the header instead.
 	 *
-	 * If the setings: htmlHelper_js_path exists, we will use it as a prefix for JS files (Deprecated by 5.2)
-	 * If the setings: htmlhelper_css_path exists, we will use it as a prefix for CSS Files (Deprecated by 5.2)
-	 *
 	 * In 5.2 the HTML Helper is an internal module, to configure it levareage the `HTMLHelper` module settings.
 	 *
 	 * This method tracks assets in the PRC via the key: <strong>cbox_assets</strong>

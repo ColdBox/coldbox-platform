@@ -1199,26 +1199,6 @@ component serializable="false" accessors="true" {
 	/***********************************************************************************************************/
 
 	/**
-	 * Setter for verifying SES mode
-	 *
-	 * @deprecated This will be removed in ColdBox 7
-	 *
-	 * @return RequestContext
-	 */
-	function setSESEnabled( required boolean flag ){
-		return this;
-	}
-
-	/**
-	 * Verify if SES is enabled or not in the request
-	 *
-	 * @deprecated This will be removed in ColdBox 7
-	 */
-	boolean function isSES(){
-		return true;
-	}
-
-	/**
 	 * Get the HTML base URL that is used for the HTML <base> tag. This also accounts for SSL or not.
 	 */
 	string function getHTMLBaseURL(){
