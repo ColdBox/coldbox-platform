@@ -279,12 +279,6 @@ component accessors="true" {
 			return variables.properties[ arguments.name ];
 		}
 
-		// TODO: remove by v7
-		// Deprecated Check
-		if ( !isNull( arguments.default ) ) {
-			return arguments.default;
-		}
-
 		// Default Value
 		if ( !isNull( arguments.defaultValue ) ) {
 			return arguments.defaultValue;
