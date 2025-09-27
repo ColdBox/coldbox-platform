@@ -1168,15 +1168,6 @@ component accessors="true" {
 	}
 
 	/**
-	 * Alias to get cachebox configuration
-	 *
-	 * @deprecated Remove by v7: use getCacheBox() instead
-	 */
-	struct function getCacheBoxConfig(){
-		return variables.cachebox;
-	}
-
-	/**
 	 * Map an object into CacheBox
 	 *
 	 * @key               You can override the key it will use for storing in cache. By default it uses the name of the mapping
