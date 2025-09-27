@@ -590,16 +590,6 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			findConventionNameValuePairs( requestString, match, results.params );
 		}
 
-		// Process legacy match-variables to incorporate to discovered params
-		results.route.matchVariables
-			.listToArray()
-			.each( function( item ){
-				// Only set if not incoming.
-				if ( !results.params.keyExists( item.getToken( 1, "=" ) ) ) {
-					results.params[ item.getToken( 1, "=" ) ] = item.getToken( 2, "=" );
-				}
-			} );
-
 		return results;
 	}
 
