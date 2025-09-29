@@ -507,7 +507,6 @@ component serializable="false" accessors="true" {
 			application[ locateAppKey() ].getModuleService().loadMappings();
 			return true;
 		}
-
 	}
 
 	/**
