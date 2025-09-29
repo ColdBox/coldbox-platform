@@ -504,9 +504,13 @@ component serializable="false" accessors="true" {
 		// If the file is "index.(cfm|bxm)" then we will process it
 		if ( reFindNoCase( "index\.(cfm|bxm)", listLast( arguments.targetPage, "/" ) ) ) {
 			processColdBoxRequest();
+			return false;
+		} else {
+			// Just load the module mappings in case we are in a module request or a web socket request.
+			application[ locateAppKey() ].getModuleService().loadMappings();
+			return true;
 		}
 
-		return true;
 	}
 
 	/**
