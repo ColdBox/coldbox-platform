@@ -1,8 +1,6 @@
 component {
 
 	function configure(){
-		// setFullRewrites( false );
-
 		route( "/bar" ).toModuleRouting( "resourcesTest" );
 
 		// Nested Resources

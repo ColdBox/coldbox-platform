@@ -1,9 +1,6 @@
 component {
 
 	function configure() {
-		// Set Full Rewrites
-		setFullRewrites( true );
-
 		/**
 		 * --------------------------------------------------------------------------
 		 * App Routes
