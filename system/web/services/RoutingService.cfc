@@ -40,8 +40,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		variables.wirebox                      = controller.getWireBox();
 
 		// Routing AppMapping Determinations according to where the ColdBox app and the Web assets are located.
-		variables.appMapping        = controller.getSetting( "AppMapping" );
-		variables.webMapping 	  = controller.getSetting( "WebMapping" );
+		variables.appMapping = controller.getSetting( "AppMapping" );
+		variables.webMapping = controller.getSetting( "WebMapping" );
 
 		// Determine the routing app mapping
 		// This is determined by the following process:
@@ -58,7 +58,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		controller.setSetting( "routingAppMapping", variables.routingAppMapping );
 
 		// Register as an interceptor to listen to pre processes for routing
-		variables.controller.getInterceptorService().registerInterceptor( interceptorObject : this );
+		variables.controller.getInterceptorService().registerInterceptor( interceptorObject: this );
 
 		// Load the Application Router
 		loadRouter();

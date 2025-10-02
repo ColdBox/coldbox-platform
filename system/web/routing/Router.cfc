@@ -31,11 +31,11 @@ component
 		inject  ="coldbox"
 		delegate="relocate,runEvent,runRoute";
 
-	property name="flash"  inject="coldbox:flash";
+	property name="flash" inject="coldbox:flash";
 
 	property name="logBox" inject="logbox";
 
-	property name="log"    inject="logbox:logger:{this}";
+	property name="log" inject="logbox:logger:{this}";
 
 	property
 		name    ="wirebox"
