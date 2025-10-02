@@ -1436,12 +1436,6 @@ component serializable="false" accessors="true" {
 		arguments.baseURL     = trim( arguments.baseURL );
 		arguments.queryString = trim( arguments.queryString );
 
-		// Front Controller Base
-		var frontController = "index.cfm";
-		if ( len( arguments.baseURL ) neq 0 ) {
-			frontController = arguments.baseURL;
-		}
-
 		// SSL ON OR TURN IT ON
 		if ( isSSL() OR ( !isNull( arguments.ssl ) and arguments.ssl ) ) {
 			variables.SESBaseURL = replaceNoCase( variables.SESBaseURL, "http:", "https:" );
