@@ -557,11 +557,11 @@ component accessors="true" singleton {
 		var relationMetaClass = "";
 		// BoxLang Prime
 		if ( arguments.relationalMeta.properties[ arguments.key ].keyExists( "className" ) ) {
-			relationMetaClass = listLast( arguments.relationalMeta.properties[ arguments.key ].className, "." )
+			relationMetaClass = arguments.relationalMeta.properties[ arguments.key ].className;
 		}
 		// CFML Legacy
 		if ( arguments.relationalMeta.properties[ arguments.key ].keyExists( "cfc" ) ) {
-			relationMetaClass = listLast( arguments.relationalMeta.properties[ arguments.key ].cfc, "." )
+			relationMetaClass = arguments.relationalMeta.properties[ arguments.key ].cfc;
 		}
 
 		// 1.) name match
@@ -571,10 +571,10 @@ component accessors="true" singleton {
 		// 2.) attempt match on class metadata on the property:
 		// property name="role" cfc="security.Role"
 		// property name="role" class="security.Role"
-		else if ( validEntityNames.findNoCase( relationMetaClass ) ) {
-			targetEntityName = relationMetaClass;
+		else if ( validEntityNames.findNoCase( listLast( relationMetaClass, "." ) ) ) {
+			targetEntityName = listLast( relationMetaClass, "." );
 		}
-		// 3.) class lookup
+		// 3.) class lookup - this would only execute if the `cfc` or `className` attribute was pointing to a CFC, but the entity name was different than the file name
 		else {
 			var annotations = server.keyExists( "boxlang" ) ? getClassMetadata( relationMetaClass ).annotations : getComponentMetadata(
 				relationMetaClass
