@@ -574,7 +574,7 @@ component accessors="true" singleton {
 		else if ( validEntityNames.findNoCase( listLast( relationMetaClass, "." ) ) ) {
 			targetEntityName = listLast( relationMetaClass, "." );
 		}
-		// 3.) class lookup - this would only fire if the `cfc` or `className` attribute was pointing to a CFC, but the entity name was different than the file name
+		// 3.) class lookup - this would only execute if the `cfc` or `className` attribute was pointing to a CFC, but the entity name was different than the file name
 		else {
 			var annotations = server.keyExists( "boxlang" ) ? getClassMetadata( relationMetaClass ).annotations : getComponentMetadata(
 				relationMetaClass
