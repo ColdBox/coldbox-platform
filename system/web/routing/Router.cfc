@@ -185,11 +185,11 @@ component
 	}
 
 	/**
-     * Helper to avoid break issues when upgrading
-     */
-    function setFullRewrites(){
-	    variables.log.warn( "The setFullRewrites() method on the router is removed and deprecated since version 6. Please do not use anymore" );
-    }
+	 * Helper to avoid break issues when upgrading
+	 */
+	function setFullRewrites(){
+		variables.log.warn( "The setFullRewrites() method on the router is removed and deprecated since version 6. Please do not use anymore" );
+	}
 
 	/**
 	 * This method is called by the Routing Services to make sure the router is ready for operation.
