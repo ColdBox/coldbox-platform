@@ -176,7 +176,6 @@ component
 		return this;
 	}
 
-
 	/**
 	 * This method is to be implemented by the application router you create.
 	 * This is where you will define all your routing.
@@ -185,7 +184,7 @@ component
 	}
 
 	/**
-	 * Helper to avoid break issues when upgrading
+	 * Helper to avoid break issues when upgrading to ColdBox 8
 	 */
 	function setFullRewrites(){
 		variables.log.warn( "The setFullRewrites() method on the router is removed and deprecated since version 6. Please do not use anymore" );
