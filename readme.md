@@ -35,7 +35,7 @@ Holy Ghost which is given unto us. ." Romans 5:5
 
 # Welcome to ColdBox HMVC Platform
 
-ColdBox is the **de-facto enterprise-level HMVC (Hierarchical Model-View-Controller) framework** designed for two powerful programming languages:
+ColdBox is the **enterprise-level HMVC (Hierarchical Model-View-Controller) framework** designed for two powerful programming languages:
 
 - **[BoxLang](https://www.boxlang.io)** - A modern JVM language owned and directed by the ColdBox team
 - **CFML (ColdFusion)** - Legacy support for existing enterprise applications
@@ -76,7 +76,12 @@ Built for scalability, modularity, and developer productivity, ColdBox eliminate
 
 We have made a firm commitment to our community that our Documentation will always be complete and up to date.  We have have a dedicated team that works full time on keeping the documentation accurate and relevant, with over 20 years of delivering quality documentation to the community.
 
-**Comprehensive documentation is available at: [https://coldbox.ortusbooks.com](https://coldbox.ortusbooks.com)**
+- [https://coldbox.ortusbooks.com](https://coldbox.ortusbooks.com)
+- [https://cachebox.ortusbooks.com](https://cachebox.ortusbooks.com)
+- [https://logbox.ortusbooks.com](https://logbox.ortusbooks.com)
+- [https://wirebox.ortusbooks.com](https://wirebox.ortusbooks.com)
+
+**Please note that all of our docs include embedded MCP servers that you can easily use in any of your AI tools.**
 
 ### Quick Links
 
