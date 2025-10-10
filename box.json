@@ -1,6 +1,6 @@
 {
     "name":"ColdBox Platform Development Framework",
-    "version":"8.0.0",
+    "version":"8.1.0",
     "location":"https://downloads.ortussolutions.com/ortussolutions/coldbox/@build.version@/coldbox-@build.version@.zip",
     "author":"Ortus Solutions <info@ortussolutions.com>",
     "slug":"coldbox",
@@ -43,7 +43,7 @@
     },
     "devDependencies":{
         "testbox":"be",
-		"commandbox-boxlang":"*",
+        "commandbox-boxlang":"*",
         "commandbox-cfformat":"*"
     },
     "installPaths":{
@@ -66,15 +66,15 @@
         "format:check":"cfformat check system/**/*.cfc,tests/specs/**/*.cfc ./.cfformat.json",
         "start:lucee":"server start serverConfigFile='server-lucee@5.json' --force",
         "start:boxlang":"server start serverConfigFile='server-boxlang-cfml@1.json' --force",
-		"start:boxlangprime":"server start serverConfigFile='server-boxlang@1.json' --force",
+        "start:boxlangprime":"server start serverConfigFile='server-boxlang@1.json' --force",
         "start:adobe":"server start serverConfigFile='server-adobe@2025.json' --force",
         "stop:lucee":"server stop serverConfigFile='server-lucee@5.json' --force",
         "stop:boxlang":"server stop serverConfigFile='server-boxlang-cfml@1.json' --force",
-		"stop:boxlangprime":"server stop serverConfigFile='server-boxlang@1.json' --force",
+        "stop:boxlangprime":"server stop serverConfigFile='server-boxlang@1.json' --force",
         "stop:adobe":"server stop serverConfigFile='server-adobe@2025.json' --force",
         "log:lucee":"server log coldbox-lucee@5 --follow",
         "log:boxlang":"server log coldbox-boxlang-cfml@1 --follow",
-		"log:boxlangprime":"server log coldbox-boxlang@1 --follow",
+        "log:boxlangprime":"server log coldbox-boxlang@1 --follow",
         "log:adobe":"server log coldbox-adobe@2025 --follow"
     }
 }
