@@ -1,6 +1,12 @@
 /**
- * Build process for ColdBox Modules
- * Adapt to your needs.
+ * Build automation script for the ColdBox Platform
+ *
+ * This component handles the build processes for the ColdBox framework including:
+ * - Compilation and packaging
+ * - Testing automation
+ * - Documentation generation
+ * - Release management
+ * - Distribution preparation
  */
 component {
 
@@ -18,18 +24,38 @@ component {
 		// Source Excludes Not Added to final binary
 		variables.excludes = [ "^\..*", "\/build\/", "test-harness" ];
 
+		// The Libraries we are building
 		variables.libraries = {
+			"bx-coldbox" : {
+				"standalone" : false,
+				"transpile" : false,
+				// Don't compile until we fix a few sourceless deployment issues
+				"compile": true,
+				"apidocs" : false,
+				"readme"     : "readme.md",
+				"boxjson"    : "build/resources/box-boxlang.json",
+				"sources"   : [
+					"system",
+					"ModuleConfig.bx"
+				]
+			},
 			"coldbox" : {
 				"standalone" : false,
+				"transpile" : false,
+				"compile": false,
+				"apidocs" : true,
 				"readme"     : "readme.md",
-				"boxjson"    : "box-original.json",
-				"packages"   : [ "system" ]
+				"boxjson"    : "build/resources/box-coldbox.json",
+				"sources"   : [ "system" ]
 			},
 			"cachebox" : {
 				"standalone" : true,
+				"transpile" : false,
+				"compile": false,
+				"apidocs" : true,
 				"readme"     : "system/cache/readme.md",
-				"boxjson"    : "box-cachebox.json",
-				"packages"   : [
+				"boxjson"    : "build/resources/box-cachebox.json",
+				"sources"   : [
 					"system/async",
 					"system/cache",
 					"system/core",
@@ -38,9 +64,12 @@ component {
 			},
 			"logbox" : {
 				"standalone" : true,
+				"transpile" : false,
+				"compile": false,
+				"apidocs" : true,
 				"readme"     : "system/logging/readme.md",
-				"boxjson"    : "box-logbox.json",
-				"packages"   : [
+				"boxjson"    : "build/resources/box-logbox.json",
+				"sources"   : [
 					"system/async",
 					"system/core",
 					"system/logging"
@@ -48,9 +77,12 @@ component {
 			},
 			"wirebox" : {
 				"standalone" : true,
+				"transpile" : false,
+				"compile": false,
+				"apidocs" : true,
 				"readme"     : "system/ioc/readme.md",
-				"boxjson"    : "box-wirebox.json",
-				"packages"   : [
+				"boxjson"    : "build/resources/box-wirebox.json",
+				"sources"   : [
 					"system/async",
 					"system/aop",
 					"system/cache",
@@ -103,6 +135,16 @@ component {
 		boolean docs = true,
 		boolean tests = false
 	){
+
+		// Initial Message
+		variables.print
+			.line()
+			.greenLine( "************************************************************" )
+			.boldGreenLine( "√ Starting the 🥊 ColdBox Platform Build Process" )
+			.greenLine( "************************************************************" )
+			.line()
+			.toConsole();
+
 		// Build the source distributions
 		variables.libraries.each( ( lib ) => {
 			variables.print
@@ -111,12 +153,20 @@ component {
 				.boldBlueLine( "< Building Source For [#arguments.lib#] >" )
 				.blueLine( "************************************************************" )
 				.toConsole()
+
+			// Build the source
 			buildSource(
 				library: arguments.lib,
 				version: version,
 				buildID: buildID,
 				branch : branch
-			);
+			)
+
+			// Print Footer and Separator
+			variables.print
+				.line()
+				.blueLine( "************************************************************" )
+				.toConsole()
 		} );
 
 		// Build the API Docs
@@ -124,7 +174,7 @@ component {
 			buildDocs( argumentCollection = arguments );
 		}
 
-		// RUn tests
+		// Run tests
 		if( arguments.tests ){
 			runTests();
 		}
@@ -205,7 +255,7 @@ component {
 		branch  = "development"
 	){
 		// Build Notice ID
-		print
+		variables.print
 			.line()
 			.boldMagentaLine( "Building [#arguments.library#] v#arguments.version#+#arguments.buildID# from [#cwd#] using the [#arguments.branch#] branch." )
 			.toConsole();
@@ -222,9 +272,10 @@ component {
 		);
 
 		// Copy Sources
-		libRecord.packages.each( ( package ) => {
-			copy( variables.cwd & "#package#", libBuildDir & "/#package#" )
+		libRecord.sources.each( ( target ) => {
+			copy( variables.cwd & "#target#", libBuildDir & "/#target#" )
 		} );
+		// Copy Extras
 		copy( variables.cwd & "license.txt", libBuildDir );
 		copy( variables.cwd & libRecord.readme, libBuildDir );
 		copy( variables.cwd & libRecord.boxjson, libBuildDir & "/box.json" );
@@ -271,6 +322,29 @@ component {
 				.run();
 		}
 
+		// Do we compile?
+		if( libRecord.compile ){
+			print.greenLine( "🤖 Compiling source code to byte code ..." ).toConsole();
+			command( "run" )
+				.params( "boxlang compile --source #libBuildDir# --target #libBuildDir#" )
+				.run()
+		}
+
+		// Do we transpile?
+		if( libRecord.transpile ){
+			print.greenLine( "💫 Transpiling CFML to BoxLang ..." ).toConsole();
+			command( "run" )
+				.params( "boxlang cftranspile --verbose --source #libBuildDir# --target #libBuildDir#" )
+				.run()
+			// Remove now all the cfc, cfm files in the libBuildDir
+			directoryList( libBuildDir, true, "path", ( path ) => {
+				return listFindNoCase( "cfc,cfm", listLast( path, "." ) );
+			} ).each( ( item ) => {
+				print.blueLine( "🥊 Deleting Source File [#item#]" ).toConsole();
+				fileDelete( item );
+			} );
+		}
+
 		// Zip Bundle
 		print.greenLine( "Zipping code to [#libArtifactDir#]..." ).toConsole();
 		cfzip(
@@ -304,6 +378,12 @@ component {
 	 */
 	function buildDocs( version = "1.0.0" ) depends="buildSource"{
 		variables.libraries.each( ( library ) => {
+			// Skip if no apidocs
+			if( !variables.libraries[ arguments.library ].apidocs ){
+				print.yellowLine( "Skipping API Docs for [#arguments.library#]..." ).toConsole();
+				return;
+			}
+
 			// Prep records
 			var libRecord      = variables.libraries[ arguments.library ];
 			var libArtifactDir = ensureExportDir( arguments.library, version );

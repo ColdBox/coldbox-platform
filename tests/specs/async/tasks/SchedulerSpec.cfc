@@ -72,7 +72,7 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 						toConsole( "we blew up: #exception.message#" );
 					} )
 					.onSuccess( function( task, results ){
-						toConsole( "Task has completed with success baby! #results#" );
+						toConsole( "Task has completed with success baby! #results.toString()#" );
 					} );
 
 				scheduler

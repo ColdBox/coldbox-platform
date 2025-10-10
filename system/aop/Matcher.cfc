@@ -10,38 +10,47 @@ component accessors="true" {
 	 * Any matcher
 	 */
 	property name="any";
+
 	/**
 	 * Matching returns
 	 */
 	property name="returns";
+
 	/**
 	 * Matching annotations
 	 */
 	property name="annotation";
+
 	/**
 	 * Matching annotation value
 	 */
 	property name="annotationValue";
+
 	/**
 	 * Matching mapping names
 	 */
 	property name="mappings";
+
 	/**
 	 * Matching instances
 	 */
 	property name="instanceOf";
+
 	/**
 	 * Matching regex
 	 */
 	property name="regex";
+
 	/**
 	 * Matching method names
 	 */
 	property name="methods";
+
 	/**
 	 * And operator
 	 */
 	property name="and";
+
 	/**
 	 * OR operator
 	 */
@@ -97,6 +106,8 @@ component accessors="true" {
 	 * @target              The target to match against to
 	 * @mapping             The target mapping to match against
 	 * @mapping.doc_generic coldbox.system.ioc.config.Mapping
+	 *
+	 * @return boolean
 	 */
 	boolean function matchClass( required target, required mapping ){
 		var results = matchClassRules( argumentCollection = arguments );
@@ -105,6 +116,7 @@ component accessors="true" {
 		if ( isObject( variables.and ) ) {
 			return ( results AND variables.and.matchClass( argumentCollection = arguments ) );
 		}
+
 		// OR matcher set?
 		if ( isObject( variables.or ) ) {
 			return ( results OR variables.or.matchClass( argumentCollection = arguments ) );
@@ -117,6 +129,8 @@ component accessors="true" {
 	 * Matches a method to this matcher according to its criteria
 	 *
 	 * @metadata The UDF metadata to use for matching
+	 *
+	 * @return boolean
 	 */
 	boolean function matchMethod( required metadata ){
 		var results = matchMethodRules( arguments.metadata );
@@ -125,6 +139,7 @@ component accessors="true" {
 		if ( isObject( variables.and ) ) {
 			return ( results AND variables.and.matchMethod( arguments.metadata ) );
 		}
+
 		// OR matcher set?
 		if ( isObject( variables.or ) ) {
 			return ( results OR variables.or.matchMethod( arguments.metadata ) );
@@ -137,12 +152,16 @@ component accessors="true" {
 	 * Go through all the rules in this matcher and match
 	 *
 	 * @metadata The UDF metadata to use for matching
+	 *
+	 * @return boolean
 	 */
 	private boolean function matchMethodRules( required metadata ){
 		// Some metadata defaults
-		var name    = arguments.metadata.name;
-		var returns = "any";
+		var name        = arguments.metadata.name;
+		var returns     = "any";
+		var annotations = arguments.metadata.keyExists( "annotations" ) ? arguments.metadata.annotations : arguments.metadata;
 
+		// Check if we have a return type
 		if ( structKeyExists( arguments.metadata, "returntype" ) ) {
 			returns = arguments.metadata.returntype;
 		}
@@ -151,28 +170,32 @@ component accessors="true" {
 		if ( variables.any ) {
 			return true;
 		}
+
 		// Check explicit methods
 		if ( len( variables.methods ) AND listFindNoCase( variables.methods, name ) ) {
 			return true;
 		}
+
 		// regex
 		if ( len( variables.regex ) AND reFindNoCase( variables.regex, name ) ) {
 			return true;
 		}
+
 		// returns
 		if ( len( variables.returns ) AND variables.returns EQ returns ) {
 			return true;
 		}
+
 		// annotation
-		if ( len( variables.annotation ) AND structKeyExists( arguments.metadata, variables.annotation ) ) {
+		if ( len( variables.annotation ) AND structKeyExists( annotations, variables.annotation ) ) {
 			// No annotation value
-			if ( NOT structKeyExists( variables, "annotationValue" ) ) {
+			if ( NOT structKeyExists( variables, "annotationValue" ) || isNull( variables.annotationValue ) ) {
 				return true;
 			}
 
 			// check annotation value
 			if (
-				structKeyExists( variables, "annotationValue" ) AND arguments.metadata[ variables.annotation ] EQ variables.annotationValue
+				structKeyExists( variables, "annotationValue" ) AND annotations[ variables.annotation ] EQ variables.annotationValue
 			) {
 				return true;
 			}
@@ -187,38 +210,43 @@ component accessors="true" {
 	 * @target              The target to match against to
 	 * @mapping             The target mapping to match against
 	 * @mapping.doc_generic coldbox.system.ioc.config.Mapping
+	 *
+	 * @return boolean
 	 */
 	private boolean function matchClassRules( required target, required mapping ){
-		var md   = arguments.mapping.getObjectMetadata();
-		var path = reReplace( md.name, "(\/|\\)", ".", "all" );
+		var md          = arguments.mapping.getObjectMetadata();
+		var annotations = md.keyExists( "annotations" ) ? md.annotations : md;
+		var path        = reReplace( md.name, "(\/|\\)", ".", "all" );
 
 		// Start with any()
 		if ( variables.any ) {
 			return true;
 		}
+
 		// Check explicit mappings
 		if ( len( variables.mappings ) AND listFindNoCase( variables.mappings, arguments.mapping.getName() ) ) {
 			return true;
 		}
+
 		// regex
 		if ( len( variables.regex ) AND reFindNoCase( variables.regex, path ) ) {
 			return true;
 		}
+
 		// instanceOf
 		if ( len( variables.instanceOf ) AND isInstanceOf( arguments.target, variables.instanceOf ) ) {
 			return true;
 		}
+
 		// annotation
-		if ( len( variables.annotation ) AND structKeyExists( md, variables.annotation ) ) {
+		if ( len( variables.annotation ) AND structKeyExists( annotations, variables.annotation ) ) {
 			// No annotation value
-			if ( NOT structKeyExists( variables, "annotationValue" ) ) {
+			if ( NOT structKeyExists( variables, "annotationValue" ) || isNull( variables.annotationValue ) ) {
 				return true;
 			}
 
 			// check annotation value
-			if (
-				structKeyExists( variables, "annotationValue" ) AND md[ variables.annotation ] EQ variables.annotationValue
-			) {
+			if ( annotations[ variables.annotation ] EQ variables.annotationValue ) {
 				return true;
 			}
 		}
@@ -228,6 +256,8 @@ component accessors="true" {
 
 	/**
 	 * Match against any method name or class path
+	 *
+	 * @return This matcher instance
 	 */
 	function any(){
 		variables.any = true;
@@ -238,6 +268,8 @@ component accessors="true" {
 	 * Match against return types in methods only
 	 *
 	 * @type The type of return to match against.  Only for method matching
+	 *
+	 * @return This matcher instance
 	 */
 	function returns( required type ){
 		variables.returns = arguments.type;
@@ -249,13 +281,17 @@ component accessors="true" {
 	 *
 	 * @annotation The annotation to discover
 	 * @value      The value of the annotation that must match. OPTIONAL
+	 *
+	 * @return This matcher instance
 	 */
 	function annotatedWith( required annotation, value ){
 		variables.annotation = arguments.annotation;
-		// the value of the annotation
-		if ( structKeyExists( arguments, "value" ) ) {
+
+		// Do we have a value for the annotation?
+		if ( !isNull( arguments.value ) ) {
 			variables.annotationValue = arguments.value;
 		}
+
 		return this;
 	}
 
@@ -263,6 +299,8 @@ component accessors="true" {
 	 * Match one, list or array of mapping names. Class Matching Only.
 	 *
 	 * @mappings One, list or array of mappings to match
+	 *
+	 * @return This matcher instance
 	 */
 	function mappings( required mappings ){
 		if ( isArray( arguments.mappings ) ) {
@@ -276,6 +314,8 @@ component accessors="true" {
 	 * Matches against a family of components according to the passed classPath. Class Matching Only.
 	 *
 	 * @classPath The class path to verify instance of
+	 *
+	 * @return This matcher instance
 	 */
 	function instanceOf( required classPath ){
 		variables.instanceOf = arguments.classPath;
@@ -286,6 +326,8 @@ component accessors="true" {
 	 * Matches a class path or method name to this regular expression
 	 *
 	 * @regex The regular expression to match against
+	 *
+	 * @return This matcher instance
 	 */
 	function regex( required regex ){
 		variables.regex = arguments.regex;
@@ -296,6 +338,8 @@ component accessors="true" {
 	 * A list, one or an array of methods to explicitly match
 	 *
 	 * @methods One, list or array of methods to match
+	 *
+	 * @return This matcher instance
 	 */
 	function methods( required methods ){
 		if ( isArray( arguments.methods ) ) {
@@ -310,6 +354,8 @@ component accessors="true" {
 	 *
 	 * @matcher             The matcher to AND this matcher with
 	 * @matcher.doc_generic coldbox.system.aop.Matcher
+	 *
+	 * @return This matcher instance
 	 */
 	function andMatch( required matcher ){
 		variables.and = arguments.matcher;
@@ -321,6 +367,8 @@ component accessors="true" {
 	 *
 	 * @matcher             The matcher to AND this matcher with
 	 * @matcher.doc_generic coldbox.system.aop.Matcher
+	 *
+	 * @return This matcher instance
 	 */
 	function orMatch( required matcher ){
 		variables.or = arguments.matcher;

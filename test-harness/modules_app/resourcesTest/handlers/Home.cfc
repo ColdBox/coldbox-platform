@@ -9,7 +9,7 @@ component {
 	function index( event, rc, prc ){
 		log.info( "Executor injected: #executor.getName()#" );
 		log.info( "Executor injected: #resourcesPool.getName()#" );
-		event.setView( "home/index" );
+		event.noLayout().setView( "home/index" );
 	}
 
 }

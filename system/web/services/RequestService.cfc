@@ -156,9 +156,9 @@ component extends="coldbox.system.web.services.BaseService" {
 			eventCache.append( eventDictionary, true );
 			// Build the event cache key according to incoming request
 			eventCache[ "cacheKey" ] = oEventURLFacade.buildEventKey(
-				keySuffix     = eventDictionary.suffix,
-				targetEvent   = currentEvent,
-				targetContext = arguments.context
+				targetEvent     = currentEvent,
+				targetContext   = arguments.context,
+				eventDictionary = eventDictionary
 			);
 
 			// Check for Event Cache Purge
@@ -286,8 +286,8 @@ component extends="coldbox.system.web.services.BaseService" {
 				break;
 			}
 			case "client": {
-				flashpath = "coldbox.system.web.flash.ClientFlash";
-				break;
+				writeDump( "Client Flash Has Been Removed, Please use session or cache" );
+				abort;
 			}
 			case "cache": {
 				flashpath = "coldbox.system.web.flash.ColdboxCacheFlash";

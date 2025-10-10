@@ -43,11 +43,6 @@ component extends="testbox.system.BaseSpec" {
 				expect( data ).toBe( "LONGTEXT" );
 			} );
 
-			it( "can get a query param data/time column type", function(){
-				var data = schemaInfo.getQueryParamDateTimeType( dsn );
-				expect( data ).toBe( "cf_sql_timestamp" );
-			} );
-
 			it( "can get all the tables on the specified datasource", function(){
 				var data = schemaInfo.getTables( dsn );
 				expect( data ).toBeArray();

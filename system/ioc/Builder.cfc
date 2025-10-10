@@ -1036,9 +1036,9 @@ component serializable="false" accessors="true" {
 		var baseObject = variables.injector.buildInstance( arguments.mapping );
 		variables.mixerUtil.start( baseObject );
 		variables.injector.autowire(
-			target  = baseObject,
-			mapping = arguments.mapping,
-			targetID: arguments.mapping.getName()
+			target   = baseObject,
+			mapping  = arguments.mapping,
+			targetID = arguments.mapping.getName()
 		);
 
 		// Mix them up baby!

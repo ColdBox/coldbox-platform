@@ -7,6 +7,8 @@ on:
     secrets:
       SLACK_WEBHOOK_URL:
         required: false
+  # Allow manual triggering
+  workflow_dispatch:
 
 jobs:
   tests:
@@ -16,24 +18,28 @@ jobs:
     env:
       DB_USER: root
       DB_PASSWORD: root
+      COMMANDBOX_VERSION: 6.2.1
     continue-on-error: ${{ matrix.experimental }}
     strategy:
       fail-fast: false
       matrix:
-        commandbox_version: [ "6.2.0" ]
-        cfengine: [ "boxlang-cfml@1", "lucee@5", "lucee@6", "adobe@2021", "adobe@2023" ]
+        cfengine: [ "boxlang@1", "boxlang-cfml@1", "lucee@5", "lucee@6", "adobe@2025" ]
         jdkVersion: [ "21" ]
-        experimental: [false]
+        experimental: [ false ]
         timeoutMinutes: [ 8 ]
         include:
-          - cfengine: "adobe@2025"
+          - cfengine: "boxlang-cfml@be"
             jdkVersion: "21"
-            commandbox_version: "6.2.0"
+            experimental: true
+            timeoutMinutes: 8
+          # Added here, due to cfpm crapping out too often, and I can't build
+          - cfengine: "adobe@2023"
+            jdkVersion: "11"
             experimental: true
             timeoutMinutes: 8
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Database and Fixtures
         run: |
@@ -42,7 +48,7 @@ jobs:
           mysql -u${{ env.DB_USER }} -p${{ env.DB_PASSWORD }} < tests/resources/coolblog.sql
 
       - name: Setup Java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: "temurin"
           java-version: ${{ matrix.jdkVersion }}
@@ -50,7 +56,7 @@ jobs:
       - name: Setup CommandBox CLI
         uses: Ortus-Solutions/setup-commandbox@v2.0.1
         with:
-          version: ${{ matrix.commandbox_version }}
+          version: ${{ env.COMMANDBOX_VERSION }}
           install: commandbox-boxlang
 
       - name: Setup .env For Runner
@@ -67,13 +73,11 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          # Core dependencies
           box install --verbose
 
       - name: Start ${{ matrix.cfengine }} Server
         run: |
           box server start serverConfigFile="server-${{ matrix.cfengine }}.json" --noSaveSettings --debug
-          # Test the harness
           curl http://127.0.0.1:8599/test-harness
 
       - name: Run Tests
@@ -83,13 +87,16 @@ jobs:
       - name: Set cfengine version env
         run: echo "CFENGINE_VERSION=$(box echo ${serverInfo.engineName@coldbox-${{ matrix.cfengine }}}@${serverInfo.engineVersion@coldbox-${{ matrix.cfengine }}})" >> $GITHUB_ENV
 
-      - name: Upload Test Results Artifacts
+      - name: Publish Test Reports
+        uses: mikepenz/action-junit-report@v5.6.2
         if: always()
-        uses: actions/upload-artifact@v4
         with:
-          name: Test Results Engine ${{ matrix.cfengine }} JDK ${{ matrix.jdkVersion }}
-          path: |
-            tests/results/**/*
+          report_paths: |
+            tests/results/**/*.xml
+          check_name: "TestBox Report ${{ matrix.cfengine }}-${{ matrix.jdkVersion }}"
+          include_passed: false
+          fail_on_failure: true
+          detailed_summary: true
 
       - name: Slack Notification
         # Only on failures and NOT in pull requests
@@ -128,7 +135,7 @@ jobs:
     if: always()
     steps:
       - name: Download Test Results Artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           path: artifacts
 

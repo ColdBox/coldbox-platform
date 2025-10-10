@@ -39,17 +39,26 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		variables.requestService               = controller.getRequestService();
 		variables.wirebox                      = controller.getWireBox();
 
-		// Routing AppMapping Determinations
-		variables.appMapping        = controller.getSetting( "AppMapping" );
-		variables.routingAppMapping = ( len( variables.appMapping ) ? variables.appMapping & "/" : "" );
+		// Routing AppMapping Determinations according to where the ColdBox app and the Web assets are located.
+		variables.appMapping = controller.getSetting( "AppMapping" );
+		variables.webMapping = controller.getSetting( "WebMapping" );
+
+		// Determine the routing app mapping
+		// This is determined by the following process:
+		// - If the web mapping is empty, then the app mapping is used
+		// - If the web mapping is not empty, then it is used instead
+		if ( len( variables.webMapping ) ) {
+			variables.routingAppMapping = variables.webMapping;
+		} else {
+			variables.routingAppMapping = ( len( variables.appMapping ) ? variables.appMapping & "/" : "" );
+		}
 		// Make sure it's prefixed with /
 		variables.routingAppMapping = left( variables.routingAppMapping, 1 ) == "/" ? variables.routingAppMapping : "/#variables.routingAppMapping#";
-
 		// Store routing appmapping
 		controller.setSetting( "routingAppMapping", variables.routingAppMapping );
 
 		// Register as an interceptor to listen to pre processes for routing
-		variables.controller.getInterceptorService().registerInterceptor( interceptorObject = this );
+		variables.controller.getInterceptorService().registerInterceptor( interceptorObject: this );
 
 		// Load the Application Router
 		loadRouter();
@@ -589,16 +598,6 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		if ( results.route.valuePairTranslation ) {
 			findConventionNameValuePairs( requestString, match, results.params );
 		}
-
-		// Process legacy match-variables to incorporate to discovered params
-		results.route.matchVariables
-			.listToArray()
-			.each( function( item ){
-				// Only set if not incoming.
-				if ( !results.params.keyExists( item.getToken( 1, "=" ) ) ) {
-					results.params[ item.getToken( 1, "=" ) ] = item.getToken( 2, "=" );
-				}
-			} );
 
 		return results;
 	}

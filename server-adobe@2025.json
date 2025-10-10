@@ -20,7 +20,7 @@
     },
     "JVM":{
         "heapSize":"1024",
-		"javaVersion":"openjdk21_jre"
+        "javaVersion":"openjdk21_jre"
     },
     "cfconfig":{
         "file":".cfconfig.json"

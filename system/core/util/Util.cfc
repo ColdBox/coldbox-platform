@@ -416,15 +416,18 @@ component {
 			if ( isObject( arguments.component ) ) {
 				arguments.md = getMetadata( arguments.component );
 			} else {
-				arguments.md = getComponentMetadata( arguments.component );
+				arguments.md = server.keyExists( "boxlang" ) ? getClassMetadata( arguments.component ) : getComponentMetadata(
+					arguments.component
+				);
 			}
 		}
 
 		// If it has a parent, stop and calculate it first, unless of course, we've reached a class we shouldn't recurse into.
 		if (
-			structKeyExists( arguments.md, "extends" ) &&
-			arguments.md.type eq "component" &&
-			stopClassRecursion( md.extends.name, arguments.stopRecursions ) EQ FALSE
+			arguments.md.keyExists( "extends" ) AND
+			!arguments.md.extends.isEmpty() AND
+			listFindNoCase( "class,component", arguments.md.extends.type ) AND
+			!stopClassRecursion( arguments.md.extends.name, arguments.stopRecursions )
 		) {
 			loc.parent = getInheritedMetaData(
 				component      = arguments.component,
@@ -471,6 +474,12 @@ component {
 			// Add in anything that's not inheritance or implementation
 			else if ( NOT listFindNoCase( "extends,implements", thisKey ) ) {
 				loc.parent[ thisKey ] = arguments.md[ thisKey ];
+				// TODO: Remove this once we go full BoxLang only source
+				// I will have to merge the annotations to normalize them, to make it easier for ColdBox to deal with
+				// CFML + BoxLang.
+				if ( loc.parent.keyExists( "annotations" ) ) {
+					loc.parent.append( loc.parent.annotations, true );
+				}
 			}
 		}
 
@@ -504,34 +513,6 @@ component {
 				.getVersion()
 				.toString();
 		}
-	}
-
-	/**
-	 **************************************************************************************************************
-	 * DEPRECATED FUNCTIONS
-	 * TODO: REMOVE BY V8
-	 * **************************************************************************************************************
-	 */
-
-	/**
-	 * @deprecated Refactor to use the Env Delegate: coldbox.system.core.delegates.Env
-	 */
-	function getSystemSetting( required key, defaultValue ){
-		return new coldbox.system.core.delegates.Env().getSystemSetting( argumentCollection = arguments );
-	}
-
-	/**
-	 * @deprecated Refactor to use the Env Delegate: coldbox.system.core.delegates.Env
-	 */
-	function getSystemProperty( required key, defaultValue ){
-		return new coldbox.system.core.delegates.Env().getSystemProperty( argumentCollection = arguments );
-	}
-
-	/**
-	 * @deprecated Refactor to use the Env Delegate: coldbox.system.core.delegates.Env
-	 */
-	function getEnv( required key, defaultValue ){
-		return new coldbox.system.core.delegates.Env().getEnv( argumentCollection = arguments );
 	}
 
 }

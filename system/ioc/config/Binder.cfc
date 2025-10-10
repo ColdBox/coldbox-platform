@@ -279,12 +279,6 @@ component accessors="true" {
 			return variables.properties[ arguments.name ];
 		}
 
-		// TODO: remove by v7
-		// Deprecated Check
-		if ( !isNull( arguments.default ) ) {
-			return arguments.default;
-		}
-
 		// Default Value
 		if ( !isNull( arguments.defaultValue ) ) {
 			return arguments.defaultValue;
@@ -1171,15 +1165,6 @@ component accessors="true" {
 	){
 		structAppend( variables.cacheBox, arguments, true );
 		return this;
-	}
-
-	/**
-	 * Alias to get cachebox configuration
-	 *
-	 * @deprecated Remove by v7: use getCacheBox() instead
-	 */
-	struct function getCacheBoxConfig(){
-		return variables.cachebox;
 	}
 
 	/**

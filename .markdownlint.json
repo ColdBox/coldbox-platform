@@ -10,5 +10,6 @@
 	},
 	"no-duplicate-header" : false,
 	"no-duplicate-heading" : false,
-	"no-inline-html" : false
+	"no-inline-html" : false,
+	"no-emphasis-as-heading": false
 }

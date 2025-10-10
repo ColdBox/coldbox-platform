@@ -209,9 +209,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 				// Create the Cache Key to save
 				eventCachingData.cacheKey = oEventURLFacade.buildEventKey(
-					keySuffix     = eventDictionaryEntry.suffix,
-					targetEvent   = arguments.ehBean.getFullEvent(),
-					targetContext = oRequestContext
+					targetEvent     = arguments.ehBean.getFullEvent(),
+					targetContext   = oRequestContext,
+					eventDictionary = eventDictionaryEntry
 				);
 
 				// Event is cacheable and we need to flag it so the Renderer caches it
@@ -654,7 +654,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			"lastAccessTimeout" : "",
 			"cacheKey"          : "",
 			"suffix"            : "",
-			"provider"          : "template"
+			"provider"          : "template",
+			"cacheInclude"      : "*",
+			"cacheExclude"      : "",
+			"cacheFilter"       : ""
 		};
 	}
 
@@ -688,17 +691,49 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 							"cacheLastAccessTimeout",
 							""
 						);
-						mdEntry.provider = arguments.ehBean.getActionMetadata( "cacheProvider", "template" );
+						mdEntry.provider     = arguments.ehBean.getActionMetadata( "cacheProvider", "template" );
+						mdEntry.cacheInclude = arguments.ehBean.getActionMetadata( "cacheInclude", "*" );
+						mdEntry.cacheExclude = arguments.ehBean.getActionMetadata( "cacheExclude", "" );
+						mdEntry.cacheFilter  = arguments.ehBean.getActionMetadata( "cacheFilter", "" );
 
 						// Handler Event Cache Key Suffix, this is global to the event
 						if (
-							isClosure( arguments.oEventHandler.EVENT_CACHE_SUFFIX ) || isCustomFunction(
-								arguments.oEventHandler.EVENT_CACHE_SUFFIX
-							)
+							isClosure( arguments.oEventHandler.EVENT_CACHE_SUFFIX ) ||
+							isCustomFunction( arguments.oEventHandler.EVENT_CACHE_SUFFIX )
 						) {
 							mdEntry.suffix = oEventHandler.EVENT_CACHE_SUFFIX( arguments.ehBean );
 						} else {
 							mdEntry.suffix = arguments.oEventHandler.EVENT_CACHE_SUFFIX;
+						}
+
+						// if the cacheFilter has a length and is a method, then we need to verify and store the resulting closure
+						if ( len( mdEntry.cacheFilter ) ) {
+							// if the method doesn't exist, then throw an exception
+							if ( !arguments.oEventHandler._actionExists( mdEntry.cacheFilter ) ) {
+								throw(
+									message = "CacheFilter expected a private method '#mdEntry.cacheFilter#'",
+									type    = "HandlerInvalidCacheFilterException",
+									detail  = "CacheFilter method '#mdEntry.cacheFilter#' does not exist in handler '#getMetadata( oEventHandler ).name#'. Please verify your cacheFilter annotation."
+								);
+							}
+
+							mdEntry.cacheFilter = arguments.oEventHandler._privateInvoker(
+								mdEntry.cacheFilter,
+								{}
+							);
+
+							// if the cacheFilter isn't a closure, throw an exception
+							// We check for isClosure and isCustomFunction for ACF/Lucee compatibility
+							if (
+								!isClosure( mdEntry.cacheFilter ) &&
+								!isCustomFunction( mdEntry.cacheFilter )
+							) {
+								throw(
+									message = "CacheFilter expected a closure.",
+									type    = "HandlerInvalidCacheFilterException",
+									detail  = "Please verify your cacheFilter annotation in handler '#getMetadata( oEventHandler ).name# to ensure it returns a closure."
+								);
+							}
 						}
 					}
 					// end cache metadata is true

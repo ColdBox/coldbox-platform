@@ -593,9 +593,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 
 	function testGetHTTPContent(){
 		var event = getRequestContext();
-
-		test = event.getHTTPContent();
-
+		test      = event.getHTTPContent();
 		assertTrue( isSimpleValue( test ) );
 	}
 

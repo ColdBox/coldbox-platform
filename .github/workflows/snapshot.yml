@@ -27,15 +27,15 @@ jobs:
     name: Code Auto-Formatting
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Auto-format
-        uses: Ortus-Solutions/commandbox-action@v1.0.2
+        uses: Ortus-Solutions/commandbox-action@v1.0.3
         with:
           cmd: run-script format
 
       - name: Commit Format Changes
-        uses: stefanzweifel/git-auto-commit-action@v4
+        uses: stefanzweifel/git-auto-commit-action@v6
         with:
           commit_message: Apply cfformat changes
           push_options: --force

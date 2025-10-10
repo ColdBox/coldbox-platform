@@ -208,8 +208,10 @@ component accessors="true" {
 		// Register local functions
 		if ( structKeyExists( arguments.metadata, "functions" ) ) {
 			for ( var thisFunction in arguments.metadata.functions ) {
+				var annotations = thisFunction.keyExists( "annotations" ) ? thisFunction.annotations : thisFunction;
+
 				// Verify observe annotation
-				if ( thisFunction.keyExists( "interceptionPoint" ) ) {
+				if ( annotations.keyExists( "interceptionPoint" ) ) {
 					// Register the observation point just in case
 					appendInterceptionPoints( thisFunction.name );
 				}
@@ -228,9 +230,11 @@ component accessors="true" {
 
 		// Start Registering inheritances?
 		if (
-			structKeyExists( arguments.metadata, "extends" )
+			arguments.metadata.keyExists( "extends" )
 			AND
-			NOT listFindNoCase( getStopRecursionClasses(), arguments.metadata.extends.name )
+			!arguments.metadata.extends.isEmpty()
+			AND
+			!listFindNoCase( getStopRecursionClasses(), arguments.metadata.extends.name )
 		) {
 			parseMetadata( arguments.metadata.extends, arguments.eventsFound );
 		}

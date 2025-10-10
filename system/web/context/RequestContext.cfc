@@ -93,11 +93,12 @@ component serializable="false" accessors="true" {
 	/**
 	 * The last status code
 	 * This is used mostly for mocking and tracking multi-step responses in case repsonses are committed.
+	 * Defaults to 200 (OK)
 	 */
 	property
 		name   ="statusCode"
 		type   ="numeric"
-		default="0";
+		default="200";
 
 	/**
 	 * The last status text
@@ -1198,26 +1199,6 @@ component serializable="false" accessors="true" {
 	/***********************************************************************************************************/
 
 	/**
-	 * Setter for verifying SES mode
-	 *
-	 * @deprecated This will be removed in ColdBox 7
-	 *
-	 * @return RequestContext
-	 */
-	function setSESEnabled( required boolean flag ){
-		return this;
-	}
-
-	/**
-	 * Verify if SES is enabled or not in the request
-	 *
-	 * @deprecated This will be removed in ColdBox 7
-	 */
-	boolean function isSES(){
-		return true;
-	}
-
-	/**
 	 * Get the HTML base URL that is used for the HTML <base> tag. This also accounts for SSL or not.
 	 */
 	string function getHTMLBaseURL(){
@@ -1288,6 +1269,8 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
+	 * Remove by ColdBox 9
+	 *
 	 * @deprecated Use `getUrl()` instead
 	 */
 	string function getFullUrl(){
@@ -1318,6 +1301,8 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
+	 * Remove by ColdBox 9
+	 *
 	 * @Deprecated Use `getPath()` instead
 	 */
 	string function getFullPath(){
@@ -1450,12 +1435,6 @@ component serializable="false" accessors="true" {
 		arguments.to          = trim( arguments.to );
 		arguments.baseURL     = trim( arguments.baseURL );
 		arguments.queryString = trim( arguments.queryString );
-
-		// Front Controller Base
-		var frontController = "index.cfm";
-		if ( len( arguments.baseURL ) neq 0 ) {
-			frontController = arguments.baseURL;
-		}
 
 		// SSL ON OR TURN IT ON
 		if ( isSSL() OR ( !isNull( arguments.ssl ) and arguments.ssl ) ) {

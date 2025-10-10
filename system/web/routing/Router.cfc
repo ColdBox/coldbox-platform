@@ -22,16 +22,21 @@ component
 	 ****************************************************************/
 
 	property
-		name    ="cachebox"  
+		name    ="cachebox"
 		inject  ="cachebox"
 		delegate="getCache";
+
 	property
 		name    ="controller"
-		inject  ="coldbox" 
+		inject  ="coldbox"
 		delegate="relocate,runEvent,runRoute";
-	property name="flash"  inject="coldbox:flash";
+
+	property name="flash" inject="coldbox:flash";
+
 	property name="logBox" inject="logbox";
-	property name="log"    inject="logbox:logger:{this}";
+
+	property name="log" inject="logbox:logger:{this}";
+
 	property
 		name    ="wirebox"
 		inject  ="wirebox"
@@ -102,15 +107,6 @@ component
 	property name="baseURL" type="string";
 
 	/**
-	 * This flag denotes if full URL rewrites are enabled or not. Meaning if the `index` is in the path of the rewriter or not.
-	 * The default value is **false**.
-	 */
-	property
-		name   ="fullRewrites"
-		type   ="boolean"
-		default="false";
-
-	/**
 	 * This flag denotes that the routing service will discover the incoming base URL from the host + ssl + environment.
 	 * If off, then it will use whatever the base URL was set in the router.
 	 */
@@ -174,19 +170,24 @@ component
 		variables.validExtensions         = variables.VALID_EXTENSIONS;
 		// Initialize the base URL as empty in case the user overrides it in their own router.
 		variables.baseUrl                 = "";
-		// Are full rewrites enabled
-		variables.fullRewrites            = false;
+		// Multi domain discovery on by default
 		variables.multiDomainDiscovery    = true;
 
 		return this;
 	}
-
 
 	/**
 	 * This method is to be implemented by the application router you create.
 	 * This is where you will define all your routing.
 	 */
 	function configure(){
+	}
+
+	/**
+	 * Helper to avoid break issues when upgrading to ColdBox 8
+	 */
+	function setFullRewrites(){
+		variables.log.warn( "The setFullRewrites() method on the router is removed and deprecated since version 6. Please do not use anymore" );
 	}
 
 	/**
@@ -199,11 +200,6 @@ component
 		// Verify baseUrl is still empty to default it for operation
 		if ( !len( variables.baseUrl ) ) {
 			variables.baseUrl = composeRoutingUrl();
-		}
-
-		// Check if rewrites turned off. If so, append the `index` to it.
-		if ( !variables.fullRewrites AND !findNoCase( frontController, variables.baseURL ) ) {
-			variables.baseURL &= "/#frontController#";
 		}
 
 		// Remove any double slashes: sometimes proxies can interfere
@@ -233,44 +229,6 @@ component
 	 */
 	boolean function isValidExtension( required extension ){
 		return variables.validExtensions.listFindNoCase( arguments.extension ) > 0;
-	}
-
-	/**
-	 * A quick ColdBox4 compatibility wrapper
-	 *
-	 * @deprecated Please use `getModuleRoutingTable()` instead.
-	 */
-	struct function getModulesRoutingTable(){
-		return getModuleRoutingTable();
-	}
-
-	/****************************************************************************************************************************/
-	// DEPRECATED FUNCTIONALITY: Remove in later release
-
-	/**
-	 * Includes a routes configuration file as an added import and returns itself after import
-	 *
-	 * @deprecated Please use the Routes class approach instead
-	 * @location   The include location of the routes configuration template.
-	 *
-	 * @return Router
-	 */
-	function includeRoutes( required location ){
-		// We are ready to roll
-		try {
-			// Try to remove pathInfoProvider, just in case
-			structDelete( variables, "pathInfoProvider" );
-			structDelete( this, "pathInfoProvider" );
-			// Import configuration
-			include arguments.location;
-		} catch ( Any e ) {
-			throw(
-				message = "Error importing routes configuration file: #e.message# #e.detail#",
-				detail  = e.tagContext.toString(),
-				type    = "SES.IncludeRoutingConfig"
-			);
-		}
-		return this;
 	}
 
 	/****************************************************************************************************************************/
@@ -480,66 +438,6 @@ component
 	/****************************************************************************************************************************/
 
 	/**
-	 *
-	 * Starts a with closure, where all arguments will be prefixed for the next concatenated addRoute() methods until an endWith() is called
-	 *
-	 * @deprecated            This has been deprecated in favor of the <code>group()</code> function.
-	 * @pattern               The pattern to match against the URL.
-	 * @handler               The handler to execute if pattern matched.
-	 * @action                The action in a handler to execute if a pattern is matched.  This can also be a structure based on the HTTP method(GET,POST,PUT,DELETE). ex: {GET:'show', PUT:'update', DELETE:'delete', POST:'save'}
-	 * @packageResolverExempt If this is set to true, then the interceptor will not try to do handler package resolving. Else a package will always be resolved. Only works if :handler is in a pattern
-	 * @matchVariables        A string of name-value pair variables to add to the request collection when this pattern matches. This is a comma delimited list. Ex: spaceFound=true,missingAction=onTest
-	 * @view                  The view to dispatch if pattern matches.  No event will be fired, so handler,action will be ignored.
-	 * @viewNoLayout          If view is chosen, then you can choose to override and not display a layout with the view. Else the view renders in the assigned layout.
-	 * @valuePairTranslation  Activate convention name value pair translations or not. Turned on by default
-	 * @constraints           A structure of regex constraint overrides for variable placeholders. The key is the name of the variable, the value is the regex to try to match.
-	 * @module                The module to add this route to
-	 * @moduleRouting         Called internally by addModuleRoutes to add a module routing route.
-	 * @namespace             The namespace to add this route to
-	 * @namespaceRouting      Called internally by addNamespaceRoutes to add a namespaced routing route.
-	 * @ssl                   Makes the route an SSL only route if true, else it can be anything. If an ssl only route is hit without ssl, the interceptor will redirect to it via ssl
-	 * @append                Whether the route should be appended or pre-pended to the array. By default we append to the end of the array
-	 * @domain                The domain to match, including wildcards
-	 *
-	 * @return Router
-	 */
-	function with(
-		string pattern,
-		string handler,
-		any action,
-		boolean packageResolverExempt,
-		string matchVariables,
-		string view,
-		boolean viewNoLayout,
-		boolean valuePairTranslation,
-		any constraints,
-		string module,
-		string moduleRouting,
-		string namespace,
-		string namespaceRouting,
-		boolean ssl,
-		boolean append,
-		string domain
-	){
-		// set the withClosure
-		variables.withClosure.append( arguments );
-		return this;
-	}
-
-	/**
-	 *
-	 * End a with closure and returns itself
-	 *
-	 * @deprecated This has been deprecated in favor of the <code>group()</code> function.
-	 *
-	 * @return Router
-	 */
-	function endWith(){
-		variables.withClosure = {};
-		return this;
-	}
-
-	/**
 	 * process a with closure
 	 *
 	 * @args The arguments to process
@@ -573,7 +471,6 @@ component
 	}
 
 	/**
-	 * This is the new approach to the <code>with</code> closure approach which has been marked as deprecated.
 	 * You can pass any route option via the <code>options</code> structure and those values will be prefixed against
 	 * any routing values done within the <code>body</code> closure.
 	 *
@@ -809,7 +706,6 @@ component
 	 * @handler               The handler to execute if pattern matched.
 	 * @action                The action in a handler to execute if a pattern is matched.  This can also be a structure based on the HTTP method(GET,POST,PUT,DELETE). ex: {GET:'show', PUT:'update', DELETE:'delete', POST:'save'}
 	 * @packageResolverExempt If this is set to true, then the interceptor will not try to do handler package resolving. Else a package will always be resolved. Only works if :handler is in a pattern
-	 * @matchVariables        DEPRECATED: Use RC or PRC structs instead. A string of name-value pair variables to add to the request collection when this pattern matches. This is a comma delimited list. Ex: spaceFound=true,missingAction=onTest
 	 * @view                  The view to dispatch if pattern matches.  No event will be fired, so handler,action will be ignored.
 	 * @viewNoLayout          If view is chosen, then you can choose to override and not display a layout with the view. Else the view renders in the assigned layout.
 	 * @valuePairTranslation  Activate convention name value pair translations or not. Turned on by default
@@ -843,7 +739,6 @@ component
 		string handler                = "",
 		any action                    = "",
 		boolean packageResolverExempt = "false",
-		string matchVariables         = "",
 		string view                   = "",
 		boolean viewNoLayout          = "false",
 		boolean valuePairTranslation  = "true",
@@ -2065,9 +1960,7 @@ component
 	 * Composes the base routing path with no host or protocol
 	 */
 	string function composeRoutingPath(){
-		var base = findNoCase( ".bx", cgi.script_name ) ? "index.bxm" : "index.cfm";
-		return variables.controller.getSetting( "RoutingAppMapping" ) & // routing app mapping
-		( variables.fullRewrites ? "" : base ); // full or controller routing
+		return variables.controller.getSetting( "RoutingAppMapping" );
 	}
 
 	/*****************************************************************************************/

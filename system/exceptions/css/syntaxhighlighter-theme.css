@@ -321,31 +321,35 @@
   color: #94A2A2 !important;
 }
 .syntaxhighlighter .plain, .syntaxhighlighter .plain a {
-  color: #94A2A2 !important;
+  color: #E9E4E5 !important;
 }
 .syntaxhighlighter .comments, .syntaxhighlighter .comments a {
-  color: #667C83 !important;
+  color: #7fcbe2 !important;
+  font-style: italic !important;
 }
 .syntaxhighlighter .string, .syntaxhighlighter .string a {
-  color: #29A198 !important;
+  color: #c0d14c !important;
 }
 .syntaxhighlighter .keyword {
-  color: #B58917 !important;
+  color: #4288CE !important;
+  font-weight: bold !important;
 }
 .syntaxhighlighter .preprocessor {
-  color: #93A1A1 !important;
+  color: #7fcbe2 !important;
 }
 .syntaxhighlighter .variable {
-  color: #268BD2 !important;
+  color: #E9E4E5 !important;
 }
 .syntaxhighlighter .value {
-  color: #29A198 !important;
+  color: #eb4c4c !important;
 }
 .syntaxhighlighter .functions {
-  color: #d29116 !important;
+  color: #4288CE !important;
+  font-weight: bold !important;
 }
 .syntaxhighlighter .constants {
-  color: #6C71C4 !important;
+  color: #eb4c4c !important;
+  font-weight: bold !important;
 }
 .syntaxhighlighter .script {
   font-weight: bold !important;

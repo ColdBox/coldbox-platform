@@ -83,6 +83,16 @@ component accessors="true" {
 		default="200";
 
 	/**
+	 * Remove by ColdBox 9
+	 *
+	 * @deprecated The status text is not used in the servlet spec anymore.
+	 */
+	property
+		name   ="statusText"
+		type   ="string"
+		default="Ok";
+
+	/**
 	 * The response time
 	 */
 	property
@@ -325,6 +335,13 @@ component accessors="true" {
 			setStatus( arguments.statusCode );
 		}
 
+		return this;
+	}
+
+	/**
+	 * This is a no-op since newer servlet specs do not support setting the status text
+	 */
+	Response function setStatusText(){
 		return this;
 	}
 

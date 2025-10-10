@@ -67,7 +67,7 @@
 	}
 
 	function testgetKeys(){
-		cacheClear();
+		cache.clearAll();
 		cache.set( "test", now() );
 		cache.set( "test2", now() );
 		assertEquals( 2, arrayLen( cache.getKeys() ) );

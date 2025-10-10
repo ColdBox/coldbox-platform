@@ -285,24 +285,6 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				} );
 			} );
 
-			story( "I can register routes with a with closure", function(){
-				given( "a with closure", function(){
-					then( "it will concatenate its members", function(){
-						router
-							.with( pattern = "/api", handler = "luis" )
-							.addRoute( pattern = "/users", action = "index" )
-							.addRoute( pattern = "/hello", action = "hello" )
-							.endWith();
-						var routes = router
-							.getRoutes()
-							.filter( function( item ){
-								return ( reFindNoCase( "^api", item.pattern ) && reFindNoCase( "luis", item.handler ) );
-							} );
-						expect( routes ).notToBeEmpty();
-					} );
-				} );
-			} );
-
 			story( "I can register route headers", function(){
 				given( "A single or multiple headers", function(){
 					then( "they will register correctly", function(){

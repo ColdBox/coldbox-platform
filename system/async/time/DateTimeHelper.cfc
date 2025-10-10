@@ -320,27 +320,30 @@ component singleton {
 		// transform all to seconds
 		switch ( arguments.targetTimeUnit ) {
 			case "SECONDS":
-				arguments.value = arguments.value * 60 * 60 * 24;
+				return arguments.value;
+				break;
+			case "DAYS":
+				return arguments.value * 60 * 60 * 24;
 				break;
 			case "HOURS":
-				arguments.value = arguments.value * 60 * 60;
+				return arguments.value * 60 * 60;
 				break;
 			case "MINUTES":
-				arguments.value = arguments.value * 60;
+				return arguments.value * 60;
 				break;
 			case "MILLISECONDS":
-				arguments.value = arguments.value / 1000;
+				return arguments.value / 1000;
 				break;
 			case "MICROSECONDS":
-				arguments.value = arguments.value / 1000000;
+				return arguments.value / 1000000;
 				break;
 			case "NANOSECONDS":
-				arguments.value = arguments.value / 1000000000;
+				return arguments.value / 1000000000;
 				break;
 			default:
+				return arguments.value;
 				break;
 		}
-		return arguments.value;
 	}
 
 	/**

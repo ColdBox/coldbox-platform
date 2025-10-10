@@ -33,7 +33,7 @@ component serializable="false" accessors="true" {
 	param name="COLDBOX_APP_KEY"       default="cbController";
 	param name="COLDBOX_APP_MAPPING"   default="";
 	param name="COLDBOX_WEB_MAPPING"   default="";
-	param name="appHash"               default="#hash( getBaseTemplatePath() )#";
+	param name="appHash"               default="#hash( getBaseTemplatePath() & application.applicationname )#";
 	param name="lockTimeout" default="30" type="numeric";
 	param name="COLDBOX_FAIL_FAST" default="true";
 
@@ -83,18 +83,11 @@ component serializable="false" accessors="true" {
 		}
 
 		// Verify Mapping
-		if ( !fileExists( expandPath( "/coldbox/system/web/Controller.cfc" ) ) ) {
-			var coldboxDirectory = reReplaceNoCase(
-				getDirectoryFromPath( getCurrentTemplatePath() ),
-				"[\\/]system",
-				""
-			);
+		if ( !directoryExists( expandPath( "/coldbox/system/" ) ) ) {
 			throw(
-				message = "Cannot find the '/'coldbox' mapping",
+				message = "Cannot find the '/'coldbox' mapping or directory",
 				detail  = "It seems that you do not have a '/coldbox' mapping in your application and we cannot continue to process the request.
-				The good news is that you can easily resolve this by either creating a mapping in your Admnistrator or in this application's
-				Application.cfc that points to this directory: '#coldboxDirectory#'.  You can also copy the code snippet
-				below to add to your Application.cfc's pseudo constructor: this.mappings[ '/coldbox' ] = '#coldboxDirectory#'",
+				Make sure ColdBox is installed correctly or create a mapping to the ColdBox system folder.",
 				type = "InvalidColdBoxMapping"
 			);
 		}
@@ -474,7 +467,11 @@ component serializable="false" accessors="true" {
 	/************************************** APP.CFC FACADES *********************************************/
 
 	/**
-	 * On request start
+	 * This fire on every request, it will process a ColdBox request if the target page is index.cfm or index.bxm
+	 *
+	 * Also note that this method will output content directly so do not try to return anything from it.
+	 *
+	 * @targetPage The target page of the request
 	 */
 	boolean function onRequestStart( required targetPage ) output=true{
 		// Global flag to denote if we are in mid reinit or not.
@@ -504,9 +501,12 @@ component serializable="false" accessors="true" {
 		// If the file is "index.(cfm|bxm)" then we will process it
 		if ( reFindNoCase( "index\.(cfm|bxm)", listLast( arguments.targetPage, "/" ) ) ) {
 			processColdBoxRequest();
+			return false;
+		} else {
+			// Just load the module mappings in case we are in a module request or a web socket request.
+			application[ locateAppKey() ].getModuleService().loadMappings();
+			return true;
 		}
-
-		return true;
 	}
 
 	/**
@@ -592,7 +592,7 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
-	 * ON application start
+	 *  When the application starts, ColdBox will be loaded into application scope
 	 */
 	boolean function onApplicationStart(){
 		// Load ColdBox
@@ -601,7 +601,7 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
-	 * ON application end
+	 * Tear down the application and execute shutdown procedures
 	 */
 	function onApplicationEnd( struct appScope ){
 		var cbController = arguments.appScope[ locateAppKey() ];

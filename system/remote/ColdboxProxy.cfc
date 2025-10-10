@@ -148,7 +148,7 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
-	 * @deprecated Please use the new `emit()` function
+	 * @deprecated Please use the new `announce()` function
 	 */
 	private function announceInterception(
 		required state,
@@ -374,7 +374,7 @@ component serializable="false" accessors="true" {
 
 		// Find the path of the proxy component being called
 		// replace the context root at the beginning of the script
-		var componentPath = replaceNoCase( scriptName, getContextRoot(), "", "one" );
+		var componentPath = len( getContextRoot ) ? replaceNoCase( scriptName, getContextRoot(), "", "one" ) : scriptName;
 		// remove the extension, if any
 		componentPath     = reReplaceNoCase( componentPath, "\..+$", "", "one" );
 		// replace all slashes with dots

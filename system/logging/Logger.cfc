@@ -31,27 +31,38 @@ component accessors="true" {
 	 */
 	property name="levelMax";
 
+	/**
+	 * Flag to allow serializing complex objects in `extraInfo`.
+	 */
+	property
+		name   ="serializeExtraInfo"
+		type   ="boolean"
+		default="true";
+
 	// The log levels enum as a public property
 	this.logLevels = new coldbox.system.logging.LogLevels();
 
 	/**
 	 * Constructor
 	 *
-	 * @category  The category name to use this logger with
-	 * @levelMin  The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARN
-	 * @levelMax  The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARN
-	 * @appenders A struct of already created appenders for this category, or blank to use the root logger.
+	 * @category           The category name to use this logger with
+	 * @levelMin           The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARN
+	 * @levelMax           The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARN
+	 * @appenders          A struct of already created appenders for this category, or blank to use the root logger.
+	 * @serializeExtraInfo Flag to allow serializing complex objects in `extraInfo`. Default is true.
 	 */
 	function init(
 		required category,
-		numeric levelMin = 0,
-		numeric levelMax = 4,
-		struct appenders = {}
+		numeric levelMin           = 0,
+		numeric levelMax           = 4,
+		struct appenders           = {},
+		boolean serializeExtraInfo = true
 	){
 		// Save Properties
-		variables.rootLogger = "";
-		variables.category   = arguments.category;
-		variables.appenders  = arguments.appenders;
+		variables.rootLogger         = "";
+		variables.category           = arguments.category;
+		variables.appenders          = arguments.appenders;
+		variables.serializeExtraInfo = arguments.serializeExtraInfo;
 
 		// Logger Logging Level defaults, which is wideeeee open!
 		variables.levelMin = arguments.levelMin;
@@ -60,7 +71,6 @@ component accessors="true" {
 		// Utilities
 		variables._hash = createUUID();
 		variables.util  = new coldbox.system.core.util.Util();
-
 
 		// Local Locking
 		variables.lockName    = variables._hash & "LoggerOperation";
@@ -317,14 +327,16 @@ component accessors="true" {
 	/**
 	 * Write an entry into the loggers registered with this LogBox variables
 	 *
-	 * @message   A message to log or a closure that returns a message to log
-	 * @severity  The severity level to log, if invalid, it will default to **Info**
-	 * @extraInfo Extra information to send to appenders
+	 * @message            A message to log or a closure that returns a message to log
+	 * @severity           The severity level to log, if invalid, it will default to **Info**
+	 * @extraInfo          Extra information to send to appenders
+	 * @serializeExtraInfo Flag to allow serializing complex objects in `extraInfo`. Default is the logger's setting.
 	 */
 	Logger function logMessage(
 		required message,
 		required severity,
-		extraInfo = ""
+		extraInfo                  = "",
+		boolean serializeExtraInfo = variables.serializeExtraInfo
 	){
 		var target = this;
 
@@ -375,23 +387,25 @@ component accessors="true" {
 				) {
 					// Thread this puppy
 					thread
-						action      ="run"
-						name        ="logMessage_#replace( createUUID(), "-", "", "all" )#"
-						appenderName="#key#"
-						message     ="#arguments.message#"
-						severity    ="#arguments.severity#"
-						extraInfo   ="#arguments.extraInfo#"
-						category    ="#arguments.category#" {
-						var target  = this;
+						action            ="run"
+						name              ="logMessage_#replace( createUUID(), "-", "", "all" )#"
+						appenderName      ="#key#"
+						message           ="#arguments.message#"
+						severity          ="#arguments.severity#"
+						extraInfo         ="#arguments.extraInfo#"
+						category          ="#arguments.category#"
+						serializeExtraInfo="#arguments.serializeExtraInfo#" {
+						var target        = this;
 						if ( !hasAppenders() ) {
 							target = getRootLogger();
 						}
 						var thisAppender = target.getAppender( attributes.appenderName );
 						thread.logEvent  = new coldbox.system.logging.LogEvent(
-							message   = attributes.message,
-							severity  = attributes.severity,
-							extraInfo = attributes.extraInfo,
-							category  = attributes.category
+							message           : attributes.message,
+							severity          : attributes.severity,
+							extraInfo         : attributes.extraInfo,
+							category          : attributes.category,
+							serializeExtraInfo: attributes.serializeExtraInfo
 						);
 						thisAppender.logMessage( thread.logEvent );
 					}

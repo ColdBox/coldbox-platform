@@ -218,22 +218,6 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	}
 
 	/**
-	 * @deprecated please use `announce()` instead
-	 */
-	public any function processState(
-		required any state,
-		any interceptData        = structNew(),
-		boolean async            = false,
-		boolean asyncAll         = false,
-		boolean asyncAllJoin     = true,
-		string asyncPriority     = "NORMAL",
-		numeric asyncJoinTimeout = 0
-	){
-		arguments.data = arguments.interceptData;
-		return announce( argumentCollection = arguments );
-	}
-
-	/**
 	 * Produce a lazy buffer for performance considerations
 	 *
 	 * @return { get(), clear(), append(), length(), getString() }
@@ -673,6 +657,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// Start Registering inheritances
 		if (
 			arguments.metadata.keyExists( "extends" )
+			&&
+			!arguments.metadata.extends.isEmpty()
 			&&
 			arguments.metadata.extends.name neq "coldbox.system.EventHandler"
 		) {

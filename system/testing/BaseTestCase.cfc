@@ -234,7 +234,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 		var rcProps        = structNew();
 
 		if ( arguments.clearMethods ) {
-			if ( structKeyExists( arguments, "decorator" ) ) {
+			if ( !isNull( arguments.decorator ) ) {
 				return getMockBox().createEmptyMock( arguments.decorator );
 			}
 			return getMockBox().createEmptyMock( "coldbox.system.web.context.RequestContext" );
@@ -256,7 +256,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 		mockRC.init( properties = rcProps, controller = mockController );
 
 		// return decorator context
-		if ( structKeyExists( arguments, "decorator" ) ) {
+		if ( !isNull( arguments.decorator ) ) {
 			return getMockBox().createMock( arguments.decorator ).init( mockRC, mockController );
 		}
 

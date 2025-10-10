@@ -1,6 +1,6 @@
 {
     "app":{
-        "cfengine":"boxlang@be",
+        "cfengine":"boxlang@1",
         "serverHomeDirectory":".engine/boxlang"
     },
     "name":"coldbox-boxlang",
@@ -20,7 +20,8 @@
     },
     "JVM":{
         "heapSize":"768",
-        "args":"-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=9999"
+        "javaVersion":"openjdk21_jre",
+        "args":"-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=9997"
     },
     "cfconfig":{
         "file":".cfconfig.json"
@@ -29,6 +30,7 @@
         "BOXLANG_DEBUG":true
     },
     "scripts":{
-        "onServerInitialInstall":"install bx-mail,bx-pdf,bx-mysql,bx-esapi,bx-orm@be --noSave"
-    }
+        "onServerInitialInstall":"install bx-mail,bx-pdf,bx-mysql,bx-esapi,bx-orm --noSave"
+    },
+    "conosole":true
 }

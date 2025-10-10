@@ -1,12 +1,15 @@
 /**
  * Static class to build executors from Java:
  *
- * - FixedThreadPool
- * - SingleThreadPool
  * - CachedThreadPool
+ * - FixedThreadPool
+ * - ForkJoinPool
+ * - SingleThreadPool
  * - ScheduledThreadPool
+ * - WorkStealingPool
+ * - VirtualThreadPool
  *
- * @see https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executors.html
+ * @see https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/Executors.html
  */
 component singleton {
 
@@ -55,6 +58,56 @@ component singleton {
 	 */
 	function newScheduledThreadPool( corePoolSize = this.DEFAULT_THREADS ){
 		return variables.jExecutors.newScheduledThreadPool( javacast( "int", arguments.corePoolSize ) );
+	}
+
+	/**
+	 * Create a virtual thread executor that can be used to run tasks in a virtual thread context.
+	 *
+	 * @see https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/VirtualThreadExecutor.html
+	 *
+	 * @return VirtualThreadExecutor: The newly created virtual thread executor
+	 */
+	function newVirtualThreadExecutor(){
+		return variables.jExecutors.newVirtualThreadPerTaskExecutor();
+	}
+
+	/**
+	 * Create a work stealing pool executor that can be used to run tasks in a work-stealing context.
+	 *
+	 * @see https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/WorkStealingPoolExecutor.html
+	 *
+	 * @return WorkStealingPoolExecutor: The newly created work stealing pool executor
+	 */
+	function newWorkStealingPoolExecutor( numeric parallelism = 0 ){
+		if ( arguments.parallelism > 0 ) {
+			return variables.jExecutors.newWorkStealingPool( javacast( "int", arguments.parallelism ) );
+		}
+		// If no parallelism is specified, use the default behavior
+		// which is to use the number of available processors.
+		// This is similar to the default behavior of the Java Executors class.
+		// This will create a work-stealing pool with a parallelism level
+		// equal to the number of available processors.
+		// This is useful for tasks that can benefit from parallel execution.
+		return variables.jExecutors.newWorkStealingPool();
+	}
+
+	/**
+	 * New ForkJoinPool executor.
+	 *
+	 * @see   https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/ForkJoinPool.html
+	 * @param maxThreads The maximum number of threads to use in the pool, defaults to 20.
+	 *
+	 * @return ForkJoinPool: The newly created ForkJoinPool
+	 */
+	function newForkJoinPool( numeric maxThreads = this.DEFAULT_THREADS ){
+		if ( maxThreads > 0 ) {
+			return createObject( "java", "java.util.concurrent.ForkJoinPool" ).init(
+				javacast( "int", arguments.maxThreads )
+			);
+		}
+		// If no maxThreads is specified, use the default behavior
+		// which is to use the number of available processors.
+		return createObject( "java", "java.util.concurrent.ForkJoinPool" ).commonPool();
 	}
 
 }
