@@ -1,7 +1,7 @@
 {
 	"name": "ColdBox Platform For BoxLang",
 	"version": "@build.version@+@build.number@",
-	"location": "https://downloads.ortussolutions.com/ortussolutions/coldbox/@build.version@/coldbox-@build.version@.zip",
+	"location": "https://downloads.ortussolutions.com/ortussolutions/bx-coldbox/@build.version@/bx-coldbox-@build.version@.zip",
 	"author": "Ortus Solutions <info@ortussolutions.com>",
 	"slug": "bx-coldbox",
 	"type": "boxlang-modules",
