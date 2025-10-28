@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [8.0.1] - 2025-10-28
+
 - Update bx-coldbox location as it was pointing to the wrong place.
 
 ## [8.0.0] - 2025-10-10
@@ -16,5 +18,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - <https://coldbox.ortusbooks.com/readme/release-history/whats-new-with-8.0.0>
 - <https://coldbox.ortusbooks.com/readme/upgrading-to-coldbox-8>
 
-[unreleased]: https://github.com/ColdBox/coldbox-platform/compare/v8.0.0...HEAD
+[unreleased]: https://github.com/ColdBox/coldbox-platform/compare/v8.0.1...HEAD
+[8.0.1]: https://github.com/ColdBox/coldbox-platform/compare/v8.0.0...v8.0.1
 [8.0.0]: https://github.com/ColdBox/coldbox-platform/compare/2782f650918c6a2399f48a8ceb8b749177f47beb...v8.0.0
