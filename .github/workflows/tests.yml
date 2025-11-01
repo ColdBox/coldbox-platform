@@ -120,7 +120,7 @@ jobs:
 
       - name: Upload Debugging Info To Artifacts
         if: ${{ failure() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: Failure Debugging Info - ${{ matrix.cfengine }} - ${{ matrix.jdkVersion }}
           path: |
