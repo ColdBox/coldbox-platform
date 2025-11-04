@@ -90,7 +90,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// Declare types of routers to discover
 		var modernRouter = "config.Router";
 		var baseRouter   = "coldbox.system.web.routing.Router";
-        var appMapping = ( len( variables.appMapping ) ? "/#variables.appMapping#/" : "/" );
+		var appMapping   = ( len( variables.appMapping ) ? "/#variables.appMapping#/" : "/" );
 
 		// Discover router: app or base
 		var configFilePath = appMapping & modernRouter.replace( ".", "/", "all" );
@@ -100,8 +100,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			)
 		) ? "modern" : "base";
 
-		writeDump( var=configFilePath, top = 5, showUDFs = false );
-		writeDump( var=routerType, top = 5, showUDFs = false );
+		writeDump(
+			var      = configFilePath,
+			top      = 5,
+			showUDFs = false
+		);
+		writeDump( var = routerType, top = 5, showUDFs = false );
 
 		// Check if base router mapped?
 		if ( NOT wirebox.getBinder().mappingExists( baseRouter ) ) {
