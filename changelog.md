@@ -9,7 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Router not being detected in `boxlang` and `modern` layouts
+
 ## [8.0.1] - 2025-10-28
+
+### Fixed
 
 - Update bx-coldbox location as it was pointing to the wrong place.
 

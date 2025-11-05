@@ -1,6 +1,6 @@
 {
     "name":"ColdBox Platform Development Framework",
-    "version":"8.1.0",
+    "version":"8.0.2",
     "location":"https://downloads.ortussolutions.com/ortussolutions/coldbox/@build.version@/coldbox-@build.version@.zip",
     "author":"Ortus Solutions <info@ortussolutions.com>",
     "slug":"coldbox",
