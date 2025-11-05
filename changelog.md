@@ -9,8 +9,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [8.0.2] - 2025-11-05
-
 ### Fixed
 
 - Left extra debugging info in the router.
