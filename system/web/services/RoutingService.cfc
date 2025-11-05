@@ -100,13 +100,6 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			)
 		) ? "modern" : "base";
 
-		writeDump(
-			var      = configFilePath,
-			top      = 5,
-			showUDFs = false
-		);
-		writeDump( var = routerType, top = 5, showUDFs = false );
-
 		// Check if base router mapped?
 		if ( NOT wirebox.getBinder().mappingExists( baseRouter ) ) {
 			// feed the base class
