@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Left extra debugging info in the router.
+
+## [8.0.2] - 2025-11-05
+
+### Fixed
+
 - Router not being detected in `boxlang` and `modern` layouts
 
 ## [8.0.1] - 2025-10-28
