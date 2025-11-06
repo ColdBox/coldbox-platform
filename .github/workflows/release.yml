@@ -74,6 +74,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
+          box install --verbose --production
           cd apidocs && box install
 
       - name: Update changelog [unreleased] with latest version
