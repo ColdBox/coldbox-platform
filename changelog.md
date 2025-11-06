@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [8.0.4] - 2025-11-06
+
 ### Fixed
 
 - add dependency install so dependencies can be built correctly
@@ -36,7 +38,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - <https://coldbox.ortusbooks.com/readme/release-history/whats-new-with-8.0.0>
 - <https://coldbox.ortusbooks.com/readme/upgrading-to-coldbox-8>
 
-[unreleased]: https://github.com/ColdBox/coldbox-platform/compare/v8.0.3...HEAD
+[unreleased]: https://github.com/ColdBox/coldbox-platform/compare/v8.0.4...HEAD
+[8.0.4]: https://github.com/ColdBox/coldbox-platform/compare/v8.0.3...v8.0.4
 [8.0.3]: https://github.com/ColdBox/coldbox-platform/compare/v8.0.2...v8.0.3
 [8.0.2]: https://github.com/ColdBox/coldbox-platform/compare/v8.0.1...v8.0.2
 [8.0.1]: https://github.com/ColdBox/coldbox-platform/compare/v8.0.0...v8.0.1
