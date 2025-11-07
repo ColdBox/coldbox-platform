@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- ColdBoxProxy typo on getting page context length
+
+## [8.0.4] - 2025-11-06
+
+### Fixed
+
 - add dependency install so dependencies can be built correctly
 
 ## [8.0.3] - 2025-11-05
