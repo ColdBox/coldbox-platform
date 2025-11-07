@@ -374,7 +374,7 @@ component serializable="false" accessors="true" {
 
 		// Find the path of the proxy component being called
 		// replace the context root at the beginning of the script
-		var componentPath = len( getContextRoot ) ? replaceNoCase( scriptName, getContextRoot(), "", "one" ) : scriptName;
+		var componentPath = len( getContextRoot() ) ? replaceNoCase( scriptName, getContextRoot(), "", "one" ) : scriptName;
 		// remove the extension, if any
 		componentPath     = reReplaceNoCase( componentPath, "\..+$", "", "one" );
 		// replace all slashes with dots
