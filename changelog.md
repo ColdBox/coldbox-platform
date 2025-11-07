@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [8.0.5] - 2025-11-07
+
 ### Fixed
 
 - ColdBoxProxy typo on getting page context length
@@ -42,7 +44,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - <https://coldbox.ortusbooks.com/readme/release-history/whats-new-with-8.0.0>
 - <https://coldbox.ortusbooks.com/readme/upgrading-to-coldbox-8>
 
-[unreleased]: https://github.com/ColdBox/coldbox-platform/compare/v8.0.4...HEAD
+[unreleased]: https://github.com/ColdBox/coldbox-platform/compare/v8.0.5...HEAD
+[8.0.5]: https://github.com/ColdBox/coldbox-platform/compare/v8.0.4...v8.0.5
 [8.0.4]: https://github.com/ColdBox/coldbox-platform/compare/v8.0.3...v8.0.4
 [8.0.3]: https://github.com/ColdBox/coldbox-platform/compare/v8.0.2...v8.0.3
 [8.0.2]: https://github.com/ColdBox/coldbox-platform/compare/v8.0.1...v8.0.2
