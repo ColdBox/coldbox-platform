@@ -49,7 +49,7 @@ jobs:
           java-version: "11"
 
       - name: Setup BoxLang
-        uses: ortus-boxlang/setup-boxlang@1.1.0
+        uses: ortus-boxlang/setup-boxlang@1.2.0
         with:
           version: "snapshot"
 
