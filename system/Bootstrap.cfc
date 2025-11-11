@@ -307,7 +307,7 @@ component serializable="false" accessors="true" {
 						// ColdBox does native JSON if you return a complex object.
 						else {
 							renderedContent = cbController.getUtil().toJson( local.refResults.results );
-							getPageContextResponse().setContentType( "application/json" );
+							getPageContextResponse().setContentType( "application/json;charset=utf-8" );
 						}
 					}
 					// Render Layout/View pair via set variable to eliminate whitespace
