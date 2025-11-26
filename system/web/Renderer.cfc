@@ -605,19 +605,23 @@ component
 			}
 		}
 
-		// Discover the layout location + helpers
-		var layoutLocations = discoverViewPaths(
-			view          : cbox_currentLayout,
-			module        : arguments.module,
-			explicitModule: cbox_explicitModule,
-			isLayout      : true
-		);
-
 		// If Layout is blank, then just delegate to the view
 		// No layout rendering.
 		if ( len( cbox_currentLayout ) eq 0 ) {
 			iData.renderedLayout = this.view();
+			// Announce
+			if ( not arguments.prePostExempt ) {
+				announce( "postLayoutRender", iData );
+			}
 		} else {
+			// Discover the layout location + helpers
+			var layoutLocations = discoverViewPaths(
+				view          : cbox_currentLayout,
+				module        : arguments.module,
+				explicitModule: cbox_explicitModule,
+				isLayout      : true
+			);
+
 			// Render the layout with it's helpers
 			iData.renderedLayout = renderViewComposite(
 				view          : cbox_currentLayout,
@@ -626,11 +630,11 @@ component
 				args          : args,
 				viewVariables : arguments.viewVariables
 			);
-		}
 
-		// Announce
-		if ( not arguments.prePostExempt ) {
-			announce( "postLayoutRender", iData.append( { viewPath : layoutLocations.viewPath } ) );
+			// Announce
+			if ( not arguments.prePostExempt ) {
+				announce( "postLayoutRender", iData.append( { viewPath : layoutLocations.viewPath } ) );
+			}
 		}
 
 		return iData.renderedLayout;
