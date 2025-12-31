@@ -210,7 +210,7 @@ component extends="coldbox.system.web.services.BaseService" {
 	/**
 	 * Get the Request context from request scope or return null if not exists
 	 *
-	 * @return coldbox.system.web.context.RequestContext
+	 * @return coldbox.system.web.context.RequestContext or null if not found
 	 */
 	private function getContextFromScope(){
 		return request[ "cb_requestContext" ] ?: javacast( "null", "" );
@@ -220,7 +220,6 @@ component extends="coldbox.system.web.services.BaseService" {
 	 * Set the request context into the request scope
 	 *
 	 * @context        Request Context object
-	 * @RequestService
 	 */
 	RequestService function setContext( required context ){
 		request.cb_requestContext = arguments.context;
@@ -319,17 +318,17 @@ component extends="coldbox.system.web.services.BaseService" {
 		var oDecorator = "";
 
 		// Create the original request context
-		var oContext = createObject( "component", classPath ).init(
-			properties = controller.getConfigSettings(),
-			controller = controller
+		var oContext = createObject( "component", arguments.classPath ).init(
+			properties : variables.controller.getConfigSettings(),
+			controller : variables.controller
 		);
 
 		// Determine if we have a decorator, if we do, then decorate it.
-		if ( len( controller.getSetting( name = "RequestContextDecorator", defaultValue = "" ) ) ) {
+		if ( len( variables.controller.getSetting( name = "RequestContextDecorator", defaultValue = "" ) ) ) {
 			// Create the decorator
-			oDecorator = createObject( "component", controller.getSetting( name = "RequestContextDecorator" ) ).init(
+			oDecorator = createObject( "component", variables.controller.getSetting( name = "RequestContextDecorator" ) ).init(
 				oContext,
-				controller
+				variables.controller
 			);
 			// Set Request Context in storage
 			setContext( oDecorator );

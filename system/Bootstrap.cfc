@@ -565,7 +565,8 @@ component serializable="false" accessors="true" {
 			cbController = arguments.appScope[ locateAppKey() ];
 		}
 
-		if ( not isSimpleValue( cbController ) ) {
+		// Only process if ColdBox is initiated
+		if ( not isSimpleValue( cbController ) && cbController.getColdboxInitiated() ) {
 			// Get Context
 			var event = cbController.getRequestService().getContext();
 
