@@ -564,7 +564,7 @@ component extends="EventHandler" {
 					}
 				} : {}
 			)
-			.addMessage( "An exception ocurred: #arguments.exception.message#" )
+			.addMessage( "An exception occurred: #arguments.exception.message#" )
 			.setStatusCode( arguments.event.STATUS.INTERNAL_ERROR );
 	}
 
