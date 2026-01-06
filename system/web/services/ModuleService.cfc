@@ -452,11 +452,26 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			// Store module configuration in main modules configuration
 			modulesConfiguration[ modName ] = mConfig;
 
-			// Link aliases by reference in both modules list and config cache
-			for ( var thisAlias in mConfig.aliases ) {
-				modulesConfiguration[ thisAlias ]   = modulesConfiguration[ modName ];
-				variables.mConfigCache[ thisAlias ] = variables.mConfigCache[ modName ];
-			}
+			/// If module name contains ForgeBox username (@username), create a canonical alias
+            // This allows DSL injection like inject="coldbox:moduleSettings:modulename"
+            // to work even when the module is installed as modulename@username
+            if ( find( "@", modName ) ) {
+                var canonicalName = listFirst( modName, "@" );
+                // Only create alias if it doesn't conflict with an existing module
+                if ( !structKeyExists( modulesConfiguration, canonicalName ) ) {
+                    modulesConfiguration[ canonicalName ] = modulesConfiguration[ modName ];
+                    variables.mConfigCache[ canonicalName ] = variables.mConfigCache[ modName ];
+                    if ( variables.logger.canDebug() ) {
+                        variables.logger.debug(
+                            "Created canonical alias [#canonicalName#] for ForgeBox module [#modName#]"
+                        );
+                    }
+                } else if ( variables.logger.canWarn() ) {
+                    variables.logger.warn(
+                        "Cannot create canonical alias [#canonicalName#] for ForgeBox module [#modName#] - name conflict with existing module"
+                    );
+                }
+            }
 
 			// Update the paths according to conventions
 			mConfig.handlerInvocationPath &= ".#replace(
