@@ -452,7 +452,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			// Store module configuration in main modules configuration
 			modulesConfiguration[ modName ] = mConfig;
 
-			/// If module name contains ForgeBox username (@username), create a canonical alias
+			// If module name contains ForgeBox username (@username), create a canonical alias
             // This allows DSL injection like inject="coldbox:moduleSettings:modulename"
             // to work even when the module is installed as modulename@username
             if ( find( "@", modName ) ) {
