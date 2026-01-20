@@ -44,7 +44,7 @@ Built for scalability, modularity, and developer productivity, ColdBox eliminate
 
 ## 🏆 Proven & Professional
 
-**19+ Years of Excellence** - Since 2006, ColdBox has been battle-tested in enterprise environments worldwide, evolving with modern development practices and industry standards.
+**20+ Years of Excellence** - Since 2006, ColdBox has been battle-tested in enterprise environments worldwide, evolving with modern development practices and industry standards.
 
 **Professional Open Source** - Backed by [Ortus Solutions](https://www.ortussolutions.com), ColdBox provides the reliability and support that businesses demand. With dedicated full-time development, comprehensive documentation, and professional services, enterprises can confidently build mission-critical applications on ColdBox.
 
@@ -56,7 +56,7 @@ Built for scalability, modularity, and developer productivity, ColdBox eliminate
 
 - **Zero Configuration**: Get started immediately with sensible defaults
 - **Convention-Based**: Write less boilerplate, focus on business logic
-- **Enterprise Ready**: 19+ years proven, professionally backed by Ortus Solutions
+- **Enterprise Ready**: 20+ years proven, professionally backed by Ortus Solutions
 - **Full-Stack Framework**: Everything you need in one cohesive platform and module ecosystem
 
 ### Powerful Features
@@ -229,12 +229,15 @@ Each library maintains its own documentation and can be installed independently 
 
 ColdBox follows a predictable release cycle with extensive support:
 
-| Version | Release | Bug Fixes Until | Security Fixes Until |
+| Version | Release | Updates | Security Fixes |
 |---------|---------|------------------|---------------------|
-| 6.x     | 2022    | 2024            | 2025               |
-| 7.x     | 2023    | 2025            | 2026               |
-| 8.x     | 2025    | 2026            | 2027               |
-| 9.x     | 2026    | 2027            | 2028               |
+| ~~6.x~~  | ~~2022~~    	| ~~2024~~ 		| ~~2025~~          |
+| 7.x     		| ~~2023~~    	| ~~2025~~ 		  | 2026                  |
+| 8.x     		| ~~2025~~    	| 2026            	   | 2027                  |
+| 9.x     		| 2026    			| 2027            		 | 2028                 |
+
+- **Updates**: Bug fixes, performance improvements, and minor enhancements
+- **Security Fixes**: Critical security patches and vulnerability resolutions
 
 ## 💻 System Requirements
 
@@ -246,7 +249,7 @@ ColdBox follows a predictable release cycle with extensive support:
 - Modern JVM language with enhanced performance
 - Owned and directed by the ColdBox team
 
-**CFML Support**
+**ColdFusion/CFML**
 
 - Adobe ColdFusion 2023+
 - Lucee 5.0+
@@ -312,6 +315,7 @@ Apache License, Version 2.0 - See [LICENSE](license.txt) file for details.
 - **GitHub Repository**: https://github.com/coldbox/coldbox-platform
 - **ColdBox CLI**: https://github.com/coldbox/coldbox-cli
 - **Application Templates**: https://github.com/coldbox-templates
+- **ColdBox Modules**: https://github.com/coldbox-modules
 
 ### Documentation
 
@@ -319,6 +323,16 @@ Apache License, Version 2.0 - See [LICENSE](license.txt) file for details.
 - **WireBox DI**: https://wirebox.ortusbooks.com
 - **CacheBox**: https://cachebox.ortusbooks.com
 - **LogBox**: https://logbox.ortusbooks.com
+
+### Documentation MCP Servers
+
+Here are the links to the MCP (Machine Comprehension Protocol) servers for our documentation, which can be used with AI tools for enhanced assistance:
+
+- **BoxLang Docs MCP**: https://boxlang.ortusbooks.com/~gitbook/mcp
+- **ColdBox Platform**: https://coldbox.ortusbooks.com/~gitbook/mcp
+- **WireBox DI**: https://wirebox.ortusbooks.com/~gitbook/mcp
+- **CacheBox**: https://cachebox.ortusbooks.com/~gitbook/mcp
+- **LogBox**: https://logbox.ortusbooks.com/~gitbook/mcp
 
 ### Issue Tracking
 

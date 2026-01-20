@@ -2,7 +2,7 @@
 	// Configure ColdBox Application
 	function configure(){
 		// coldbox directives
-		coldbox = {
+		variables.coldbox = {
 			// Application Setup
 			appName                 : "Test Harness",
 			eventName               : "event",
@@ -49,15 +49,15 @@
 		};
 
 		// custom settings
-		settings = { test1 : { display : "not-core" } };
+		variables.settings = { test1 : { display : "not-core" } };
 
 		// environment settings, create a detectEnvironment() method to detect it yourself.
 		// create a function with the name of the environment so it can be executed if that environment is detected
 		// the value of the environment is a list of regex patterns to match the CGI.SERVER_NAME.
-		environments = { development : "^cf.,^localhost,^127" };
+		variables.environments = { development : "^cf.,^localhost,^127" };
 
 		// Module Directives
-		modules = {
+		variables.modules = {
 			// Turn to false in production
 			autoReload : false,
 			// An array of modules names to load, empty means all of them
@@ -67,7 +67,7 @@
 		};
 
 		// LogBox DSL
-		logBox = {
+		variables.logBox = {
 			// Define Appenders
 			appenders : {
 				myConsole    : { class : "ConsoleAppender" },
@@ -95,7 +95,7 @@
 		};
 
 		// You can now register executors for your application
-		executors = {
+		variables.executors = {
 			"simpleTaskRunner" : {
 				type : "fixed"
 			},
@@ -105,19 +105,19 @@
 		};
 
 		// Layout Settings
-		layoutSettings = { defaultLayout : "", defaultView : "" };
+		variables.layoutSettings = { defaultLayout : "", defaultView : "" };
 
 		// Interceptor Settings
-		interceptorSettings = { customInterceptionPoints : "onCustomState" };
+		variables.interceptorSettings = { customInterceptionPoints : "onCustomState" };
 
 		// Register interceptors as an array, we need order
-		interceptors = [
+		variables.interceptors = [
 			{ class : "#appMapping#.interceptors.Test1" },
 			{ class : "#appMapping#.interceptors.Test2" }
 		];
 
 		// Datasources
-		datasources = {
+		variables.datasources = {
 			mysite : {
 				name     : "mySite",
 				dbType   : "mysql",
@@ -133,7 +133,7 @@
 		};
 
 		// flash scope configuration
-		flash = {
+		variables.flash = {
 			scope        : "session",
 			properties   : {}, // constructor properties for the flash scope implementation
 			inflateToRC  : true, // automatically inflate flash data into the RC scope
@@ -144,7 +144,7 @@
 	}
 
 	function development(){
-		wirebox = {
+		variables.wirebox = {
 			singletonReload : true
 		}
 	}
