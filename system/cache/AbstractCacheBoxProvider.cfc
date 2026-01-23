@@ -10,9 +10,10 @@
  * core cache operations that can be extended or overridden by concrete implementations.
  **/
 component
-	accessors=true
+	accessors   =true
 	serializable=false
-	implements="providers.ICacheProvider" {
+	implements  ="providers.ICacheProvider"
+{
 
 	/**
 	 * The name of this cache provider
@@ -519,7 +520,7 @@ component
 	 * ---------------------------------------------------------------------------------------------------------------
 	 */
 
-	 /**
+	/**
 	 * Get the ColdBox Utility class
 	 *
 	 * @return coldbox.system.core.util.Util
@@ -545,7 +546,7 @@ component
 		lastAccessTimeout = "",
 		prefix            = ""
 	){
-		arguments.mapping.each( ( key, value ) =>{
+		arguments.mapping.each( ( key, value ) => {
 			// Cache these puppies
 			set(
 				objectKey         = prefix & arguments.key,
