@@ -245,7 +245,6 @@ component
 		// Throw not implemented, the concrete cache must implement it
 		throw(
 			message = "The cache provider #getName()# does not implement getObjectStore() method.",
-			detail  = "This cache provider does not support object store retrieval.",
 			type    = "NotImplementedException"
 		)
 	}
@@ -257,7 +256,6 @@ component
 		// Throw not implemented, the concrete cache must implement it
 		throw(
 			message = "The cache provider #getName()# does not implement getStoreMetadataReport() method.",
-			detail  = "This cache provider does not support store metadata reporting.",
 			type    = "NotImplementedException"
 		)
 	}
@@ -269,7 +267,6 @@ component
 		// Throw not implemented, the concrete cache must implement it
 		throw(
 			message = "The cache provider #getName()# does not implement getStoreMetadataKeyMap() method.",
-			detail  = "This cache provider does not support store metadata key mapping.",
 			type    = "NotImplementedException"
 		)
 	}
@@ -281,7 +278,6 @@ component
 		// Throw not implemented, the concrete cache must implement it
 		throw(
 			message = "The cache provider #getName()# does not implement getKeys() method.",
-			detail  = "This cache provider does not support key retrieval.",
 			type    = "NotImplementedException"
 		)
 	}
@@ -295,7 +291,6 @@ component
 		// Throw not implemented, the concrete cache must implement it
 		throw(
 			message = "The cache provider #getName()# does not implement getCachedObjectMetadata() method.",
-			detail  = "This cache provider does not support cached object metadata retrieval.",
 			type    = "NotImplementedException"
 		)
 	}
@@ -309,7 +304,6 @@ component
 		// Throw not implemented, the concrete cache must implement it
 		throw(
 			message = "The cache provider #getName()# does not implement get() method.",
-			detail  = "This cache provider does not support object retrieval.",
 			type    = "NotImplementedException"
 		)
 	}
@@ -323,7 +317,6 @@ component
 		// Throw not implemented, the concrete cache must implement it
 		throw(
 			message = "The cache provider #getName()# does not implement getQuiet() method.",
-			detail  = "This cache provider does not support quiet object retrieval.",
 			type    = "NotImplementedException"
 		)
 	}
@@ -337,7 +330,6 @@ component
 		// Throw not implemented, the concrete cache must implement it
 		throw(
 			message = "The cache provider #getName()# does not implement isExpired() method.",
-			detail  = "This cache provider does not support expiration checking.",
 			type    = "NotImplementedException"
 		)
 	}
@@ -351,7 +343,6 @@ component
 		// Throw not implemented, the concrete cache must implement it
 		throw(
 			message = "The cache provider #getName()# does not implement lookup() method.",
-			detail  = "This cache provider does not support object lookup.",
 			type    = "NotImplementedException"
 		)
 	}
@@ -365,7 +356,6 @@ component
 		// Throw not implemented, the concrete cache must implement it
 		throw(
 			message = "The cache provider #getName()# does not implement lookupQuiet() method.",
-			detail  = "This cache provider does not support quiet object lookup.",
 			type    = "NotImplementedException"
 		)
 	}
@@ -387,7 +377,13 @@ component
 		timeout,
 		lastAccessTimeout,
 		struct extra
-	);
+	){
+		// Throw not implemented, the concrete cache must implement it
+		throw(
+			message = "The cache provider #getName()# does not implement set() method.",
+			type    = "NotImplementedException"
+		)
+	}
 
 	/**
 	 * Sets an object in the cache with no event calls and returns an instance of itself
@@ -410,7 +406,6 @@ component
 		// Throw not implemented, the concrete cache must implement it
 		throw(
 			message = "The cache provider #getName()# does not implement setQuiet() method.",
-			detail  = "This cache provider does not support quiet object setting.",
 			type    = "NotImplementedException"
 		)
 	}
@@ -422,7 +417,6 @@ component
 		// Throw not implemented, the concrete cache must implement it
 		throw(
 			message = "The cache provider #getName()# does not implement getSize() method.",
-			detail  = "This cache provider does not support size retrieval.",
 			type    = "NotImplementedException"
 		)
 	}
@@ -436,7 +430,6 @@ component
 		// Throw not implemented, the concrete cache must implement it
 		throw(
 			message = "The cache provider #getName()# does not implement reap() method.",
-			detail  = "This cache provider does not support reaping.",
 			type    = "NotImplementedException"
 		)
 	}
@@ -450,7 +443,6 @@ component
 		// Throw not implemented, the concrete cache must implement it
 		throw(
 			message = "The cache provider #getName()# does not implement clearAll() method.",
-			detail  = "This cache provider does not support clearing all elements.",
 			type    = "NotImplementedException"
 		)
 	}
@@ -464,7 +456,6 @@ component
 		// Throw not implemented, the concrete cache must implement it
 		throw(
 			message = "The cache provider #getName()# does not implement clear() method.",
-			detail  = "This cache provider does not support object clearing.",
 			type    = "NotImplementedException"
 		)
 	}
@@ -478,7 +469,6 @@ component
 		// Throw not implemented, the concrete cache must implement it
 		throw(
 			message = "The cache provider #getName()# does not implement clearQuiet() method.",
-			detail  = "This cache provider does not support quiet object clearing.",
 			type    = "NotImplementedException"
 		)
 	}
@@ -491,8 +481,7 @@ component
 	function expireAll(){
 		// Throw not implemented, the concrete cache must implement it
 		throw(
-			message = "The cache provider #getName()# does not implement clearQuiet() method.",
-			detail  = "This cache provider does not support quiet object clearing.",
+			message = "The cache provider #getName()# does not implement expireAll() method.",
 			type    = "NotImplementedException"
 		)
 	}
@@ -507,8 +496,7 @@ component
 	function expireObject( required objectKey ){
 		// Throw not implemented, the concrete cache must implement it
 		throw(
-			message = "The cache provider #getName()# does not implement clearQuiet() method.",
-			detail  = "This cache provider does not support quiet object clearing.",
+			message = "The cache provider #getName()# does not implement expireObject() method.",
 			type    = "NotImplementedException"
 		)
 	}
@@ -763,7 +751,7 @@ component
 	 * @throws IllegalStateException
 	 */
 	private AbstractCacheBoxProvider function statusCheck(){
-		if ( !isEnabled ) {
+		if ( !isEnabled() ) {
 			throw(
 				message = "The cache #getName()# is not yet enabled",
 				detail  = "The cache was being accessed without the configuration being complete",
