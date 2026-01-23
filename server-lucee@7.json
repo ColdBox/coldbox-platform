@@ -1,0 +1,31 @@
+{
+    "app":{
+        "cfengine":"lucee@7",
+        "serverHomeDirectory":".engine/lucee7"
+    },
+    "name":"coldbox-lucee@7",
+    "force":true,
+    "openBrowser":false,
+    "web":{
+        "directoryBrowsing":true,
+        "http":{
+            "port":"8599"
+        },
+        "rewrites":{
+            "enable":true
+        },
+        "aliases":{
+            "/coldbox":"./"
+        }
+    },
+    "JVM":{
+        "heapSize":"1024",
+		"javaVersion":"openjdk21_jre"
+    },
+    "cfconfig":{
+        "file":".cfconfig.json"
+    },
+    "env":{
+        "lucee-extensions":"D062D72F-F8A2-46F0-8CBC91325B2F067B"
+    }
+}
