@@ -10,7 +10,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	/**
 	 * A ColdBox Router this routing service configures with.
 	 *
-	 * @doc_generic coldbox.system.web.routing.Router
+	 * @doc.type coldbox.system.web.routing.Router
 	 */
 	property name="router";
 

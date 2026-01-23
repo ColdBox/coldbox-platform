@@ -37,21 +37,21 @@ component
 	/**
 	 * The eviction policy to use on the cache storage: Defaults to LRU
 	 *
-	 * @doc_generic coldbox.system.cache.policies.IEvictionPolicy
+	 * @doc.type coldbox.system.cache.policies.IEvictionPolicy
 	 */
 	property name="evictionPolicy";
 
 	/**
 	 * The object storage object
 	 *
-	 * @doc_generic coldbox.system.cache.store.IObjectStore
+	 * @doc.type coldbox.system.cache.store.IObjectStore
 	 */
 	property name="objectStore";
 
 	/**
 	 * The cache stats object
 	 *
-	 * @doc_generic coldbox.system.cache.util.CacheStats
+	 * @doc.type coldbox.system.cache.util.CacheStats
 	 */
 	property name="stats";
 
