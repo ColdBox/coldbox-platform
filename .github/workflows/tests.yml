@@ -18,7 +18,7 @@ jobs:
     env:
       DB_USER: root
       DB_PASSWORD: root
-      COMMANDBOX_VERSION: 6.2.1
+      COMMANDBOX_VERSION: 6.3.1
     continue-on-error: ${{ matrix.experimental }}
     strategy:
       fail-fast: false
