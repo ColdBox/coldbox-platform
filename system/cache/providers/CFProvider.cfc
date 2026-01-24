@@ -294,7 +294,7 @@ component
 		required object,
 		timeout           = "",
 		lastAccessTimeout = "",
-		struct extra = {}
+		struct extra      = {}
 	){
 		setQuiet( argumentCollection = arguments );
 
@@ -327,7 +327,7 @@ component
 		required object,
 		timeout           = "",
 		lastAccessTimeout = "",
-		struct extra = {}
+		struct extra      = {}
 	){
 		// check if incoming timeout is a timespan or minute to convert to timespan, do also checks if empty strings
 		if ( findNoCase( "string", arguments.timeout.getClass().getName() ) ) {
