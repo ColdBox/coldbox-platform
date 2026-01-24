@@ -215,9 +215,7 @@ component extends="coldbox.system.async.tasks.ScheduledTask" accessors="true" {
 		}
 
 		// Check if we are the same server that holds the lock
-		if (
-			local.serverLock.serverHost eq getStats().inetHost && local.serverLock.serverIp eq getStats().localIp
-		) {
+		if ( local.serverLock.serverHost eq getStats().inetHost && local.serverLock.serverIp eq getStats().localIp ) {
 			return true;
 		} else {
 			variables.log.info(
