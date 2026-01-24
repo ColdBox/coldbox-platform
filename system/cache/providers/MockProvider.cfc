@@ -183,9 +183,9 @@ component
 	function set(
 		required objectKey,
 		required object,
-		timeout = "",
+		timeout           = "",
 		lastAccessTimeout = "",
-		struct extra = {}
+		struct extra      = {}
 	){
 		variables.cache[ arguments.objectKey ] = arguments.object;
 		return this;
@@ -205,9 +205,9 @@ component
 	function setQuiet(
 		required objectKey,
 		required object,
-		timeout = "",
+		timeout           = "",
 		lastAccessTimeout = "",
-		struct extra = {}
+		struct extra      = {}
 	){
 		variables.cache[ arguments.objectKey ] = arguments.object;
 		return this;

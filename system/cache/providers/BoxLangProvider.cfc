@@ -349,7 +349,7 @@ component
 		required object,
 		timeout           = "",
 		lastAccessTimeout = "",
-		struct extra = {}
+		struct extra      = {}
 	){
 		cache( getConfiguration().cacheName ).set(
 			arguments.objectKey,
