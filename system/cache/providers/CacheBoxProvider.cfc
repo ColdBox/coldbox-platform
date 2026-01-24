@@ -231,9 +231,9 @@ component
 					task  : this,
 					method: "reap"
 				)
-				.inMinutes()
 				.delay( getConfiguration().reapFrequency ) // Don't start immediately, give it a breathing room
 				.spacedDelay( getConfiguration().reapFrequency ) // Runs again, after this spaced delay once each reap finalizes
+				.inMinutes()
 				.start();
 
 			variables.logger.info(
