@@ -45,6 +45,16 @@ component accessors="true" singleton {
 		default="30";
 
 	/**
+	 * If this scheduler has been started or not
+	 */
+	property name="started" type="boolean" default="false";
+
+	/**
+	 * When this scheduler was started
+	 */
+	property name="startedAt" type="date";
+
+	/**
 	 * Constructor
 	 *
 	 * @name         The name of this scheduler
@@ -113,6 +123,7 @@ component accessors="true" singleton {
 					variables.tasks.each( ( taskName, taskRecord ) => startupTask( taskName ) );
 					// Mark scheduler as started
 					variables.started = true;
+					variables.startedAt = now();
 					// callback
 					this.onStartup();
 					// Log it
