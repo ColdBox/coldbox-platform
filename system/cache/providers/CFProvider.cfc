@@ -10,7 +10,6 @@
 component
 	accessors   ="true"
 	serializable="false"
-	implements  ="coldbox.system.cache.providers.ICacheProvider"
 	extends     ="coldbox.system.cache.AbstractCacheBoxProvider"
 {
 
@@ -293,9 +292,9 @@ component
 	function set(
 		required objectKey,
 		required object,
-		timeout           = 0,
-		lastAccessTimeout = 0,
-		struct extra
+		timeout           = "",
+		lastAccessTimeout = "",
+		struct extra = {}
 	){
 		setQuiet( argumentCollection = arguments );
 
@@ -326,9 +325,9 @@ component
 	function setQuiet(
 		required objectKey,
 		required object,
-		timeout           = 0,
-		lastAccessTimeout = 0,
-		struct extra
+		timeout           = "",
+		lastAccessTimeout = "",
+		struct extra = {}
 	){
 		// check if incoming timeout is a timespan or minute to convert to timespan, do also checks if empty strings
 		if ( findNoCase( "string", arguments.timeout.getClass().getName() ) ) {

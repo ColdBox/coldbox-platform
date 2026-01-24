@@ -347,9 +347,9 @@ component
 	function set(
 		required objectKey,
 		required object,
-		timeout           = 0,
-		lastAccessTimeout = 0,
-		struct extra
+		timeout           = "",
+		lastAccessTimeout = "",
+		struct extra = {}
 	){
 		cache( getConfiguration().cacheName ).set(
 			arguments.objectKey,
@@ -386,9 +386,9 @@ component
 	function setQuiet(
 		required objectKey,
 		required object,
-		timeout           = 0,
-		lastAccessTimeout = 0,
-		struct extra
+		timeout           = "",
+		lastAccessTimeout = "",
+		struct extra      = {}
 	){
 		cache( getConfiguration().cacheName ).set(
 			arguments.objectKey,

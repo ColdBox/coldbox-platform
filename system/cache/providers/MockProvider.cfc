@@ -10,7 +10,6 @@
 component
 	accessors   =true
 	serializable=false
-	implements  ="coldbox.system.cache.providers.IColdBoxProvider"
 	extends     ="coldbox.system.cache.AbstractCacheBoxProvider"
 {
 
@@ -184,9 +183,9 @@ component
 	function set(
 		required objectKey,
 		required object,
-		timeout,
-		lastAccessTimeout,
-		struct extra
+		timeout = "",
+		lastAccessTimeout = "",
+		struct extra = {}
 	){
 		variables.cache[ arguments.objectKey ] = arguments.object;
 		return this;
@@ -206,9 +205,9 @@ component
 	function setQuiet(
 		required objectKey,
 		required object,
-		timeout,
-		lastAccessTimeout,
-		struct extra
+		timeout = "",
+		lastAccessTimeout = "",
+		struct extra = {}
 	){
 		variables.cache[ arguments.objectKey ] = arguments.object;
 		return this;
