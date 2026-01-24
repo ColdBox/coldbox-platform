@@ -347,6 +347,40 @@ component singleton {
 	}
 
 	/**
+	 * Transforms the incoming value in the specified time unit to minutes
+	 *
+	 * @value          The value to convert to minutes
+	 * @targetTimeUnit The time unit of the incoming value (days, hours, minutes, seconds, milliseconds, microseconds, nanoseconds)
+	 * @defaultValue   The default value to return if the time unit is not recognized
+	 *
+	 * @return The value in minutes
+	 */
+	static numeric function timeUnitToMinutes(
+		required numeric value,
+		required string targetTimeUnit,
+		numeric defaultValue = 0
+	){
+		switch ( arguments.targetTimeUnit ) {
+			case "days":
+				return arguments.value * 24 * 60;
+			case "hours":
+				return arguments.value * 60;
+			case "minutes":
+				return arguments.value;
+			case "seconds":
+				return arguments.value / 60;
+			case "milliseconds":
+				return arguments.value / 1000 / 60;
+			case "microseconds":
+				return arguments.value / 1000 / 1000 / 60;
+			case "nanoseconds":
+				return arguments.value / 1000 / 1000 / 1000 / 60;
+			default:
+				return arguments.defaultValue;
+		}
+	}
+
+	/**
 	 * Adds the specified amount of time to the target date/time
 	 *
 	 * @target   The target date/time to add to, this must be a Java LocalDateTime

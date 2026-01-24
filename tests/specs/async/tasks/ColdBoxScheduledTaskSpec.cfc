@@ -64,9 +64,11 @@ component extends="tests.resources.BaseIntegrationTest" {
 				expect( t.isConstrained() ).toBeFalse();
 				expect( t.getCache().getKeys() ).toInclude( t.getFixationCacheKey() );
 
-				// Constrain it
+				// Cache item should persist after cleanup (it's removed by natural expiration now)
 				t.cleanupTaskRun();
-				expect( t.getCache().getKeys() ).notToInclude( t.getFixationCacheKey() );
+				expect( t.getCache().getKeys() ).toInclude( t.getFixationCacheKey() );
+
+				// Constrain it by setting a lock from a different server
 				t.getCache()
 					.set(
 						t.getFixationCacheKey(),
@@ -81,7 +83,10 @@ component extends="tests.resources.BaseIntegrationTest" {
 					);
 				expect( t.getCache().getKeys() ).toInclude( t.getFixationCacheKey() );
 				expect( t.isConstrained() ).toBeTrue();
+
+				// Cleanup still doesn't remove the cache item
 				t.cleanupTaskRun();
+				expect( t.getCache().getKeys() ).toInclude( t.getFixationCacheKey() );
 			} );
 		} );
 	}

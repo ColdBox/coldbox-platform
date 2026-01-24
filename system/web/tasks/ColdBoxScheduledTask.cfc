@@ -4,6 +4,8 @@
  *
  * A task can be represented as either a closure or a cfc with a `run()` or custom runnable method.
  */
+import coldbox.system.async.time.DateTimeHelper;
+
 component extends="coldbox.system.async.tasks.ScheduledTask" accessors="true" {
 
 	/**
@@ -42,7 +44,9 @@ component extends="coldbox.system.async.tasks.ScheduledTask" accessors="true" {
 	property name="cacheName";
 
 	/**
-	 * How long does the server fixation lock remain for. Deafult is 60 minutes.
+	 * How long does the server fixation lock remain for in minutes. This is a fallback value used when
+	 * the task period cannot be determined. By default, the lock timeout is calculated from the task's
+	 * period to ensure it persists until the next scheduled run. Default fallback is 60 minutes.
 	 */
 	property name="serverLockTimeout" type="numeric";
 
@@ -150,29 +154,34 @@ component extends="coldbox.system.async.tasks.ScheduledTask" accessors="true" {
 
 	/**
 	 * This method is called ALWAYS after a task runs, wether in failure or success but used internally for
-	 * any type of cleanups
+	 * any type of cleanups. We override this to handle server fixation cleanup ONLY when needed.
 	 */
 	function cleanupTaskRun(){
-		var cacheKey     = getFixationCacheKey();
-		// Only cleanup if your are the fixated server
-		var fixationData = getCache().get( cacheKey );
-		if (
-			!isNull( local.fixationData ) && isStruct( local.fixationData ) && local.fixationData.serverhost eq getStats().inetHost && local.fixationData.serverIp eq getStats().localIp
-		) {
-			// Cleanup server fixation locks after task execution, wether failure or success
-			// This way, the tasks can run on a round-robin approach on a clustered environment
-			// and not fixated on a specific server
-			getCache().clear( cacheKey );
-			// Debugging
-			variables.log.debug( "Fixation cache key (#cacheKey#) removed by fixated server, task ran!" );
+		// Only process cleanup if server fixation is enabled for this task
+		if ( !variables.serverFixation ) {
+			return;
 		}
+
+		// NOTE: We intentionally DO NOT clear the cache item here anymore.
+		// The cache item needs to remain in place until it naturally expires (based on task period)
+		// so other servers know not to run the task during this period.
+		// The cache timeout is set to match the task period in canRunOnThisServer()
+		// This prevents the task from running multiple times across different servers.
 	}
 
 	/**
-	 * Verifies if a task can run on the executed server by using our distributed cache lock strategy
+	 * Verifies if a task can run on the executed server by using our distributed cache lock strategy.
+	 * The cache timeout is set to match the task period so the lock persists until the next scheduled run,
+	 * preventing other servers from running the task during this period while still allowing failover
+	 * if the locked server goes offline.
 	 */
 	boolean function canRunOnThisServer(){
 		var keyName = getFixationCacheKey();
+
+		// Calculate cache timeout in minutes based on task period
+		// This ensures the lock persists until the next run, preventing duplicate executions
+		var lockTimeout = calculateLockTimeout();
+
 		// Get or set the lock, first one wins!
 		getCache().getOrSet(
 			// key
@@ -183,15 +192,19 @@ component extends="coldbox.system.async.tasks.ScheduledTask" accessors="true" {
 					"task"       : getName(),
 					"lockOn"     : now(),
 					"serverHost" : getStats().inetHost,
-					"serverIp"   : getStats().localIp
+					"serverIp"   : getStats().localIp,
+					"nextRun"    : getStats().nextRun
 				};
 			},
-			// timeout in minutes: defaults to 60 minutes and 0 last access timeout
-			variables.serverLockTimeout,
+			// timeout in minutes based on task period
+			lockTimeout,
+			// no last access timeout
 			0
 		);
+
 		// Get the lock now. At least one server must have set it by now
 		var serverLock = getCache().get( keyName );
+
 		// If no lock something really went wrong, so constrain it and log it
 		if ( isNull( local.serverLock ) || !isStruct( local.serverLock ) ) {
 			variables.log.error(
@@ -200,8 +213,9 @@ component extends="coldbox.system.async.tasks.ScheduledTask" accessors="true" {
 			);
 			return false;
 		}
-		// Else, it exists, check we are the same server that locked! If true, then we can run it baby!
-		else if (
+
+		// Check if we are the same server that holds the lock
+		if (
 			local.serverLock.serverHost eq getStats().inetHost && local.serverLock.serverIp eq getStats().localIp
 		) {
 			return true;
@@ -211,6 +225,44 @@ component extends="coldbox.system.async.tasks.ScheduledTask" accessors="true" {
 			);
 			return false;
 		}
+	}
+
+	/**
+	 * Calculate the cache lock timeout in minutes based on the task's period.
+	 * This ensures the lock persists until the next scheduled run while allowing failover.
+	 * Falls back to serverLockTimeout if period cannot be determined.
+	 *
+	 * @return numeric The timeout in minutes
+	 */
+	private numeric function calculateLockTimeout(){
+		// If we have a period set, convert it to minutes
+		if ( getPeriod() > 0 ) {
+			return max(
+				1,
+				ceiling(
+					DateTimeHelper.timeUnitToMinutes(
+						value          = getPeriod(),
+						targetTimeUnit = getTimeUnit(),
+						defaultValue   = variables.serverLockTimeout
+					)
+				)
+			);
+		}
+		// If we have a spaced delay, use that
+		else if ( getSpacedDelay() > 0 ) {
+			return max(
+				1,
+				ceiling(
+					DateTimeHelper.timeUnitToMinutes(
+						value          = getSpacedDelay(),
+						targetTimeUnit = getTimeUnit(),
+						defaultValue   = variables.serverLockTimeout
+					)
+				)
+			);
+		}
+		// Fall back to the configured serverLockTimeout
+		return variables.serverLockTimeout;
 	}
 
 	/**
