@@ -211,9 +211,14 @@ component
 			// Prepare Statistics
 			variables.stats          = new coldbox.system.cache.util.CacheStats( this );
 			// Setup the eviction Policy to use
-			variables.evictionPolicy = createObject( "component", locateEvictionPolicy( cacheConfig.evictionPolicy ) ).init( this );
+			variables.evictionPolicy = createObject(
+				"component",
+				locateEvictionPolicy( cacheConfig.evictionPolicy )
+			).init( this );
 			// Create the object store the configuration mandated
-			variables.objectStore = createObject( "component", locateObjectStore( cacheConfig.objectStore ) ).init( this );
+			variables.objectStore = createObject( "component", locateObjectStore( cacheConfig.objectStore ) ).init(
+				this
+			);
 			// Enable cache
 			variables.enabled          = true;
 			// Enable reporting
