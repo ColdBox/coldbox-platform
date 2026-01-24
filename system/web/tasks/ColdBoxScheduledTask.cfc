@@ -182,18 +182,25 @@ component extends="coldbox.system.async.tasks.ScheduledTask" accessors="true" {
 		// This ensures the lock persists until the next run, preventing duplicate executions
 		var lockTimeout = calculateLockTimeout();
 
+		// Get existing lock to preserve schedule anchor
+		var existingLock = getCache().get( keyName );
+
 		// Get or set the lock, first one wins!
 		getCache().getOrSet(
 			// key
 			keyName,
 			// producer
-			function(){
+			() =>{
 				return {
-					"task"       : getName(),
-					"lockOn"     : now(),
-					"serverHost" : getStats().inetHost,
-					"serverIp"   : getStats().localIp,
-					"nextRun"    : getStats().nextRun
+					"task"          : getName(),
+					"lockOn"        : now(),
+					"serverHost"    : getStats().inetHost,
+					"serverIp"      : getStats().localIp,
+					"nextRun"       : getStats().nextRun,
+					"scheduleStart" : hasScheduler() ? getScheduler().getStartedAt() : now(),
+					"period"        : getPeriod(),
+					"spacedDelay"   : getSpacedDelay(),
+					"timeUnit"      : getTimeUnit()
 				};
 			},
 			// timeout in minutes based on task period
@@ -216,12 +223,192 @@ component extends="coldbox.system.async.tasks.ScheduledTask" accessors="true" {
 
 		// Check if we are the same server that holds the lock
 		if ( local.serverLock.serverHost eq getStats().inetHost && local.serverLock.serverIp eq getStats().localIp ) {
+			// We hold the lock - refresh it while preserving the original scheduleStart
+			if ( !isNull( local.existingLock ) && isStruct( local.existingLock ) && local.existingLock.keyExists( "scheduleStart" ) ) {
+				var refreshedLock             = duplicate( local.serverLock );
+				refreshedLock.lockOn          = now();
+				refreshedLock.nextRun         = getStats().nextRun;
+				// Preserve the original schedule anchor
+				refreshedLock.scheduleStart   = local.existingLock.scheduleStart;
+				// Update the lock
+				getCache().set( keyName, refreshedLock, lockTimeout, 0 );
+			}
 			return true;
 		} else {
 			variables.log.info(
 				"Skipping task (#getName()#) as it is constrained to run on one server (#local.serverLock.serverHost#/#local.serverLock.serverIp#). This server (#getStats().inetHost#/#getStats().localIp#) is different."
 			);
 			return false;
+		}
+	}
+
+	/**
+	 * Override start() to synchronize schedules across servers when server fixation is enabled.
+	 * This ensures all servers run the task at aligned intervals even if they start at different times.
+	 *
+	 * @return A ScheduledFuture from where you can monitor the task
+	 */
+	function start(){
+		// Sync schedules before starting if server fixation is enabled
+		if ( variables.serverFixation ) {
+			syncScheduleWithCluster();
+		}
+		return super.start();
+	}
+
+	/**
+	 * Synchronizes this task's schedule with any existing schedule in the cluster.
+	 * If another server has already started this task, we align our schedule to match.
+	 * This prevents schedule drift across servers and ensures consistent execution timing.
+	 */
+	public function syncScheduleWithCluster(){
+		var existingLock = getCache().get( getFixationCacheKey() );
+
+		// No existing lock means we're the first server - no sync needed
+		if ( isNull( local.existingLock ) || !isStruct( local.existingLock ) ) {
+			variables.log.debug( "Task (#getName()#): No existing schedule found, will create schedule anchor" );
+			return;
+		}
+
+		// Only sync period-based tasks (not spaced delay tasks as they depend on execution time)
+		if ( getPeriod() == 0 ) {
+			variables.log.debug( "Task (#getName()#): Not a period-based task, skipping schedule sync" );
+			return;
+		}
+
+		// Verify the lock has schedule metadata
+		if (
+			!local.existingLock.keyExists( "scheduleStart" ) ||
+			!local.existingLock.keyExists( "period" ) ||
+			!local.existingLock.keyExists( "timeUnit" )
+		) {
+			variables.log.warn( "Task (#getName()#): Existing lock missing schedule metadata, cannot sync" );
+			return;
+		}
+
+		// Calculate when the next aligned run should occur
+		var nextAlignedRun = calculateNextAlignedRun(
+			local.existingLock.scheduleStart,
+			local.existingLock.period,
+			local.existingLock.timeUnit
+		);
+
+		if ( isNull( local.nextAlignedRun ) ) {
+			variables.log.warn( "Task (#getName()#): Could not calculate next aligned run time" );
+			return;
+		}
+
+		// Calculate delay in our timeUnit to align with the cluster schedule
+		adjustDelayToAlignWith( local.nextAlignedRun );
+
+		variables.log.info(
+			"Task (#getName()#): Synchronized schedule with cluster. Schedule anchor: #local.existingLock.scheduleStart#, Next aligned run: #local.nextAlignedRun#"
+		);
+	}
+
+	/**
+	 * Calculates the next execution time aligned with the cluster's schedule.
+	 *
+	 * @scheduleStart The original schedule anchor timestamp
+	 * @period        The period value
+	 * @timeUnit      The time unit (days, hours, minutes, etc.)
+	 *
+	 * @return The next aligned execution time as a Java LocalDateTime, or null if calculation fails
+	 */
+	private function calculateNextAlignedRun(
+		required scheduleStart,
+		required numeric period,
+		required string timeUnit
+	){
+		try {
+			var dateTimeHelper = new coldbox.system.async.time.DateTimeHelper();
+			var now            = dateTimeHelper.now( getTimezone().getId() );
+			var anchor         = dateTimeHelper.toLocalDateTime(
+				arguments.scheduleStart,
+				getTimezone().getId()
+			);
+
+			// Calculate how much time has passed since the schedule started
+			var chronoUnit         = getChronoUnit( arguments.timeUnit );
+			var elapsedPeriods     = anchor.until( now, chronoUnit );
+			// Calculate how many full periods have passed
+			var completedPeriods   = ceiling( elapsedPeriods / arguments.period );
+			// Calculate the next aligned run time
+			var periodsToAdd       = completedPeriods * arguments.period;
+
+			// Add the periods to the anchor to get next aligned time
+			switch ( arguments.timeUnit ) {
+				case "days":
+					return anchor.plusDays( javacast( "long", periodsToAdd ) );
+				case "hours":
+					return anchor.plusHours( javacast( "long", periodsToAdd ) );
+				case "minutes":
+					return anchor.plusMinutes( javacast( "long", periodsToAdd ) );
+				case "seconds":
+					return anchor.plusSeconds( javacast( "long", periodsToAdd ) );
+				case "milliseconds":
+					return anchor.plusNanos( javacast( "long", periodsToAdd * 1000000 ) );
+				default:
+					return anchor.plusSeconds( javacast( "long", periodsToAdd ) );
+			}
+		} catch ( any e ) {
+			variables.log.error( "Error calculating next aligned run for task (#getName()#): #e.message#", e );
+			return;
+		}
+	}
+
+	/**
+	 * Adjusts the task's initial delay to align with the target execution time.
+	 *
+	 * @targetTime The target execution time as a Java LocalDateTime
+	 */
+	private function adjustDelayToAlignWith( required targetTime ){
+		try {
+			var dateTimeHelper = new coldbox.system.async.time.DateTimeHelper();
+			var now            = dateTimeHelper.now( getTimezone().getId() );
+			var chronoUnit     = getChronoUnit( getTimeUnit() );
+
+			// Calculate the delay in our timeUnit
+			var delayAmount = now.until( arguments.targetTime, chronoUnit );
+
+			// If the target is in the past, set minimal delay
+			if ( delayAmount <= 0 ) {
+				delayAmount = 1;
+			}
+
+			// Update the task's delay
+			delay( delayAmount, getTimeUnit(), true );
+
+			variables.log.debug(
+				"Task (#getName()#): Adjusted initial delay to #delayAmount# #getTimeUnit()# to align with cluster schedule"
+			);
+		} catch ( any e ) {
+			variables.log.error( "Error adjusting delay for task (#getName()#): #e.message#", e );
+		}
+	}
+
+	/**
+	 * Get the Java ChronoUnit constant for the given time unit string
+	 *
+	 * @timeUnit The time unit string (days, hours, minutes, etc.)
+	 *
+	 * @return The Java ChronoUnit constant
+	 */
+	private function getChronoUnit( required string timeUnit ){
+		var dateTimeHelper = new coldbox.system.async.time.DateTimeHelper();
+		switch ( arguments.timeUnit ) {
+			case "days":
+				return dateTimeHelper.DAYS;
+			case "hours":
+				return dateTimeHelper.HOURS;
+			case "minutes":
+				return dateTimeHelper.MINUTES;
+			case "seconds":
+				return dateTimeHelper.SECONDS;
+			case "milliseconds":
+				return dateTimeHelper.MILLIS;
+			default:
+				return dateTimeHelper.SECONDS;
 		}
 	}
 
