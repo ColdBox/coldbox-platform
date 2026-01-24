@@ -190,7 +190,7 @@ component extends="coldbox.system.async.tasks.ScheduledTask" accessors="true" {
 			// key
 			keyName,
 			// producer
-			() =>{
+			() => {
 				return {
 					"task"          : getName(),
 					"lockOn"        : now(),
@@ -224,12 +224,14 @@ component extends="coldbox.system.async.tasks.ScheduledTask" accessors="true" {
 		// Check if we are the same server that holds the lock
 		if ( local.serverLock.serverHost eq getStats().inetHost && local.serverLock.serverIp eq getStats().localIp ) {
 			// We hold the lock - refresh it while preserving the original scheduleStart
-			if ( !isNull( local.existingLock ) && isStruct( local.existingLock ) && local.existingLock.keyExists( "scheduleStart" ) ) {
-				var refreshedLock             = duplicate( local.serverLock );
-				refreshedLock.lockOn          = now();
-				refreshedLock.nextRun         = getStats().nextRun;
+			if (
+				!isNull( local.existingLock ) && isStruct( local.existingLock ) && local.existingLock.keyExists( "scheduleStart" )
+			) {
+				var refreshedLock           = duplicate( local.serverLock );
+				refreshedLock.lockOn        = now();
+				refreshedLock.nextRun       = getStats().nextRun;
 				// Preserve the original schedule anchor
-				refreshedLock.scheduleStart   = local.existingLock.scheduleStart;
+				refreshedLock.scheduleStart = local.existingLock.scheduleStart;
 				// Update the lock
 				getCache().set( keyName, refreshedLock, lockTimeout, 0 );
 			}
@@ -323,18 +325,15 @@ component extends="coldbox.system.async.tasks.ScheduledTask" accessors="true" {
 		try {
 			var dateTimeHelper = new coldbox.system.async.time.DateTimeHelper();
 			var now            = dateTimeHelper.now( getTimezone().getId() );
-			var anchor         = dateTimeHelper.toLocalDateTime(
-				arguments.scheduleStart,
-				getTimezone().getId()
-			);
+			var anchor         = dateTimeHelper.toLocalDateTime( arguments.scheduleStart, getTimezone().getId() );
 
 			// Calculate how much time has passed since the schedule started
-			var chronoUnit         = getChronoUnit( arguments.timeUnit );
-			var elapsedPeriods     = anchor.until( now, chronoUnit );
+			var chronoUnit       = getChronoUnit( arguments.timeUnit );
+			var elapsedPeriods   = anchor.until( now, chronoUnit );
 			// Calculate how many full periods have passed
-			var completedPeriods   = ceiling( elapsedPeriods / arguments.period );
+			var completedPeriods = ceiling( elapsedPeriods / arguments.period );
 			// Calculate the next aligned run time
-			var periodsToAdd       = completedPeriods * arguments.period;
+			var periodsToAdd     = completedPeriods * arguments.period;
 
 			// Add the periods to the anchor to get next aligned time
 			switch ( arguments.timeUnit ) {

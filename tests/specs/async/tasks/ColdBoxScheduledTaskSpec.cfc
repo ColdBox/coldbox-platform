@@ -10,7 +10,6 @@ component extends="tests.resources.BaseIntegrationTest" {
 	function run( testResults, testBox ){
 		// all your suites go here.
 		describe( "ColdBox Scheduled Task", function(){
-
 			beforeEach( function( currentSpec ){
 				variables.scheduler = getInstance(
 					name         : "coldbox.system.web.tasks.ColdBoxScheduler",
@@ -171,7 +170,7 @@ component extends="tests.resources.BaseIntegrationTest" {
 					// Call syncScheduleWithCluster to align with Server 1
 					server2Task.syncScheduleWithCluster();
 					// Server 2 should have adjusted its delay to align with existing schedule
-				});
+				} );
 
 				it( "calculates proper lock timeout based on task period", function(){
 					var hourlyTask = scheduler
