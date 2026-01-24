@@ -47,7 +47,10 @@ component accessors="true" singleton {
 	/**
 	 * If this scheduler has been started or not
 	 */
-	property name="started" type="boolean" default="false";
+	property
+		name   ="started"
+		type   ="boolean"
+		default="false";
 
 	/**
 	 * When this scheduler was started
@@ -122,7 +125,7 @@ component accessors="true" singleton {
 					// Iterate over tasks and send them off for scheduling
 					variables.tasks.each( ( taskName, taskRecord ) => startupTask( taskName ) );
 					// Mark scheduler as started
-					variables.started = true;
+					variables.started   = true;
 					variables.startedAt = now();
 					// callback
 					this.onStartup();
