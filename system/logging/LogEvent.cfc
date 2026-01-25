@@ -95,7 +95,7 @@ component accessors="true" {
 			return variables.extraInfo.$toString();
 		}
 
-		// Is this a raw CFML Exception?
+		// Is this a raw Exception?
 		if (
 			( isObject( variables.extraInfo ) || isStruct( variables.extraInfo ) )
 			&&
