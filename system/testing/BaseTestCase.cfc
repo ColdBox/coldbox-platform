@@ -4,7 +4,7 @@
  * ---
  * Base testing component to intergrate TestBox with ColdBox
  */
-component extends="testbox.system.compat.framework.TestCase" accessors="true" {
+component extends="testbox.system.BaseSpec" accessors="true" {
 
 	/**
 	 * The application mapping this test links to
