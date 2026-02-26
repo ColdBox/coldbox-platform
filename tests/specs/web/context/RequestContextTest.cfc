@@ -591,6 +591,25 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		event.setHTTPHeader( name = "expires", value = "#now()#" );
 	}
 
+    function testMockRequestContextPopulatesResponseHeaders(){
+        // MockRequestContext.setHTTPHeader() should populate variables.responseHeaders
+        // so that getResponseHeaders() works correctly in integration tests
+        var mockEvent = getMockBox().createMock( "coldbox.system.testing.mock.web.context.MockRequestContext" );
+        mockEvent.init( properties = props, controller = mockController );
+
+        // Set custom headers
+        mockEvent.setHTTPHeader( name = "x-custom-header", value = "test-value" );
+        mockEvent.setHTTPHeader( name = "cached-data", value = "false" );
+
+        // getResponseHeaders() should return the headers that were set
+        var headers = mockEvent.getResponseHeaders();
+        
+        expect( headers ).toHaveKey( "x-custom-header" );
+        expect( headers[ "x-custom-header" ] ).toBe( "test-value" );
+        expect( headers ).toHaveKey( "cached-data" );
+        expect( headers[ "cached-data" ] ).toBe( "false" );
+    }
+
 	function testGetHTTPContent(){
 		var event = getRequestContext();
 		test      = event.getHTTPContent();
