@@ -29,6 +29,6 @@
         "BOXLANG_DEBUG":true
     },
     "scripts":{
-        "onServerInitialInstall":"install bx-mail,bx-pdf,bx-mysql,bx-compat-cfml@be,bx-esapi,bx-orm --noSave"
+        "onServerInitialInstall":"install bx-mail,bx-pdf,bx-mysql,bx-compat-cfml@be,bx-esapi,bx-orm,bx-ai --noSave"
     }
 }
