@@ -1948,15 +1948,15 @@ component
 	private function ensureBoxLang(){
 		if ( !server.keyExists( "boxlang" ) ) {
 			throw(
-				type    : "BoxLangRequiredException",
-				message : "BoxLang is required for AI/MCP routing. toAi() and toMCP() are BoxLang-only features."
+				type   : "BoxLangRequiredException",
+				message: "BoxLang is required for AI/MCP routing. toAi() and toMCP() are BoxLang-only features."
 			);
 		}
 
 		if ( !getModuleList().keyArray().findNoCase( "bxai" ) ) {
 			throw(
-				type    : "ModuleNotFoundException",
-				message : "The BoxLang AI module (bxai) is required for AI/MCP routing. Install it via: box install bxai"
+				type   : "ModuleNotFoundException",
+				message: "The BoxLang AI module (bxai) is required for AI/MCP routing. Install it via: box install bxai"
 			);
 		}
 	}
@@ -2008,10 +2008,10 @@ component
 		if (
 			( !isSimpleValue( arguments.runnable ) && !isObject( arguments.runnable ) ) ||
 			isNumeric( arguments.runnable )
-		 ) {
+		) {
 			throw(
-				type    : "InvalidArgumentException",
-				message : "The 'runnable' argument must be a WireBox ID string or an IAiRunnable instance"
+				type   : "InvalidArgumentException",
+				message: "The 'runnable' argument must be a WireBox ID string or an IAiRunnable instance"
 			)
 		}
 
@@ -2043,15 +2043,20 @@ component
 		// =====================================================================================
 
 		// POST {base}/invoke  — synchronous execution via run()
-		var routeArgs = sharedArgs.copy()
+		var routeArgs = sharedArgs
+			.copy()
 			.append( {
-				"pattern" 	: "#basePath#/invoke",
-				"name"    	: "#baseName#.invoke",
-				"verbs"   	: "POST",
-				"response"	: ( event, rc, prc ) => {
+				"pattern"  : "#basePath#/invoke",
+				"name"     : "#baseName#.invoke",
+				"verbs"    : "POST",
+				"response" : ( event, rc, prc ) => {
 					var runnableInstance = isSimpleValue( capturedRunnable ) ? getInstance( capturedRunnable ) : capturedRunnable
-					var body             = event.getHTTPContent( json:true )
-					var result           = runnableInstance.run( body.input ?: {}, body.params ?: {}, body.options ?: {} )
+					var body             = event.getHTTPContent( json: true )
+					var result           = runnableInstance.run(
+						body.input ?: {},
+						body.params ?: {},
+						body.options ?: {}
+					)
 					return { "output" : result, "success" : true }
 				}
 			} )
@@ -2068,23 +2073,24 @@ component
 		// =====================================================================================
 
 		// POST {base}/stream  — streaming via BoxLang SSE() BIF
-		routeArgs = sharedArgs.copy()
+		routeArgs = sharedArgs
+			.copy()
 			.append( {
-				"pattern" 	: "#basePath#/stream",
-				"name"    	: "#baseName#.stream",
-				"verbs"   	: "POST",
-				"response" 	: ( event, rc, prc ) => {
+				"pattern"  : "#basePath#/stream",
+				"name"     : "#baseName#.stream",
+				"verbs"    : "POST",
+				"response" : ( event, rc, prc ) => {
 					var runnableInstance = isSimpleValue( capturedRunnable ) ? getInstance( capturedRunnable ) : capturedRunnable;
-					var body             = event.getHTTPContent( json : true );
+					var body             = event.getHTTPContent( json: true );
 					SSE(
-						callback : ( emitter ) => {
+						callback: ( emitter ) => {
 							runnableInstance.stream(
 								( chunk ) => {
 									if ( !emitter.isClosed() ) {
 										emitter.send( chunk, "chunk" );
 									}
 								},
-								body.input  ?: {},
+								body.input ?: {},
 								body.params ?: {},
 								body.options ?: {}
 							);
@@ -2111,19 +2117,23 @@ component
 		// BATCH ROUTE
 		// =====================================================================================
 		// POST {base}/batch  — run() for each item in inputs[]
-		routeArgs = sharedArgs.copy()
+		routeArgs = sharedArgs
+			.copy()
 			.append( {
-				"pattern" : "#basePath#/batch",
-				"name"    : "#baseName#.batch",
-				"verbs"   : "POST",
-				"response"	: ( event, rc, prc ) => {
+				"pattern"  : "#basePath#/batch",
+				"name"     : "#baseName#.batch",
+				"verbs"    : "POST",
+				"response" : ( event, rc, prc ) => {
 					var runnableInstance = isSimpleValue( capturedRunnable ) ? getInstance( capturedRunnable ) : capturedRunnable
-					var body             = event.getHTTPContent( json:true )
+					var body             = event.getHTTPContent( json: true )
 					var params           = body.params ?: {}
 					var options          = body.options ?: {}
 					var outputs          = ( body.inputs ?: [] ).map( ( input ) => {
 						try {
-							return { output : runnableInstance.run( input, params, options ), success : true };
+							return {
+								output  : runnableInstance.run( input, params, options ),
+								success : true
+							};
 						} catch ( any e ) {
 							return { error : e.message, success : false };
 						}
@@ -2143,22 +2153,39 @@ component
 		// INFO ROUTE
 		// =====================================================================================
 		// GET {base}/info  — brief endpoint metadata
-		routeArgs = sharedArgs.copy()
+		routeArgs = sharedArgs
+			.copy()
 			.append( {
-				"pattern" 	: "#basePath#/info",
-				"name"    	: "#baseName#.info",
-				"verbs"   	: "GET",
-				"response"	: ( event, rc, prc ) => {
+				"pattern"  : "#basePath#/info",
+				"name"     : "#baseName#.info",
+				"verbs"    : "GET",
+				"response" : ( event, rc, prc ) => {
 					var runnableInstance = isSimpleValue( capturedRunnable ) ? getInstance( capturedRunnable ) : capturedRunnable
 					return {
 						"name"        : runnableInstance.getName(),
 						"description" : runnableInstance?.getDescription() ?: "",
 						"pattern"     : basePath,
-						"endpoints" : [
-							{ "verb" : "POST", "path" : basePath & "/invoke", "description" : "Synchronous execution" },
-							{ "verb" : "POST", "path" : basePath & "/stream", "description" : "Streaming SSE execution" },
-							{ "verb" : "POST", "path" : basePath & "/batch",  "description" : "Batch execution" },
-							{ "verb" : "GET",  "path" : basePath & "/info",   "description" : "Endpoint metadata" }
+						"endpoints"   : [
+							{
+								"verb"        : "POST",
+								"path"        : basePath & "/invoke",
+								"description" : "Synchronous execution"
+							},
+							{
+								"verb"        : "POST",
+								"path"        : basePath & "/stream",
+								"description" : "Streaming SSE execution"
+							},
+							{
+								"verb"        : "POST",
+								"path"        : basePath & "/batch",
+								"description" : "Batch execution"
+							},
+							{
+								"verb"        : "GET",
+								"path"        : basePath & "/info",
+								"description" : "Endpoint metadata"
+							}
 						]
 					}
 				}
@@ -2214,8 +2241,8 @@ component
 		// Validate argument
 		if ( !len( trim( arguments.serverName ) ) && !findNoCase( ":mcpServer", variables.thisRoute.pattern ) ) {
 			throw(
-				type    : "InvalidArgumentException",
-				message : "The 'serverName' argument must be a non-empty string or the route pattern must contain the ':mcpServer' placeholder"
+				type   : "InvalidArgumentException",
+				message: "The 'serverName' argument must be a non-empty string or the route pattern must contain the ':mcpServer' placeholder"
 			)
 		}
 
@@ -2226,7 +2253,7 @@ component
 
 		// Inline response closure: resolves the server name and delegates to MCPRequestProcessor
 		var mcpResponseClosure = ( event, rc, prc ) => {
-			var resolvedServerName = rc.keyExists( "mcpServer" ) ? rc.mcpServer : serverName
+			var resolvedServerName                              = rc.keyExists( "mcpServer" ) ? rc.mcpServer : serverName
 			return bxModules.bxai.models.mcp.MCPRequestProcessor::processHttp( resolvedServerName );
 		};
 
