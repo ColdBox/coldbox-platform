@@ -2100,7 +2100,7 @@ component
 							}
 						},
 						keepAliveInterval: 30000,
-						cors: "*"
+						cors             : "*"
 					);
 					return "";
 				}
@@ -2234,7 +2234,7 @@ component
 	 * @throws ModuleNotFoundException  If the bxai module is not installed
 	 * @throws InvalidArgumentException If serverName is not a non-empty string and no :mcpServer placeholder exists
 	 */
-	function toMCP( string serverName="" ){
+	function toMCP( string serverName = "" ){
 		// Guard: BoxLang + bxai must be present at route-registration time
 		ensureBoxLang()
 

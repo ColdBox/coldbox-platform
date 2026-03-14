@@ -183,7 +183,6 @@ component extends="coldbox.system.testing.BaseModelTest" skip="notBoxlang" {
 			} )
 
 			story( "I want dynamic routing support on toMCP()", function(){
-
 				given( "an empty serverName but an :mcpServer placeholder in the route", function(){
 					then( "it should not throw an exception", function(){
 						router.route( "/mcp/:mcpServer" ).toMCP()
@@ -193,9 +192,7 @@ component extends="coldbox.system.testing.BaseModelTest" skip="notBoxlang" {
 						expect( routes[ 1 ].mcpServer ).toBeEmpty()
 					} )
 				} )
-
 			} )
-
 		} )
 	}
 
