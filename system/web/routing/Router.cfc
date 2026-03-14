@@ -2088,11 +2088,15 @@ component
 								body.params ?: {},
 								body.options ?: {}
 							);
-							emitter.send( "[DONE]", "done" );
-							emitter.close();
+							if ( !emitter.isClosed() ) {
+								emitter.send( "[DONE]", "done" );
+								emitter.close();
+							}
 						},
+						keepAliveInterval: 30000,
 						cors: "*"
 					);
+					return "";
 				}
 			} )
 
@@ -2195,23 +2199,23 @@ component
 	 * route( "/mcp/:mcpServer" ).toMCP();
 	 * </pre>
 	 *
-	 * @serverName The name of the MCP server to expose.
+	 * @serverName The optional name of the MCP server to expose. Defaults to empty string to allow dynamic route placeholder :mcpServer
 	 *
 	 * @return Router instance for chaining
 	 *
 	 * @throws BoxLangRequiredException If BoxLang is not the active runtime
 	 * @throws ModuleNotFoundException  If the bxai module is not installed
-	 * @throws InvalidArgumentException If serverName is not a non-empty string
+	 * @throws InvalidArgumentException If serverName is not a non-empty string and no :mcpServer placeholder exists
 	 */
-	function toMCP( required string serverName ){
+	function toMCP( string serverName="" ){
 		// Guard: BoxLang + bxai must be present at route-registration time
 		ensureBoxLang()
 
 		// Validate argument
-		if ( !len( trim( arguments.serverName ) ) ) {
+		if ( !len( trim( arguments.serverName ) ) && !findNoCase( ":mcpServer", variables.thisRoute.pattern ) ) {
 			throw(
 				type    : "InvalidArgumentException",
-				message : "The 'serverName' argument must be a non-empty string"
+				message : "The 'serverName' argument must be a non-empty string or the route pattern must contain the ':mcpServer' placeholder"
 			)
 		}
 
