@@ -451,10 +451,10 @@ component
 		}
 
 		variables.withClosure
-			.filter( function( key, value ){
+			.filter( ( key, value ) => {
 				return !isNull( arguments.value );
 			} )
-			.each( function( key, value ){
+			.each( ( key, value ) => {
 				// Verify if the key does not exist in incoming but it does in with, so default it
 				if ( NOT structKeyExists( args, key ) ) {
 					args[ key ] = value;
@@ -1114,7 +1114,6 @@ component
 			"action"                : "", // The action to execute
 			"append"                : true, // Was this route appended or pre/prended
 			"condition"             : "", // The condition closure which must be true for the route to match
-			// TODO: Consider deprecating this since now we have a `-regex()` placeholder
 			"constraints"           : {}, // If we have any regex constraints on placeholders.
 			"domain"                : "", // The domain attached to the route
 			"event"                 : "", // The full event syntax to execute
@@ -1140,7 +1139,13 @@ component
 			"verbs"                 : "", // The HTTP Verbs allowed
 			"view"                  : "", // The view to proxy to
 			"viewModule"            : "", // If the view comes from a module
-			"viewNoLayout"          : false // If we use a layout or not
+			"viewNoLayout"          : false, // If we use a layout or not
+			// AI Routing
+			"ai"                    : false, // Flag indicating this is an AI runnable route
+			"aiRunnable"            : "", // The AI runnable WireBox ID or instance
+			// MCP Routing
+			"mcp"                   : false, // Flag indicating this is an MCP server route
+			"mcpServer"             : "" // The MCP server name to expose
 		};
 	}
 
@@ -1929,6 +1934,315 @@ component
 
 		// reinit
 		variables.thisRoute = initRouteDefinition();
+		return this;
+	}
+
+	/**
+	 * Verifies that BoxLang is the active runtime and that the bxai module is installed.
+	 * Used as a guard by toAi() and toMCP() at route-registration time so misconfigurations
+	 * are caught on startup rather than at request time.
+	 *
+	 * @throws BoxLangRequiredException If BoxLang is not the active runtime
+	 * @throws ModuleNotFoundException  If the bxai module is not installed
+	 */
+	private function ensureBoxLang(){
+		if ( !server.keyExists( "boxlang" ) ) {
+			throw(
+				type    : "BoxLangRequiredException",
+				message : "BoxLang is required for AI/MCP routing. toAi() and toMCP() are BoxLang-only features."
+			);
+		}
+
+		if ( !getModuleList().keyArray().findNoCase( "bxai" ) ) {
+			throw(
+				type    : "ModuleNotFoundException",
+				message : "The BoxLang AI module (bxai) is required for AI/MCP routing. Install it via: box install bxai"
+			);
+		}
+	}
+
+	/**
+	 * Terminates the route by registering a family of standardized sub-routes that expose
+	 * an IAiRunnable as a REST API
+	 *
+	 * Given a base pattern (e.g. "/api/chat"), the following sub-routes are registered automatically:
+	 *
+	 *   POST {pattern}/invoke  → runnable.run( input, params, options )  [sync JSON]
+	 *   POST {pattern}/stream  → runnable.stream( onChunk, input, ... )  [SSE via BoxLang SSE() BIF]
+	 *   POST {pattern}/batch   → run() for each item in inputs[]         [JSON array]
+	 *   GET  {pattern}/info    → brief metadata about the runnable       [JSON]
+	 *
+	 * The runnable must implement IAiRunnable (from bxai):
+	 *   any  function run( any input={}, struct params={}, struct options={} )
+	 *   void function stream( function onChunk, any input={}, struct params={}, struct options={} )
+	 *
+	 * Any route modifiers already set (withCondition, withDomain, withSSL, etc.) are inherited
+	 * by all five sub-routes.
+	 *
+	 * <pre>
+	 * // Using WireBox ID — resolved lazily at request time
+	 * route( "/api/chat" ).toAi( "ChatRunnable" );
+	 *
+	 * // Using a direct instance
+	 * route( "/api/embeddings" ).toAi( getInstance( "EmbeddingRunnable" ) );
+	 *
+	 * // With a shared condition on all sub-routes
+	 * route( "/api/chat" )
+	 *     .withCondition( ( route, params, event ) => event.isAuthenticated() )
+	 *     .toAi( "ChatRunnable" );
+	 * </pre>
+	 *
+	 * @runnable A WireBox ID string or a live IAiRunnable instance
+	 *
+	 * @return Router instance for chaining
+	 *
+	 * @throws BoxLangRequiredException If BoxLang is not the active runtime
+	 * @throws ModuleNotFoundException  If the bxai module is not installed
+	 * @throws InvalidArgumentException If runnable is not a string or object
+	 */
+	function toAi( required runnable ){
+		// Guard: BoxLang + bxai must be present at route-registration time
+		ensureBoxLang()
+
+		// Validate argument type
+		if (
+			( !isSimpleValue( arguments.runnable ) && !isObject( arguments.runnable ) ) ||
+			isNumeric( arguments.runnable )
+		 ) {
+			throw(
+				type    : "InvalidArgumentException",
+				message : "The 'runnable' argument must be a WireBox ID string or an IAiRunnable instance"
+			)
+		}
+
+		// Capture base path and route name from the current fluent state,
+		// exactly as resources() does — then build each sub-route as its own
+		// explicit routeArgs struct and call addRoute() directly.
+		var basePath = variables.thisRoute.pattern
+		var baseName = len( variables.thisRoute.name ) ? variables.thisRoute.name : basePath
+
+		// Shared modifiers forwarded to every sub-route (mirrors resources() pattern)
+		var sharedArgs = {
+			condition  : variables.thisRoute.condition,
+			domain     : variables.thisRoute.domain,
+			ssl        : variables.thisRoute.ssl,
+			headers    : variables.thisRoute.headers,
+			module     : variables.thisRoute.module,
+			namespace  : variables.thisRoute.namespace,
+			meta       : variables.thisRoute.meta,
+			ai         : true,
+			aiRunnable : arguments.runnable,
+			statusCode : 200
+		}
+
+		// Capture runnable in local variable so closures can close over it
+		var capturedRunnable = arguments.runnable
+
+		// =====================================================================================
+		// INVOKE ROUTE
+		// =====================================================================================
+
+		// POST {base}/invoke  — synchronous execution via run()
+		var routeArgs = sharedArgs.copy()
+			.append( {
+				"pattern" 	: "#basePath#/invoke",
+				"name"    	: "#baseName#.invoke",
+				"verbs"   	: "POST",
+				"response"	: ( event, rc, prc ) => {
+					var runnableInstance = isSimpleValue( capturedRunnable ) ? getInstance( capturedRunnable ) : capturedRunnable
+					var body             = event.getHTTPContent( json:true )
+					var result           = runnableInstance.run( body.input ?: {}, body.params ?: {}, body.options ?: {} )
+					return { "output" : result, "success" : true }
+				}
+			} )
+
+		// process a with closure if not empty
+		if ( !variables.withClosure.isEmpty() ) {
+			processWith( routeArgs )
+		}
+		// Register the route
+		addRoute( argumentCollection = routeArgs )
+
+		// =====================================================================================
+		// STREAM ROUTE
+		// =====================================================================================
+
+		// POST {base}/stream  — streaming via BoxLang SSE() BIF
+		routeArgs = sharedArgs.copy()
+			.append( {
+				"pattern" 	: "#basePath#/stream",
+				"name"    	: "#baseName#.stream",
+				"verbs"   	: "POST",
+				"response" 	: ( event, rc, prc ) => {
+					var runnableInstance = isSimpleValue( capturedRunnable ) ? getInstance( capturedRunnable ) : capturedRunnable;
+					var body             = event.getHTTPContent( json : true );
+					SSE(
+						callback : ( emitter ) => {
+							runnableInstance.stream(
+								( chunk ) => {
+									if ( !emitter.isClosed() ) {
+										emitter.send( chunk, "chunk" );
+									}
+								},
+								body.input  ?: {},
+								body.params ?: {},
+								body.options ?: {}
+							);
+							emitter.send( "[DONE]", "done" );
+							emitter.close();
+						},
+						cors: "*"
+					);
+				}
+			} )
+
+		// process a with closure if not empty
+		if ( !variables.withClosure.isEmpty() ) {
+			processWith( routeArgs )
+		}
+		// Register the route
+		addRoute( argumentCollection = routeArgs )
+
+		// =====================================================================================
+		// BATCH ROUTE
+		// =====================================================================================
+		// POST {base}/batch  — run() for each item in inputs[]
+		routeArgs = sharedArgs.copy()
+			.append( {
+				"pattern" : "#basePath#/batch",
+				"name"    : "#baseName#.batch",
+				"verbs"   : "POST",
+				"response"	: ( event, rc, prc ) => {
+					var runnableInstance = isSimpleValue( capturedRunnable ) ? getInstance( capturedRunnable ) : capturedRunnable
+					var body             = event.getHTTPContent( json:true )
+					var params           = body.params ?: {}
+					var options          = body.options ?: {}
+					var outputs          = ( body.inputs ?: [] ).map( ( input ) => {
+						try {
+							return { output : runnableInstance.run( input, params, options ), success : true };
+						} catch ( any e ) {
+							return { error : e.message, success : false };
+						}
+					} )
+					return { "outputs" : outputs }
+				}
+			} )
+
+		// process a with closure if not empty
+		if ( !variables.withClosure.isEmpty() ) {
+			processWith( routeArgs )
+		}
+		// Register the route
+		addRoute( argumentCollection = routeArgs )
+
+		// =====================================================================================
+		// INFO ROUTE
+		// =====================================================================================
+		// GET {base}/info  — brief endpoint metadata
+		routeArgs = sharedArgs.copy()
+			.append( {
+				"pattern" 	: "#basePath#/info",
+				"name"    	: "#baseName#.info",
+				"verbs"   	: "GET",
+				"response"	: ( event, rc, prc ) => {
+					var runnableInstance = isSimpleValue( capturedRunnable ) ? getInstance( capturedRunnable ) : capturedRunnable
+					return {
+						"name"        : runnableInstance.getName(),
+						"description" : runnableInstance?.getDescription() ?: "",
+						"pattern"     : basePath,
+						"endpoints" : [
+							{ "verb" : "POST", "path" : basePath & "/invoke", "description" : "Synchronous execution" },
+							{ "verb" : "POST", "path" : basePath & "/stream", "description" : "Streaming SSE execution" },
+							{ "verb" : "POST", "path" : basePath & "/batch",  "description" : "Batch execution" },
+							{ "verb" : "GET",  "path" : basePath & "/info",   "description" : "Endpoint metadata" }
+						]
+					}
+				}
+			} )
+
+		// process a with closure if not empty
+		if ( !variables.withClosure.isEmpty() ) {
+			processWith( routeArgs );
+		}
+		// Register the route
+		addRoute( argumentCollection = routeArgs )
+
+		// Reset fluent state for the next route definition
+		variables.thisRoute = initRouteDefinition()
+
+		return this;
+	}
+
+	/**
+	 * Terminates the route to expose a BoxLang MCP (Model Context Protocol) server via HTTP.
+	 * This delegates the entire request to the MCP server's HTTP handler, enabling MCP clients
+	 * to communicate with the server through standard HTTP.
+	 *
+	 * The MCP server must be registered in the BoxLang AI module (bxai) and accessible via
+	 * the provided server name. The serverName may contain {placeholder} syntax to resolve
+	 * a dynamic value from the RC at request time.
+	 *
+	 * <pre>
+	 * // Expose filesystem MCP server
+	 * route( "/mcp/filesystem" ).toMCP( "FileSystemServer" );
+	 *
+	 * // Expose database MCP server with auth
+	 * route( "/mcp/database" )
+	 *     .withCondition( ( route, params, event ) => event.isAuthenticated() )
+	 *     .toMCP( "DatabaseServer" );
+	 *
+	 * // Dynamic MCP routing via URL placeholder, using the :mcpServer placeholder from the RC
+	 * route( "/mcp/:mcpServer" ).toMCP();
+	 * </pre>
+	 *
+	 * @serverName The name of the MCP server to expose.
+	 *
+	 * @return Router instance for chaining
+	 *
+	 * @throws BoxLangRequiredException If BoxLang is not the active runtime
+	 * @throws ModuleNotFoundException  If the bxai module is not installed
+	 * @throws InvalidArgumentException If serverName is not a non-empty string
+	 */
+	function toMCP( required string serverName ){
+		// Guard: BoxLang + bxai must be present at route-registration time
+		ensureBoxLang()
+
+		// Validate argument
+		if ( !len( trim( arguments.serverName ) ) ) {
+			throw(
+				type    : "InvalidArgumentException",
+				message : "The 'serverName' argument must be a non-empty string"
+			)
+		}
+
+		// process a with closure if not empty
+		if ( !variables.withClosure.isEmpty() ) {
+			processWith( arguments )
+		}
+
+		// Inline response closure: resolves the server name and delegates to MCPRequestProcessor
+		var mcpResponseClosure = ( event, rc, prc ) => {
+			var resolvedServerName = rc.keyExists( "mcpServer" ) ? rc.mcpServer : serverName
+			return bxModules.bxai.models.mcp.MCPRequestProcessor::processHttp( resolvedServerName );
+		};
+
+		// Construct route with MCP metadata
+		variables.thisRoute.append(
+			{
+				response   : mcpResponseClosure,
+				mcp        : true,
+				mcpServer  : arguments.serverName,
+				statusCode : 200
+			},
+			true
+		);
+
+		// Register the route
+		addRoute( argumentCollection = variables.thisRoute );
+
+		// Reset fluent state for the next route definition
+		variables.thisRoute = initRouteDefinition();
+
 		return this;
 	}
 

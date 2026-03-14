@@ -1,6 +1,36 @@
 component {
 
 	function configure(){
+
+		// =====================================================================================
+		// AI ROUTING
+		// =====================================================================================
+
+		if( server.keyExists( "boxlang" ) ){
+			// Create a basic MCP Server
+			MCPServer( "MyMCPServer" )
+				.registerTool(
+					aiTool( "echo", "Echoes the input message", ( message ) => {
+					 	return {
+							"echoedMessage": message
+						}
+					} )
+				)
+
+			var routerAiAgent = aiAgent(
+				name: "ColdBox Test Agent",
+				instructions: "You are a helpful assistant for testing AI routing in ColdBox."
+			)
+
+			// Define a basic MCP server route for testing
+			route( "/mcp/test" ).toMCP( "MyMCPServer" )
+			route( "/ai/test" ).toAi( routerAiAgent )
+		}
+
+		// =====================================================================================
+		// NORMAL ROUTING
+		// =====================================================================================
+
 		route( "/bar" ).toModuleRouting( "resourcesTest" );
 
 		// Nested Resources
