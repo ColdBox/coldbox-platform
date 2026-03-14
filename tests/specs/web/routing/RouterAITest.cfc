@@ -1,7 +1,7 @@
 /**
  * AI & MCP Routing Tests — covers toAi() and toMCP() terminators
  */
-component extends="coldbox.system.testing.BaseModelTest" skip="notBoxlang"{
+component extends="coldbox.system.testing.BaseModelTest" skip="notBoxlang" {
 
 	boolean function notBoxlang(){
 		return !isBoxLang()
@@ -21,9 +21,7 @@ component extends="coldbox.system.testing.BaseModelTest" skip="notBoxlang"{
 	/*********************************** BDD SUITES ***********************************/
 
 	function run( testResults, testBox ){
-
 		describe( "AI Routing — toAi()", function(){
-
 			beforeEach( function(){
 				variables.router = createMock( "coldbox.system.web.routing.Router" )
 					.init()
@@ -35,7 +33,6 @@ component extends="coldbox.system.testing.BaseModelTest" skip="notBoxlang"{
 			} )
 
 			story( "I want to register an AI runnable behind a base route pattern", function(){
-
 				given( "a WireBox ID string as runnable", function(){
 					then( "it should register 5 standardized sub-routes", function(){
 						router.route( "/api/chat" ).toAi( "MockRunnable" )
@@ -64,7 +61,10 @@ component extends="coldbox.system.testing.BaseModelTest" skip="notBoxlang"{
 
 				given( "a base route with withSSL() set", function(){
 					then( "all sub-routes should inherit ssl=true", function(){
-						router.route( "/api/chat" ).withSSL().toAi( "MockRunnable" )
+						router
+							.route( "/api/chat" )
+							.withSSL()
+							.toAi( "MockRunnable" )
 						var routes = router.getRoutes()
 
 						expect( routes ).toHaveLength( 4 )
@@ -77,7 +77,7 @@ component extends="coldbox.system.testing.BaseModelTest" skip="notBoxlang"{
 				given( "a registered AI route family", function(){
 					then( "POST sub-routes should be invoke/stream/batch and GET sub-routes should be info", function(){
 						router.route( "/api/chat" ).toAi( "MockRunnable" )
-						var routes    = router.getRoutes()
+						var routes     = router.getRoutes()
 						var postRoutes = routes.filter( ( r ) => r.verbs == "POST" )
 						var getRoutes  = routes.filter( ( r ) => r.verbs == "GET" )
 
@@ -98,11 +98,9 @@ component extends="coldbox.system.testing.BaseModelTest" skip="notBoxlang"{
 						expect( names ).toInclude( "chat.info" )
 					} )
 				} )
-
 			} )
 
 			story( "I want argument validation on toAi()", function(){
-
 				given( "a numeric value as runnable", function(){
 					then( "it should throw InvalidArgumentException", function(){
 						expect( function(){
@@ -118,13 +116,10 @@ component extends="coldbox.system.testing.BaseModelTest" skip="notBoxlang"{
 						} ).toThrow( "InvalidArgumentException" )
 					} )
 				} )
-
 			} )
-
 		} )
 
 		describe( "MCP Routing — toMCP()", function(){
-
 			beforeEach( function(){
 				variables.router = createMock( "coldbox.system.web.routing.Router" )
 					.init()
@@ -136,7 +131,6 @@ component extends="coldbox.system.testing.BaseModelTest" skip="notBoxlang"{
 			} )
 
 			story( "I want to expose an MCP server via a route", function(){
-
 				given( "a valid server name", function(){
 					then( "it should register one route with mcp=true and the server name", function(){
 						router.route( "/mcp/filesystem" ).toMCP( "FileSystemServer" )
@@ -159,17 +153,18 @@ component extends="coldbox.system.testing.BaseModelTest" skip="notBoxlang"{
 
 				given( "an MCP route with withSSL()", function(){
 					then( "the route should have ssl=true", function(){
-						router.route( "/mcp/filesystem" ).withSSL().toMCP( "FileSystemServer" )
+						router
+							.route( "/mcp/filesystem" )
+							.withSSL()
+							.toMCP( "FileSystemServer" )
 						var routes = router.getRoutes()
 
 						expect( routes[ 1 ].ssl ).toBeTrue()
 					} )
 				} )
-
 			} )
 
 			story( "I want argument validation on toMCP()", function(){
-
 				given( "an empty string as serverName", function(){
 					then( "it should throw InvalidArgumentException", function(){
 						expect( function(){
@@ -185,11 +180,8 @@ component extends="coldbox.system.testing.BaseModelTest" skip="notBoxlang"{
 						} ).toThrow( "InvalidArgumentException" )
 					} )
 				} )
-
 			} )
-
 		} )
-
 	}
 
 }
