@@ -603,7 +603,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 
 		// getResponseHeaders() should return the headers that were set
 		var headers = mockEvent.getResponseHeaders();
-		
+
 		expect( headers ).toHaveKey( "x-custom-header" );
 		expect( headers[ "x-custom-header" ] ).toBe( "test-value" );
 		expect( headers ).toHaveKey( "cached-data" );
