@@ -21,6 +21,11 @@ component extends="coldbox.system.testing.BaseModelTest" skip="notBoxlang" {
 	/*********************************** BDD SUITES ***********************************/
 
 	function run( testResults, testBox ){
+		
+		if( notBoxlang() ){
+			return;
+		}
+
 		describe( "AI Routing — toAi()", function(){
 			beforeEach( function(){
 				variables.router = createMock( "coldbox.system.web.routing.Router" )
