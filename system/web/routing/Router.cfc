@@ -2128,10 +2128,10 @@ component
 					var body             = event.getHTTPContent( json: true )
 					var params           = body.params ?: {}
 					var options          = body.options ?: {}
-					var inputs  		 = body.inputs ?: []
+					var inputs           = body.inputs ?: []
 
 					// Map the incoming outputs
-					var outputs          = inputs.map( ( input ) => {
+					var outputs = inputs.map( ( input ) => {
 						try {
 							return {
 								output  : runnableInstance.run( input, params, options ),
