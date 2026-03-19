@@ -1,4 +1,4 @@
-﻿/**
+/**
  * The main ColdBox utility library.
  */
 component {
@@ -233,13 +233,17 @@ component {
 	 * @obj The object to be serialized
 	 */
 	string function toJson( required any obj ){
-		// https://cfdocs.org/serializejson
-		// We default to "struct" serialization for queries.  The CFML defaults are dumb and just nasty!
+		// If the obj is already json then skip it
+		if( isJson( arguments.obj ) ){
+			return arguments.obj
+		}
+
+		// We default to "struct" serialization for queries.
 		return serializeJSON(
 			arguments.obj,
 			"struct",
 			!server.keyExists( "boxlang" ) && listFindNoCase( "Lucee", server.coldfusion.productname ) ? "utf-8" : false
-		);
+		)
 	}
 
 	/**
