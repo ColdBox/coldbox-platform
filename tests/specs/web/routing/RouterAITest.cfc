@@ -21,8 +21,7 @@ component extends="coldbox.system.testing.BaseModelTest" skip="notBoxlang" {
 	/*********************************** BDD SUITES ***********************************/
 
 	function run( testResults, testBox ){
-		
-		if( notBoxlang() ){
+		if ( notBoxlang() ) {
 			return;
 		}
 
