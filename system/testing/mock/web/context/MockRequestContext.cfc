@@ -29,7 +29,7 @@ component
 		else if ( structKeyExists( arguments, "name" ) ) {
 			var headers                        = getValue( "cbox_headers", {} );
 			headers[ lCase( arguments.name ) ] = arguments.value;
-            // Keep variables.responseHeaders in sync so getResponseHeaders() works in tests
+			// Keep variables.responseHeaders in sync so getResponseHeaders() works in tests
 			variables.responseHeaders[ arguments.name ] = arguments.value;
 			setValue( "cbox_headers", headers );
 		} else {
