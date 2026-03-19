@@ -420,9 +420,7 @@ component {
 			if ( isObject( arguments.component ) ) {
 				arguments.md = getMetadata( arguments.component );
 			} else {
-				arguments.md = server.keyExists( "boxlang" ) ? getClassMetadata( arguments.component ) : getComponentMetadata(
-					arguments.component
-				);
+				arguments.md = server.keyExists( "boxlang" ) ? getClassMetadata( arguments.component ) : getComponentMetadata( arguments.component );
 			}
 		}
 
@@ -431,7 +429,9 @@ component {
 			arguments.md.keyExists( "extends" ) AND
 			!arguments.md.extends.isEmpty() AND
 			listFindNoCase( "class,component", arguments.md.extends.type ) AND
-			!stopClassRecursion( arguments.md.extends.name, arguments.stopRecursions )
+			!stopClassRecursion( 
+				arguments.md.extends.name, arguments.stopRecursions 
+			)
 		) {
 			loc.parent = getInheritedMetaData(
 				component      = arguments.component,
