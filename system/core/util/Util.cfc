@@ -234,7 +234,7 @@ component {
 	 */
 	string function toJson( required any obj ){
 		// If the obj is already json then skip it
-		if( isJson( arguments.obj ) ){
+		if ( isJSON( arguments.obj ) ) {
 			return arguments.obj
 		}
 
