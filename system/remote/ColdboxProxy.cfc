@@ -362,7 +362,7 @@ component serializable="false" accessors="true" {
 	 */
 	private function selfAutoWire(){
 		var scriptName = CGI.SCRIPT_NAME
-		var extension = listLast( scriptName, "." )
+		var extension  = listLast( scriptName, "." )
 
 		// Only process cfc or bx extensions and if ColdBox is available, else ignore and let the engine handle it as a normal cfc request
 		if (
