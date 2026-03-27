@@ -717,16 +717,16 @@ component serializable="false" accessors="true" {
 		required encoding
 	){
 		// Status Codes
-		getPageContextResponse().setStatus( arguments.statusCode );
+		getPageContextResponse().setStatus( arguments.statusCode )
 		// Render the Data Content Type
 		controller
 			.getDataMarshaller()
 			.renderContent(
-				type     = arguments.contentType,
-				encoding = arguments.encoding,
-				reset    = true
-			);
-		return this;
+				type     : arguments.contentType,
+				encoding : arguments.encoding,
+				reset    : true
+			)
+		return this
 	}
 
 	/**
@@ -734,19 +734,19 @@ component serializable="false" accessors="true" {
 	 */
 	private function locateAppKey(){
 		if ( len( trim( variables.COLDBOX_APP_KEY ) ) ) {
-			return variables.COLDBOX_APP_KEY;
+			return variables.COLDBOX_APP_KEY
 		}
-		return "cbController";
+		return "cbController"
 	}
 
 	/**
 	 * Helper method to deal with ACF's overload of the page context response, come on Adobe, get your act together!
 	 */
 	private function getPageContextResponse(){
-		if ( server.keyExists( "coldfusion" ) && server.coldfusion.productName.findNoCase( "ColdFusion" ) ) {
-			return getPageContext().getResponse().getResponse();
+		if( server.keyExists( "boxlang" ) || server.keyExists( "lucee" ) ) {
+			return getPageContext().getResponse()
 		}
-		return getPageContext().getResponse();
+		return getPageContext().getResponse().getResponse()
 	}
 
 }
