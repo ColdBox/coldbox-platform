@@ -722,9 +722,9 @@ component serializable="false" accessors="true" {
 		controller
 			.getDataMarshaller()
 			.renderContent(
-				type     : arguments.contentType,
-				encoding : arguments.encoding,
-				reset    : true
+				type    : arguments.contentType,
+				encoding: arguments.encoding,
+				reset   : true
 			)
 		return this
 	}
@@ -743,7 +743,7 @@ component serializable="false" accessors="true" {
 	 * Helper method to deal with ACF's overload of the page context response, come on Adobe, get your act together!
 	 */
 	private function getPageContextResponse(){
-		if( server.keyExists( "boxlang" ) || server.keyExists( "lucee" ) ) {
+		if ( server.keyExists( "boxlang" ) || server.keyExists( "lucee" ) ) {
 			return getPageContext().getResponse()
 		}
 		return getPageContext().getResponse().getResponse()
