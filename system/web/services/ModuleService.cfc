@@ -1316,7 +1316,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			var globalModuleSettings = controller
 				.getSetting( "ColdBoxConfig" )
 				.getPropertyMixin( "moduleSettings", "variables", {} );
-			param name="globalModuleSettings[ mConfig.modelNamespace ]" default="#structNew()#";
+			if( !globalModuleSettings.keyExists( mConfig.modelNamespace ) ) {
+				globalModuleSettings[ mConfig.modelNamespace ] = structNew();
+			}
 			mConfig.settings.append( globalModuleSettings[ mConfig.modelNamespace ], true );
 
 			// config/{mConfig.modelNamespace}.cfc overrides
