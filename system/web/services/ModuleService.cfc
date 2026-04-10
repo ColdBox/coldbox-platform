@@ -334,8 +334,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				autoProcessModels : false,
 				// Does the module belong to a bundle or not
 				bundle            : arguments.bundle,
-				// ColdFusion mapping
-				cfmapping         : "",
+				// Engine mapping
+				mapping         : "",
 				// Child modules
 				childModules      : [],
 				// Module Conventions
@@ -480,11 +480,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			mConfig.schedulerInvocationPath &= ".#mConfig.conventions.schedulerLocation#";
 			mConfig.schedulerPhysicalPath &= "/#mConfig.conventions.schedulerLocation.replace( ".", "/", "all" )#";
 
-			// Register CFML Mapping if it exists, for loading purposes
-			// TODO: If a duplicate mapping is detected, warn it to logs
-			if ( len( trim( mConfig.cfMapping ) ) ) {
-				variables.util.addMapping( name = mConfig.cfMapping, path = mConfig.path );
-				variables.mappingRegistry[ "/#mConfig.cfMapping#" ] = mConfig.path;
+			// Register Engine Mapping if it exists, for loading purposes
+			if ( len( trim( mConfig.mapping ) ) ) {
+				variables.util.addMapping( name: mConfig.mapping, path: mConfig.path );
+				variables.mappingRegistry[ "/#mConfig.mapping#" ] = mConfig.path;
 			}
 
 			// Register Custom Interception Points
@@ -564,7 +563,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * Load all module mappings
 	 */
 	function loadMappings(){
-		variables.util.addMapping( mappings = variables.mappingRegistry );
+		variables.util.addMapping( mappings : variables.mappingRegistry );
 		return this;
 	}
 
@@ -699,7 +698,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 				// Add as a mapped directory with module name as the namespace with correct mapping path
 				var packagePath = (
-					len( mConfig.cfmapping ) ? mConfig.cfmapping & ".#mConfig.conventions.modelsLocation#" : mConfig.modelsInvocationPath
+					len( mConfig.mapping ) ? mConfig.mapping & ".#mConfig.conventions.modelsLocation#" : mConfig.modelsInvocationPath
 				);
 
 				// Module Injector : Map with no namespace in the local injector
@@ -1098,7 +1097,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * @parent     The parent that invoked the registration
 	 * @parent     The parent injector this module will be linked to
 	 *
-	 * @return struct : { config:cfc, injector:cfc }
+	 * @return struct : { config:class, injector:class }
 	 */
 	struct function loadModuleConfiguration(
 		required struct config,
@@ -1147,9 +1146,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// version
 		param results.config.version        = "1.0.0";
 		mConfig.version                     = results.config.version;
-		// cf mapping
+		// engine mapping: cfmapping is deprecated but we check for it for backward compatibility
 		param results.config.cfmapping      = "";
-		mConfig.cfmapping                   = results.config.cfmapping;
+		param results.config.mapping        = "";
+		mConfig.mapping                     = len( results.config.mapping ) ? results.config.mapping : results.config.cfmapping;
 		// Module Injector
 		param results.config.moduleInjector = false;
 		mConfig.moduleInjector              = results.config.moduleInjector;

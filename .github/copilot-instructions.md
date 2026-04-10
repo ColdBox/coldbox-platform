@@ -67,7 +67,7 @@ The ColdBox framework includes several core services in `/system/web/services/` 
 - **HandlerService.cfc**: Manages event handling, handler caching, event caching, and handler execution lifecycle
 - **InterceptorService.cfc**: Manages interception points, interceptor registration, and announcement of framework events
 - **LoaderService.cfc**: Responsible for loading and configuring a ColdBox application with all its services during startup
-- **ModuleService.cfc**: Oversees HMVC module management including registration, activation, and CF mapping management
+- **ModuleService.cfc**: Oversees HMVC module management including registration, activation, and Engine mapping management
 - **RequestService.cfc**: Handles request context preparation, FORM/URL processing, and flash scope management
 - **RoutingService.cfc**: Manages URL routing, route registration, and request-to-handler mapping via the Router component
 - **SchedulerService.cfc**: Manages application schedulers in an HMVC fashion for background task execution

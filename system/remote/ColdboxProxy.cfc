@@ -49,7 +49,7 @@ component serializable="false" accessors="true" {
 		try {
 			// Locate ColdBox Controller
 			var cbController = getController();
-			// Load Module CF Mappings
+			// Load Module Engine Mappings
 			cbController.getModuleService().loadMappings();
 			// Create the request context
 			var event = cbController.getRequestService().requestCapture( proxyCall: true );

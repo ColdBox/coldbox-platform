@@ -14,8 +14,8 @@ component {
 	this.entryPoint         = "resourcesTest";
 	// Model Namespace
 	this.modelNamespace     = "resourcesTest";
-	// CF Mapping
-	this.cfmapping          = "resourcesTest";
+	// Engine Mapping
+	this.mapping          = "resourcesTest";
 	// Auto-map models
 	this.autoMapModels      = true;
 	// Module Dependencies

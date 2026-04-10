@@ -7,8 +7,8 @@ component {
 	this.title             = "HTML Helper";
 	// Model Namespace
 	this.modelNamespace    = "HTMLHelper";
-	// CF Mapping
-	this.cfmapping         = "HTMLHelper";
+	// Engine Mapping
+	this.mapping         = "HTMLHelper";
 	// Auto-map models
 	this.autoMapModels     = true;
 	// Helpers
@@ -16,7 +16,7 @@ component {
 
 	function configure(){
 		// module settings - stored in modules.name.settings
-		settings = {
+		variables.settings = {
 			// The base path of JS assets
 			js_path      : "/includes/js/",
 			// The base path of CSS assets

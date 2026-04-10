@@ -149,7 +149,7 @@ component serializable="false" accessors="true" {
 						if (
 							structKeyExists( application, appKey ) AND application[ appKey ].getColdboxInitiated() AND needReinit
 						) {
-							// Load Module CF Mappings so modules can unload properly
+							// Load Module Engine Mappings so modules can unload properly
 							application[ appKey ].getModuleService().loadMappings();
 							// process preReinit interceptors
 							application[ appKey ].getInterceptorService().announce( "preReinit" );
