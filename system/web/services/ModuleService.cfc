@@ -40,11 +40,11 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		variables.interceptorService = arguments.controller.getInterceptorService();
 
 		// service properties
-		variables.logger            = "";
-		variables.mConfigCache      = {};
-		variables.moduleRegistry    = structNew( "ordered" );
-		variables.mappingRegistry = {};
-		variables.appConfigModules  = {};
+		variables.logger           = "";
+		variables.mConfigCache     = {};
+		variables.moduleRegistry   = structNew( "ordered" );
+		variables.mappingRegistry  = {};
+		variables.appConfigModules = {};
 
 		return this;
 	}
