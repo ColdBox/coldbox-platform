@@ -22,9 +22,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	property name="moduleRegistry";
 
 	/**
-	 * CF Mapping registry Dictionary
+	 * Engine Mapping registry Dictionary
 	 */
-	property name="cfmappingRegistry";
+	property name="mappingRegistry";
 
 	/**
 	 * App config overrides registry
@@ -43,7 +43,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		variables.logger            = "";
 		variables.mConfigCache      = {};
 		variables.moduleRegistry    = structNew( "ordered" );
-		variables.cfmappingRegistry = {};
+		variables.mappingRegistry = {};
 		variables.appConfigModules  = {};
 
 		return this;
@@ -484,7 +484,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			// TODO: If a duplicate mapping is detected, warn it to logs
 			if ( len( trim( mConfig.cfMapping ) ) ) {
 				variables.util.addMapping( name = mConfig.cfMapping, path = mConfig.path );
-				variables.cfmappingRegistry[ "/#mConfig.cfMapping#" ] = mConfig.path;
+				variables.mappingRegistry[ "/#mConfig.cfMapping#" ] = mConfig.path;
 			}
 
 			// Register Custom Interception Points
@@ -564,7 +564,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * Load all module mappings
 	 */
 	function loadMappings(){
-		variables.util.addMapping( mappings = variables.cfmappingRegistry );
+		variables.util.addMapping( mappings = variables.mappingRegistry );
 		return this;
 	}
 
