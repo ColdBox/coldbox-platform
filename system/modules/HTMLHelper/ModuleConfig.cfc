@@ -8,7 +8,7 @@ component {
 	// Model Namespace
 	this.modelNamespace    = "HTMLHelper";
 	// Engine Mapping
-	this.mapping         = "HTMLHelper";
+	this.mapping           = "HTMLHelper";
 	// Auto-map models
 	this.autoMapModels     = true;
 	// Helpers

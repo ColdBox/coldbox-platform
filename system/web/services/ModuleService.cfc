@@ -335,7 +335,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				// Does the module belong to a bundle or not
 				bundle            : arguments.bundle,
 				// Engine mapping
-				mapping         : "",
+				mapping           : "",
 				// Child modules
 				childModules      : [],
 				// Module Conventions
@@ -563,7 +563,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * Load all module mappings
 	 */
 	function loadMappings(){
-		variables.util.addMapping( mappings : variables.mappingRegistry );
+		variables.util.addMapping( mappings: variables.mappingRegistry );
 		return this;
 	}
 
