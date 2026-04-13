@@ -17,7 +17,7 @@ component {
 	// Model Namespace
 	this.modelNamespace = "v1";
 	// Engine Mapping
-	this.mapping      = "v1";
+	this.engineMapping      = "v1";
 	// Auto-map models
 	this.autoMapModels  = true;
 	// Module Dependencies

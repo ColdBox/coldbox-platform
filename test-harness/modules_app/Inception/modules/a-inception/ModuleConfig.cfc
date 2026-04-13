@@ -17,7 +17,7 @@ component {
 	// Auto Map Models Directory
 	this.autoMapModels      = true;
 	// Engine Mapping
-	this.mapping          = "";
+	this.engineMapping          = "";
 	this.dependencies       = [ "Inception" ];
 
 	function configure(){

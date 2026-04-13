@@ -334,8 +334,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				autoProcessModels : false,
 				// Does the module belong to a bundle or not
 				bundle            : arguments.bundle,
-				// Engine mapping
-				mapping           : "",
+				// Engine mapping for this module (ex: /myModule)
+				engineMapping           : "",
 				// Child modules
 				childModules      : [],
 				// Module Conventions
@@ -481,9 +481,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			mConfig.schedulerPhysicalPath &= "/#mConfig.conventions.schedulerLocation.replace( ".", "/", "all" )#";
 
 			// Register Engine Mapping if it exists, for loading purposes
-			if ( len( trim( mConfig.mapping ) ) ) {
-				variables.util.addMapping( name: mConfig.mapping, path: mConfig.path );
-				variables.mappingRegistry[ "/#mConfig.mapping#" ] = mConfig.path;
+			if ( len( trim( mConfig.engineMapping ) ) ) {
+				variables.util.addMapping( name: mConfig.engineMapping, path: mConfig.path );
+				variables.mappingRegistry[ "/#mConfig.engineMapping#" ] = mConfig.path;
 			}
 
 			// Register Custom Interception Points
@@ -1148,8 +1148,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		mConfig.version                     = results.config.version;
 		// engine mapping: cfmapping is deprecated but we check for it for backward compatibility
 		param results.config.cfmapping      = "";
-		param results.config.mapping        = "";
-		mConfig.mapping                     = len( results.config.mapping ) ? results.config.mapping : results.config.cfmapping;
+		param results.config.engineMapping        = "";
+		mConfig.engineMapping                     = len( results.config.engineMapping ) ? results.config.engineMapping : results.config.cfmapping;
 		// Module Injector
 		param results.config.moduleInjector = false;
 		mConfig.moduleInjector              = results.config.moduleInjector;

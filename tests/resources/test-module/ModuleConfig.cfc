@@ -8,7 +8,7 @@ component {
 	// Model Namespace
 	this.modelNamespace    = "mserv";
 	// Engine Mapping
-	this.mapping         = "mserv";
+	this.engineMapping         = "mserv";
 	// Auto-map models
 	this.autoMapModels     = true;
 

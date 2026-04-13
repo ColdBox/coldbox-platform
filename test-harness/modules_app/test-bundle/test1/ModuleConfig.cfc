@@ -12,7 +12,7 @@
 	this.layoutParentLookup = true;
 	this.entryPoint         = "test1";
 	// CFML Mapping for this module, the path will be the module root. If empty, none is registered.
-	this.mapping          = "cbModuleTest1";
+	this.engineMapping          = "cbModuleTest1";
 
 	function configure(){
 		// parent settings

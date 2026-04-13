@@ -9,7 +9,7 @@ this.viewParentLookup     = (true) [boolean] (Optional) // If true, checks for v
 this.layoutParentLookup = (true) [boolean] (Optional) // If true, checks for layouts in the parent first, then it the module.If false, then modules first, then parent.
 this.entryPoint          		= "" (Optional) // If set, this is the default event (ex:forgebox:manager.index) or default route (/forgebox) the framework
 									       will use to create an entry link to the module. Similar to a default event.
-this.mapping     			= "The Engine Mapping to create";
+this.engineMapping     			= "The Engine Mapping to create";
 this.modelNamespace		= "The namespace to use for registered models, if blank it uses the name of the module."
 this.dependencies   		= "The array of dependencies for this module"
 
@@ -58,7 +58,7 @@ component {
 	// Model Namespace
 	this.modelNamespace     = "api";
 	// Engine Mapping
-	this.mapping          = "api";
+	this.engineMapping          = "api";
 	// Auto-map models
 	this.autoMapModels      = true;
 	// Module Dependencies

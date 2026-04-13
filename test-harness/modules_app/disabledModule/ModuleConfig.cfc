@@ -17,7 +17,7 @@ component {
 	// Auto Map Models Directory
 	this.autoMapModels      = true;
 	// Engine Mapping
-	this.mapping          = "";
+	this.engineMapping          = "";
 	// Disabled
 	this.disabled           = true;
 
