@@ -698,7 +698,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 				// Add as a mapped directory with module name as the namespace with correct mapping path
 				var packagePath = (
-					len( mConfig.mapping ) ? mConfig.mapping & ".#mConfig.conventions.modelsLocation#" : mConfig.modelsInvocationPath
+					len( mConfig.engineMapping ) ? mConfig.engineMapping & ".#mConfig.conventions.modelsLocation#" : mConfig.modelsInvocationPath
 				);
 
 				// Module Injector : Map with no namespace in the local injector

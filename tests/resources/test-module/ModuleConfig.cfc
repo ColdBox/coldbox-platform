@@ -13,7 +13,7 @@ component {
 	this.autoMapModels     = true;
 
 	function configure(){
-		settings = {
+		variables.settings = {
 			"foo" : "bar"
 		}
 	}
