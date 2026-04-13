@@ -441,8 +441,11 @@ component accessors="true" {
 		delegateIncludes = []
 	){
 		// check if already registered, if it is, just return
-		for ( var thisProperty in variables.DIProperties ) {
-			if ( thisProperty.name eq arguments.name ) {
+		for ( var x = 1; x lte arrayLen( variables.DIProperties ); x++ ) {
+			if (
+				structKeyExists( variables.DIProperties[ x ], "name" ) AND
+				variables.DIProperties[ x ].name == arguments.name
+			) {
 				return this;
 			}
 		}
