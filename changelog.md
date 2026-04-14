@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- https://coldbox.ortusbooks.com/readme/release-history/whats-new-with-8.1.0
+
 ## [8.0.5] - 2025-11-07
 
 ### Fixed
