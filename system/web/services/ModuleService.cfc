@@ -335,7 +335,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				// Does the module belong to a bundle or not
 				bundle            : arguments.bundle,
 				// Engine mapping for this module (ex: /myModule)
-				classMapping     : "",
+				classMapping      : "",
 				// Child modules
 				childModules      : [],
 				// Module Conventions
@@ -1148,8 +1148,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		mConfig.version                     = results.config.version;
 		// engine mapping: cfmapping is deprecated but we check for it for backward compatibility
 		param results.config.cfmapping      = "";
-		param results.config.classMapping  = "";
-		mConfig.classMapping               = len( results.config.classMapping ) ? results.config.classMapping : results.config.cfmapping;
+		param results.config.classMapping   = "";
+		mConfig.classMapping                = len( results.config.classMapping ) ? results.config.classMapping : results.config.cfmapping;
 		// Module Injector
 		param results.config.moduleInjector = false;
 		mConfig.moduleInjector              = results.config.moduleInjector;
