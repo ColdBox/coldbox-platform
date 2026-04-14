@@ -17,7 +17,7 @@ component {
 	// Auto Map Models Directory
 	this.autoMapModels      = true;
 	// Engine Mapping
-	this.engineMapping          = "";
+	this.classMapping          = "";
 
 	function configure(){
 		// parent settings

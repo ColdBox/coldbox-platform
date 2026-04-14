@@ -7,18 +7,18 @@ component {
 	 * SERVER/USER/CFML ENGINE HELPERS *
 	 ****************************************************************/
 
-	private function getEngineMappingHelper(){
+	private function getClassMappingHelper(){
 		// Lazy load the helper
-		if ( isNull( variables.engineMappingHelper ) ) {
+		if ( isNull( variables.classMappingHelper ) ) {
 			if ( server.keyExists( "boxlang" ) ) {
-				variables.engineMappingHelper = new BoxLangMappingHelper();
+				variables.classMappingHelper = new BoxLangMappingHelper();
 			} else if ( listFindNoCase( "Lucee", server.coldfusion.productname ) ) {
-				variables.engineMappingHelper = new LuceeMappingHelper();
+				variables.classMappingHelper = new LuceeMappingHelper();
 			} else {
-				variables.engineMappingHelper = new CFMappingHelper();
+				variables.classMappingHelper = new CFMappingHelper();
 			}
 		}
-		return variables.engineMappingHelper;
+		return variables.classMappingHelper;
 	}
 
 	/**
@@ -27,7 +27,7 @@ component {
 	 * @path The absolute path to the directory containing tags
 	 */
 	Util function addCustomTagPath( required path ){
-		getEngineMappingHelper().addCustomTagPath( arguments.path );
+		getClassMappingHelper().addCustomTagPath( arguments.path );
 		return this;
 	}
 
@@ -39,10 +39,10 @@ component {
 	 * @mappings A struct of mappings to incorporate instead of one-offs
 	 */
 	Util function addMapping( string name, string path, struct mappings ){
-		var engineMappingHelper = getEngineMappingHelper();
+		var classMappingHelper = getClassMappingHelper();
 
 		if ( !isNull( arguments.mappings ) ) {
-			engineMappingHelper.addMappings( arguments.mappings );
+			classMappingHelper.addMappings( arguments.mappings );
 		} else {
 			// Add / registration
 			if ( left( arguments.name, 1 ) != "/" ) {
@@ -50,7 +50,7 @@ component {
 			}
 
 			// Add mapping
-			engineMappingHelper.addMapping( arguments.name, arguments.path );
+			classMappingHelper.addMapping( arguments.name, arguments.path );
 		}
 
 		return this;

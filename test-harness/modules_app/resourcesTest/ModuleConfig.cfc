@@ -15,7 +15,7 @@ component {
 	// Model Namespace
 	this.modelNamespace     = "resourcesTest";
 	// Engine Mapping
-	this.engineMapping          = "resourcesTest";
+	this.classMapping          = "resourcesTest";
 	// Auto-map models
 	this.autoMapModels      = true;
 	// Module Dependencies
