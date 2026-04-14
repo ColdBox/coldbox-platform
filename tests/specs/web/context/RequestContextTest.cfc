@@ -505,7 +505,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		// Test JSON
 		event.renderData( type = "JSON", data = "[1,2,3,4]" );
 		rd = event.getRenderData();
-		assertEquals( rd.contenttype, "application/json" );
+		assertEquals( rd.contenttype, "application/json; charset=utf-8" );
 		assertEquals( rd.type, "json" );
 		assertEquals( rd.statusCode, "200" );
 
