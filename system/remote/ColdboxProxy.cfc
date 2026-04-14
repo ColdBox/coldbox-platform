@@ -49,7 +49,7 @@ component serializable="false" accessors="true" {
 		try {
 			// Locate ColdBox Controller
 			var cbController = getController();
-			// Load Module CF Mappings
+			// Load Module Engine Mappings
 			cbController.getModuleService().loadMappings();
 			// Create the request context
 			var event = cbController.getRequestService().requestCapture( proxyCall: true );
@@ -361,15 +361,16 @@ component serializable="false" accessors="true" {
 	 * Autowire the proxy on creation. This references the super class only, we use cgi information to get the actual proxy component path
 	 */
 	private function selfAutoWire(){
-		var scriptName = CGI.SCRIPT_NAME;
+		var scriptName = CGI.SCRIPT_NAME
+		var extension  = listLast( scriptName, "." )
 
-		// Only process this logic if hitting a remote proxy CFC directly and if ColdBox exists.
+		// Only process cfc or bx extensions and if ColdBox is available, else ignore and let the engine handle it as a normal cfc request
 		if (
-			len( scriptName ) < 5 || !reFindNoCase( "(cfc|bx)", right( scriptName, 4 ) ) || !verifyColdBox(
-				throwOnNotExist = false
-			)
+			( extension neq "cfc" && extension neq "bx" )
+			||
+			!verifyColdBox( throwOnNotExist = false )
 		) {
-			return;
+			return
 		}
 
 		// Find the path of the proxy component being called

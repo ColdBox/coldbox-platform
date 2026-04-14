@@ -1,19 +1,19 @@
 ﻿/**
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
- * ----
- * An abstract CacheBox Provider
- * Properties
- * - name : The cache name
- * - enabled : Boolean flag if cache is enabled
- * - reportingEnabled: Boolean flag if cache can report
- * - stats : The statistics object
- * - configuration : The configuration structure
- * - cacheFactory : The linkage to the cachebox factory
- * - eventManager : The linkage to the event manager
- * - cacheID : The unique identity code of this CFC
+ * ---
+ * This is the abstract class for all CacheBox providers.
+ * All cache providers must extend this class and implement the required methods.
+ *
+ * This class provides the foundation for cache providers with common functionality
+ * such as event handling, statistics tracking, object storage management, and
+ * core cache operations that can be extended or overridden by concrete implementations.
  **/
-component accessors=true serializable=false {
+component
+	accessors   =true
+	serializable=false
+	implements  ="providers.ICacheProvider"
+{
 
 	/**
 	 * The name of this cache provider
@@ -64,7 +64,7 @@ component accessors=true serializable=false {
 	/**
 	 * ColdBox Utility object
 	 *
-	 * @doc_generic coldbox.system.core.util.Util
+	 * @doc.type coldbox.system.core.util.Util
 	 */
 	property name="utility";
 
@@ -100,22 +100,16 @@ component accessors=true serializable=false {
 	}
 
 	/**
+	 * ---------------------------------------------------------------------------------------------------------------
+	 * ICacheProvider METHODS
+	 * ---------------------------------------------------------------------------------------------------------------
+	 */
+
+	/**
 	 * Get the name of this cache
 	 */
 	function getName(){
 		return variables.name;
-	}
-
-	/**
-	 * Get the ColdBox Utility class
-	 *
-	 * @return coldbox.system.core.util.Util
-	 */
-	function getUtility(){
-		if ( isNull( variables.utility ) ) {
-			variables.utility = new coldbox.system.core.util.Util();
-		}
-		return variables.utility;
 	}
 
 	/**
@@ -219,7 +213,312 @@ component accessors=true serializable=false {
 		variables.eventManager = arguments.eventManager;
 	}
 
-	/************************************ CACHING UTILITIES ************************************/
+	/**
+	 * This method makes the cache ready to accept elements and run.  Usually a cache is first created (init), then wired and then the factory calls configure() on it
+	 *
+	 * @return ICacheProvider
+	 */
+	function configure(){
+		// Validate configuration
+		validateConfiguration();
+		// Mark as enabled
+		variables.enabled = true;
+		return this;
+	}
+
+	/**
+	 * Shutdown command issued when CacheBox is going through shutdown phase
+	 *
+	 * @return ICacheProvider
+	 */
+	function shutdown(){
+		// Mark as disabled
+		variables.enabled = false;
+		return this;
+	}
+
+	/**
+	 * If the cache provider implements it, this returns the cache's object store.
+	 *
+	 * @return coldbox.system.cache.store.IObjectStore or any depending on the cache implementation
+	 */
+	function getObjectStore(){
+		// Throw not implemented, the concrete cache must implement it
+		throw(
+			message = "The cache provider #getName()# does not implement getObjectStore() method.",
+			type    = "NotImplementedException"
+		)
+	}
+
+	/**
+	 * Get a structure of all the keys in the cache with their appropriate metadata structures. This is used to build the reporting.[keyX->[metadataStructure]]
+	 */
+	struct function getStoreMetadataReport(){
+		// Throw not implemented, the concrete cache must implement it
+		throw(
+			message = "The cache provider #getName()# does not implement getStoreMetadataReport() method.",
+			type    = "NotImplementedException"
+		)
+	}
+
+	/**
+	 * Get a key lookup structure where cachebox can build the report on. Ex: [timeout=timeout,lastAccessTimeout=idleTimeout].  It is a way for the visualizer to construct the columns correctly on the reports
+	 */
+	struct function getStoreMetadataKeyMap(){
+		// Throw not implemented, the concrete cache must implement it
+		throw(
+			message = "The cache provider #getName()# does not implement getStoreMetadataKeyMap() method.",
+			type    = "NotImplementedException"
+		)
+	}
+
+	/**
+	 * Returns a list of all elements in the cache, whether or not they are expired
+	 */
+	array function getKeys(){
+		// Throw not implemented, the concrete cache must implement it
+		throw(
+			message = "The cache provider #getName()# does not implement getKeys() method.",
+			type    = "NotImplementedException"
+		)
+	}
+
+	/**
+	 * Get a cache objects metadata about its performance. This value is a structure of name-value pairs of metadata.
+	 *
+	 * @objectKey The key to retrieve
+	 */
+	struct function getCachedObjectMetadata( required objectKey ){
+		// Throw not implemented, the concrete cache must implement it
+		throw(
+			message = "The cache provider #getName()# does not implement getCachedObjectMetadata() method.",
+			type    = "NotImplementedException"
+		)
+	}
+
+	/**
+	 * Get an object from the cache and updates stats
+	 *
+	 * @objectKey The key to retrieve
+	 */
+	function get( required objectKey ){
+		// Throw not implemented, the concrete cache must implement it
+		throw(
+			message = "The cache provider #getName()# does not implement get() method.",
+			type    = "NotImplementedException"
+		)
+	}
+
+	/**
+	 * Get an object from the cache without updating stats or listeners
+	 *
+	 * @objectKey The key to retrieve
+	 */
+	function getQuiet( required objectKey ){
+		// Throw not implemented, the concrete cache must implement it
+		throw(
+			message = "The cache provider #getName()# does not implement getQuiet() method.",
+			type    = "NotImplementedException"
+		)
+	}
+
+	/**
+	 * Has the object key expired in the cache
+	 *
+	 * @objectKey The key to retrieve
+	 */
+	boolean function isExpired( required objectKey ){
+		// Throw not implemented, the concrete cache must implement it
+		throw(
+			message = "The cache provider #getName()# does not implement isExpired() method.",
+			type    = "NotImplementedException"
+		)
+	}
+
+	/**
+	 * Check if an object is in cache, if not found it records a miss.
+	 *
+	 * @objectKey The key to retrieve
+	 */
+	boolean function lookup( required objectKey ){
+		// Throw not implemented, the concrete cache must implement it
+		throw(
+			message = "The cache provider #getName()# does not implement lookup() method.",
+			type    = "NotImplementedException"
+		)
+	}
+
+	/**
+	 * Check if an object is in cache, no stats updated or listeners
+	 *
+	 * @objectKey The key to retrieve
+	 */
+	boolean function lookupQuiet( required objectKey ){
+		// Throw not implemented, the concrete cache must implement it
+		throw(
+			message = "The cache provider #getName()# does not implement lookupQuiet() method.",
+			type    = "NotImplementedException"
+		)
+	}
+
+	/**
+	 * Sets an object in the cache and returns an instance of itself
+	 *
+	 * @objectKey         The object cache key
+	 * @object            The object to cache
+	 * @timeout           The timeout to use on the object (if any, provider specific)
+	 * @lastAccessTimeout The idle timeout to use on the object (if any, provider specific)
+	 * @extra             A map of name-value pairs to use as extra arguments to pass to a providers set operation
+	 *
+	 * @return ICacheProvider
+	 */
+	function set(
+		required objectKey,
+		required object,
+		timeout,
+		lastAccessTimeout,
+		struct extra
+	){
+		// Throw not implemented, the concrete cache must implement it
+		throw(
+			message = "The cache provider #getName()# does not implement set() method.",
+			type    = "NotImplementedException"
+		)
+	}
+
+	/**
+	 * Sets an object in the cache with no event calls and returns an instance of itself
+	 *
+	 * @objectKey         The object cache key
+	 * @object            The object to cache
+	 * @timeout           The timeout to use on the object (if any, provider specific)
+	 * @lastAccessTimeout The idle timeout to use on the object (if any, provider specific)
+	 * @extra             A map of name-value pairs to use as extra arguments to pass to a providers set operation
+	 *
+	 * @return ICacheProvider
+	 */
+	function setQuiet(
+		required objectKey,
+		required object,
+		timeout,
+		lastAccessTimeout,
+		struct extra
+	){
+		// Throw not implemented, the concrete cache must implement it
+		throw(
+			message = "The cache provider #getName()# does not implement setQuiet() method.",
+			type    = "NotImplementedException"
+		)
+	}
+
+	/**
+	 * Get the number of elements in the cache
+	 */
+	numeric function getSize(){
+		// Throw not implemented, the concrete cache must implement it
+		throw(
+			message = "The cache provider #getName()# does not implement getSize() method.",
+			type    = "NotImplementedException"
+		)
+	}
+
+	/**
+	 * Send a reap or flush command to the cache
+	 *
+	 * @return ICacheProvider
+	 */
+	function reap(){
+		// Throw not implemented, the concrete cache must implement it
+		throw(
+			message = "The cache provider #getName()# does not implement reap() method.",
+			type    = "NotImplementedException"
+		)
+	}
+
+	/**
+	 * Clear all the cache elements from the cache
+	 *
+	 * @return ICacheProvider
+	 */
+	function clearAll(){
+		// Throw not implemented, the concrete cache must implement it
+		throw(
+			message = "The cache provider #getName()# does not implement clearAll() method.",
+			type    = "NotImplementedException"
+		)
+	}
+
+	/**
+	 * Clears an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore
+	 *
+	 * @objectKey The object cache key
+	 */
+	boolean function clear( required objectKey ){
+		// Throw not implemented, the concrete cache must implement it
+		throw(
+			message = "The cache provider #getName()# does not implement clear() method.",
+			type    = "NotImplementedException"
+		)
+	}
+
+	/**
+	 * Clears an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore without doing statistics or updating listeners
+	 *
+	 * @objectKey The object cache key
+	 */
+	boolean function clearQuiet( required objectKey ){
+		// Throw not implemented, the concrete cache must implement it
+		throw(
+			message = "The cache provider #getName()# does not implement clearQuiet() method.",
+			type    = "NotImplementedException"
+		)
+	}
+
+	/**
+	 * Expire all the elements in the cache (if supported by the provider)
+	 *
+	 * @return ICacheProvider
+	 */
+	function expireAll(){
+		// Throw not implemented, the concrete cache must implement it
+		throw(
+			message = "The cache provider #getName()# does not implement expireAll() method.",
+			type    = "NotImplementedException"
+		)
+	}
+
+	/**
+	 * Expires an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore (if supported by the provider)
+	 *
+	 * @objectKey The object cache key
+	 *
+	 * @return ICacheProvider
+	 */
+	function expireObject( required objectKey ){
+		// Throw not implemented, the concrete cache must implement it
+		throw(
+			message = "The cache provider #getName()# does not implement expireObject() method.",
+			type    = "NotImplementedException"
+		)
+	}
+
+	/**
+	 * ---------------------------------------------------------------------------------------------------------------
+	 * Caching Utilities
+	 * ---------------------------------------------------------------------------------------------------------------
+	 */
+
+	/**
+	 * Get the ColdBox Utility class
+	 *
+	 * @return coldbox.system.core.util.Util
+	 */
+	function getUtility(){
+		if ( isNull( variables.utility ) ) {
+			variables.utility = new coldbox.system.core.util.Util();
+		}
+		return variables.utility;
+	}
 
 	/**
 	 * Sets Multiple Objects in the cache. Sets might be expensive. If the JVM threshold is used and it has been reached, the object won't be cached. If the pool is at maximum it will expire using its eviction policy and still cache the object. Cleanup will be done later.
@@ -235,7 +534,7 @@ component accessors=true serializable=false {
 		lastAccessTimeout = "",
 		prefix            = ""
 	){
-		arguments.mapping.each( function( key, value ){
+		arguments.mapping.each( ( key, value ) => {
 			// Cache these puppies
 			set(
 				objectKey         = prefix & arguments.key,
@@ -259,11 +558,11 @@ component accessors=true serializable=false {
 
 		return arguments.keys
 			// prefix keys
-			.map( function( item ){
+			.map( ( item ) => {
 				return prefix & item;
 			} )
 			// reduce to struct of lookups
-			.reduce( function( result, key ){
+			.reduce( ( result, key ) => {
 				result[ key ] = clear( key );
 				return result;
 			}, {} );
@@ -284,11 +583,11 @@ component accessors=true serializable=false {
 
 		return arguments.keys
 			// prefix keys
-			.map( function( item ){
+			.map( ( item ) => {
 				return prefix & item;
 			} )
 			// reduce to struct of lookups
-			.reduce( function( result, key ){
+			.reduce( ( result, key ) => {
 				result[ key ] = lookup( key );
 				return result;
 			}, {} );
@@ -309,11 +608,11 @@ component accessors=true serializable=false {
 
 		return arguments.keys
 			// prefix keys
-			.map( function( item ){
+			.map( ( item ) => {
 				return prefix & item;
 			} )
 			// reduce to struct of lookups
-			.reduce( function( result, key ){
+			.reduce( ( result, key ) => {
 				result[ key ] = get( key );
 				return result;
 			}, {} );
@@ -332,11 +631,11 @@ component accessors=true serializable=false {
 
 		return arguments.keys
 			// prefix keys
-			.map( function( item ){
+			.map( ( item ) => {
 				return prefix & item;
 			} )
 			// reduce to struct of lookups
-			.reduce( function( result, key ){
+			.reduce( ( result, key ) => {
 				result[ key ] = getCachedObjectMetadata( key );
 				return result;
 			}, {} );
@@ -418,8 +717,6 @@ component accessors=true serializable=false {
 		return target;
 	}
 
-	/************************************ UTILITIES ************************************/
-
 	/**
 	 * Produce a fast random UUID
 	 */
@@ -432,10 +729,10 @@ component accessors=true serializable=false {
 	}
 
 	/**
-	 * A quick snapshot of the state
+	 * A quick snapshot of the state of the cache provider
 	 */
 	struct function getMemento(){
-		return variables.filter( function( k, v ){
+		return variables.filter( ( k, v ) => {
 			return ( !isCustomFunction( v ) );
 		} );
 	}
@@ -455,7 +752,7 @@ component accessors=true serializable=false {
 	 * @throws IllegalStateException
 	 */
 	private AbstractCacheBoxProvider function statusCheck(){
-		if ( !isEnabled ) {
+		if ( !isEnabled() ) {
 			throw(
 				message = "The cache #getName()# is not yet enabled",
 				detail  = "The cache was being accessed without the configuration being complete",

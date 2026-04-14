@@ -425,7 +425,7 @@ component extends="EventHandler" {
 		 * When you need a really hard stop to prevent further execution ( use as last resort )
 		 */
 		if ( arguments.abort ) {
-			event.setHTTPHeader( name = "Content-Type", value = "application/json" );
+			event.setHTTPHeader( name = "Content-Type", value = "application/json; charset=utf-8" );
 			event.setHTTPHeader( statusCode = "#arguments.event.STATUS.NOT_AUTHENTICATED#" );
 
 			writeOutput( toJson( prc.response.getDataPacket( reset = this.resetDataOnError ) ) );
@@ -477,7 +477,7 @@ component extends="EventHandler" {
 		 * When you need a really hard stop to prevent further execution ( use as last resort )
 		 */
 		if ( arguments.abort ) {
-			event.setHTTPHeader( name = "Content-Type", value = "application/json" );
+			event.setHTTPHeader( name = "Content-Type", value = "application/json; charset=utf-8" );
 			event.setHTTPHeader( statusCode = "#arguments.event.STATUS.NOT_AUTHORIZED#" );
 
 			writeOutput( serializeJSON( prc.response.getDataPacket( reset = this.resetDataOnError ) ) );
@@ -564,7 +564,7 @@ component extends="EventHandler" {
 					}
 				} : {}
 			)
-			.addMessage( "An exception ocurred: #arguments.exception.message#" )
+			.addMessage( "An exception occurred: #arguments.exception.message#" )
 			.setStatusCode( arguments.event.STATUS.INTERNAL_ERROR );
 	}
 

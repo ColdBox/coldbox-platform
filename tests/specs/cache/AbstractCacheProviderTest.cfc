@@ -1,7 +1,7 @@
 ﻿component extends="coldbox.system.testing.BaseModelTest" {
 
 	function setup(){
-		cp = createMock( "coldbox.system.cache.AbstractCacheBoxProvider" ).init();
+		variables.cp = createMock( "coldbox.system.cache.AbstractCacheBoxProvider" ).init();
 	}
 
 	function testName(){
@@ -44,7 +44,6 @@
 
 		assertEquals( mockFactory, cp.getCacheFactory() );
 	}
-
 
 	function testEventManager(){
 		mockEventManager = createStub();

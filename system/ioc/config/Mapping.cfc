@@ -441,8 +441,11 @@ component accessors="true" {
 		delegateIncludes = []
 	){
 		// check if already registered, if it is, just return
-		for ( var thisProperty in variables.DIProperties ) {
-			if ( thisProperty.name eq arguments.name ) {
+		for ( var x = 1; x lte arrayLen( variables.DIProperties ); x++ ) {
+			if (
+				structKeyExists( variables.DIProperties[ x ], "name" ) AND
+				variables.DIProperties[ x ].name == arguments.name
+			) {
 				return this;
 			}
 		}
@@ -482,7 +485,10 @@ component accessors="true" {
 	){
 		// check if already registered, if it is, just return
 		for ( var x = 1; x lte arrayLen( variables.DISetters ); x++ ) {
-			if ( variables.DISetters[ x ].name eq arguments.name ) {
+			if (
+				structKeyExists( variables.DISetters[ x ], "name" ) AND
+				variables.DISetters[ x ].name eq arguments.name
+			) {
 				return this;
 			}
 		}
@@ -1126,7 +1132,8 @@ component accessors="true" {
 		// Constructor Processing if found
 		if ( arguments.metadata.name eq variables.constructor ) {
 			// Process parameters for constructor injection
-			for ( var thisParam in arguments.metadata.parameters ) {
+			for ( var x = 1; x lte arrayLen( arguments.metadata.parameters ); x++ ) {
+				var thisParam = arguments.metadata.parameters[ x ];
 				// Check injection annotation, if not found then no injection
 				if ( hasAnnotationValue( thisParam, "inject" ) ) {
 					// ADD Constructor argument

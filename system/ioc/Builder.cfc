@@ -678,9 +678,12 @@ component serializable="false" accessors="true" {
 			// If no DSL's found, let's try to use the name as the empty namespace
 			default: {
 				if ( len( DSLNamespace ) && left( DSLNamespace, 1 ) == "@" ) {
-					arguments.definition.dsl = arguments.definition.name & arguments.definition.dsl;
+					refLocal.dependency = variables.injector.getInstance(
+						arguments.definition.name & arguments.definition.dsl
+					);
+				} else {
+					refLocal.dependency = getModelDSL( argumentCollection = arguments );
 				}
-				refLocal.dependency = getModelDSL( argumentCollection = arguments );
 			}
 		}
 

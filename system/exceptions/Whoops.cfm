@@ -155,7 +155,7 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 			<meta name="robots" content="noindex, nofollow">
 			<title>ColdBox Exception Report - #encodeForHTML(oException.getType())#</title>
 			<!--- Alpine.js --->
-			<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+			<script defer src="/coldbox/system/exceptions/js/alpinejs.min.js"></script>
 			<!--- Whoops Alpine.js Component --->
 			<script src="/coldbox/system/exceptions/js/whoops.js"></script>
 			<!--- JavaScript --->

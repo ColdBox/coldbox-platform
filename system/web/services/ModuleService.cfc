@@ -22,9 +22,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	property name="moduleRegistry";
 
 	/**
-	 * CF Mapping registry Dictionary
+	 * Engine Mapping registry Dictionary
 	 */
-	property name="cfmappingRegistry";
+	property name="mappingRegistry";
 
 	/**
 	 * App config overrides registry
@@ -40,11 +40,11 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		variables.interceptorService = arguments.controller.getInterceptorService();
 
 		// service properties
-		variables.logger            = "";
-		variables.mConfigCache      = {};
-		variables.moduleRegistry    = structNew( "ordered" );
-		variables.cfmappingRegistry = {};
-		variables.appConfigModules  = {};
+		variables.logger           = "";
+		variables.mConfigCache     = {};
+		variables.moduleRegistry   = structNew( "ordered" );
+		variables.mappingRegistry  = {};
+		variables.appConfigModules = {};
 
 		return this;
 	}
@@ -334,8 +334,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				autoProcessModels : false,
 				// Does the module belong to a bundle or not
 				bundle            : arguments.bundle,
-				// ColdFusion mapping
-				cfmapping         : "",
+				// Engine mapping for this module (ex: /myModule)
+				classMapping      : "",
 				// Child modules
 				childModules      : [],
 				// Module Conventions
@@ -480,11 +480,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			mConfig.schedulerInvocationPath &= ".#mConfig.conventions.schedulerLocation#";
 			mConfig.schedulerPhysicalPath &= "/#mConfig.conventions.schedulerLocation.replace( ".", "/", "all" )#";
 
-			// Register CFML Mapping if it exists, for loading purposes
-			// TODO: If a duplicate mapping is detected, warn it to logs
-			if ( len( trim( mConfig.cfMapping ) ) ) {
-				variables.util.addMapping( name = mConfig.cfMapping, path = mConfig.path );
-				variables.cfmappingRegistry[ "/#mConfig.cfMapping#" ] = mConfig.path;
+			// Register Engine Mapping if it exists, for loading purposes
+			if ( len( trim( mConfig.classMapping ) ) ) {
+				variables.util.addMapping( name: mConfig.classMapping, path: mConfig.path );
+				variables.mappingRegistry[ "/#mConfig.classMapping#" ] = mConfig.path;
 			}
 
 			// Register Custom Interception Points
@@ -564,7 +563,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * Load all module mappings
 	 */
 	function loadMappings(){
-		variables.util.addMapping( mappings = variables.cfmappingRegistry );
+		variables.util.addMapping( mappings: variables.mappingRegistry );
 		return this;
 	}
 
@@ -699,7 +698,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 				// Add as a mapped directory with module name as the namespace with correct mapping path
 				var packagePath = (
-					len( mConfig.cfmapping ) ? mConfig.cfmapping & ".#mConfig.conventions.modelsLocation#" : mConfig.modelsInvocationPath
+					len( mConfig.classMapping ) ? mConfig.classMapping & ".#mConfig.conventions.modelsLocation#" : mConfig.modelsInvocationPath
 				);
 
 				// Module Injector : Map with no namespace in the local injector
@@ -1098,7 +1097,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * @parent     The parent that invoked the registration
 	 * @parent     The parent injector this module will be linked to
 	 *
-	 * @return struct : { config:cfc, injector:cfc }
+	 * @return struct : { config:class, injector:class }
 	 */
 	struct function loadModuleConfiguration(
 		required struct config,
@@ -1147,9 +1146,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// version
 		param results.config.version        = "1.0.0";
 		mConfig.version                     = results.config.version;
-		// cf mapping
+		// engine mapping: cfmapping is deprecated but we check for it for backward compatibility
 		param results.config.cfmapping      = "";
-		mConfig.cfmapping                   = results.config.cfmapping;
+		param results.config.classMapping   = "";
+		mConfig.classMapping                = len( results.config.classMapping ) ? results.config.classMapping : results.config.cfmapping;
 		// Module Injector
 		param results.config.moduleInjector = false;
 		mConfig.moduleInjector              = results.config.moduleInjector;

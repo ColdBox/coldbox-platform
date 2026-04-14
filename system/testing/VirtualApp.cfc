@@ -73,7 +73,7 @@ component accessors="true" {
 				overrideAppMapping = variables.appMapping,
 				overrideWebMapping = variables.webMapping
 			);
-		// Load Module CF Mappings so modules can work properly
+		// Load Module Engine Mappings so modules can work properly
 		application.cbController.getModuleService().loadMappings();
 		// back to the future!
 		return application.cbController;

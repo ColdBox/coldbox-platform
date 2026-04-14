@@ -149,7 +149,7 @@ component serializable="false" accessors="true" {
 						if (
 							structKeyExists( application, appKey ) AND application[ appKey ].getColdboxInitiated() AND needReinit
 						) {
-							// Load Module CF Mappings so modules can unload properly
+							// Load Module Engine Mappings so modules can unload properly
 							application[ appKey ].getModuleService().loadMappings();
 							// process preReinit interceptors
 							application[ appKey ].getInterceptorService().announce( "preReinit" );
@@ -307,7 +307,7 @@ component serializable="false" accessors="true" {
 						// ColdBox does native JSON if you return a complex object.
 						else {
 							renderedContent = cbController.getUtil().toJson( local.refResults.results );
-							getPageContextResponse().setContentType( "application/json" );
+							getPageContextResponse().setContentType( "application/json;charset=utf-8" );
 						}
 					}
 					// Render Layout/View pair via set variable to eliminate whitespace
@@ -565,7 +565,8 @@ component serializable="false" accessors="true" {
 			cbController = arguments.appScope[ locateAppKey() ];
 		}
 
-		if ( not isSimpleValue( cbController ) ) {
+		// Only process if ColdBox is initiated
+		if ( not isSimpleValue( cbController ) && cbController.getColdboxInitiated() ) {
 			// Get Context
 			var event = cbController.getRequestService().getContext();
 
@@ -716,16 +717,16 @@ component serializable="false" accessors="true" {
 		required encoding
 	){
 		// Status Codes
-		getPageContextResponse().setStatus( arguments.statusCode );
+		getPageContextResponse().setStatus( arguments.statusCode )
 		// Render the Data Content Type
 		controller
 			.getDataMarshaller()
 			.renderContent(
-				type     = arguments.contentType,
-				encoding = arguments.encoding,
-				reset    = true
-			);
-		return this;
+				type    : arguments.contentType,
+				encoding: arguments.encoding,
+				reset   : true
+			)
+		return this
 	}
 
 	/**
@@ -733,19 +734,19 @@ component serializable="false" accessors="true" {
 	 */
 	private function locateAppKey(){
 		if ( len( trim( variables.COLDBOX_APP_KEY ) ) ) {
-			return variables.COLDBOX_APP_KEY;
+			return variables.COLDBOX_APP_KEY
 		}
-		return "cbController";
+		return "cbController"
 	}
 
 	/**
 	 * Helper method to deal with ACF's overload of the page context response, come on Adobe, get your act together!
 	 */
 	private function getPageContextResponse(){
-		if ( server.keyExists( "coldfusion" ) && server.coldfusion.productName.findNoCase( "ColdFusion" ) ) {
-			return getPageContext().getResponse().getResponse();
+		if ( server.keyExists( "boxlang" ) || server.keyExists( "lucee" ) ) {
+			return getPageContext().getResponse()
 		}
-		return getPageContext().getResponse();
+		return getPageContext().getResponse().getResponse()
 	}
 
 }

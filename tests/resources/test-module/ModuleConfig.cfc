@@ -7,13 +7,13 @@ component {
 	this.title             = "Module Service Test Module";
 	// Model Namespace
 	this.modelNamespace    = "mserv";
-	// CF Mapping
-	this.cfmapping         = "mserv";
+	// Engine Mapping
+	this.classMapping         = "mserv";
 	// Auto-map models
 	this.autoMapModels     = true;
 
 	function configure(){
-		settings = {
+		variables.settings = {
 			"foo" : "bar"
 		}
 	}

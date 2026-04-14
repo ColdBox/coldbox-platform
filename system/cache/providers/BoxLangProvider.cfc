@@ -2,15 +2,130 @@
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
+ * <h2>BoxLang Cache Provider</h2>
+ * <p>
+ * A CacheBox provider that integrates with BoxLang's native caching engine. This provider acts as
+ * a bridge between CacheBox's abstraction layer and BoxLang's built-in cache functionality, allowing
+ * you to leverage the high-performance native caching capabilities of the BoxLang runtime while
+ * maintaining compatibility with the CacheBox API.
+ * </p>
  *
- * This CacheBox provider communicates with the built in caches in the BoxLang Runtime
+ * <h3>Key Features</h3>
+ * <ul>
+ *   <li><strong>Native Performance</strong> - Direct integration with BoxLang's optimized caching engine</li>
+ *   <li><strong>Zero Configuration</strong> - Works out of the box with BoxLang's default cache settings</li>
+ *   <li><strong>Event Integration</strong> - Fires CacheBox interception events for cache operations</li>
+ *   <li><strong>Full CacheBox API</strong> - Implements the complete ICacheProvider interface</li>
+ *   <li><strong>Automatic Management</strong> - BoxLang runtime handles memory management and reaping</li>
+ *   <li><strong>Thread-Safe</strong> - Leverages BoxLang's concurrent cache implementation</li>
+ * </ul>
+ *
+ * <h3>Configuration</h3>
+ * <p>
+ * This provider requires minimal configuration. The only required setting is:
+ * </p>
+ * <ul>
+ *   <li><strong>cacheName</strong> (default: "default") - The name of the BoxLang cache region to use</li>
+ * </ul>
+ *
+ * <h3>Usage Example</h3>
+ * <pre>
+ * // Configure in CacheBox.cfc
+ * caches = {
+ *     boxlang = {
+ *         provider   = "coldbox.system.cache.providers.BoxLangProvider",
+ *         properties = {
+ *             cacheName = "default"  // Or any BoxLang cache region name
+ *         }
+ *     }
+ * };
+ *
+ * // Use the cache
+ * cache = cacheFactory.getCache( "boxlang" );
+ * cache.set( "myKey", myObject, 60 );
+ * var data = cache.get( "myKey" );
+ * </pre>
+ *
+ * <h3>BoxLang Native Cache</h3>
+ * <p>
+ * BoxLang provides a highly optimized native caching engine that handles:
+ * </p>
+ * <ul>
+ *   <li>Automatic memory management based on JVM heap availability</li>
+ *   <li>Concurrent access with minimal locking overhead</li>
+ *   <li>Intelligent eviction strategies</li>
+ *   <li>Built-in statistics and monitoring</li>
+ *   <li>Distributed caching support (when configured)</li>
+ * </ul>
+ *
+ * <h3>Cache Regions</h3>
+ * <p>
+ * BoxLang supports multiple named cache regions. You can configure different providers to
+ * target different regions:
+ * </p>
+ * <pre>
+ * caches = {
+ *     sessions = {
+ *         provider   = "coldbox.system.cache.providers.BoxLangProvider",
+ *         properties = { cacheName = "sessions" }
+ *     },
+ *     queries = {
+ *         provider   = "coldbox.system.cache.providers.BoxLangProvider",
+ *         properties = { cacheName = "queries" }
+ *     }
+ * };
+ * </pre>
+ *
+ * <h3>Events</h3>
+ * <p>
+ * The provider fires the following CacheBox interception events:
+ * </p>
+ * <ul>
+ *   <li><strong>afterCacheElementInsert</strong> - Fired after an object is inserted or updated</li>
+ *   <li><strong>afterCacheElementRemoved</strong> - Fired after an object is manually removed</li>
+ *   <li><strong>afterCacheClearAll</strong> - Fired after the entire cache is cleared</li>
+ * </ul>
+ *
+ * <h3>Limitations</h3>
+ * <p>
+ * Some CacheBox features are delegated to BoxLang's native implementation:
+ * </p>
+ * <ul>
+ *   <li><strong>expireAll()</strong> - Not implemented, BoxLang manages expiration automatically</li>
+ *   <li><strong>expireObject()</strong> - Not implemented, use clear() instead</li>
+ *   <li><strong>isExpired()</strong> - Always returns false, BoxLang auto-removes expired objects</li>
+ * </ul>
+ *
+ * <h3>Performance Benefits</h3>
+ * <p>
+ * Using the BoxLang provider offers several performance advantages:
+ * </p>
+ * <ul>
+ *   <li>Native JVM-level optimizations in BoxLang's caching engine</li>
+ *   <li>Reduced overhead compared to pure CFML implementations</li>
+ *   <li>Direct memory management by the BoxLang runtime</li>
+ *   <li>Optimized serialization for BoxLang objects</li>
+ * </ul>
+ *
+ * <h3>When to Use</h3>
+ * <p>
+ * Choose BoxLangProvider when:
+ * </p>
+ * <ul>
+ *   <li>Running on the BoxLang runtime</li>
+ *   <li>You want maximum performance with minimal configuration</li>
+ *   <li>You need integration with BoxLang's cache management tools</li>
+ *   <li>You want to leverage BoxLang-specific caching features</li>
+ * </ul>
  *
  * @author Luis Majano
+ * @see    coldbox.system.cache.AbstractCacheBoxProvider
+ * @see    coldbox.system.cache.providers.ICacheProvider
+ * @see    coldbox.system.cache.providers.stats.BoxLangStats
  */
 component
 	accessors   ="true"
 	serializable="false"
-	implements  ="coldbox.system.cache.providers.ICacheProvider"
 	extends     ="coldbox.system.cache.AbstractCacheBoxProvider"
 {
 
@@ -35,7 +150,7 @@ component
 	}
 
 	/**
-	 * configure the cache for operation
+	 * Configure the cache provider with the given configuration structure
 	 *
 	 * @return BoxLangProvider
 	 */
@@ -84,7 +199,7 @@ component
 	 * @return coldbox.system.cache.util.IStats
 	 */
 	function getStats(){
-		return new "coldbox.system.cache.providers.stats.BoxLangStats"( this );
+		return new coldbox.system.cache.providers.stats.BoxLangStats( this );
 	}
 
 	/**
@@ -232,9 +347,9 @@ component
 	function set(
 		required objectKey,
 		required object,
-		timeout           = 0,
-		lastAccessTimeout = 0,
-		struct extra
+		timeout           = "",
+		lastAccessTimeout = "",
+		struct extra      = {}
 	){
 		cache( getConfiguration().cacheName ).set(
 			arguments.objectKey,
@@ -271,9 +386,9 @@ component
 	function setQuiet(
 		required objectKey,
 		required object,
-		timeout           = 0,
-		lastAccessTimeout = 0,
-		struct extra
+		timeout           = "",
+		lastAccessTimeout = "",
+		struct extra      = {}
 	){
 		cache( getConfiguration().cacheName ).set(
 			arguments.objectKey,

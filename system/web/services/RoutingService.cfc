@@ -10,7 +10,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	/**
 	 * A ColdBox Router this routing service configures with.
 	 *
-	 * @doc_generic coldbox.system.web.routing.Router
+	 * @doc.type coldbox.system.web.routing.Router
 	 */
 	property name="router";
 
@@ -374,6 +374,28 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		if (
 			isClosure( routeResults.route.response ) || isCustomFunction( routeResults.route.response ) || routeResults.route.response.len()
 		) {
+			// Log AI/MCP route execution
+			if ( routeResults.route.ai ?: false ) {
+				variables.log.debug(
+					"Executing AI runnable route: #routeResults.route.pattern#",
+					{
+						route    : routeResults.route.pattern,
+						runnable : isObject( routeResults.route.aiRunnable ) ? getMetadata(
+							routeResults.route.aiRunnable
+						).name : routeResults.route.aiRunnable,
+						verbs : routeResults.route.verbs
+					}
+				);
+			} else if ( routeResults.route.mcp ?: false ) {
+				variables.log.debug(
+					"Executing MCP server route: #routeResults.route.pattern# -> #routeResults.route.mcpServer#",
+					{
+						route     : routeResults.route.pattern,
+						mcpServer : routeResults.route.mcpServer,
+						verbs     : routeResults.route.verbs
+					}
+				);
+			}
 			renderResponse( routeResults.route, arguments.event );
 		}
 

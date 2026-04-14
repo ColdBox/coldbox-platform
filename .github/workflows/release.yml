@@ -40,7 +40,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Setup Java
         uses: actions/setup-java@v5
@@ -49,7 +49,7 @@ jobs:
           java-version: "11"
 
       - name: Setup BoxLang
-        uses: ortus-boxlang/setup-boxlang@1.2.0
+        uses: ortus-boxlang/setup-boxlang@1.3.0
         with:
           version: "snapshot"
 
@@ -97,7 +97,7 @@ jobs:
           box task run build/Build.cfc run ${{ env.COLDBOX_VERSION }} ${{ github.run_number }} ${{ env.BRANCH }}
 
       - name: Commit Changelog [unreleased] with latest version
-        uses: EndBug/add-and-commit@v9.1.4
+        uses: EndBug/add-and-commit@v10.0.0
         if: env.SNAPSHOT == 'false'
         with:
           author_name: Github Actions
@@ -115,7 +115,7 @@ jobs:
 
       - name: Upload Build Artifacts
         if: success()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           path: |
             .artifacts/**/*
@@ -153,7 +153,7 @@ jobs:
           cd $ROOT_DIR/.artifacts/logbox/${{ env.COLDBOX_VERSION }} && box forgebox publish
 
       - name: Create Github Release
-        uses: taiki-e/create-gh-release-action@v1.9.1
+        uses: taiki-e/create-gh-release-action@v1.9.3
         continue-on-error: true
         if: env.SNAPSHOT == 'false'
         with:
@@ -184,13 +184,13 @@ jobs:
     needs: [ build ]
     steps:
       - name: Checkout Development Repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         if: env.LTS == 'false'
         with:
           ref: development
 
       - name: Checkout LTS Repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         if: env.LTS == 'true'
 
       - name: Setup CommandBox
@@ -199,7 +199,7 @@ jobs:
           forgeboxAPIKey: ${{ secrets.FORGEBOX_TOKEN }}
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v8
         with:
           path: .tmp
 
@@ -220,7 +220,7 @@ jobs:
           git pull
 
       - name: Commit Version Bump
-        uses: EndBug/add-and-commit@v9.1.4
+        uses: EndBug/add-and-commit@v10.0.0
         if: ${{ always() }}
         with:
           author_name: Github Actions

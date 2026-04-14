@@ -3,13 +3,11 @@
     "version":"1.0.0",
     "slug":"module-apidocs",
     "dependencies":{
-        "docbox":"^3.0.0"
+        "docbox":"^5"
     },
     "devDependencies":{
-        "testbox":"^4.5.0+5"
     },
     "installPaths":{
-        "docbox":"docbox/",
-        "testbox":"testbox/"
+        "docbox":"docbox/"
     }
 }

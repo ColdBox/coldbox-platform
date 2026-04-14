@@ -1,0 +1,832 @@
+<!---
+	TestBox Run IDE
+	BoxLang-native test runner UI — BDD/xUnit discovery + SSE streaming
+--->
+<bx:script>
+// Configurable parameters (can be overridden via URL query params)
+bx:param name="url.directory"       default="tests.specs";
+bx:param name="url.recurse"         default="true"  type="boolean";
+bx:param name="url.bundlesPattern"  default="";
+bx:param name="url.labels"          default="";
+bx:param name="url.excludes"        default="";
+bx:param name="url.runnerUrl"       default="runner.bxm";
+bx:param name="url.editor"          default="vscode";
+</bx:script>
+<!--- HTML CODE --->
+<bx:output>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>TestBox Run IDE</title>
+	<link rel="icon" type="image/svg+xml" href="assets/images/testbox-icon-full-L.svg">
+
+	<!--- Vendor CSS --->
+	<link rel="stylesheet" href="assets/css/vendor/bootstrap.min.css">
+
+	<!--- Bootstrap Icons --->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+	<!--- App CSS --->
+	<link rel="stylesheet" href="assets/css/run.css?v=20260316-theme4">
+
+	<script>
+		// Pass server context URL parameters to Javascript
+		window.initialOptions = {
+			directory: "#url.directory#",
+			recurse: #url.recurse#,
+			bundlesPattern: "#url.bundlesPattern#",
+			labels: "#url.labels#",
+			excludes: "#url.excludes#",
+			runnerUrl: "#url.runnerUrl#",
+			editor: "#url.editor#"
+		};
+	</script>
+</head>
+<body
+	data-bs-theme="dark"
+	x-data="testboxRun()"
+	x-init="init()"
+	:data-bs-theme="preferences.theme">
+
+	<!--- ============================================================================================================ --->
+	<!-- NAVBAR -->
+	<!--- ============================================================================================================ --->
+	<nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom fixed-top">
+		<div class="container-fluid">
+			<a
+				class="navbar-brand text-primary d-flex align-items-center cursor-pointer"
+				href="##"
+				data-bs-toggle="modal"
+				data-bs-target="##aboutModal"
+				data-bs-title="About TestBox Run"
+				x-tooltip.bottom>
+				<img
+					:src="preferences.theme === 'dark' ? 'assets/images/testbox-logo-full-light-L.svg' : 'assets/images/testbox-logo-full-dark-L.svg'"
+					alt="TestBox"
+					height="30"
+					class="me-2 d-inline-block align-text-top"> RUN
+			</a>
+			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="##navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="navbarText">
+				<!--- Centered search --->
+				<div class="mx-auto px-3 flex-grow-1 search-wrapper" style="max-width: 500px;" x-show="!globalError">
+					<div class="input-group input-group-sm">
+						<span class="input-group-text search-icon-addon border-primary border-end-0">
+							<i class="bi bi-search"></i>
+						</span>
+						<input
+							id="searchInput"
+							type="text"
+							class="form-control form-control-sm border-primary border-start-0 border-end-0 search-input"
+							x-model="searchQuery"
+							placeholder="Ask or search..."
+							data-bs-title="Filter the test tree by name"
+							x-tooltip.bottom>
+						<span class="input-group-text search-kbd-addon border-primary border-start-0">
+							<kbd class="search-kbd" x-text="navigator.platform?.includes('Mac') ? '⌘' : 'Ctrl'"></kbd>
+							<kbd class="search-kbd">K</kbd>
+						</span>
+					</div>
+				</div>
+				<div class="me-auto" x-show="globalError"></div>
+				<span class="navbar-text d-flex align-items-center gap-2 ms-2">
+					<!--- Expand / Collapse All --->
+					<button
+						class="btn btn-sm btn-outline-secondary"
+						@click="expandAll()"
+						:disabled="isLoading"
+						data-bs-title="Expand all bundles (Ctrl/Cmd + B)"
+						x-tooltip.bottom>
+						<i class="bi bi-arrows-expand"></i>
+					</button>
+					<button
+						class="btn btn-sm btn-outline-secondary"
+						@click="collapseAll()"
+						:disabled="isLoading"
+						data-bs-title="Collapse all bundles (Ctrl/Cmd + B)"
+						x-tooltip.bottom>
+						<i class="bi bi-arrows-collapse"></i>
+					</button>
+					<!--- Run All / Stop --->
+					<button
+						class="btn btn-sm btn-success"
+						@click="runAllTests()"
+						x-show="!isRunning"
+						:disabled="isLoading"
+						data-bs-title="Run All (Ctrl/Cmd + Enter)"
+						x-tooltip.bottom>
+						<i class="bi bi-play-fill"></i>
+					</button>
+					<button
+						class="btn btn-sm btn-danger"
+						@click="stopTests()"
+						x-show="isRunning"
+						data-bs-title="Stop the current run"
+						x-tooltip.bottom>
+						<i class="bi bi-stop-fill"></i>
+					</button>
+					<div class="vr opacity-25 mx-1"></div>
+					<!--- Refresh / Theme / Settings --->
+					<button
+						class="btn btn-sm btn-outline-secondary"
+						@click="refreshTests()"
+						:disabled="isRunning"
+						data-bs-title="Reload Tests (Ctrl/Cmd + .)"
+						x-tooltip.left>
+						<i class="bi bi-arrow-clockwise" :class="isLoading ? 'spinner-icon' : ''"></i>
+					</button>
+					<button
+						class="btn btn-sm btn-outline-secondary"
+						@click="toggleTheme()"
+						:data-bs-title="preferences.theme === 'dark' ? 'Light Mode' : 'Dark Mode'"
+						x-tooltip.bottom>
+						<i class="bi" :class="preferences.theme === 'dark' ? 'bi-moon-stars-fill' : 'bi-sun-fill'"></i>
+					</button>
+					<button
+						class="btn btn-sm btn-outline-secondary"
+						data-bs-toggle="modal"
+						data-bs-target="##settingsModal"
+						data-bs-title="Settings"
+						x-tooltip.bottom>
+						<i class="bi bi-gear-fill"></i>
+					</button>
+				</span>
+			</div>
+
+			<!--- Compact controls for collapsed/mobile mode --->
+			<div class="w-100 d-lg-none mt-2" x-show="!globalError">
+				<div class="tb-compact-controls">
+					<div class="input-group input-group-sm tb-compact-search">
+						<span class="input-group-text search-icon-addon border-primary border-end-0">
+							<i class="bi bi-search"></i>
+						</span>
+						<input
+							id="searchInputCompact"
+							type="text"
+							class="form-control form-control-sm border-primary border-start-0"
+							x-model="searchQuery"
+							placeholder="Search..."
+							data-bs-title="Filter the test tree by name"
+							x-tooltip.bottom>
+					</div>
+
+					<div class="tb-compact-actions">
+						<button
+							class="btn btn-sm btn-success d-inline-flex align-items-center gap-1"
+							type="button"
+							@click="runAllTests()"
+							x-show="!isRunning"
+							:disabled="isLoading"
+							data-bs-title="Run All"
+							x-tooltip.bottom>
+							<i class="bi bi-play-fill"></i>
+							<span>Run</span>
+						</button>
+						<button
+							class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1"
+							type="button"
+							@click="refreshTests()"
+							:disabled="isRunning"
+							data-bs-title="Reload Tests"
+							x-tooltip.bottom>
+							<i class="bi bi-arrow-clockwise" :class="isLoading ? 'spinner-icon' : ''"></i>
+							<span>Reload</span>
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</nav>
+
+	<!--- ============================================================================================================ --->
+	<!-- CONTAINER -->
+	<!--- ============================================================================================================ --->
+	<div class="container-fluid">
+
+		<!-- Error Banner -->
+		<template x-if="globalError">
+			<div class="alert alert-danger" role="alert">
+				<h4 class="alert-heading">
+					<i class="bi bi-exclamation-triangle-fill"></i> Oops, something went wrong!
+				</h4>
+				<p x-text="globalError"></p>
+				<hr>
+				<p class="mb-0 font-monospace small" style="white-space: pre-wrap;" x-text="globalErrorDetail"></p>
+				<template x-if="globalErrorUrl">
+					<div>
+						<hr>
+						<p class="mb-1"><strong>Runner URL used:</strong></p>
+						<p class="mb-0 font-monospace small text-break">
+							<a :href="globalErrorUrl" target="_blank" rel="noopener" x-text="globalErrorUrl" class="alert-link"></a>
+						</p>
+					</div>
+				</template>
+				<hr>
+				<p class="mb-1">
+					<i class="bi bi-gear-fill me-1"></i>
+					Click the <strong>gear icon</strong> in the top-right corner to open Settings and verify or change the runner URL.
+				</p>
+				<p class="mb-0">
+					<i class="bi bi-info-circle me-1"></i>
+					Common causes: the <code>runner.bxm</code> (or <code>runner.cfm</code>) file does not exist, the server is not running, or the runner URL path is incorrect.
+					Try opening the runner URL directly in your browser to see the raw error.
+				</p>
+			</div>
+		</template>
+
+		<!--- Results Summary Card --->
+		<div class="card results-summary-card mb-3" :class="'status-bd-' + globalRunStatus" x-show="!globalError">
+			<div class="card-body p-0">
+				<div class="d-flex">
+					<!--- Passed --->
+					<div class="results-stat-item flex-fill py-3 text-center cursor-pointer"
+						:class="{'filter-off': !statusFilters.passed}"
+						@click="statusFilters.passed = !statusFilters.passed"
+						:data-bs-title="statusFilters.passed ? 'Hide Passed Specs' : 'Show Passed Specs'"
+						x-tooltip>
+						<div class="results-stat-count text-success" x-text="metaGlobalStats.totalPass">0</div>
+						<div class="results-stat-label text-success"><i class="bi bi-check-circle-fill me-1"></i>Passed</div>
+					</div>
+					<div class="vr my-2 opacity-25"></div>
+					<!--- Failed --->
+					<div class="results-stat-item flex-fill py-3 text-center cursor-pointer"
+						:class="{'filter-off': !statusFilters.failed}"
+						@click="statusFilters.failed = !statusFilters.failed"
+						:data-bs-title="statusFilters.failed ? 'Hide Failed Specs' : 'Show Failed Specs'"
+						x-tooltip>
+						<div class="results-stat-count text-danger" x-text="metaGlobalStats.totalFail">0</div>
+						<div class="results-stat-label text-danger"><i class="bi bi-x-circle-fill me-1"></i>Failed</div>
+					</div>
+					<div class="vr my-2 opacity-25"></div>
+					<!--- Errored --->
+					<div class="results-stat-item flex-fill py-3 text-center cursor-pointer"
+						:class="{'filter-off': !statusFilters.error}"
+						@click="statusFilters.error = !statusFilters.error"
+						data-bs-title="Click to toggle errored specs visibility"
+						:data-bs-title="statusFilters.error ? 'Hide Errored Specs' : 'Show Errored Specs'"
+						x-tooltip>
+						<div class="results-stat-count text-warning" x-text="metaGlobalStats.totalError">0</div>
+						<div class="results-stat-label text-warning"><i class="bi bi-exclamation-octagon-fill me-1"></i>Errored</div>
+					</div>
+					<div class="vr my-2 opacity-25"></div>
+					<!--- Skipped --->
+					<div class="results-stat-item flex-fill py-3 text-center cursor-pointer"
+						:class="{'filter-off': !statusFilters.skipped}"
+						@click="statusFilters.skipped = !statusFilters.skipped"
+						:data-bs-title="statusFilters.skipped ? 'Hide Skipped Specs' : 'Show Skipped Specs'"
+						x-tooltip>
+						<div class="results-stat-count text-info" x-text="metaGlobalStats.totalSkipped">0</div>
+						<div class="results-stat-label text-info"><i class="bi bi-dash-circle-fill me-1"></i>Skipped</div>
+					</div>
+				</div>
+			</div>
+			<div class="card-footer py-1 text-center small text-muted border-top bg-transparent">
+				<span data-bs-title="Total bundles discovered" x-tooltip>
+					<i class="bi bi-boxes me-1 opacity-50"></i><strong x-text="metaGlobalStats.totalBundles">0</strong> <span class="opacity-50">bundles</span>
+				</span>
+				<span class="mx-2 opacity-25">·</span>
+				<span data-bs-title="Total suites across all bundles" x-tooltip>
+					<i class="bi bi-collection me-1 opacity-50"></i><strong x-text="metaGlobalStats.totalSuites">0</strong> <span class="opacity-50">suites</span>
+				</span>
+				<span class="mx-2 opacity-25">·</span>
+				<span data-bs-title="Total specs across all suites" x-tooltip>
+					<i class="bi bi-file-text me-1 opacity-50"></i><strong x-text="metaGlobalStats.totalSpecs">0</strong> <span class="opacity-50">specs</span>
+				</span>
+				<span class="mx-2 opacity-25">·</span>
+				<span data-bs-title="Total execution time" x-tooltip>
+					<i class="bi bi-clock me-1 opacity-50"></i><strong x-text="metaGlobalStats.totalDuration + ' ms'">0 ms</strong>
+				</span>
+			</div>
+		</div>
+
+		<!--- Floating Progress Widget (visible only while a run is active) --->
+		<template x-if="isRunning">
+			<div class="floating-progress-widget" role="status" aria-live="polite">
+				<div class="floating-progress-glow"></div>
+				<div class="floating-progress-header d-flex justify-content-between align-items-center mb-2">
+					<span class="floating-progress-title">
+						<i class="bi bi-hourglass-split spinner-icon me-1 text-primary"></i>
+						<span x-text="activeBundlePath ? 'Running bundle…' : 'Running all tests…'"></span>
+					</span>
+					<span class="floating-progress-count" x-text="specsCompleted + ' / ' + metaGlobalStats.totalSpecs"></span>
+				</div>
+				<div class="floating-progress-track progress">
+					<div
+						class="progress-bar progress-bar-striped progress-bar-animated bg-primary"
+						role="progressbar"
+						:style="'width: ' + (metaGlobalStats.totalSpecs > 0 ? Math.round( (specsCompleted / metaGlobalStats.totalSpecs) * 100 ) : 100) + '%'"
+						:aria-valuenow="specsCompleted"
+						:aria-valuemax="metaGlobalStats.totalSpecs">
+					</div>
+				</div>
+				<div class="floating-progress-subtext mt-2" x-text="Math.min(100, (metaGlobalStats.totalSpecs > 0 ? Math.round( (specsCompleted / metaGlobalStats.totalSpecs) * 100 ) : 100)) + '% complete'"></div>
+			</div>
+		</template>
+
+		<!--- Loader --->
+		<template x-if="isLoading">
+			<div class="d-flex justify-content-center my-5">
+				<div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+					<span class="visually-hidden">Loading...</span>
+				</div>
+			</div>
+		</template>
+
+		<!-- Test Tree -->
+		<div class="test-tree" x-show="!isLoading && !globalError">
+			<template x-for="bundle in filteredBundles" :key="bundle.uid">
+				<div
+					class="card mb-3 bundle-card border-secondary"
+					:class="[
+						'status-bd-' + bundle.status,
+						activeBundlePath && activeBundlePath !== bundle.path ? 'opacity-50' : ''
+					]">
+					<div class="card-header d-flex justify-content-between align-items-center cursor-pointer"
+						@click="bundle.expanded = !bundle.expanded; bundle.suites.forEach( s => s.expanded = bundle.expanded )"
+						x-tooltip.bottom
+					>
+						<div class="d-flex align-items-center gap-2">
+							<i class="bi fs-5" :class="getStatusIcon(bundle.status, bundle.type)"></i>
+							<strong class="fs-6" x-text="bundle.path"></strong>
+						</div>
+						<div class="d-flex align-items-center gap-2">
+							<!--- Bundle run button: disabled when another bundle/run-all is already active --->
+							<button
+								class="btn btn-sm btn-outline-primary border-0 p-0 lh-1 bundle-play-btn"
+								style="font-size: 1.35rem; line-height: 1; width: 1.6rem; height: 1.6rem;"
+								data-bs-title="Run this bundle"
+								:data-path="bundle.path"
+								@click.stop="runBundle( $el.dataset.path )"
+								:disabled="isRunning && activeBundlePath !== bundle.path"
+								x-tooltip>
+								<i class="bi" :class="isRunning && activeBundlePath === bundle.path ? 'bi-hourglass-split text-primary spinner-icon' : 'bi-play-circle-fill'"></i>
+							</button>
+							<i class="bi text-muted" :class="bundle.expanded ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+						</div>
+					</div>
+
+					<!--- Inline results strip — only rendered once bundle has real results --->
+					<template x-if="bundle.hasStats">
+						<div
+							class="bundle-results-strip d-flex align-items-center gap-3 px-3 py-1"
+							:class="'strip-' + bundle.status">
+							<span class="strip-stat text-success" x-show="bundle.totalPass > 0">
+								<i class="bi bi-check-circle-fill me-1"></i><span x-text="bundle.totalPass"></span> passed
+							</span>
+							<span class="strip-stat text-danger" x-show="bundle.totalFail > 0">
+								<i class="bi bi-x-circle-fill me-1"></i><span x-text="bundle.totalFail"></span> failed
+							</span>
+							<span class="strip-stat text-warning" x-show="bundle.totalError > 0">
+								<i class="bi bi-exclamation-octagon-fill me-1"></i><span x-text="bundle.totalError"></span> errored
+							</span>
+							<span class="strip-stat text-info" x-show="bundle.totalSkipped > 0">
+								<i class="bi bi-dash-circle-fill me-1"></i><span x-text="bundle.totalSkipped"></span> skipped
+							</span>
+							<span class="strip-stat text-secondary ms-auto" x-show="bundle.totalDuration > 0">
+								<i class="bi bi-clock me-1"></i><span x-text="bundle.totalDuration + ' ms'"></span>
+							</span>
+							<!--- Debug buffer toggle — only appears when there is debug output --->
+							<button
+								class="btn btn-sm border-0 p-0 ms-1 lh-1 strip-debug-btn"
+								:class="bundle.showDebug ? 'active' : ''"
+								@click.stop="bundle.showDebug = !bundle.showDebug"
+								:data-bs-title="'Debug Buffer (' + bundle.debugBuffer.length + ' entries)'"
+								x-show="bundle.debugBuffer && bundle.debugBuffer.length > 0"
+								x-tooltip>
+								<i class="bi bi-bug-fill"></i>
+							</button>
+						</div>
+					</template>
+
+					<!--- Debug output panel --->
+					<div
+						class="bundle-debug-panel"
+						x-show="bundle.showDebug && bundle.debugBuffer && bundle.debugBuffer.length > 0"
+						x-collapse>
+						<div class="px-3 py-2 border-top border-warning border-opacity-25">
+							<div class="d-flex align-items-center justify-content-between mb-2">
+								<span class="text-warning small fw-semibold">
+									<i class="bi bi-bug-fill me-1"></i>Debug Buffer
+									<span class="badge bg-warning text-dark ms-1" x-text="bundle.debugBuffer.length"></span>
+								</span>
+								<button class="btn btn-sm btn-outline-secondary border-0 py-0 px-1" @click.stop="bundle.showDebug = false" data-bs-title="Close debug panel" x-tooltip>
+									<i class="bi bi-x-lg"></i>
+								</button>
+							</div>
+							<template x-for="(entry, idx) in bundle.debugBuffer" :key="idx">
+								<div class="debug-entry mb-2 rounded">
+									<div class="debug-entry-header d-flex align-items-center justify-content-between px-2 py-1">
+										<span class="debug-entry-label fw-semibold small" x-text="entry.label || 'debug'"></span>
+										<span class="text-muted" style="font-size: 0.7rem;" x-text="entry.timestamp"></span>
+									</div>
+									<pre class="debug-entry-body mb-0 px-2 py-1" x-text="typeof entry.data === 'string' ? entry.data : JSON.stringify(entry.data, null, 2)"></pre>
+								</div>
+							</template>
+						</div>
+					</div>
+
+					<!--- Suite list --->
+					<div class="card-body p-0" x-show="bundle.expanded" x-collapse>
+						<ul class="list-group list-group-flush">
+
+							<!-- Loop suites within bundle -->
+							<template x-for="suite in bundle.suites" :key="suite.id">
+								<li
+									class="list-group-item suite-item bg-transparent"
+									:class="'status-bg-' + suite.status"
+									x-show="isSuiteVisible(suite)"
+								>
+									<div
+										class="d-flex justify-content-between align-items-center cursor-pointer py-1"
+										@click="suite.expanded = !suite.expanded">
+										<div class="ps-2 ms-2 box-border-left" :class="'border-' + getStatusColorClass(suite.status)">
+											<i class="bi me-1" :class="getStatusIcon(suite.status, 'suite')"></i>
+											<strong x-text="suite.name"></strong>
+										</div>
+									<div class="d-flex align-items-center gap-2">
+										<button
+											class="btn btn-sm btn-outline-primary border-0 p-0 lh-1 suite-play-btn"
+											style="font-size: 1.1rem; line-height: 1; width: 1.4rem; height: 1.4rem;"
+											data-bs-title="Run this suite"
+											@click.stop="runSuite( bundle.path, suite.name )"
+											:disabled="isRunning && activeBundlePath !== bundle.path"
+											x-tooltip>
+											<i class="bi" :class="isRunning && activeBundlePath === bundle.path ? 'bi-hourglass-split text-primary spinner-icon' : 'bi-play-circle-fill'"></i>
+										</button>
+										<i class="bi text-muted" :class="suite.expanded ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+									</div>
+									</div>
+									<ul class="list-group list-group-flush" x-show="suite.expanded" x-collapse>
+										<template x-for="spec in suite.specs" :key="spec.id">
+											<li
+												class="list-group-item spec-item border-0 py-1 bg-transparent"
+												:class="'status-bg-' + spec.status"
+												x-show="isSpecVisible(spec)">
+												<div
+													class="d-flex justify-content-between align-items-center ps-4 ms-3 box-border-left"
+													:class="'border-' + getStatusColorClass(spec.status)">
+													<div>
+														<i class="bi me-2" :class="getStatusIcon(spec.status, 'spec')"></i>
+														<span x-text="spec.name"></span>
+														<div x-show="spec.failMessage" class="text-danger mt-1 small font-monospace"><strong x-text="spec.failMessage"></strong></div>
+														<div x-show="spec.failDetail" class="text-danger mt-1 small font-monospace" style="white-space: pre-wrap;" x-text="spec.failDetail"></div>
+														<div x-show="spec.error?.message" class="text-warning mt-1 small font-monospace"><strong x-text="spec.error?.message"></strong></div>
+
+															<template x-if="getPrimaryContext( spec )">
+																<div class="spec-origin-row mt-1">
+																	<span class="text-muted">Context:</span>
+																	<a
+																		href="##"
+																		class="spec-origin-link text-info"
+																		@click.prevent="openInEditor( getPrimaryContext( spec ).template, getPrimaryContext( spec ).line )"
+																		x-text="formatContextLabel( getPrimaryContext( spec ) )"></a>
+																</div>
+															</template>
+
+															<div
+																class="mt-1 d-flex align-items-center gap-2 flex-wrap"
+																x-show="shouldShowFailureControls( spec )"
+															>
+																<button
+																	class="btn btn-sm btn-link text-decoration-none spec-show-all-btn p-0"
+																	@click.stop="spec.showFailureOrigin = !spec.showFailureOrigin"
+																	x-show="shouldShowFailureControls( spec )"
+																>
+																	<i class="bi me-1" :class="spec.showFailureOrigin ? 'bi-dash-square' : 'bi-plus-square'"></i>
+																	<span x-text="spec.showFailureOrigin ? 'Hide details' : 'Show Failure Details'"></span>
+																</button>
+																<button
+																	class="btn btn-sm btn-link text-decoration-none spec-show-stack-btn p-0"
+																	x-show="hasStacktrace( spec )"
+																	@click.stop="spec.showStacktrace = !spec.showStacktrace">
+																	<i class="bi me-1" :class="spec.showStacktrace ? 'bi-dash-square' : 'bi-plus-square'"></i>
+																	<span x-text="spec.showStacktrace ? 'Hide stacktrace' : 'Show Stacktrace'"></span>
+																</button>
+															</div>
+
+															<div class="spec-fail-panel spec-stacktrace-panel" x-show="spec.showStacktrace && hasStacktrace( spec )" x-collapse>
+																<div class="spec-fail-section-label">Stacktrace</div>
+																<div class="spec-fail-stacktrace-full" x-html="formatStacktraceHTML( getStacktrace( spec ) )"></div>
+															</div>
+
+															<div class="spec-fail-panel" x-show="spec.showFailureOrigin && hasFailureDetails( spec )" x-collapse>
+																<template x-if="getPrimaryContext( spec )">
+																	<div class="mb-2">
+																		<div class="spec-fail-section-label">First Context</div>
+																		<div class="spec-origin-item">
+																			<a
+																				href="##"
+																				class="spec-origin-link text-info"
+																				@click.prevent="openInEditor( getPrimaryContext( spec ).template, getPrimaryContext( spec ).line )"
+																				x-text="formatContextLabel( getPrimaryContext( spec ) )"></a>
+																		</div>
+																		<div class="bg-body-tertiary rounded p-2 mt-1 small font-monospace" x-show="getContextCodeHTML( getPrimaryContext( spec ) )" x-html="getContextCodeHTML( getPrimaryContext( spec ) )"></div>
+																	</div>
+																</template>
+
+																<div x-show="spec.failOrigin && spec.failOrigin.length">
+																	<div class="spec-fail-section-label">Failure Origin</div>
+																	<template x-for="(ctx, ctxIdx) in spec.failOrigin" :key="ctxIdx">
+																		<div class="border border-primary-subtle rounded p-2 mb-2 cursor-pointer" @click.stop="openInEditor( ctx.template, ctx.line )">
+																			<div class="spec-origin-item">
+																				<span class="spec-origin-idx text-muted" x-text="(ctxIdx + 1) + '.'"></span>
+																				<span class="spec-origin-link text-info" x-text="formatContextLabel( ctx )"></span>
+																			</div>
+																			<div class="bg-body-tertiary rounded p-2 mt-1 small font-monospace" x-show="getContextCodeHTML( ctx )" x-html="getContextCodeHTML( ctx )"></div>
+																		</div>
+																	</template>
+																</div>
+
+															</div>
+													</div>
+														<div class="d-flex align-items-center gap-2">
+															<button
+																class="btn btn-sm btn-outline-primary border-0 p-0 lh-1 spec-play-btn spec-play-btn-hover"
+																data-bs-title="Run this spec"
+																@click.stop="runSpec( bundle.path, spec.sourceId )"
+																:disabled="isRunning"
+																x-tooltip>
+																<i class="bi bi-play-circle-fill"></i>
+															</button>
+															<span
+																class="badge rounded-pill bg-secondary"
+																x-text="formatSpecDuration( spec )"
+																x-show="shouldShowSpecDuration( spec )"></span>
+														</div>
+												</div>
+											</li>
+										</template>
+									</ul>
+								</li>
+							</template>
+
+							<!-- Loop top-level specs in bundle (for xunit or unnested) -->
+							<template x-for="spec in bundle.specs" :key="spec.id">
+								<li class="list-group-item spec-item bg-transparent" :class="'status-bg-' + spec.status" x-show="isSpecVisible(spec)">
+									<div class="d-flex justify-content-between align-items-center ps-2 ms-2 box-border-left" :class="'border-' + getStatusColorClass(spec.status)">
+										<div>
+											<!--- Status Icon --->
+											<i class="bi me-2" :class="getStatusIcon(spec.status, 'spec')"></i>
+											<!--- Test Name --->
+											<span x-text="spec.name"></span>
+											<!--- Fail Messages --->
+											<div x-show="spec.failMessage" class="text-danger mt-1 small font-monospace"><strong x-text="spec.failMessage"></strong></div>
+											<div x-show="spec.failDetail" class="text-danger mt-1 small font-monospace" style="white-space: pre-wrap;" x-text="spec.failDetail"></div>
+											<div x-show="spec.error?.message" class="text-warning mt-1 small font-monospace"><strong x-text="spec.error?.message"></strong></div>
+
+											<!--- Shows the Failure Context If it Exists --->
+											<template x-if="getPrimaryContext( spec )">
+												<div class="spec-origin-row mt-1">
+													<span class="text-muted">Context:</span>
+													<a
+														href="##"
+														class="spec-origin-link text-info"
+														@click.prevent="openInEditor( getPrimaryContext( spec ).template, getPrimaryContext( spec ).line )"
+														x-text="formatContextLabel( getPrimaryContext( spec ) )"></a>
+												</div>
+											</template>
+
+											<!--- Failure Details ToolBar --->
+											<div
+												class="mt-1 d-flex align-items-center gap-2 flex-wrap"
+												x-show="shouldShowFailureControls( spec )"
+											>
+												<button
+													class="btn btn-sm btn-link text-decoration-none spec-show-all-btn p-0"
+													@click.stop="spec.showFailureOrigin = !spec.showFailureOrigin">
+													<i class="bi me-1" :class="spec.showFailureOrigin ? 'bi-dash-square' : 'bi-plus-square'"></i>
+													<span x-text="spec.showFailureOrigin ? 'Hide details' : 'Show failure origin'"></span>
+												</button>
+												<button
+													class="btn btn-sm btn-link text-decoration-none spec-show-stack-btn p-0"
+													x-show="hasStacktrace( spec )"
+													@click.stop="spec.showStacktrace = !spec.showStacktrace">
+													<i class="bi me-1" :class="spec.showStacktrace ? 'bi-dash-square' : 'bi-plus-square'"></i>
+													<span x-text="spec.showStacktrace ? 'Hide stacktrace' : 'Show stacktrace'"></span>
+												</button>
+											</div>
+
+											<!--- Show Stacktrace --->
+											<div
+												class="spec-fail-panel"
+												x-show="spec.showStacktrace"
+												x-collapse
+											>
+												<div>
+													<div class="spec-fail-section-label">Stacktrace</div>
+													<div class="spec-fail-stacktrace-full" x-html="formatStacktraceHTML( getStacktrace( spec ) )"></div>
+												</div>
+											</div>
+
+											<!--- Show Failure Origin --->
+											<div
+												class="spec-fail-panel"
+												x-show="spec.showFailureOrigin && hasFailureDetails( spec )"
+												x-collapse>
+												<template x-if="getPrimaryContext( spec )">
+													<div class="mb-2">
+														<div class="spec-fail-section-label">First Context</div>
+														<div class="spec-origin-item">
+															<a
+																href="##"
+																class="spec-origin-link text-info"
+																@click.prevent="openInEditor( getPrimaryContext( spec ).template, getPrimaryContext( spec ).line )"
+																x-text="formatContextLabel( getPrimaryContext( spec ) )"></a>
+														</div>
+														<div class="bg-body-tertiary rounded p-2 mt-1 small font-monospace" x-show="getContextCodeHTML( getPrimaryContext( spec ) )" x-html="getContextCodeHTML( getPrimaryContext( spec ) )"></div>
+													</div>
+												</template>
+
+												<div x-show="spec.failOrigin && spec.failOrigin.length">
+													<div class="spec-fail-section-label">Failure Origin</div>
+													<template x-for="(ctx, ctxIdx) in spec.failOrigin" :key="ctxIdx">
+														<div class="border border-primary-subtle rounded p-2 mb-2 cursor-pointer" @click.stop="openInEditor( ctx.template, ctx.line )">
+															<div class="spec-origin-item">
+																<span class="spec-origin-idx text-muted" x-text="(ctxIdx + 1) + '.'"></span>
+																<span class="spec-origin-link text-info" x-text="formatContextLabel( ctx )"></span>
+															</div>
+															<div class="bg-body-tertiary rounded p-2 mt-1 small font-monospace" x-show="getContextCodeHTML( ctx )" x-html="getContextCodeHTML( ctx )"></div>
+														</div>
+													</template>
+												</div>
+											</div>
+										</div>
+
+										<!--- Duration + Run Spec button --->
+										<div class="d-flex align-items-center gap-2">
+											<button
+											class="btn btn-sm btn-outline-primary border-0 p-0 lh-1 spec-play-btn spec-play-btn-hover"
+												data-bs-title="Run this spec"
+												@click.stop="runSpec( bundle.path, spec.sourceId )"
+												:disabled="isRunning"
+												x-tooltip>
+													<i class="bi bi-play-circle-fill"></i>
+											</button>
+											<span class="badge rounded-pill bg-secondary" x-text="formatSpecDuration( spec )" x-show="shouldShowSpecDuration( spec )"></span>
+										</div>
+									</div>
+								</li>
+							</template>
+						</ul>
+					</div>
+				</div>
+			</template>
+		</div>
+
+	</div>
+
+
+	<!--- ============================================================================================================ --->
+	<!-- Settings Modal -->
+	<!--- ============================================================================================================ --->
+	<div
+		class="modal fade"
+		id="settingsModal"
+		tabindex="-1"
+		aria-labelledby="settingsModalLabel"
+		aria-hidden="true">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<!--- Header --->
+				<div class="modal-header">
+					<h1 class="modal-title fs-5" id="settingsModalLabel"><i class="bi bi-gear-fill"></i> Settings</h1>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<!--- Body --->
+				<div class="modal-body">
+					<p>
+						From here you can configure your test runner preferences.
+						These settings will be saved locally in your browser and applied on each visit.
+						You can also override any of these options via URL query parameters for quick testing or CI integration.
+						<strong>Please note that all these options are runner-specific and require your runner to support them.</strong>
+					</p>
+					<div class="mb-3">
+						<label class="form-label">Runner URL</label>
+						<input type="text" class="form-control" x-model="preferences.runnerUrl">
+						<div class="form-text">Relative path (e.g. runner.bxm) or absolute HTTP/S.</div>
+					</div>
+					<div class="row mb-3">
+						<div class="col-md-6">
+							<label class="form-label">Directory</label>
+							<input type="text" class="form-control" x-model="preferences.directory">
+						</div>
+						<div class="col-md-6">
+							<label class="form-label">Bundles Pattern</label>
+							<input type="text" class="form-control" x-model="preferences.bundlesPattern">
+						</div>
+					</div>
+					<div class="mb-3 form-check">
+						<input type="checkbox" class="form-check-input" id="recurseCheck" x-model="preferences.recurse">
+						<label class="form-check-label" for="recurseCheck">Recurse</label>
+					</div>
+					<div class="mb-3">
+						<label class="form-label">Labels</label>
+						<input type="text" class="form-control" x-model="preferences.labels">
+					</div>
+					<div class="mb-3">
+						<label class="form-label">Excludes</label>
+						<input type="text" class="form-control" x-model="preferences.excludes">
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-outline-danger me-auto" @click="resetPreferences()" data-bs-dismiss="modal">
+						<i class="bi bi-trash3"></i> Reset to Defaults
+					</button>
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-primary" @click="savePreferences()" data-bs-dismiss="modal">Save &amp; Reload</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!--- ============================================================================================================ --->
+	<!-- About Modal -->
+	<!--- ============================================================================================================ --->
+	<div
+		class="modal fade"
+		id="aboutModal"
+		tabindex="-1"
+		aria-labelledby="aboutModalLabel"
+		aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<!--- Header --->
+				<div class="modal-header border-0 pb-0">
+					<button type="button" class="btn-close ms-auto" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<!--- Body --->
+				<div class="modal-body pt-0 pb-4 px-4 text-center">
+					<!--- Logo --->
+					<img
+						:src="preferences.theme === 'dark' ? 'assets/images/testbox-logo-full-light-L.svg' : 'assets/images/testbox-logo-full-dark-L.svg'"
+						alt="TestBox"
+						class="about-logo mb-1">
+					<p class="text-muted small mb-3">The leading BDD &amp; TDD testing framework for BoxLang &amp; CFML</p>
+
+					<!--- Keyboard shortcuts --->
+					<div class="about-shortcuts mb-4 text-start">
+						<p class="text-uppercase fw-semibold small text-muted mb-2 letter-spacing-1"><i class="bi bi-keyboard me-1"></i>Keyboard Shortcuts</p>
+						<div class="about-shortcut-grid">
+							<span class="about-shortcut-desc">Focus Search</span>
+							<span class="about-shortcut-keys"><kbd>⌘/ctrl</kbd><kbd>K</kbd></span>
+
+							<span class="about-shortcut-desc">Clear Search</span>
+							<span class="about-shortcut-keys"><kbd>Esc</kbd></span>
+
+							<span class="about-shortcut-desc">Run All Tests</span>
+							<span class="about-shortcut-keys"><kbd>⌘/ctrl</kbd><kbd>↵</kbd></span>
+
+							<span class="about-shortcut-desc">Reload</span>
+										<span class="about-shortcut-keys"><kbd>⌘/ctrl</kbd><kbd>.</kbd></span>
+							<span class="about-shortcut-desc">Settings</span>
+							<span class="about-shortcut-keys"><kbd>⌘/ctrl</kbd><kbd>,</kbd></span>
+
+							<span class="about-shortcut-desc">Toggle All Bundles</span>
+							<span class="about-shortcut-keys"><kbd>⌘/ctrl</kbd><kbd>B</kbd></span>
+
+							<span class="about-shortcut-desc">Toggle Theme</span>
+							<span class="about-shortcut-keys"><kbd>⌘/ctrl</kbd><kbd>D</kbd></span>
+
+							<span class="about-shortcut-desc">Help / About</span>
+							<span class="about-shortcut-keys"><kbd>⌘/ctrl</kbd><kbd>H</kbd></span>
+						</div>
+					</div>
+
+					<!--- Links --->
+					<div class="d-flex justify-content-center gap-3 flex-wrap mb-4">
+						<a href="https://www.testbox.run" target="_blank" rel="noopener" class="about-link">
+							<i class="bi bi-globe2 me-1"></i>testbox.run
+						</a>
+						<a href="https://testbox.ortusbooks.com" target="_blank" rel="noopener" class="about-link">
+							<i class="bi bi-book me-1"></i>Documentation
+						</a>
+						<a href="https://www.ortussolutions.com/services/support" target="_blank" rel="noopener" class="about-link about-link-support">
+							<i class="bi bi-headset me-1"></i>Professional Support
+						</a>
+					</div>
+
+					<!--- Copyright --->
+					<p class="text-muted small mb-0">
+						&copy; <span x-text="new Date().getFullYear()"></span>
+						<a href="https://www.ortussolutions.com" target="_blank" rel="noopener" class="text-muted">Ortus Solutions, Corp.</a>
+						&mdash; All rights reserved.
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!--- ============================================================================================================ --->
+	<!-- JAVASCRIPT -->
+	<!--- ============================================================================================================ --->
+	<script defer src="assets/js/vendor/bootstrap.bundle.min.js"></script>
+	<script defer src="assets/js/run.js?v=20260316-15"></script>
+	<script defer src="assets/js/vendor/alpine-collapse.min.js"></script>
+	<script defer src="assets/js/vendor/alpine.min.js"></script>
+</body>
+</html>
+</bx:output>

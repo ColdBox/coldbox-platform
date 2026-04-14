@@ -997,7 +997,7 @@ component serializable="false" accessors="true" {
 	/**
 	 * Get a reference to the parent injector instance, else an empty simple string meaning nothing is set
 	 *
-	 * @doc_generic coldbox.system.ioc.Injector
+	 * @doc.type coldbox.system.ioc.Injector
 	 */
 	function getParent(){
 		return variables.parent;
@@ -1015,7 +1015,7 @@ component serializable="false" accessors="true" {
 	/**
 	 * Checks if Coldbox application context is linked
 	 *
-	 * @doc_generic boolean
+	 * @doc.type boolean
 	 */
 	boolean function isColdBoxLinked(){
 		return !isNull( variables.coldbox ) && isObject( variables.coldbox );
@@ -1024,7 +1024,7 @@ component serializable="false" accessors="true" {
 	/**
 	 * Checks if CacheBox is linked
 	 *
-	 * @doc_generic boolean
+	 * @doc.type boolean
 	 */
 	boolean function isCacheBoxLinked(){
 		return !isNull( variables.cacheBox ) && isObject( variables.cacheBox );
@@ -1085,7 +1085,7 @@ component serializable="false" accessors="true" {
 	/**
 	 * Return a self reference using the scoped registration, mostly used by providers or scope widening objects
 	 *
-	 * @doc_generic coldbox.system.ioc.Injector
+	 * @doc.type coldbox.system.ioc.Injector
 	 */
 	function locateScopedSelf(){
 		var scopeInfo = variables.binder.getScopeRegistration();

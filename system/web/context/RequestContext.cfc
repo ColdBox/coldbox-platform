@@ -1744,7 +1744,7 @@ component serializable="false" accessors="true" {
 		// Automatic Content Types by marshalling type
 		switch ( rd.type ) {
 			case "JSON": {
-				rd.contenttype = "application/json";
+				rd.contenttype = "application/json; charset=#arguments.encoding#";
 				if ( arguments.jsonAsText ) {
 					rd.contentType = "text/plain";
 				}

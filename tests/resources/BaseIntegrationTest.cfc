@@ -61,32 +61,35 @@ component
 	 * @beforeEach
 	 */
 	function cleanupColdBoxRequestData(){
-		structDelete( request, "_lastInvalidEvent" );
+		structDelete( request, "_lastInvalidEvent" )
 		structDelete( request, "cbTransientDICache" )
 	}
 
 	function isAdobe(){
-		return server.keyExists( "coldfusion" ) && server.coldfusion.productName.findNoCase( "ColdFusion" );
+		if( isLucee() || isBoxLang() ){
+			return false
+		}
+		return server.keyExists( "coldfusion" ) && server.coldfusion.productName.findNoCase( "ColdFusion" )
 	}
 
 	function isLucee(){
-		return server.keyExists( "lucee" );
+		return server.keyExists( "lucee" )
 	}
 
 	function isBoxLang(){
-		return server.keyExists( "boxlang" );
+		return server.keyExists( "boxlang" )
 	}
 
 	function isLucee6(){
-		return server.keyExists( "lucee" ) && left( server.lucee.version, 1 ) == 6;
+		return server.keyExists( "lucee" ) && left( server.lucee.version, 1 ) == 6
 	}
 
 	function noWSDLSupport(){
-		return isAdobe() || isLucee6() || isBoxLang();
+		return isAdobe() || isLucee6() || isBoxLang()
 	}
 
 	function shutdownColdBox(){
-		getColdBoxVirtualApp().shutdown();
+		getColdBoxVirtualApp().shutdown()
 	}
 
 }

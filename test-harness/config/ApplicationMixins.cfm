@@ -23,8 +23,10 @@
     	flushAtRequestEnd 	= false,
     	autoManageSession 	= false,
     	eventHandling 	  	= true,
-    	dialect				= 'MySQL'
+    	dialect				= 'MySQL',
+		ignoreParseErrors = true
     };
+
 	if( server.keyExists( "boxlang" ) ){
 		this.ormSettings.eventHandler = "cbtestharness.models.entities.BoxLangEventHandler";
 	} else {

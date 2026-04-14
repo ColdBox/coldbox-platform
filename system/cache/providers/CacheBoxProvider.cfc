@@ -2,25 +2,114 @@
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
+ * <h2>CacheBox Provider</h2>
+ * <p>
+ * The default CacheBox caching provider implementation. This provider offers a full-featured,
+ * high-performance in-memory caching solution with support for:
+ * </p>
+ * <ul>
+ *   <li>Multiple eviction policies (LRU, LFU, FIFO, etc.)</li>
+ *   <li>Pluggable object stores (ConcurrentStore, ConcurrentSoftReferenceStore, etc.)</li>
+ *   <li>Automatic cache reaping and expiration management</li>
+ *   <li>JVM memory threshold monitoring</li>
+ *   <li>Last access timeout support</li>
+ *   <li>Event-driven architecture with interception points</li>
+ *   <li>Comprehensive statistics tracking</li>
+ * </ul>
  *
- * This CacheBox provider is our own enterprise cache implementation with many options and storage providers.
+ * <h3>Configuration</h3>
+ * <p>
+ * This provider supports the following configuration options:
+ * </p>
+ * <ul>
+ *   <li><strong>objectDefaultTimeout</strong> (default: 60) - Default timeout in minutes for cached objects</li>
+ *   <li><strong>objectDefaultLastAccessTimeout</strong> (default: 30) - Default idle timeout in minutes</li>
+ *   <li><strong>useLastAccessTimeouts</strong> (default: true) - Enable/disable idle timeout checks</li>
+ *   <li><strong>reapFrequency</strong> (default: 2) - How often to run cache reaping in minutes</li>
+ *   <li><strong>freeMemoryPercentageThreshold</strong> (default: 0) - JVM free memory threshold percentage (0 = disabled)</li>
+ *   <li><strong>evictionPolicy</strong> (default: "LRU") - Eviction algorithm to use (LRU, LFU, FIFO, etc.)</li>
+ *   <li><strong>evictCount</strong> (default: 1) - Number of items to evict when eviction is triggered</li>
+ *   <li><strong>maxObjects</strong> (default: 200) - Maximum number of objects in cache (0 = unlimited)</li>
+ *   <li><strong>objectStore</strong> (default: "ConcurrentStore") - The object store implementation to use</li>
+ *   <li><strong>coldboxEnabled</strong> (default: false) - Enable ColdBox integration features</li>
+ *   <li><strong>resetTimeoutOnAccess</strong> (default: false) - Reset object timeout when accessed</li>
+ * </ul>
  *
- * Properties
- * - name : The cache name
- * - enabled : Boolean flag if cache is enabled
- * - reportingEnabled: Boolean flag if cache can report
- * - stats : The statistics object
- * - configuration : The configuration structure
- * - cacheFactory : The linkage to the cachebox factory
- * - eventManager : The linkage to the event manager
- * - cacheID : The unique identity code of this CFC
+ * <h3>Usage Example</h3>
+ * <pre>
+ * // Configure in CacheBox.cfc
+ * caches = {
+ *     default = {
+ *         provider   = "coldbox.system.cache.providers.CacheBoxProvider",
+ *         properties = {
+ *             objectDefaultTimeout           = 60,
+ *             objectDefaultLastAccessTimeout = 30,
+ *             useLastAccessTimeouts          = true,
+ *             reapFrequency                  = 5,
+ *             evictionPolicy                 = "LRU",
+ *             maxObjects                     = 1000
+ *         }
+ *     }
+ * };
+ *
+ * // Use the cache
+ * cache = cacheFactory.getCache( "default" );
+ * cache.set( "myKey", myObject, 60 );
+ * var data = cache.get( "myKey" );
+ * </pre>
+ *
+ * <h3>Eviction Policies</h3>
+ * <p>
+ * The provider supports multiple eviction policies to determine which objects to remove
+ * when the cache reaches capacity or memory thresholds:
+ * </p>
+ * <ul>
+ *   <li><strong>LRU</strong> - Least Recently Used (default)</li>
+ *   <li><strong>LFU</strong> - Least Frequently Used</li>
+ *   <li><strong>FIFO</strong> - First In First Out</li>
+ *   <li><strong>LIFO</strong> - Last In First Out</li>
+ *   <li><strong>Random</strong> - Random eviction</li>
+ * </ul>
+ *
+ * <h3>Object Stores</h3>
+ * <p>
+ * Different object store implementations provide various performance and memory characteristics:
+ * </p>
+ * <ul>
+ *   <li><strong>ConcurrentStore</strong> - High-performance concurrent storage (default)</li>
+ *   <li><strong>ConcurrentSoftReferenceStore</strong> - Uses soft references for automatic memory management</li>
+ * </ul>
+ *
+ * <h3>Cache Reaping</h3>
+ * <p>
+ * The provider automatically schedules a reaping task that runs at the configured frequency
+ * to expire and remove stale objects from the cache. The reaper checks:
+ * </p>
+ * <ul>
+ *   <li>Object timeout expiration</li>
+ *   <li>Last access timeout (idle timeout)</li>
+ *   <li>Corrupted or invalid entries</li>
+ * </ul>
+ *
+ * <h3>Events</h3>
+ * <p>
+ * The provider fires the following interception events:
+ * </p>
+ * <ul>
+ *   <li><strong>afterCacheElementInsert</strong> - Fired after a new object is inserted</li>
+ *   <li><strong>afterCacheElementUpdated</strong> - Fired after an existing object is updated</li>
+ *   <li><strong>afterCacheElementRemoved</strong> - Fired after an object is manually removed</li>
+ *   <li><strong>afterCacheElementExpired</strong> - Fired after an object expires</li>
+ *   <li><strong>afterCacheClearAll</strong> - Fired after the entire cache is cleared</li>
+ * </ul>
  *
  * @author Luis Majano
+ * @see    coldbox.system.cache.AbstractCacheBoxProvider
+ * @see    coldbox.system.cache.providers.ICacheProvider
  */
 component
 	accessors   ="true"
 	serializable="false"
-	implements  ="coldbox.system.cache.providers.ICacheProvider"
 	extends     ="coldbox.system.cache.AbstractCacheBoxProvider"
 {
 
@@ -37,21 +126,21 @@ component
 	/**
 	 * The eviction policy to use on the cache storage: Defaults to LRU
 	 *
-	 * @doc_generic coldbox.system.cache.policies.IEvictionPolicy
+	 * @doc.type coldbox.system.cache.policies.IEvictionPolicy
 	 */
 	property name="evictionPolicy";
 
 	/**
 	 * The object storage object
 	 *
-	 * @doc_generic coldbox.system.cache.store.IObjectStore
+	 * @doc.type coldbox.system.cache.store.IObjectStore
 	 */
 	property name="objectStore";
 
 	/**
 	 * The cache stats object
 	 *
-	 * @doc_generic coldbox.system.cache.util.CacheStats
+	 * @doc.type coldbox.system.cache.util.CacheStats
 	 */
 	property name="stats";
 
@@ -105,7 +194,7 @@ component
 		lock
 			name            ="CacheBoxProvider.configure.#variables.cacheId#"
 			type            ="exclusive"
-			timeout         ="30"
+			timeout         ="#variables.lockTimeout#"
 			throwontimeout  ="true" {
 			// Prepare the logger
 			variables.logger= getCacheFactory().getLogBox().getLogger( this );
@@ -170,7 +259,7 @@ component
 	/**
 	 * Shutdown command issued when CacheBox is going through shutdown phase
 	 *
-	 * @return LuceeProvider
+	 * @return CacheBoxProvider
 	 */
 	function shutdown(){
 		// nothing to shutdown
@@ -184,6 +273,8 @@ component
 	 * Check if an object is in cache, if not found it records a miss.
 	 *
 	 * @objectKey The key to retrieve
+	 *
+	 * @return boolean True if found, false if not found
 	 */
 	boolean function lookup( required objectKey ){
 		if ( lookupQuiet( arguments.objectKey ) ) {
@@ -202,11 +293,12 @@ component
 	 * Check if an object is in cache, no stats updated or listeners
 	 *
 	 * @objectKey The key to retrieve
+	 *
+	 * @return boolean True if found, false if not found
 	 */
 	boolean function lookupQuiet( required objectKey ){
 		// cleanup the key
 		arguments.objectKey = lCase( arguments.objectKey );
-
 		return variables.objectStore.lookup( arguments.objectKey );
 	}
 
@@ -214,6 +306,8 @@ component
 	 * Get an object from the cache
 	 *
 	 * @objectKey The key to retrieve
+	 *
+	 * @return The cached object or null if not found
 	 */
 	function get( required objectKey ){
 		// cleanup the key
@@ -230,9 +324,11 @@ component
 	}
 
 	/**
-	 * get an item silently from cache, no stats advised: Stats not available on lucee
+	 * Get an item silently from cache, no stats advised: Stats not available on lucee
 	 *
 	 * @objectKey The key to retrieve
+	 *
+	 * @return The cached object or null if not found
 	 */
 	function getQuiet( required objectKey ){
 		// cleanup the key
@@ -250,6 +346,8 @@ component
 	 * Get a cache objects metadata about its performance. This value is a structure of name-value pairs of metadata.
 	 *
 	 * @objectKey The key to retrieve
+	 *
+	 * @return struct The metadata structure
 	 */
 	struct function getCachedObjectMetadata( required objectKey ){
 		// Cleanup the key
@@ -380,11 +478,12 @@ component
 	 * Clears an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore without doing statistics or updating listeners
 	 *
 	 * @objectKey The object cache key
+	 *
+	 * @return boolean True if removed, false if not removed
 	 */
 	boolean function clearQuiet( required objectKey ){
 		// clean key
 		arguments.objectKey = lCase( arguments.objectKey );
-
 		// clear key
 		return variables.objectStore.clear( arguments.objectKey );
 	}
@@ -393,6 +492,8 @@ component
 	 * Clears an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore
 	 *
 	 * @objectKey The object cache key
+	 *
+	 * @return boolean True if removed, false if not removed
 	 */
 	boolean function clear( required objectKey ){
 		var clearCheck = clearQuiet( arguments.objectKey );
@@ -424,6 +525,8 @@ component
 
 	/**
 	 * Get the number of elements in the cache
+	 *
+	 * @return numeric The number of elements in the cache
 	 */
 	numeric function getSize(){
 		return variables.objectStore.getSize();
@@ -495,6 +598,8 @@ component
 	/**
 	 * Get a structure of all the keys in the cache with their appropriate metadata structures. This is used to build the reporting.[keyX->[metadataStructure]]
 	 * <strong>ALERT:</strong> Please be aware that this method can be very expensive in large caches, use with caution.
+	 *
+	 * @return struct A structure of all keys and their metadata structures
 	 */
 	struct function getStoreMetadataReport(){
 		var results = {};
@@ -508,6 +613,8 @@ component
 
 	/**
 	 * Get a key lookup structure where cachebox can build the report on. Ex: [timeout=timeout,lastAccessTimeout=idleTimeout].  It is a way for the visualizer to construct the columns correctly on the reports
+	 *
+	 * @return struct The key map structure
 	 */
 	struct function getStoreMetadataKeyMap(){
 		return {
@@ -522,6 +629,8 @@ component
 
 	/**
 	 * Returns a list of all elements in the cache, whether or not they are expired
+	 *
+	 * @return array A list of all elements in the cache
 	 */
 	array function getKeys(){
 		return variables.objectStore.getKeys();

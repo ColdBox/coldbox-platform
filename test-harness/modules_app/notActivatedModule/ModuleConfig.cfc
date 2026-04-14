@@ -16,8 +16,8 @@ component {
 	this.modelNamespace     = "";
 	// Auto Map Models Directory
 	this.autoMapModels      = true;
-	// CF Mapping
-	this.cfmapping          = "";
+	// Engine Mapping
+	this.classMapping          = "";
 	// Disabled
 	this.disabled           = false;
 	// Activate the module

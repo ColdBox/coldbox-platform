@@ -505,7 +505,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		// Test JSON
 		event.renderData( type = "JSON", data = "[1,2,3,4]" );
 		rd = event.getRenderData();
-		assertEquals( rd.contenttype, "application/json" );
+		assertEquals( rd.contenttype, "application/json; charset=utf-8" );
 		assertEquals( rd.type, "json" );
 		assertEquals( rd.statusCode, "200" );
 
@@ -589,6 +589,25 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		event.setHTTPHeader( statusCode = "200" );
 
 		event.setHTTPHeader( name = "expires", value = "#now()#" );
+	}
+
+	function testMockRequestContextPopulatesResponseHeaders(){
+		// MockRequestContext.setHTTPHeader() should populate variables.responseHeaders
+		// so that getResponseHeaders() works correctly in integration tests
+		var mockEvent = getMockBox().createMock( "coldbox.system.testing.mock.web.context.MockRequestContext" );
+		mockEvent.init( properties = props, controller = mockController );
+
+		// Set custom headers
+		mockEvent.setHTTPHeader( name = "x-custom-header", value = "test-value" );
+		mockEvent.setHTTPHeader( name = "cached-data", value = "false" );
+
+		// getResponseHeaders() should return the headers that were set
+		var headers = mockEvent.getResponseHeaders();
+
+		expect( headers ).toHaveKey( "x-custom-header" );
+		expect( headers[ "x-custom-header" ] ).toBe( "test-value" );
+		expect( headers ).toHaveKey( "cached-data" );
+		expect( headers[ "cached-data" ] ).toBe( "false" );
 	}
 
 	function testGetHTTPContent(){
