@@ -386,7 +386,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 		struct eventArguments         = {},
 		boolean renderResults         = false,
 		boolean withExceptionHandling = false,
-		domain                        = cgi.SERVER_NAME
+		string domain = cgi.SERVER_NAME
 	){
 		var handlerResults  = "";
 		var requestContext  = getRequestContext();
@@ -585,6 +585,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * @renderResults         If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
 	 * @withExceptionHandling If true, then ColdBox will process any errors through the exception handling framework instead of just throwing the error. Default: false.
 	 * @domain                Override the domain of execution of the request. Default is to use the cgi.server_name variable.
+	 * @body 				The body content to be passed in the request, useful for POST/PUT/PATCH requests.
 	 */
 	function request(
 		string route                  = "",
@@ -593,23 +594,35 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 		string method                 = "GET",
 		boolean renderResults         = true,
 		boolean withExceptionHandling = false,
-		domain                        = cgi.SERVER_NAME
+		string domain                        = cgi.SERVER_NAME,
+		any body = ""
 	){
-		var mockedEvent = prepareMock( getRequestContext() ).$( "getHTTPMethod", uCase( arguments.method ) );
+		// Mock the event context
+		var mockedEvent = prepareMock( getRequestContext() )
+			// Mock the HTTP method
+			.$( "getHTTPMethod", uCase( arguments.method ) )
+			// Mock the body content
+			.$( "getHttpContent", arguments.body )
+
+		// Add params to the request collection
 		arguments.params
 			.keyArray()
-			.each( function( name ){
-				mockedEvent.setValue( arguments.name, params[ arguments.name ] );
-			} );
+			.each( ( name ) => {
+				mockedEvent.setValue( arguments.name, params[ arguments.name ] )
+			} )
+
+		// Add headers to the request collection
 		arguments.headers
 			.keyArray()
-			.each( function( name ){
+			.each( ( name ) => {
 				mockedEvent
 					.$( "getHTTPHeader" )
 					.$args( arguments.name )
-					.$results( headers[ arguments.name ] );
-			} );
-		return this.execute( argumentCollection = arguments );
+					.$results( headers[ arguments.name ] )
+			} )
+
+		// Funnel through the main execute method
+		return this.execute( argumentCollection: arguments )
 	}
 
 	/**
@@ -621,6 +634,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * @renderResults         If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
 	 * @withExceptionHandling If true, then ColdBox will process any errors through the exception handling framework instead of just throwing the error. Default: false.
 	 * @domain                Override the domain of execution of the request. Default is to use the cgi.server_name variable.
+	 * @body 				The body content to be passed in the request, useful for PUT/PATCH requests.
 	 */
 	function get(
 		string route                  = "",
@@ -628,7 +642,8 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 		struct headers                = {},
 		boolean renderResults         = true,
 		boolean withExceptionHandling = false,
-		domain                        = cgi.SERVER_NAME
+		string domain = cgi.SERVER_NAME,
+		any body = ""
 	){
 		arguments.method = "GET";
 		return variables.request( argumentCollection = arguments );
@@ -643,6 +658,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * @renderResults         If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
 	 * @withExceptionHandling If true, then ColdBox will process any errors through the exception handling framework instead of just throwing the error. Default: false.
 	 * @domain                Override the domain of execution of the request. Default is to use the cgi.server_name variable.
+	 * @body 				The body content to be passed in the request, useful for POST/PUT/PATCH requests.
 	 */
 	function post(
 		string route                  = "",
@@ -650,7 +666,8 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 		struct headers                = {},
 		boolean renderResults         = true,
 		boolean withExceptionHandling = false,
-		domain                        = cgi.SERVER_NAME
+		string domain                 = cgi.SERVER_NAME,
+		any body = ""
 	){
 		arguments.method = "POST";
 		return variables.request( argumentCollection = arguments );
@@ -665,6 +682,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * @renderResults         If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
 	 * @withExceptionHandling If true, then ColdBox will process any errors through the exception handling framework instead of just throwing the error. Default: false.
 	 * @domain                Override the domain of execution of the request. Default is to use the cgi.server_name variable.
+	 * @body 				The body content to be passed in the request, useful for POST/PUT/PATCH requests.
 	 */
 	function put(
 		string route                  = "",
@@ -672,7 +690,8 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 		struct headers                = {},
 		boolean renderResults         = true,
 		boolean withExceptionHandling = false,
-		domain                        = cgi.SERVER_NAME
+		string domain                 = cgi.SERVER_NAME,
+		any body = ""
 	){
 		arguments.method = "PUT";
 		return variables.request( argumentCollection = arguments );
@@ -687,6 +706,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * @renderResults         If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
 	 * @withExceptionHandling If true, then ColdBox will process any errors through the exception handling framework instead of just throwing the error. Default: false.
 	 * @domain                Override the domain of execution of the request. Default is to use the cgi.server_name variable.
+	 * @body 				The body content to be passed in the request, useful for POST/PUT/PATCH requests.
 	 */
 	function patch(
 		string route                  = "",
@@ -694,7 +714,8 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 		struct headers                = {},
 		boolean renderResults         = true,
 		boolean withExceptionHandling = false,
-		domain                        = cgi.SERVER_NAME
+		string domain                 = cgi.SERVER_NAME,
+		any body = ""
 	){
 		arguments.method = "PATCH";
 		return variables.request( argumentCollection = arguments );
@@ -709,6 +730,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * @renderResults         If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
 	 * @withExceptionHandling If true, then ColdBox will process any errors through the exception handling framework instead of just throwing the error. Default: false.
 	 * @domain                Override the domain of execution of the request. Default is to use the cgi.server_name variable.
+	 * @body 				The body content to be passed in the request, useful for POST/PUT/PATCH requests.
 	 */
 	function delete(
 		string route                  = "",
@@ -716,7 +738,8 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 		struct headers                = {},
 		boolean renderResults         = true,
 		boolean withExceptionHandling = false,
-		domain                        = cgi.SERVER_NAME
+		string domain                 = cgi.SERVER_NAME,
+		any body = ""
 	){
 		arguments.method = "DELETE";
 		return variables.request( argumentCollection = arguments );
