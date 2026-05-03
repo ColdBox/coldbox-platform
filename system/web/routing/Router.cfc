@@ -1953,10 +1953,10 @@ component
 			);
 		}
 
-		if ( !getModuleList().keyArray().findNoCase( "bxai" ) ) {
+		if ( !getModuleList().keyArray().findNoCase( "bx-ai" ) ) {
 			throw(
 				type   : "ModuleNotFoundException",
-				message: "The BoxLang AI module (bxai) is required for AI/MCP routing. Install it via: box install bxai"
+				message: "The BoxLang AI module (bx-ai) is required for AI/MCP routing. Install it via: box install bx-ai"
 			);
 		}
 	}
