@@ -33,7 +33,6 @@ component serializable="false" accessors="true" {
 	param name="COLDBOX_APP_KEY"       default="cbController";
 	param name="COLDBOX_APP_MAPPING"   default="";
 	param name="COLDBOX_WEB_MAPPING"   default="";
-	param name="appHash"               default="#hash( getBaseTemplatePath() & application.applicationname )#";
 	param name="lockTimeout" default="30" type="numeric";
 	param name="COLDBOX_FAIL_FAST" default="true";
 
@@ -76,6 +75,9 @@ component serializable="false" accessors="true" {
 	 */
 	function loadColdBox(){
 		var appKey = locateAppKey();
+
+		// Param the incoming app hash
+		param name="appHash" default="#hash( getBaseTemplatePath() & application.applicationname )#";
 
 		// Cleanup of old code, just in case
 		if ( structKeyExists( application, appKey ) ) {
