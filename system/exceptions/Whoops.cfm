@@ -643,25 +643,8 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 							<cfset highlighter = "js">
 						</cfif>
 
-						<!--- Add spacing for indentation --->
-						<cfset spacing = "#chr( 32 )##chr( 32 )##chr( 32 )##chr( 32 )#">
-
-						<!--- Output code only once per instance found --->
-						<cfset filecontent = []>
-
-						<!--- Replace spaces with space charaters for correct indentation --->
-						<cfloop file="#thisTagContext.template#" index="line">
-							<cfset findInitalSpaces = reFind( "^[\s\t]+", line, 0, true, "All" )>
-							<cfif trim( line ) is not "" and arrayLen( findInitalSpaces )>
-								<cfset trimmedline = right( line, len( line ) - findInitalSpaces[ 1 ].len[ 1 ] )>
-								<cfset arrayAppend(
-									filecontent,
-									"#repeatString( spacing, findInitalSpaces[ 1 ].len[ 1 ] )##trimmedline#"
-								)>
-							<cfelse>
-								<cfset arrayAppend( filecontent, "#chr( 32 )##line#" )>
-							</cfif>
-						</cfloop>
+						<!--- Read file content and normalize tabs to spaces for SyntaxHighlighter --->
+						<cfset filecontent = reReplace( fileRead( thisTagContext.template ), "\t", repeatString( chr( 32 ), 4 ), "All" )>
 
 						<!--- If we have content, then render it --->
 						<cfif NOT structKeyExists( stackRenderings, thisTagContext.template )>
@@ -669,7 +652,7 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 								id="stackframe-#hash( thisTagContext.template )#"
 								type="text"
 								async
-							><![CDATA[#arrayToList( filecontent, "#chr( 13 )##chr( 10 )#" )#]]></script>
+							><![CDATA[#filecontent#]]></script>
 							<cfset stackRenderings[ thisTagContext.template ] = true>
 						</cfif>
 
