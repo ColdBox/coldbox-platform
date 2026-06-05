@@ -644,7 +644,7 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 						</cfif>
 
 						<!--- Add spacing for indentation --->
-						<cfset spacing = "#chr( 20 )##chr( 20 )##chr( 20 )##chr( 20 )#">
+						<cfset spacing = "#chr( 32 )##chr( 32 )##chr( 32 )##chr( 32 )#">
 
 						<!--- Output code only once per instance found --->
 						<cfset filecontent = []>
@@ -659,7 +659,7 @@ An enhanced error reporting and debugging tool for ColdBox Framework
 									"#repeatString( spacing, findInitalSpaces[ 1 ].len[ 1 ] )##trimmedline#"
 								)>
 							<cfelse>
-								<cfset arrayAppend( filecontent, "#chr( 20 )##line#" )>
+								<cfset arrayAppend( filecontent, "#chr( 32 )##line#" )>
 							</cfif>
 						</cfloop>
 
