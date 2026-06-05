@@ -616,6 +616,45 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		assertTrue( isSimpleValue( test ) );
 	}
 
+	function testIsAjaxWithXMLHttpRequestHeader(){
+		var event = getRequestContext()
+			.$( "getHTTPHeader" )
+			.$args( "X-Requested-With", "" )
+			.$results( "XMLHttpRequest" );
+
+		expect( event.isAjax() ).toBeTrue();
+	}
+
+	function testIsAjaxWithFetchMetadataHeaders(){
+		var event = getRequestContext()
+			.$( "getHTTPHeader" )
+			.$args( "X-Requested-With", "" )
+			.$results( "" )
+			.$( "getHTTPHeader" )
+			.$args( "Sec-Fetch-Mode", "" )
+			.$results( "cors" )
+			.$( "getHTTPHeader" )
+			.$args( "Sec-Fetch-Dest", "" )
+			.$results( "empty" );
+
+		expect( event.isAjax() ).toBeTrue();
+	}
+
+	function testIsAjaxFalseForNavigationRequests(){
+		var event = getRequestContext()
+			.$( "getHTTPHeader" )
+			.$args( "X-Requested-With", "" )
+			.$results( "" )
+			.$( "getHTTPHeader" )
+			.$args( "Sec-Fetch-Mode", "" )
+			.$results( "navigate" )
+			.$( "getHTTPHeader" )
+			.$args( "Sec-Fetch-Dest", "" )
+			.$results( "document" );
+
+		expect( event.isAjax() ).toBeFalse();
+	}
+
 	function testNoLayout(){
 		var event = getRequestContext();
 

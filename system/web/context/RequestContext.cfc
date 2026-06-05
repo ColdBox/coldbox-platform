@@ -1926,7 +1926,18 @@ component serializable="false" accessors="true" {
 	 * Determines if in an Ajax call or not by looking at the request headers
 	 */
 	boolean function isAjax(){
-		return ( getHTTPHeader( "X-Requested-With", "" ) eq "XMLHttpRequest" );
+		var xRequestedWith = getHTTPHeader( "X-Requested-With", "" );
+		var fetchMode      = getHTTPHeader( "Sec-Fetch-Mode", "" );
+		var fetchDest      = getHTTPHeader( "Sec-Fetch-Dest", "" );
+
+		return (
+			xRequestedWith eq "XMLHttpRequest" ||
+			(
+				len( fetchMode ) &&
+				fetchMode neq "navigate" &&
+				fetchDest eq "empty"
+			)
+		);
 	}
 
 	/***********************************************************************************************************/
