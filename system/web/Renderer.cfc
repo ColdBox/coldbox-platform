@@ -605,20 +605,20 @@ component
 			}
 		}
 
-		// Discover the layout location + helpers
-		var layoutLocations = discoverViewPaths(
-			view          : cbox_currentLayout,
-			module        : arguments.module,
-			explicitModule: cbox_explicitModule,
-			isLayout      : true
-		);
+		// Layout location holder — only populated when layout is non-empty.
+		// discoverViewPaths throws on an empty layout name (regression vs ColdBox 7).
+		var layoutLocations = { viewPath : "", viewHelperPath : [] };
 
-		// If Layout is blank, then just delegate to the view
-		// No layout rendering.
+		// If Layout is blank, then just delegate to the view (no layout rendering).
 		if ( len( cbox_currentLayout ) eq 0 ) {
 			iData.renderedLayout = this.view();
 		} else {
-			// Render the layout with it's helpers
+			layoutLocations = discoverViewPaths(
+				view          : cbox_currentLayout,
+				module        : arguments.module,
+				explicitModule: cbox_explicitModule,
+				isLayout      : true
+			);
 			iData.renderedLayout = renderViewComposite(
 				view          : cbox_currentLayout,
 				viewPath      : layoutLocations.viewPath,
