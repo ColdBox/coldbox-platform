@@ -168,7 +168,7 @@ component extends="Executor" accessors="true" singleton {
 	 * @method     The method on the cfc to call, defaults to "run" (optional)
 	 */
 	ScheduledTask function newSchedule( required task, method = "run" ){
-		return this.newTask( argumentCollection = arguments );
+		return this.newTask( argumentCollection = arguments )
 	}
 
 	/**
@@ -178,15 +178,17 @@ component extends="Executor" accessors="true" singleton {
 	 * @debug  Add debugging logs to System out, disabled by default
 	 * @task   The closure or cfc that represents the task (optional)
 	 * @method The method on the cfc to call, defaults to "run" (optional)
+	 * @scheduler The scheduler to set into the task, defaults to this (optional)
 	 */
 	ScheduledTask function newTask(
 		name  = "task-#getName()#-#createUUID()#",
 		debug = false,
 		task,
-		method = "run"
+		method = "run",
+		scheduler
 	){
-		arguments.executor = this;
-		return new coldbox.system.async.tasks.ScheduledTask( argumentCollection = arguments );
+		arguments.executor = this
+		return new coldbox.system.async.tasks.ScheduledTask( argumentCollection = arguments )
 	}
 
 	/****************************************************************

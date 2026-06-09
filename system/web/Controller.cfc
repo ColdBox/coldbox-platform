@@ -285,6 +285,15 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
+	 * Get the ColdBox version from the settings
+	 *
+	 * @return The ColdBox version
+	 */
+	function getColdBoxVersion(){
+		return getColdBoxSetting( "version", "unknown" )
+	}
+
+	/**
 	 * Get a ColdBox setting
 	 *
 	 * @name         The key to get
@@ -363,15 +372,15 @@ component serializable="false" accessors="true" {
 	 * @throws InvalidModuleException - The module passed is invalid
 	 */
 	struct function getModuleConfig( required module ){
-		var mConfig = getSetting( "modules" );
+		var mConfig = getSetting( "modules" )
 		if ( structKeyExists( mConfig, arguments.module ) ) {
-			return mConfig[ arguments.module ];
+			return mConfig[ arguments.module ]
 		}
 		throw(
-			message = "The module you passed #arguments.module# is invalid.",
-			detail  = "The loaded modules are #structKeyList( mConfig )#",
+			message = "The module you passed [#arguments.module#] is invalid.",
+			detail  = "The loaded modules are: #structKeyList( mConfig )#",
 			type    = "InvalidModuleException"
-		);
+		)
 	}
 
 	/**

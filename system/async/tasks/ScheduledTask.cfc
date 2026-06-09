@@ -190,6 +190,7 @@ component accessors="true" {
 	 * @task     The closure or cfc that represents the task (optional)
 	 * @method   The method on the cfc to call, defaults to "run" (optional)
 	 * @debug    Add debugging logs to System out, disabled by default
+	 * @scheduler The scheduler to set into the task (optional)
 	 */
 	ScheduledTask function init(
 		required name,
@@ -197,46 +198,51 @@ component accessors="true" {
 		any task = "",
 		method   = "run",
 		debug    = false,
-		group    = ""
+		group    = "",
+		scheduler
 	){
-		// Utility class
-		variables.util             = new coldbox.system.core.util.Util();
+		// Store scheduler if sent!
+		if( !isNull( arguments.scheduler ) ){
+			variables.scheduler = arguments.scheduler
+			variables.util = variables.scheduler.getUtil()
+		} else{
+			variables.util = new coldbox.system.core.util.Util()
+		}
+
 		// Link up the executor and name
-		variables.executor         = arguments.executor;
-		variables.name             = arguments.name;
-		variables.group            = arguments.group;
+		variables.executor         = arguments.executor
+		variables.name             = arguments.name
+		variables.group            = arguments.group
 		// time unit helper
-		variables.dateTimeHelper   = new coldbox.system.async.time.DateTimeHelper();
-		variables.timeUnitHelper   = new coldbox.system.async.time.TimeUnit();
+		variables.dateTimeHelper   = new coldbox.system.async.time.DateTimeHelper()
+		variables.timeUnitHelper   = new coldbox.system.async.time.TimeUnit()
 		// Init Properties
-		variables.task             = arguments.task;
-		variables.method           = arguments.method;
+		variables.task             = arguments.task
+		variables.method           = arguments.method
 		// Default Frequencies
-		variables.delay            = 0;
-		variables.delayTimeUnit    = "";
-		variables.period           = 0;
-		variables.spacedDelay      = 0;
-		variables.timeUnit         = "milliseconds";
-		variables.noOverlaps       = false;
+		variables.delay            = 0
+		variables.delayTimeUnit    = ""
+		variables.period           = 0
+		variables.spacedDelay      = 0
+		variables.timeUnit         = "milliseconds"
+		variables.noOverlaps       = false
 		// Constraints
-		variables.annually         = false;
-		variables.debug            = arguments.debug;
-		variables.disabled         = false;
-		variables.whenClosure      = "";
-		variables.dayOfTheMonth    = 0;
-		variables.dayOfTheWeek     = 0;
-		variables.weekends         = false;
-		variables.weekdays         = false;
-		variables.firstBusinessDay = false;
-		variables.lastBusinessDay  = false;
-		variables.taskTime         = "";
-		variables.startOnDateTime  = "";
-		variables.endOnDateTime    = "";
-		variables.startTime        = "";
-		variables.endTime          = "";
-		variables.scheduled        = false;
-		// Probable Scheduler or not
-		variables.scheduler        = "";
+		variables.annually         = false
+		variables.debug            = arguments.debug
+		variables.disabled         = false
+		variables.whenClosure      = ""
+		variables.dayOfTheMonth    = 0
+		variables.dayOfTheWeek     = 0
+		variables.weekends         = false
+		variables.weekdays         = false
+		variables.firstBusinessDay = false
+		variables.lastBusinessDay  = false
+		variables.taskTime         = ""
+		variables.startOnDateTime  = ""
+		variables.endOnDateTime    = ""
+		variables.startTime        = ""
+		variables.endTime          = ""
+		variables.scheduled        = false
 		// Prepare execution tracking stats
 		variables.stats            = {
 			// Save name just in case
@@ -260,17 +266,17 @@ component accessors="true" {
 			// If the task has never ran or not
 			"neverRun"          : true,
 			// Server Host
-			"inetHost"          : variables.util.discoverInetHost(),
+			"inetHost"          : isNull( arguments.scheduler) ? variables.util.discoverInetHost() : arguments.scheduler.getInetHost(),
 			// Server IP
-			"localIp"           : variables.util.getServerIp()
-		};
+			"localIp"           : isNull( arguments.scheduler) ? variables.util.getServerIp() : arguments.scheduler.getLocalIp()
+		}
 		// Prepare for the user to store metadata
-		variables.meta          = {};
+		variables.meta          = {}
 		// Life cycle methods
-		variables.beforeTask    = "";
-		variables.afterTask     = "";
-		variables.onTaskSuccess = "";
-		variables.onTaskFailure = "";
+		variables.beforeTask    = ""
+		variables.afterTask     = ""
+		variables.onTaskSuccess = ""
+		variables.onTaskFailure = ""
 
 		debugLog(
 			"init",
@@ -280,9 +286,9 @@ component accessors="true" {
 				method : variables.method,
 				debug  : variables.debug
 			}
-		);
+		)
 
-		return this;
+		return this
 	}
 
 	/**

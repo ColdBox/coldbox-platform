@@ -19,13 +19,14 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 	/**
 	 * Constructor
+	 *
+	 * @controller The controller reference is required to access settings and other services
 	 */
 	function init( required controller ){
-		variables.controller = arguments.controller;
+		variables.controller = arguments.controller
 		// Register a fresh collection of schedulers
-		variables.schedulers = structNew( "ordered" );
-
-		return this;
+		variables.schedulers = structNew( "ordered" )
+		return this
 	}
 
 	/**
@@ -33,14 +34,17 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 */
 	function onConfigurationLoad(){
 		// Prepare references for faster access
-		variables.log                = variables.controller.getLogBox().getLogger( this );
-		variables.interceptorService = variables.controller.getInterceptorService();
-		variables.wirebox            = variables.controller.getWireBox();
-		variables.appMapping         = variables.controller.getSetting( "AppMapping" );
-		variables.appPath            = variables.controller.getSetting( "applicationPath" );
-		variables.baseScheduler      = "coldbox.system.web.tasks.ColdBoxScheduler";
-		// Load up the global app scheduler
-		loadGlobalScheduler();
+		variables.interceptorService = variables.controller.getInterceptorService()
+		variables.wirebox            = variables.controller.getWireBox()
+		variables.appMapping         = variables.controller.getSetting( "AppMapping" )
+		variables.appPath            = variables.controller.getSetting( "applicationPath" )
+		variables.coldBoxVersion     = variables.controller.getColdBoxVersion()
+		variables.baseScheduler      = "coldbox.system.web.tasks.ColdBoxScheduler"
+
+		// Make sure the base scheduler is registered in WireBox for virtual inheritance
+		variables.wirebox
+			.registerNewInstance( name = variables.baseScheduler, instancePath = variables.baseScheduler )
+			.addDIConstructorArgument( name = "name", value = variables.baseScheduler )
 	}
 
 	/**
@@ -49,41 +53,33 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * @force If true, it forces all shutdowns this is usually true when doing reinits
 	 */
 	function onShutdown( boolean force = false ){
-		variables.schedulers.each( function( name, thisScheduler ){
-			variables.log.info( "† Shutting down Scheduler (#arguments.name#)..." );
-			arguments.thisScheduler.shutdown( force );
-		} );
+		for ( var schedulerName in variables.schedulers ) {
+			getLogger().info( "† Shutting down Scheduler (#schedulerName#)..." )
+			variables.schedulers[ schedulerName ].shutdown( force )
+		}
 	}
 
 	/**
-	 * Load the application's global scheduler
+	 * Load the application's global scheduler if it exists, else load a simple one with the base scheduler implementation
+	 * This is ran by the loader service once the ColdBox application is ready to serve requests
 	 */
 	function loadGlobalScheduler(){
-		var appSchedulerConvention = "config.Scheduler";
-		var schedulerName          = "appScheduler@coldbox";
-		var schedulerPath          = variables.baseScheduler;
-
-		// Check if base scheduler has been mapped?
-		if ( NOT variables.wirebox.getBinder().mappingExists( variables.baseScheduler ) ) {
-			// feed the base class
-			variables.wirebox
-				.registerNewInstance( name = variables.baseScheduler, instancePath = variables.baseScheduler )
-				.addDIConstructorArgument( name = "name", value = variables.baseScheduler );
-		}
+		var appSchedulerConvention = "config.Scheduler"
+		var schedulerName          = "appScheduler@coldbox"
+		var schedulerPath          = variables.baseScheduler
 
 		// Check if the convention exists, else just build out a simple scheduler
 		if (
-			fileExists( variables.appPath & "config/Scheduler.cfc" ) || fileExists(
-				variables.appPath & "config/Scheduler.bx"
-			)
+			fileExists( variables.appPath & "config/Scheduler.cfc" ) ||
+			fileExists( variables.appPath & "config/Scheduler.bx" )
 		) {
 			schedulerPath = (
 				variables.appMapping.len() ? "#variables.appMapping#.#appSchedulerConvention#" : appSchedulerConvention
-			);
+			)
 		}
 
 		// Load, create, register and activate
-		loadScheduler( schedulerName, schedulerPath );
+		loadScheduler( schedulerName, schedulerPath )
 	}
 
 	/**
@@ -102,51 +98,52 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		string module = ""
 	){
 		// Log it
-		variables.log.info( "Loading ColdBox Task Scheduler (#arguments.name#) at => #arguments.path#..." );
+		getLogger().info( "Loading ColdBox Task Scheduler (#arguments.name#) at => #arguments.path#..." )
+
 		// Process as a Scheduler with virtual inheritance
 		wirebox
 			.registerNewInstance( name = arguments.name, instancePath = arguments.path )
 			.setVirtualInheritance( variables.baseScheduler )
 			.setThreadSafe( true )
 			.setScope( variables.wirebox.getBinder().SCOPES.SINGLETON )
-			.addDIConstructorArgument( name = "name", value = arguments.name );
+			.addDIConstructorArgument( name = "name", value = arguments.name )
 
 		// Create, register, configure it and start it up baby!
 		var oScheduler = registerScheduler(
 			variables.wirebox.getInstance( arguments.name, { name : arguments.name } ).setName( arguments.name )
-		);
+		)
 
 		// Reconfigure the Logger Category due to virtual inheritance
-		oScheduler.getLog().setCategory( arguments.path );
+		oScheduler.getLog().setCategory( arguments.path )
 
 		// Register the Scheduler as an Interceptor as well.
-		variables.controller.getInterceptorService().registerInterceptor( interceptorObject = oScheduler );
+		variables.interceptorService.registerInterceptor( interceptorObject = oScheduler )
 
 		// Inject useful global properties
-		var envUtil = wirebox.getInstance( "Env@coreDelegates" );
+		var envUtil = getEnvDelegate()
 		oScheduler
-			.injectPropertyMixin( "coldboxVersion", variables.controller.getColdBoxSettings().version )
-			.injectPropertyMixin( "appMapping", variables.controller.getSetting( "appMapping" ) )
+			.injectPropertyMixin( "coldboxVersion", variables.coldBoxVersion )
+			.injectPropertyMixin( "appMapping", variables.appMapping )
 			.injectPropertyMixin( "getJavaSystem", envUtil.getJavaSystem )
 			.injectPropertyMixin( "getSystemSetting", envUtil.getSystemSetting )
 			.injectPropertyMixin( "getSystemProperty", envUtil.getSystemProperty )
-			.injectPropertyMixin( "getEnv", envUtil.getEnv );
+			.injectPropertyMixin( "getEnv", envUtil.getEnv )
 
 		// Is this a module scheduler?
 		if ( len( arguments.module ) ) {
-			var moduleConfig = variables.controller.getConfigSettings().modules[ arguments.module ];
+			var moduleConfig = variables.controller.getModuleConfig( arguments.module )
 			// Inject useful module data
 			oScheduler
 				.injectPropertyMixin( "moduleMapping", moduleConfig.mapping )
 				.injectPropertyMixin( "modulePath", moduleConfig.path )
-				.injectPropertyMixin( "moduleSettings", moduleConfig.settings );
+				.injectPropertyMixin( "moduleSettings", moduleConfig.settings )
 		}
 
 		// Configure it
-		oScheduler.configure();
+		oScheduler.configure()
 
 		// Return it
-		return oScheduler;
+		return oScheduler
 	}
 
 	/**
@@ -155,7 +152,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 */
 	SchedulerService function startupSchedulers(){
 		for ( var thisScheduler in variables.schedulers ) {
-			variables.schedulers[ thisScheduler ].startup();
+			variables.schedulers[ thisScheduler ].startup()
 		}
 		return this;
 	}
@@ -169,9 +166,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 */
 	function registerScheduler( required scheduler ){
 		// Register it
-		variables.schedulers[ arguments.scheduler.getName() ] = arguments.scheduler;
+		variables.schedulers[ arguments.scheduler.getName() ] = arguments.scheduler
 		// Return it
-		return arguments.scheduler;
+		return arguments.scheduler
 	}
 
 	/**
@@ -180,7 +177,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * @name The name of the scheduler
 	 */
 	boolean function hasScheduler( required name ){
-		return variables.schedulers.keyExists( arguments.name );
+		return variables.schedulers.keyExists( arguments.name )
 	}
 
 	/**
@@ -192,11 +189,19 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 */
 	boolean function removeScheduler( required name ){
 		if ( hasScheduler( arguments.name ) ) {
-			variables.schedulers[ arguments.name ].shutdown();
-			structDelete( variables.schedulers, arguments.name );
-			return true;
+			lock
+				name = "restartScheduler_#arguments.name#"
+				timeout = 10
+				type = "exclusive"
+			{
+				if ( hasScheduler( arguments.name ) ) {
+					variables.schedulers[ arguments.name ].shutdown()
+					structDelete( variables.schedulers, arguments.name )
+					return true
+				}
+			}
 		}
-		return false;
+		return false
 	}
 
 	/**
@@ -214,12 +219,19 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		numeric timeout
 	){
 		if ( hasScheduler( arguments.name ) ) {
-			var scheduler = variables.scheduler[ arguments.name ];
-			structDelete( arguments, "name" );
-			scheduler.restart( argumentCollection = arguments );
-			return true;
+			lock
+				name = "restartScheduler_#arguments.name#"
+				timeout = 10
+				type = "exclusive"
+			{
+				if ( hasScheduler( arguments.name ) ) {
+					var scheduler = variables.schedulers[ arguments.name ]
+					scheduler.restart( argumentCollection = arguments )
+					return true
+				}
+			}
 		}
-		return false;
+		return false
 	}
 
 }

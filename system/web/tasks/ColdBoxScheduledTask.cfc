@@ -57,25 +57,27 @@ component extends="coldbox.system.async.tasks.ScheduledTask" accessors="true" {
 	 * @executor The executor this task will run under and be linked to
 	 * @task     The closure or cfc that represents the task (optional)
 	 * @method   The method on the cfc to call, defaults to "run" (optional)
+	 * @scheduler The scheduler to set into the task (optional)
 	 */
 	ColdBoxScheduledTask function init(
 		required name,
 		required executor,
 		any task = "",
-		method   = "run"
+		method   = "run",
+		scheduler
 	){
 		// init
-		super.init( argumentCollection = arguments );
+		super.init( argumentCollection = arguments )
 		// seed environments
-		variables.environments      = [];
+		variables.environments      = []
 		// Can we run on all servers, or just one
-		variables.serverFixation    = false;
+		variables.serverFixation    = false
 		// How long in minutes will the lock be set for before it expires.
-		variables.serverLockTimeout = 60;
+		variables.serverLockTimeout = 60
 		// CacheBox Region
-		variables.cacheName         = "template";
+		variables.cacheName         = "template"
 
-		return this;
+		return this
 	}
 
 	/**
@@ -85,10 +87,10 @@ component extends="coldbox.system.async.tasks.ScheduledTask" accessors="true" {
 	 */
 	ColdBoxScheduledTask function onEnvironment( required environment ){
 		if ( isSimpleValue( arguments.environment ) ) {
-			arguments.environment = listToArray( arguments.environment );
+			arguments.environment = listToArray( arguments.environment )
 		}
-		variables.environments = arguments.environment;
-		return this;
+		variables.environments = arguments.environment
+		return this
 	}
 
 	/**
@@ -98,8 +100,8 @@ component extends="coldbox.system.async.tasks.ScheduledTask" accessors="true" {
 	 * caching engine like: Redis, Couchbase, Mongo, Elastic, DB etc.
 	 */
 	ColdBoxScheduledTask function onOneServer(){
-		variables.serverFixation = true;
-		return this;
+		variables.serverFixation = true
+		return this
 	}
 
 	/**
