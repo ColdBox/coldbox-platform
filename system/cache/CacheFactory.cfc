@@ -74,10 +74,20 @@ component accessors=true serializable=false {
 	 */
 	property name="taskScheduler";
 
-	/**
-	 * The default configuration class to use when no configuration is passed to the init method.
-	 */
-	variables.DEFAULT_CONFIG = "coldbox.system.cache.config.DefaultConfiguration";
+	// The default configuration class to use when no configuration is passed to the init method.
+	variables.DEFAULT_CONFIG = "coldbox.system.cache.config.DefaultConfiguration"
+	// System providers
+	variables.SYSTEM_PROVIDERS = [
+		"BoxLangColdBoxProvider",
+		"BoxLangProvider",
+		"CacheBoxColdBoxProvider",
+		"CacheBoxProvider",
+		"CFColdBoxProvider",
+		"CFProvider",
+		"LuceeColdboxProvider",
+		"LuceeeProvider",
+		"MockProvider"
+	]
 
 	/**
 	 * Constructor
@@ -96,19 +106,19 @@ component accessors=true serializable=false {
 		wirebox
 	){
 		// CacheBox Factory UniqueID
-		variables.factoryId = arguments.factoryId;
+		variables.factoryId = arguments.factoryId
 		// Version
-		variables.version   = "@build.version@+@build.number@";
+		variables.version   = "@build.version@+@build.number@"
 		// Default Config Checks
 		if ( isSimpleValue( arguments.config ) AND NOT len( trim( arguments.config ) ) ) {
-			arguments.config = variables.DEFAULT_CONFIG;
+			arguments.config = variables.DEFAULT_CONFIG
 		}
 		// ColdBox Application Link
-		variables.coldbox      = "";
+		variables.coldbox      = ""
 		// ColdBox Application Link
-		variables.wirebox      = "";
+		variables.wirebox      = ""
 		// Event Manager Link
-		variables.eventManager = "";
+		variables.eventManager = ""
 		// Configured Event States
 		variables.eventStates  = [
 			"afterCacheElementInsert",
@@ -125,69 +135,61 @@ component accessors=true serializable=false {
 			"afterCacheFactoryShutdown",
 			"beforeCacheShutdown",
 			"afterCacheShutdown"
-		];
+		]
 		// LogBox Links
-		variables.logBox          = "";
-		variables.log             = "";
+		variables.logBox          = ""
+		variables.log             = ""
 		// Cache Map
-		variables.caches          = {};
+		variables.caches          = {}
 		// Prepare Lock Info
-		variables.lockName        = "CacheFactory.#variables.factoryID#";
-		// Registered system cache providers
-		variables.systemProviders = directoryList(
-			expandPath( "/coldbox/system/cache/providers" ),
-			false, // don't recurse
-			"name", // only names
-			"*.cfc" // only cfcs
-		).filter( ( thisProvider ) => left( thisProvider, 1 ) != "I" )
-			.map( ( thisProvider ) => listFirst( thisProvider, "." ) );
+		variables.lockName        = "CacheFactory.#variables.factoryID#"
 
 		// Check if linking ColdBox
 		if ( !isNull( arguments.coldbox ) ) {
 			// Link ColdBox
-			variables.coldbox      = arguments.coldbox;
+			variables.coldbox      = arguments.coldbox
 			// Link to WireBox
-			variables.wirebox      = variables.coldbox.getWireBox();
+			variables.wirebox      = variables.coldbox.getWireBox()
 			// link LogBox
-			variables.logBox       = variables.coldbox.getLogBox();
+			variables.logBox       = variables.coldbox.getLogBox()
 			// Link Event Manager
-			variables.eventManager = variables.coldbox.getInterceptorService();
+			variables.eventManager = variables.coldbox.getInterceptorService()
 			// Link Interception States
-			variables.coldbox.getInterceptorService().appendInterceptionPoints( variables.eventStates );
+			variables.coldbox.getInterceptorService().appendInterceptionPoints( variables.eventStates )
 			// Link async manager and scheduler
-			variables.asyncManager  = variables.coldbox.getAsyncManager();
-			variables.taskScheduler = variables.asyncManager.getExecutor( "coldbox-tasks" );
+			variables.asyncManager  = variables.coldbox.getAsyncManager()
+			variables.taskScheduler = variables.asyncManager.getExecutor( "coldbox-tasks" )
 		} else {
 			if ( !isNull( arguments.wirebox ) ) {
 				// Link to WireBox
-				variables.wirebox       = arguments.wirebox;
+				variables.wirebox       = arguments.wirebox
 				// If WireBox linked, get LogBox and EventManager, and asyncmanager from it
-				variables.asyncManager  = variables.wirebox.getAsyncManager();
-				variables.taskScheduler = variables.wirebox.getTaskScheduler();
-				variables.logBox        = variables.wirebox.getLogBox();
+				variables.asyncManager  = variables.wirebox.getAsyncManager()
+				variables.taskScheduler = variables.wirebox.getTaskScheduler()
+				variables.logBox        = variables.wirebox.getLogBox()
 				// link LogBox
-				variables.eventManager  = variables.wirebox.getEventManager();
+				variables.eventManager  = variables.wirebox.getEventManager()
 				// register the points to listen to
-				variables.eventManager.appendInterceptionPoints( variables.eventStates );
+				variables.eventManager.appendInterceptionPoints( variables.eventStates )
 			} else {
 				// Register an async manager and scheduler
-				variables.asyncManager  = new coldbox.system.async.AsyncManager();
+				variables.asyncManager  = new coldbox.system.async.AsyncManager()
 				variables.taskScheduler = variables.asyncManager.newScheduledExecutor(
 					name   : "cachebox-tasks",
 					threads: 20
-				);
+				)
 				// Running standalone, so create our own event manager
-				variables.eventManager = new coldbox.system.core.events.EventPoolManager( variables.eventStates );
+				variables.eventManager = new coldbox.system.core.events.EventPoolManager( variables.eventStates )
 			}
 		}
 
 		// Configure the Cache Factory
-		configure( arguments.config );
+		configure( arguments.config )
 
 		// Configure Logging for the Cache Factory
-		variables.log = variables.logBox.getLogger( this );
+		variables.log = variables.logBox.getLogger( this )
 
-		return this;
+		return this
 	}
 
 	/**

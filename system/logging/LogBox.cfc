@@ -66,15 +66,24 @@ component accessors="true" {
 	property name="taskScheduler";
 
 	// The log levels enum as a public property
-	this.logLevels = new coldbox.system.logging.LogLevels();
-
-	/**
-	 * The default configuration class to use when no configuration is passed to the init method.
-	 */
-	variables.DEFAULT_CONFIG = "coldbox.system.logging.config.DefaultConfig";
+	this.logLevels = new coldbox.system.logging.LogLevels()
+	variables.DEFAULT_CONFIG = "coldbox.system.logging.config.DefaultConfig"
 	// BoxLang Detection
-	variables.IS_BOXLANG     = server.keyExists( "boxlang" );
-	variables.IS_CLI         = variables.IS_BOXLANG && server.boxlang.cliMode ? true : false;
+	variables.IS_BOXLANG     = server.keyExists( "boxlang" )
+	variables.IS_CLI         = variables.IS_BOXLANG && server.boxlang.cliMode ? true : false
+	// Registered system appenders
+	variables.SYSTEM_APPENDERS = [
+		"CFAppender",
+		"ConsoleAppender",
+		"DBAppender",
+		"DummyAppender",
+		"EmailAppender",
+		"FileAppender",
+		"RollingFileAppender",
+		"ScopeAppender",
+		"SocketAppender",
+		"TracerAppender"
+	]
 
 	/**
 	 * Constructor
@@ -91,55 +100,45 @@ component accessors="true" {
 		wirebox = ""
 	){
 		// LogBox Unique ID
-		variables.logboxID          = createUUID();
+		variables.logboxID          = createUUID()
 		// Appenders
-		variables.appenderRegistry  = structNew();
+		variables.appenderRegistry  = {}
 		// Loggers
-		variables.loggerRegistry    = structNew();
+		variables.loggerRegistry    = {}
 		// Category Appenders
-		variables.categoryAppenders = "";
+		variables.categoryAppenders = ""
 		// Version
-		variables.version           = "@build.version@+@build.number@";
+		variables.version           = "@build.version@+@build.number@"
 		// Link incoming ColdBox instance
-		variables.coldbox           = arguments.coldbox;
+		variables.coldbox           = arguments.coldbox
 		// Link incoming WireBox instance
-		variables.wirebox           = arguments.wirebox;
-
-		// Registered system appenders
-		variables.systemAppenders = directoryList(
-			expandPath( "/coldbox/system/logging/appenders" ),
-			false, // don't recurse
-			"name", // only names
-			"*.cfc" // only cfcs
-		).map( function( thisAppender ){
-			return listFirst( thisAppender, "." );
-		} );
+		variables.wirebox           = arguments.wirebox
 
 		// Register the task scheduler according to operating mode
 		if ( isObject( variables.coldbox ) ) {
-			variables.wirebox       = variables.coldbox.getWireBox();
-			variables.asyncManager  = variables.coldbox.getAsyncManager();
-			variables.taskScheduler = variables.asyncManager.getExecutor( "coldbox-tasks" );
+			variables.wirebox       = variables.coldbox.getWireBox()
+			variables.asyncManager  = variables.coldbox.getAsyncManager()
+			variables.taskScheduler = variables.asyncManager.getExecutor( "coldbox-tasks" )
 		} else if ( isObject( arguments.wirebox ) ) {
-			variables.asyncManager  = variables.wirebox.getAsyncManager();
-			variables.taskScheduler = variables.wirebox.getTaskScheduler();
+			variables.asyncManager  = variables.wirebox.getAsyncManager()
+			variables.taskScheduler = variables.wirebox.getTaskScheduler()
 		} else {
-			variables.asyncManager  = new coldbox.system.async.AsyncManager();
+			variables.asyncManager  = new coldbox.system.async.AsyncManager()
 			variables.taskScheduler = variables.asyncManager.newScheduledExecutor(
 				name   : "logbox-tasks",
 				threads: 20
-			);
+			)
 		}
 
 		// Default Config Checks
 		if ( isSimpleValue( arguments.config ) AND NOT len( trim( arguments.config ) ) ) {
-			arguments.config = variables.DEFAULT_CONFIG;
+			arguments.config = variables.DEFAULT_CONFIG
 		}
 
 		// Configure LogBox
-		configure( arguments.config );
+		configure( arguments.config )
 
-		return this;
+		return this
 	}
 
 	/**
@@ -354,7 +353,7 @@ component accessors="true" {
 	 */
 	private function getLoggerClass( required class ){
 		// is this a local class?
-		if ( arrayFindNoCase( variables.systemAppenders, arguments.class ) ) {
+		if ( arrayFindNoCase( variables.SYSTEM_APPENDERS, arguments.class ) ) {
 			return "coldbox.system.logging.appenders.#arguments.class#";
 		}
 
