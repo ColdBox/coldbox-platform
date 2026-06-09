@@ -4,13 +4,13 @@
 component extends="tests.resources.BaseIntegrationTest" {
 
 	function run( testResults, testBox ){
-		describe( "Handler Service", function(){
-			beforeEach( function(){
+		describe( "Handler Service", () => {
+			beforeEach( () => {
 				setup();
 				variables.handlerService = controller.getHandlerService();
 			} );
 
-			it( "can register handlers", function(){
+			it( "can register handlers", () => {
 				variables.handlerService.registerHandlers();
 
 				var registered = getController().getSetting( "registeredHandlers" );
@@ -22,7 +22,7 @@ component extends="tests.resources.BaseIntegrationTest" {
 				expect( external ).notToBeEmpty();
 			} );
 
-			it( "registered handlers include enrichment metadata", function(){
+			it( "registered handlers include enrichment metadata", () => {
 				variables.handlerService.registerHandlers();
 
 				var registered = getController().getSetting( "registeredHandlers" );
@@ -39,7 +39,7 @@ component extends="tests.resources.BaseIntegrationTest" {
 				expect( mainHandler.runnable ).toInclude( "main" );
 			} );
 
-			it( "external handlers include enrichment metadata", function(){
+			it( "external handlers include enrichment metadata", () => {
 				variables.handlerService.registerHandlers();
 
 				var external = getController().getSetting( "registeredExternalHandlers" );
@@ -55,7 +55,7 @@ component extends="tests.resources.BaseIntegrationTest" {
 				expect( ehTestHandler.moduleName ).toBe( "" );
 			} );
 
-			it( "module handlers include enrichment metadata", function(){
+			it( "module handlers include enrichment metadata", () => {
 				var modules = getController().getSetting( "modules" );
 				expect( modules ).toHaveKey( "resourcesTest" );
 
@@ -74,7 +74,7 @@ component extends="tests.resources.BaseIntegrationTest" {
 				expect( homeHandler.runnable ).toInclude( "Home" );
 			} );
 
-			it( "can recurse handler listings", function(){
+			it( "can recurse handler listings", () =>{
 				var path = expandPath( "/coldbox/test-harness/handlers" );
 				makePublic( variables.handlerService, "getHandlerListing" );
 
@@ -90,7 +90,7 @@ component extends="tests.resources.BaseIntegrationTest" {
 				expect( handlers[ firstKey ] ).toHaveKey( "extension" );
 			} );
 
-			it( "getHandlerListing returns struct with correct metadata", function(){
+			it( "getHandlerListing returns struct with correct metadata", () =>{
 				var path = expandPath( "/coldbox/test-harness/handlers" );
 				makePublic( variables.handlerService, "getHandlerListing" );
 
@@ -103,7 +103,7 @@ component extends="tests.resources.BaseIntegrationTest" {
 				expect( handlers[ "main" ].extension ).toBe( "cfc" );
 			} );
 
-			it( "configures REST handler annotations as virtual inheritance", function(){
+			it( "configures REST handler annotations as virtual inheritance", () =>{
 				var ehBean  = variables.handlerService.getHandlerBean( "restfulHandlerAnnotation.index" );
 				var handler = variables.handlerService.newHandler( ehBean );
 				var mapping = controller
@@ -117,42 +117,48 @@ component extends="tests.resources.BaseIntegrationTest" {
 				expect( structKeyExists( handler, "aroundHandler" ) ).toBeTrue();
 			} );
 
-			describe( "Retrieve handler beans", function(){
-				beforeEach( function(){
+			describe( "Retrieve handler beans", () => {
+				beforeEach( () => {
 					variables.handlerService.setHandlerCaching( true );
 				} );
 
-				it( "with an invalid event", function(){
+				it( "with an invalid event", () => {
 					var results = variables.handlerService.getHandlerBean( "invalid" );
 					expect( results.getMethod() ).toBe( "onInvalidEvent" );
 					expect( variables.handlerService.getHandlerBeanCacheDictionary() ).notToHaveKey( "invalid" );
 				} );
 
-				it( "with a valid handler event", function(){
+				it( "with a valid handler event", () => {
 					var results = variables.handlerService.getHandlerBean( "main.index" );
 					expect( results.getMethod() ).toBe( "index" );
 					expect( results.getHandler() ).toBe( "main" );
+					expect( results.getFullEvent() ).toBe( "main.index" );
+					expect( results.getRunnable() ).toBe( results.getHandlerRecord().runnable );
 					expect( variables.handlerService.getHandlerBeanCacheDictionary() ).toHaveKey( "main.index" );
 				} );
 
-				it( "with a valid external handler event", function(){
+				it( "with a valid external handler event", () => {
 					var results = variables.handlerService.getHandlerBean( "ehTest.dspExternal" );
 					expect( results.getMethod() ).toBe( "dspExternal" );
 					expect( results.getHandler() ).toBe( "ehTest" );
+					expect( results.getFullEvent() ).toBe( "ehTest.dspExternal" );
+					expect( results.getRunnable() ).toBe( results.getHandlerRecord().runnable );
 					expect( variables.handlerService.getHandlerBeanCacheDictionary() ).toHaveKey( "ehTest.dspExternal" );
 				} );
 
-				it( "with a valid module Event", function(){
+				it( "with a valid module Event", () => {
 					var results = variables.handlerService.getHandlerBean( "resourcesTest:Home.index" );
 					expect( results.getMethod() ).toBe( "index" );
 					expect( results.getHandler() ).toBe( "Home" );
 					expect( results.getModule() ).toBe( "resourcesTest" );
+					expect( results.getFullEvent() ).toBe( "resourcesTest:Home.index" );
+					expect( results.getRunnable() ).toBe( results.getHandlerRecord().runnable );
 					expect( variables.handlerService.getHandlerBeanCacheDictionary() ).toHaveKey(
 						"resourcesTest:Home.index"
 					);
 				} );
 
-				it( "with a valid view dispatch", function(){
+				it( "with a valid view dispatch", () => {
 					var results = variables.handlerService.getHandlerBean( "simpleview" );
 					expect( results.getViewDispatch() ).toBe( true );
 					expect( variables.handlerService.getHandlerBeanCacheDictionary() ).toHaveKey( "simpleview" );

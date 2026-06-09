@@ -247,11 +247,13 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				// Verify handler in module handlers using O(1) struct lookup
 				if ( structKeyExists( moduleHandlers, handlerReceived ) ) {
 					// Prepare bean data
-					oHandlerBean
-						.setInvocationPath( moduleSettings[ moduleReceived ].handlerInvocationPath )
-						.setHandler( moduleHandlers[ handlerReceived ].handler )
-						.setMethod( methodReceived )
-						.setModule( moduleReceived );
+					prepareHandlerBean(
+						ehBean        = oHandlerBean,
+						handlerRecord = moduleHandlers[ handlerReceived ],
+						method        = methodReceived,
+						fullEvent     = arguments.event,
+						module        = moduleReceived
+					)
 
 					// put bean in cache if enabled
 					if ( variables.handlerCaching ) {
@@ -274,9 +276,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			// O(1) struct lookup for handler in conventions location
 			if ( structKeyExists( variables.registeredHandlers, handlerReceived ) ) {
 				// Prepare bean data
-				oHandlerBean
-					.setHandler( variables.registeredHandlers[ handlerReceived ].handler )
-					.setMethod( MethodReceived );
+				prepareHandlerBean(
+					ehBean        = oHandlerBean,
+					handlerRecord = variables.registeredHandlers[ handlerReceived ],
+					method        = methodReceived,
+					fullEvent     = arguments.event
+				)
 
 				// put bean in cache if enabled
 				if ( variables.handlerCaching ) {
@@ -289,10 +294,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			// O(1) struct lookup for handler in external location
 			if ( structKeyExists( variables.registeredExternalHandlers, handlerReceived ) ) {
 				// Prepare bean data
-				oHandlerBean
-					.setInvocationPath( variables.handlersExternalLocation )
-					.setHandler( variables.registeredExternalHandlers[ handlerReceived ].handler )
-					.setMethod( MethodReceived );
+				prepareHandlerBean(
+					ehBean        = oHandlerBean,
+					handlerRecord = variables.registeredExternalHandlers[ handlerReceived ],
+					method        = methodReceived,
+					fullEvent     = arguments.event
+				)
 
 				// put bean in cache if enabled
 				if ( variables.handlerCaching ) {
@@ -622,6 +629,31 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	}
 
 	/************************************ PRIVATE ************************************/
+
+	/**
+	 * Prepare a handler bean from registered handler metadata.
+	 *
+	 * @ehBean        The event handler bean to prepare
+	 * @handlerRecord The registered handler metadata
+	 * @method        The method to execute
+	 * @fullEvent     The full event string
+	 * @module        The module assignment, if any
+	 *
+	 * @return EventHandlerBean
+	 */
+	private function prepareHandlerBean(
+		required ehBean,
+		required struct handlerRecord,
+		required string method,
+		required string fullEvent,
+		string module = ""
+	){
+		return arguments.ehBean
+			.setHandlerRecord( arguments.handlerRecord )
+			.setMethod( arguments.method )
+			.setModule( arguments.module )
+			.setFullEvent( arguments.fullEvent )
+	}
 
 	/**
 	 * Configure REST handler virtual inheritance from the handler metadata once per mapping.

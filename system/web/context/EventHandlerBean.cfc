@@ -51,6 +51,21 @@ component accessors="true" {
 	 */
 	property name="handlerMetadata" type="struct";
 
+	/**
+	 * Registered handler metadata
+	 */
+	property name="handlerRecord" type="struct";
+
+	/**
+	 * Precalculated runnable execution path
+	 */
+	property name="runnable";
+
+	/**
+	 * Precalculated full event string
+	 */
+	property name="fullEvent";
+
 	/************************************** CONSTRUCTOR *********************************************/
 
 	/**
@@ -59,17 +74,20 @@ component accessors="true" {
 	 * @invocationPath The default invocation path
 	 */
 	function init( invocationPath = "" ){
-		variables.invocationPath  = arguments.invocationPath;
-		variables.handler         = "";
-		variables.method          = "";
-		variables.module          = "";
-		variables.isPrivate       = false;
-		variables.missingAction   = "";
-		variables.viewDispatch    = false;
-		variables.actionMetadata  = {};
-		variables.handlerMetadata = {};
+		variables.invocationPath  = arguments.invocationPath
+		variables.handler         = ""
+		variables.method          = ""
+		variables.module          = ""
+		variables.isPrivate       = false
+		variables.missingAction   = ""
+		variables.viewDispatch    = false
+		variables.actionMetadata  = {}
+		variables.handlerMetadata = {}
+		variables.handlerRecord   = {}
+		variables.runnable        = ""
+		variables.fullEvent       = ""
 
-		return this;
+		return this
 	}
 
 	/************************************** UTILITY METHODS *********************************************/
@@ -82,8 +100,8 @@ component accessors="true" {
 	 * @return True if the action has been annotated with the key, else false.
 	 */
 	boolean function actionMetadataExists( required key ){
-		var annotations = variables.actionMetadata.keyExists( "annotations" ) ? variables.actionMetadata.annotations : variables.actionMetadata;
-		return annotations.keyExists( arguments.key );
+		var annotations = variables.actionMetadata.keyExists( "annotations" ) ? variables.actionMetadata.annotations : variables.actionMetadata
+		return annotations.keyExists( arguments.key )
 	}
 
 	/**
@@ -135,39 +153,133 @@ component accessors="true" {
 	 * Verify if the metadata is loaded or not.
 	 */
 	boolean function isMetadataLoaded(){
-		return !structIsEmpty( variables.handlerMetadata );
+		return !structIsEmpty( variables.handlerMetadata )
 	}
 
 	/**
 	 * Get the full execution string
 	 */
 	function getFullEvent(){
-		var event = variables.handler & "." & variables.method;
-		if ( isModule() ) {
-			return variables.module & ":" & event;
+		if ( len( variables.fullEvent ) ) {
+			return variables.fullEvent
 		}
-		return event;
+
+		var event = variables.handler & "." & variables.method
+		if ( isModule() ) {
+			return variables.module & ":" & event
+		}
+		return event
 	}
 
 	/**
 	 * Get the runnable execution path
 	 */
 	function getRunnable(){
-		return getInvocationPath() & "." & variables.handler;
+		if ( len( variables.runnable ) ) {
+			return variables.runnable
+		}
+
+		return getInvocationPath() & "." & variables.handler
+	}
+
+	/**
+	 * Set the invocation path and invalidate derived runnable paths.
+	 *
+	 * @invocationPath The invocation path
+	 *
+	 * @return EventHandlerBean
+	 */
+	function setInvocationPath( required invocationPath ){
+		variables.invocationPath = arguments.invocationPath
+		variables.runnable       = ""
+
+		return this;
+	}
+
+	/**
+	 * Set the handler and invalidate derived event/runnable paths.
+	 *
+	 * @handler The handler to execute
+	 *
+	 * @return EventHandlerBean
+	 */
+	function setHandler( required handler ){
+		variables.handler   = arguments.handler
+		variables.runnable  = ""
+		variables.fullEvent = ""
+
+		return this;
+	}
+
+	/**
+	 * Set the method and invalidate derived event paths.
+	 *
+	 * @method The method to execute
+	 *
+	 * @return EventHandlerBean
+	 */
+	function setMethod( required method ){
+		variables.method    = arguments.method
+		variables.fullEvent = ""
+
+		return this;
+	}
+
+	/**
+	 * Set the module and invalidate derived event paths.
+	 *
+	 * @module The module assignment
+	 *
+	 * @return EventHandlerBean
+	 */
+	function setModule( required module ){
+		variables.module    = arguments.module
+		variables.fullEvent = ""
+
+		return this;
+	}
+
+	/**
+	 * Apply a registered handler record to the bean.
+	 *
+	 * @handlerRecord The registered handler metadata
+	 *
+	 * @return EventHandlerBean
+	 */
+	function setHandlerRecord( required struct handlerRecord ){
+		variables.handlerRecord = arguments.handlerRecord
+
+		if ( structKeyExists( arguments.handlerRecord, "handler" ) ) {
+			variables.handler = arguments.handlerRecord.handler
+		}
+
+		if ( structKeyExists( arguments.handlerRecord, "invocationPath" ) ) {
+			variables.invocationPath = arguments.handlerRecord.invocationPath
+		}
+
+		if ( structKeyExists( arguments.handlerRecord, "runnable" ) ) {
+			variables.runnable = arguments.handlerRecord.runnable
+		} else {
+			variables.runnable = ""
+		}
+
+		variables.fullEvent = ""
+
+		return this
 	}
 
 	/**
 	 * Is this a module execution
 	 */
 	boolean function isModule(){
-		return ( len( variables.module ) GT 0 );
+		return ( len( variables.module ) GT 0 )
 	}
 
 	/**
 	 * Are we in missing action execution
 	 */
 	boolean function isMissingAction(){
-		return ( len( variables.missingAction ) GT 0 );
+		return ( len( variables.missingAction ) GT 0 )
 	}
 
 }

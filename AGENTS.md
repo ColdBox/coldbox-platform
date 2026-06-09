@@ -9,6 +9,15 @@ ColdBox is an HMVC (Hierarchical Model-View-Controller) framework designed for t
 - **CacheBox**: Caching framework in `/system/cache/` - provides multi-provider caching abstraction and it's own caching engine
 - **LogBox**: Logging framework in `/system/logging/` - structured logging with multiple appenders
 
+## BoxLang/CFML Coding Standards
+
+### Semicolon Usage
+- Do not use semicolons for normal BoxLang/CFML statements.
+- Use semicolons only where they are required or intentionally supported for compatibility:
+  - Property definitions, e.g. `property name="myService" inject="MyService";`
+  - Bodyless component calls, e.g. `bx:component;`
+  - `continue;` and `break;` statements for Adobe ColdFusion/Lucee compatibility.
+
 ## JavaScript Coding Standards
 
 ### Spacing and Formatting
