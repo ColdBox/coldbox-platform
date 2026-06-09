@@ -206,6 +206,7 @@ component accessors="true" {
 			variables.scheduler = arguments.scheduler
 			variables.util      = variables.scheduler.getUtil()
 		} else {
+			variables.scheduler = ""
 			variables.util = new coldbox.system.core.util.Util()
 		}
 
