@@ -66,11 +66,11 @@ component accessors="true" {
 	property name="taskScheduler";
 
 	// The log levels enum as a public property
-	this.logLevels = new coldbox.system.logging.LogLevels()
-	variables.DEFAULT_CONFIG = "coldbox.system.logging.config.DefaultConfig"
+	this.logLevels             = new coldbox.system.logging.LogLevels()
+	variables.DEFAULT_CONFIG   = "coldbox.system.logging.config.DefaultConfig"
 	// BoxLang Detection
-	variables.IS_BOXLANG     = server.keyExists( "boxlang" )
-	variables.IS_CLI         = variables.IS_BOXLANG && server.boxlang.cliMode ? true : false
+	variables.IS_BOXLANG       = server.keyExists( "boxlang" )
+	variables.IS_CLI           = variables.IS_BOXLANG && server.boxlang.cliMode ? true : false
 	// Registered system appenders
 	variables.SYSTEM_APPENDERS = [
 		"CFAppender",

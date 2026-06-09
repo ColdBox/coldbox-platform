@@ -75,7 +75,7 @@ component accessors=true serializable=false {
 	property name="taskScheduler";
 
 	// The default configuration class to use when no configuration is passed to the init method.
-	variables.DEFAULT_CONFIG = "coldbox.system.cache.config.DefaultConfiguration"
+	variables.DEFAULT_CONFIG   = "coldbox.system.cache.config.DefaultConfiguration"
 	// System providers
 	variables.SYSTEM_PROVIDERS = [
 		"BoxLangColdBoxProvider",
@@ -137,12 +137,12 @@ component accessors=true serializable=false {
 			"afterCacheShutdown"
 		]
 		// LogBox Links
-		variables.logBox          = ""
-		variables.log             = ""
+		variables.logBox   = ""
+		variables.log      = ""
 		// Cache Map
-		variables.caches          = {}
+		variables.caches   = {}
 		// Prepare Lock Info
-		variables.lockName        = "CacheFactory.#variables.factoryID#"
+		variables.lockName = "CacheFactory.#variables.factoryID#"
 
 		// Check if linking ColdBox
 		if ( !isNull( arguments.coldbox ) ) {
