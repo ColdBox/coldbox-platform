@@ -53,7 +53,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 */
 	function init( required controller ){
 		// controlle + wirebox references
-		variables.controller = arguments.controller
+		variables.controller                 = arguments.controller
 		// Setup the Event Handler Cache Dictionary
 		variables.handlerCacheDictionary     = {}
 		// Setup the Event Cache Dictionary
@@ -72,19 +72,19 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 */
 	function onConfigurationLoad(){
 		// Configuration data and dependencies
-		variables.eventAction                = variables.controller.getColdBoxSetting( "EventAction" )
-		variables.eventCaching               = variables.controller.getSetting( "EventCaching" )
-		variables.eventName                  = variables.controller.getSetting( "EventName" )
-		variables.handlerCaching             = variables.controller.getSetting( "HandlerCaching" )
-		variables.handlersExternalLocation   = variables.controller.getSetting( "HandlersExternalLocation" )
-		variables.handlersExternalLocationPath   = variables.controller.getSetting( "handlersExternalLocationPath" )
-		variables.handlersInvocationPath     = variables.controller.getSetting( "HandlersInvocationPath" )
-		variables.handlersPath    			 = variables.controller.getSetting( "handlersPath" )
-		variables.interceptorService         = variables.controller.getInterceptorService()
-		variables.invalidEventHandler        = variables.controller.getSetting( "invalidEventHandler" )
-		variables.modules                    = variables.controller.getSetting( "modules" )
-		variables.templateCache              = variables.controller.getCache( "template" )
-		variables.wirebox                    = variables.controller.getWireBox()
+		variables.eventAction                  = variables.controller.getColdBoxSetting( "EventAction" )
+		variables.eventCaching                 = variables.controller.getSetting( "EventCaching" )
+		variables.eventName                    = variables.controller.getSetting( "EventName" )
+		variables.handlerCaching               = variables.controller.getSetting( "HandlerCaching" )
+		variables.handlersExternalLocation     = variables.controller.getSetting( "HandlersExternalLocation" )
+		variables.handlersExternalLocationPath = variables.controller.getSetting( "handlersExternalLocationPath" )
+		variables.handlersInvocationPath       = variables.controller.getSetting( "HandlersInvocationPath" )
+		variables.handlersPath                 = variables.controller.getSetting( "handlersPath" )
+		variables.interceptorService           = variables.controller.getInterceptorService()
+		variables.invalidEventHandler          = variables.controller.getSetting( "invalidEventHandler" )
+		variables.modules                      = variables.controller.getSetting( "modules" )
+		variables.templateCache                = variables.controller.getCache( "template" )
+		variables.wirebox                      = variables.controller.getWireBox()
 
 		// execute the handler registrations after configurations loaded
 		registerHandlers()
@@ -107,7 +107,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			// lazy load checks for wirebox
 			injectorSeedBaseClasses( injector );
 			// feed this handler to wirebox with virtual inheritance just in case, use registerNewInstance so its thread safe
-			var mapping = injector
+			injector
 				.registerNewInstance( name = handlerPath, instancePath = handlerPath )
 				.setVirtualInheritance( "coldbox.system.EventHandler" )
 				.setThreadSafe( true )
@@ -117,25 +117,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				.setExtraAttributes( { handlerPath : handlerPath, isHandler : true } );
 		}
 
+		configureRestHandlerMapping( injector.getBinder().getMapping( handlerPath ), injector );
+
 		// retrieve, build and wire from wirebox
 		var handler = injector.getInstance( handlerPath );
-
-		// Is this a rest handler by annotation? If so, incorporate it's methods
-		if (
-			injector
-				.getBinder()
-				.getMapping( handlerPath )
-				.getObjectMetadata()
-				.keyExists( "restHandler" )
-			&&
-			!structKeyExists( handler, "restHandler" )
-		) {
-			structEach( variables.wirebox.getInstance( "coldbox.system.RestHandler" ), function( functionName, functionTarget ){
-				if ( !structKeyExists( handler, functionName ) ) {
-					handler[ functionName ] = functionTarget;
-				}
-			} );
-		}
 
 		return handler;
 	}
@@ -289,7 +274,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			// O(1) struct lookup for handler in conventions location
 			if ( structKeyExists( variables.registeredHandlers, handlerReceived ) ) {
 				// Prepare bean data
-				oHandlerBean.setHandler( variables.registeredHandlers[ handlerReceived ].handler ).setMethod( MethodReceived );
+				oHandlerBean
+					.setHandler( variables.registeredHandlers[ handlerReceived ].handler )
+					.setMethod( MethodReceived );
 
 				// put bean in cache if enabled
 				if ( variables.handlerCaching ) {
@@ -521,15 +508,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 		// Register handlers by convention, this will throw an error if the directory does not exist, which is good because it is a convention and should be there.
 		variables.registeredHandlers = getHandlerListing(
-			directory: variables.handlersPath,
+			directory     : variables.handlersPath,
 			invocationPath: variables.handlersInvocationPath,
-			source: "conventions"
+			source        : "conventions"
 		)
 		// Store the registered handlers in the controller for global access, this is used for things like the handler list in the admin and other places.
-		variables.controller.setSetting(
-			name = "registeredHandlers",
-			value = variables.registeredHandlers
-		)
+		variables.controller.setSetting( name = "registeredHandlers", value = variables.registeredHandlers )
 
 		/* ::::::::::::::::::::::::::::::::::::::::: EXTERNAL HANDLERS :::::::::::::::::::::::::::::::::::::::::::: */
 
@@ -544,9 +528,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 			// Get struct listing for O(1) lookups with enrichment metadata
 			variables.registeredExternalHandlers = getHandlerListing(
-				directory: variables.handlersExternalLocationPath,
+				directory     : variables.handlersExternalLocationPath,
 				invocationPath: variables.handlersExternalLocation,
-				source: "external"
+				source        : "external"
 			)
 		}
 
@@ -618,11 +602,11 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				1
 			)
 			// Rip extension first to get handler name
-			var handlerName = util.ripExtension( cleanHandler )
+			var handlerName                      = util.ripExtension( cleanHandler )
 			// Get file extension
-			var extension   = listLast( cleanHandler, "." )
+			var extension                        = listLast( cleanHandler, "." )
 			// Build runnable path if invocationPath provided
-			var runnable    = len( invocationPath ) ? invocationPath & "." & handlerName : ""
+			var runnable                         = len( invocationPath ) ? invocationPath & "." & handlerName : ""
 			// Store in struct with metadata
 			arguments.accumulator[ handlerName ] = {
 				handler        : handlerName,
@@ -638,6 +622,41 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	}
 
 	/************************************ PRIVATE ************************************/
+
+	/**
+	 * Configure REST handler virtual inheritance from the handler metadata once per mapping.
+	 *
+	 * @mapping  The handler WireBox mapping
+	 * @injector The injector that owns the mapping
+	 *
+	 * @return HandlerService
+	 */
+	private function configureRestHandlerMapping( required mapping, required injector ){
+		var extraAttributes = arguments.mapping.getExtraAttributes()
+
+		if ( structKeyExists( extraAttributes, "restHandlerVirtualInheritanceConfigured" ) ) {
+			return this
+		}
+
+		if ( !arguments.mapping.isDiscovered() ) {
+			arguments.mapping.process( binder = arguments.injector.getBinder(), injector = arguments.injector )
+		}
+
+		if (
+			arguments.mapping.getObjectMetadata().keyExists( "restHandler" ) &&
+			(
+				!len( arguments.mapping.getVirtualInheritance() ) ||
+				arguments.mapping.getVirtualInheritance() == "coldbox.system.EventHandler"
+			)
+		) {
+			injectorSeedBaseClasses( arguments.injector )
+			arguments.mapping.setVirtualInheritance( "coldbox.system.RestHandler" )
+		}
+
+		extraAttributes.restHandlerVirtualInheritanceConfigured = true
+
+		return this
+	}
 
 	/**
 	 * Process an invalid event by resolving the configured invalid event handler.

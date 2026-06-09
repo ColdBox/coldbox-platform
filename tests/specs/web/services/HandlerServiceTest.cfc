@@ -103,6 +103,20 @@ component extends="tests.resources.BaseIntegrationTest" {
 				expect( handlers[ "main" ].extension ).toBe( "cfc" );
 			} );
 
+			it( "configures REST handler annotations as virtual inheritance", function(){
+				var ehBean  = variables.handlerService.getHandlerBean( "restfulHandlerAnnotation.index" );
+				var handler = variables.handlerService.newHandler( ehBean );
+				var mapping = controller
+					.getWireBox()
+					.getBinder()
+					.getMapping( ehBean.getRunnable() );
+
+				expect( mapping.getVirtualInheritance() ).toBe( "coldbox.system.RestHandler" );
+				expect( mapping.getExtraAttributes() ).toHaveKey( "restHandlerVirtualInheritanceConfigured" );
+				expect( structKeyExists( handler, "restHandler" ) ).toBeTrue();
+				expect( structKeyExists( handler, "aroundHandler" ) ).toBeTrue();
+			} );
+
 			describe( "Retrieve handler beans", function(){
 				beforeEach( function(){
 					variables.handlerService.setHandlerCaching( true );
