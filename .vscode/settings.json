@@ -1,14 +1,10 @@
 {
-    "boxlang.cfml.mappings": [
-		{
-		  "logicalPath": "/coldbox",
-		  "directoryPath": ".",
-		  "isPhysicalDirectoryPath" :false
-		},
-		{
-			"logicalPath": "/testbox",
-			"directoryPath": "./testbox",
-			"isPhysicalDirectoryPath" :false
-		  }
-	  ]
+    "boxlang.mappings": {
+		"coldbox": "${workspaceFolder}",
+		"cachebox": "${workspaceFolder}",
+		"logbox": "${workspaceFolder}",
+		"wirebox": "${workspaceFolder}",
+		"testbox": "${workspaceFolder}/testbox"
+	},
+    "boxlang.debugger.moduleVersion": "1.1.1+2"
 }
