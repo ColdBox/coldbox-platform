@@ -32,7 +32,7 @@
 					<span class="badge bg-danger">index()</span>
 					</p>
 					<div class="list-group">
-						<cfloop list="#getSetting("RegisteredHandlers")#" index="handler">
+						<cfloop collection="#getSetting("RegisteredHandlers")#" item="handler">
 							<a href="#event.buildLink( handler )#" class="list-group-item list-group-item-action d-flex gap-2 py-3" title="Run Event">
 								<div class="rounded-circle flex-shrink-0 text-success px-1">
 									<i class="bi bi-play-btn" aria-hidden="true"></i>

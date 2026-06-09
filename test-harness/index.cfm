@@ -1,5 +1,5 @@
 ﻿<cfsetting enablecfoutputonly="yes">
-<cfsetting showdebugoutput="true">
+<cfsetting showdebugoutput="false">
 <!-----------------------------------------------------------------------
 Template :  index.cfm
 Author 	 :	Luis Majano

@@ -546,13 +546,16 @@ component serializable="false" accessors="true" {
 	 * ON session start
 	 */
 	function onSessionStart(){
-		// get reference
-		var cbController = application[ locateAppKey() ];
+		// Exit if we don't have the app key in scope, means we are not ready to process session start yet.
+		if( !application.keyExists( locateAppKey() ) ) {
+			return;
+		}
+		var cbController = application[ locateAppKey() ]
 		// Session start interceptors
-		cbController.getInterceptorService().announce( "sessionStart", session );
+		cbController.getInterceptorService().announce( "sessionStart", session )
 		// Execute Session Start Handler
 		if ( len( cbController.getSetting( "SessionStartHandler" ) ) ) {
-			cbController.runEvent( event = cbController.getSetting( "SessionStartHandler" ), prePostExempt = true );
+			cbController.runEvent( event = cbController.getSetting( "SessionStartHandler" ), prePostExempt = true )
 		}
 	}
 
@@ -560,36 +563,36 @@ component serializable="false" accessors="true" {
 	 * ON session end
 	 */
 	function onSessionEnd( required struct sessionScope, struct appScope ){
-		var cbController = "";
+		var cbController = ""
 
 		// Check for cb Controller
 		if ( structKeyExists( arguments.appScope, locateAppKey() ) ) {
-			cbController = arguments.appScope[ locateAppKey() ];
+			cbController = arguments.appScope[ locateAppKey() ]
 		}
 
 		// Only process if ColdBox is initiated
 		if ( not isSimpleValue( cbController ) && cbController.getColdboxInitiated() ) {
 			// Get Context
-			var event = cbController.getRequestService().getContext();
+			var event = cbController.getRequestService().getContext()
 
 			// Execute interceptors
 			var iData = {
 				sessionReference     : arguments.sessionScope,
 				applicationReference : arguments.appScope
-			};
-			cbController.getInterceptorService().announce( "sessionEnd", iData );
+			}
+			cbController.getInterceptorService().announce( "sessionEnd", iData )
 
 			// Execute Session End Handler
 			if ( len( cbController.getSetting( "SessionEndHandler" ) ) ) {
 				// Place session reference on event object
 				event
 					.setValue( "sessionReference", arguments.sessionScope )
-					.setValue( "applicationReference", arguments.appScope );
+					.setValue( "applicationReference", arguments.appScope )
 				// Execute the Handler
 				cbController.runEvent(
 					event         = cbController.getSetting( "SessionEndHandler" ),
 					prepostExempt = true
-				);
+				)
 			}
 		}
 	}
@@ -599,28 +602,28 @@ component serializable="false" accessors="true" {
 	 */
 	boolean function onApplicationStart(){
 		// Load ColdBox
-		loadColdBox();
-		return true;
+		loadColdBox()
+		return true
 	}
 
 	/**
 	 * Tear down the application and execute shutdown procedures
 	 */
 	function onApplicationEnd( struct appScope ){
-		var cbController = arguments.appScope[ locateAppKey() ];
+		var cbController = arguments.appScope[ locateAppKey() ]
 
 		// Execute Application End interceptors
-		cbController.getInterceptorService().announce( "applicationEnd" );
+		cbController.getInterceptorService().announce( "applicationEnd" )
 		// Execute Application End Handler
 		if ( len( cbController.getSetting( "applicationEndHandler" ) ) ) {
 			cbController.runEvent(
 				event         = cbController.getSetting( "applicationEndHandler" ),
 				prePostExempt = true
-			);
+			)
 		}
 
 		// Controlled service shutdown operations
-		cbController.getLoaderService().processShutdown();
+		cbController.getLoaderService().processShutdown()
 	}
 
 	/************************************** PRIVATE HELPERS *********************************************/
@@ -633,36 +636,36 @@ component serializable="false" accessors="true" {
 	 */
 	private string function processException( required controller, required exception ){
 		// prepare exception facade object + app logger
-		var oException = new coldbox.system.web.context.ExceptionBean( arguments.exception );
-		var appLogger  = arguments.controller.getLogBox().getLogger( this );
-		var event      = arguments.controller.getRequestService().getContext();
-		var rc         = event.getCollection();
-		var prc        = event.getPrivateCollection();
+		var oException = new coldbox.system.web.context.ExceptionBean( arguments.exception )
+		var appLogger  = arguments.controller.getLogBox().getLogger( this )
+		var event      = arguments.controller.getRequestService().getContext()
+		var rc         = event.getCollection()
+		var prc        = event.getPrivateCollection()
 
 		// Announce interception
-		arguments.controller.getInterceptorService().announce( "onException", { exception : arguments.exception } );
+		arguments.controller.getInterceptorService().announce( "onException", { exception : arguments.exception } )
 
 		// Store exception in private context
-		event.setPrivateValue( "exception", oException );
+		event.setPrivateValue( "exception", oException )
 
 		// Set Exception Header
-		getPageContextResponse().setStatus( 500 );
+		getPageContextResponse().setStatus( 500 )
 
 		// Run custom Exception handler if Found, else run default exception routines
 		if ( len( arguments.controller.getSetting( "ExceptionHandler" ) ) ) {
 			try {
-				arguments.controller.runEvent( arguments.controller.getSetting( "Exceptionhandler" ) );
+				arguments.controller.runEvent( arguments.controller.getSetting( "Exceptionhandler" ) )
 			} catch ( Any e ) {
 				// Log Original Error First
 				appLogger.error(
 					"Original Error: #arguments.exception.message# #arguments.exception.detail# ",
 					arguments.exception
-				);
+				)
 				// Log Exception Handler Error
 				appLogger.error(
 					"Error running exception handler: #arguments.controller.getSetting( "ExceptionHandler" )# #e.message# #e.detail#",
 					e
-				);
+				)
 				// rethrow error
 				rethrow;
 			}
@@ -671,19 +674,19 @@ component serializable="false" accessors="true" {
 			appLogger.error(
 				"Error: #arguments.exception.message# #arguments.exception.detail# ",
 				arguments.exception
-			);
+			)
 		}
 
 		// Render out error via CustomErrorTemplate or Core
-		var customErrorTemplate = arguments.controller.getSetting( "CustomErrorTemplate" );
+		var customErrorTemplate = arguments.controller.getSetting( "CustomErrorTemplate" )
 		if ( len( customErrorTemplate ) ) {
 			// Get app location path
-			var appLocation = "/";
+			var appLocation = "/"
 			if ( len( arguments.controller.getSetting( "AppMapping" ) ) ) {
-				appLocation = appLocation & arguments.controller.getSetting( "AppMapping" ) & "/";
+				appLocation = appLocation & arguments.controller.getSetting( "AppMapping" ) & "/"
 			}
-			var bugReportRelativePath = appLocation & reReplace( customErrorTemplate, "^/", "" );
-			var bugReportAbsolutePath = customErrorTemplate;
+			var bugReportRelativePath = appLocation & reReplace( customErrorTemplate, "^/", "" )
+			var bugReportAbsolutePath = customErrorTemplate
 
 			// Show Bug Report
 			savecontent variable="local.exceptionReport" {
@@ -701,7 +704,7 @@ component serializable="false" accessors="true" {
 			}
 		}
 
-		return local.exceptionReport;
+		return local.exceptionReport
 	}
 
 	/**

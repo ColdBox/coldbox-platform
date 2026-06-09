@@ -33,8 +33,8 @@
 			<span class="label label-important">index()</span>
 		</p>
 		<ul>
-			<cfloop list="#getSetting("RegisteredHandlers")#" index="handler">
-			<li><a href="#event.buildLink( handler )#">#handler#</a></li>
+			<cfloop collection="#getSetting("RegisteredHandlers")#" item="handler">
+			<li><a href="/test-harness/index.cfm/#handler#">#handler#</a></li>
 			</cfloop>
 		</ul>
 		</section>

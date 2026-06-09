@@ -284,7 +284,11 @@ component extends="BaseAsyncSpec" {
 			} );
 
 
-			it( "can process an array of items with a special apply function for each", function(){
+			// Skip on adobe, their multi-threading is bad.
+			it(
+				title:"can process an array of items with a special apply function for each",
+				skip: isAdobe(),
+				body: () => {
 				var aItems = [
 					createRecord( 1 ),
 					createRecord( 2 ),
@@ -312,7 +316,10 @@ component extends="BaseAsyncSpec" {
 				expect( results[ 5 ] ).toBeStruct();
 			} );
 
-			it( "can process an array of items with a special apply function for each and a custom executor", function(){
+			it(
+				title: "can process an array of items with a special apply function for each and a custom executor",
+				skip: isAdobe(),
+				body: () => {
 				var aItems = [
 					createRecord( 1 ),
 					createRecord( 2 ),
@@ -344,7 +351,10 @@ component extends="BaseAsyncSpec" {
 				expect( results[ 5 ] ).toBeStruct();
 			} );
 
-			it( "can process a struct with via allApply()", function(){
+			it(
+				title: "can process a struct with via allApply()",
+				skip: isAdobe(),
+				body: () => {
 				var myStruct = {
 					1 : createRecord( 1 ),
 					2 : createRecord( 2 ),

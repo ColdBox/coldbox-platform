@@ -27,9 +27,24 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	property name="eventCaching" type="boolean";
 
 	/**
+	 * The default event action
+	 */
+	property name="eventAction" type="string";
+
+	/**
 	 * Handler bean cache dictionary
 	 */
 	property name="handlerBeanCacheDictionary" type="struct";
+
+	/**
+	 * The registered event handlers
+	 */
+	property name="registeredHandlers" type="struct";
+
+	/**
+	 * The external registered event handlers
+	 */
+	property name="registeredExternalHandlers" type="struct";
 
 	/**
 	 * Constructor
@@ -38,42 +53,41 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 */
 	function init( required controller ){
 		// controlle + wirebox references
-		variables.controller = arguments.controller;
-
+		variables.controller = arguments.controller
 		// Setup the Event Handler Cache Dictionary
-		variables.handlerCacheDictionary     = {};
+		variables.handlerCacheDictionary     = {}
 		// Setup the Event Cache Dictionary
-		variables.eventCacheDictionary       = {};
+		variables.eventCacheDictionary       = {}
 		// Setup the Handler Bean Cache Dictionary
-		variables.handlerBeanCacheDictionary = {};
+		variables.handlerBeanCacheDictionary = {}
+		// Default registries
+		variables.registeredHandlers         = {}
+		variables.registeredExternalHandlers = {}
 
-		return this;
+		return this
 	}
 
 	/**
 	 * Once configuration file loads setup the services with app specific variables
 	 */
 	function onConfigurationLoad(){
-		// local logger
-		variables.log = variables.controller.getLogBox().getLogger( this );
+		// Configuration data and dependencies
+		variables.eventAction                = variables.controller.getColdBoxSetting( "EventAction" )
+		variables.eventCaching               = variables.controller.getSetting( "EventCaching" )
+		variables.eventName                  = variables.controller.getSetting( "EventName" )
+		variables.handlerCaching             = variables.controller.getSetting( "HandlerCaching" )
+		variables.handlersExternalLocation   = variables.controller.getSetting( "HandlersExternalLocation" )
+		variables.handlersExternalLocationPath   = variables.controller.getSetting( "handlersExternalLocationPath" )
+		variables.handlersInvocationPath     = variables.controller.getSetting( "HandlersInvocationPath" )
+		variables.handlersPath    			 = variables.controller.getSetting( "handlersPath" )
+		variables.interceptorService         = variables.controller.getInterceptorService()
+		variables.invalidEventHandler        = variables.controller.getSetting( "invalidEventHandler" )
+		variables.modules                    = variables.controller.getSetting( "modules" )
+		variables.templateCache              = variables.controller.getCache( "template" )
+		variables.wirebox                    = variables.controller.getWireBox()
 
 		// execute the handler registrations after configurations loaded
-		registerHandlers();
-
-		// Configuration data and dependencies
-		variables.eventAction                = variables.controller.getColdBoxSetting( "EventAction" );
-		variables.registeredHandlers         = variables.controller.getSetting( "RegisteredHandlers" );
-		variables.registeredExternalHandlers = variables.controller.getSetting( "RegisteredExternalHandlers" );
-		variables.eventName                  = variables.controller.getSetting( "EventName" );
-		variables.invalidEventHandler        = variables.controller.getSetting( "invalidEventHandler" );
-		variables.handlerCaching             = variables.controller.getSetting( "HandlerCaching" );
-		variables.eventCaching               = variables.controller.getSetting( "EventCaching" );
-		variables.handlersInvocationPath     = variables.controller.getSetting( "HandlersInvocationPath" );
-		variables.handlersExternalLocation   = variables.controller.getSetting( "HandlersExternalLocation" );
-		variables.templateCache              = variables.controller.getCache( "template" );
-		variables.modules                    = variables.controller.getSetting( "modules" );
-		variables.interceptorService         = variables.controller.getInterceptorService();
-		variables.wirebox                    = variables.controller.getWireBox();
+		registerHandlers()
 	}
 
 	/**
@@ -141,17 +155,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		var oEventURLFacade = variables.templateCache.getEventURLFacade();
 
 		// Create Runnable Object via WireBox
-		var oEventHandler       = newHandler( arguments.ehBean );
-		// Process An Invalid Event logic, which is reused
-		var processInvalidEvent = function(){
-			// The handler exists but the action requested does not, let's go into invalid execution mode
-			var targetInvalidEvent = invalidEvent( ehBean.getFullEvent(), ehBean );
-			// If we get here, then the invalid event kicked in and exists, else an exception is thrown above
-			// set the invalid event handler as the current event
-			oRequestContext.overrideEvent( targetInvalidEvent );
-			// Go retrieve the handler that will handle the invalid event so it can execute.
-			return getHandler( getHandlerBean( targetInvalidEvent ), oRequestContext );
-		};
+		var oEventHandler = newHandler( arguments.ehBean );
 
 		/* ::::::::::::::::::::::::::::::::::::::::: EVENT METHOD TESTING :::::::::::::::::::::::::::::::::::::::::::: */
 
@@ -173,7 +177,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				return oEventHandler;
 			}
 			// Invalid Event processing
-			return processInvalidEvent();
+			return processInvalidEvent( arguments.ehBean, oRequestContext );
 		}
 		// method check finalized.
 
@@ -187,7 +191,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// Are they trying to execute an internal ColdBox method?
 		if ( arguments.ehBean.actionMetadataExists( "cbMethod" ) ) {
 			// Invalid Event processing
-			return processInvalidEvent();
+			return processInvalidEvent( arguments.ehBean, oRequestContext );
 		}
 
 		/* ::::::::::::::::::::::::::::::::::::::::: EVENT CACHING :::::::::::::::::::::::::::::::::::::::::::: */
@@ -239,32 +243,28 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		}
 
 		// New event, prepare it
-		var handlersList         = variables.registeredHandlers;
-		var handlersExternalList = variables.registeredExternalHandlers;
-		var oHandlerBean         = new coldbox.system.web.context.EventHandlerBean( variables.handlersInvocationPath );
-		var moduleSettings       = variables.modules;
+		var oHandlerBean   = new coldbox.system.web.context.EventHandlerBean( variables.handlersInvocationPath );
+		var moduleSettings = variables.modules;
 
-		// Rip the handler and method
-		var handlerReceived = listLast( reReplace( arguments.event, "\.[^.]*$", "" ), ":" );
-		var methodReceived  = listLast( arguments.event, "." );
+		// Rip the handler and method using string functions (no regex)
+		var lastDotPos      = arguments.event.lastIndexOf( "." );
+		var handlerPortion  = lastDotPos > 0 ? arguments.event.substring( 0, lastDotPos ) : arguments.event;
+		var handlerReceived = listLast( handlerPortion, ":" );
+		var methodReceived  = lastDotPos > 0 ? arguments.event.substring( lastDotPos + 1 ) : arguments.event;
 
 		// Verify if this is a module call
 		if ( find( ":", arguments.event ) ) {
 			var moduleReceived = listFirst( arguments.event, ":" );
 			// Does this module exist?
 			if ( structKeyExists( moduleSettings, moduleReceived ) ) {
-				// Verify handler in module handlers
-				var handlerIndex = listFindNoCase(
-					moduleSettings[ moduleReceived ].registeredHandlers,
-					handlerReceived
-				);
-				if ( handlerIndex ) {
+				// Get module's handler struct for O(1) lookup
+				var moduleHandlers = moduleSettings[ moduleReceived ].registeredHandlers ?: {};
+				// Verify handler in module handlers using O(1) struct lookup
+				if ( structKeyExists( moduleHandlers, handlerReceived ) ) {
 					// Prepare bean data
 					oHandlerBean
 						.setInvocationPath( moduleSettings[ moduleReceived ].handlerInvocationPath )
-						.setHandler(
-							listGetAt( moduleSettings[ moduleReceived ].registeredHandlers, handlerIndex )
-						)
+						.setHandler( moduleHandlers[ handlerReceived ].handler )
 						.setMethod( methodReceived )
 						.setModule( moduleReceived );
 
@@ -275,23 +275,21 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 					return oHandlerBean;
 				} else {
-					variables.log.error(
-						"Invalid Module (#moduleReceived#) Handler: #handlerReceived#. Valid handlers are #moduleSettings[ moduleReceived ].registeredHandlers#"
+					getLogger().error(
+						"Invalid Module (#moduleReceived#) Handler: #handlerReceived#. Valid handlers are #structKeyList( moduleHandlers )#"
 					);
 				}
 			}
 
 			// Log Error
-			variables.log.error(
+			getLogger().error(
 				"Invalid Module Event Called: #arguments.event#. The module: #moduleReceived# is not valid. Valid Modules are: #structKeyList( moduleSettings )#"
 			);
 		} else {
-			// Try to do list localization in the registry for full event string.
-			var handlerIndex = listFindNoCase( handlersList, handlerReceived );
-			// Check for conventions location
-			if ( handlerIndex ) {
+			// O(1) struct lookup for handler in conventions location
+			if ( structKeyExists( variables.registeredHandlers, handlerReceived ) ) {
 				// Prepare bean data
-				oHandlerBean.setHandler( listGetAt( handlersList, handlerIndex ) ).setMethod( MethodReceived );
+				oHandlerBean.setHandler( variables.registeredHandlers[ handlerReceived ].handler ).setMethod( MethodReceived );
 
 				// put bean in cache if enabled
 				if ( variables.handlerCaching ) {
@@ -301,13 +299,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				return oHandlerBean;
 			}
 
-			// Check for external location
-			handlerIndex = listFindNoCase( handlersExternalList, handlerReceived );
-			if ( handlerIndex ) {
+			// O(1) struct lookup for handler in external location
+			if ( structKeyExists( variables.registeredExternalHandlers, handlerReceived ) ) {
 				// Prepare bean data
 				oHandlerBean
 					.setInvocationPath( variables.handlersExternalLocation )
-					.setHandler( listGetAt( handlersExternalList, handlerIndex ) )
+					.setHandler( variables.registeredExternalHandlers[ handlerReceived ].handler )
 					.setMethod( MethodReceived );
 
 				// put bean in cache if enabled
@@ -346,33 +343,30 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * @return HandlerService
 	 */
 	function defaultActionCheck( required event ){
-		var handlersList         = variables.registeredHandlers;
-		var handlersExternalList = variables.registeredExternalHandlers;
-		var currentEvent         = arguments.event.getCurrentEvent();
-		var modulesConfig        = variables.modules;
+		var currentEvent  = arguments.event.getCurrentEvent();
+		var modulesConfig = variables.modules;
 
 		// Module Check?
 		if ( find( ":", currentEvent ) ) {
 			var module = listFirst( currentEvent, ":" );
-			if (
-				structKeyExists( modulesConfig, module ) AND
-				listFindNoCase(
-					modulesConfig[ module ].registeredHandlers,
-					reReplaceNoCase( currentEvent, "^([^:.]*):", "" )
-				)
-			) {
-				// Append the default event action
-				currentEvent = currentEvent & "." & variables.eventAction;
-				// Save it as the current Event
-				event.setValue( variables.eventName, currentEvent );
+			if ( structKeyExists( modulesConfig, module ) ) {
+				// Get module's handler struct for O(1) lookup
+				var moduleHandlers = modulesConfig[ module ].registeredHandlers ?: {};
+				var handlerKey     = reReplaceNoCase( currentEvent, "^([^:.]*):", "" );
+				if ( structKeyExists( moduleHandlers, handlerKey ) ) {
+					// Append the default event action
+					currentEvent = currentEvent & "." & variables.eventAction;
+					// Save it as the current Event
+					event.setValue( variables.eventName, currentEvent );
+				}
 			}
 			return this;
 		}
 
-		// Do a Default Action Test First, if default action desired.
+		// O(1) struct lookup for default action test
 		if (
-			listFindNoCase( handlersList, currentEvent ) OR
-			listFindNoCase( handlersExternalList, currentEvent )
+			structKeyExists( variables.registeredHandlers, currentEvent ) OR
+			structKeyExists( variables.registeredExternalHandlers, currentEvent )
 		) {
 			// Append the default event action
 			currentEvent = currentEvent & "." & variables.eventAction;
@@ -460,7 +454,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			) {
 				var exceptionMessage = "The invalidEventHandler event (#variables.invalidEventHandler#) is also invalid: #arguments.event#";
 				// Extra Debugging for illusive CI/Tests exceptions: Remove at one point if discovered.
-				variables.log.error(
+				getLogger().error(
 					exceptionMessage,
 					{
 						event              : arguments.event,
@@ -504,7 +498,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			.setHTTPHeader( statusCode = 404 );
 
 		// Invalid Event Detected, log it in the Application log, not a coldbox log but an app log
-		variables.log.error(
+		getLogger().error(
 			"Invalid Event detected: #arguments.event#. Path info: #CGI.PATH_INFO#, query string: #CGI.QUERY_STRING#"
 		);
 
@@ -523,42 +517,45 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * @throws HandlersDirectoryNotFoundException
 	 */
 	function registerHandlers(){
-		var handlersPath                 = variables.controller.getSetting( "handlersPath" );
-		var handlersExternalLocationPath = variables.controller.getSetting( "handlersExternalLocationPath" );
-		var handlersExternalArray        = [];
-
 		/* ::::::::::::::::::::::::::::::::::::::::: HANDLERS BY CONVENTION :::::::::::::::::::::::::::::::::::::::::::: */
 
-		// Get recursive Array listing
-		var handlerArray = getHandlerListing( handlersPath );
-
-		// Set registered Handlers
-		variables.registeredHandlers = arrayToList( handlerArray );
-		variables.controller.setSetting( name = "registeredHandlers", value = variables.registeredHandlers );
+		// Register handlers by convention, this will throw an error if the directory does not exist, which is good because it is a convention and should be there.
+		variables.registeredHandlers = getHandlerListing(
+			directory: variables.handlersPath,
+			invocationPath: variables.handlersInvocationPath,
+			source: "conventions"
+		)
+		// Store the registered handlers in the controller for global access, this is used for things like the handler list in the admin and other places.
+		variables.controller.setSetting(
+			name = "registeredHandlers",
+			value = variables.registeredHandlers
+		)
 
 		/* ::::::::::::::::::::::::::::::::::::::::: EXTERNAL HANDLERS :::::::::::::::::::::::::::::::::::::::::::: */
 
-		if ( len( handlersExternalLocationPath ) ) {
+		if ( len( variables.handlersExternalLocationPath ) ) {
 			// Check for handlers Directory Location
-			if ( !directoryExists( handlersExternalLocationPath ) ) {
+			if ( !directoryExists( variables.handlersExternalLocationPath ) ) {
 				throw(
-					message = "The external handlers directory: #HandlersExternalLocationPath# does not exist please check your application structure.",
+					message = "The external handlers directory: #variables.handlersExternalLocationPath# does not exist please check your application structure.",
 					type    = "HandlersDirectoryNotFoundException"
-				);
+				)
 			}
 
-			// Get recursive Array listing
-			handlersExternalArray = getHandlerListing( handlersExternalLocationPath );
+			// Get struct listing for O(1) lookups with enrichment metadata
+			variables.registeredExternalHandlers = getHandlerListing(
+				directory: variables.handlersExternalLocationPath,
+				invocationPath: variables.handlersExternalLocation,
+				source: "external"
+			)
 		}
 
-		// Set registered External Handlers
-		variables.registeredExternalHandlers = arrayToList( handlersExternalArray );
 		variables.controller.setSetting(
 			name  = "registeredExternalHandlers",
 			value = variables.registeredExternalHandlers
-		);
+		)
 
-		return this;
+		return this
 	}
 
 	/**
@@ -567,7 +564,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * @return HandlerService
 	 */
 	function clearDictionaries(){
-		variables.eventCacheDictionary = {};
+		variables.eventCacheDictionary.clear()
 		return this;
 	}
 
@@ -578,41 +575,89 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 */
 	struct function getEventMetadataEntry( required targetEvent ){
 		if ( NOT structKeyExists( variables.eventCacheDictionary, arguments.targetEvent ) ) {
-			return getNewMDEntry();
+			return getNewMDEntry()
 		}
 
-		return variables.eventCacheDictionary[ arguments.targetEvent ];
+		return variables.eventCacheDictionary[ arguments.targetEvent ]
 	}
 
 	/**
-	 * Retrieve handler listings from disk
+	 * Retrieve handler listings from disk as a struct for O(1) lookups.
+	 * Keys are handler names (case-insensitive), values are structs with handler metadata.
 	 *
-	 * @directory The path to retrieve
+	 * @directory      The path to retrieve
+	 * @invocationPath The dot-notation invocation path for this handler directory
+	 * @source         The source type: "conventions", "external", or "module"
+	 * @moduleName     The module name (empty string for non-module handlers)
+	 *
+	 * @return struct with handler names as keys and metadata structs as values
 	 */
-	array function getHandlerListing( required directory ){
+	struct function getHandlerListing(
+		required directory,
+		string invocationPath = "",
+		string source         = "",
+		string moduleName     = ""
+	){
 		// Convert windows \ to java /
-		arguments.directory = replace( arguments.directory, "\", "/", "all" );
+		arguments.directory = replace( arguments.directory, "\", "/", "all" )
+
+		var util = variables.controller.getUtil()
 
 		return directoryList(
 			arguments.directory,
 			true,
 			"array",
 			"*.cfc|*.bx"
-		).map( function( item ){
-			var thisAbsolutePath = replace( item, "\", "/", "all" );
-			var cleanHandler     = replaceNoCase( thisAbsolutePath, directory, "", "all" );
+		).reduce( ( accumulator, item ) => {
+			var thisAbsolutePath = replace( arguments.item, "\", "/", "all" )
+			var cleanHandler     = replaceNoCase( thisAbsolutePath, directory, "", "all" )
 			// Clean OS separators to dot notation.
 			cleanHandler         = removeChars(
 				replaceNoCase( cleanHandler, "/", ".", "all" ),
 				1,
 				1
-			);
-			// Clean Extension
-			return variables.controller.getUtil().ripExtension( cleanhandler );
-		} );
+			)
+			// Rip extension first to get handler name
+			var handlerName = util.ripExtension( cleanHandler )
+			// Get file extension
+			var extension   = listLast( cleanHandler, "." )
+			// Build runnable path if invocationPath provided
+			var runnable    = len( invocationPath ) ? invocationPath & "." & handlerName : ""
+			// Store in struct with metadata
+			arguments.accumulator[ handlerName ] = {
+				handler        : handlerName,
+				path           : thisAbsolutePath,
+				extension      : extension,
+				invocationPath : invocationPath,
+				runnable       : runnable,
+				source         : source,
+				moduleName     : moduleName
+			}
+			return arguments.accumulator
+		}, {} )
 	}
 
 	/************************************ PRIVATE ************************************/
+
+	/**
+	 * Process an invalid event by resolving the configured invalid event handler.
+	 *
+	 * @ehBean         The event handler bean representing the invalid event
+	 * @requestContext The current request context
+	 *
+	 * @return The handler that should process the invalid event
+	 */
+	private function processInvalidEvent( required ehBean, required requestContext ){
+		// The handler exists but the action requested does not, let's go into invalid execution mode
+		var targetInvalidEvent = invalidEvent( arguments.ehBean.getFullEvent(), arguments.ehBean );
+
+		// If we get here, then the invalid event kicked in and exists, else an exception is thrown above
+		// set the invalid event handler as the current event
+		arguments.requestContext.overrideEvent( targetInvalidEvent );
+
+		// Go retrieve the handler that will handle the invalid event so it can execute.
+		return getHandler( getHandlerBean( targetInvalidEvent ), arguments.requestContext );
+	}
 
 	/**
 	 * Verifies setup of base handler classes in WireBox
@@ -628,7 +673,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 					name        : "coldbox.system.EventHandler",
 					instancePath: "coldbox.system.EventHandler"
 				)
-				.setScope( "singleton" );
+				.setScope( "singleton" )
 		}
 		if ( NOT arguments.injector.getBinder().mappingExists( "coldbox.system.RestHandler" ) ) {
 			arguments.injector
@@ -636,10 +681,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 					name        : "coldbox.system.RestHandler",
 					instancePath: "coldbox.system.RestHandler"
 				)
-				.setScope( "singleton" );
+				.setScope( "singleton" )
 		}
 
-		return this;
+		return this
 	}
 
 	/**
@@ -658,7 +703,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			"cacheInclude"      : "*",
 			"cacheExclude"      : "",
 			"cacheFilter"       : ""
-		};
+		}
 	}
 
 	/**

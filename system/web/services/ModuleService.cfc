@@ -391,8 +391,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				moduleInjector          : false,
 				// Module Routes
 				routes                  : [],
-				// Registered handlers
-				registeredHandlers      : "",
+				// Registered handlers (struct for O(1) lookups)
+				registeredHandlers      : {},
 				// Routing resources
 				resources               : [],
 				// My Daddy!
@@ -675,8 +675,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			*/
 			mConfig.registeredHandlers = controller
 				.getHandlerService()
-				.getHandlerListing( mconfig.handlerPhysicalPath )
-				.toList();
+				.getHandlerListing(
+					directory: mconfig.handlerPhysicalPath,
+					invocationPath: mConfig.handlerInvocationPath,
+					source: "module",
+					moduleName: arguments.moduleName
+				);
 
 			/*
 			|--------------------------------------------------------------------------
