@@ -196,11 +196,13 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				structAppend( eventCachingData, eventDictionaryEntry, true );
 
 				// Create the Cache Key to save
-				eventCachingData.cacheKey = variables.templateCache.getEventURLFacade().buildEventKey(
-					targetEvent     = arguments.ehBean.getFullEvent(),
-					targetContext   = oRequestContext,
-					eventDictionary = eventDictionaryEntry
-				);
+				eventCachingData.cacheKey = variables.templateCache
+					.getEventURLFacade()
+					.buildEventKey(
+						targetEvent     = arguments.ehBean.getFullEvent(),
+						targetContext   = oRequestContext,
+						eventDictionary = eventDictionaryEntry
+					);
 
 				// Event is cacheable and we need to flag it so the Renderer caches it
 				oRequestContext.setEventCacheableEntry( eventCachingData );
@@ -346,7 +348,11 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			if ( structKeyExists( modulesConfig, module ) ) {
 				// Get module's handler struct for O(1) lookup
 				var moduleHandlers = modulesConfig[ module ].registeredHandlers ?: {};
-				var handlerKey     = mid( currentEvent, separatorIndex + 1, len( currentEvent ) );
+				var handlerKey     = mid(
+					currentEvent,
+					separatorIndex + 1,
+					len( currentEvent )
+				);
 				if ( structKeyExists( moduleHandlers, handlerKey ) ) {
 					// Save it as the current Event
 					event.setValue( variables.eventName, moduleHandlers[ handlerKey ].defaultEvent );
@@ -361,7 +367,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			event.setValue( variables.eventName, variables.registeredHandlers[ currentEvent ].defaultEvent );
 		} else if ( structKeyExists( variables.registeredExternalHandlers, currentEvent ) ) {
 			// Save it as the current Event now with the default action
-			event.setValue( variables.eventName, variables.registeredExternalHandlers[ currentEvent ].defaultEvent );
+			event.setValue(
+				variables.eventName,
+				variables.registeredExternalHandlers[ currentEvent ].defaultEvent
+			);
 		}
 
 		return this;
@@ -599,20 +608,25 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 		for ( var item in files ) {
 			var thisAbsolutePath = replace( item, "\", "/", "all" )
-			var cleanHandler     = replaceNoCase( thisAbsolutePath, arguments.directory, "", "all" )
+			var cleanHandler     = replaceNoCase(
+				thisAbsolutePath,
+				arguments.directory,
+				"",
+				"all"
+			)
 			// Clean OS separators to dot notation.
-			cleanHandler         = removeChars(
+			cleanHandler = removeChars(
 				replaceNoCase( cleanHandler, "/", ".", "all" ),
 				1,
 				1
 			)
 			// Rip extension first to get handler name
-			var handlerName                      = util.ripExtension( cleanHandler )
+			var handlerName            = util.ripExtension( cleanHandler )
 			// Get file extension
-			var extension                        = listLast( cleanHandler, "." )
+			var extension              = listLast( cleanHandler, "." )
 			// Build runnable path if invocationPath provided
-			var runnable                         = len( invocationPath ) ? invocationPath & "." & handlerName : ""
-			var defaultEvent                     = len( moduleName ) ? moduleName & ":" & handlerName & "." & variables.eventAction : handlerName & "." & variables.eventAction
+			var runnable               = len( invocationPath ) ? invocationPath & "." & handlerName : ""
+			var defaultEvent           = len( moduleName ) ? moduleName & ":" & handlerName & "." & variables.eventAction : handlerName & "." & variables.eventAction
 			// Store in struct with metadata
 			handlerList[ handlerName ] = {
 				handler        : handlerName,

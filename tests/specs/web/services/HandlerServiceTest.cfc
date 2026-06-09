@@ -80,7 +80,7 @@ component extends="tests.resources.BaseIntegrationTest" {
 				expect( homeHandler.defaultEvent ).toBe( "resourcesTest:Home.index" );
 			} );
 
-			it( "can recurse handler listings", () =>{
+			it( "can recurse handler listings", () => {
 				var path = expandPath( "/coldbox/test-harness/handlers" );
 				makePublic( variables.handlerService, "getHandlerListing" );
 
@@ -96,7 +96,7 @@ component extends="tests.resources.BaseIntegrationTest" {
 				expect( handlers[ firstKey ] ).toHaveKey( "extension" );
 			} );
 
-			it( "getHandlerListing returns struct with correct metadata", () =>{
+			it( "getHandlerListing returns struct with correct metadata", () => {
 				var path = expandPath( "/coldbox/test-harness/handlers" );
 				makePublic( variables.handlerService, "getHandlerListing" );
 
@@ -110,7 +110,7 @@ component extends="tests.resources.BaseIntegrationTest" {
 				expect( handlers[ "main" ].defaultEvent ).toBe( "main.index" );
 			} );
 
-			it( "uses registered handler default events for default action checks", () =>{
+			it( "uses registered handler default events for default action checks", () => {
 				var context = getRequestContext();
 
 				context.setValue( context.getEventName(), "main" );
@@ -126,7 +126,7 @@ component extends="tests.resources.BaseIntegrationTest" {
 				expect( context.getCurrentEvent() ).toBe( "resourcesTest:Home.index" );
 			} );
 
-			it( "configures REST handler annotations as virtual inheritance", () =>{
+			it( "configures REST handler annotations as virtual inheritance", () => {
 				var ehBean  = variables.handlerService.getHandlerBean( "restfulHandlerAnnotation.index" );
 				var handler = variables.handlerService.newHandler( ehBean );
 				var mapping = controller

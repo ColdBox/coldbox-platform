@@ -676,10 +676,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			mConfig.registeredHandlers = controller
 				.getHandlerService()
 				.getHandlerListing(
-					directory: mconfig.handlerPhysicalPath,
+					directory     : mconfig.handlerPhysicalPath,
 					invocationPath: mConfig.handlerInvocationPath,
-					source: "module",
-					moduleName: arguments.moduleName
+					source        : "module",
+					moduleName    : arguments.moduleName
 				);
 
 			/*

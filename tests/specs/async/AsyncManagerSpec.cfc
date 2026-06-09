@@ -286,93 +286,96 @@ component extends="BaseAsyncSpec" {
 
 			// Skip on adobe, their multi-threading is bad.
 			it(
-				title:"can process an array of items with a special apply function for each",
-				skip: isAdobe(),
-				body: () => {
-				var aItems = [
-					createRecord( 1 ),
-					createRecord( 2 ),
-					createRecord( 3 ),
-					createRecord( 4 ),
-					createRecord( 5 )
-				];
+				title: "can process an array of items with a special apply function for each",
+				skip : isAdobe(),
+				body : () => {
+					var aItems = [
+						createRecord( 1 ),
+						createRecord( 2 ),
+						createRecord( 3 ),
+						createRecord( 4 ),
+						createRecord( 5 )
+					];
 
-				var results = asyncManager.allApply( aItems, function( item ){
-					writeDump(
-						var   : "Processing #arguments.item.getId()# memento via #getThreadName()#",
-						output: "console"
-					);
-					sleep( randRange( 100, 1000 ) );
-					return arguments.item.getMemento();
-				} );
-
-				// debug( results );
-
-				expect( results ).toBeArray();
-				expect( results[ 1 ] ).toBeStruct();
-				expect( results[ 2 ] ).toBeStruct();
-				expect( results[ 3 ] ).toBeStruct();
-				expect( results[ 4 ] ).toBeStruct();
-				expect( results[ 5 ] ).toBeStruct();
-			} );
-
-			it(
-				title: "can process an array of items with a special apply function for each and a custom executor",
-				skip: isAdobe(),
-				body: () => {
-				var aItems = [
-					createRecord( 1 ),
-					createRecord( 2 ),
-					createRecord( 3 ),
-					createRecord( 4 ),
-					createRecord( 5 )
-				];
-
-				var results = asyncManager.allApply(
-					aItems,
-					function( item ){
+					var results = asyncManager.allApply( aItems, function( item ){
 						writeDump(
 							var   : "Processing #arguments.item.getId()# memento via #getThreadName()#",
 							output: "console"
 						);
 						sleep( randRange( 100, 1000 ) );
 						return arguments.item.getMemento();
-					},
-					asyncManager.$executors.newCachedThreadPool()
-				);
+					} );
 
-				// debug( results );
+					// debug( results );
 
-				expect( results ).toBeArray();
-				expect( results[ 1 ] ).toBeStruct();
-				expect( results[ 2 ] ).toBeStruct();
-				expect( results[ 3 ] ).toBeStruct();
-				expect( results[ 4 ] ).toBeStruct();
-				expect( results[ 5 ] ).toBeStruct();
-			} );
+					expect( results ).toBeArray();
+					expect( results[ 1 ] ).toBeStruct();
+					expect( results[ 2 ] ).toBeStruct();
+					expect( results[ 3 ] ).toBeStruct();
+					expect( results[ 4 ] ).toBeStruct();
+					expect( results[ 5 ] ).toBeStruct();
+				}
+			);
+
+			it(
+				title: "can process an array of items with a special apply function for each and a custom executor",
+				skip : isAdobe(),
+				body : () => {
+					var aItems = [
+						createRecord( 1 ),
+						createRecord( 2 ),
+						createRecord( 3 ),
+						createRecord( 4 ),
+						createRecord( 5 )
+					];
+
+					var results = asyncManager.allApply(
+						aItems,
+						function( item ){
+							writeDump(
+								var   : "Processing #arguments.item.getId()# memento via #getThreadName()#",
+								output: "console"
+							);
+							sleep( randRange( 100, 1000 ) );
+							return arguments.item.getMemento();
+						},
+						asyncManager.$executors.newCachedThreadPool()
+					);
+
+					// debug( results );
+
+					expect( results ).toBeArray();
+					expect( results[ 1 ] ).toBeStruct();
+					expect( results[ 2 ] ).toBeStruct();
+					expect( results[ 3 ] ).toBeStruct();
+					expect( results[ 4 ] ).toBeStruct();
+					expect( results[ 5 ] ).toBeStruct();
+				}
+			);
 
 			it(
 				title: "can process a struct with via allApply()",
-				skip: isAdobe(),
-				body: () => {
-				var myStruct = {
-					1 : createRecord( 1 ),
-					2 : createRecord( 2 ),
-					3 : createRecord( 3 ),
-					4 : createRecord( 4 )
-				};
+				skip : isAdobe(),
+				body : () => {
+					var myStruct = {
+						1 : createRecord( 1 ),
+						2 : createRecord( 2 ),
+						3 : createRecord( 3 ),
+						4 : createRecord( 4 )
+					};
 
-				var results = asyncManager.allApply( myStruct, function( result ){
-					writeDump(
-						var   : "Processing #arguments.result.key# memento via #getThreadName()#",
-						output: "console"
-					);
-					sleep( randRange( 100, 1000 ) );
-					return arguments.result.value.getMemento();
-				} );
+					var results = asyncManager.allApply( myStruct, function( result ){
+						writeDump(
+							var   : "Processing #arguments.result.key# memento via #getThreadName()#",
+							output: "console"
+						);
+						sleep( randRange( 100, 1000 ) );
+						return arguments.result.value.getMemento();
+					} );
 
-				// debug( results );
-			} );
+					// debug( results );
+				}
+			);
 		} );
 	}
 

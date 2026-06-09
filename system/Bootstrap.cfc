@@ -547,7 +547,7 @@ component serializable="false" accessors="true" {
 	 */
 	function onSessionStart(){
 		// Exit if we don't have the app key in scope, means we are not ready to process session start yet.
-		if( !application.keyExists( locateAppKey() ) ) {
+		if ( !application.keyExists( locateAppKey() ) ) {
 			return;
 		}
 		var cbController = application[ locateAppKey() ]
