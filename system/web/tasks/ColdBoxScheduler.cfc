@@ -28,10 +28,10 @@ component
 
 	property
 		name    ="controller"
-		inject  ="coldbox"
+		inject  ="coldbox" 
 		delegate="runEvent,runRoute";
 	property
-		name    ="cachebox"
+		name    ="cachebox"  
 		inject  ="cachebox"
 		delegate="getCache";
 	property name="log" inject="logbox:logger:{this}";
@@ -94,10 +94,10 @@ component
 			.getInstance(
 				"coldbox.system.web.tasks.ColdBoxScheduledTask",
 				{
-					name     : arguments.name,
-					executor : variables.executor,
-					debug    : arguments.debug,
-					scheduler: this
+					name      : arguments.name,
+					executor  : variables.executor,
+					debug     : arguments.debug,
+					scheduler : this
 				}
 			)
 			// Set the default cachename into the task

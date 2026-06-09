@@ -174,10 +174,10 @@ component extends="Executor" accessors="true" singleton {
 	/**
 	 * Build out a new scheduled task representation. Calling this method does not mean that the task is executed.
 	 *
-	 * @name   The name of the task
-	 * @debug  Add debugging logs to System out, disabled by default
-	 * @task   The closure or cfc that represents the task (optional)
-	 * @method The method on the cfc to call, defaults to "run" (optional)
+	 * @name      The name of the task
+	 * @debug     Add debugging logs to System out, disabled by default
+	 * @task      The closure or cfc that represents the task (optional)
+	 * @method    The method on the cfc to call, defaults to "run" (optional)
 	 * @scheduler The scheduler to set into the task, defaults to this (optional)
 	 */
 	ScheduledTask function newTask(

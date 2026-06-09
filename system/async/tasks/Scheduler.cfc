@@ -94,7 +94,7 @@ component accessors="true" singleton {
 		// Build out the executor for this scheduler
 		createSchedulerExecutor()
 		// Bit that denotes if this scheduler has been started or not
-		variables.started = false
+		variables.started  = false
 		// Inet Host and local IP
 		variables.inetHost = variables.util.discoverInetHost()
 		variables.localIp  = variables.util.getServerIp()
@@ -138,15 +138,10 @@ component accessors="true" singleton {
 	 */
 	Scheduler function startup(){
 		if ( !variables.started ) {
-			lock
-				name="scheduler-#getName()#-startup"
-				type="exclusive"
-				timeout="45"
-				throwOnTimeout="true"
-			{
+			lock name="scheduler-#getName()#-startup" type="exclusive" timeout="45" throwOnTimeout="true" {
 				if ( !variables.started ) {
 					// Iterate over tasks and send them off for scheduling
-					for( var taskName in variables.tasks ){
+					for ( var taskName in variables.tasks ) {
 						startupTask( taskName )
 					}
 					// Mark scheduler as started
@@ -373,11 +368,13 @@ component accessors="true" singleton {
 		// Create task with custom name
 		var oTask = variables.executor
 			// Give me the task broda!
-			.newTask( argumentCollection = {
-				name : arguments.name,
-				debug: arguments.debug,
-				scheduler: this
-			} )
+			.newTask(
+				argumentCollection = {
+					name      : arguments.name,
+					debug     : arguments.debug,
+					scheduler : this
+				}
+			)
 			// Set default timezone into the task
 			.setTimezone( this.getTimezone().getId() )
 

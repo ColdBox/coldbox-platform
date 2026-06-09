@@ -21,7 +21,7 @@ component accessors="true" {
 	 */
 	property name="envDelegate";
 
-	//************************ INTERNAL EVENTS ************************//
+	// ************************ INTERNAL EVENTS ************************//
 
 	/**
 	 * Once configuration file loads
@@ -39,7 +39,7 @@ component accessors="true" {
 	 * Get the service logger
 	 */
 	function getLogger(){
-		if( isNull( variables.log ) ){
+		if ( isNull( variables.log ) ) {
 			variables.log = variables.controller.getLogBox().getLogger( this )
 		}
 		return variables.log
@@ -49,10 +49,8 @@ component accessors="true" {
 	 * Get the Env delegate
 	 */
 	function getEnvDelegate(){
-		if( isNull( variables.envDelegate ) ){
-			variables.envDelegate = variables.controller
-				.getWireBox()
-				.getInstance( "Env@coreDelegates" )
+		if ( isNull( variables.envDelegate ) ) {
+			variables.envDelegate = variables.controller.getWireBox().getInstance( "Env@coreDelegates" )
 		}
 		return variables.envDelegate
 	}

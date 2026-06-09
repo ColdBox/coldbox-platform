@@ -185,11 +185,11 @@ component accessors="true" {
 	/**
 	 * Constructor
 	 *
-	 * @name     The name of this task
-	 * @executor The executor this task will run under and be linked to
-	 * @task     The closure or cfc that represents the task (optional)
-	 * @method   The method on the cfc to call, defaults to "run" (optional)
-	 * @debug    Add debugging logs to System out, disabled by default
+	 * @name      The name of this task
+	 * @executor  The executor this task will run under and be linked to
+	 * @task      The closure or cfc that represents the task (optional)
+	 * @method    The method on the cfc to call, defaults to "run" (optional)
+	 * @debug     Add debugging logs to System out, disabled by default
 	 * @scheduler The scheduler to set into the task (optional)
 	 */
 	ScheduledTask function init(
@@ -202,10 +202,10 @@ component accessors="true" {
 		scheduler
 	){
 		// Store scheduler if sent!
-		if( !isNull( arguments.scheduler ) ){
+		if ( !isNull( arguments.scheduler ) ) {
 			variables.scheduler = arguments.scheduler
-			variables.util = variables.scheduler.getUtil()
-		} else{
+			variables.util      = variables.scheduler.getUtil()
+		} else {
 			variables.util = new coldbox.system.core.util.Util()
 		}
 
@@ -266,9 +266,9 @@ component accessors="true" {
 			// If the task has never ran or not
 			"neverRun"          : true,
 			// Server Host
-			"inetHost"          : isNull( arguments.scheduler) ? variables.util.discoverInetHost() : arguments.scheduler.getInetHost(),
+			"inetHost"          : isNull( arguments.scheduler ) ? variables.util.discoverInetHost() : arguments.scheduler.getInetHost(),
 			// Server IP
-			"localIp"           : isNull( arguments.scheduler) ? variables.util.getServerIp() : arguments.scheduler.getLocalIp()
+			"localIp"           : isNull( arguments.scheduler ) ? variables.util.getServerIp() : arguments.scheduler.getLocalIp()
 		}
 		// Prepare for the user to store metadata
 		variables.meta          = {}

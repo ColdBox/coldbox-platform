@@ -189,11 +189,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 */
 	boolean function removeScheduler( required name ){
 		if ( hasScheduler( arguments.name ) ) {
-			lock
-				name = "restartScheduler_#arguments.name#"
-				timeout = 10
-				type = "exclusive"
-			{
+			lock name="restartScheduler_#arguments.name#" timeout=10 type="exclusive" {
 				if ( hasScheduler( arguments.name ) ) {
 					variables.schedulers[ arguments.name ].shutdown()
 					structDelete( variables.schedulers, arguments.name )
@@ -219,11 +215,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		numeric timeout
 	){
 		if ( hasScheduler( arguments.name ) ) {
-			lock
-				name = "restartScheduler_#arguments.name#"
-				timeout = 10
-				type = "exclusive"
-			{
+			lock name="restartScheduler_#arguments.name#" timeout=10 type="exclusive" {
 				if ( hasScheduler( arguments.name ) ) {
 					var scheduler = variables.schedulers[ arguments.name ]
 					scheduler.restart( argumentCollection = arguments )
