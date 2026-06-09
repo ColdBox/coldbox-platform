@@ -207,7 +207,7 @@ component accessors="true" {
 			variables.util      = variables.scheduler.getUtil()
 		} else {
 			variables.scheduler = ""
-			variables.util = new coldbox.system.core.util.Util()
+			variables.util      = new coldbox.system.core.util.Util()
 		}
 
 		// Link up the executor and name
