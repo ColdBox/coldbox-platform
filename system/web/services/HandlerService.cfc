@@ -137,7 +137,6 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 */
 	function getHandler( required ehBean, required requestContext ){
 		var oRequestContext = arguments.requestContext;
-		var oEventURLFacade = variables.templateCache.getEventURLFacade();
 
 		// Create Runnable Object via WireBox
 		var oEventHandler = newHandler( arguments.ehBean );
@@ -197,7 +196,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				structAppend( eventCachingData, eventDictionaryEntry, true );
 
 				// Create the Cache Key to save
-				eventCachingData.cacheKey = oEventURLFacade.buildEventKey(
+				eventCachingData.cacheKey = variables.templateCache.getEventURLFacade().buildEventKey(
 					targetEvent     = arguments.ehBean.getFullEvent(),
 					targetContext   = oRequestContext,
 					eventDictionary = eventDictionaryEntry
@@ -342,30 +341,27 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 		// Module Check?
 		if ( find( ":", currentEvent ) ) {
-			var module = listFirst( currentEvent, ":" );
+			var separatorIndex = find( ":", currentEvent );
+			var module         = left( currentEvent, separatorIndex - 1 );
 			if ( structKeyExists( modulesConfig, module ) ) {
 				// Get module's handler struct for O(1) lookup
 				var moduleHandlers = modulesConfig[ module ].registeredHandlers ?: {};
-				var handlerKey     = reReplaceNoCase( currentEvent, "^([^:.]*):", "" );
+				var handlerKey     = mid( currentEvent, separatorIndex + 1, len( currentEvent ) );
 				if ( structKeyExists( moduleHandlers, handlerKey ) ) {
-					// Append the default event action
-					currentEvent = currentEvent & "." & variables.eventAction;
 					// Save it as the current Event
-					event.setValue( variables.eventName, currentEvent );
+					event.setValue( variables.eventName, moduleHandlers[ handlerKey ].defaultEvent );
 				}
 			}
 			return this;
 		}
 
 		// O(1) struct lookup for default action test
-		if (
-			structKeyExists( variables.registeredHandlers, currentEvent ) OR
-			structKeyExists( variables.registeredExternalHandlers, currentEvent )
-		) {
-			// Append the default event action
-			currentEvent = currentEvent & "." & variables.eventAction;
+		if ( structKeyExists( variables.registeredHandlers, currentEvent ) ) {
 			// Save it as the current Event now with the default action
-			event.setValue( variables.eventName, currentEvent );
+			event.setValue( variables.eventName, variables.registeredHandlers[ currentEvent ].defaultEvent );
+		} else if ( structKeyExists( variables.registeredExternalHandlers, currentEvent ) ) {
+			// Save it as the current Event now with the default action
+			event.setValue( variables.eventName, variables.registeredExternalHandlers[ currentEvent ].defaultEvent );
 		}
 
 		return this;
@@ -592,16 +588,18 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// Convert windows \ to java /
 		arguments.directory = replace( arguments.directory, "\", "/", "all" )
 
-		var util = variables.controller.getUtil()
-
-		return directoryList(
+		var util        = variables.controller.getUtil()
+		var handlerList = {}
+		var files       = directoryList(
 			arguments.directory,
 			true,
 			"array",
 			"*.cfc|*.bx"
-		).reduce( ( accumulator, item ) => {
-			var thisAbsolutePath = replace( arguments.item, "\", "/", "all" )
-			var cleanHandler     = replaceNoCase( thisAbsolutePath, directory, "", "all" )
+		)
+
+		for ( var item in files ) {
+			var thisAbsolutePath = replace( item, "\", "/", "all" )
+			var cleanHandler     = replaceNoCase( thisAbsolutePath, arguments.directory, "", "all" )
 			// Clean OS separators to dot notation.
 			cleanHandler         = removeChars(
 				replaceNoCase( cleanHandler, "/", ".", "all" ),
@@ -614,18 +612,21 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			var extension                        = listLast( cleanHandler, "." )
 			// Build runnable path if invocationPath provided
 			var runnable                         = len( invocationPath ) ? invocationPath & "." & handlerName : ""
+			var defaultEvent                     = len( moduleName ) ? moduleName & ":" & handlerName & "." & variables.eventAction : handlerName & "." & variables.eventAction
 			// Store in struct with metadata
-			arguments.accumulator[ handlerName ] = {
+			handlerList[ handlerName ] = {
 				handler        : handlerName,
 				path           : thisAbsolutePath,
 				extension      : extension,
 				invocationPath : invocationPath,
 				runnable       : runnable,
+				defaultEvent   : defaultEvent,
 				source         : source,
 				moduleName     : moduleName
 			}
-			return arguments.accumulator
-		}, {} )
+		}
+
+		return handlerList
 	}
 
 	/************************************ PRIVATE ************************************/

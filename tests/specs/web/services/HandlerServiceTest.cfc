@@ -31,12 +31,14 @@ component extends="tests.resources.BaseIntegrationTest" {
 				var mainHandler = registered[ "main" ];
 				expect( mainHandler ).toHaveKey( "invocationPath" );
 				expect( mainHandler ).toHaveKey( "runnable" );
+				expect( mainHandler ).toHaveKey( "defaultEvent" );
 				expect( mainHandler ).toHaveKey( "source" );
 				expect( mainHandler ).toHaveKey( "moduleName" );
 
 				expect( mainHandler.source ).toBe( "conventions" );
 				expect( mainHandler.moduleName ).toBe( "" );
 				expect( mainHandler.runnable ).toInclude( "main" );
+				expect( mainHandler.defaultEvent ).toBe( "main.index" );
 			} );
 
 			it( "external handlers include enrichment metadata", () => {
@@ -48,11 +50,13 @@ component extends="tests.resources.BaseIntegrationTest" {
 				var ehTestHandler = external[ "ehTest" ];
 				expect( ehTestHandler ).toHaveKey( "invocationPath" );
 				expect( ehTestHandler ).toHaveKey( "runnable" );
+				expect( ehTestHandler ).toHaveKey( "defaultEvent" );
 				expect( ehTestHandler ).toHaveKey( "source" );
 				expect( ehTestHandler ).toHaveKey( "moduleName" );
 
 				expect( ehTestHandler.source ).toBe( "external" );
 				expect( ehTestHandler.moduleName ).toBe( "" );
+				expect( ehTestHandler.defaultEvent ).toBe( "ehTest.index" );
 			} );
 
 			it( "module handlers include enrichment metadata", () => {
@@ -66,12 +70,14 @@ component extends="tests.resources.BaseIntegrationTest" {
 				var homeHandler = moduleHandlers[ "Home" ];
 				expect( homeHandler ).toHaveKey( "invocationPath" );
 				expect( homeHandler ).toHaveKey( "runnable" );
+				expect( homeHandler ).toHaveKey( "defaultEvent" );
 				expect( homeHandler ).toHaveKey( "source" );
 				expect( homeHandler ).toHaveKey( "moduleName" );
 
 				expect( homeHandler.source ).toBe( "module" );
 				expect( homeHandler.moduleName ).toBe( "resourcesTest" );
 				expect( homeHandler.runnable ).toInclude( "Home" );
+				expect( homeHandler.defaultEvent ).toBe( "resourcesTest:Home.index" );
 			} );
 
 			it( "can recurse handler listings", () =>{
@@ -101,6 +107,23 @@ component extends="tests.resources.BaseIntegrationTest" {
 				expect( handlers[ "main" ].handler ).toBe( "main" );
 				expect( handlers[ "main" ].path ).toInclude( "main.cfc" );
 				expect( handlers[ "main" ].extension ).toBe( "cfc" );
+				expect( handlers[ "main" ].defaultEvent ).toBe( "main.index" );
+			} );
+
+			it( "uses registered handler default events for default action checks", () =>{
+				var context = getRequestContext();
+
+				context.setValue( context.getEventName(), "main" );
+				variables.handlerService.defaultActionCheck( context );
+				expect( context.getCurrentEvent() ).toBe( "main.index" );
+
+				context.setValue( context.getEventName(), "ehTest" );
+				variables.handlerService.defaultActionCheck( context );
+				expect( context.getCurrentEvent() ).toBe( "ehTest.index" );
+
+				context.setValue( context.getEventName(), "resourcesTest:Home" );
+				variables.handlerService.defaultActionCheck( context );
+				expect( context.getCurrentEvent() ).toBe( "resourcesTest:Home.index" );
 			} );
 
 			it( "configures REST handler annotations as virtual inheritance", () =>{
@@ -134,6 +157,8 @@ component extends="tests.resources.BaseIntegrationTest" {
 					expect( results.getHandler() ).toBe( "main" );
 					expect( results.getFullEvent() ).toBe( "main.index" );
 					expect( results.getRunnable() ).toBe( results.getHandlerRecord().runnable );
+					expect( results.getDefaultEvent() ).toBe( results.getHandlerRecord().defaultEvent );
+					expect( results.getHandlerSource() ).toBe( "conventions" );
 					expect( variables.handlerService.getHandlerBeanCacheDictionary() ).toHaveKey( "main.index" );
 				} );
 
@@ -143,6 +168,8 @@ component extends="tests.resources.BaseIntegrationTest" {
 					expect( results.getHandler() ).toBe( "ehTest" );
 					expect( results.getFullEvent() ).toBe( "ehTest.dspExternal" );
 					expect( results.getRunnable() ).toBe( results.getHandlerRecord().runnable );
+					expect( results.getDefaultEvent() ).toBe( results.getHandlerRecord().defaultEvent );
+					expect( results.getHandlerSource() ).toBe( "external" );
 					expect( variables.handlerService.getHandlerBeanCacheDictionary() ).toHaveKey( "ehTest.dspExternal" );
 				} );
 
@@ -153,6 +180,8 @@ component extends="tests.resources.BaseIntegrationTest" {
 					expect( results.getModule() ).toBe( "resourcesTest" );
 					expect( results.getFullEvent() ).toBe( "resourcesTest:Home.index" );
 					expect( results.getRunnable() ).toBe( results.getHandlerRecord().runnable );
+					expect( results.getDefaultEvent() ).toBe( results.getHandlerRecord().defaultEvent );
+					expect( results.getHandlerSource() ).toBe( "module" );
 					expect( variables.handlerService.getHandlerBeanCacheDictionary() ).toHaveKey(
 						"resourcesTest:Home.index"
 					);

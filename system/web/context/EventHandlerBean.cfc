@@ -66,6 +66,16 @@ component accessors="true" {
 	 */
 	property name="fullEvent";
 
+	/**
+	 * Precalculated default event string
+	 */
+	property name="defaultEvent";
+
+	/**
+	 * Registered handler source
+	 */
+	property name="handlerSource";
+
 	/************************************** CONSTRUCTOR *********************************************/
 
 	/**
@@ -86,6 +96,8 @@ component accessors="true" {
 		variables.handlerRecord   = {}
 		variables.runnable        = ""
 		variables.fullEvent       = ""
+		variables.defaultEvent    = ""
+		variables.handlerSource   = ""
 
 		return this
 	}
@@ -193,7 +205,7 @@ component accessors="true" {
 		variables.invocationPath = arguments.invocationPath
 		variables.runnable       = ""
 
-		return this;
+		return this
 	}
 
 	/**
@@ -208,7 +220,7 @@ component accessors="true" {
 		variables.runnable  = ""
 		variables.fullEvent = ""
 
-		return this;
+		return this
 	}
 
 	/**
@@ -222,7 +234,7 @@ component accessors="true" {
 		variables.method    = arguments.method
 		variables.fullEvent = ""
 
-		return this;
+		return this
 	}
 
 	/**
@@ -236,7 +248,7 @@ component accessors="true" {
 		variables.module    = arguments.module
 		variables.fullEvent = ""
 
-		return this;
+		return this
 	}
 
 	/**
@@ -261,6 +273,18 @@ component accessors="true" {
 			variables.runnable = arguments.handlerRecord.runnable
 		} else {
 			variables.runnable = ""
+		}
+
+		if ( structKeyExists( arguments.handlerRecord, "defaultEvent" ) ) {
+			variables.defaultEvent = arguments.handlerRecord.defaultEvent
+		} else {
+			variables.defaultEvent = ""
+		}
+
+		if ( structKeyExists( arguments.handlerRecord, "source" ) ) {
+			variables.handlerSource = arguments.handlerRecord.source
+		} else {
+			variables.handlerSource = ""
 		}
 
 		variables.fullEvent = ""

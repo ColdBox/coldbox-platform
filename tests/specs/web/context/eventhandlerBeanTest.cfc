@@ -87,6 +87,7 @@
 			handler        : "recorded",
 			invocationPath : "app.handlers",
 			runnable       : "app.handlers.recorded",
+			defaultEvent   : "recorded.index",
 			source         : "conventions"
 		};
 
@@ -99,6 +100,8 @@
 		assertEquals( this.ehBean.getInvocationPath(), "app.handlers" );
 		assertEquals( this.ehBean.getRunnable(), "app.handlers.recorded" );
 		assertEquals( this.ehBean.getFullEvent(), "recorded.show" );
+		assertEquals( this.ehBean.getDefaultEvent(), "recorded.index" );
+		assertEquals( this.ehBean.getHandlerSource(), "conventions" );
 		expect( this.ehBean.getHandlerRecord() ).toBe( handlerRecord );
 		</cfscript>
 	</cffunction>
