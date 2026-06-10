@@ -347,93 +347,88 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		injector
 	){
 		// determine registration names
-		var objectName   = "";
-		var oInterceptor = "";
+		var objectName   = ""
+		var oInterceptor = ""
 
 		// Do we have a class path?
 		if ( !isNull( arguments.interceptorClass ) ) {
-			objectName = listLast( arguments.interceptorClass, "." );
+			objectName = listLast( arguments.interceptorClass, "." )
 			if ( !isNull( arguments.interceptorName ) ) {
-				objectName = arguments.interceptorName;
+				objectName = arguments.interceptorName
 			}
 		}
 		// Else we have an object?
 		else if ( !isNull( arguments.interceptorObject ) ) {
 			// Determine object name
 			if ( !isNull( arguments.interceptorName ) ) {
-				objectName = arguments.interceptorName;
+				objectName = arguments.interceptorName
 			} else {
-				objectName = listLast( getMetadata( arguments.interceptorObject ).name, "." );
+				objectName = listLast( getMetadata( arguments.interceptorObject ).name, "." )
 			}
-			oInterceptor = arguments.interceptorObject;
+			oInterceptor = arguments.interceptorObject
 		} else {
 			throw(
 				message = "Invalid registration.",
 				detail  = "You did not send in an interceptorClass or interceptorObject argument for registration",
 				type    = "InterceptorService.InvalidRegistration"
-			);
+			)
 		}
 
-		lock
-			name          ="interceptorService.#getController().getAppHash()#.registerInterceptor.#objectName#"
-			type          ="exclusive"
-			throwontimeout="true"
-			timeout       ="30" {
-			// Did we send in a class to instantiate
-			if ( !isNull( arguments.interceptorClass ) ) {
-				// Create the Interceptor Class
-				try {
-					oInterceptor = createInterceptor(
-						interceptorClass,
-						objectName,
-						interceptorProperties,
-						isNull( arguments.injector ) ? variables.wirebox : arguments.injector
-					);
-				} catch ( Any e ) {
-					getLogger().error(
-						"Error creating interceptor: #arguments.interceptorClass#. #e.detail# #e.message# #e.stackTrace#",
-						e.tagContext
-					);
-					rethrow;
-				}
-
-				// Configure the Interceptor
-				oInterceptor.configure();
+		// Did we send in a class to instantiate
+		if ( !isNull( arguments.interceptorClass ) ) {
+			// Create the Interceptor Class
+			try {
+				oInterceptor = createInterceptor(
+					interceptorClass,
+					objectName,
+					interceptorProperties,
+					isNull( arguments.injector ) ? variables.wirebox : arguments.injector
+				)
+			} catch ( Any e ) {
+				getLogger().error(
+					"Error creating interceptor: #arguments.interceptorClass#. #e.detail# #e.message# #e.stackTrace#",
+					e.tagContext
+				)
+				rethrow;
 			}
-			// end if class is sent.
 
-			// Append Custom Points
-			appendInterceptionPoints( arguments.customPoints )
+			// Configure the Interceptor
+			oInterceptor.configure()
+		}
+		// end if class is sent.
 
-			// Parse Interception Points
-			parseMetadata( getMetadata( oInterceptor ), {} ).each( function( stateKey, stateValue ){
-				// Register the point
-				registerInterceptionPoint(
-					interceptorKey = objectName,
-					state          = arguments.stateKey,
-					oInterceptor   = oInterceptor,
-					interceptorMD  = arguments.stateValue
-				);
-				// Debug log
-				if ( getLogger().canDebug() ) {
-					getLogger().debug( "Registering #objectName# on '#arguments.stateKey#' interception point" );
-				}
-			} );
+		// Append Custom Points
+		appendInterceptionPoints( arguments.customPoints )
 
-			// Register Core Internal ColdBox Points
-			// We do this manually as CFML Engines do not add mixins to metadata when using virtual inheritance
-			if ( structKeyExists( oInterceptor, "cbLoadInterceptorHelpers" ) ) {
-				// Register the point
-				registerInterceptionPoint(
-					interceptorKey = objectName,
-					state          = "cbLoadInterceptorHelpers",
-					oInterceptor   = oInterceptor
-				);
+		// Parse Interception Points
+		var parsedMeta = parseMetadata( getMetadata( oInterceptor ), {} )
+		for ( var stateKey in parsedMeta ) {
+			var stateValue = parsedMeta[ stateKey ]
+			// Register the point
+			registerInterceptionPoint(
+				interceptorKey = objectName,
+				state          = stateKey,
+				oInterceptor   = oInterceptor,
+				interceptorMD  = stateValue
+			)
+			// Debug log
+			if ( getLogger().canDebug() ) {
+				getLogger().debug( "Registering #objectName# on '#stateKey#' interception point" )
 			}
 		}
-		// end lock
 
-		return this;
+		// Register Core Internal ColdBox Points
+		// We do this manually as CFML Engines do not add mixins to metadata when using virtual inheritance
+		if ( structKeyExists( oInterceptor, "cbLoadInterceptorHelpers" ) ) {
+			// Register the point
+			registerInterceptionPoint(
+				interceptorKey = objectName,
+				state          = "cbLoadInterceptorHelpers",
+				oInterceptor   = oInterceptor
+			)
+		}
+
+		return this
 	}
 
 	/**
@@ -651,6 +646,11 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 	/**
 	 * I get a components valid interception points
+	 *
+	 * @metadata The metadata struct of the component to parse for interception points
+	 * @points   The interception points found so far in the recursive lookup, this is used
+	 *
+	 * @return The interception points found in the metadata and its inheritances
 	 */
 	private struct function parseMetadata( required metadata, required points ){
 		var x           = 1;
