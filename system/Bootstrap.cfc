@@ -54,18 +54,18 @@ component serializable="false" accessors="true" {
 		any COLDBOX_FAIL_FAST      = true,
 		string COLDBOX_WEB_MAPPING = ""
 	){
-		variables.COLDBOX_CONFIG_FILE   = arguments.COLDBOX_CONFIG_FILE;
-		variables.COLDBOX_APP_ROOT_PATH = arguments.COLDBOX_APP_ROOT_PATH;
-		variables.COLDBOX_APP_MAPPING   = arguments.COLDBOX_APP_MAPPING;
-		variables.COLDBOX_WEB_MAPPING   = arguments.COLDBOX_WEB_MAPPING;
-		variables.COLDBOX_FAIL_FAST     = arguments.COLDBOX_FAIL_FAST;
+		variables.COLDBOX_CONFIG_FILE   = arguments.COLDBOX_CONFIG_FILE
+		variables.COLDBOX_APP_ROOT_PATH = arguments.COLDBOX_APP_ROOT_PATH
+		variables.COLDBOX_APP_MAPPING   = arguments.COLDBOX_APP_MAPPING
+		variables.COLDBOX_WEB_MAPPING   = arguments.COLDBOX_WEB_MAPPING
+		variables.COLDBOX_FAIL_FAST     = arguments.COLDBOX_FAIL_FAST
 
 		// App Key Check
 		if ( structKeyExists( arguments, "COLDBOX_APP_KEY" ) AND len( trim( arguments.COLDBOX_APP_KEY ) ) ) {
-			variables.COLDBOX_APP_KEY = arguments.COLDBOX_APP_KEY;
+			variables.COLDBOX_APP_KEY = arguments.COLDBOX_APP_KEY
 		}
 
-		return this;
+		return this
 	}
 
 	/**
@@ -74,14 +74,15 @@ component serializable="false" accessors="true" {
 	 * @throws InvalidColdBoxMapping
 	 */
 	function loadColdBox(){
-		var appKey = locateAppKey();
+		var appKey    = locateAppKey()
+		var startTime = getTickCount()
 
 		// Param the incoming app hash
 		param name="appHash" default="#hash( getBaseTemplatePath() & application.applicationname )#";
 
 		// Cleanup of old code, just in case
 		if ( structKeyExists( application, appKey ) ) {
-			structDelete( application, appKey );
+			structDelete( application, appKey )
 		}
 
 		// Verify Mapping
@@ -91,11 +92,11 @@ component serializable="false" accessors="true" {
 				detail  = "It seems that you do not have a '/coldbox' mapping in your application and we cannot continue to process the request.
 				Make sure ColdBox is installed correctly or create a mapping to the ColdBox system folder.",
 				type = "InvalidColdBoxMapping"
-			);
+			)
 		}
 
 		// Create Brand New Controller
-		application[ appKey ] = new coldbox.system.web.Controller( variables.COLDBOX_APP_ROOT_PATH, appKey );
+		application[ appKey ] = new coldbox.system.web.Controller( variables.COLDBOX_APP_ROOT_PATH, appKey )
 		// Setup the Framework And Application
 		application[ appKey ]
 			.getLoaderService()
@@ -103,29 +104,33 @@ component serializable="false" accessors="true" {
 				variables.COLDBOX_CONFIG_FILE,
 				variables.COLDBOX_APP_MAPPING,
 				variables.COLDBOX_WEB_MAPPING
-			);
+			)
 		// Get the reinit key
 		// Application Start Handler
 		try {
 			if ( len( application[ appKey ].getSetting( "ApplicationStartHandler" ) ) ) {
 				application[ appKey ].runEvent(
 					event = application[ appKey ].getSetting( "ApplicationStartHandler" )
-				);
+				)
 			}
 		} catch ( any e ) {
 			// process the exception
-			writeOutput( processException( application[ appKey ], e ) );
+			writeOutput( processException( application[ appKey ], e ) )
 			// abort it, something went really wrong.
 			abort;
 		}
 
 		// Check if fwreinit is sent, if sent, ignore it, we are loading the framework
-		var reinitKey = application[ appKey ].getSetting( "reinitKey", "fwreinit" );
+		var reinitKey = application[ appKey ].getSetting( "reinitKey", "fwreinit" )
 		if ( structKeyExists( url, reinitKey ) ) {
-			structDelete( url, reinitKey );
+			structDelete( url, reinitKey )
 		}
 
-		return this;
+		// Log startup time
+		var elapsedMs = getTickCount() - startTime
+		application[ appKey ].getLogBox().getLogger( this ).info( "=> ColdBox Application started in [#elapsedMs#] ms" );
+
+		return this
 	}
 
 	/**
