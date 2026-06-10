@@ -38,15 +38,15 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 		super.init( argumentCollection = arguments )
 
 		// Controller
-		variables.controller  = arguments.controller
+		variables.controller       = arguments.controller
 		// md ref map
-		variables.metadataMap = {}
+		variables.metadataMap      = {}
 		// Ordered runtime chain for hot interception processing
 		variables.interceptorChain = []
 		// Utilities
-		variables.utility     = arguments.controller.getUtil()
+		variables.utility          = arguments.controller.getUtil()
 		// UUID Helper
-		variables.uuidHelper  = createObject( "java", "java.util.UUID" )
+		variables.uuidHelper       = createObject( "java", "java.util.UUID" )
 
 		return this
 	}

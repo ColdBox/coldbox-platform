@@ -651,9 +651,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * @return The interception points found in the metadata and its inheritances
 	 */
 	private struct function parseMetadata( required metadata, required points ){
-		var pointsFound             = arguments.points
-		var currentMetadata         = arguments.metadata
-		var interceptionPointIndex  = variables.interceptionPointIndex
+		var pointsFound            = arguments.points
+		var currentMetadata        = arguments.metadata
+		var interceptionPointIndex = variables.interceptionPointIndex
 
 		while ( isStruct( currentMetadata ) ) {
 			// Register local functions only
@@ -664,7 +664,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				for ( var x = 1; x lte functionCount; x++ ) {
 					var thisFunction = functionMetadata[ x ]
 					var pointName    = thisFunction.name
-					var annotations = thisFunction.annotations ?: thisFunction
+					var annotations  = thisFunction.annotations ?: thisFunction
 
 					// Register the point by convention and annotation
 					if ( structKeyExists( annotations, "interceptionPoint" ) ) {
