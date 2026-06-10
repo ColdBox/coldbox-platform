@@ -25,10 +25,10 @@ component accessors="true" {
 		// Create the event pool, start with 5 instead of 16 to save space
 		variables.pool = createObject( "java", "java.util.Collections" ).synchronizedMap(
 			createObject( "java", "java.util.LinkedHashMap" ).init( 5 )
-		);
-		variables.state = arguments.state;
+		)
+		variables.state = arguments.state
 
-		return this;
+		return this
 	}
 
 	/**
@@ -40,8 +40,8 @@ component accessors="true" {
 	 * @return EventPool
 	 */
 	function register( required key, required target ){
-		variables.pool.put( lCase( arguments.key ), arguments.target );
-		return this;
+		variables.pool.put( lCase( arguments.key ), arguments.target )
+		return this
 	}
 
 	/**
@@ -50,15 +50,15 @@ component accessors="true" {
 	 * @key The key of the object, will be lowercased to conform to non-case sensitivity
 	 */
 	boolean function unregister( required key ){
-		var results = variables.pool.remove( lCase( arguments.key ) );
-		return isNull( results ) ? false : true;
+		var results = variables.pool.remove( lCase( arguments.key ) )
+		return isNull( results ) ? false : true
 	}
 
 	/**
 	 * Check if a key exists in the pool
 	 */
 	boolean function exists( required key ){
-		return variables.pool.containsKey( lCase( arguments.key ) );
+		return variables.pool.containsKey( lCase( arguments.key ) )
 	}
 
 	/**
@@ -69,7 +69,7 @@ component accessors="true" {
 	 * @return The requested object or an empty structure
 	 */
 	any function getObject( required key ){
-		return variables.pool.getOrDefault( lCase( arguments.key ), {} );
+		return variables.pool.getOrDefault( lCase( arguments.key ), {} )
 	}
 
 	/**
@@ -83,7 +83,7 @@ component accessors="true" {
 		// Loop and execute each target object as registered in order
 		for ( var key in structKeyArray( variables.pool ) ) {
 			// Invoke the execution point
-			var stopChain = invoker( variables.pool[ key ], arguments.data );
+			var stopChain = invoker( variables.pool[ key ], arguments.data )
 
 			// Check for results
 			if ( stopChain ) {
@@ -107,13 +107,13 @@ component accessors="true" {
 			arguments.target,
 			variables.state,
 			{ interceptData : arguments.data, data : arguments.data }
-		);
+		)
 
 		if ( !isNull( local.results ) && isBoolean( local.results ) ) {
-			return results;
+			return results
 		}
 
-		return false;
+		return false
 	}
 
 }

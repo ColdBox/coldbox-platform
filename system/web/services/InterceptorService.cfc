@@ -203,30 +203,37 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		string asyncPriority     = "NORMAL",
 		numeric asyncJoinTimeout = 0
 	){
-		// Backwards Compat: Remove by ColdBox 7
-		if ( !isNull( arguments.interceptData ) ) {
-			arguments.data = arguments.interceptData;
-		}
+		var interceptionStates = variables.interceptionStates
 
 		// Process The State if it exists, else just exit out
-		if ( structKeyExists( variables.interceptionStates, arguments.state ) ) {
-			arguments.event  = controller.getRequestService().getContext();
-			arguments.buffer = getLazyBuffer();
+		if ( !structKeyExists( interceptionStates, arguments.state ) ) {
+			return
+		}
 
-			// Execute Interception
-			var results = variables.interceptionStates
-				.find( arguments.state )
-				.process( argumentCollection = arguments );
+		var interceptionState = interceptionStates[ arguments.state ]
+		var event            = controller.getRequestService().getContext()
+		var buffer           = getLazyBuffer()
 
-			// If buffer has a builder, then content was lazyly produced, output it
-			if ( arguments.buffer.keyExists( "builder" ) ) {
-				writeOutput( arguments.buffer.getString() );
-			}
+		// Process the interception state and get results if any
+		var results = interceptionState.process(
+			event            = event,
+			data             = arguments.data,
+			async            = arguments.async,
+			asyncAll         = arguments.asyncAll,
+			asyncAllJoin     = arguments.asyncAllJoin,
+			asyncPriority    = arguments.asyncPriority,
+			asyncJoinTimeout = arguments.asyncJoinTimeout,
+			buffer           = buffer
+		)
 
-			// Any results
-			if ( !isNull( local.results ) ) {
-				return results;
-			}
+		// If buffer has a builder, then content was lazily produced, output it
+		if ( buffer.hasContent() ) {
+			writeOutput( buffer.getString() )
+		}
+
+		// Any results
+		if ( !isNull( local.results ) ) {
+			return results
 		}
 	}
 
@@ -235,30 +242,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 *
 	 * @return { get(), clear(), append(), length(), getString() }
 	 */
-	struct function getLazyBuffer(){
-		var buffer = {
-			get : function(){
-				if ( !buffer.keyExists( "builder" ) ) {
-					buffer.builder = createObject( "java", "java.lang.StringBuilder" ).init( "" );
-				}
-				return buffer.builder;
-			},
-			clear : function(){
-				buffer.get().setLength( 0 );
-				return buffer;
-			},
-			append : function( required str ){
-				buffer.get().append( arguments.str );
-				return buffer;
-			},
-			length : function(){
-				return buffer.get().length();
-			},
-			getString : function(){
-				return buffer.get().toString();
-			}
-		};
-		return buffer;
+	function getLazyBuffer(){
+		return new coldbox.system.web.context.InterceptorBuffer()
 	}
 
 	/**

@@ -125,13 +125,22 @@
 		// Invoke
 		makepublic( this.state, "invoker" );
 		assertTrue( mockInterceptor.$never( "unittest" ) );
+		mockEvent  = getMockRequestContext().$( "getCollection", {} ).$( "getPrivateCollection", {} );
 		mockBuffer = createStub();
 		this.state.invoker(
-			mockInterceptor,
-			getMockRequestContext(),
-			{},
-			this.key,
-			mockBuffer
+			interceptor    = mockInterceptor,
+			interceptorKey = this.key,
+			invocationArgs = {
+				event         : mockEvent,
+				data          : {},
+				interceptData : {},
+				buffer        : mockBuffer,
+				rc            : {},
+				prc           : {}
+			},
+			canDebug       = false,
+			state          = this.state.getState(),
+			log            = mockLogger
 		);
 		assertTrue( mockInterceptor.$once( "unittest" ) );
 	}

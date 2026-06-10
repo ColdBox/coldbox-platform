@@ -115,6 +115,18 @@
 		assertFalse( called );
 	}
 
+	function testAnnounceFlushesBufferedInterceptorOutput(){
+		iService.listen( function( event, data, buffer ){
+			arguments.buffer.append( "buffered output" )
+		}, "onBufferedOutput" )
+
+		savecontent variable="local.output" {
+			iService.announce( "onBufferedOutput" )
+		}
+
+		expect( local.output ).toBe( "buffered output" )
+	}
+
 	function testInterceptionPoints(){
 		// test registration again
 		assertTrue( arrayLen( iService.getInterceptionPoints() ) gt 0 );
