@@ -297,4 +297,18 @@
 		assertTrue( isObject( iService.getStateContainer( "unittest" ) ) );
 	}
 
+	function testRegisterInterceptorParsesInheritedAndAnnotatedMetadata(){
+		var obj                               = createObject( "component", "coldbox.tests.resources.ChildMetadataInterceptor" )
+		mockCache.INTERCEPTOR_CACHEKEY_PREFIX = "sample"
+		mockLogger.$( "canDebug", false )
+		mockController.$( "getAspectsInitiated", false )
+
+		iService.registerInterceptor( interceptorObject = obj, interceptorName = "childMetadataInterceptor" )
+
+		assertTrue( isObject( iService.getStateContainer( "preProcess" ) ) )
+		assertTrue( isObject( iService.getStateContainer( "postProcess" ) ) )
+		assertTrue( isObject( iService.getStateContainer( "onCustomMetadata" ) ) )
+		expect( iService.getInterceptionPointIndex() ).toHaveKey( "onCustomMetadata" )
+	}
+
 }

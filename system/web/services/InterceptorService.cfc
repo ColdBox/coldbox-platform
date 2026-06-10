@@ -491,15 +491,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		}
 
 		for ( var thisPoint in arguments.customPoints ) {
-			if ( !structKeyExists( variables.interceptionPointIndex, thisPoint ) ) {
-				variables.interceptionPoints.append( thisPoint )
-				indexInterceptionPoint(
-					name   = thisPoint,
-					core   = false,
-					module = arguments.module
-				)
-				variables.interceptionPointsChanged = true
-			}
+			appendInterceptionPoint( point = thisPoint, module = arguments.module )
 		}
 
 		return variables.interceptionPoints
@@ -623,6 +615,30 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	}
 
 	/**
+	 * Append a single interception point if it has not been indexed already
+	 *
+	 * @point  The interception point name
+	 * @module The module contributing the point, if any
+	 *
+	 * @return True if the point was added, else false
+	 */
+	private boolean function appendInterceptionPoint( required point, module = "" ){
+		if ( structKeyExists( variables.interceptionPointIndex, arguments.point ) ) {
+			return false
+		}
+
+		variables.interceptionPoints.append( arguments.point )
+		indexInterceptionPoint(
+			name   = arguments.point,
+			core   = false,
+			module = arguments.module
+		)
+		variables.interceptionPointsChanged = true
+
+		return true
+	}
+
+	/**
 	 * Verifies setup of base handler classes in WireBox
 	 *
 	 * @injector The injector to seed and verify
@@ -653,64 +669,66 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * @return The interception points found in the metadata and its inheritances
 	 */
 	private struct function parseMetadata( required metadata, required points ){
-		var x           = 1;
-		var pointsFound = arguments.points;
+		var pointsFound             = arguments.points
+		var currentMetadata         = arguments.metadata
+		var interceptionPointIndex  = variables.interceptionPointIndex
+		var functionMetadata        = []
+		var functionCount           = 0
+		var thisFunction            = {}
+		var pointName               = ""
+		var pointRecord             = {}
 
-		// Register local functions only
-		if ( structKeyExists( arguments.metadata, "functions" ) ) {
-			var fncLen = arrayLen( arguments.metadata.functions );
-			for ( var x = 1; x lte fncLen; x++ ) {
-				// Verify the @interceptionPoint annotation so the function can be registered as an interception point
-				if ( structKeyExists( arguments.metadata.functions[ x ], "interceptionPoint" ) ) {
+		while ( isStruct( currentMetadata ) ) {
+			// Register local functions only
+			if ( structKeyExists( currentMetadata, "functions" ) ) {
+				functionMetadata = currentMetadata.functions
+				functionCount    = arrayLen( functionMetadata )
+
+				for ( var x = 1; x lte functionCount; x++ ) {
+					thisFunction = functionMetadata[ x ]
+					pointName    = thisFunction.name
+
 					// Register the point by convention and annotation
-					appendInterceptionPoints( arguments.metadata.functions[ x ].name )
-				}
-
-				// verify its an interception point by comparing it to the local defined interception points
-				// Also verify it has not been found already
-				if (
-					structKeyExists( variables.interceptionPointIndex, arguments.metadata.functions[ x ].name ) AND
-					NOT structKeyExists( pointsFound, arguments.metadata.functions[ x ].name )
-				) {
-					// Create point record
-					var pointRecord = newPointRecord();
-
-					// Discover point information
-					if ( structKeyExists( arguments.metadata.functions[ x ], "async" ) ) {
-						pointRecord.async = true;
-					}
-					if ( structKeyExists( arguments.metadata.functions[ x ], "asyncPriority" ) ) {
-						pointRecord.asyncPriority = arguments.metadata.functions[ x ].asyncPriority;
-					}
-					if ( structKeyExists( arguments.metadata.functions[ x ], "eventPattern" ) ) {
-						pointRecord.eventPattern = arguments.metadata.functions[ x ].eventPattern;
+					if ( structKeyExists( thisFunction, "interceptionPoint" ) ) {
+						appendInterceptionPoint( point = pointName )
 					}
 
-					// Insert to metadata struct of points found
-					structInsert(
-						pointsFound,
-						arguments.metadata.functions[ x ].name,
-						pointRecord
-					);
+					// verify its an interception point by comparing it to the local defined interception points
+					// Also verify it has not been found already
+					if (
+						structKeyExists( interceptionPointIndex, pointName ) AND
+						NOT structKeyExists( pointsFound, pointName )
+					) {
+						pointRecord = newPointRecord()
+
+						// Discover point information
+						if ( structKeyExists( thisFunction, "async" ) ) {
+							pointRecord.async = true
+						}
+						if ( structKeyExists( thisFunction, "asyncPriority" ) ) {
+							pointRecord.asyncPriority = thisFunction.asyncPriority
+						}
+						if ( structKeyExists( thisFunction, "eventPattern" ) ) {
+							pointRecord.eventPattern = thisFunction.eventPattern
+						}
+
+						pointsFound[ pointName ] = pointRecord
+					}
 				}
 			}
-			// loop over functions
+
+			if (
+				!structKeyExists( currentMetadata, "extends" ) OR
+				currentMetadata.extends.isEmpty() OR
+				currentMetadata.extends.name eq variables.INTERCEPTOR_BASE_CLASS
+			) {
+				break;
+			}
+
+			currentMetadata = currentMetadata.extends
 		}
 
-		// Start Registering inheritances
-		if (
-			arguments.metadata.keyExists( "extends" )
-			&&
-			!arguments.metadata.extends.isEmpty()
-			&&
-			arguments.metadata.extends.name neq "coldbox.system.EventHandler"
-		) {
-			// Recursive lookup
-			parseMetadata( arguments.metadata.extends, pointsFound );
-		}
-
-		// return the interception points found
-		return pointsFound;
+		return pointsFound
 	}
 
 }
