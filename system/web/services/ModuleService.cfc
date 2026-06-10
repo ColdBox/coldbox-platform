@@ -659,10 +659,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		|--------------------------------------------------------------------------
 		*/
 		// Activate dependencies first
-		mConfig.dependencies.each( function( thisDependency ){
-			variables.logger.debug( "==> Activating '#moduleName#' dependency: #arguments.thisDependency#" )
-			activateModule( arguments.thisDependency )
-		} )
+		for( var thisDependency in mConfig.dependencies ) {
+			variables.logger.debug( "==> Activating '#moduleName#' dependency: #thisDependency#" )
+			activateModule( thisDependency )
+		}
 
 		// Check if activating one of this module's dependencies already activated this module, hey it can happen!
 		if ( modules[ arguments.moduleName ].activated ) {
@@ -770,14 +770,14 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			| Module Interceptors
 			|--------------------------------------------------------------------------
 			*/
-			mConfig.interceptors.each( function( thisInterceptor ){
+			for ( var thisInterceptor in mConfig.interceptors ) {
 				variables.interceptorService.registerInterceptor(
 					interceptorClass     : thisInterceptor.class,
 					interceptorProperties: thisInterceptor.properties,
 					interceptorName      : thisInterceptor.name & "@" & moduleName,
 					injector             : mConfig.injector
 				)
-			} )
+			}
 
 			/*
 			|--------------------------------------------------------------------------
@@ -848,16 +848,15 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				}
 
 				// Process Module Router
-				mConfig.router
-					.getRoutes()
-					.each( function( item ){
-						// Incorporate module context
-						if ( !item.module.len() ) {
-							item.module = moduleName
-						}
-						// Add to App Router
-						appRouter.getModuleRoutes( moduleName ).append( item )
-					} )
+				var moduleRoutes = appRouter.getModuleRoutes( moduleName )
+				for ( var item in mConfig.router.getRoutes() ) {
+					// Incorporate module context
+					if ( !item.module.len() ) {
+						item.module = moduleName
+					}
+					// Add to App Router
+					moduleRoutes.append( item )
+				}
 			}
 
 			// Register App and View Helpers
@@ -876,11 +875,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			| Module Executors
 			|--------------------------------------------------------------------------
 			*/
-			mConfig.executors.each( function( key, config ){
-				arguments.config.name = arguments.key
-				variables.controller.getAsyncManager().newExecutor( argumentCollection = arguments.config )
-				variables.logger.info( "+ Registered Module (#moduleName#) Executor: #arguments.key#" )
-			} )
+			for ( var key in mConfig.executors ) {
+				var config = mConfig.executors[ key ]
+				config.name = key
+				variables.controller.getAsyncManager().newExecutor( argumentCollection = config )
+				variables.logger.info( "+ Registered Module (#moduleName#) Executor: #key#" )
+			}
 
 			/*
 			|--------------------------------------------------------------------------
@@ -918,9 +918,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			| Activate Module Children
 			|--------------------------------------------------------------------------
 			*/
-			mConfig.childModules.each( function( thisChild ){
+			for ( var thisChild in mConfig.childModules ) {
 				activateModule( moduleName = thisChild )
-			} )
+			}
 
 			// Log activation time
 			mConfig.activationTime = getTickCount() - sTime
@@ -1074,9 +1074,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			}
 
 			// Remove executors
-			mConfig.executors.each( function( key, config ){
-				variables.controller.getAsyncManager().deleteExecutor( arguments.key )
-			} )
+			for ( var key in mConfig.executors ) {
+				variables.controller.getAsyncManager().deleteExecutor( key )
+			}
 
 			// Remove configuration
 			structDelete( appConfig.modules, arguments.moduleName )
@@ -1109,9 +1109,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// Verify registered modules
 		if ( !isNull( variables.registeredModules ) && isStruct( variables.registeredModules ) ) {
 			// Unload all modules
-			variables.registeredModules.each( function( key, module ){
-				unload( arguments.key )
-			} )
+			for ( var key in variables.registeredModules ) {
+				unload( key )
+			}
 		}
 		return this
 	}
@@ -1427,14 +1427,11 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * @locations The array of locations to register
 	 */
 	private function buildRegistry( required array locations ){
-		arguments.locations
-			.filter( function( item ){
-				return item.trim().len()
-			} )
-			.each( function( item ){
-				// Get all modules found in the module location and append to module registry, only new ones are added
+		for( var item in arguments.locations ){
+			if( item.trim().len() ){
 				scanModulesDirectory( item )
-			} )
+			}
+		}
 	}
 
 	/**
@@ -1502,20 +1499,17 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	}
 
 	/**
-	 * Get an array of modules found and add to the registry structure
+	 * Scan a directory for modules and add them to the registry if not already there, so we can have multiple module locations with order of preference
 	 *
-	 * @dirPath The path to scan
+	 * @dirPath The path to scan for modules, we will expand it and use the physical path for scanning
 	 */
 	private function scanModulesDirectory( required dirPath ){
 		var expandedPath = expandPath( arguments.dirpath )
-
-		directoryList( expandedPath, false, "array", "", "asc" )
-			.filter( function( item ){
-				// Only directories please and no . folders
-				return ( directoryExists( item ) && !item.listLast( "\/" ).find( "." ) )
-			} )
-			.each( function( item ){
-				var moduleName = item.listLast( "\/" )
+		var dirEntries   = directoryList( expandedPath, false, "query", "", "asc" )
+		for ( var item in dirEntries ) {
+			// Only directories and no . folders
+			if ( item.type == "Dir" && !item.name.startsWith( "." ) ) {
+				var moduleName = item.name
 				// Add only if it does not exist, so location preference kicks in
 				if ( not structKeyExists( variables.moduleRegistry, moduleName ) ) {
 					variables.moduleRegistry[ moduleName ] = {
@@ -1533,7 +1527,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 						"Found duplicate module: #moduleName# in #dirPath#. Skipping its registration in our module registry, order of preference given."
 					)
 				}
-			} )
+			}
+		}
 	}
 
 	/**
