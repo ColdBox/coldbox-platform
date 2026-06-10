@@ -121,8 +121,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 */
 	LoaderService function createAppExecutors(){
 		var executors = variables.controller.getSetting( "executors" )
-		for( var thisEecutorName in executors ) {
-			var config = executors[ thisEecutorName ]
+		for ( var thisEecutorName in executors ) {
+			var config  = executors[ thisEecutorName ]
 			config.name = thisEecutorName
 			variables.controller.getAsyncManager().newExecutor( argumentCollection = config )
 			variables.log.info( "+ Registered App Executor: #thisEecutorName#" )
@@ -191,9 +191,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// Map Object Converter
 		binder.map( "ObjectMarshaller@coldbox" ).to( "coldbox.system.core.conversion.ObjectMarshaller" )
 		// Map Async Manager
-		binder
-			.map( "AsyncManager@coldbox" )
-			.toValue( variables.controller.getAsyncManager() )
+		binder.map( "AsyncManager@coldbox" ).toValue( variables.controller.getAsyncManager() )
 		// Map Delegates: core and ColdBox based delegates
 		binder.mapDirectory( packagePath = "coldbox.system.core.delegates", namespace = "@coreDelegates" )
 		binder.mapDirectory( packagePath = "coldbox.system.web.delegates", namespace = "@cbDelegates" )
@@ -252,7 +250,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 		// Process services reinit
 		var services = variables.controller.getServices()
-		for( var thisService in services ) {
+		for ( var thisService in services ) {
 			variables.log.info( "† Shutting down [#thisService#] service..." )
 			services[ thisService ].onShutdown( force = force )
 		}

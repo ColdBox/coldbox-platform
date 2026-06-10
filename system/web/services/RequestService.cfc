@@ -315,8 +315,11 @@ component extends="coldbox.system.web.services.BaseService" {
 	 * @return coldbox.system.web.context.RequestContext
 	 */
 	function createContext( string classPath = "coldbox.system.web.context.RequestContext" ){
-		var oDecorator = ""
-		var decoratorClassPath = variables.controller.getSetting( name = "RequestContextDecorator", defaultValue = "" )
+		var oDecorator         = ""
+		var decoratorClassPath = variables.controller.getSetting(
+			name         = "RequestContextDecorator",
+			defaultValue = ""
+		)
 
 		// Create the original request context
 		var oContext = createObject( "component", arguments.classPath ).init(
@@ -327,10 +330,7 @@ component extends="coldbox.system.web.services.BaseService" {
 		// Determine if we have a decorator, if we do, then decorate it.
 		if ( len( decoratorClassPath ) ) {
 			// Create the decorator
-			oDecorator = createObject(
-				"component",
-				decoratorClassPath
-			).init( oContext, variables.controller )
+			oDecorator = createObject( "component", decoratorClassPath ).init( oContext, variables.controller )
 			// Set Request Context in storage
 			setContext( oDecorator )
 			// Return
