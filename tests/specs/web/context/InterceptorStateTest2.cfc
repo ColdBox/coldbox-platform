@@ -55,15 +55,14 @@
 		// Now process with other method for event pattern
 		this.event.setValue( "unittest", false );
 		this.mock.unittest = variables.unittest;
-		this.state.$property(
-			"metadataMap",
-			"variables",
+		this.state.unregister( this.key );
+		this.state.register(
+			this.key,
+			this.mock,
 			{
-				"#this.key#" : {
-					async         : false,
-					asyncPriority : "normal",
-					eventPattern  : "^UnitTest"
-				}
+				async         : false,
+				asyncPriority : "normal",
+				eventPattern  : "^UnitTest"
 			}
 		);
 		this.state.process(
@@ -104,6 +103,14 @@
 		this.state.unregister( this.key );
 		assertFalse( this.state.getINterceptors().size() );
 		assertFalse( structKeyExists( this.state.getMetadataMap(), this.key ) );
+
+		this.event.setValue( "unittest", false );
+		this.state.process(
+			event  = this.event,
+			data   = structNew(),
+			buffer = createStub()
+		);
+		assertFalse( this.event.getValue( "unittest" ) );
 
 		this.state.unregister( "nothing baby" );
 	}
