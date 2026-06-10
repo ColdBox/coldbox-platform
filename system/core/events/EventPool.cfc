@@ -93,14 +93,14 @@ component accessors="true" {
 	 */
 	function process( required data ){
 		var listenerChain = variables.listenerChain
-		var listenerCount  = listenerChain.len()
-		var state          = variables.state
+		var listenerCount = listenerChain.len()
+		var state         = variables.state
 
 		// Loop and execute each target object as registered in order
 		for ( var listenerIndex = 1; listenerIndex <= listenerCount; listenerIndex++ ) {
 			var listenerEntry = listenerChain[ listenerIndex ]
 			// Invoke the execution point
-			var stopChain = invoker(
+			var stopChain     = invoker(
 				target = listenerEntry.target,
 				data   = arguments.data,
 				state  = state
@@ -124,11 +124,7 @@ component accessors="true" {
 	 *
 	 * @return A boolean indicator that the interception chain needs to be broken or not.
 	 */
-	private boolean function invoker(
-		required target,
-		required data,
-		required state
-	){
+	private boolean function invoker( required target, required data, required state ){
 		var results = invoke(
 			arguments.target,
 			arguments.state,
@@ -146,7 +142,7 @@ component accessors="true" {
 	 * Rebuild the ordered runtime listener chain from the registered pool
 	 */
 	private function rebuildListenerChain(){
-		var newChain           = []
+		var newChain        = []
 		var listenerEntries = variables.pool.entrySet().iterator()
 
 		while ( listenerEntries.hasNext() ) {
@@ -154,10 +150,7 @@ component accessors="true" {
 			var key           = listenerEntry.getKey()
 			var target        = listenerEntry.getValue()
 
-			newChain.append( {
-				"key"    : key,
-				"target" : target
-			} )
+			newChain.append( { "key" : key, "target" : target } )
 		}
 
 		variables.listenerChain = newChain

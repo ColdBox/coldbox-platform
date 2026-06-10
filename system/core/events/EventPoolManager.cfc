@@ -54,7 +54,7 @@ component accessors="true" {
 			indexEventState( thisState )
 		}
 		// Track if states have changed
-		variables.eventStatesChanged   = false
+		variables.eventStatesChanged = false
 
 		return this
 	}
@@ -121,7 +121,7 @@ component accessors="true" {
 		// Verify if the event state doesn't exist in the evnet pool, else create it
 		if ( not structKeyExists( variables.eventPoolContainer, arguments.state ) ) {
 			// Create new event pool
-			eventPool = new coldbox.system.core.events.EventPool( arguments.state )
+			eventPool                                       = new coldbox.system.core.events.EventPool( arguments.state )
 			// Register it with this pool manager
 			variables.eventPoolContainer[ arguments.state ] = eventPool
 		} else {
