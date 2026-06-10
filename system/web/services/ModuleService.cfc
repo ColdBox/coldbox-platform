@@ -40,7 +40,6 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		variables.interceptorService = arguments.controller.getInterceptorService()
 
 		// service properties
-		variables.logger           = ""
 		variables.mConfigCache     = {}
 		variables.moduleRegistry   = structNew( "ordered" )
 		variables.mappingRegistry  = {}
@@ -55,15 +54,29 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * Called by loader service when configuration file loads
 	 */
 	ModuleService function onConfigurationLoad(){
-		variables.logger            = variables.controller.getLogBox().getLogger( this )
+		variables.logBox 		 	= variables.controller.getLogBox()
+		variables.logger            = variables.logBox.getLogger( this )
 		variables.wirebox           = variables.controller.getWireBox()
+		variables.cachebox 		 	= variables.controller.getCacheBox()
 		variables.registeredModules = variables.controller.getSetting( "modules" )
 		variables.appRouter         = variables.wirebox.getInstance( "router@coldbox" )
+		variables.appSettings 		= variables.controller.getConfigSettings()
+		variables.appMapping 		= variables.appSettings.appMapping
+		variables.coldboxVersion 	= variables.controller.getColdBoxVersion()
+		variables.appHash 			= variables.controller.getAppHash()
+		// Global config/Coldbox.cfc moduleSettings override
+		variables.globalModuleSettings = variables.appSettings
+			.coldBoxConfig
+			.getPropertyMixin( "moduleSettings", "variables", {} )
+		// Build exclude lookup struct once for O(1) canLoad() checks on every module
+		variables.excludeModules = {}
+		for ( var m in variables.appSettings.modulesExclude ) {
+			variables.excludeModules[ m ] = true
+		}
 
 		// Load up the config overrides registry
-		var appSettings            = controller.getConfigSettings()
 		variables.appConfigModules = directoryList(
-			appSettings.applicationPath & "config/modules",
+			variables.appSettings.applicationPath & "config/modules",
 			false,
 			"path",
 			"*.cfc|*.bx"
@@ -72,7 +85,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				var invocationClass = fileName.listFirst( "." )
 				return {
 					"path"           : item,
-					"invocationPath" : len( appSettings.appMapping ) ? "#appSettings.appMapping#.config.modules.#invocationClass#" : "config.modules.#invocationClass#",
+					"invocationPath" : len( variables.appMapping ) ? "#variables.appMapping#.config.modules.#invocationClass#" : "config.modules.#invocationClass#",
 					"name"           : invocationClass,
 					"isCFC"          : fileName.findNoCase( ".cfc" ) > 0,
 					"isBoxLang"      : fileName.findNoCase( ".bx" ) > 0
@@ -299,7 +312,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		|--------------------------------------------------------------------------
 		*/
 		lock
-			name          ="module#variables.controller.getAppHash()#.registration.#modName#"
+			name          ="module#variables.appHash#.registration.#modName#"
 			type          ="exclusive"
 			throwontimeout="true"
 			timeout       ="20" {
@@ -654,7 +667,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 		// lock and load baby
 		lock
-			name          ="module#variables.controller.getAppHash()#.activation.#arguments.moduleName#"
+			name          ="module#variables.appHash#.activation.#arguments.moduleName#"
 			type          ="exclusive"
 			timeout       ="20"
 			throwontimeout="true" {
@@ -997,7 +1010,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		}
 
 		lock
-			name          ="module#variables.controller.getAppHash()#.unload.#arguments.moduleName#"
+			name          ="module#variables.appHash#.unload.#arguments.moduleName#"
 			type          ="exclusive"
 			timeout       ="20"
 			throwontimeout="true" {
@@ -1050,7 +1063,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 			// Remove SES if enabled.
 			if ( controller.settingExists( "sesBaseURL" ) ) {
-				variables.wirebox.getInstance( "router@coldbox" ).removeModuleRoutes( arguments.moduleName )
+				variables.appRouter.removeModuleRoutes( arguments.moduleName )
 			}
 
 			// Remove executors
@@ -1113,7 +1126,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		parentInjector = ""
 	){
 		var appSettings = controller.getConfigSettings()
-		var envUtil     = variables.wirebox.getInstance( "Env@coreDelegates" )
+		var envUtil     = getEnvDelegate()
 		var mConfig     = arguments.config
 		var results     = { "config" : "", "injector" : "" }
 
@@ -1266,22 +1279,22 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		|--------------------------------------------------------------------------
 		*/
 		results.config
-			.injectPropertyMixin( "controller", controller )
-			.injectPropertyMixin( "coldboxVersion", controller.getColdBoxSettings().version )
-			.injectPropertyMixin( "appMapping", controller.getSetting( "appMapping" ) )
+			.injectPropertyMixin( "controller", variables.controller )
+			.injectPropertyMixin( "coldboxVersion", variables.coldboxVersion )
+			.injectPropertyMixin( "appMapping", variables.appMapping )
 			.injectPropertyMixin( "moduleMapping", mConfig.mapping )
 			.injectPropertyMixin( "modulePath", mConfig.path )
-			.injectPropertyMixin( "logBox", controller.getLogBox() )
+			.injectPropertyMixin( "logBox", variables.logBox )
 			.injectPropertyMixin( "log", controller.getLogBox().getLogger( results.config ) )
 			.injectPropertyMixin( "wirebox", results.injector )
 			.injectPropertyMixin( "rootWirebox", variables.wirebox )
 			.injectPropertyMixin( "binder", results.injector.getBinder() )
-			.injectPropertyMixin( "cachebox", controller.getCacheBox() )
+			.injectPropertyMixin( "cachebox", variables.cacheBox )
 			.injectPropertyMixin( "getJavaSystem", envUtil.getJavaSystem )
 			.injectPropertyMixin( "getSystemSetting", envUtil.getSystemSetting )
 			.injectPropertyMixin( "getSystemProperty", envUtil.getSystemProperty )
 			.injectPropertyMixin( "getEnv", envUtil.getEnv )
-			.injectPropertyMixin( "appRouter", variables.wireBox.getInstance( "router@coldbox" ) )
+			.injectPropertyMixin( "appRouter", variables.appRouter )
 			.injectPropertyMixin( "router", arguments.config.router )
 
 		/*
@@ -1321,13 +1334,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// If true, then look into the global app and load the module config overrides
 		if ( mConfig.parseParentSettings ) {
 			// Global config/Coldbox.cfc moduleSettings override
-			var globalModuleSettings = controller
-				.getSetting( "ColdBoxConfig" )
-				.getPropertyMixin( "moduleSettings", "variables", {} )
+			param name="variables.globalModuleSettings[ mConfig.modelNamespace ]" default="#structNew()#";
 
-			param name="globalModuleSettings[ mConfig.modelNamespace ]" default="#structNew()#";
-
-			mConfig.settings.append( globalModuleSettings[ mConfig.modelNamespace ], true )
+			mConfig.settings.append( variables.globalModuleSettings[ mConfig.modelNamespace ], true )
 
 			// config/{mConfig.modelNamespace}.cfc overrides
 			if ( variables.appConfigModules.keyExists( mConfig.modelNamespace ) ) {
@@ -1438,7 +1447,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		}
 
 		var oConfig = variables.wirebox.getInstance( overrideRecord.invocationPath )
-		var envUtil = variables.wirebox.getInstance( "Env@coreDelegates" )
+		var envUtil = getEnvDelegate()
 
 		/*
 		|--------------------------------------------------------------------------
@@ -1446,21 +1455,21 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		|--------------------------------------------------------------------------
 		*/
 		oConfig
-			.injectPropertyMixin( "controller", controller )
-			.injectPropertyMixin( "coldboxVersion", controller.getColdBoxSettings().version )
-			.injectPropertyMixin( "appMapping", controller.getSetting( "appMapping" ) )
+			.injectPropertyMixin( "controller", variables.controller )
+			.injectPropertyMixin( "coldboxVersion", variables.coldboxVersion )
+			.injectPropertyMixin( "appMapping", variables.appMapping )
 			.injectPropertyMixin( "moduleMapping", mConfig.mapping )
 			.injectPropertyMixin( "modulePath", mConfig.path )
-			.injectPropertyMixin( "logBox", controller.getLogBox() )
-			.injectPropertyMixin( "log", controller.getLogBox().getLogger( oConfig ) )
+			.injectPropertyMixin( "logBox", variables.logBox )
+			.injectPropertyMixin( "log", variables.logBox.getLogger( oConfig ) )
 			.injectPropertyMixin( "wirebox", variables.wireBox )
 			.injectPropertyMixin( "binder", variables.wireBox.getBinder() )
-			.injectPropertyMixin( "cachebox", controller.getCacheBox() )
+			.injectPropertyMixin( "cachebox", variables.cacheBox )
 			.injectPropertyMixin( "getJavaSystem", envUtil.getJavaSystem )
 			.injectPropertyMixin( "getSystemSetting", envUtil.getSystemSetting )
 			.injectPropertyMixin( "getSystemProperty", envUtil.getSystemProperty )
 			.injectPropertyMixin( "getEnv", envUtil.getEnv )
-			.injectPropertyMixin( "appRouter", variables.wireBox.getInstance( "router@coldbox" ) )
+			.injectPropertyMixin( "appRouter", variables.appRouter )
 			.injectPropertyMixin( "router", arguments.config.router )
 
 		/*
@@ -1526,10 +1535,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * @moduleName The module to check
 	 */
 	private boolean function canLoad( required moduleName ){
-		var excludeModules = arrayToList( controller.getSetting( "ModulesExclude" ) )
-
 		// If we have excludes and in the excludes
-		if ( len( excludeModules ) and listFindNoCase( excludeModules, arguments.moduleName ) ) {
+		if ( structKeyExists( variables.excludeModules, arguments.moduleName ) ) {
 			variables.logger.info( "> Module: #arguments.moduleName# excluded from loading." )
 			return false
 		}
