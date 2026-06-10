@@ -128,7 +128,10 @@ component serializable="false" accessors="true" {
 
 		// Log startup time
 		var elapsedMs = getTickCount() - startTime
-		application[ appKey ].getLogBox().getLogger( this ).info( "=> ColdBox Application started in [#elapsedMs#] ms" );
+		application[ appKey ]
+			.getLogBox()
+			.getLogger( this )
+			.info( "=> ColdBox Application started in [#elapsedMs#] ms" );
 
 		return this
 	}

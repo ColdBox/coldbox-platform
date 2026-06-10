@@ -54,21 +54,23 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * Called by loader service when configuration file loads
 	 */
 	ModuleService function onConfigurationLoad(){
-		variables.logBox 		 	= variables.controller.getLogBox()
+		variables.logBox            = variables.controller.getLogBox()
 		variables.logger            = variables.logBox.getLogger( this )
 		variables.wirebox           = variables.controller.getWireBox()
-		variables.cachebox 		 	= variables.controller.getCacheBox()
+		variables.cachebox          = variables.controller.getCacheBox()
 		variables.registeredModules = variables.controller.getSetting( "modules" )
 		variables.appRouter         = variables.wirebox.getInstance( "router@coldbox" )
-		variables.appSettings 		= variables.controller.getConfigSettings()
-		variables.appMapping 		= variables.appSettings.appMapping
-		variables.coldboxVersion 	= variables.controller.getColdBoxVersion()
-		variables.appHash 			= variables.controller.getAppHash()
+		variables.appSettings       = variables.controller.getConfigSettings()
+		variables.appMapping        = variables.appSettings.appMapping
+		variables.coldboxVersion    = variables.controller.getColdBoxVersion()
+		variables.appHash           = variables.controller.getAppHash()
 
 		// Global config/Coldbox.cfc moduleSettings override
-		variables.globalModuleSettings = variables.appSettings
-			.coldBoxConfig
-			.getPropertyMixin( "moduleSettings", "variables", {} )
+		variables.globalModuleSettings = variables.appSettings.coldBoxConfig.getPropertyMixin(
+			"moduleSettings",
+			"variables",
+			{}
+		)
 
 		// Build exclude lookup struct once for O(1) canLoad() checks on every module
 		variables.excludeModules = {}
@@ -90,15 +92,15 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 */
 	private void function registerModuleAppOverrides(){
 		variables.appConfigModules = {}
-		var configFiles = directoryList(
+		var configFiles            = directoryList(
 			variables.appSettings.applicationPath & "config/modules",
 			false,
 			"query",
 			"*.cfc|*.bx"
 		)
 		for ( var item in configFiles ) {
-			var fileName        = item.name
-			var invocationClass = fileName.listFirst( "." )
+			var fileName                                  = item.name
+			var invocationClass                           = fileName.listFirst( "." )
 			variables.appConfigModules[ invocationClass ] = {
 				"path"           : item.directory & "/" & item.name,
 				"invocationPath" : len( variables.appMapping ) ? "#variables.appMapping#.config.modules.#invocationClass#" : "config.modules.#invocationClass#",
@@ -659,7 +661,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		|--------------------------------------------------------------------------
 		*/
 		// Activate dependencies first
-		for( var thisDependency in mConfig.dependencies ) {
+		for ( var thisDependency in mConfig.dependencies ) {
 			variables.logger.debug( "==> Activating '#moduleName#' dependency: #thisDependency#" )
 			activateModule( thisDependency )
 		}
@@ -876,7 +878,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			|--------------------------------------------------------------------------
 			*/
 			for ( var key in mConfig.executors ) {
-				var config = mConfig.executors[ key ]
+				var config  = mConfig.executors[ key ]
 				config.name = key
 				variables.controller.getAsyncManager().newExecutor( argumentCollection = config )
 				variables.logger.info( "+ Registered Module (#moduleName#) Executor: #key#" )
@@ -1153,7 +1155,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// title
 		param results.config.title = arguments.moduleName;
 
-		mConfig.title              = results.config.title
+		mConfig.title = results.config.title
 		// aliases
 		if ( structKeyExists( results.config, "aliases" ) ) {
 			// inflate list to array
@@ -1427,8 +1429,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * @locations The array of locations to register
 	 */
 	private function buildRegistry( required array locations ){
-		for( var item in arguments.locations ){
-			if( item.trim().len() ){
+		for ( var item in arguments.locations ) {
+			if ( item.trim().len() ) {
 				scanModulesDirectory( item )
 			}
 		}
