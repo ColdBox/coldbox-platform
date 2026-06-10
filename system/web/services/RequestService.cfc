@@ -28,6 +28,8 @@ component extends="coldbox.system.web.services.BaseService" {
 		// Local Configuration data and dependencies
 		variables.eventName          = controller.getSetting( "eventName" )
 		variables.eventCaching       = controller.getSetting( "eventCaching" )
+		variables.jsonPayloadToRC    = controller.getSetting( "jsonPayloadToRC" )
+		variables.defaultEvent       = controller.getSetting( "DefaultEvent" )
 		variables.interceptorService = controller.getInterceptorService()
 		variables.routingService     = controller.getRoutingService()
 		variables.handlerService     = controller.getHandlerService()
@@ -50,80 +52,79 @@ component extends="coldbox.system.web.services.BaseService" {
 	 * @return coldbox.system.web.context.RequestContext
 	 */
 	any function requestCapture( event, boolean proxyCall = false ){
-		var context = getContext();
-		var rc      = context.getCollection();
-		var prc     = context.getCollection( private = true );
+		var context = getContext()
+		var rc      = context.getCollection()
+		var prc     = context.getCollection( private = true )
 
 		// Capture FORM/URL or direct overrride
 		if ( isDefined( "FORM" ) ) {
-			structAppend( rc, FORM );
+			structAppend( rc, FORM )
 		}
 		if ( isDefined( "URL" ) ) {
-			structAppend( rc, URL );
+			structAppend( rc, URL )
 		}
 
 		// If the inbound content body is a JSON payload capture it
-		if (
-			controller.getSetting( "jsonPayloadToRC" ) &&
-			len( context.getHTTPContent() ) &&
-			isJSON( context.getHTTPContent() )
-		) {
-			var payload = context.getHTTPContent( json = true );
-			if ( isStruct( payload ) ) {
-				structAppend( rc, payload );
+		if ( variables.jsonPayloadToRC ) {
+			var httpContent = context.getHTTPContent()
+			if ( len( httpContent ) && isJSON( httpContent ) ) {
+				var payload = context.getHTTPContent( json = true )
+				if ( isStruct( payload ) ) {
+					structAppend( rc, payload )
+				}
 			}
 		}
 
 		// Configure decorator if available?
 		if ( structKeyExists( context, "configure" ) ) {
-			context.configure();
+			context.configure()
 		}
 
 		// First, process the request through the RoutingService
 		if ( !arguments.proxyCall ) {
-			variables.routingService.requestCapture( context );
+			variables.routingService.requestCapture( context )
 		}
 
 		// Do we have an override
 		if ( !isNull( arguments.event ) && len( arguments.event ) ) {
-			rc[ variables.eventName ] = arguments.event;
+			rc[ variables.eventName ] = arguments.event
 		}
 
 		// Remove FW reserved commands just in case before collection snapshot
-		var fwCache = structKeyExists( rc, "fwCache" );
-		structDelete( rc, "fwCache" );
+		var fwCache = structKeyExists( rc, "fwCache" )
+		structDelete( rc, "fwCache" )
 
 		// Take snapshot of incoming collection
-		prc[ "cbox_incomingContextHash" ] = hash( rc.toString() );
+		prc[ "cbox_incomingContextHash" ] = hash( rc.toString() )
 
 		// Do we have flash elements to inflate?
 		if ( variables.flashScope.flashExists() ) {
 			if ( getLogger().canDebug() ) {
 				getLogger().debug( "Flash RAM detected, inflating flash." );
 			}
-			variables.flashScope.inflateFlash();
+			variables.flashScope.inflateFlash()
 		}
 
 		// Default Event Determination
 		if ( NOT structKeyExists( rc, variables.eventName ) ) {
-			rc[ variables.eventName ] = controller.getSetting( "DefaultEvent" );
+			rc[ variables.eventName ] = variables.defaultEvent
 		}
 
 		// Event More Than 1 Check, grab the first event instance, other's are discarded
 		if ( listLen( rc[ variables.eventName ] ) GTE 2 ) {
-			rc[ variables.eventName ] = getToken( rc[ variables.eventName ], 2, "," );
+			rc[ variables.eventName ] = getToken( rc[ variables.eventName ], 2, "," )
 		}
 
 		// Default Event Action Checks
-		variables.handlerService.defaultActionCheck( context );
+		variables.handlerService.defaultActionCheck( context )
 
 		// Execute onRequestCapture interceptionPoint
-		variables.interceptorService.announce( "onRequestCapture" );
+		variables.interceptorService.announce( "onRequestCapture" )
 
 		// Are we using event caching?
-		eventCachingTest( context, fwCache );
+		eventCachingTest( context, fwCache )
 
-		return context;
+		return context
 	}
 
 	/**
@@ -134,52 +135,52 @@ component extends="coldbox.system.web.services.BaseService" {
 	 * @fwCache                Flag to hard purge the cache if needed
 	 */
 	RequestService function eventCachingTest( required context, boolean fwCache = false ){
-		var eventCache      = {};
-		var oEventURLFacade = variables.templateCache.getEventURLFacade();
-		var currentEvent    = arguments.context.getCurrentEvent();
+		var eventCache      = {}
+		var oEventURLFacade = variables.templateCache.getEventURLFacade()
+		var currentEvent    = arguments.context.getCurrentEvent()
 
 		// Are we using event caching?
 		if ( variables.eventCaching ) {
 			// Cleanup the cache key, just in case, maybe ses interceptor has been used.
-			arguments.context.removeEventCacheableEntry();
+			arguments.context.removeEventCacheableEntry()
 
 			// Get metadata entry for event that's fired.
-			var eventDictionary = variables.handlerService.getEventMetaDataEntry( currentEvent );
+			var eventDictionary = variables.handlerService.getEventMetaDataEntry( currentEvent )
 
 			// Verify that it is cacheable, else quit, no need for testing anymore.
 			if ( NOT eventDictionary.cacheable ) {
-				return this;
+				return this
 			}
 
 			// Incorporate metadata about event
-			eventCache.append( eventDictionary, true );
+			eventCache.append( eventDictionary, true )
 			// Build the event cache key according to incoming request
 			eventCache[ "cacheKey" ] = oEventURLFacade.buildEventKey(
 				targetEvent     = currentEvent,
 				targetContext   = arguments.context,
 				eventDictionary = eventDictionary
-			);
+			)
 
 			// Check for Event Cache Purge
 			if ( arguments.fwCache ) {
 				// Clear the key from the cache
-				variables.cacheBox.getCache( eventDictionary.provider ).clear( eventCache.cacheKey );
+				variables.cacheBox.getCache( eventDictionary.provider ).clear( eventCache.cacheKey )
 
 				// Return don't show cached version
-				return this;
+				return this
 			}
 
 			// Event has been found, flag it so we can render it from cache if it still survives
-			arguments.context.setEventCacheableEntry( eventCache );
+			arguments.context.setEventCacheableEntry( eventCache )
 
 			// debug logging
 			if ( getLogger().canDebug() ) {
-				getLogger().debug( "Event caching detected for : #eventCache.toString()#" );
+				getLogger().debug( "Event caching detected for : #eventCache.toString()#" )
 			}
 		}
 		// end if using event caching.
 
-		return this;
+		return this
 	}
 
 	/**
