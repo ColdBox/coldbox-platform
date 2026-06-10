@@ -26,6 +26,11 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 */
 	property name="interceptorConfig" type="struct";
 
+	/**
+	 * Startup dirty flag for interception point changes after configuration load
+	 */
+	property name="interceptionPointsChanged" type="boolean";
+
 	// Interceptor base class
 	INTERCEPTOR_BASE_CLASS = "coldbox.system.Interceptor";
 
@@ -93,7 +98,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		variables.interceptionStates           = {}
 		// Setup Default Configuration
 		variables.interceptorConfig            = {}
-		variables.onLoadInterceptionPointsHash = ""
+		variables.interceptionPointsChanged    = false
 
 		return this
 	}
@@ -122,8 +127,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		)
 		// Register All Core App Interceptors
 		registerInterceptors()
-		// Store hash of loaded points
-		variables.onLoadInterceptionPointsHash = variables.interceptionPoints.toList().hash()
+		// Reset startup dirty flag after the initial interceptor registration pass
+		variables.interceptionPointsChanged = false
 
 		return this
 	}
@@ -134,11 +139,11 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * @return InterceptorService
 	 */
 	function rescanInterceptors(){
-		if ( variables.onLoadInterceptionPointsHash != variables.interceptionPoints.toList().hash() ) {
-			getLogger().info( "Re-scanning interceptors as modules have contributed interception points" );
-			registerInterceptors();
+		if ( variables.interceptionPointsChanged ) {
+			getLogger().info( "Re-scanning interceptors as interception points changed during startup" )
+			registerInterceptors()
 		}
-		return this;
+		return this
 	}
 
 
@@ -498,6 +503,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 					core   = false,
 					module = arguments.module
 				)
+				variables.interceptionPointsChanged = true
 			}
 		}
 

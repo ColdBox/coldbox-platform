@@ -42,10 +42,12 @@
 			.$args( "coldboxConfig" )
 			.$results( mockBox.createStub() );
 		iService.$( "registerInterceptor", iService ).$( "registerInterceptors", iService );
+		iService.$property( "interceptionPointsChanged", "variables", true );
 
 		iService.onConfigurationLoad();
 
 		assertTrue( iService.$once( "registerInterceptors" ) );
+		expect( iService.getInterceptionPointsChanged() ).toBeFalse();
 	}
 
 	function testregisterInterceptors(){
@@ -168,10 +170,12 @@
 
 	function testAppendInterceptionPoints(){
 		var aLen = arrayLen( iService.getInterceptionPoints() );
+		expect( iService.getInterceptionPointsChanged() ).toBeFalse();
 
 		// test 1: nothing
 		iService.appendInterceptionPoints( "" );
 		assertEquals( aLen, arrayLen( iService.getInterceptionPoints() ) );
+		expect( iService.getInterceptionPointsChanged() ).toBeFalse();
 
 		// test 2: add points
 		aLen = arrayLen( iService.getInterceptionPoints() );
@@ -180,11 +184,17 @@
 		expect( iService.getInterceptionPointIndex().onTest.name ).toBe( "onTest" );
 		expect( iService.getInterceptionPointIndex().onTest.core ).toBeFalse();
 		expect( iService.getInterceptionPointIndex().onTest.module ).toBe( "" );
+		expect( iService.getInterceptionPointsChanged() ).toBeTrue();
+
+		iService.$property( "interceptionPointsChanged", "variables", false );
 
 		// test 3: add points with duplicates
 		aLen = arrayLen( iService.getInterceptionPoints() );
 		iService.appendInterceptionPoints( [ "on1", "on2", "on1" ] );
 		assertEquals( ( aLen + 2 ), arrayLen( iService.getInterceptionPoints() ) );
+		expect( iService.getInterceptionPointsChanged() ).toBeTrue();
+
+		iService.$property( "interceptionPointsChanged", "variables", false );
 
 		// test 4: add module points
 		aLen = arrayLen( iService.getInterceptionPoints() );
@@ -193,12 +203,29 @@
 		expect( iService.getInterceptionPointIndex().onModulePoint.name ).toBe( "onModulePoint" );
 		expect( iService.getInterceptionPointIndex().onModulePoint.core ).toBeFalse();
 		expect( iService.getInterceptionPointIndex().onModulePoint.module ).toBe( "testModule" );
+		expect( iService.getInterceptionPointsChanged() ).toBeTrue();
+
+		iService.$property( "interceptionPointsChanged", "variables", false );
 
 		// test 5: case-insensitive duplicate checks use the index
 		aLen = arrayLen( iService.getInterceptionPoints() );
 		iService.appendInterceptionPoints( "ONMODULEPOINT" );
 		assertEquals( aLen, arrayLen( iService.getInterceptionPoints() ) );
 		expect( iService.getInterceptionPointIndex().onModulePoint.module ).toBe( "testModule" );
+		expect( iService.getInterceptionPointsChanged() ).toBeFalse();
+	}
+
+	function testRescanInterceptorsOnlyWhenInterceptionPointsChanged(){
+		mockLogger.$( "info" );
+		iService.$( "registerInterceptors", iService );
+
+		iService.rescanInterceptors();
+		assertTrue( iService.$never( "registerInterceptors" ) );
+
+		iService.appendInterceptionPoints( "onStartupAddedPoint" );
+		iService.rescanInterceptors();
+
+		assertTrue( iService.$once( "registerInterceptors" ) );
 	}
 
 	function testSimpleProcessInterception(){
