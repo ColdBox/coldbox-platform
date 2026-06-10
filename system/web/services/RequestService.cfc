@@ -135,50 +135,51 @@ component extends="coldbox.system.web.services.BaseService" {
 	 * @fwCache                Flag to hard purge the cache if needed
 	 */
 	RequestService function eventCachingTest( required context, boolean fwCache = false ){
-		var eventCache      = {}
+		// Not using event caching? Bail early before doing any work. This is the common path.
+		if ( !variables.eventCaching ) {
+			return this;
+		}
+
 		var oEventURLFacade = variables.templateCache.getEventURLFacade()
 		var currentEvent    = arguments.context.getCurrentEvent()
+		var eventCache      = {}
 
-		// Are we using event caching?
-		if ( variables.eventCaching ) {
-			// Cleanup the cache key, just in case, maybe ses interceptor has been used.
-			arguments.context.removeEventCacheableEntry()
+		// Cleanup the cache key, just in case, maybe ses interceptor has been used.
+		arguments.context.removeEventCacheableEntry()
 
-			// Get metadata entry for event that's fired.
-			var eventDictionary = variables.handlerService.getEventMetaDataEntry( currentEvent )
+		// Get metadata entry for event that's fired.
+		var eventDictionary = variables.handlerService.getEventMetaDataEntry( currentEvent )
 
-			// Verify that it is cacheable, else quit, no need for testing anymore.
-			if ( NOT eventDictionary.cacheable ) {
-				return this
-			}
-
-			// Incorporate metadata about event
-			eventCache.append( eventDictionary, true )
-			// Build the event cache key according to incoming request
-			eventCache[ "cacheKey" ] = oEventURLFacade.buildEventKey(
-				targetEvent     = currentEvent,
-				targetContext   = arguments.context,
-				eventDictionary = eventDictionary
-			)
-
-			// Check for Event Cache Purge
-			if ( arguments.fwCache ) {
-				// Clear the key from the cache
-				variables.cacheBox.getCache( eventDictionary.provider ).clear( eventCache.cacheKey )
-
-				// Return don't show cached version
-				return this
-			}
-
-			// Event has been found, flag it so we can render it from cache if it still survives
-			arguments.context.setEventCacheableEntry( eventCache )
-
-			// debug logging
-			if ( getLogger().canDebug() ) {
-				getLogger().debug( "Event caching detected for : #eventCache.toString()#" )
-			}
+		// Verify that it is cacheable, else quit, no need for testing anymore.
+		if ( NOT eventDictionary.cacheable ) {
+			return this
 		}
-		// end if using event caching.
+
+		// Incorporate metadata about event
+		eventCache.append( eventDictionary, true )
+		// Build the event cache key according to incoming request
+		eventCache[ "cacheKey" ] = oEventURLFacade.buildEventKey(
+			targetEvent     = currentEvent,
+			targetContext   = arguments.context,
+			eventDictionary = eventDictionary
+		)
+
+		// Check for Event Cache Purge
+		if ( arguments.fwCache ) {
+			// Clear the key from the cache
+			variables.cacheBox.getCache( eventDictionary.provider ).clear( eventCache.cacheKey )
+
+			// Return don't show cached version
+			return this
+		}
+
+		// Event has been found, flag it so we can render it from cache if it still survives
+		arguments.context.setEventCacheableEntry( eventCache )
+
+		// debug logging
+		if ( getLogger().canDebug() ) {
+			getLogger().debug( "Event caching detected for : #eventCache.toString()#" )
+		}
 
 		return this
 	}
