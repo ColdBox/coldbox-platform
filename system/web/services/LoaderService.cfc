@@ -13,7 +13,6 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 */
 	function init( required controller ){
 		variables.controller = arguments.controller;
-		variables.log        = "";
 		return this;
 	}
 
@@ -36,10 +35,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			arguments.overrideAppMapping,
 			arguments.overrideWebMapping
 		);
-		// Prep services
+		// Get commonly used variables
 		var coldBoxSettings = variables.controller.getColdBoxSettings();
 		var services        = variables.controller.getServices();
 		var configSettings  = variables.controller.getConfigSettings();
+		var logBox          = variables.controller.getLogBox();
+		var wireBox         = variables.controller.getWireBox();
 
 		// Do we need to create a controller decorator?
 		if ( len( configSettings.controllerDecorator ) ) {
@@ -49,13 +50,14 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// Check if application has loaded logbox settings so we can reconfigure, else using defaults.
 		if ( NOT structIsEmpty( configSettings.logBoxConfig ) ) {
 			// reconfigure LogBox with user configurations
-			variables.controller.getLogBox().configure( variables.controller.getLogBox().getConfig() );
+			logBox.configure( logBox.getConfig() );
 			// Reset the controller main logger
-			variables.controller.setLog( variables.controller.getLogBox().getLogger( variables.controller ) );
+			controller.setLog( logBox.getLogger( controller ) );
 		}
 
 		// Seed a local logger
-		variables.log = variables.controller.getLogBox().getLogger( this );
+		variables.log = logBox.getLogger( this )
+		var canInfo   = variables.log.canInfo()
 		// Clear the Cache Dictionaries, just to make sure, we are in reload mode.
 		services.handlerService.clearDictionaries();
 		// Configure interceptors for operation from the configuration file
@@ -69,16 +71,17 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// Execute onConfigurationLoad for coldbox internal services()
 		for ( var thisService in services ) {
 			services[ thisService ].onConfigurationLoad();
-			variables.log.info( "+ #thisService# configured" );
+			if ( canInfo ) {
+				variables.log.info( "+ #thisService# configured" );
+			}
 		}
 
 		// Auto Map Root Models
 		if ( configSettings.autoMapModels && directoryExists( configSettings.modelsPath ) ) {
-			variables.controller
-				.getWireBox()
-				.getBinder()
-				.mapDirectory( configSettings.ModelsInvocationPath );
-			variables.log.info( "+ Automatically mapped all root models" );
+			wireBox.getBinder().mapDirectory( configSettings.ModelsInvocationPath );
+			if ( canInfo ) {
+				variables.log.info( "+ Automatically mapped all root models" );
+			}
 		}
 
 		// Load up App Executors
@@ -105,7 +108,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// Startup the schedulers now that the entire application has been loaded and runnning
 		services.schedulerService.startupSchedulers();
 		// Log it
-		variables.log.info( "+++ ColdBox is ready to serve requests" );
+		if ( canInfo ) {
+			variables.log.info( "+++ ColdBox is ready to serve requests" );
+		}
 
 		// We are now done, rock and roll!!
 		return this;
@@ -115,14 +120,14 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * Create and register the application's executors
 	 */
 	LoaderService function createAppExecutors(){
-		variables.controller
-			.getSetting( "executors" )
-			.each( function( key, config ){
-				arguments.config.name = arguments.key;
-				variables.controller.getAsyncManager().newExecutor( argumentCollection = arguments.config );
-				variables.log.info( "+ Registered App Executor: #arguments.key#" );
-			} );
-		return this;
+		var executors = variables.controller.getSetting( "executors" )
+		for( var thisEecutorName in executors ) {
+			var config = executors[ thisEecutorName ]
+			config.name = thisEecutorName
+			variables.controller.getAsyncManager().newExecutor( argumentCollection = config )
+			variables.log.info( "+ Registered App Executor: #thisEecutorName#" )
+		}
+		return this
 	}
 
 	/**
@@ -241,57 +246,43 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * @force If true, it forces all shutdowns this is usually true when doing reinits
 	 */
 	LoaderService function processShutdown( boolean force = false ){
-		if ( !isSimpleValue( variables.log ) ) {
-			variables.log.info( "† Shutting down ColdBox..." );
-		}
+		variables.log.info( "† Shutting down ColdBox..." )
 
 		// Announce shutdown
-		variables.controller.getInterceptorService().announce( "onColdBoxShutdown" );
+		variables.controller.getInterceptorService().announce( "onColdBoxShutdown" )
 
 		// Start shutting things down
-		var wireBox = variables.controller.getWireBox();
+		var wireBox = variables.controller.getWireBox()
 
 		// Process services reinit
-		structEach( variables.controller.getServices(), function( key, thisService ){
-			if ( !isSimpleValue( variables.log ) ) {
-				variables.log.info( "† Shutting down ColdBox #arguments.key# service..." );
-			}
-			thisService.onShutdown( force = force );
-		} );
+		var services = variables.controller.getServices()
+		for( var thisService in services ) {
+			variables.log.info( "† Shutting down [#thisService#] service..." )
+			services[ thisService ].onShutdown( force = force )
+		}
 
 		// Shutdown any services like cache engine, etc.
-		if ( !isSimpleValue( variables.log ) ) {
-			variables.log.info( "† Shutting down CacheBox..." );
+		variables.log.info( "† Shutting down CacheBox..." )
+		variables.controller.getCacheBox().shutdown()
+
+		// Shutdown all ColdBox Scheduler Tasks, no need to delete them as WireBox will be nuked!
+		variables.log.info( "† Shutting down ColdBox Task Scheduler..." )
+
+		try {
+			wirebox.getInstance( "AsyncManager@coldbox" ).shutdownAllExecutors( force = arguments.force )
+		} catch ( any e ) {
+			variables.log.error( "† Error getting the async manager to shutdown all executors...", e )
 		}
-		variables.controller.getCacheBox().shutdown();
 
 		// Shutdown WireBox if it exists
 		if ( isObject( wirebox ) ) {
-			if ( !isSimpleValue( variables.log ) ) {
-				variables.log.info( "† Shutting down WireBox..." );
-			}
-			wirebox.shutdown();
-		}
-
-		// Shutdown all ColdBox Scheduler Tasks, no need to delete them as WireBox will be nuked!
-		if ( !isSimpleValue( variables.log ) ) {
-			variables.log.info( "† Shutting down ColdBox Task Scheduler..." );
-		}
-
-		try {
-			var asyncManager = wirebox.getInstance( "AsyncManager@coldbox" );
-			asyncManager.shutdownAllExecutors( force = arguments.force );
-		} catch ( any e ) {
-			if ( !isSimpleValue( variables.log ) && variables.log.canError() ) {
-				variables.log.error( "† Error getting the async manager to shutdown all executors...", e );
-			}
+			variables.log.info( "† Shutting down WireBox..." )
+			wirebox.shutdown()
 		}
 
 		// Shutdown LogBox LAST
-		if ( !isSimpleValue( variables.log ) ) {
-			variables.log.info( "† Shutting down LogBox..." );
-		}
-		variables.controller.getLogBox().shutdown();
+		variables.log.info( "† Shutting down LogBox..." )
+		variables.controller.getLogBox().shutdown()
 
 		return this;
 	}
