@@ -203,14 +203,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		string asyncPriority     = "NORMAL",
 		numeric asyncJoinTimeout = 0
 	){
-		var interceptionStates = variables.interceptionStates
-
 		// Process The State if it exists, else just exit out
-		if ( !structKeyExists( interceptionStates, arguments.state ) ) {
+		if ( !structKeyExists( variables.interceptionStates, arguments.state ) ) {
 			return
 		}
 
-		var interceptionState = interceptionStates[ arguments.state ]
+		var interceptionState = variables.interceptionStates[ arguments.state ]
 		var event            = controller.getRequestService().getContext()
 		var buffer           = getLazyBuffer()
 

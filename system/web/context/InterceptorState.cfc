@@ -30,20 +30,18 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 		required logbox,
 		required controller
 	){
-		super.init( argumentCollection = arguments );
+		super.init( argumentCollection = arguments )
 
 		// Controller
-		variables.controller  = arguments.controller;
+		variables.controller  = arguments.controller
 		// md ref map
-		variables.metadataMap = {};
+		variables.metadataMap = {}
 		// Utilities
-		variables.utility     = arguments.controller.getUtil();
+		variables.utility     = arguments.controller.getUtil()
 		// UUID Helper
-		variables.uuidHelper  = createObject( "java", "java.util.UUID" );
-		// Logger Object
-		variables.log         = arguments.logbox.getLogger( this );
+		variables.uuidHelper  = createObject( "java", "java.util.UUID" )
 
-		return this;
+		return this
 	}
 
 	/**
@@ -53,9 +51,9 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 	 */
 	function getMetadataMap( interceptorKey ){
 		if ( !isNull( arguments.interceptorKey ) ) {
-			return variables.metadataMap[ arguments.interceptorKey ];
+			return variables.metadataMap[ arguments.interceptorKey ]
 		}
-		return variables.metadataMap;
+		return variables.metadataMap
 	}
 
 	/**
@@ -71,11 +69,11 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 		required interceptorMD
 	){
 		// Register interceptor object
-		super.register( arguments.interceptorKey, arguments.interceptor );
+		super.register( arguments.interceptorKey, arguments.interceptor )
 		// Register interceptor metadata
-		variables.metadataMap[ arguments.interceptorKey ] = arguments.interceptorMD;
+		variables.metadataMap[ arguments.interceptorKey ] = arguments.interceptorMD
 
-		return this;
+		return this
 	}
 
 	/**
@@ -85,11 +83,11 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 	 */
 	function unregister( required interceptorKey ){
 		// unregister object
-		var results = super.unregister( arguments.interceptorKey );
+		var results = super.unregister( arguments.interceptorKey )
 		// unregister metadata map
-		structDelete( variables.metadataMap, arguments.interceptorKey );
+		structDelete( variables.metadataMap, arguments.interceptorKey )
 
-		return results;
+		return results
 	}
 
 	/**
@@ -98,7 +96,7 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 	 * @interceptorKey The interceptor key class to verify it exists
 	 */
 	function exists( required interceptorKey ){
-		return super.exists( arguments.interceptorKey );
+		return super.exists( arguments.interceptorKey )
 	}
 
 	/**
@@ -107,7 +105,7 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 	 * @interceptorKey The interceptor key class to retrieve
 	 */
 	function getInterceptor( required interceptorKey ){
-		return super.getObject( arguments.interceptorKey );
+		return super.getObject( arguments.interceptorKey )
 	}
 
 	/**
@@ -171,8 +169,8 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 			"all"
 		)#"
 
-		if ( variables.log.canDebug() ) {
-			variables.log.debug(
+		if ( getLogger().canDebug() ) {
+			getLogger().debug(
 				"Threading interceptor chain: '#getState()#' with thread name: #threadName#, priority: #arguments.asyncPriority#"
 			)
 		}
@@ -195,8 +193,8 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 					buffer = attributes.buffer
 				);
 
-				if ( variables.log.canDebug() ) {
-					variables.log.debug(
+				if ( getLogger().canDebug() ) {
+					getLogger().debug(
 						"Finished threaded interceptor chain: #getState()# with thread name: #attributes.threadName#",
 						thread
 					)
@@ -232,8 +230,8 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 		var threadnames  = []
 		var threadData   = {}
 
-		if ( variables.log.canDebug() ) {
-			variables.log.debug(
+		if ( getLogger().canDebug() ) {
+			getLogger().debug(
 				"AsyncAll interceptor chain starting for: '#getState()#' with join: #arguments.asyncAllJoin#, priority: #arguments.asyncPriority#, timeout: #arguments.asyncJoinTimeout#"
 			)
 		}
@@ -280,7 +278,7 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 							"rc"            : threadEvent.getCollection(),
 							"prc"           : threadEvent.getPrivateCollection()
 						}
-						var canDebug = variables.log.canDebug()
+						var canDebug = getLogger().canDebug()
 
 						// Invoke the execution point
 						variables.invoker(
@@ -289,12 +287,12 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 							invocationArgs = invocationArgs,
 							canDebug       = canDebug,
 							state          = this.getState(),
-							log            = variables.log
+							log            = getLogger()
 						)
 
 						// Debug interceptions
 						if ( canDebug ) {
-							variables.log.debug(
+							getLogger().debug(
 								"Interceptor '#getMetadata( thisInterceptor ).name#' fired in asyncAll chain: '#this.getState()#'"
 							)
 						}
@@ -309,16 +307,16 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 		// end for loop
 
 		if ( arguments.asyncAllJoin ) {
-			if ( variables.log.canDebug() ) {
-				variables.log.debug(
+			if ( getLogger().canDebug() ) {
+				getLogger().debug(
 					"AsyncAll interceptor chain waiting for join: '#getState()#', timeout: #arguments.asyncJoinTimeout# "
 				)
 			}
 			thread action="join" name="#arrayToList( threadNames )#" timeout="#arguments.asyncJoinTimeout#";
 		}
 
-		if ( variables.log.canDebug() ) {
-			variables.log.debug(
+		if ( getLogger().canDebug() ) {
+			getLogger().debug(
 				"AsyncAll interceptor chain ended for: '#getState()#' with join: #arguments.asyncAllJoin#, priority: #arguments.asyncPriority#, timeout: #arguments.asyncJoinTimeout#"
 			)
 		}
@@ -340,7 +338,7 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 	function processSync( required event, required data, required buffer ){
 		var interceptors    = getInterceptors()
 		var metadataMap     = variables.metadataMap
-		var log             = variables.log
+		var log             = getLogger()
 		var canDebug        = log.canDebug()
 		var state           = getState()
 		var currentEvent    = ""
@@ -437,8 +435,8 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 			NOT reFindNoCase( iData.eventPattern, arguments.event.getCurrentEvent() )
 		) {
 			// Log it
-			if ( variables.log.canDebug() ) {
-				variables.log.debug(
+			if ( getLogger().canDebug() ) {
+				getLogger().debug(
 					"Interceptor '#getMetadata( arguments.target ).name#' did NOT fire in chain: '#getState()#' due to event pattern mismatch: #iData.eventPattern#."
 				);
 			}
@@ -480,8 +478,8 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 			"all"
 		)#";
 
-		if ( variables.log.canDebug() ) {
-			variables.log.debug(
+		if ( getLogger().canDebug() ) {
+			getLogger().debug(
 				"Async interception starting for: '#getState()#', interceptor: #arguments.interceptorKey#, priority: #arguments.asyncPriority#"
 			);
 		}
@@ -510,8 +508,8 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 					args
 				);
 
-				if ( variables.log.canDebug() ) {
-					variables.log.debug(
+				if ( getLogger().canDebug() ) {
+					getLogger().debug(
 						"Async interception ended for: '#this.getState()#', interceptor: #attributes.key#, threadName: #attributes.threadName#"
 					);
 				}
@@ -560,6 +558,16 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 		} else {
 			return false
 		}
+	}
+
+	/**
+	 * Get the service logger
+	 */
+	function getLogger(){
+		if ( isNull( variables.log ) ) {
+			variables.log = variables.controller.getLogBox().getLogger( this )
+		}
+		return variables.log
 	}
 
 }
