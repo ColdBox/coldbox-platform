@@ -12,6 +12,11 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	property name="interceptionPoints" type="array";
 
 	/**
+	 * Interception Points metadata index
+	 */
+	property name="interceptionPointIndex" type="struct";
+
+	/**
 	 * Interception States that represent the unique points
 	 */
 	property name="interceptionStates" type="struct";
@@ -28,8 +33,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * Constructor
 	 */
 	InterceptorService function init( required controller ){
-		setController( arguments.controller );
-
+		// controller reference
+		variables.controller = arguments.controller
 		// Register the interception points ENUM
 		variables.interceptionPoints = [
 			// Application startup points
@@ -75,29 +80,31 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			// Module Global Events
 			"afterModuleRegistrations",
 			"afterModuleActivations"
-		];
-
+		]
+		// Init interception point metadata index
+		variables.interceptionPointIndex = {}
+		for ( var thisPoint in variables.interceptionPoints ) {
+			indexInterceptionPoint(
+				name   = thisPoint,
+				core   = true
+			)
+		}
 		// Init Container of interception states
-		variables.interceptionStates           = {};
-		// Default Logging
-		variables.log                          = controller.getLogBox().getLogger( this );
+		variables.interceptionStates           = {}
 		// Setup Default Configuration
-		variables.interceptorConfig            = {};
-		variables.onLoadInterceptionPointsHash = "";
+		variables.interceptorConfig            = {}
+		variables.onLoadInterceptionPointsHash = ""
 
-		return this;
+		return this
 	}
 
 	/**
 	 * Configure the service
 	 */
 	InterceptorService function configure(){
-		// Reconfigure Logging With Application Configuration Data
-		variables.log               = variables.controller.getLogBox().getLogger( this );
 		// Setup Configuration
-		variables.interceptorConfig = variables.controller.getSetting( "InterceptorConfig" );
-
-		return this;
+		variables.interceptorConfig = variables.controller.getSetting( "InterceptorConfig" )
+		return this
 	}
 
 	/**
@@ -107,17 +114,18 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 */
 	function onConfigurationLoad(){
 		// WireBox is loaded now, set it for performance.
-		variables.wirebox = variables.controller.getWireBox();
+		variables.wirebox = variables.controller.getWireBox()
 		// Register the ColdBox Config as an interceptor
 		registerInterceptor(
 			interceptorObject = variables.controller.getSetting( "coldboxConfig" ),
 			interceptorName   = "coldboxConfig"
-		);
+		)
 		// Register All Core App Interceptors
-		registerInterceptors();
+		registerInterceptors()
 		// Store hash of loaded points
-		variables.onLoadInterceptionPointsHash = hash( arrayToList( variables.interceptionPoints ) );
-		return this;
+		variables.onLoadInterceptionPointsHash = variables.interceptionPoints.toList().hash()
+
+		return this
 	}
 
 	/**
@@ -126,8 +134,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * @return InterceptorService
 	 */
 	function rescanInterceptors(){
-		if ( variables.onLoadInterceptionPointsHash != hash( arrayToList( variables.interceptionPoints ) ) ) {
-			variables.log.info( "Re-scanning interceptors as modules have contributed interception points" );
+		if ( variables.onLoadInterceptionPointsHash != variables.interceptionPoints.toList().hash() ) {
+			getLogger().info( "Re-scanning interceptors as modules have contributed interception points" );
 			registerInterceptors();
 		}
 		return this;
@@ -149,20 +157,20 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 		// Check if we have custom interception points, and register them if we do
 		if ( arrayLen( variables.interceptorConfig.customInterceptionPoints ) ) {
-			appendInterceptionPoints( variables.interceptorConfig.customInterceptionPoints );
-			variables.log.info(
+			appendInterceptionPoints( variables.interceptorConfig.customInterceptionPoints )
+			getLogger().info(
 				"Registering custom interception points: #variables.interceptorConfig.customInterceptionPoints.toString()#"
 			);
 		}
 
 		// Loop over the Interceptor Array, to begin registration
-		variables.interceptorConfig.interceptors.each( function( item ){
+		for ( var item in variables.interceptorConfig.interceptors ) {
 			registerInterceptor(
 				interceptorClass      = item.class,
 				interceptorProperties = item.properties,
 				interceptorName       = item.name
-			);
-		} );
+			)
+		}
 
 		return this;
 	}
@@ -270,7 +278,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	void function listen( required target, required point ){
 		arguments = normalizeListenArguments( argumentCollection = arguments );
 		// Append Custom Points
-		appendInterceptionPoints( arguments.point );
+		appendInterceptionPoints( arguments.point )
 		// Register the listener
 		registerInterceptionPoint(
 			interceptorKey = "closure-#arguments.point#-#hash( arguments.target.toString() )#",
@@ -377,7 +385,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 						isNull( arguments.injector ) ? variables.wirebox : arguments.injector
 					);
 				} catch ( Any e ) {
-					variables.log.error(
+					getLogger().error(
 						"Error creating interceptor: #arguments.interceptorClass#. #e.detail# #e.message# #e.stackTrace#",
 						e.tagContext
 					);
@@ -390,7 +398,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			// end if class is sent.
 
 			// Append Custom Points
-			appendInterceptionPoints( arguments.customPoints );
+			appendInterceptionPoints( arguments.customPoints )
 
 			// Parse Interception Points
 			parseMetadata( getMetadata( oInterceptor ), {} ).each( function( stateKey, stateValue ){
@@ -402,8 +410,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 					interceptorMD  = arguments.stateValue
 				);
 				// Debug log
-				if ( variables.log.canDebug() ) {
-					variables.log.debug( "Registering #objectName# on '#arguments.stateKey#' interception point" );
+				if ( getLogger().canDebug() ) {
+					getLogger().debug( "Registering #objectName# on '#arguments.stateKey#' interception point" );
 				}
 			} );
 
@@ -472,22 +480,28 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * Append a list of custom interception points to the CORE interception points and returns itself
 	 *
 	 * @customPoints A comma delimited list or array of custom interception points to append. If they already exists, then they will not be added again.
+	 * @module       The module contributing these interception points, if any. This is used for indexing and debugging purposes.
 	 *
 	 * @return The current interception points
 	 */
-	array function appendInterceptionPoints( required customPoints ){
+	array function appendInterceptionPoints( required customPoints, module = "" ){
 		// Inflate custom points
 		if ( isSimpleValue( arguments.customPoints ) ) {
-			arguments.customPoints = listToArray( arguments.customPoints );
+			arguments.customPoints = listToArray( arguments.customPoints )
 		}
 
 		for ( var thisPoint in arguments.customPoints ) {
-			if ( !arrayFindNoCase( variables.interceptionPoints, thisPoint ) ) {
-				variables.interceptionPoints.append( thisPoint );
+			if ( !structKeyExists( variables.interceptionPointIndex, thisPoint ) ) {
+				variables.interceptionPoints.append( thisPoint )
+				indexInterceptionPoint(
+					name   = thisPoint,
+					core   = false,
+					module = arguments.module
+				)
 			}
 		}
 
-		return variables.interceptionPoints;
+		return variables.interceptionPoints
 	}
 
 	/**
@@ -584,6 +598,30 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	}
 
 	/**
+	 * Index an interception point with source metadata.
+	 *
+	 * @name   The interception point name
+	 * @core   True if the point is a ColdBox core point
+	 * @module The module that contributed the point, if any
+	 *
+	 * @return InterceptorService
+	 */
+	private function indexInterceptionPoint(
+		required name,
+		boolean core = false,
+		module       = ""
+	){
+		variables.interceptionPointIndex[ arguments.name ] = {
+			name   : arguments.name,
+			core   : arguments.core,
+			module : arguments.module,
+			order  : variables.interceptionPoints.len()
+		}
+
+		return this
+	}
+
+	/**
 	 * Verifies setup of base handler classes in WireBox
 	 *
 	 * @injector The injector to seed and verify
@@ -611,7 +649,6 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	private struct function parseMetadata( required metadata, required points ){
 		var x           = 1;
 		var pointsFound = arguments.points;
-		var currentList = arrayToList( variables.interceptionPoints );
 
 		// Register local functions only
 		if ( structKeyExists( arguments.metadata, "functions" ) ) {
@@ -620,13 +657,13 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				// Verify the @interceptionPoint annotation so the function can be registered as an interception point
 				if ( structKeyExists( arguments.metadata.functions[ x ], "interceptionPoint" ) ) {
 					// Register the point by convention and annotation
-					currentList = arrayToList( appendInterceptionPoints( arguments.metadata.functions[ x ].name ) );
+					appendInterceptionPoints( arguments.metadata.functions[ x ].name )
 				}
 
 				// verify its an interception point by comparing it to the local defined interception points
 				// Also verify it has not been found already
 				if (
-					listFindNoCase( currentList, arguments.metadata.functions[ x ].name ) AND
+					structKeyExists( variables.interceptionPointIndex, arguments.metadata.functions[ x ].name ) AND
 					NOT structKeyExists( pointsFound, arguments.metadata.functions[ x ].name )
 				) {
 					// Create point record

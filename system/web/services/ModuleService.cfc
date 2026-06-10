@@ -489,7 +489,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			// Register Custom Interception Points
 			controller
 				.getInterceptorService()
-				.appendInterceptionPoints( mConfig.interceptorSettings.customInterceptionPoints );
+				.appendInterceptionPoints(
+					customPoints = mConfig.interceptorSettings.customInterceptionPoints,
+					module       = modName
+				)
 
 			// Register Parent Settings
 			structAppend( appSettings, mConfig.parentSettings, true );

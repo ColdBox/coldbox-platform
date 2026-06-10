@@ -52,7 +52,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * @controller ColdBox Controller
 	 */
 	function init( required controller ){
-		// controlle + wirebox references
+		// controller reference
 		variables.controller                 = arguments.controller
 		// Setup the Event Handler Cache Dictionary
 		variables.handlerCacheDictionary     = {}
