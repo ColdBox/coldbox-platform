@@ -77,19 +77,13 @@ component accessors="true" {
 			arguments.name = listLast( md.name, "." );
 		}
 
-		lock
-			name          ="EventPoolManager.#variables.classID#.RegisterObject.#arguments.name#"
-			type          ="exclusive"
-			throwontimeout="true"
-			timeout       ="30" {
-			// Append Custom Statess
-			appendInterceptionPoints( arguments.customStates );
+		// Append Custom Statess
+		appendInterceptionPoints( arguments.customStates );
 
-			// Register this target's event observation states with its appropriate interceptor/observation state
-			parseMetadata( md, {} ).each( function( item ){
-				registerInEventState( name, item, target );
-			} );
-		}
+		// Register this target's event observation states with its appropriate interceptor/observation state
+		parseMetadata( md, {} ).each( function( item ){
+			registerInEventState( name, item, target );
+		} );
 
 		return this;
 	}

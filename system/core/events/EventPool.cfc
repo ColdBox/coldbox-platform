@@ -17,6 +17,12 @@ component accessors="true" {
 	property name="state";
 
 	/**
+	 * Ordered hot chain array for fast iteration during processing.
+	 * Rebuilt on every register/unregister to avoid map lookups in the hot path.
+	 */
+	property name="listenerChain" type="array";
+
+	/**
 	 * Constructor
 	 *
 	 * @state The name of the pool
@@ -26,7 +32,9 @@ component accessors="true" {
 		variables.pool = createObject( "java", "java.util.Collections" ).synchronizedMap(
 			createObject( "java", "java.util.LinkedHashMap" ).init( 5 )
 		)
-		variables.state = arguments.state
+		variables.state         = arguments.state
+		// Ordered hot chain for fast processing iteration
+		variables.listenerChain = []
 
 		return this
 	}
@@ -41,6 +49,8 @@ component accessors="true" {
 	 */
 	function register( required key, required target ){
 		variables.pool.put( lCase( arguments.key ), arguments.target )
+		// Rebuild hot lookup chain
+		rebuildListenerChain()
 		return this
 	}
 
@@ -51,6 +61,8 @@ component accessors="true" {
 	 */
 	boolean function unregister( required key ){
 		var results = variables.pool.remove( lCase( arguments.key ) )
+		// Rebuild hot lookup chain
+		rebuildListenerChain()
 		return isNull( results ) ? false : true
 	}
 
@@ -80,10 +92,19 @@ component accessors="true" {
 	 * @return EventPool
 	 */
 	function process( required data ){
+		var listenerChain = variables.listenerChain
+		var listenerCount  = listenerChain.len()
+		var state          = variables.state
+
 		// Loop and execute each target object as registered in order
-		for ( var key in structKeyArray( variables.pool ) ) {
+		for ( var listenerIndex = 1; listenerIndex <= listenerCount; listenerIndex++ ) {
+			var listenerEntry = listenerChain[ listenerIndex ]
 			// Invoke the execution point
-			var stopChain = invoker( variables.pool[ key ], arguments.data )
+			var stopChain = invoker(
+				target = listenerEntry.target,
+				data   = arguments.data,
+				state  = state
+			)
 
 			// Check for results
 			if ( stopChain ) {
@@ -99,13 +120,18 @@ component accessors="true" {
 	 *
 	 * @target The target object
 	 * @data   The data used in the interception call
+	 * @state  The state name to invoke
 	 *
 	 * @return A boolean indicator that the interception chain needs to be broken or not.
 	 */
-	private boolean function invoker( required target, required data ){
+	private boolean function invoker(
+		required target,
+		required data,
+		required state
+	){
 		var results = invoke(
 			arguments.target,
-			variables.state,
+			arguments.state,
 			{ interceptData : arguments.data, data : arguments.data }
 		)
 
@@ -114,6 +140,29 @@ component accessors="true" {
 		}
 
 		return false
+	}
+
+	/**
+	 * Rebuild the ordered runtime listener chain from the registered pool
+	 */
+	private function rebuildListenerChain(){
+		var newChain           = []
+		var listenerEntries = variables.pool.entrySet().iterator()
+
+		while ( listenerEntries.hasNext() ) {
+			var listenerEntry = listenerEntries.next()
+			var key           = listenerEntry.getKey()
+			var target        = listenerEntry.getValue()
+
+			newChain.append( {
+				"key"    : key,
+				"target" : target
+			} )
+		}
+
+		variables.listenerChain = newChain
+
+		return this
 	}
 
 }
