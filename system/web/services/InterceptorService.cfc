@@ -402,6 +402,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 		// Parse Interception Points
 		var parsedMeta = parseMetadata( getMetadata( oInterceptor ), {} )
+		var logger = getLogger()
+		var canDebug = logger.canDebug()
 		for ( var stateKey in parsedMeta ) {
 			var stateValue = parsedMeta[ stateKey ]
 			// Register the point
@@ -412,8 +414,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				interceptorMD  = stateValue
 			)
 			// Debug log
-			if ( getLogger().canDebug() ) {
-				getLogger().debug( "Registering #objectName# on '#stateKey#' interception point" )
+			if ( canDebug ) {
+				logger.debug( "Registering #objectName# on '#stateKey#' interception point" )
 			}
 		}
 
@@ -544,11 +546,11 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		required oInterceptor,
 		interceptorMD
 	){
-		var oInterceptorState = "";
+		var oInterceptorState = ""
 
 		// Init md if not passed
 		if ( isNull( arguments.interceptorMD ) ) {
-			arguments.interceptorMD = newPointRecord();
+			arguments.interceptorMD = newPointRecord()
 		}
 
 		// Verify if state doesn't exist, create it
@@ -557,11 +559,11 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				state      = arguments.state,
 				logbox     = controller.getLogBox(),
 				controller = controller
-			);
-			variables.interceptionStates[ arguments.state ] = oInterceptorState;
+			)
+			variables.interceptionStates[ arguments.state ] = oInterceptorState
 		} else {
 			// Get the State we need to register in
-			oInterceptorState = variables.interceptionStates[ arguments.state ];
+			oInterceptorState = variables.interceptionStates[ arguments.state ]
 		}
 
 		// Verify if the interceptor is already in the state
@@ -571,10 +573,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				interceptorKey = arguments.interceptorKey,
 				interceptor    = arguments.oInterceptor,
 				interceptorMD  = arguments.interceptorMD
-			);
+			)
 		}
 
-		return this;
+		return this
 	}
 
 	/****************************** PRIVATE *********************************/
@@ -587,7 +589,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			async         : false,
 			asyncPriority : "normal",
 			eventPattern  : ""
-		};
+		}
 	}
 
 	/**
@@ -654,10 +656,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 					name        : variables.INTERCEPTOR_BASE_CLASS,
 					instancePath: variables.INTERCEPTOR_BASE_CLASS
 				)
-				.setScope( "singleton" );
+				.setScope( "singleton" )
 		}
 
-		return this;
+		return this
 	}
 
 	/**
