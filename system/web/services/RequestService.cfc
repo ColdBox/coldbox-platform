@@ -12,13 +12,13 @@ component extends="coldbox.system.web.services.BaseService" {
 	 * @controller The ColdBox Controller.
 	 */
 	function init( required controller ){
-		setController( arguments.controller );
+		setController( arguments.controller )
 
-		variables.flashScope    = "";
-		variables.flashData     = "";
-		variables.flashDataHash = "";
+		variables.flashScope    = ""
+		variables.flashData     = ""
+		variables.flashDataHash = ""
 
-		return this;
+		return this
 	}
 
 	/**
@@ -26,20 +26,19 @@ component extends="coldbox.system.web.services.BaseService" {
 	 */
 	function onConfigurationLoad(){
 		// Local Configuration data and dependencies
-		variables.log                = controller.getLogBox().getLogger( this );
-		variables.eventName          = controller.getSetting( "eventName" );
-		variables.eventCaching       = controller.getSetting( "eventCaching" );
-		variables.interceptorService = controller.getInterceptorService();
-		variables.routingService     = controller.getRoutingService();
-		variables.handlerService     = controller.getHandlerService();
-		variables.cacheBox           = controller.getCacheBox();
-		variables.cache              = controller.getCache();
-		variables.templateCache      = controller.getCache( "template" );
-		variables.flashData          = controller.getSetting( "flash" );
-		variables.flashDataHash      = hash( variables.flashData.toString() );
+		variables.eventName          = controller.getSetting( "eventName" )
+		variables.eventCaching       = controller.getSetting( "eventCaching" )
+		variables.interceptorService = controller.getInterceptorService()
+		variables.routingService     = controller.getRoutingService()
+		variables.handlerService     = controller.getHandlerService()
+		variables.cacheBox           = controller.getCacheBox()
+		variables.cache              = controller.getCache()
+		variables.templateCache      = controller.getCache( "template" )
+		variables.flashData          = controller.getSetting( "flash" )
+		variables.flashDataHash      = hash( variables.flashData.toString() )
 
 		// build out Flash RAM
-		buildFlashScope();
+		buildFlashScope()
 	}
 
 	/**
@@ -99,8 +98,8 @@ component extends="coldbox.system.web.services.BaseService" {
 
 		// Do we have flash elements to inflate?
 		if ( variables.flashScope.flashExists() ) {
-			if ( variables.log.canDebug() ) {
-				variables.log.debug( "Flash RAM detected, inflating flash." );
+			if ( getLogger().canDebug() ) {
+				getLogger().debug( "Flash RAM detected, inflating flash." );
 			}
 			variables.flashScope.inflateFlash();
 		}
@@ -174,8 +173,8 @@ component extends="coldbox.system.web.services.BaseService" {
 			arguments.context.setEventCacheableEntry( eventCache );
 
 			// debug logging
-			if ( variables.log.canDebug() ) {
-				variables.log.debug( "Event caching detected for : #eventCache.toString()#" );
+			if ( getLogger().canDebug() ) {
+				getLogger().debug( "Event caching detected for : #eventCache.toString()#" );
 			}
 		}
 		// end if using event caching.
@@ -191,19 +190,19 @@ component extends="coldbox.system.web.services.BaseService" {
 	 * @return coldbox.system.web.context.RequestContext
 	 */
 	function getContext( string classPath = "coldbox.system.web.context.RequestContext" ){
-		var thisContext = getContextFromScope();
+		var thisContext = getContextFromScope()
 		if ( !isNull( thisContext ) ) {
-			return thisContext;
+			return thisContext
 		}
 
 		lock scope="request" timeout="30" {
 			// Double check once inside lock
-			var thisContext = getContextFromScope();
+			var thisContext = getContextFromScope()
 			if ( !isNull( thisContext ) ) {
-				return thisContext;
+				return thisContext
 			}
 
-			return createContext( classPath );
+			return createContext( classPath )
 		}
 	}
 
@@ -213,7 +212,7 @@ component extends="coldbox.system.web.services.BaseService" {
 	 * @return coldbox.system.web.context.RequestContext or null if not found
 	 */
 	private function getContextFromScope(){
-		return request[ "cb_requestContext" ] ?: javacast( "null", "" );
+		return request[ "cb_requestContext" ] ?: javacast( "null", "" )
 	}
 
 	/**
@@ -222,30 +221,30 @@ component extends="coldbox.system.web.services.BaseService" {
 	 * @context Request Context object
 	 */
 	RequestService function setContext( required context ){
-		request.cb_requestContext = arguments.context;
-		return this;
+		request.cb_requestContext = arguments.context
+		return this
 	}
 
 	/**
 	 * Remove the context from scope
 	 */
 	RequestService function removeContext(){
-		structDelete( request, "cb_requestContext" );
-		return this;
+		structDelete( request, "cb_requestContext" )
+		return this
 	}
 
 	/**
 	 * Does the request context exist in request scope
 	 */
 	boolean function contextExists(){
-		return structKeyExists( request, "cb_requestContext" );
+		return structKeyExists( request, "cb_requestContext" )
 	}
 
 	/**
 	 * Return the flash scope instance in use by the framework.
 	 */
 	any function getFlashScope(){
-		return variables.flashScope;
+		return variables.flashScope
 	}
 
 	/**
@@ -253,58 +252,58 @@ component extends="coldbox.system.web.services.BaseService" {
 	 */
 	RequestService function rebuildFlashScope(){
 		if ( variables.flashDataHash neq hash( controller.getSetting( "flash" ).toString() ) ) {
-			buildFlashScope();
+			buildFlashScope()
 		}
-		return this;
+		return this
 	}
 
 	/**
 	 * Build's the Flash RAM Scope as defined in the application spec.
 	 */
 	RequestService function buildFlashScope(){
-		var flashPath = "";
+		var flashPath = ""
 
 		// Verify Flash decisions
 		if ( variables.flashData.scope == "session" and !getApplicationMetadata().sessionManagement ) {
-			log.error(
+			getLogger().error(
 				"Flash RAM was set to use session but session is undefined, changing it to cache for you so we don't blow up."
-			);
-			variables.flashData.scope = "cache";
+			)
+			variables.flashData.scope = "cache"
 		}
 		if ( variables.flashData.scope == "client" and !getApplicationMetadata().clientManagement ) {
-			log.error(
+			getLogger().error(
 				"Flash RAM was set to use client but client is undefined, changing it to cache for you so we don't blow up."
-			);
-			variables.flashData.scope = "cache";
+			)
+			variables.flashData.scope = "cache"
 		}
 
 		// Shorthand Flash Types
 		switch ( variables.flashData.scope ) {
 			case "session": {
-				flashpath = "coldbox.system.web.flash.SessionFlash";
+				flashpath = "coldbox.system.web.flash.SessionFlash"
 				break;
 			}
 			case "client": {
-				writeDump( "Client Flash Has Been Removed, Please use session or cache" );
+				writeDump( "Client Flash Has Been Removed, Please use session or cache" )
 				abort;
 			}
 			case "cache": {
-				flashpath = "coldbox.system.web.flash.ColdboxCacheFlash";
+				flashpath = "coldbox.system.web.flash.ColdboxCacheFlash"
 				break;
 			}
 			case "mock": {
-				flashpath = "coldbox.system.web.flash.MockFlash";
+				flashpath = "coldbox.system.web.flash.MockFlash"
 				break;
 			}
 			default: {
-				flashPath = variables.flashData.scope;
+				flashPath = variables.flashData.scope
 			}
 		}
 
 		// Create Flash RAM object
-		variables.flashScope = createObject( "component", flashPath ).init( controller, variables.flashData );
+		variables.flashScope = createObject( "component", flashPath ).init( controller, variables.flashData )
 
-		return this;
+		return this
 	}
 
 	/****************************************** PRIVATE ******************************************************/
@@ -315,32 +314,33 @@ component extends="coldbox.system.web.services.BaseService" {
 	 * @return coldbox.system.web.context.RequestContext
 	 */
 	function createContext( string classPath = "coldbox.system.web.context.RequestContext" ){
-		var oDecorator = "";
+		var oDecorator = ""
+		var decoratorClassPath = variables.controller.getSetting( name = "RequestContextDecorator", defaultValue = "" )
 
 		// Create the original request context
 		var oContext = createObject( "component", arguments.classPath ).init(
 			properties: variables.controller.getConfigSettings(),
 			controller: variables.controller
-		);
+		)
 
 		// Determine if we have a decorator, if we do, then decorate it.
-		if ( len( variables.controller.getSetting( name = "RequestContextDecorator", defaultValue = "" ) ) ) {
+		if ( len( decoratorClassPath ) ) {
 			// Create the decorator
 			oDecorator = createObject(
 				"component",
-				variables.controller.getSetting( name = "RequestContextDecorator" )
-			).init( oContext, variables.controller );
+				decoratorClassPath
+			).init( oContext, variables.controller )
 			// Set Request Context in storage
-			setContext( oDecorator );
+			setContext( oDecorator )
 			// Return
-			return oDecorator;
+			return oDecorator
 		}
 
 		// Set Request Context in storage
-		setContext( oContext );
+		setContext( oContext )
 
 		// Return Context
-		return oContext;
+		return oContext
 	}
 
 }
