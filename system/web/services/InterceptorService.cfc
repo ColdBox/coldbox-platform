@@ -651,27 +651,23 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * @return The interception points found in the metadata and its inheritances
 	 */
 	private struct function parseMetadata( required metadata, required points ){
-		var pointsFound            = arguments.points
-		var currentMetadata        = arguments.metadata
-		var interceptionPointIndex = variables.interceptionPointIndex
-		var functionMetadata       = []
-		var functionCount          = 0
-		var thisFunction           = {}
-		var pointName              = ""
-		var pointRecord            = {}
+		var pointsFound             = arguments.points
+		var currentMetadata         = arguments.metadata
+		var interceptionPointIndex  = variables.interceptionPointIndex
 
 		while ( isStruct( currentMetadata ) ) {
 			// Register local functions only
 			if ( structKeyExists( currentMetadata, "functions" ) ) {
-				functionMetadata = currentMetadata.functions
-				functionCount    = arrayLen( functionMetadata )
+				var functionMetadata = currentMetadata.functions
+				var functionCount    = arrayLen( functionMetadata )
 
 				for ( var x = 1; x lte functionCount; x++ ) {
-					thisFunction = functionMetadata[ x ]
-					pointName    = thisFunction.name
+					var thisFunction = functionMetadata[ x ]
+					var pointName    = thisFunction.name
+					var annotations = thisFunction.annotations ?: thisFunction
 
 					// Register the point by convention and annotation
-					if ( structKeyExists( thisFunction, "interceptionPoint" ) ) {
+					if ( structKeyExists( annotations, "interceptionPoint" ) ) {
 						appendInterceptionPoint( point = pointName )
 					}
 
@@ -681,17 +677,17 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 						structKeyExists( interceptionPointIndex, pointName ) AND
 						NOT structKeyExists( pointsFound, pointName )
 					) {
-						pointRecord = newPointRecord()
+						var pointRecord = newPointRecord()
 
 						// Discover point information
-						if ( structKeyExists( thisFunction, "async" ) ) {
+						if ( structKeyExists( annotations, "async" ) ) {
 							pointRecord.async = true
 						}
-						if ( structKeyExists( thisFunction, "asyncPriority" ) ) {
-							pointRecord.asyncPriority = thisFunction.asyncPriority
+						if ( structKeyExists( annotations, "asyncPriority" ) ) {
+							pointRecord.asyncPriority = annotations.asyncPriority
 						}
-						if ( structKeyExists( thisFunction, "eventPattern" ) ) {
-							pointRecord.eventPattern = thisFunction.eventPattern
+						if ( structKeyExists( annotations, "eventPattern" ) ) {
+							pointRecord.eventPattern = annotations.eventPattern
 						}
 
 						pointsFound[ pointName ] = pointRecord
