@@ -7,6 +7,13 @@
 component accessors="false" {
 
 	/**
+	 * Constructor
+	 */
+	function init(){
+		return this
+	}
+
+	/**
 	 * Get the underlying string builder, creating it only when output is produced.
 	 */
 	function get(){
