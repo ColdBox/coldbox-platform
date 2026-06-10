@@ -15,6 +15,11 @@ component accessors="true" {
 	property name="eventStates";
 
 	/**
+	 * Event states metadata index for O(1) lookups
+	 */
+	property name="eventStateIndex" type="struct";
+
+	/**
 	 * Stop recursion classes
 	 */
 	property name="stopRecursionClasses";
@@ -25,6 +30,11 @@ component accessors="true" {
 	property name="eventPoolContainer" type="struct";
 
 	/**
+	 * Dirty flag for event state changes
+	 */
+	property name="eventStatesChanged" type="boolean";
+
+	/**
 	 * Constructor
 	 *
 	 * @eventStates          The event states to listen for
@@ -32,14 +42,21 @@ component accessors="true" {
 	 */
 	function init( required array eventStates, stopRecursionClasses = "" ){
 		// Setup properties of the event manager
-		variables.eventStates          = arguments.eventStates;
-		variables.stopRecursionClasses = arguments.stopRecursionClasses;
+		variables.eventStates          = arguments.eventStates
+		variables.stopRecursionClasses = arguments.stopRecursionClasses
 		// class id code
-		variables.classID              = createUUID();
+		variables.classID              = createUUID()
 		// Init event pool container
-		variables.eventPoolContainer   = structNew();
+		variables.eventPoolContainer   = structNew()
+		// Init event state index for O(1) lookups
+		variables.eventStateIndex      = {}
+		for ( var thisState in variables.eventStates ) {
+			indexEventState( thisState )
+		}
+		// Track if states have changed
+		variables.eventStatesChanged   = false
 
-		return this;
+		return this
 	}
 
 	/**
@@ -52,10 +69,10 @@ component accessors="true" {
 	 */
 	function announce( required state, struct data = {} ){
 		if ( variables.eventPoolContainer.keyExists( arguments.state ) ) {
-			variables.eventPoolContainer.find( arguments.state ).process( arguments.data );
+			variables.eventPoolContainer.find( arguments.state ).process( arguments.data )
 		}
 
-		return this;
+		return this
 	}
 
 	/**
@@ -70,20 +87,21 @@ component accessors="true" {
 	 * @return EventPoolManager
 	 */
 	function register( required target, name = "", customStates = "" ){
-		var md = getMetadata( arguments.target );
+		var md = getMetadata( arguments.target )
 
 		// Check if name sent? If not, get the name from the last part of its name
 		if ( NOT len( trim( arguments.name ) ) ) {
-			arguments.name = listLast( md.name, "." );
+			arguments.name = listLast( md.name, "." )
 		}
 
 		// Append Custom Statess
-		appendInterceptionPoints( arguments.customStates );
+		appendInterceptionPoints( arguments.customStates )
 
 		// Register this target's event observation states with its appropriate interceptor/observation state
-		parseMetadata( md, {} ).each( function( item ){
-			registerInEventState( name, item, target );
-		} );
+		var parsedMeta = parseMetadata( md, {} )
+		for ( var stateKey in parsedMeta ) {
+			registerInEventState( arguments.name, stateKey, arguments.target )
+		}
 
 		return this;
 	}
@@ -98,26 +116,26 @@ component accessors="true" {
 	 * @return EventPoolManager
 	 */
 	function registerInEventState( required key, required state, required target ){
-		var eventPool = "";
+		var eventPool = ""
 
 		// Verify if the event state doesn't exist in the evnet pool, else create it
 		if ( not structKeyExists( variables.eventPoolContainer, arguments.state ) ) {
 			// Create new event pool
-			eventPool                                       = new coldbox.system.core.events.EventPool( arguments.state );
+			eventPool = new coldbox.system.core.events.EventPool( arguments.state )
 			// Register it with this pool manager
-			variables.eventPoolContainer[ arguments.state ] = eventPool;
+			variables.eventPoolContainer[ arguments.state ] = eventPool
 		} else {
 			// Get the State we need to register in
-			eventPool = variables.eventPoolContainer[ arguments.state ];
+			eventPool = variables.eventPoolContainer[ arguments.state ]
 		}
 
 		// Verify if the target object is already in the state
 		if ( NOT eventPool.exists( arguments.key ) ) {
 			// Register it
-			eventPool.register( arguments.key, arguments.target );
+			eventPool.register( arguments.key, arguments.target )
 		}
 
-		return this;
+		return this
 	}
 
 	/**
@@ -130,7 +148,7 @@ component accessors="true" {
 	function getObject( required name ){
 		for ( var key in variables.eventPoolContainer ) {
 			if ( structFind( variables.eventPoolContainer, key ).exists( arguments.name ) ) {
-				return structFind( variables.eventPoolContainer, key ).getObject( arguments.name );
+				return structFind( variables.eventPoolContainer, key ).getObject( arguments.name )
 			}
 		}
 
@@ -138,7 +156,7 @@ component accessors="true" {
 		throw(
 			message = "Object: #arguments.name# not found in any event pool state: #structKeyList( variables.eventPoolContainer )#.",
 			type    = "EventPoolManager.ObjectNotFound"
-		);
+		)
 	}
 
 	/**
@@ -151,16 +169,19 @@ component accessors="true" {
 	array function appendInterceptionPoints( required customStates ){
 		// Inflate custom points
 		if ( isSimpleValue( arguments.customStates ) ) {
-			arguments.customStates = listToArray( arguments.customStates );
+			arguments.customStates = listToArray( arguments.customStates )
 		}
 
 		for ( var thisPoint in arguments.customStates ) {
-			if ( !arrayFindNoCase( variables.eventStates, thisPoint ) ) {
-				variables.eventStates.append( thisPoint );
+			// Use O(1) index lookup instead of O(n) arrayFindNoCase
+			if ( !variables.eventStateIndex.keyExists( lCase( thisPoint ) ) ) {
+				variables.eventStates.append( thisPoint )
+				indexEventState( thisPoint )
+				variables.eventStatesChanged = true
 			}
 		}
 
-		return variables.eventStates;
+		return variables.eventStates
 	}
 
 	/**
@@ -182,17 +203,17 @@ component accessors="true" {
 	 * @state The state to unregister from. If not passed, then we will unregister from ALL pools
 	 */
 	boolean function unregister( required name, state = "" ){
-		var unregistered = false;
+		var unregistered = false
 
 		// Unregister the object
 		for ( var key in variables.eventPoolContainer ) {
 			if ( len( arguments.state ) eq 0 OR arguments.state eq key ) {
-				structFind( variables.eventPoolContainer, key ).unregister( arguments.name );
-				unregistered = true;
+				structFind( variables.eventPoolContainer, key ).unregister( arguments.name )
+				unregistered = true
 			}
 		}
 
-		return unregistered;
+		return unregistered
 	}
 
 	/**
@@ -202,22 +223,23 @@ component accessors="true" {
 		// Register local functions
 		if ( structKeyExists( arguments.metadata, "functions" ) ) {
 			for ( var thisFunction in arguments.metadata.functions ) {
-				var annotations = thisFunction.keyExists( "annotations" ) ? thisFunction.annotations : thisFunction;
+				var annotations = thisFunction.keyExists( "annotations" ) ? thisFunction.annotations : thisFunction
 
 				// Verify observe annotation
 				if ( annotations.keyExists( "interceptionPoint" ) ) {
 					// Register the observation point just in case
-					appendInterceptionPoints( thisFunction.name );
+					appendInterceptionPoints( thisFunction.name )
 				}
 
 				// verify it's an observation state and Not Registered already
+				// Use O(1) index lookup instead of O(n) arrayFindNoCase
 				if (
-					arrayFindNoCase( variables.eventStates, thisFunction.name )
+					variables.eventStateIndex.keyExists( lCase( thisFunction.name ) )
 					&&
 					!arguments.eventsFound.keyExists( thisFunction.name )
 				) {
 					// Observation Event Found
-					arguments.eventsFound[ thisFunction.name ] = true;
+					arguments.eventsFound[ thisFunction.name ] = true
 				}
 			}
 		}
@@ -230,18 +252,28 @@ component accessors="true" {
 			AND
 			!listFindNoCase( getStopRecursionClasses(), arguments.metadata.extends.name )
 		) {
-			parseMetadata( arguments.metadata.extends, arguments.eventsFound );
+			parseMetadata( arguments.metadata.extends, arguments.eventsFound )
 		}
 
 		// return the event states found
-		return arguments.eventsFound;
+		return arguments.eventsFound
+	}
+
+	/**
+	 * Index an event state for O(1) lookups
+	 *
+	 * @state The event state name to index
+	 */
+	private function indexEventState( required state ){
+		variables.eventStateIndex[ lCase( arguments.state ) ] = true
+		return this
 	}
 
 	/**
 	 * Get ColdBox utility object
 	 */
 	private function getUtil(){
-		return new coldbox.system.core.util.Util();
+		return new coldbox.system.core.util.Util()
 	}
 
 }
