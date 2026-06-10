@@ -266,7 +266,7 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 				try {
 					// Retrieve interceptor to fire and local context
 					var thisInterceptor = this.getInterceptors().get( attributes.key )
-					var threadEvent           = variables.controller.getRequestService().getContext()
+					var threadEvent     = variables.controller.getRequestService().getContext()
 
 					// Check if we can execute this Interceptor
 					if ( variables.isExecutable( thisInterceptor, threadEvent, attributes.key ) ) {
@@ -336,13 +336,13 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 	 * @buffer hint="The request buffer object that can be used to produce output from interceptor chains
 	 */
 	function processSync( required event, required data, required buffer ){
-		var interceptors    = getInterceptors()
-		var metadataMap     = variables.metadataMap
-		var log             = getLogger()
-		var canDebug        = log.canDebug()
-		var state           = getState()
-		var currentEvent    = ""
-		var invocationArgs  = {
+		var interceptors   = getInterceptors()
+		var metadataMap    = variables.metadataMap
+		var log            = getLogger()
+		var canDebug       = log.canDebug()
+		var state          = getState()
+		var currentEvent   = ""
+		var invocationArgs = {
 			"event"         : arguments.event,
 			"data"          : arguments.data,
 			"interceptData" : arguments.data, // Remove by ColdBox 7 DEPRECATED
@@ -546,7 +546,11 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 		if ( isClosure( arguments.interceptor ) ) {
 			arguments.interceptor( argumentCollection = arguments.invocationArgs )
 		} else {
-			var results = invoke( arguments.interceptor, arguments.state, arguments.invocationArgs )
+			var results = invoke(
+				arguments.interceptor,
+				arguments.state,
+				arguments.invocationArgs
+			)
 		}
 
 		if ( arguments.canDebug ) {

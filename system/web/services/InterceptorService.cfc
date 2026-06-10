@@ -39,7 +39,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 */
 	InterceptorService function init( required controller ){
 		// controller reference
-		variables.controller = arguments.controller
+		variables.controller         = arguments.controller
 		// Register the interception points ENUM
 		variables.interceptionPoints = [
 			// Application startup points
@@ -89,16 +89,13 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// Init interception point metadata index
 		variables.interceptionPointIndex = {}
 		for ( var thisPoint in variables.interceptionPoints ) {
-			indexInterceptionPoint(
-				name   = thisPoint,
-				core   = true
-			)
+			indexInterceptionPoint( name = thisPoint, core = true )
 		}
 		// Init Container of interception states
-		variables.interceptionStates           = {}
+		variables.interceptionStates        = {}
 		// Setup Default Configuration
-		variables.interceptorConfig            = {}
-		variables.interceptionPointsChanged    = false
+		variables.interceptorConfig         = {}
+		variables.interceptionPointsChanged = false
 
 		return this
 	}
@@ -209,8 +206,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		}
 
 		var interceptionState = variables.interceptionStates[ arguments.state ]
-		var event            = controller.getRequestService().getContext()
-		var buffer           = getLazyBuffer()
+		var event             = controller.getRequestService().getContext()
+		var buffer            = getLazyBuffer()
 
 		// Process the interception state and get results if any
 		var results = interceptionState.process(
@@ -385,8 +382,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 		// Parse Interception Points
 		var parsedMeta = parseMetadata( getMetadata( oInterceptor ), {} )
-		var logger = getLogger()
-		var canDebug = logger.canDebug()
+		var logger     = getLogger()
+		var canDebug   = logger.canDebug()
 		for ( var stateKey in parsedMeta ) {
 			var stateValue = parsedMeta[ stateKey ]
 			// Register the point
@@ -654,14 +651,14 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * @return The interception points found in the metadata and its inheritances
 	 */
 	private struct function parseMetadata( required metadata, required points ){
-		var pointsFound             = arguments.points
-		var currentMetadata         = arguments.metadata
-		var interceptionPointIndex  = variables.interceptionPointIndex
-		var functionMetadata        = []
-		var functionCount           = 0
-		var thisFunction            = {}
-		var pointName               = ""
-		var pointRecord             = {}
+		var pointsFound            = arguments.points
+		var currentMetadata        = arguments.metadata
+		var interceptionPointIndex = variables.interceptionPointIndex
+		var functionMetadata       = []
+		var functionCount          = 0
+		var thisFunction           = {}
+		var pointName              = ""
+		var pointRecord            = {}
 
 		while ( isStruct( currentMetadata ) ) {
 			// Register local functions only

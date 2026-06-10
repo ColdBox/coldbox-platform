@@ -138,9 +138,9 @@
 				rc            : {},
 				prc           : {}
 			},
-			canDebug       = false,
-			state          = this.state.getState(),
-			log            = mockLogger
+			canDebug = false,
+			state    = this.state.getState(),
+			log      = mockLogger
 		);
 		assertTrue( mockInterceptor.$once( "unittest" ) );
 	}

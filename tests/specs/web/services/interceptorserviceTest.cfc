@@ -51,7 +51,7 @@
 	}
 
 	function testregisterInterceptors(){
-		var states = "";
+		var states     = "";
 		var mockConfig = {
 			customInterceptionPoints : [ "myCustom" ],
 			interceptors             : [
@@ -156,7 +156,7 @@
 	function testUnregister(){
 		// mocks
 		mockCache.INTERCEPTOR_CACHEKEY_PREFIX = "sample";
-		var mockState                             = mockBox.createStub().$( "unregister" );
+		var mockState                         = mockBox.createStub().$( "unregister" );
 		iService.$property(
 			"preProcess",
 			"variables.interceptionStates",
@@ -198,7 +198,11 @@
 		expect( iService.getInterceptionPointIndex().onTest.module ).toBe( "" );
 		expect( iService.getInterceptionPointsChanged() ).toBeTrue();
 
-		iService.$property( "interceptionPointsChanged", "variables", false );
+		iService.$property(
+			"interceptionPointsChanged",
+			"variables",
+			false
+		);
 
 		// test 3: add points with duplicates
 		aLen = arrayLen( iService.getInterceptionPoints() );
@@ -206,7 +210,11 @@
 		assertEquals( ( aLen + 2 ), arrayLen( iService.getInterceptionPoints() ) );
 		expect( iService.getInterceptionPointsChanged() ).toBeTrue();
 
-		iService.$property( "interceptionPointsChanged", "variables", false );
+		iService.$property(
+			"interceptionPointsChanged",
+			"variables",
+			false
+		);
 
 		// test 4: add module points
 		aLen = arrayLen( iService.getInterceptionPoints() );
@@ -217,7 +225,11 @@
 		expect( iService.getInterceptionPointIndex().onModulePoint.module ).toBe( "testModule" );
 		expect( iService.getInterceptionPointsChanged() ).toBeTrue();
 
-		iService.$property( "interceptionPointsChanged", "variables", false );
+		iService.$property(
+			"interceptionPointsChanged",
+			"variables",
+			false
+		);
 
 		// test 5: case-insensitive duplicate checks use the index
 		aLen = arrayLen( iService.getInterceptionPoints() );
