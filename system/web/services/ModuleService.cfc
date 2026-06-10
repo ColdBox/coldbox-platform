@@ -842,7 +842,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				// Add convention based routing if it does not exist.
 				var conventionsRouteExists = mConfig.router
 					.getRoutes()
-					.findAll( function( item ){
+					.findAll( ( item ) => {
 						return ( item.pattern == "/:handler/:action" || item.pattern == ":handler/:action" )
 					} )
 				if ( arrayLen( conventionsRouteExists ) == 0 ) {
@@ -850,14 +850,13 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				}
 
 				// Process Module Router
-				var moduleRoutes = appRouter.getModuleRoutes( moduleName )
 				for ( var item in mConfig.router.getRoutes() ) {
 					// Incorporate module context
 					if ( !item.module.len() ) {
-						item.module = moduleName
+						item.module = arguments.moduleName
 					}
 					// Add to App Router
-					moduleRoutes.append( item )
+					appRouter.getModuleRoutes( arguments.moduleName ).append( item )
 				}
 			}
 
