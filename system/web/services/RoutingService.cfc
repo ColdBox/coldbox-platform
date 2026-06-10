@@ -1020,7 +1020,11 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 		// Clean ContextRoots
 		if ( len( variables.contextRoot ) ) {
-			results[ "scriptName" ] = replaceNoCase( results[ "scriptName" ], variables.contextRoot, "" );
+			results[ "scriptName" ] = replaceNoCase(
+				results[ "scriptName" ],
+				variables.contextRoot,
+				""
+			);
 		}
 
 		// Clean up the path_info from index
