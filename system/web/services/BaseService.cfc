@@ -55,4 +55,24 @@ component accessors="true" {
 		return variables.envDelegate
 	}
 
+	/**
+	 * Get the LogBox instance (lazy-cached)
+	 */
+	function getLogBox(){
+		if ( isNull( variables.logBox ) ) {
+			variables.logBox = variables.controller.getLogBox()
+		}
+		return variables.logBox
+	}
+
+	/**
+	 * Get the CacheBox instance (lazy-cached)
+	 */
+	function getCacheBox(){
+		if ( isNull( variables.cacheBox ) ) {
+			variables.cacheBox = variables.controller.getCacheBox()
+		}
+		return variables.cacheBox
+	}
+
 }
