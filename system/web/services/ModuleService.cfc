@@ -64,42 +64,49 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		variables.appMapping 		= variables.appSettings.appMapping
 		variables.coldboxVersion 	= variables.controller.getColdBoxVersion()
 		variables.appHash 			= variables.controller.getAppHash()
+
 		// Global config/Coldbox.cfc moduleSettings override
 		variables.globalModuleSettings = variables.appSettings
 			.coldBoxConfig
 			.getPropertyMixin( "moduleSettings", "variables", {} )
+
 		// Build exclude lookup struct once for O(1) canLoad() checks on every module
 		variables.excludeModules = {}
 		for ( var m in variables.appSettings.modulesExclude ) {
 			variables.excludeModules[ m ] = true
 		}
 
-		// Load up the config overrides registry
-		variables.appConfigModules = directoryList(
-			variables.appSettings.applicationPath & "config/modules",
-			false,
-			"path",
-			"*.cfc|*.bx"
-		).map( ( item ) => {
-				var fileName        = getFileFromPath( item )
-				var invocationClass = fileName.listFirst( "." )
-				return {
-					"path"           : item,
-					"invocationPath" : len( variables.appMapping ) ? "#variables.appMapping#.config.modules.#invocationClass#" : "config.modules.#invocationClass#",
-					"name"           : invocationClass,
-					"isCFC"          : fileName.findNoCase( ".cfc" ) > 0,
-					"isBoxLang"      : fileName.findNoCase( ".bx" ) > 0
-				}
-			} )
-			.reduce( ( acc, item ) => {
-				acc[ item.name ] = item
-				return acc
-			}, {} )
-
+		// Load up app config overrides
+		registerModuleAppOverrides()
 		// Register All Modules
 		registerAllModules()
 
 		return this
+	}
+
+	/**
+	 * Get all the module config overrides from the app's config/modules directory, this is used to merge into the module's config struct when loading a module,
+	 * this allows you to have environment specific overrides for modules without having to touch the module's code or have multiple versions of the same module for different environments
+	 */
+	private void function registerModuleAppOverrides(){
+		variables.appConfigModules = {}
+		var configFiles = directoryList(
+			variables.appSettings.applicationPath & "config/modules",
+			false,
+			"query",
+			"*.cfc|*.bx"
+		)
+		for ( var item in configFiles ) {
+			var fileName        = item.name
+			var invocationClass = fileName.listFirst( "." )
+			variables.appConfigModules[ invocationClass ] = {
+				"path"           : item.directory & "/" & item.name,
+				"invocationPath" : len( variables.appMapping ) ? "#variables.appMapping#.config.modules.#invocationClass#" : "config.modules.#invocationClass#",
+				"name"           : invocationClass,
+				"isCFC"          : fileName.findNoCase( ".cfc" ) > 0,
+				"isBoxLang"      : fileName.findNoCase( ".bx" ) > 0
+			}
+		}
 	}
 
 	/**
@@ -1540,7 +1547,6 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			variables.logger.info( "> Module: #arguments.moduleName# excluded from loading." )
 			return false
 		}
-
 		return true
 	}
 
