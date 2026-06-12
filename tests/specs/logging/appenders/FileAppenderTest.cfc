@@ -9,23 +9,39 @@ component extends="coldbox.system.testing.BaseModelTest" {
 	function beforeAll(){
 		super.beforeAll();
 
-		dirPath = expandPath( "/tests/logs" );
+		var dirPath = expandPath( "/tests/logs" )
 		if ( directoryExists( dirPath ) ) {
-			directoryDelete( expandPath( "/tests/logs" ), true );
+			try {
+				directoryDelete( dirPath, true )
+			} catch ( any e ) {
+				// If deletion fails, attempt to delete individual files first
+				try {
+					var files = directoryList( dirPath, false, "query" )
+					for ( var file in files ) {
+						if ( file.type == "File" ) {
+							fileDelete( dirPath & "/" & file.name )
+						}
+					}
+					// Retry directory deletion
+					directoryDelete( dirPath, true )
+				} catch ( any retry ) {
+					writeDump( var = "Warning: Could not fully clean test logs directory: #retry.message#", output = "console" );
+				}
+			}
 		}
 
-		props = {
+		variables.props = {
 			filePath   : expandPath( "/tests/logs" ),
 			autoExpand : false
-		};
+		}
 		// debug(props);
-		logBox       = new coldbox.system.logging.LogBox();
-		fileappender = createMock( "coldbox.system.logging.appenders.FileAppender" ).setLogBox( logBox );
+		variables.logBox       = new coldbox.system.logging.LogBox()
+		variables.fileappender = createMock( "coldbox.system.logging.appenders.FileAppender" ).setLogBox( logBox )
 
-		fileappender.init( "MyFileAppender", props );
+		variables.fileappender.init( "MyFileAppender", props )
 
-		loge = createMock( "coldbox.system.logging.LogEvent" );
-		loge.init( "Unit Test Sample", 0, "", "UnitTest" );
+		variables.loge = createMock( "coldbox.system.logging.LogEvent" )
+		variables.loge.init( "Unit Test Sample", 0, "", "UnitTest" )
 	}
 
 	// executes after all suites+specs in the run() method
