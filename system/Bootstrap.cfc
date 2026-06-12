@@ -354,7 +354,7 @@ component serializable="false" accessors="true" {
 						var cacheEntry = {
 							renderedContent : renderedContent,
 							renderData      : !renderData.isEmpty(),
-							contentType     : !isNull( renderData.contentType ) ? renderData.contentType : getPageContextResponse().getContentType(),
+							contentType     : !isNull( renderData.contentType ) ? renderData.contentType : getPageContextResponse().getContentType() ?: "text/html",
 							encoding        : "UTF-8",
 							statusCode      : getPageContextResponse().getStatus(),
 							isBinary        : false,
