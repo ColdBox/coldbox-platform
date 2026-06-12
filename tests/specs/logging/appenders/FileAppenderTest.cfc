@@ -25,7 +25,10 @@ component extends="coldbox.system.testing.BaseModelTest" {
 					// Retry directory deletion
 					directoryDelete( dirPath, true )
 				} catch ( any retry ) {
-					writeDump( var = "Warning: Could not fully clean test logs directory: #retry.message#", output = "console" );
+					writeDump(
+						var    = "Warning: Could not fully clean test logs directory: #retry.message#",
+						output = "console"
+					);
 				}
 			}
 		}
