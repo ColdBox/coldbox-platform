@@ -144,15 +144,13 @@ component
 	 */
 	property name="stats";
 
-	static {
-		EVICTION_POLICIES = { "FIFO" : {}, "LFU" : {}, "LIFO" : {}, "LRU" : {} }
-		OBJECT_STORES     = {
-			"BlackHoleStore"               : {},
-			"ConcurrentSoftReferenceStore" : {},
-			"ConcurrentStore"              : {},
-			"DiskStore"                    : {},
-			"JDBCStore"                    : {}
-		}
+	variables.EVICTION_POLICIES = { "FIFO" : {}, "LFU" : {}, "LIFO" : {}, "LRU" : {} }
+	variables.OBJECT_STORES     = {
+		"BlackHoleStore"               : {},
+		"ConcurrentSoftReferenceStore" : {},
+		"ConcurrentStore"              : {},
+		"DiskStore"                    : {},
+		"JDBCStore"                    : {}
 	}
 
 	// CacheBox Provider Property Defaults
@@ -657,7 +655,7 @@ component
 	 * @return coldbox.system.cache.policies.IEvictionPolicy
 	 */
 	function locateEvictionPolicy( required policy ){
-		if ( static.EVICTION_POLICIES.keyExists( arguments.policy ) ) {
+		if ( variables.EVICTION_POLICIES.keyExists( arguments.policy ) ) {
 			return "coldbox.system.cache.policies.#arguments.policy#"
 		}
 		return arguments.policy
@@ -671,7 +669,7 @@ component
 	 * @return coldbox.system.cache.store.IObjectStore
 	 */
 	function locateObjectStore( required store ){
-		if ( static.OBJECT_STORES.keyExists( arguments.store ) ) {
+		if ( variables.OBJECT_STORES.keyExists( arguments.store ) ) {
 			return "coldbox.system.cache.store.#arguments.store#"
 		}
 		return arguments.store
