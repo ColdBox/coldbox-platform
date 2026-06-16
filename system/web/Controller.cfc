@@ -87,10 +87,10 @@ component serializable="false" accessors="true" {
 	property name="asyncManager";
 
 	// BoxLang Detection
-	variables.IS_BOXLANG = server.keyExists( "boxlang" )
-	variables.IS_CLI     = variables.IS_BOXLANG && server.boxlang.cliMode ? true : false
+	variables.IS_BOXLANG        = server.keyExists( "boxlang" )
+	variables.IS_CLI            = variables.IS_BOXLANG && server.boxlang.cliMode ? true : false
 	// Locate file cache
-    variables.locateTargetCache = {}
+	variables.locateTargetCache = {}
 
 	/**
 	 * Constructor
@@ -1119,10 +1119,10 @@ component serializable="false" accessors="true" {
 	 * @pathToCheck The relative or absolute file path to verify and locate
 	 */
 	function locateFilePath( required pathToCheck ){
-		var foundPath = ""
+		var foundPath    = ""
 		var pathCheckKey = "file:#arguments.pathToCheck#"
-		var pathFound = locateTargetCache[ pathCheckKey ] ?: javaCast( "null", "" )
-		if( !isNull( pathFound ) ) {
+		var pathFound    = locateTargetCache[ pathCheckKey ] ?: javacast( "null", "" )
+		if ( !isNull( pathFound ) ) {
 			return pathFound
 		}
 
@@ -1152,10 +1152,10 @@ component serializable="false" accessors="true" {
 	 * @pathToCheck The relative or absolute directory path to verify and locate
 	 */
 	function locateDirectoryPath( required pathToCheck ){
-		var foundPath = ""
+		var foundPath    = ""
 		var pathCheckKey = "dir:#arguments.pathToCheck#"
-		var pathFound = locateTargetCache[ pathCheckKey ] ?: javaCast( "null", "" )
-		if( !isNull( pathFound ) ) {
+		var pathFound    = locateTargetCache[ pathCheckKey ] ?: javacast( "null", "" )
+		if ( !isNull( pathFound ) ) {
 			return pathFound
 		}
 
