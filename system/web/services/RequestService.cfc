@@ -31,6 +31,10 @@ component extends="coldbox.system.web.services.BaseService" {
 		variables.cacheBox           = controller.getCacheBox()
 		variables.cache              = controller.getCache()
 		variables.templateCache      = controller.getCache( "template" )
+		// build out Flash RAM
+		variables.flashData     = controller.getSetting( "flash" )
+		variables.flashDataHash = hash( variables.flashData.toString() )
+		buildFlashScope()
 	}
 
 	/**
@@ -42,11 +46,6 @@ component extends="coldbox.system.web.services.BaseService" {
 		variables.eventCaching    = controller.getSetting( "eventCaching" )
 		variables.jsonPayloadToRC = controller.getSetting( "jsonPayloadToRC" )
 		variables.defaultEvent    = controller.getSetting( "DefaultEvent" )
-
-		// build out Flash RAM
-		variables.flashData     = controller.getSetting( "flash" )
-		variables.flashDataHash = hash( variables.flashData.toString() )
-		buildFlashScope()
 	}
 
 	/**
