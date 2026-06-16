@@ -524,30 +524,30 @@ component serializable="false" accessors="true" {
 	 */
 	boolean function onMissingTemplate( required template ){
 		// get reference
-		var cbController = application[ locateAppKey() ];
+		var cbController = application[ locateAppKey() ]
 		// Execute Missing Template Handler if it exists
 		if ( len( cbController.getSetting( "MissingTemplateHandler" ) ) ) {
 			// Save missing template in RC and right handler for this call.
-			var event = cbController.getRequestService().getContext();
+			var event = cbController.getRequestService().getContext()
 			event
 				.setValue( "missingTemplate", arguments.template )
 				.setValue(
 					cbController.getSetting( "EventName" ),
 					cbController.getSetting( "MissingTemplateHandler" )
-				);
+				)
 
 			// Process it
 			if ( fileExists( cbController.locateFilePath( "index.bxm" ) ) ) {
-				onRequestStart( "index.bxm" );
+				onRequestStart( "index.bxm" )
 			} else {
-				onRequestStart( "index.cfm" );
+				onRequestStart( "index.cfm" )
 			}
 
 			// Return processed
-			return true;
+			return true
 		}
 
-		return false;
+		return false
 	}
 
 	/**
