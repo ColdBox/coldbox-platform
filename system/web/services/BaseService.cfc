@@ -30,6 +30,12 @@ component accessors="true" {
 	}
 
 	/**
+	 * Once aspects are loaded
+	 */
+	function afterAspectsLoad(){
+	}
+
+	/**
 	 * On framework shutdown
 	 */
 	function onShutdown(){

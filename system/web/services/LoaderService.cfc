@@ -103,6 +103,14 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		variables.controller.getRenderer().startup()
 		// Execute afterAspectsLoad: all module interceptions are registered and flash rebuilt if needed
 		services.interceptorService.announce( "afterAspectsLoad" )
+
+		// Execute afterAspectsLoad for coldbox internal services()
+		// This is the last step before the framework is ready to serve requests
+		// Modules have been loaded and activated.
+		for ( var thisService in services ) {
+			services[ thisService ].afterAspectsLoad()
+		}
+
 		// Flag the initiation, Framework is ready to serve requests. Praise be to GOD.
 		variables.controller.setColdboxInitiated( true )
 		// Startup the schedulers now that the entire application has been loaded and runnning
