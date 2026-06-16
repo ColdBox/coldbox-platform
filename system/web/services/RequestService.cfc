@@ -25,21 +25,27 @@ component extends="coldbox.system.web.services.BaseService" {
 	 * Once configuration loads this method is fired by the service loader.
 	 */
 	function onConfigurationLoad(){
-		// Local Configuration data and dependencies
-		variables.eventName          = controller.getSetting( "eventName" )
-		variables.eventCaching       = controller.getSetting( "eventCaching" )
-		variables.jsonPayloadToRC    = controller.getSetting( "jsonPayloadToRC" )
-		variables.defaultEvent       = controller.getSetting( "DefaultEvent" )
 		variables.interceptorService = controller.getInterceptorService()
 		variables.routingService     = controller.getRoutingService()
 		variables.handlerService     = controller.getHandlerService()
 		variables.cacheBox           = controller.getCacheBox()
 		variables.cache              = controller.getCache()
 		variables.templateCache      = controller.getCache( "template" )
-		variables.flashData          = controller.getSetting( "flash" )
-		variables.flashDataHash      = hash( variables.flashData.toString() )
+	}
+
+	/**
+	 * Once aspects load this method is fired by the service loader.
+	 */
+	function afterAspectsLoad(){
+		// Local Configuration data and dependencies
+		variables.eventName          = controller.getSetting( "eventName" )
+		variables.eventCaching       = controller.getSetting( "eventCaching" )
+		variables.jsonPayloadToRC    = controller.getSetting( "jsonPayloadToRC" )
+		variables.defaultEvent       = controller.getSetting( "DefaultEvent" )
 
 		// build out Flash RAM
+		variables.flashData          = controller.getSetting( "flash" )
+		variables.flashDataHash      = hash( variables.flashData.toString() )
 		buildFlashScope()
 	}
 
