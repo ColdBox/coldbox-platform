@@ -36,8 +36,8 @@ component extends="coldbox.system.web.services.BaseService" {
 		variables.flashDataHash      = hash( variables.flashData.toString() )
 		buildFlashScope()
 		// Re-cache settings that may be changed during testing or runtime
-		variables.jsonPayloadToRC    = controller.getSetting( "jsonPayloadToRC" )
-		variables.defaultEvent       = controller.getSetting( "DefaultEvent" )
+		variables.jsonPayloadToRC = controller.getSetting( "jsonPayloadToRC" )
+		variables.defaultEvent    = controller.getSetting( "DefaultEvent" )
 	}
 
 	/**
