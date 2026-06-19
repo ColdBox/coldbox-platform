@@ -34,6 +34,7 @@ component {
 		"handlerCaching"           : true,
 		"eventCaching"             : true,
 		"viewCaching"              : true,
+		"viewDiscoveryCaching"     : true,
 		// Default Conventions Events + Views
 		"defaultEvent"             : "main.index",
 		"defaultLayout"            : "Main",
