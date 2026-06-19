@@ -666,6 +666,61 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				} );
 			} );
 		} );
+
+		describe( "Response placeholder pre-parsing", function(){
+			beforeEach( function( currentSpec ){
+				router = createMock( "coldbox.system.web.routing.Router" )
+					.init()
+					.setController( controller )
+					.setLogBox( controller.getLogBox() )
+					.setLog( controller.getLogBox().getLogger( this ) )
+					.setCacheBox( controller.getCacheBox() )
+					.setWireBox( controller.getWireBox() );
+			} );
+
+			it( "a route with a static string response pre-parses placeholders at registration", function(){
+				router.addRoute( pattern = "/hello/:name", response = "Hello {name}!" );
+				var routes = router.getRoutes();
+				expect( routes ).toHaveLength( 1 );
+				expect( routes[ 1 ] ).toHaveKey( "responsePlaceholders" );
+				expect( routes[ 1 ].responsePlaceholders ).toHaveLength( 1 );
+				expect( routes[ 1 ].responsePlaceholders[ 1 ].token ).toBe( "{name}" );
+				expect( routes[ 1 ].responsePlaceholders[ 1 ].key ).toBe( "name" );
+			} );
+
+			it( "a route with multiple placeholders pre-parses all of them", function(){
+				router.addRoute( pattern = "/greet/:name/:mod", response = "Hello {name} from {mod}" );
+				var routes = router.getRoutes();
+				expect( routes[ 1 ].responsePlaceholders ).toHaveLength( 2 );
+				expect( routes[ 1 ].responsePlaceholders[ 1 ].key ).toBe( "name" );
+				expect( routes[ 1 ].responsePlaceholders[ 2 ].key ).toBe( "mod" );
+			} );
+
+			it( "a route with no placeholders has an empty responsePlaceholders array", function(){
+				router.addRoute( pattern = "/static", response = "No placeholders here" );
+				var routes = router.getRoutes();
+				expect( routes[ 1 ].responsePlaceholders ).toBeArray();
+				expect( routes[ 1 ].responsePlaceholders ).toHaveLength( 0 );
+			} );
+
+			it( "a route with a closure response has an empty responsePlaceholders array", function(){
+				router.addRoute(
+					pattern  = "/closure",
+					response = function( event, rc, prc ){ return "hi"; }
+				);
+				var routes = router.getRoutes();
+				expect( routes[ 1 ].responsePlaceholders ).toBeArray();
+				expect( routes[ 1 ].responsePlaceholders ).toHaveLength( 0 );
+			} );
+
+			it( "a route with no response has an empty responsePlaceholders array", function(){
+				router.addRoute( pattern = "/noop", event = "main.index" );
+				var routes = router.getRoutes();
+				expect( routes[ 1 ].responsePlaceholders ).toBeArray();
+				expect( routes[ 1 ].responsePlaceholders ).toHaveLength( 0 );
+			} );
+		} );
+	} );
 	}
 
 }
