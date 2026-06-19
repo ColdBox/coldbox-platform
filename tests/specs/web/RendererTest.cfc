@@ -195,7 +195,11 @@ component extends="tests.resources.BaseIntegrationTest" {
 				it( "discoverViewPaths populates viewsRefMap when viewDiscoveryCaching is true", function(){
 					renderer.$property( "viewsRefMap", "variables", {} );
 					renderer.$property( "isDiscoveryCaching", "variables", true );
-					renderer.discoverViewPaths( view : "simpleview", module : "", explicitModule : false );
+					renderer.discoverViewPaths(
+						view          : "simpleview",
+						module        : "",
+						explicitModule: false
+					);
 					expect( structCount( renderer.$getProperty( "viewsRefMap", "variables" ) ) ).toBeGT( 0 );
 				} );
 			} );
