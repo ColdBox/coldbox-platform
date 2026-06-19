@@ -42,14 +42,25 @@ component
 	property name="lockName";
 	// Discovery caching is tied to handlers for discovery.
 	property name="isDiscoveryCaching";
+	// Memoized expandPath() results — always active, expandPath is pure
+	property name="expandPathCache";
+	// Cached results of locateView() calls
+	property name="locateViewCache";
+	// Cached results of locateLayout() calls
+	property name="locateLayoutCache";
 
 	/**
 	 * Constructor
 	 */
 	function init(){
 		// Layouts + Views Reference Maps
-		variables.layoutsRefMap = {};
-		variables.viewsRefMap   = {};
+		variables.layoutsRefMap     = {};
+		variables.viewsRefMap       = {};
+		// expandPath() is deterministic — cache unconditionally
+		variables.expandPathCache   = {};
+		// Per-name locate caches, gated by viewDiscoveryCaching
+		variables.locateViewCache   = {};
+		variables.locateLayoutCache = {};
 		super.init();
 		return this;
 	}
@@ -106,8 +117,8 @@ component
 		// Template Cache & Caching Maps
 		variables.lockName = "rendering.#variables.controller.getAppHash()#";
 
-		// Discovery caching
-		variables.isDiscoveryCaching = variables.controller.getSetting( "viewCaching" );
+		// Discovery caching — independent from viewCaching (output cache)
+		variables.isDiscoveryCaching = variables.controller.getSetting( "viewDiscoveryCaching" );
 
 		// Load Application helpers
 		loadApplicationHelpers();
@@ -645,6 +656,11 @@ component
 		// Remove extension: We need to test cfm vs bxm
 		arguments.layout = reReplace( arguments.layout, "\.(cfm|bxm)$", "", "one" );
 
+		// Return cached result when discovery caching is active
+		if ( variables.isDiscoveryCaching && variables.locateLayoutCache.keyExists( arguments.layout ) ) {
+			return variables.locateLayoutCache[ arguments.layout ];
+		}
+
 		// Default path is the conventions location
 		var layoutPaths = [
 			// Conventions location first
@@ -657,18 +673,27 @@ component
 			"#arguments.layout#"
 		];
 
-		// Try to locate the view
+		// Try to locate the layout
 		for ( var thisLayoutPath in layoutPaths ) {
 			thisLayoutPath = reReplace( thisLayoutPath, "//", "/", "all" );
-			if ( fileExists( expandPath( thisLayoutPath & ".cfm" ) ) ) {
+			if ( fileExists( cachedExpandPath( thisLayoutPath & ".cfm" ) ) ) {
+				if ( variables.isDiscoveryCaching && !variables.locateLayoutCache.keyExists( arguments.layout ) ) {
+					variables.locateLayoutCache[ arguments.layout ] = thisLayoutPath & ".cfm";
+				}
 				return thisLayoutPath & ".cfm";
 			}
-			if ( fileExists( expandPath( thisLayoutPath & ".bxm" ) ) ) {
+			if ( fileExists( cachedExpandPath( thisLayoutPath & ".bxm" ) ) ) {
+				if ( variables.isDiscoveryCaching && !variables.locateLayoutCache.keyExists( arguments.layout ) ) {
+					variables.locateLayoutCache[ arguments.layout ] = thisLayoutPath & ".bxm";
+				}
 				return thisLayoutPath & ".bxm";
 			}
 		}
 
 		// If all fails, return the path as is
+		if ( variables.isDiscoveryCaching && !variables.locateLayoutCache.keyExists( arguments.layout ) ) {
+			variables.locateLayoutCache[ arguments.layout ] = arguments.layout;
+		}
 		return arguments.layout;
 	}
 
@@ -692,10 +717,10 @@ component
 		// Explicit Module layout lookup?
 		if ( len( arguments.module ) and arguments.explicitModule ) {
 			var explicitLayout = "#variables.modulesConfig[ arguments.module ].mapping#/#variables.modulesConfig[ arguments.module ].conventions.layoutsLocation#/#arguments.layout#";
-			if ( fileExists( expandPath( explicitLayout & ".cfm" ) ) ) {
+			if ( fileExists( cachedExpandPath( explicitLayout & ".cfm" ) ) ) {
 				return explicitLayout & ".cfm";
 			}
-			if ( fileExists( expandPath( explicitLayout & ".bxm" ) ) ) {
+			if ( fileExists( cachedExpandPath( explicitLayout & ".bxm" ) ) ) {
 				return explicitLayout & ".bxm";
 			}
 			throw(
@@ -724,26 +749,26 @@ component
 		// Check parent view order setup
 		if ( variables.modulesConfig[ moduleName ].layoutParentLookup ) {
 			// We check if layout is overridden in parent first.
-			if ( fileExists( expandPath( parentModuleLayoutPath & ".cfm" ) ) ) {
+			if ( fileExists( cachedExpandPath( parentModuleLayoutPath & ".cfm" ) ) ) {
 				return parentModuleLayoutPath & ".cfm";
 			}
-			if ( fileExists( expandPath( parentModuleLayoutPath & ".bxm" ) ) ) {
+			if ( fileExists( cachedExpandPath( parentModuleLayoutPath & ".bxm" ) ) ) {
 				return parentModuleLayoutPath & ".bxm";
 			}
 
 			// Check if parent has a common layout override
-			if ( fileExists( expandPath( parentCommonLayoutPath & ".cfm" ) ) ) {
+			if ( fileExists( cachedExpandPath( parentCommonLayoutPath & ".cfm" ) ) ) {
 				return parentCommonLayoutPath & ".cfm";
 			}
-			if ( fileExists( expandPath( parentCommonLayoutPath & ".bxm" ) ) ) {
+			if ( fileExists( cachedExpandPath( parentCommonLayoutPath & ".bxm" ) ) ) {
 				return parentCommonLayoutPath & ".bxm";
 			}
 
 			// Check module
-			if ( fileExists( expandPath( moduleLayoutPath & ".cfm" ) ) ) {
+			if ( fileExists( cachedExpandPath( moduleLayoutPath & ".cfm" ) ) ) {
 				return moduleLayoutPath & ".cfm";
 			}
-			if ( fileExists( expandPath( moduleLayoutPath & ".bxm" ) ) ) {
+			if ( fileExists( cachedExpandPath( moduleLayoutPath & ".bxm" ) ) ) {
 				return moduleLayoutPath & ".bxm";
 			}
 
@@ -752,26 +777,26 @@ component
 		}
 
 		// If we reach here then we are doing module lookup first then if not parent.
-		if ( fileExists( expandPath( moduleLayoutPath & ".cfm" ) ) ) {
+		if ( fileExists( cachedExpandPath( moduleLayoutPath & ".cfm" ) ) ) {
 			return moduleLayoutPath & ".cfm";
 		}
-		if ( fileExists( expandPath( moduleLayoutPath & ".bxm" ) ) ) {
+		if ( fileExists( cachedExpandPath( moduleLayoutPath & ".bxm" ) ) ) {
 			return moduleLayoutPath & ".bxm";
 		}
 
 		// We check if layout is overridden in parent first.
-		if ( fileExists( expandPath( parentModuleLayoutPath & ".cfm" ) ) ) {
+		if ( fileExists( cachedExpandPath( parentModuleLayoutPath & ".cfm" ) ) ) {
 			return parentModuleLayoutPath & ".cfm";
 		}
-		if ( fileExists( expandPath( parentModuleLayoutPath & ".bxm" ) ) ) {
+		if ( fileExists( cachedExpandPath( parentModuleLayoutPath & ".bxm" ) ) ) {
 			return parentModuleLayoutPath & ".bxm";
 		}
 
 		// Check if parent has a common layout override
-		if ( fileExists( expandPath( parentCommonLayoutPath & ".cfm" ) ) ) {
+		if ( fileExists( cachedExpandPath( parentCommonLayoutPath & ".cfm" ) ) ) {
 			return parentCommonLayoutPath & ".cfm";
 		}
-		if ( fileExists( expandPath( parentCommonLayoutPath & ".bxm" ) ) ) {
+		if ( fileExists( cachedExpandPath( parentCommonLayoutPath & ".bxm" ) ) ) {
 			return parentCommonLayoutPath & ".bxm";
 		}
 
@@ -788,6 +813,11 @@ component
 		// Remove extension: We need to test cfm vs bxm
 		arguments.view = reReplace( arguments.view, "\.(cfm|bxm)$", "", "one" );
 
+		// Return cached result when discovery caching is active
+		if ( variables.isDiscoveryCaching && variables.locateViewCache.keyExists( arguments.view ) ) {
+			return variables.locateViewCache[ arguments.view ];
+		}
+
 		// Default path is the conventions location, then the external location
 		var viewPaths = [
 			// Conventions location first
@@ -803,15 +833,24 @@ component
 		// Try to locate the view
 		for ( var thisViewPath in viewPaths ) {
 			thisViewPath = reReplace( thisViewPath, "//", "/", "all" );
-			if ( fileExists( expandPath( thisViewPath & ".cfm" ) ) ) {
+			if ( fileExists( cachedExpandPath( thisViewPath & ".cfm" ) ) ) {
+				if ( variables.isDiscoveryCaching && !variables.locateViewCache.keyExists( arguments.view ) ) {
+					variables.locateViewCache[ arguments.view ] = thisViewPath & ".cfm";
+				}
 				return thisViewPath & ".cfm";
 			}
-			if ( fileExists( expandPath( thisViewPath & ".bxm" ) ) ) {
+			if ( fileExists( cachedExpandPath( thisViewPath & ".bxm" ) ) ) {
+				if ( variables.isDiscoveryCaching && !variables.locateViewCache.keyExists( arguments.view ) ) {
+					variables.locateViewCache[ arguments.view ] = thisViewPath & ".bxm";
+				}
 				return thisViewPath & ".bxm";
 			}
 		}
 
 		// If all fails, return the path as is
+		if ( variables.isDiscoveryCaching && !variables.locateViewCache.keyExists( arguments.view ) ) {
+			variables.locateViewCache[ arguments.view ] = arguments.view;
+		}
 		return arguments.view;
 	}
 
@@ -833,10 +872,10 @@ component
 		// Explicit Module view lookup?
 		if ( len( arguments.module ) and arguments.explicitModule ) {
 			var explicitView = "#variables.modulesConfig[ arguments.module ].mapping#/#variables.modulesConfig[ arguments.module ].conventions.viewsLocation#/#arguments.view#";
-			if ( fileExists( expandPath( explicitView & ".cfm" ) ) ) {
+			if ( fileExists( cachedExpandPath( explicitView & ".cfm" ) ) ) {
 				return explicitView & ".cfm";
 			}
-			if ( fileExists( expandPath( explicitView & ".bxm" ) ) ) {
+			if ( fileExists( cachedExpandPath( explicitView & ".bxm" ) ) ) {
 				return explicitView & ".bxm";
 			}
 			throw(
@@ -865,26 +904,26 @@ component
 		// Check parent view order setup
 		if ( variables.modulesConfig[ moduleName ].viewParentLookup ) {
 			// We check if view is overridden in parent first.
-			if ( fileExists( expandPath( parentModuleViewPath & ".cfm" ) ) ) {
+			if ( fileExists( cachedExpandPath( parentModuleViewPath & ".cfm" ) ) ) {
 				return parentModuleViewPath & ".cfm";
 			}
-			if ( fileExists( expandPath( parentModuleViewPath & ".bxm" ) ) ) {
+			if ( fileExists( cachedExpandPath( parentModuleViewPath & ".bxm" ) ) ) {
 				return parentModuleViewPath & ".bxm";
 			}
 
 			// Check if parent has a common view override
-			if ( fileExists( expandPath( parentCommonViewPath & ".cfm" ) ) ) {
+			if ( fileExists( cachedExpandPath( parentCommonViewPath & ".cfm" ) ) ) {
 				return parentCommonViewPath & ".cfm";
 			}
-			if ( fileExists( expandPath( parentCommonViewPath & ".bxm" ) ) ) {
+			if ( fileExists( cachedExpandPath( parentCommonViewPath & ".bxm" ) ) ) {
 				return parentCommonViewPath & ".bxm";
 			}
 
 			// Check module for view
-			if ( fileExists( expandPath( moduleViewPath & ".cfm" ) ) ) {
+			if ( fileExists( cachedExpandPath( moduleViewPath & ".cfm" ) ) ) {
 				return moduleViewPath & ".cfm";
 			}
-			if ( fileExists( expandPath( moduleViewPath & ".bxm" ) ) ) {
+			if ( fileExists( cachedExpandPath( moduleViewPath & ".bxm" ) ) ) {
 				return moduleViewPath & ".bxm";
 			}
 
@@ -893,26 +932,26 @@ component
 		}
 
 		// If we reach here then we are doing module lookup first then if not the parent.
-		if ( fileExists( expandPath( moduleViewPath & ".cfm" ) ) ) {
+		if ( fileExists( cachedExpandPath( moduleViewPath & ".cfm" ) ) ) {
 			return moduleViewPath & ".cfm";
 		}
-		if ( fileExists( expandPath( moduleViewPath & ".bxm" ) ) ) {
+		if ( fileExists( cachedExpandPath( moduleViewPath & ".bxm" ) ) ) {
 			return moduleViewPath & ".bxm";
 		}
 
 		// We check if view is overridden in parent first.
-		if ( fileExists( expandPath( parentModuleViewPath & ".cfm" ) ) ) {
+		if ( fileExists( cachedExpandPath( parentModuleViewPath & ".cfm" ) ) ) {
 			return parentModuleViewPath & ".cfm";
 		}
-		if ( fileExists( expandPath( parentModuleViewPath & ".bxm" ) ) ) {
+		if ( fileExists( cachedExpandPath( parentModuleViewPath & ".bxm" ) ) ) {
 			return parentModuleViewPath & ".bxm";
 		}
 
 		// Check if parent has a common view override
-		if ( fileExists( expandPath( parentCommonViewPath & ".cfm" ) ) ) {
+		if ( fileExists( cachedExpandPath( parentCommonViewPath & ".cfm" ) ) ) {
 			return parentCommonViewPath & ".cfm";
 		}
-		if ( fileExists( expandPath( parentCommonViewPath & ".bxm" ) ) ) {
+		if ( fileExists( cachedExpandPath( parentCommonViewPath & ".bxm" ) ) ) {
 			return parentCommonViewPath & ".bxm";
 		}
 
@@ -964,19 +1003,19 @@ component
 
 		// Check for directory helper convention first
 		var dPath = getDirectoryFromPath( results.viewPath );
-		if ( fileExists( expandPath( dPath & listLast( dPath, "\/" ) & "Helper.cfm" ) ) ) {
+		if ( fileExists( cachedExpandPath( dPath & listLast( dPath, "\/" ) & "Helper.cfm" ) ) ) {
 			results.viewHelperPath.append( dPath & listLast( dPath, "\/" ) & "Helper.cfm" );
 		}
-		if ( fileExists( expandPath( dPath & listLast( dPath, "\/" ) & "Helper.bxm" ) ) ) {
+		if ( fileExists( cachedExpandPath( dPath & listLast( dPath, "\/" ) & "Helper.bxm" ) ) ) {
 			results.viewHelperPath.append( dPath & listLast( dPath, "\/" ) & "Helper.bxm" );
 		}
 
 		// Check for view helper convention second
 		var vPath = results.viewPath.listFirst( "." );
-		if ( fileExists( expandPath( vPath & "Helper.cfm" ) ) ) {
+		if ( fileExists( cachedExpandPath( vPath & "Helper.cfm" ) ) ) {
 			results.viewHelperPath.append( vPath & "Helper.cfm" );
 		}
-		if ( fileExists( expandPath( vPath & "Helper.bxm" ) ) ) {
+		if ( fileExists( cachedExpandPath( vPath & "Helper.bxm" ) ) ) {
 			results.viewHelperPath.append( vPath & "Helper.bxm" );
 		}
 
@@ -989,6 +1028,17 @@ component
 	}
 
 	/************************************** PRIVATE *********************************************/
+
+	/**
+	 * Memoized expandPath() — the mapping-to-absolute-path computation is pure and
+	 * never changes between requests, so we cache it unconditionally.
+	 */
+	private function cachedExpandPath( required string path ){
+		if ( !variables.expandPathCache.keyExists( arguments.path ) ) {
+			variables.expandPathCache[ arguments.path ] = expandPath( arguments.path );
+		}
+		return variables.expandPathCache[ arguments.path ];
+	}
 
 	/**
 	 * Verifies if we should render the implicit view or not

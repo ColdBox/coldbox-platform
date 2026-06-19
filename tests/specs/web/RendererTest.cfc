@@ -146,6 +146,60 @@ component extends="tests.resources.BaseIntegrationTest" {
 			} );
 
 
+			describe( "Discovery Cache", function(){
+				it( "viewDiscoveryCaching setting defaults to true", function(){
+					expect( getController().getSetting( "viewDiscoveryCaching" ) ).toBeTrue();
+				} );
+
+				it( "locateView caches path results when viewDiscoveryCaching is true", function(){
+					renderer.$property( "locateViewCache", "variables", {} );
+					renderer.$property( "isDiscoveryCaching", "variables", true );
+					var path1 = renderer.locateView( "simpleview" );
+					var path2 = renderer.locateView( "simpleview" );
+					expect( path1 ).toBe( path2 );
+					expect( path1 ).toInclude( "simpleview" );
+					expect( structCount( renderer.getLocateViewCache() ) ).toBeGT( 0 );
+				} );
+
+				it( "locateLayout caches path results when viewDiscoveryCaching is true", function(){
+					renderer.$property( "locateLayoutCache", "variables", {} );
+					renderer.$property( "isDiscoveryCaching", "variables", true );
+					var path1 = renderer.locateLayout( "Main" );
+					var path2 = renderer.locateLayout( "Main" );
+					expect( path1 ).toBe( path2 );
+					expect( path1 ).toInclude( "Main" );
+					expect( structCount( renderer.getLocateLayoutCache() ) ).toBeGT( 0 );
+				} );
+
+				it( "expandPathCache is always populated regardless of viewDiscoveryCaching", function(){
+					renderer.$property( "expandPathCache", "variables", {} );
+					renderer.$property( "isDiscoveryCaching", "variables", false );
+					renderer.locateView( "simpleview" );
+					expect( structCount( renderer.getExpandPathCache() ) ).toBeGT( 0 );
+				} );
+
+				it( "does not populate locateViewCache when viewDiscoveryCaching is false", function(){
+					renderer.$property( "isDiscoveryCaching", "variables", false );
+					renderer.$property( "locateViewCache", "variables", {} );
+					renderer.locateView( "simpleview" );
+					expect( structCount( renderer.getLocateViewCache() ) ).toBe( 0 );
+				} );
+
+				it( "does not populate locateLayoutCache when viewDiscoveryCaching is false", function(){
+					renderer.$property( "isDiscoveryCaching", "variables", false );
+					renderer.$property( "locateLayoutCache", "variables", {} );
+					renderer.locateLayout( "Main" );
+					expect( structCount( renderer.getLocateLayoutCache() ) ).toBe( 0 );
+				} );
+
+				it( "discoverViewPaths populates viewsRefMap when viewDiscoveryCaching is true", function(){
+					renderer.$property( "viewsRefMap", "variables", {} );
+					renderer.$property( "isDiscoveryCaching", "variables", true );
+					renderer.discoverViewPaths( view : "simpleview", module : "", explicitModule : false );
+					expect( structCount( renderer.$getProperty( "viewsRefMap", "variables" ) ) ).toBeGT( 0 );
+				} );
+			} );
+
 			feature( "ColdBox can render view collections", function(){
 				beforeEach( function( currentSpec ){
 					aUsers = [
