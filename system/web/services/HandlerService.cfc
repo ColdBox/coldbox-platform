@@ -82,6 +82,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		variables.handlersPath                 = variables.controller.getSetting( "handlersPath" )
 		variables.interceptorService           = variables.controller.getInterceptorService()
 		variables.invalidEventHandler          = variables.controller.getSetting( "invalidEventHandler" )
+		variables.implicitViews                = variables.controller.getSetting( "ImplicitViews" )
 		variables.modules                      = variables.controller.getSetting( "modules" )
 		variables.templateCache                = variables.controller.getCache( "template" )
 		variables.wirebox                      = variables.controller.getWireBox()
@@ -155,7 +156,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 			// Test for Implicit View Dispatch
 			if (
-				controller.getSetting( "ImplicitViews" ) AND
+				variables.implicitViews AND
 				isViewDispatch( arguments.ehBean.getFullEvent(), arguments.ehBean )
 			) {
 				return oEventHandler;
@@ -404,8 +405,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			targetView = renderer.locateView( cEvent );
 		}
 
-		// CFML View
-		if ( fileExists( expandPath( targetView ) ) ) {
+		// locateView/locateModuleView return a path with .cfm/.bxm extension only when
+		// the file was verified to exist — no need for a redundant filesystem call here.
+		if ( right( targetView, 4 ) == ".cfm" || right( targetView, 4 ) == ".bxm" ) {
 			arguments.ehBean.setViewDispatch( true );
 			return true;
 		}

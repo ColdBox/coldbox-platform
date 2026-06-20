@@ -533,7 +533,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 		// Check if we found a route, else just return empty params struct
 		if ( results.route.isEmpty() ) {
-			if ( getLogger().canDebug() ) {
+			if ( canDebug ) {
 				getLogger().debug( "No URL routes matched on routed string: #requestString#" );
 			}
 			return results;
@@ -599,7 +599,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			// reset pattern matching, if packages found.
 			if ( compare( packagedRequestString, requestString ) NEQ 0 ) {
 				// Log package resolved
-				if ( getLogger().canDebug() ) {
+				if ( canDebug ) {
 					getLogger().debug( "URL Routing Package Resolved: #packagedRequestString#" );
 				}
 				// Return found Route recursively.
@@ -781,16 +781,14 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// simple values
 		if ( isSimpleValue( aRoute.response ) ) {
 			// setup default response
-			theResponse      = aRoute.response;
-			// String replacements
-			var replacements = reMatchNoCase( "{[^{]+?}", aRoute.response );
-			for ( var thisReplacement in replacements ) {
-				var thisKey = reReplaceNoCase( thisReplacement, "({|})", "", "all" );
-				if ( event.valueExists( thisKey ) ) {
+			theResponse = aRoute.response;
+			// Apply pre-parsed placeholders (tokens resolved once at route registration)
+			for ( var placeholder in aRoute.responsePlaceholders ) {
+				if ( event.valueExists( placeholder.key ) ) {
 					theResponse = replace(
-						aRoute.response,
-						thisReplacement,
-						event.getValue( thisKey ),
+						theResponse,
+						placeholder.token,
+						event.getValue( placeholder.key ),
 						"all"
 					);
 				}

@@ -194,6 +194,32 @@ component extends="tests.resources.BaseIntegrationTest" {
 				} );
 			} );
 		} );
+
+		describe( "Hot-path caching optimizations", () => {
+			beforeEach( () => {
+				setup();
+				variables.handlerService = controller.getHandlerService();
+			} );
+
+			it( "caches implicitViews setting in variables scope after configuration load", () => {
+				// implicitViews must be a boolean cached from getSetting("ImplicitViews")
+				prepareMock( variables.handlerService );
+				expect( variables.handlerService.$getProperty( "implicitViews", "variables" ) ).toBeBoolean();
+				expect( variables.handlerService.$getProperty( "implicitViews", "variables" ) ).toBeTrue();
+			} );
+
+			it( "isViewDispatch detects a view by extension without a filesystem call", () => {
+				// simpleview exists — getHandlerBean triggers isViewDispatch internally
+				// If the extension-check logic is wrong the viewDispatch flag won't be set
+				var results = variables.handlerService.getHandlerBean( "simpleview" );
+				expect( results.getViewDispatch() ).toBeTrue();
+			} );
+
+			it( "isViewDispatch returns false for an event with no matching view", () => {
+				var results = variables.handlerService.getHandlerBean( "nonexistent_view_xyz" );
+				expect( results.getViewDispatch() ).toBeFalse();
+			} );
+		} );
 	}
 
 }

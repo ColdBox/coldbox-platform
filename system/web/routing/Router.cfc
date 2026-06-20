@@ -1065,6 +1065,15 @@ component
 			}
 		}
 
+		// Pre-parse response string placeholders so renderResponse() skips regex on every request
+		if ( isSimpleValue( thisRoute.response ) && len( thisRoute.response ) ) {
+			thisRoute.responsePlaceholders = reMatchNoCase( "{[^{]+?}", thisRoute.response ).map( function( token ){
+				return { token : token, key : reReplaceNoCase( token, "({|})", "", "all" ) };
+			} );
+		} else {
+			thisRoute.responsePlaceholders = [];
+		}
+
 		// Add it to the corresponding routing table
 		// MODULES
 		if ( len( arguments.module ) ) {
@@ -1133,6 +1142,7 @@ component
 			"rc"                    : {}, // The RC params to add incorporate if matched
 			"redirect"              : "", // The redirection location
 			"response"              : "", // Do we have an inline response closure
+			"responsePlaceholders"  : [], // Pre-parsed {token} list for string responses
 			"ssl"                   : false, // Are we forcing SSL
 			"statusCode"            : 200, // The response status code
 			"valuePairTranslation"  : true, // If we translate name-value pairs in the URL by convention
