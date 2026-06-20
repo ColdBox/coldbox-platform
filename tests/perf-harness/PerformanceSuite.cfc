@@ -31,29 +31,29 @@ component {
 	variables.ENGINES = {
 		"boxlang" : {
 			name         : "BoxLang",
-			serverConfig : variables.REPO_ROOT & "server-boxlang@1.json",
-			serverName   : "coldbox-boxlang",
+			serverConfig : variables.TASK_DIR & "server-perf-boxlang.json",
+			serverName   : "coldbox-perf-boxlang",
 			cacheDir     : variables.REPO_ROOT & ".engine/boxlang/",
 			cacheDirs    : [ ".boxlang/classes", "home" ]
 		},
 		"boxlang-cfml" : {
 			name         : "BoxLang CFML",
-			serverConfig : variables.REPO_ROOT & "server-boxlang-cfml@1.json",
-			serverName   : "coldbox-boxlang-cfml-1",
+			serverConfig : variables.TASK_DIR & "server-perf-boxlang-cfml.json",
+			serverName   : "coldbox-perf-boxlang-cfml",
 			cacheDir     : variables.REPO_ROOT & ".engine/boxlang-cfml-1/",
 			cacheDirs    : [ ".boxlang/classes", "home" ]
 		},
 		"adobe-2025" : {
 			name         : "Adobe CF 2025",
-			serverConfig : variables.REPO_ROOT & "server-adobe@2025.json",
-			serverName   : "coldbox-adobe@2025",
+			serverConfig : variables.TASK_DIR & "server-perf-adobe2025.json",
+			serverName   : "coldbox-perf-adobe2025",
 			cacheDir     : variables.REPO_ROOT & ".engine/adobe2025/",
 			cacheDirs    : [ "WEB-INF/cfclasses" ]
 		},
 		"lucee-7" : {
 			name         : "Lucee 7",
-			serverConfig : variables.REPO_ROOT & "server-lucee@7.json",
-			serverName   : "coldbox-lucee@7",
+			serverConfig : variables.TASK_DIR & "server-perf-lucee7.json",
+			serverName   : "coldbox-perf-lucee7",
 			cacheDir     : variables.REPO_ROOT & ".engine/lucee7/",
 			cacheDirs    : [ "WEB-INF/lucee/web/cfclasses", "WEB-INF/lucee/web/tmp" ]
 		}
@@ -63,37 +63,37 @@ component {
 		{
 			id          : "health",
 			name        : "Health Check",
-			description : "Routing only — no DI, no view rendering",
-			bePath      : "/tests/perf-harness/be-app/perf/health",
-			stablePath  : "/tests/perf-harness/stable-app/perf/health"
+			description : "Minimal ColdBox lifecycle — no DI, no view, text response",
+			bePath      : "/tests/perf-harness/be-app/index.cfm?event=Main.health",
+			stablePath  : "/tests/perf-harness/stable-app/index.cfm?event=Main.health"
 		},
 		{
 			id          : "view",
 			name        : "Simple View",
 			description : "View rendering + layout pipeline",
-			bePath      : "/tests/perf-harness/be-app/perf/view",
-			stablePath  : "/tests/perf-harness/stable-app/perf/view"
+			bePath      : "/tests/perf-harness/be-app/index.cfm?event=Main.index",
+			stablePath  : "/tests/perf-harness/stable-app/index.cfm?event=Main.index"
 		},
 		{
 			id          : "api",
 			name        : "JSON API",
 			description : "WireBox DI + JSON serialization via renderData",
-			bePath      : "/tests/perf-harness/be-app/perf/api",
-			stablePath  : "/tests/perf-harness/stable-app/perf/api"
+			bePath      : "/tests/perf-harness/be-app/index.cfm?event=Api.list",
+			stablePath  : "/tests/perf-harness/stable-app/index.cfm?event=Api.list"
 		},
 		{
 			id          : "complex",
 			name        : "Complex View",
 			description : "Multiple model injections + view with data loops",
-			bePath      : "/tests/perf-harness/be-app/perf/complex",
-			stablePath  : "/tests/perf-harness/stable-app/perf/complex"
+			bePath      : "/tests/perf-harness/be-app/index.cfm?event=Main.complex",
+			stablePath  : "/tests/perf-harness/stable-app/index.cfm?event=Main.complex"
 		},
 		{
 			id          : "module",
 			name        : "Module Request",
 			description : "Full HMVC module routing + module-scoped DI",
-			bePath      : "/tests/perf-harness/be-app/perf/module",
-			stablePath  : "/tests/perf-harness/stable-app/perf/module"
+			bePath      : "/tests/perf-harness/be-app/index.cfm?event=perf-module%3AItems.index",
+			stablePath  : "/tests/perf-harness/stable-app/index.cfm?event=perf-module%3AItems.index"
 		}
 	]
 
@@ -373,7 +373,7 @@ component {
 
 	private struct function measureAppBootstrap( required string version ){
 		var healthPath = ( arguments.version == "be" ) ? variables.SCENARIOS[ 1 ].bePath : variables.SCENARIOS[ 1 ].stablePath
-		var reinitUrl  = variables.BASE_URL & healthPath & "?bsReinit=1"
+		var reinitUrl  = variables.BASE_URL & healthPath & "&bsReinit=1"
 		var healthUrl  = variables.BASE_URL & healthPath
 
 		// Trigger ColdBox re-initialization

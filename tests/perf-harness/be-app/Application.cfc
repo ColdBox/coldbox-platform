@@ -17,9 +17,9 @@ component {
 	// beAppPath  = /…/tests/perf-harness/be-app/
 	// repoRoot   = /…/coldbox-platform/
 	// sharedApp  = /…/tests/perf-harness/app/
-	var beAppPath  = getDirectoryFromPath( getCurrentTemplatePath() )
-	var repoRoot   = reReplaceNoCase( beAppPath, "tests[/\\]perf-harness[/\\]be-app[/\\]", "" )
-	var sharedApp  = repoRoot & "tests/perf-harness/app/"
+	beAppPath  = getDirectoryFromPath( getCurrentTemplatePath() )
+	repoRoot   = reReplaceNoCase( beAppPath, "tests[/\\]perf-harness[/\\]be-app[/\\]", "" )
+	sharedApp  = repoRoot & "tests/perf-harness/app/"
 
 	// ─── CF Mappings ──────────────────────────────────────────────────────────
 	// /coldbox  → bleeding edge framework (repo root)
@@ -29,7 +29,7 @@ component {
 
 	// ─── ColdBox bootstrap settings ───────────────────────────────────────────
 	COLDBOX_APP_ROOT_PATH = sharedApp
-	COLDBOX_CONFIG_FILE   = sharedApp & "config/ColdBox.cfc"
+	COLDBOX_CONFIG_FILE   = "cbperfapp.config.ColdBox"
 	COLDBOX_APP_KEY       = "cbperf_be"
 	COLDBOX_APP_MAPPING   = "cbperfapp"
 	COLDBOX_WEB_MAPPING   = "tests/perf-harness/be-app"

@@ -16,9 +16,9 @@ component {
 	// ─── Path resolution ──────────────────────────────────────────────────────
 	// stableAppPath = /…/tests/perf-harness/stable-app/
 	// sharedApp     = /…/tests/perf-harness/app/
-	var stableAppPath = getDirectoryFromPath( getCurrentTemplatePath() )
-	var repoRoot      = reReplaceNoCase( stableAppPath, "tests[/\\]perf-harness[/\\]stable-app[/\\]", "" )
-	var sharedApp     = repoRoot & "tests/perf-harness/app/"
+	stableAppPath = getDirectoryFromPath( getCurrentTemplatePath() )
+	repoRoot      = reReplaceNoCase( stableAppPath, "tests[/\\]perf-harness[/\\]stable-app[/\\]", "" )
+	sharedApp     = repoRoot & "tests/perf-harness/app/"
 
 	// ─── CF Mappings ──────────────────────────────────────────────────────────
 	// /coldbox  → stable 8.1 installed in stable-app/coldbox/
@@ -28,7 +28,7 @@ component {
 
 	// ─── ColdBox bootstrap settings ───────────────────────────────────────────
 	COLDBOX_APP_ROOT_PATH = sharedApp
-	COLDBOX_CONFIG_FILE   = sharedApp & "config/ColdBox.cfc"
+	COLDBOX_CONFIG_FILE   = "cbperfapp.config.ColdBox"
 	COLDBOX_APP_KEY       = "cbperf_stable"
 	COLDBOX_APP_MAPPING   = "cbperfapp"
 	COLDBOX_WEB_MAPPING   = "tests/perf-harness/stable-app"

@@ -8,7 +8,7 @@ component extends="coldbox.system.EventHandler" {
 
 	// Baseline — no DI usage, no view, minimal processing
 	function health( event, rc, prc ){
-		return "ok"
+		event.renderData( type="text", data="ok", statusCode=200 )
 	}
 
 	// Simple view — renders main/index with layout
