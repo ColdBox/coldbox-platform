@@ -1068,7 +1068,10 @@ component
 		// Pre-parse response string placeholders so renderResponse() skips regex on every request
 		if ( isSimpleValue( thisRoute.response ) && len( thisRoute.response ) ) {
 			thisRoute.responsePlaceholders = reMatchNoCase( "{[^{]+?}", thisRoute.response ).map( function( token ){
-				return { token : token, key : reReplaceNoCase( token, "({|})", "", "all" ) };
+				return {
+					token : token,
+					key   : reReplaceNoCase( token, "({|})", "", "all" )
+				};
 			} );
 		} else {
 			thisRoute.responsePlaceholders = [];

@@ -706,7 +706,9 @@ component extends="coldbox.system.testing.BaseModelTest" {
 			it( "a route with a closure response has an empty responsePlaceholders array", function(){
 				router.addRoute(
 					pattern  = "/closure",
-					response = function( event, rc, prc ){ return "hi"; }
+					response = function( event, rc, prc ){
+						return "hi";
+					}
 				);
 				var routes = router.getRoutes();
 				expect( routes[ 1 ].responsePlaceholders ).toBeArray();
