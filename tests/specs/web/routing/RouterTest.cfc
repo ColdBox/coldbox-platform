@@ -720,7 +720,6 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				expect( routes[ 1 ].responsePlaceholders ).toHaveLength( 0 );
 			} );
 		} );
-	} );
 	}
 
 }
