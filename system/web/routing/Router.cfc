@@ -1070,6 +1070,8 @@ component
 			thisRoute.responsePlaceholders = reMatchNoCase( "{[^{]+?}", thisRoute.response ).map( function( token ){
 				return { token : token, key : reReplaceNoCase( token, "({|})", "", "all" ) };
 			} );
+		} else {
+			thisRoute.responsePlaceholders = [];
 		}
 
 		// Add it to the corresponding routing table

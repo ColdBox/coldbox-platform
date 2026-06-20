@@ -203,6 +203,7 @@ component extends="tests.resources.BaseIntegrationTest" {
 
 			it( "caches implicitViews setting in variables scope after configuration load", () => {
 				// implicitViews must be a boolean cached from getSetting("ImplicitViews")
+				prepareMock( variables.handlerService );
 				expect( variables.handlerService.$getProperty( "implicitViews", "variables" ) ).toBeBoolean();
 				expect( variables.handlerService.$getProperty( "implicitViews", "variables" ) ).toBeTrue();
 			} );
