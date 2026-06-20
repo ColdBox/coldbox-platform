@@ -75,6 +75,12 @@
         "log:lucee":"server log coldbox-lucee@5 --follow",
         "log:boxlang":"server log coldbox-boxlang-cfml@1 --follow",
         "log:boxlangprime":"server log coldbox-boxlang@1 --follow",
-        "log:adobe":"server log coldbox-adobe@2025 --follow"
+        "log:adobe":"server log coldbox-adobe@2025 --follow",
+        "perf:run":"task run tests/perf-harness/PerformanceSuite.cfc",
+        "perf:run:quick":"task run tests/perf-harness/PerformanceSuite.cfc engines=boxlang-cfml iterations=10 warmup=3 coldStart=false",
+        "perf:be":"task run tests/perf-harness/PerformanceSuite.cfc versions=be",
+        "perf:stable":"task run tests/perf-harness/PerformanceSuite.cfc versions=stable",
+        "perf:lucee":"task run tests/perf-harness/PerformanceSuite.cfc engines=lucee-7",
+        "perf:adobe":"task run tests/perf-harness/PerformanceSuite.cfc engines=adobe-2025"
     }
 }

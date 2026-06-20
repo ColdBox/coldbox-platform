@@ -1,0 +1,24 @@
+{
+    "app": {
+        "cfengine": "adobe@2025",
+        "serverHomeDirectory": "../../.engine/adobe2025"
+    },
+    "name": "coldbox-perf-adobe2025",
+    "force": true,
+    "openBrowser": false,
+    "web": {
+        "webroot": "../../",
+        "directoryBrowsing": true,
+        "http": { "port": "8599" },
+        "rewrites": { "enable": true },
+        "aliases": { "/coldbox": "../../" }
+    },
+    "JVM": {
+        "heapSize": "1024",
+        "javaHome": "/usr/lib/jvm/java-21-openjdk-amd64"
+    },
+    "cfconfig": { "file": "../../.cfconfig.json" },
+    "scripts": {
+        "onServerInstall": "cfpm install caching,zip,orm,mysql,postgresql --noSave"
+    }
+}
