@@ -365,26 +365,26 @@ component extends="coldbox.system.async.tasks.ScheduledTask" accessors="true" {
 	 */
 	private function adjustDelayToAlignWith( required targetTime ){
 		try {
-			var dateTimeHelper = new coldbox.system.async.time.DateTimeHelper();
-			var now            = dateTimeHelper.now( this.getTimezone().getId() );
-			var chronoUnit     = getChronoUnit( getTimeUnit() );
+			var dateTimeHelper = new coldbox.system.async.time.DateTimeHelper()
+			var now            = dateTimeHelper.now( this.getTimezone().getId() )
+			var chronoUnit     = getChronoUnit( getTimeUnit() )
 
 			// Calculate the delay in our timeUnit
-			var delayAmount = now.until( arguments.targetTime, chronoUnit );
+			var delayAmount = now.until( arguments.targetTime, chronoUnit )
 
 			// If the target is in the past, set minimal delay
 			if ( delayAmount <= 0 ) {
-				delayAmount = 1;
+				delayAmount = 1
 			}
 
 			// Update the task's delay
-			delay( delayAmount, getTimeUnit(), true );
+			this.delay( delayAmount, getTimeUnit(), true )
 
 			variables.log.debug(
 				"Task (#getName()#): Adjusted initial delay to #delayAmount# #getTimeUnit()# to align with cluster schedule"
-			);
+			)
 		} catch ( any e ) {
-			variables.log.error( "Error adjusting delay for task (#getName()#): #e.message#", e );
+			variables.log.error( "Error adjusting delay for task (#getName()#): #e.message#", e )
 		}
 	}
 
