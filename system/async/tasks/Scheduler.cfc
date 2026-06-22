@@ -179,45 +179,46 @@ component accessors="true" singleton {
 	struct function startupTask( any task ){
 		var taskRecord = getTaskRecord(
 			isSimpleValue( arguments.task ) ? arguments.task : arguments.task.getName()
-		);
+		)
 
 		// Verify we can start it up the task or not
 		if ( taskRecord.task.isDisabled() ) {
 			taskRecord.disabled = true;
 			variables.asyncManager.out(
 				"- Scheduler (#getName()#) skipping task (#taskRecord.task.getName()#) as it is disabled."
-			);
-			return taskRecord;
+			)
+			return taskRecord
 		} else {
 			// Log scheduling startup
 			variables.asyncManager.out(
 				"- Scheduler (#getName()#) scheduling task (#taskRecord.task.getName()#)..."
-			);
+			)
 		}
 
 		// Verify that the task record: scheduledAt is empty
 		if ( !isNull( taskRecord.scheduledAt ) && len( taskRecord.scheduledAt ) ) {
 			variables.asyncManager.out(
 				"- Scheduler (#getName()#) skipping task (#taskRecord.task.getName()#) as it is already scheduled."
-			);
-			return taskRecord;
+			)
+			return taskRecord
 		}
 
 		// Send it off for scheduling
 		try {
-			taskRecord.future      = taskRecord.task.start();
-			taskRecord.scheduledAt = now();
-			variables.asyncManager.out( "√ Task (#taskRecord.task.getName()#) scheduled successfully." );
+			taskRecord.future      = taskRecord.task.start()
+			taskRecord.scheduledAt = now()
+			variables.asyncManager.out( "√ Task (#taskRecord.task.getName()#) scheduled successfully." )
 		} catch ( any e ) {
 			variables.asyncManager.err(
 				"X Error scheduling task (#taskRecord.task.getName()#) => #e.message# #e.detail#"
-			);
-			taskRecord.error        = true;
-			taskRecord.errorMessage = e.message & e.detail;
-			taskRecord.stackTrace   = e.stacktrace;
+			)
+			variables.asyncManager.err( e.stacktrace )
+			taskRecord.error        = true
+			taskRecord.errorMessage = e.message & e.detail
+			taskRecord.stackTrace   = e.stacktrace
 		}
 
-		return taskRecord;
+		return taskRecord
 	}
 
 	/**
