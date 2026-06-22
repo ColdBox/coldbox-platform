@@ -326,8 +326,8 @@ component extends="coldbox.system.async.tasks.ScheduledTask" accessors="true" {
 	){
 		try {
 			var dateTimeHelper = new coldbox.system.async.time.DateTimeHelper();
-			var now            = dateTimeHelper.now( getTimezone().getId() );
-			var anchor         = dateTimeHelper.toLocalDateTime( arguments.scheduleStart, getTimezone().getId() );
+			var now            = dateTimeHelper.now( this.getTimezone().getId() );
+			var anchor         = dateTimeHelper.toLocalDateTime( arguments.scheduleStart, this.getTimezone().getId() );
 
 			// Calculate how much time has passed since the schedule started
 			var chronoUnit       = getChronoUnit( arguments.timeUnit );
@@ -366,7 +366,7 @@ component extends="coldbox.system.async.tasks.ScheduledTask" accessors="true" {
 	private function adjustDelayToAlignWith( required targetTime ){
 		try {
 			var dateTimeHelper = new coldbox.system.async.time.DateTimeHelper();
-			var now            = dateTimeHelper.now( getTimezone().getId() );
+			var now            = dateTimeHelper.now( this.getTimezone().getId() );
 			var chronoUnit     = getChronoUnit( getTimeUnit() );
 
 			// Calculate the delay in our timeUnit
