@@ -166,6 +166,19 @@ component accessors="true" {
 		variables.appenderRegistry = structNew();
 		variables.loggerRegistry   = structNew();
 
+		// Sentinel ROOT logger: prevents KeyNotFoundException when appender
+		// constructors (e.g. custom Sentry/ELK appenders) pull a logger via
+		// DI/interceptors during registerAppender() mid-configure.
+		// levelMax=5 (OFF) so any log calls during the configure window are silent.
+		var sentinelRoot = new coldbox.system.logging.Logger(
+			category           : "ROOT",
+			levelMin           : 0,
+			levelMax           : 5,
+			appenders          : {},
+			serializeExtraInfo : false
+		);
+		variables.loggerRegistry[ "ROOT" ] = sentinelRoot;
+
 		// Get appender definitions
 		var appenders = variables.config.getAllAppenders();
 
@@ -176,7 +189,7 @@ component accessors="true" {
 
 		// Get Root def
 		var rootConfig = variables.config.getRoot();
-		// Create Root Logger
+		// Create Root Logger replacing the sentinel, now that appenders are populated
 		var args       = {
 			category           : "ROOT",
 			levelMin           : rootConfig.levelMin,
@@ -185,8 +198,8 @@ component accessors="true" {
 			serializeExtraInfo : variables.config.getSerializeExtraInfo()
 		};
 
-		// Save in Registry
-		variables.loggerRegistry = { "ROOT" : new coldbox.system.logging.Logger( argumentCollection = args ) };
+		// Save in Registry, replacing the sentinel
+		variables.loggerRegistry[ "ROOT" ] = new coldbox.system.logging.Logger( argumentCollection = args );
 	}
 
 	/**
@@ -215,6 +228,18 @@ component accessors="true" {
 	 * @return coldbox.system.logging.Logger
 	 */
 	function getRootLogger(){
+		// Defensive fallback: if registry is transiently empty (edge-case),
+		// return a silent transient Logger so callers don't crash.
+		// Constructed directly via `new` to avoid DI/logBox recursion.
+		if ( !structKeyExists( variables.loggerRegistry, "ROOT" ) ) {
+			return new coldbox.system.logging.Logger(
+				category           : "ROOT",
+				levelMin           : 0,
+				levelMax           : 5,
+				appenders          : {},
+				serializeExtraInfo : false
+			);
+		}
 		return variables.loggerRegistry[ "ROOT" ];
 	}
 
