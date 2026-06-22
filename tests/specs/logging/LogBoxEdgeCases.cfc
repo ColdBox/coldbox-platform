@@ -26,13 +26,13 @@ component extends="testbox.system.BaseSpec" {
 						var config = {
 							appenders : {
 								sentinelAppender : {
-									class    : "tests.specs.logging.appenders.SentinelTestAppender",
+									class      : "tests.specs.logging.appenders.SentinelTestAppender",
 									properties : {},
-									levelMin : 0,
-									levelMax : 4
+									levelMin   : 0,
+									levelMax   : 4
 								}
 							},
-							root : { levelMax: "INFO", appenders : "sentinelAppender" }
+							root : { levelMax : "INFO", appenders : "sentinelAppender" }
 						};
 
 						// This constructor calls configure() which triggers registerAppender,
@@ -58,13 +58,13 @@ component extends="testbox.system.BaseSpec" {
 						var config = {
 							appenders : {
 								consoleAppender : {
-									class    : "ConsoleAppender",
+									class      : "ConsoleAppender",
 									properties : {},
-									levelMin : 0,
-									levelMax : 4
+									levelMin   : 0,
+									levelMax   : 4
 								}
 							},
-							root : { levelMax: "INFO", appenders : "consoleAppender" }
+							root : { levelMax : "INFO", appenders : "consoleAppender" }
 						};
 
 						var logBox = new coldbox.system.logging.LogBox( config );

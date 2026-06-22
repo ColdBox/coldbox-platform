@@ -171,11 +171,11 @@ component accessors="true" {
 		// DI/interceptors during registerAppender() mid-configure.
 		// levelMax=5 (OFF) so any log calls during the configure window are silent.
 		var sentinelRoot = new coldbox.system.logging.Logger(
-			category           : "ROOT",
-			levelMin           : 0,
-			levelMax           : 5,
-			appenders          : {},
-			serializeExtraInfo : false
+			category          : "ROOT",
+			levelMin          : 0,
+			levelMax          : 5,
+			appenders         : {},
+			serializeExtraInfo: false
 		);
 		variables.loggerRegistry[ "ROOT" ] = sentinelRoot;
 
@@ -233,11 +233,11 @@ component accessors="true" {
 		// Constructed directly via `new` to avoid DI/logBox recursion.
 		if ( !structKeyExists( variables.loggerRegistry, "ROOT" ) ) {
 			return new coldbox.system.logging.Logger(
-				category           : "ROOT",
-				levelMin           : 0,
-				levelMax           : 5,
-				appenders          : {},
-				serializeExtraInfo : false
+				category          : "ROOT",
+				levelMin          : 0,
+				levelMax          : 5,
+				appenders         : {},
+				serializeExtraInfo: false
 			);
 		}
 		return variables.loggerRegistry[ "ROOT" ];
