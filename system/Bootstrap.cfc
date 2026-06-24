@@ -562,8 +562,9 @@ component serializable="false" accessors="true" {
 		// Session start interceptors
 		cbController.getInterceptorService().announce( "sessionStart", session )
 		// Execute Session Start Handler
-		if ( len( cbController.getSetting( "SessionStartHandler" ) ) ) {
-			cbController.runEvent( event = cbController.getSetting( "SessionStartHandler" ), prePostExempt = true )
+		var sessionHandler = cbController.getSetting( name:"SessionStartHandler", defaultValue="" )
+		if ( len( sessionHandler ) ) {
+			cbController.runEvent( event = sessionHandler, prePostExempt = true )s
 		}
 	}
 
