@@ -564,7 +564,7 @@ component serializable="false" accessors="true" {
 		// Execute Session Start Handler
 		var sessionHandler = cbController.getSetting( name: "SessionStartHandler", defaultValue = "" )
 		if ( len( sessionHandler ) ) {
-			cbController.runEvent( event = sessionHandler, prePostExempt = true )s
+			cbController.runEvent( event = sessionHandler, prePostExempt = true )
 		}
 	}
 
