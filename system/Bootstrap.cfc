@@ -78,7 +78,7 @@ component serializable="false" accessors="true" {
 		var startTime = getTickCount()
 
 		// Param the incoming app hash
-		variables.appHash ="#hash( getBaseTemplatePath() & application.applicationname )#";
+		variables.appHash = "#hash( getBaseTemplatePath() & application.applicationname )#";
 
 		// Cleanup of old code, just in case
 		if ( structKeyExists( application, appKey ) ) {
