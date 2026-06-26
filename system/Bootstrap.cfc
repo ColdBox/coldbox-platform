@@ -33,7 +33,7 @@ component serializable="false" accessors="true" {
 	param name="COLDBOX_APP_KEY"       default="cbController";
 	param name="COLDBOX_APP_MAPPING"   default="";
 	param name="COLDBOX_WEB_MAPPING"   default="";
-	param name="appHash" default="#hash( getBaseTemplatePath() & application.applicationname )#";
+	param name="appHash" default="";
 	param name="lockTimeout" default="30" type="numeric";
 	param name="COLDBOX_FAIL_FAST" default="true";
 
@@ -60,6 +60,7 @@ component serializable="false" accessors="true" {
 		variables.COLDBOX_APP_MAPPING   = arguments.COLDBOX_APP_MAPPING
 		variables.COLDBOX_WEB_MAPPING   = arguments.COLDBOX_WEB_MAPPING
 		variables.COLDBOX_FAIL_FAST     = arguments.COLDBOX_FAIL_FAST
+		variables.appHash               = hash( getBaseTemplatePath() & application.applicationname )
 
 		// App Key Check
 		if ( structKeyExists( arguments, "COLDBOX_APP_KEY" ) AND len( trim( arguments.COLDBOX_APP_KEY ) ) ) {
