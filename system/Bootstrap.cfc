@@ -23,7 +23,7 @@ component serializable="false" accessors="true" {
 	// Lock Timeout for startup operations
 	property name="lockTimeout";
 	// The application hash used for locks
-	property name="appHash";
+	property name="appHash" default="#getBaseTemplatePath()#";
 	// By default if an app is reiniting and a request hits it, we will fail fast with a message
 	property name="COLDBOX_FAIL_FAST";
 
@@ -78,7 +78,7 @@ component serializable="false" accessors="true" {
 		var startTime = getTickCount()
 
 		// Param the incoming app hash
-		param name="appHash" default="#hash( getBaseTemplatePath() & application.applicationname )#";
+		variables.appHash ="#hash( getBaseTemplatePath() & application.applicationname )#";
 
 		// Cleanup of old code, just in case
 		if ( structKeyExists( application, appKey ) ) {
