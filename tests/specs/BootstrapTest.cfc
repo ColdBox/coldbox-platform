@@ -3,7 +3,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 	function run( testResults, testBox ){
 		describe( "Bootstrap", function(){
 			beforeEach( function(){
-				param name="application.applicationname" default="cbTestHarness"
+				param name="application.applicationname" default="cbtestharness"
 
 				structDelete( application, "cbController" )
 				structDelete( application, "fwReinit" )
