@@ -4,7 +4,7 @@
  * ---
  * Ability to serialize content to the output stream
  */
-component accessors="true" singleton {
+component accessors="true" singleton threadsafe {
 
 	// DI
 	property name="xmlConverter"   inject="provider:XMLConverter@coldbox";
