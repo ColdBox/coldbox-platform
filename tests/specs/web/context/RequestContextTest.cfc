@@ -856,4 +856,56 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		expect( event.getSesBaseUrl() ).toInclude( event.getSESBasePath() );
 	}
 
+	/**
+	 * Tests for method spoofing security fix (COLDBOX-1406).
+	 * _method override should only be honored when the original request is POST.
+	 */
+	function testGetHTTPMethodNoOverrideOnGET(){
+		var event = getRequestContext().$( "getOriginalHTTPMethod", "GET" );
+		event.setValue( "_method", "DELETE" );
+		expect( event.getHTTPMethod() ).toBe( "GET" );
+	}
+
+	function testGetHTTPMethodNoOverrideOnHEAD(){
+		var event = getRequestContext().$( "getOriginalHTTPMethod", "HEAD" );
+		event.setValue( "_method", "DELETE" );
+		expect( event.getHTTPMethod() ).toBe( "HEAD" );
+	}
+
+	function testGetHTTPMethodNoOverrideOnPUT(){
+		var event = getRequestContext().$( "getOriginalHTTPMethod", "PUT" );
+		event.setValue( "_method", "DELETE" );
+		expect( event.getHTTPMethod() ).toBe( "PUT" );
+	}
+
+	function testGetHTTPMethodPostDeleteOverride(){
+		var event = getRequestContext().$( "getOriginalHTTPMethod", "POST" );
+		event.setValue( "_method", "DELETE" );
+		expect( event.getHTTPMethod() ).toBe( "DELETE" );
+	}
+
+	function testGetHTTPMethodPostPutOverride(){
+		var event = getRequestContext().$( "getOriginalHTTPMethod", "POST" );
+		event.setValue( "_method", "PUT" );
+		expect( event.getHTTPMethod() ).toBe( "PUT" );
+	}
+
+	function testGetHTTPMethodPostPatchOverride(){
+		var event = getRequestContext().$( "getOriginalHTTPMethod", "POST" );
+		event.setValue( "_method", "PATCH" );
+		expect( event.getHTTPMethod() ).toBe( "PATCH" );
+	}
+
+	function testGetHTTPMethodPostWithNoOverride(){
+		var event = getRequestContext().$( "getOriginalHTTPMethod", "POST" );
+		expect( event.getHTTPMethod() ).toBe( "POST" );
+	}
+
+	function testGetHTTPMethodPostGetOverrideIgnored(){
+		// POST _method=GET should not be honored; result stays POST
+		var event = getRequestContext().$( "getOriginalHTTPMethod", "POST" );
+		event.setValue( "_method", "GET" );
+		expect( event.getHTTPMethod() ).toBe( "POST" );
+	}
+
 }
