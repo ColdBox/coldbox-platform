@@ -1799,10 +1799,34 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
-	 * Get the HTTP Request Method Type
+	 * Get the original (transport-level) HTTP Request Method Type, ignoring any _method override.
+	 */
+	string function getOriginalHTTPMethod(){
+		return uCase( CGI.REQUEST_METHOD );
+	}
+
+	/**
+	 * Get the effective HTTP Request Method Type.
+	 * Method spoofing via the _method parameter is only honored when the original
+	 * transport-level request method is POST, and only for PUT, PATCH, and DELETE overrides.
+	 * This prevents GET requests from spoofing destructive HTTP methods.
 	 */
 	string function getHTTPMethod(){
-		return getValue( "_method", CGI.REQUEST_METHOD );
+		var originalMethod = getOriginalHTTPMethod();
+
+		// Only honor _method override on POST requests
+		if ( originalMethod != "POST" ) {
+			return originalMethod;
+		}
+
+		var overriddenMethod = uCase( trim( getValue( "_method", "" ) ) );
+
+		// Only allow overriding to PUT, PATCH, or DELETE from POST
+		if ( listFindNoCase( "PUT,PATCH,DELETE", overriddenMethod ) ) {
+			return overriddenMethod;
+		}
+
+		return originalMethod;
 	}
 
 	/**
