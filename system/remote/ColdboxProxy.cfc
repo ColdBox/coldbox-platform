@@ -348,6 +348,8 @@ component serializable="false" accessors="true" {
 	/**
 	 * Get a reference to the ColdBox Remoting utility class
 	 *
+	 * @deprecated This method is deprecated and will be removed in ColdBox 9. Engines offer this now.
+	 *
 	 * @return coldbox.system.remote.RemotingUtil
 	 */
 	private function getRemotingUtil(){

@@ -5,6 +5,7 @@
  * Remoting Utility
  *
  * @author Luis Majano <lmajano@ortussolutions.com>
+ * @deprecated This class is deprecated and will be removed in ColdBox 9. Engines offer this now.
  */
 component {
 
