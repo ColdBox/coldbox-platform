@@ -168,15 +168,16 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 		// Store metadata in execution bean
 		if ( !variables.handlerCaching || !arguments.ehBean.isMetadataLoaded() ) {
+			var md = getMetadata( oEventHandler )
 			arguments.ehBean
 				.setActionMetadata( oEventHandler._actionMetadata( arguments.ehBean.getMethod() ) )
-				.setHandlerMetadata( getMetadata( oEventHandler ) );
+				.setHandlerMetadata( md.keyExists( "annotations" ) ? md.annotations : md )
 		}
 
 		// Are they trying to execute an internal ColdBox method?
 		if ( arguments.ehBean.actionMetadataExists( "cbMethod" ) ) {
 			// Invalid Event processing
-			return processInvalidEvent( arguments.ehBean, oRequestContext );
+			return processInvalidEvent( arguments.ehBean, oRequestContext )
 		}
 
 		/* ::::::::::::::::::::::::::::::::::::::::: EVENT CACHING :::::::::::::::::::::::::::::::::::::::::::: */

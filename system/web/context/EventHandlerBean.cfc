@@ -148,17 +148,19 @@ component accessors="true" {
 	 *
 	 * @return any
 	 */
-	function getHandlerMetadata( key, defaultValue = "" ){
+	function getHandlerMetadata( string key, defaultValue = "" ){
 		// If no key passed, then return full structure
 		if ( isNull( arguments.key ) || !len( arguments.key ) ) {
-			return variables.handlerMetadata;
+			return variables.handlerMetadata
 		}
+
 		// Filter by key
-		if ( structKeyExists( variables.handlerMetadata, arguments.key ) ) {
-			return variables.handlerMetadata[ arguments.key ];
+		if ( !isNull( variables.handlerMetadata[ arguments.key ] ) ) {
+			return variables.handlerMetadata[ arguments.key ]
 		}
+
 		// Nothing found, just return the default value of empty string
-		return arguments.defaultValue;
+		return arguments.defaultValue
 	}
 
 	/**
