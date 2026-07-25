@@ -543,8 +543,8 @@ component accessors="true" singleton {
 		required relationalMeta,
 		required target
 	){
-		var validEntityNames = getORMEntityMap();
-		var targetEntityName = "";
+		var validEntityNames = getORMEntityMap()
+		var targetEntityName = ""
 
 		/**
 		 * The only info we know about the relationships are the property names and the class names
@@ -554,35 +554,38 @@ component accessors="true" singleton {
 		 * 2.) Harder: Use the `cfc` attribute on the property (e.g., one-to-many, many-to-many) or `class` if using BoxLang
 		 * 3.) Nuclear: If neither above works, try by component meta data lookup. Won't work if using relative paths!!!!
 		 */
-		var relationMetaClass = "";
+		var relationMetaClass = ""
 		// BoxLang Prime
 		if ( arguments.relationalMeta.properties[ arguments.key ].keyExists( "className" ) ) {
-			relationMetaClass = arguments.relationalMeta.properties[ arguments.key ].className;
+			relationMetaClass = arguments.relationalMeta.properties[ arguments.key ].className
 		}
+		if ( arguments.relationalMeta.properties[ arguments.key ].keyExists( "class" ) ) {
+			relationMetaClass = arguments.relationalMeta.properties[ arguments.key ].class
+		}
+
 		// CFML Legacy
 		if ( arguments.relationalMeta.properties[ arguments.key ].keyExists( "cfc" ) ) {
-			relationMetaClass = arguments.relationalMeta.properties[ arguments.key ].cfc;
+			relationMetaClass = arguments.relationalMeta.properties[ arguments.key ].cfc
 		}
 
 		// 1.) name match
 		if ( validEntityNames.findNoCase( arguments.key ) ) {
-			targetEntityName = arguments.key;
+			targetEntityName = arguments.key
 		}
 		// 2.) attempt match on class metadata on the property:
 		// property name="role" cfc="security.Role"
 		// property name="role" class="security.Role"
 		else if ( validEntityNames.findNoCase( listLast( relationMetaClass, "." ) ) ) {
-			targetEntityName = listLast( relationMetaClass, "." );
+			targetEntityName = listLast( relationMetaClass, "." )
 		}
 		// 3.) class lookup - this would only execute if the `cfc` or `className` attribute was pointing to a CFC, but the entity name was different than the file name
 		else {
 			var annotations = server.keyExists( "boxlang" ) ? getClassMetadata( relationMetaClass ).annotations : getComponentMetadata(
 				relationMetaClass
-			);
-
+			)
 			// Verify if the entityName annotation exists
 			if ( annotations.keyExists( "entityName" ) ) {
-				targetEntityName = annotations.entityName;
+				targetEntityName = annotations.entityName
 			}
 		}
 
@@ -590,10 +593,10 @@ component accessors="true" singleton {
 			throw(
 				type    = "ObjectPopulator.PopulateObjectException",
 				message = "Error populating object [#getMetadata( arguments.target ).name#] relationship of [#arguments.key#]. The class [#relationMetaClass#] could not be found."
-			);
+			)
 		}
 
-		return targetEntityName;
+		return targetEntityName
 	}
 
 	/**
