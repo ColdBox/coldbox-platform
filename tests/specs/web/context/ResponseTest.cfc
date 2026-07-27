@@ -28,8 +28,9 @@ component extends="coldbox.system.testing.BaseModelTest" {
 
 
 			it( "can add messages", function(){
-				response.addMessage( "Hola" ).addMessage( " how are you?" );
+				response.addMessage( "Hola" ).addMessage( "how are you?" );
 				expect( response.getMessagesString() ).toBe( "Hola, how are you?" );
+				expect( response.getMessagesString( "|" ) ).toBe( "Hola|how are you?" );
 			} );
 
 
@@ -53,12 +54,12 @@ component extends="coldbox.system.testing.BaseModelTest" {
 			it( "can get a data packet", function(){
 				response
 					.setError( false )
-					.setData( { today : now(), name : "luis" } )
-					.addMessage( "Created!" );
+					.setData( { today : now(), name : "luis" }, "Created!", "/users/1" );
 
 				expect( response.getError() ).toBeFalse();
 				expect( response.getData().name ).toBe( "luis" );
 				expect( response.getMessagesString() ).toBe( "Created!" );
+				expect( response.getLocation() ).toBe( "/users/1" );
 			} );
 
 
@@ -70,12 +71,10 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				expect( response.getStatusCode() ).toBe( 400 );
 			} );
 
-			it( "can set error messages with accompanied code and text", function(){
-				response.setErrorMessage( "unit test", 400, "error baby" );
+			it( "can ignore status text updates", function(){
+				response.setStatusText();
 
-				expect( response.getError() ).toBeTrue();
-				expect( response.getMessagesString() ).toInclude( "unit test" );
-				expect( response.getStatusCode() ).toBe( 400 );
+				expect( response.getStatusText() ).toBe( "Ok" );
 			} );
 
 			it( "can set status with default code texts", function(){
