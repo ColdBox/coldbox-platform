@@ -451,6 +451,53 @@
 					expect( data2 ).notToBe( data );
 				} );
 			} );
+
+			describe( "EVENT_CACHE_SUFFIX", function(){
+				it( "evaluates a closure suffix on every request producing distinct cache keys", function(){
+					getRequestContext().setValue( "slug", "alpha" )
+					var event1 = execute( event = "eventcachingSuffix.index", renderResults = true )
+					var key1   = event1.getPrivateCollection().cbox_eventCacheableEntry.cacheKey
+
+					expect( key1 ).toInclude( "-alpha-" )
+
+					// reset to simulate another request with a different slug
+					setup()
+					getRequestContext().setValue( "slug", "beta" )
+					var event2 = execute( event = "eventcachingSuffix.index", renderResults = true )
+					var key2   = event2.getPrivateCollection().cbox_eventCacheableEntry.cacheKey
+
+					// the closure must re-evaluate per request, not freeze on the first request's value
+					expect( key2 ).toInclude( "-beta-" )
+					expect( key2 ).notToBe( key1 )
+				} );
+
+				it( "produces the same key on the serve-side lookup and the store-side build", function(){
+					getRequestContext().setValue( "slug", "gamma" )
+					var event    = execute( event = "eventcachingSuffix.index", renderResults = true )
+					var storeKey = event.getPrivateCollection().cbox_eventCacheableEntry.cacheKey
+
+					// re-run the real serve-side path: getEventMetadataEntry() -> buildEventKey()
+					controller.getRequestService().eventCachingTest( event )
+					var serveKey = event.getPrivateCollection().cbox_eventCacheableEntry.cacheKey
+
+					// if lookup and storage keys disagree, cached responses are never served
+					expect( serveKey ).toBe( storeKey )
+				} );
+
+				it( "keeps the closure in the memoized dictionary entry after requests", function(){
+					getRequestContext().setValue( "slug", "delta" )
+					execute( event = "eventcachingSuffix.index", renderResults = true )
+
+					var dictionary = prepareMock( controller.getHandlerService() ).$getProperty(
+						"eventCacheDictionary",
+						"variables"
+					)
+					var suffix = dictionary[ "eventcachingSuffix.index" ].suffix
+
+					// the dictionary must keep the closure so later requests can re-evaluate it
+					expect( isClosure( suffix ) || isCustomFunction( suffix ) ).toBeTrue()
+				} );
+			} );
 		} );
 	}
 
