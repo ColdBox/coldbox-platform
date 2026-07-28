@@ -577,7 +577,16 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			return getNewMDEntry()
 		}
 
-		return variables.eventCacheDictionary[ arguments.targetEvent ]
+		var mdEntry = variables.eventCacheDictionary[ arguments.targetEvent ]
+
+		// Fast path: a static suffix needs no per-request work, hand back the memoized entry
+		if ( isSimpleValue( mdEntry.suffix ) ) {
+			return mdEntry
+		}
+
+		// Closure suffix: resolve it for THIS request. The serve side has no bean in
+		// hand, so getHandlerBean() supplies the bean the closure contract documents.
+		return resolveCacheSuffix( mdEntry, getHandlerBean( arguments.targetEvent ) )
 	}
 
 	/**
@@ -810,15 +819,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 						mdEntry.cacheExclude = arguments.ehBean.getActionMetadata( "cacheExclude", "" );
 						mdEntry.cacheFilter  = arguments.ehBean.getActionMetadata( "cacheFilter", "" );
 
-						// Handler Event Cache Key Suffix, this is global to the event
-						if (
-							isClosure( arguments.oEventHandler.EVENT_CACHE_SUFFIX ) ||
-							isCustomFunction( arguments.oEventHandler.EVENT_CACHE_SUFFIX )
-						) {
-							mdEntry.suffix = oEventHandler.EVENT_CACHE_SUFFIX( arguments.ehBean );
-						} else {
-							mdEntry.suffix = arguments.oEventHandler.EVENT_CACHE_SUFFIX;
-						}
+						// Handler Event Cache Key Suffix, this is global to the event.
+						// Stored AS DECLARED: a closure must NOT be evaluated here because this
+						// entry is memoized for the life of the app, and a request-time value
+						// (locale, session, slug) would freeze into every later request's cache
+						// key. resolveCacheSuffix() evaluates it on every read instead.
+						mdEntry.suffix = arguments.oEventHandler.EVENT_CACHE_SUFFIX;
 
 						// if the cacheFilter has a length and is a method, then we need to verify and store the resulting closure
 						if ( len( mdEntry.cacheFilter ) ) {
@@ -861,7 +867,39 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		}
 		// end if
 
-		return variables.eventCacheDictionary[ cacheKey ];
+		return resolveCacheSuffix( variables.eventCacheDictionary[ cacheKey ], arguments.ehBean );
+	}
+
+	/**
+	 * Resolve a metadata entry's cache-key suffix for the CURRENT request.
+	 *
+	 * A static string suffix passes the entry through untouched. A closure suffix is
+	 * evaluated now, on a shallow COPY of the entry — the memoized entry keeps the
+	 * closure so every request re-evaluates it (locale, session, slug use cases).
+	 *
+	 * The closure receives ( eventHandlerBean, event ) and runs twice per request
+	 * (serve-side key lookup + store-side key build), so it must be deterministic
+	 * within a request: read request-stable inputs only, never time or randomness,
+	 * and mutate nothing — the same contract the hashed rc and the stored
+	 * cacheFilter closure already have.
+	 *
+	 * @mdEntry The memoized event caching metadata entry
+	 * @ehBean  The event handler bean, passed to the closure as its first argument
+	 */
+	private struct function resolveCacheSuffix( required struct mdEntry, required ehBean ){
+		// We check for isClosure and isCustomFunction for ACF/Lucee/BoxLang compatibility
+		if (
+			!isClosure( arguments.mdEntry.suffix ) &&
+			!isCustomFunction( arguments.mdEntry.suffix )
+		) {
+			return arguments.mdEntry;
+		}
+
+		var resolved    = structCopy( arguments.mdEntry );
+		var suffixUDF   = arguments.mdEntry.suffix;
+		resolved.suffix = suffixUDF( arguments.ehBean, variables.controller.getRequestService().getContext() );
+
+		return resolved;
 	}
 
 }

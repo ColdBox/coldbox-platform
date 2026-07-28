@@ -484,6 +484,20 @@
 					expect( serveKey ).toBe( storeKey )
 				} );
 
+				it( "leaves static string suffixes untouched when resolving", function(){
+					var handlerService = controller.getHandlerService()
+					makePublic( handlerService, "resolveCacheSuffix" )
+
+					var mdEntry  = { "cacheable" : true, "suffix" : "static" }
+					var resolved = handlerService.resolveCacheSuffix(
+						mdEntry,
+						handlerService.getHandlerBean( "eventcachingSuffix.index" )
+					)
+
+					expect( isSimpleValue( resolved.suffix ) ).toBeTrue()
+					expect( resolved.suffix ).toBe( "static" )
+				} );
+
 				it( "keeps the closure in the memoized dictionary entry after requests", function(){
 					getRequestContext().setValue( "slug", "delta" )
 					execute( event = "eventcachingSuffix.index", renderResults = true )

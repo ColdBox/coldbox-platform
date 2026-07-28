@@ -6,8 +6,8 @@
 component output="false"{
 
 	// Evaluated per request: the cache key suffix carries the incoming slug
-	this.EVENT_CACHE_SUFFIX = function( eventHandlerBean ){
-		return getRequestContext().getValue( "slug", "none" )
+	this.EVENT_CACHE_SUFFIX = function( eventHandlerBean, event ){
+		return arguments.event.getValue( "slug", "none" )
 	}
 
 	// cacheInclude="" keeps the rc hash constant, so only the suffix varies the cache key
