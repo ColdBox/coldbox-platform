@@ -139,7 +139,7 @@ component accessors="true" {
 	 * @return Returns a struct of the current state of this object
 	 */
 	struct function getMemento(){
-		return variables.filter( ( key, value ) =>{
+		return variables.filter( ( key, value ) => {
 			return (
 				!isNull( arguments.value ) && !isCustomFunction( arguments.value ) && !listFindNoCase(
 					"this",
@@ -236,13 +236,17 @@ component accessors="true" {
 	/**
 	 * Sets the data for the API response
 	 *
-	 * @data The data to be set
-	 * @message An optional message to be set with the data
+	 * @data     The data to be set
+	 * @message  An optional message to be set with the data
 	 * @location An optional location to be set with the data
 	 *
 	 * @return Returns the Response object for chaining
 	 */
-	Response function setData( required any data, string message, string location ){
+	Response function setData(
+		required any data,
+		string message,
+		string location
+	){
 		variables.data = arguments.data
 		if ( !isNull( arguments.message ) ) {
 			addMessage( arguments.message )
@@ -288,7 +292,7 @@ component accessors="true" {
 	 *
 	 * @errorMessage The error message to set
 	 * @statusCode   The status code to set, if any
-	 * @data 	   The data to set, if any
+	 * @data         The data to set, if any
 	 *
 	 * @return Returns the Response object for chaining
 	 */

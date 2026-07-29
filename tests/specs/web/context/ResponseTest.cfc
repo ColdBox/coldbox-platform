@@ -54,7 +54,11 @@ component extends="coldbox.system.testing.BaseModelTest" {
 			it( "can get a data packet", function(){
 				response
 					.setError( false )
-					.setData( { today : now(), name : "luis" }, "Created!", "/users/1" );
+					.setData(
+						{ today : now(), name : "luis" },
+						"Created!",
+						"/users/1"
+					);
 
 				expect( response.getError() ).toBeFalse();
 				expect( response.getData().name ).toBe( "luis" );
