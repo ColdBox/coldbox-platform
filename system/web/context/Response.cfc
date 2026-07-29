@@ -165,6 +165,37 @@ component accessors="true" {
 	}
 
 	/**
+	 * Add multiple messages to the response
+	 *
+	 * @messages The messages to incorporate
+	 *
+	 * @return Returns the Response object for chaining
+	 */
+	Response function addMessages( required array messages ){
+		variables.messages.addAll( arguments.messages )
+		return this
+	}
+
+	/**
+	 * Remove all messages from the response
+	 *
+	 * @return Returns the Response object for chaining
+	 */
+	Response function clearMessages(){
+		variables.messages.clear()
+		return this
+	}
+
+	/**
+	 * Check whether the response contains messages
+	 *
+	 * @return True when the response contains at least one message
+	 */
+	boolean function hasMessages(){
+		return !getMessages().isEmpty()
+	}
+
+	/**
 	 * Get all messages as a string
 	 *
 	 * @delimiter The delimiter to use when joining the messages, defaults to a comma and space
@@ -185,6 +216,86 @@ component accessors="true" {
 	 */
 	Response function addHeader( required string name, required string value ){
 		arrayAppend( variables.headers, { "name" : arguments.name, "value" : arguments.value } )
+		return this
+	}
+
+	/**
+	 * Set a response header, replacing an existing header with the same name
+	 *
+	 * @name  The header name
+	 * @value The header value
+	 *
+	 * @return Returns the Response object for chaining
+	 */
+	Response function setHeader( required string name, required string value ){
+		for ( var header in variables.headers ) {
+			if ( header.name.equalsIgnoreCase( arguments.name ) ) {
+				header.value = arguments.value
+				return this
+			}
+		}
+
+		return addHeader( argumentCollection = arguments )
+	}
+
+	/**
+	 * Get a response header value by name
+	 *
+	 * @name The header name
+	 *
+	 * @return The header value, or an empty string when it does not exist
+	 */
+	string function getHeader( required string name ){
+		for ( var header in variables.headers ) {
+			if ( header.name.equalsIgnoreCase( arguments.name ) ) {
+				return header.value
+			}
+		}
+
+		return ""
+	}
+
+	/**
+	 * Check whether a response header exists
+	 *
+	 * @name The header name
+	 *
+	 * @return True when the header exists
+	 */
+	boolean function hasHeader( required string name ){
+		for ( var header in variables.headers ) {
+			if ( header.name.equalsIgnoreCase( arguments.name ) ) {
+				return true
+			}
+		}
+
+		return false
+	}
+
+	/**
+	 * Remove a response header by name
+	 *
+	 * @name The header name
+	 *
+	 * @return Returns the Response object for chaining
+	 */
+	Response function removeHeader( required string name ){
+		for ( var index = variables.headers.len(); index >= 1; index-- ) {
+			if ( variables.headers[ index ].name.equalsIgnoreCase( arguments.name ) ) {
+				variables.headers.deleteAt( index )
+			}
+		}
+
+		return this
+	}
+
+	/**
+	 * Remove all response headers
+	 *
+	 * @return Returns the Response object for chaining
+	 */
+	Response function clearHeaders(){
+		variables.headers.clear()
 		return this
 	}
 
@@ -244,17 +355,59 @@ component accessors="true" {
 	 */
 	Response function setData(
 		required any data,
-		string message,
-		string location
+		string message = "",
+		string location = ""
 	){
 		variables.data = arguments.data
-		if ( !isNull( arguments.message ) ) {
+
+		if ( !arguments.message.trim().isEmpty() ) {
 			addMessage( arguments.message )
 		}
-		if ( !isNull( arguments.location ) ) {
+
+		if ( !arguments.location.trim().isEmpty() ) {
 			variables.location = arguments.location
 		}
+
 		return this
+	}
+
+	/**
+	 * Set response data using fluent naming
+	 *
+	 * @data     The data to be set
+	 * @message  An optional message to be set with the data
+	 * @location An optional location to be set with the data
+	 *
+	 * @return Returns the Response object for chaining
+	 */
+	Response function withData(
+		required any data,
+		string message = "",
+		string location = ""
+	){
+		return setData( argumentCollection = arguments )
+	}
+
+	/**
+	 * Add a response message using fluent naming
+	 *
+	 * @message The message to incorporate
+	 *
+	 * @return Returns the Response object for chaining
+	 */
+	Response function withMessage( required any message ){
+		return addMessage( arguments.message )
+	}
+
+	/**
+	 * Set the response status using fluent naming
+	 *
+	 * @code The status code to be set
+	 *
+	 * @return Returns the Response object for chaining
+	 */
+	Response function withStatus( required code ){
+		return setStatus( arguments.code )
 	}
 
 	/**
@@ -267,6 +420,63 @@ component accessors="true" {
 	Response function setStatus( required code ){
 		variables.statusCode = arguments.code;
 		return this;
+	}
+
+	/**
+	 * Mark the response as successful and optionally set its data
+	 *
+	 * @data     The data to be set
+	 * @message  An optional message to be set with the data
+	 * @location An optional location to be set with the data
+	 *
+	 * @return Returns the Response object for chaining
+	 */
+	Response function success(
+		required any data,
+		string message = "",
+		string location = ""
+	){
+		setError( false )
+		return setData( argumentCollection = arguments )
+	}
+
+	/**
+	 * Mark the response as failed with a message, status, and optional data
+	 *
+	 * @message    The error message
+	 * @statusCode The status code to set
+	 * @data       The data to set
+	 *
+	 * @return Returns the Response object for chaining
+	 */
+	Response function failure(
+		required string message,
+		numeric statusCode = 400,
+		any data
+	){
+		return setErrorMessage(
+			errorMessage = arguments.message,
+			statusCode   = arguments.statusCode,
+			data         = arguments.data
+		)
+	}
+
+	/**
+	 * Check whether the response is in an error state
+	 *
+	 * @return True when the response is marked as an error
+	 */
+	boolean function isError(){
+		return getError()
+	}
+
+	/**
+	 * Check whether the response has a successful HTTP status
+	 *
+	 * @return True for non-error 2xx and 3xx status codes
+	 */
+	boolean function isSuccess(){
+		return !isError() && getStatusCode() >= 200 && getStatusCode() < 400
 	}
 
 	/**
@@ -296,7 +506,7 @@ component accessors="true" {
 	 *
 	 * @return Returns the Response object for chaining
 	 */
-	Response function setErrorMessage( required errorMessage, statusCode, any data ){
+	Response function setErrorMessage( required errorMessage, numeric statusCode=400, any data ){
 		setError( true )
 		addMessage( arguments.errorMessage )
 

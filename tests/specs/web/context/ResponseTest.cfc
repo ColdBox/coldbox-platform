@@ -19,24 +19,43 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		// all your suites go here.
 		describe( "Response Object", function(){
 			beforeEach( function( currentSpec ){
-				response = new coldbox.system.web.context.Response();
+				variables.response = new coldbox.system.web.context.Response();
 			} );
 
 			it( "can be created", function(){
-				expect( response ).toBeComponent();
+				expect( variables.response ).toBeComponent();
 			} );
 
 
 			it( "can add messages", function(){
-				response.addMessage( "Hola" ).addMessage( "how are you?" );
-				expect( response.getMessagesString() ).toBe( "Hola, how are you?" );
-				expect( response.getMessagesString( "|" ) ).toBe( "Hola|how are you?" );
+				variables.response.addMessage( "Hola" ).addMessage( "how are you?" );
+				expect( variables.response.getMessagesString() ).toBe( "Hola, how are you?" );
+				expect( variables.response.getMessagesString( "|" ) ).toBe( "Hola|how are you?" );
+				expect( variables.response.hasMessages() ).toBeTrue();
+				variables.response.clearMessages();
+				expect( variables.response.hasMessages() ).toBeFalse();
+				expect( variables.response.getMessages() ).toBeEmpty();
+			} );
+
+			it( "can add multiple messages fluently", function(){
+				variables.response.addMessages( [ "First", "Second" ] ).withMessage( "Third" );
+
+				expect( variables.response.getMessagesString() ).toBe( "First, Second, Third" );
 			} );
 
 
 			it( "can add headers", function(){
-				response.addHeader( "x-api-code", 0 );
-				expect( response.getHeaders().len() ).toBe( 1 );
+				variables.response.addHeader( "x-api-code", 0 );
+				expect( variables.response.getHeaders().len() ).toBe( 1 );
+				expect( variables.response.hasHeader( "X-API-CODE" ) ).toBeTrue();
+				expect( variables.response.getHeader( "X-API-CODE" ) ).toBe( "0" );
+				variables.response.setHeader( "X-API-CODE", "1" );
+				expect( variables.response.getHeaders().len() ).toBe( 1 );
+				expect( variables.response.getHeader( "x-api-code" ) ).toBe( "1" );
+				variables.response.removeHeader( "X-API-CODE" ).setHeader( "X-Test", "yes" );
+				expect( variables.response.hasHeader( "x-api-code" ) ).toBeFalse();
+				variables.response.clearHeaders();
+				expect( variables.response.getHeaders() ).toBeEmpty();
 			} );
 
 
@@ -52,55 +71,66 @@ component extends="coldbox.system.testing.BaseModelTest" {
 			} );
 
 			it( "can get a data packet", function(){
-				response
+				variables.response
 					.setError( false )
-					.setData(
+					.withData(
 						{ today : now(), name : "luis" },
 						"Created!",
 						"/users/1"
 					);
 
-				expect( response.getError() ).toBeFalse();
-				expect( response.getData().name ).toBe( "luis" );
-				expect( response.getMessagesString() ).toBe( "Created!" );
-				expect( response.getLocation() ).toBe( "/users/1" );
+				expect( variables.response.isSuccess() ).toBeTrue();
+				expect( variables.response.getError() ).toBeFalse();
+				expect( variables.response.getData().name ).toBe( "luis" );
+				expect( variables.response.getMessagesString() ).toBe( "Created!" );
+				expect( variables.response.getLocation() ).toBe( "/users/1" );
 			} );
 
 
 			it( "can set error messages with accompanied data", function(){
-				response.setErrorMessage( "unit test", 400 );
+				variables.response.setErrorMessage( "unit test", 400 );
 
-				expect( response.getError() ).toBeTrue();
-				expect( response.getMessagesString() ).toInclude( "unit test" );
-				expect( response.getStatusCode() ).toBe( 400 );
+				expect( variables.response.isError() ).toBeTrue();
+				expect( variables.response.getMessagesString() ).toInclude( "unit test" );
+				expect( variables.response.getStatusCode() ).toBe( 400 );
+				expect( variables.response.isSuccess() ).toBeFalse();
+			} );
+
+			it( "can build success and failure responses fluently", function(){
+				variables.response
+					.success( { id : 1 }, "Created", "/users/1" )
+					.withStatus( 201 );
+
+				expect( variables.response.isSuccess() ).toBeTrue();
+				expect( variables.response.getStatusCode() ).toBe( 201 );
+
+				variables.response.failure( "Invalid", 422, { field : "email" } );
+				expect( variables.response.isError() ).toBeTrue();
+				expect( variables.response.getData().field ).toBe( "email" );
+				expect( variables.response.getStatusCode() ).toBe( 422 );
 			} );
 
 			it( "can ignore status text updates", function(){
-				response.setStatusText();
+				variables.response.setStatusText();
 
-				expect( response.getStatusText() ).toBe( "Ok" );
+				expect( variables.response.getStatusText() ).toBe( "Ok" );
 			} );
 
-			it( "can set status with default code texts", function(){
-				response.setStatus( 400 );
-				expect( response.getStatusCode() ).toBe( 400 );
-			} );
-
-			it( "can set status with set code texts", function(){
-				response.setStatus( 400 );
-				expect( response.getStatusCode() ).toBe( 400 );
+			it( "can set status codes", function(){
+				variables.response.setStatus( 201 );
+				expect( variables.response.getStatusCode() ).toBe( 201 );
 			} );
 
 			it( "can set data with pagination with no pagination data", function(){
-				response.setDataWithPagination( { "results" : "luis" } );
-				expect( response.getData() ).toBe( "luis" );
-				expect( response.getPagination().page ).toBe( 1 );
+				variables.response.setDataWithPagination( { "results" : "luis" } );
+				expect( variables.response.getData() ).toBe( "luis" );
+				expect( variables.response.getPagination().page ).toBe( 1 );
 			} );
 
 			it( "can set data with pagination and pagination data", function(){
-				response.setDataWithPagination( { "results" : "luis", "pagination" : { "page" : 4 } } );
-				expect( response.getData() ).toBe( "luis" );
-				expect( response.getPagination().page ).toBe( 4 );
+				variables.response.setDataWithPagination( { "results" : "luis", "pagination" : { "page" : 4 } } );
+				expect( variables.response.getData() ).toBe( "luis" );
+				expect( variables.response.getPagination().page ).toBe( 4 );
 			} );
 		} );
 	}
