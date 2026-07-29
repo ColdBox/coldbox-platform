@@ -355,7 +355,7 @@ component accessors="true" {
 	 */
 	Response function setData(
 		required any data,
-		string message = "",
+		string message  = "",
 		string location = ""
 	){
 		variables.data = arguments.data
@@ -382,7 +382,7 @@ component accessors="true" {
 	 */
 	Response function withData(
 		required any data,
-		string message = "",
+		string message  = "",
 		string location = ""
 	){
 		return setData( argumentCollection = arguments )
@@ -433,7 +433,7 @@ component accessors="true" {
 	 */
 	Response function success(
 		required any data,
-		string message = "",
+		string message  = "",
 		string location = ""
 	){
 		setError( false )
@@ -506,7 +506,11 @@ component accessors="true" {
 	 *
 	 * @return Returns the Response object for chaining
 	 */
-	Response function setErrorMessage( required errorMessage, numeric statusCode=400, any data ){
+	Response function setErrorMessage(
+		required errorMessage,
+		numeric statusCode = 400,
+		any data
+	){
 		setError( true )
 		addMessage( arguments.errorMessage )
 

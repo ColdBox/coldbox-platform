@@ -97,9 +97,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 			} );
 
 			it( "can build success and failure responses fluently", function(){
-				variables.response
-					.success( { id : 1 }, "Created", "/users/1" )
-					.withStatus( 201 );
+				variables.response.success( { id : 1 }, "Created", "/users/1" ).withStatus( 201 );
 
 				expect( variables.response.isSuccess() ).toBeTrue();
 				expect( variables.response.getStatusCode() ).toBe( 201 );
