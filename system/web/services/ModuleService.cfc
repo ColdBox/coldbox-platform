@@ -542,16 +542,23 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 								thisChild & "/ModuleConfig.bx"
 							)
 						) {
-							// add to parent children
-							arrayAppend( mConfig.childModules, childname )
 							// register child
-							registerModule(
+							var childRegistered = registerModule(
 								moduleName    : childName,
 								invocationPath: mConfig.invocationPath & "." & thisInceptionPath,
 								parent        : modName,
 								bundle        : arguments.bundle,
 								parentInjector: moduleConfigAndInjector.injector
 							)
+							/*
+							 * Track the child only when it registered now, or when another parent
+							 * already registered it (the activation cascade must still reach it).
+							 * A child that failed registration entirely (e.g. it is disabled) must
+							 * not be tracked: activating it later throws IllegalModuleState.
+							 */
+							if ( childRegistered || structKeyExists( variables.registeredModules, childName ) ) {
+								arrayAppend( mConfig.childModules, childname )
+							}
 						} else if ( variables.logger.canInfo() ) {
 							variables.logger.info(
 								"> Inception Module #childName# does not have a valid ModuleConfig.cfc in its root, so skipping registration"
