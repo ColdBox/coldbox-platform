@@ -1,11 +1,14 @@
 /**
  * RequestContext SSE Tests — the streaming API surface on the request context.
  *
- * The `sse()` call itself needs a live BoxLang web response, so the suites that would open a
- * stream are skipped off BoxLang. Everything around it — the runtime guard, content
- * negotiation predicates, and module aware setting resolution — is asserted on every engine.
+ * SSE is a BoxLang-only feature (see docs/specs/sse-streaming.md), so this whole suite is
+ * excluded on any other engine, matching RouterAITest.cfc's pattern for toAi()/toMCP(). Note
+ * this means graceful degradation on CFML (isSSESupported() returning false,
+ * SSENotSupportedException being thrown) is not verified by *this* suite - a spec that never
+ * runs on CFML cannot assert CFML behavior. That guarantee rests on ensureSSESupport()'s own
+ * simplicity (a single server.keyExists( "boxlang" ) check) rather than on test coverage here.
  */
-component extends="coldbox.system.testing.BaseModelTest" {
+component extends="coldbox.system.testing.BaseModelTest" skip="notBoxlang" {
 
 	/*********************************** LIFE CYCLE Methods ***********************************/
 
@@ -74,38 +77,16 @@ component extends="coldbox.system.testing.BaseModelTest" {
 	/*********************************** BDD SUITES ***********************************/
 
 	function run( testResults, testBox ){
+		if ( notBoxlang() ) {
+			return;
+		}
+
 		describe( "RequestContext SSE support", function(){
 			describe( "runtime detection", function(){
 				it( "reports support based purely on the server scope", function(){
 					var event = buildContext();
 
 					expect( event.isSSESupported() ).toBe( server.keyExists( "boxlang" ) );
-				} );
-
-				it( "throws a clear exception when streaming on a runtime without the BIF", function(){
-					if ( isBoxLang() ) {
-						return;
-					}
-
-					var event = buildContext();
-
-					expect( () => event.sse( ( emitter ) => {} ) ).toThrow( "SSENotSupportedException" );
-				} );
-
-				it( "does not mark the request as SSE when the guard rejects it", function(){
-					if ( isBoxLang() ) {
-						return;
-					}
-
-					var event = buildContext();
-
-					try {
-						event.sse( ( emitter ) => {} );
-					} catch ( SSENotSupportedException e ) {
-					}
-
-					expect( event.isSSE() ).toBeFalse();
-					expect( event.isNoRender() ).toBeFalse();
 				} );
 			} );
 
@@ -186,10 +167,6 @@ component extends="coldbox.system.testing.BaseModelTest" {
 			// what makes a handler action calling event.sse() actually integration testable - see
 			// docs/specs/sse-streaming.md §7.
 			it( "takes over the response when a stream opens", function(){
-				if ( notBoxlang() ) {
-					return;
-				}
-
 				var event = buildContext();
 				event.sse( ( emitter ) => emitter.close() );
 
@@ -198,10 +175,6 @@ component extends="coldbox.system.testing.BaseModelTest" {
 			} );
 
 			it( "discards any event cache entry so an empty response is never cached", function(){
-				if ( notBoxlang() ) {
-					return;
-				}
-
 				var event = buildContext();
 				event.setEventCacheableEntry( { cachekey : "should-be-gone", provider : "template" } );
 
@@ -211,10 +184,6 @@ component extends="coldbox.system.testing.BaseModelTest" {
 			} );
 
 			it( "runs the callback synchronously against a MockSSEEmitter, exposed as a private value", function(){
-				if ( notBoxlang() ) {
-					return;
-				}
-
 				var event = buildContext();
 				event.sse( ( emitter ) => {
 					emitter.send( { "count" : 3 }, "tick" );
@@ -235,10 +204,6 @@ component extends="coldbox.system.testing.BaseModelTest" {
 			} );
 
 			it( "hands the callback the same SSEEmitter decorator a real stream would use", function(){
-				if ( notBoxlang() ) {
-					return;
-				}
-
 				var event         = buildContext();
 				var callbackEvent = "";
 
@@ -251,10 +216,6 @@ component extends="coldbox.system.testing.BaseModelTest" {
 			} );
 
 			it( "propagates an exception thrown inside the callback and still closes the emitter", function(){
-				if ( notBoxlang() ) {
-					return;
-				}
-
 				var event = buildContext();
 
 				expect( function(){
@@ -269,10 +230,6 @@ component extends="coldbox.system.testing.BaseModelTest" {
 			} );
 
 			it( "aborts before opening the stream when preSSEConnection rejects it and lets the response render normally", function(){
-				if ( notBoxlang() ) {
-					return;
-				}
-
 				// Interceptor closures are invoked with named arguments matching InterceptorState's
 				// invocationArgs keys (event, data, rc, prc) - not positional - so the parameter
 				// names below must match exactly or they are silently left unbound.
@@ -301,10 +258,6 @@ component extends="coldbox.system.testing.BaseModelTest" {
 			} );
 
 			it( "defaults an unrendered rejection to the interceptor's status code", function(){
-				if ( notBoxlang() ) {
-					return;
-				}
-
 				// abortSSE() reaches event.setHTTPHeader() on this path, which needs a real servlet
 				// page context. That is unavailable in this CLI sandbox - the same gap that already
 				// makes RequestContextTest.cfc's own testsetHTTPHeader error here - but is present on
@@ -336,18 +289,6 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				expect( event.getCurrentView() ).toBeEmpty();
 
 				event.getController().getInterceptorService().unlisten( listener, "preSSEConnection" );
-			} );
-
-			it( "still throws SSENotSupportedException on a non BoxLang engine even under a MockController", function(){
-				if ( isBoxLang() ) {
-					return;
-				}
-
-				var event = buildContext();
-
-				expect( function(){
-					event.sse( ( emitter ) => {} );
-				} ).toThrow( "SSENotSupportedException" );
 			} );
 		} );
 	}

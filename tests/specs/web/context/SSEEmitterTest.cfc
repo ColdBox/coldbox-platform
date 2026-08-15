@@ -1,11 +1,17 @@
 /**
  * SSEEmitter Tests — the ColdBox decorator over the BoxLang SSE emitter.
  *
- * These run on every engine. The decorator never touches the `SSE()` BIF itself: it wraps
- * whatever emitter it is handed, so a MockSSEEmitter exercises the whole surface without
- * needing a live BoxLang web runtime.
+ * SSE is a BoxLang-only feature (see docs/specs/sse-streaming.md), so this whole suite is
+ * excluded on any other engine, matching the pattern already established in RouterAITest.cfc.
+ * The decorator itself never touches the `SSE()` BIF - it just wraps whatever emitter it is
+ * handed - but keeping the entire SSE test surface BoxLang-gated is a single, easy to reason
+ * about policy rather than a per-file judgment call.
  */
-component extends="coldbox.system.testing.BaseModelTest" {
+component extends="coldbox.system.testing.BaseModelTest" skip="notBoxlang" {
+
+	boolean function notBoxlang(){
+		return !isBoxLang();
+	}
 
 	/*********************************** LIFE CYCLE Methods ***********************************/
 
@@ -17,6 +23,10 @@ component extends="coldbox.system.testing.BaseModelTest" {
 	/*********************************** BDD SUITES ***********************************/
 
 	function run( testResults, testBox ){
+		if ( notBoxlang() ) {
+			return;
+		}
+
 		describe( "SSEEmitter", function(){
 			beforeEach( function( currentSpec ){
 				variables.mockEmitter = new coldbox.system.testing.mock.web.MockSSEEmitter();

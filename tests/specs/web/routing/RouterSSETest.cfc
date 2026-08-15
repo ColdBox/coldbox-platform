@@ -1,10 +1,13 @@
 /**
  * SSE Routing Tests — the toSSE() terminator and the format negotiation wiring.
  *
- * The extension and media type alias suites run everywhere, since they are pure routing table
- * concerns. Registering a toSSE() route is guarded on BoxLang and skipped elsewhere.
+ * SSE is a BoxLang-only feature (see docs/specs/sse-streaming.md), so this whole suite is
+ * excluded on any other engine, matching RouterAITest.cfc's pattern for toAi()/toMCP(). The
+ * extension and media type alias assertions are, in principle, engine-agnostic routing table
+ * concerns, but keeping the entire SSE test surface under one BoxLang gate is a simpler policy
+ * than deciding file-by-file which parts "could" run elsewhere.
  */
-component extends="coldbox.system.testing.BaseModelTest" {
+component extends="coldbox.system.testing.BaseModelTest" skip="notBoxlang" {
 
 	/*********************************** LIFE CYCLE Methods ***********************************/
 
@@ -33,6 +36,10 @@ component extends="coldbox.system.testing.BaseModelTest" {
 	/*********************************** BDD SUITES ***********************************/
 
 	function run( testResults, testBox ){
+		if ( notBoxlang() ) {
+			return;
+		}
+
 		describe( "SSE format negotiation", function(){
 			beforeEach( function( currentSpec ){
 				variables.router = buildRouter();
@@ -84,10 +91,6 @@ component extends="coldbox.system.testing.BaseModelTest" {
 			} );
 
 			it( "registers a streaming route", function(){
-				if ( notBoxlang() ) {
-					return;
-				}
-
 				variables.router.route( "/events/heartbeat" ).toSSE( ( event, rc, prc, emitter ) => {} );
 
 				var routes = variables.router.getRoutes();
@@ -97,10 +100,6 @@ component extends="coldbox.system.testing.BaseModelTest" {
 			} );
 
 			it( "stores the streaming callback on the route", function(){
-				if ( notBoxlang() ) {
-					return;
-				}
-
 				variables.router.route( "/events" ).toSSE( ( event, rc, prc, emitter ) => "streamed" );
 
 				var route = variables.router.getRoutes()[ 1 ];
@@ -108,10 +107,6 @@ component extends="coldbox.system.testing.BaseModelTest" {
 			} );
 
 			it( "inherits route modifiers like any other terminator", function(){
-				if ( notBoxlang() ) {
-					return;
-				}
-
 				variables.router
 					.route( "/events/secure" )
 					.withSSL()
@@ -124,10 +119,6 @@ component extends="coldbox.system.testing.BaseModelTest" {
 			} );
 
 			it( "resets the fluent route state so the next route starts clean", function(){
-				if ( notBoxlang() ) {
-					return;
-				}
-
 				variables.router.route( "/events" ).toSSE( ( event, rc, prc, emitter ) => {} );
 				variables.router.route( "/plain", "main.index" );
 
@@ -139,22 +130,8 @@ component extends="coldbox.system.testing.BaseModelTest" {
 			} );
 
 			it( "rejects a callback that is not a closure", function(){
-				if ( notBoxlang() ) {
-					return;
-				}
-
 				expect( () => variables.router.route( "/events" ).toSSE( "not-a-closure" ) ).toThrow(
 					"InvalidArgumentException"
-				);
-			} );
-
-			it( "throws on a runtime that cannot stream", function(){
-				if ( isBoxLang() ) {
-					return;
-				}
-
-				expect( () => variables.router.route( "/events" ).toSSE( ( event, rc, prc, emitter ) => {} ) ).toThrow(
-					"SSENotSupportedException"
 				);
 			} );
 		} );

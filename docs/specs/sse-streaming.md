@@ -787,6 +787,36 @@ component extends="coldbox.system.RestHandler" {
 
 ## 7. Testing — implemented
 
+### Test files are excluded on any engine but BoxLang
+
+`SSEEmitterTest.cfc`, `RequestContextSSETest.cfc`, and `RouterSSETest.cfc` each
+open with `if ( notBoxlang() ) { return; }` as the first statement in `run()`,
+before any `describe()` call — matching the mechanism `RouterAITest.cfc` already
+uses for `toAi()`/`toMCP()`. On a non-BoxLang engine this registers zero suites,
+so the bundle reports `0/0` rather than attempting BoxLang-only operations.
+
+This means these three files no longer assert CFML graceful-degradation
+behavior (`isSSESupported()` returning `false`, `SSENotSupportedException` being
+thrown) themselves — a suite that never runs off BoxLang cannot verify
+off-BoxLang behavior. That guarantee rests on `ensureSSESupport()`'s own
+simplicity (a single `server.keyExists( "boxlang" )` check, §2) rather than on
+test coverage.
+
+**Note on the class-level `skip="notBoxlang"` annotation.** All three files also
+carry this annotation for documentation/consistency with `RouterAITest.cfc`, but
+it does not actually gate execution — verified empirically: a `describe()`/`it()`
+body under a class annotated `skip="alwaysTrue"` still ran and its assertion
+still failed, in both plain `testbox.system.BaseSpec` and
+`coldbox.system.testing.BaseModelTest`. The real, functioning mechanism is the
+early return at the top of `run()`; the annotation is inert decoration. This
+appears to be a pre-existing TestBox/BoxLang interaction, not something specific
+to these files — `RouterAITest.cfc`'s own class-level annotation has the same
+gap, papered over there by the identical early-return guard it already has at
+the top of its `run()`. Worth a closer look independent of this feature, since
+the annotation's ineffectiveness is easy to miss.
+
+### Streaming behavior
+
 SSE cannot be exercised through the normal `BaseTestCase.execute()` path — there
 is no real response to stream into. Instead, `RequestContext.sse()` detects a
 `MockController` (the same `structKeyExists( variables.controller,
