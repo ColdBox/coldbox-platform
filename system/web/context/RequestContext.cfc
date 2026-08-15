@@ -1558,6 +1558,262 @@ component serializable="false" accessors="true" {
 		return variables.privateContext.response;
 	}
 
+	/***********************************************************************************************************/
+	/************************************** SERVER-SENT EVENTS (BoxLang) ***************************************/
+	/***********************************************************************************************************/
+
+	/**
+	 * Stream a Server-Sent Events response. BoxLang only.
+	 *
+	 * This takes over the response: ColdBox rendering is suppressed, any event cache entry is
+	 * discarded, and the flash scope is not auto-saved. The callback receives a ColdBox
+	 * `SSEEmitter` which can render views, marshall data, and silently no-ops once the client
+	 * disconnects.
+	 *
+	 * <pre>
+	 * event.sse( ( emitter ) => {
+	 *     while( emitter.isOpen() ){
+	 *         emitter.send( { "ts" : now() }, "tick" )
+	 *         sleep( 1000 )
+	 *     }
+	 * } )
+	 * </pre>
+	 *
+	 * @callback          A closure/lambda receiving ( emitter )
+	 * @keepAliveInterval Milliseconds between automatic keep-alive comments. 0 disables.
+	 * @retry             Client reconnect hint in milliseconds. 0 omits the field.
+	 * @cors              CORS origin. `*` for all, empty for none.
+	 * @headers           Additional response headers to set before the stream opens
+	 *
+	 * @return RequestContext
+	 *
+	 * @throws SSENotSupportedException If the active runtime cannot stream
+	 */
+	function sse(
+		required any callback,
+		numeric keepAliveInterval,
+		numeric retry,
+		string cors,
+		struct headers = {}
+	){
+		ensureSSESupport();
+
+		var options = getSSEOptions();
+		if ( !isNull( arguments.keepAliveInterval ) ) {
+			options.keepAliveInterval = arguments.keepAliveInterval;
+		}
+		if ( !isNull( arguments.retry ) ) {
+			options.retry = arguments.retry;
+		}
+		if ( !isNull( arguments.cors ) ) {
+			options.cors = arguments.cors;
+		}
+
+		// Take over the response: no rendering, no event caching, no flash auto-save.
+		// Event caching is cleared rather than ignored, else a `cache=true` streaming action
+		// would cache an empty response and serve it until it expires.
+		setPrivateValue( name = "coldbox_sse", value = true );
+		noRender();
+		removeEventCacheableEntry();
+
+		// Response headers must go out before the stream opens
+		arguments.headers.each( ( name, value ) => setHTTPHeader( name = name, value = value ) );
+
+		// Give interceptors a chance to reject the connection. Note the abort travels in the
+		// data struct: a `true` return breaks the interceptor chain but is not reported back
+		// to the caller on the synchronous path.
+		var interceptData = {
+			"options"    : options,
+			"abort"      : false,
+			"statusCode" : 403
+		};
+		variables.controller.getInterceptorService().announce( "preSSEConnection", interceptData );
+
+		if ( interceptData.abort ) {
+			return abortSSE( interceptData.statusCode );
+		}
+
+		var stime    = getTickCount();
+		var oEmitter = "";
+
+		// Capture the user callback so the streaming closure does not have to reach into an
+		// `arguments` scope it does not own
+		var userCallback = arguments.callback;
+
+		try {
+			// Delegated rather than called inline: an unqualified SSE() here would resolve back to
+			// this very method, whose signature matches the BIF's named arguments, and recurse.
+			new coldbox.system.web.context.SSEStreamer().stream(
+				callback          = ( emitter ) => {
+					oEmitter = new coldbox.system.web.context.SSEEmitter( emitter, variables.controller );
+					userCallback( oEmitter );
+				},
+				keepAliveInterval = options.keepAliveInterval,
+				retry             = options.retry,
+				cors              = options.cors
+			);
+		} catch ( any e ) {
+			variables.controller
+				.getInterceptorService()
+				.announce(
+					"onSSEError",
+					{
+						"exception" : e,
+						"sentCount" : isObject( oEmitter ) ? oEmitter.getSentCount() : 0
+					}
+				);
+
+			variables.controller
+				.getLogBox()
+				.getLogger( this )
+				.error( "Error streaming SSE response: #e.message# #e.detail#", e.stackTrace );
+
+			// Best effort close so the client is not left hanging on a half-open stream
+			if ( isObject( oEmitter ) ) {
+				try {
+					oEmitter.close();
+				} catch ( any closeError ) {
+				}
+			}
+
+			rethrow;
+		}
+
+		variables.controller
+			.getInterceptorService()
+			.announce(
+				"postSSEConnection",
+				{
+					"sentCount" : isObject( oEmitter ) ? oEmitter.getSentCount() : 0,
+					"duration"  : getTickCount() - stime
+				}
+			);
+
+		return this;
+	}
+
+	/**
+	 * Has this request been taken over by an SSE stream?
+	 *
+	 * Used by the framework to skip work that would be a write-after-commit against a
+	 * response whose headers already went out.
+	 */
+	boolean function isSSE(){
+		return getPrivateValue( name = "coldbox_sse", defaultValue = false );
+	}
+
+	/**
+	 * Can the active runtime stream Server-Sent Events?
+	 *
+	 * Use this to degrade gracefully in applications that must also run on CFML engines.
+	 *
+	 * <pre>
+	 * if( !event.isSSESupported() ){ return event.renderData( type = "json", data = service.latest() ) }
+	 * </pre>
+	 */
+	boolean function isSSESupported(){
+		return server.keyExists( "boxlang" );
+	}
+
+	/**
+	 * Did the client ask for a stream via content negotiation?
+	 *
+	 * True when `rc.format` resolved to `sse`, which happens for an `Accept: text/event-stream`
+	 * header or a `.sse` URL extension.
+	 */
+	boolean function wantsSSE(){
+		return getValue( name = "format", defaultValue = "" ) == "sse";
+	}
+
+	/**
+	 * Abort a stream that an interceptor rejected before it opened.
+	 *
+	 * Because we bail before calling the BIF, the response was never committed, so the normal
+	 * render pipeline is still available. That lets a rejection return a real error page or an
+	 * HTMX error fragment rather than a bare status code.
+	 *
+	 * @statusCode The status to respond with when the interceptor set neither a status nor a view
+	 *
+	 * @return RequestContext
+	 */
+	private function abortSSE( required numeric statusCode ){
+		removePrivateValue( name = "coldbox_sse" );
+		noRender( remove = true );
+
+		// Only default the status when the interceptor did not render its own response
+		if ( !getCurrentView().len() && getRenderData().isEmpty() ) {
+			setHTTPHeader( statusCode = arguments.statusCode );
+		}
+
+		return this;
+	}
+
+	/**
+	 * The fully resolved SSE options for this request.
+	 *
+	 * Module level overrides are folded over the global block, so this reports exactly what a
+	 * stream opened right now would use. Explicit arguments to `sse()` still win over these.
+	 *
+	 * @return struct of keepAliveInterval, retry and cors
+	 */
+	struct function getSSEOptions(){
+		return {
+			"keepAliveInterval" : getSSESetting( "keepAliveInterval" ),
+			"retry"             : getSSESetting( "retry" ),
+			"cors"              : getSSESetting( "cors" )
+		};
+	}
+
+	/**
+	 * Resolve an SSE setting, preferring the current module's overrides over the global block.
+	 *
+	 * @key The setting key: keepAliveInterval, retry or cors
+	 */
+	private any function getSSESetting( required string key ){
+		var defaults      = { "keepAliveInterval" : 30000, "retry" : 0, "cors" : "*" };
+		var currentModule = getCurrentModule();
+
+		// Module level overrides win over the global block
+		if ( len( currentModule ) ) {
+			var moduleSettings = variables.controller.getSetting( "moduleSettings", {} );
+			if (
+				moduleSettings.keyExists( currentModule )
+				&& isStruct( moduleSettings[ currentModule ] )
+				&& moduleSettings[ currentModule ].keyExists( "sse" )
+				&& isStruct( moduleSettings[ currentModule ].sse )
+				&& moduleSettings[ currentModule ].sse.keyExists( arguments.key )
+			) {
+				return moduleSettings[ currentModule ].sse[ arguments.key ];
+			}
+		}
+
+		var globalSettings = variables.controller.getSetting( "sse", defaults );
+
+		return globalSettings.keyExists( arguments.key ) ? globalSettings[ arguments.key ] : defaults[
+			arguments.key
+		];
+	}
+
+	/**
+	 * Verify the active runtime can stream Server-Sent Events.
+	 *
+	 * `SSE()` is a core BoxLang BIF with no CFML equivalent. This is a server scope check only:
+	 * ColdBox 8 already requires a BoxLang release that carries the BIF, so version detection
+	 * would guard a state that cannot occur.
+	 *
+	 * @throws SSENotSupportedException If not running on BoxLang
+	 */
+	private function ensureSSESupport(){
+		if ( !isSSESupported() ) {
+			throw(
+				type   : "SSENotSupportedException",
+				message: "Server-Sent Events require BoxLang.",
+				detail : "event.sse() is a BoxLang only feature. Guard calls with event.isSSESupported() to degrade gracefully."
+			);
+		}
+		return this;
+	}
+
 	/**
 	 * Get the routed structure of key-value pairs. What the ses interceptor could match.
 	 *

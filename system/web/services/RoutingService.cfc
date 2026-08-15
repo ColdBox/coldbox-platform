@@ -379,6 +379,30 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			event.setHTTPHeader( name = key, value = value );
 		} );
 
+		// See if this route streams Server-Sent Events
+		if ( routeResults.route.sse ?: false ) {
+			if ( getLogger().canDebug() ) {
+				getLogger().debug( "Streaming SSE route: #routeResults.route.pattern#" );
+			}
+
+			var sseCallback = routeResults.route.sseCallback;
+
+			arguments.event.sse( ( emitter ) => {
+				sseCallback(
+					event,
+					event.getCollection(),
+					event.getPrivateCollection(),
+					emitter
+				);
+			} );
+
+			// The response is committed, nothing left to execute or render
+			arguments.event.noExecution();
+			arguments.event.setRoutedStruct( routeResults.params );
+
+			return discoveredEvent;
+		}
+
 		// See if Response is dispatched
 		if (
 			isClosure( routeResults.route.response ) || isCustomFunction( routeResults.route.response ) || routeResults.route.response.len()
@@ -742,6 +766,13 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 					// If we found, just return
 					if ( previous.len() ) {
 						return previous;
+					}
+					// Explicit aliases first, for media types that share no substring with their
+					// extension. `text/event-stream` does not contain `sse`, so the filter below
+					// would never match it.
+					var alias = variables.router.getMimeExtensionAlias( thisAccept );
+					if ( alias.len() ) {
+						return alias;
 					}
 					// Match towards system valid extensions
 					return variables.router

@@ -1,6 +1,7 @@
 # Spec: First-Class Server-Sent Events (SSE) in ColdBox
 
-**Status:** Draft / RFC
+**Status:** Implemented — see `system/web/context/SSEEmitter.cfc`, `SSEStreamer.cfc`, and the
+`sse()` API on `RequestContext.cfc`
 **Target:** ColdBox 8.3.0
 **Runtime:** **BoxLang only** — requires BoxLang 1.7.0+ on a web runtime
 **Related:** COLDBOX-1411 (`toAi()` streaming), BoxLang `SSE()` BIF
@@ -167,7 +168,18 @@ existing `AsyncManager` inside the callback and emit from the streaming thread.
 9. Announce **`postSSEConnection`** with `{ sentCount, duration }`.
 10. Return `this` for chaining.
 
-### 3.2 `event.isSSE()`
+### 3.2 `event.getSSEOptions()`
+
+```java
+struct function getSSEOptions()
+```
+
+The fully resolved options for this request — module overrides folded over the global block — so
+it reports exactly what a stream opened right now would use. Explicit arguments to `sse()` still
+win over these. Public because it is genuinely useful for introspection and debugging, and it
+keeps the resolution logic testable without exposing the per-key private helper.
+
+### 3.3 `event.isSSE()`
 
 ```java
 boolean function isSSE()
@@ -643,6 +655,7 @@ function updates( event, rc, prc ){
 |---|---|
 | `system/web/context/RequestContext.cfc` | Add `sse()`, `isSSE()`, `isSSESupported()`, `wantsSSE()`, private `ensureSSESupport()` and `getSSESetting()` |
 | `system/web/context/SSEEmitter.cfc` | **New** — decorator over the BoxLang emitter |
+| `system/web/context/SSEStreamer.cfc` | **New** — isolates the `SSE()` BIF call, see §5.3 |
 | `system/web/routing/Router.cfc` | Add `toSSE()`; add `sse` + `sseCallback` to `initRouteDefinition()` (line 1119); add `sse` to `VALID_EXTENSIONS` (line 151); add the `mimeExtensionAliases` map; replace the hardcoded `cors: "*"` in `toAi()` (line 2116) with the setting |
 | `system/web/services/RoutingService.cfc` | Add an `sse` branch to `processRoute()`, next to the existing `response` branch; consult `mimeExtensionAliases` in `detectExtension()` before the substring reduce (line 749) |
 | `system/web/services/InterceptorService.cfc` | Append 3 interception points to the ENUM (line 44) |
@@ -672,6 +685,36 @@ client bug.
 path at `Bootstrap.cfc:378-390` has nothing to store. Streaming and event caching
 are fundamentally incompatible; making that explicit at the point of no return is
 better than trusting every developer to never combine the two annotations.
+
+### 5.3 The BIF call must not live in `RequestContext`
+
+Found while implementing, and non-obvious enough to be worth recording.
+
+Calling `SSE( callback : ..., keepAliveInterval : ..., retry : ..., cors : ... )` directly from
+inside `RequestContext.sse()` **recurses until the stack overflows**. The unqualified call
+resolves against the component's own function table first, and `sse()`'s signature matches the
+BIF's named arguments exactly, so the method calls itself.
+
+The collision is signature-sensitive, which makes it easy to miss: a component with an `sse()`
+method taking only `callback` resolves a one-argument `SSE( callback : ... )` to the BIF as
+expected. It is the full argument match that tips resolution the other way.
+
+Hence `SSEStreamer.cfc` — a single-purpose component with no colliding member whose only job is
+to invoke the BIF. `RequestContext.sse()` delegates to it.
+
+The same reasoning applies to the user callback: it is captured into a local
+(`var userCallback = arguments.callback`) before the streaming closure is built, so the closure
+never has to reach into an `arguments` scope it does not own.
+
+### 5.4 Route keys must be declared arguments of `addRoute()`
+
+`addRoute()` builds its route struct with `thisRoute.append( arguments )` against an explicitly
+declared argument list. Keys that are not declared arguments do not survive registration — which
+is why `toAi()` captures its runnable in a closure rather than trusting the `aiRunnable` route key,
+and why `RoutingService` reads these flags defensively as `route.sse ?: false`.
+
+Adding `sse` and `sseCallback` to `initRouteDefinition()` is therefore **not sufficient**. Both
+must also be declared arguments of `addRoute()`, or `toSSE()` silently loses its callback.
 
 ### 5.2 Flash scope is disabled for streams
 
@@ -804,6 +847,18 @@ that loops terminate when a client drops.
 | — | `sendView()` and layouts | Layout-less by default; `layout` argument plus a `sendLayout()` method. (§3.3) |
 | — | Runtime check | `server.keyExists( "boxlang" )`, no version detection. (§2) |
 | — | `RestHandler` | Early exit covering both marshalling and header flush. (§6) |
+
+### Found during implementation
+
+- **The runtime guard does not imply the BIF is present.** `server.keyExists( "boxlang" )` is true
+  in the BoxLang **CLI** runtime, but `SSE()` is a *web* runtime BIF, so a call there fails with
+  `Function [SSE] not found` rather than the framework's own `SSENotSupportedException`. The guard
+  is intentionally left as a plain server-scope check, so this only affects code paths that stream
+  from a non-web runtime — a scheduled task or CLI script, where streaming is meaningless anyway.
+  Worth a documentation note rather than a code change.
+- **`makePublic()` does not exist in TestBox 7's MockBox**, and a UDF pulled out of `variables` via
+  `$getProperty()` loses its component binding. Testing private helpers through either route is a
+  dead end; expose a purposeful public accessor instead, as `getSSEOptions()` does.
 
 ### Still open
 
