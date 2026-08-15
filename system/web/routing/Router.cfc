@@ -793,7 +793,11 @@ component
 		string layoutModule           = "",
 		struct meta                   = {},
 		boolean sse                   = "false",
-		any sseCallback               = ""
+		any sseCallback               = "",
+		boolean ai                    = "false",
+		any aiRunnable                = "",
+		boolean mcp                   = "false",
+		string mcpServer              = ""
 	){
 		// The route construct we will save
 		var thisRoute = {};

@@ -156,6 +156,24 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				} );
 			} );
 
+			story( "I want every registered route to carry the full route definition shape", function(){
+				given( "an ordinary route with no AI/MCP/SSE modifiers", function(){
+					then( "it still carries defaulted ai, aiRunnable, mcp and mcpServer keys", function(){
+						router.route( "/luis", "main.index" );
+						var thisRoute = router.getRoutes()[ 1 ];
+
+						expect( thisRoute ).toHaveKey( "ai" );
+						expect( thisRoute.ai ).toBeFalse();
+						expect( thisRoute ).toHaveKey( "aiRunnable" );
+						expect( thisRoute.aiRunnable ).toBe( "" );
+						expect( thisRoute ).toHaveKey( "mcp" );
+						expect( thisRoute.mcp ).toBeFalse();
+						expect( thisRoute ).toHaveKey( "mcpServer" );
+						expect( thisRoute.mcpServer ).toBe( "" );
+					} );
+				} );
+			} );
+
 			story( "I want to register fluent routes with no modifiers or terminators", function(){
 				given( "no inline target", function(){
 					then( "it should store the route pointer", function(){
