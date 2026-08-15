@@ -174,6 +174,33 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				} );
 			} );
 
+			story( "I want addRoute() and initRouteDefinition() to never drift apart", function(){
+				given( "the canonical route definition shape and addRoute()'s declared parameters", function(){
+					then( "every settable key in the shape has a matching addRoute() parameter", function(){
+						// Keys that are computed internally during registration rather than accepted as
+						// caller input - these are legitimately absent from addRoute()'s signature.
+						var computedOnlyKeys = [ "responsePlaceholders" ];
+
+						var definitionKeys = router.getRouteDefinitionKeys();
+						var addRouteParams = getMetadata( router ).functions.filter( function( fn ){
+							return fn.name == "addRoute";
+						} )[ 1 ].parameters.map( function( param ){
+							return param.name;
+						} );
+
+						for ( var key in definitionKeys ) {
+							if ( computedOnlyKeys.findNoCase( key ) ) {
+								continue;
+							}
+							expect( addRouteParams ).toInclude(
+								key,
+								"initRouteDefinition() key '#key#' has no matching addRoute() parameter - it will be silently absent (not defaulted) from any route that doesn't explicitly pass it"
+							);
+						}
+					} );
+				} );
+			} );
+
 			story( "I want to register fluent routes with no modifiers or terminators", function(){
 				given( "no inline target", function(){
 					then( "it should store the route pointer", function(){
