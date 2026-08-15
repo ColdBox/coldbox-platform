@@ -182,11 +182,21 @@ component extends="coldbox.system.testing.BaseModelTest" {
 						var computedOnlyKeys = [ "responsePlaceholders" ];
 
 						var definitionKeys = router.getRouteDefinitionKeys();
-						var addRouteParams = getMetadata( router ).functions.filter( function( fn ){
-							return fn.name == "addRoute";
-						} )[ 1 ].parameters.map( function( param ){
-							return param.name;
-						} );
+						var routerMetadata = getMetadata( router );
+						var addRouteParams = [];
+
+						// Plain for-in loops rather than .filter()/.map() member calls - the array
+						// nested inside a function's metadata (fn.parameters) isn't guaranteed to
+						// support CF array member functions on every engine (observed missing on
+						// Adobe ColdFusion).
+						for ( var fn in routerMetadata.functions ) {
+							if ( fn.name == "addRoute" ) {
+								for ( var param in fn.parameters ) {
+									addRouteParams.append( param.name );
+								}
+								break;
+							}
+						}
 
 						for ( var key in definitionKeys ) {
 							if ( computedOnlyKeys.findNoCase( key ) ) {
