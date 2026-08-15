@@ -66,25 +66,34 @@ This matters: the existing `Router.ensureBoxLang()` (`Router.cfc:1961`) throws
 `ModuleNotFoundException` unless `bxai` is installed, because `toAi()` genuinely
 needs it. The generalized SSE API **must not** inherit that requirement.
 
-A new, narrower private guard is introduced:
+A new, narrower private guard is introduced. It is a **server-scope check only** —
+no version detection:
 
 ```java
 /**
  * Verifies the active runtime can stream Server-Sent Events.
  *
- * @throws SSENotSupportedException If not running on BoxLang, or on a BoxLang
- *                                  runtime older than 1.7.0, or in a non-web runtime
+ * @throws SSENotSupportedException If not running on BoxLang
  */
 private function ensureSSESupport(){
     if ( !server.keyExists( "boxlang" ) ) {
         throw(
             type   : "SSENotSupportedException",
-            message: "Server-Sent Events require BoxLang. The active runtime is [#server.coldfusion.productname#].",
+            message: "Server-Sent Events require BoxLang.",
             detail : "event.sse() is a BoxLang-only feature. Guard calls with event.isSSESupported()."
         )
     }
 }
 ```
+
+`isSSESupported()` is the same check, returned as a boolean.
+
+Deliberately **not** doing version detection. ColdBox 8.x already requires a
+BoxLang release well past 1.7.0, so a runtime new enough to run the framework is
+new enough to have the BIF. Parsing `server.boxlang.version` to re-verify that
+would add a brittle string comparison guarding against a configuration that
+cannot occur in practice. If someone does manage it, they get a clean
+`Unknown function [SSE]` error from the runtime, which is adequate.
 
 Applications that must run on both BoxLang and CFML use the public predicate to
 degrade gracefully:
@@ -217,7 +226,7 @@ so it does not demand `bxai`.
 
 ### 3.5 Configuration
 
-New block in `system/web/config/Settings.cfc`:
+New block in `system/web/config/Settings.cfc`, a sibling of `this.flash`:
 
 ```java
 // Server-Sent Events defaults (BoxLang only)
@@ -229,11 +238,35 @@ this.sse = {
 }
 ```
 
-Note the deliberate difference from `toAi()`, which hardcodes `cors: "*"`
-(`Router.cfc:2116`). **A framework default of `cors: "*"` is wrong** — it makes
-every stream readable cross-origin. The default here is `""`, opt-in per route.
-`toAi()`'s existing behavior is left untouched for backward compatibility, but
-should be flagged for review.
+Parsed by a new `parseSSE()` in `system/web/config/ApplicationLoader.cfc`,
+following the existing `parseFlashScope()` pattern, so applications configure it
+in `config/Coldbox.cfc`:
+
+```java
+function configure(){
+    sse = {
+        cors              : "https://app.example.com",
+        keepAliveInterval : 15000
+    }
+}
+```
+
+### CORS is configuration, never a hardcoded default
+
+`toAi()` currently hardcodes `cors: "*"` in its stream sub-route
+(`Router.cfc:2116`), which makes every AI stream readable from any origin with
+no way to change it. **This spec removes that hardcode.** `toAi()`'s stream route
+reads `getSetting( "sse" ).cors` like every other stream, so a single setting
+governs CORS for all SSE responses, and per-route overrides go through the
+`cors` argument.
+
+The framework default is `""` — no `Access-Control-Allow-Origin` header — so
+cross-origin access is opt-in.
+
+> **Behavior change.** Applications relying on `toAi()`'s implicit `cors: "*"`
+> must now set `sse = { cors : "*" }` in `config/Coldbox.cfc`. This belongs in
+> the 8.3.0 upgrade notes. See open question 1 on whether to soften the
+> transition.
 
 ### 3.6 Interception points
 
@@ -452,7 +485,8 @@ function updates( event, rc, prc ){
 | `system/web/services/RoutingService.cfc` | Add an `sse` branch to `processRoute()`, next to the existing `response` branch |
 | `system/web/services/InterceptorService.cfc` | Append 3 interception points to the ENUM (line 44) |
 | `system/web/config/Settings.cfc` | Add the `this.sse` defaults block |
-| `system/RestHandler.cfc` | Guard `aroundHandler` against marshalling over a live stream (§6) |
+| `system/web/config/ApplicationLoader.cfc` | Add `parseSSE()` to the parser chain, following `parseFlashScope()` |
+| `system/RestHandler.cfc` | Early exit in `aroundHandler` for SSE — skips both marshalling and header flush (§6) |
 | `system/testing/mock/web/MockSSEEmitter.cfc` | **New** — recording emitter for tests |
 | `system/testing/CustomMatchers.cfc` | Add `toHaveSentSSEEvent()` |
 
@@ -467,14 +501,42 @@ which is exactly the desired effect. `toSSE()` routes use both, matching how
 
 ## 6. Interaction with `RestHandler`
 
-This is the one real integration hazard. `RestHandler.aroundHandler`
-(`system/RestHandler.cfc:40`) ends with: *if the action returned nothing, set no
-view, and set no renderData, then call `event.renderData( ... )`.* A streaming
-action satisfies all three conditions, so it would try to marshal a JSON envelope
-onto a response that has already been streamed and closed.
+This is the one real integration hazard, and it is **in scope for this spec**.
 
-`aroundHandler` must therefore add `!event.isSSE()` to that final condition.
-Same for the `x-response-time` header write, which would be a write-after-commit.
+`RestHandler.aroundHandler` (`system/RestHandler.cfc:40`) does two things after
+the action returns that are both invalid once a stream has been committed:
+
+1. **Lines 118-142** — *if the action returned nothing, set no view, and set no
+   render data, then call `event.renderData( ... )`.* A streaming action
+   satisfies all three conditions, so it marshals a JSON envelope onto a response
+   that has already been streamed and closed.
+2. **Lines 145-150** — adds `x-response-time` and flushes
+   `prc.response.getHeaders()` through `event.setHTTPHeader()`. Every one of
+   those is a write-after-commit against a response whose headers went out the
+   moment the stream opened.
+
+Guarding only the render condition, as originally drafted, would have left the
+header writes broken. The correct fix is a single early exit covering both,
+inserted after the response timer is set (line 115) and before the render block:
+
+```java
+// end timer
+arguments.prc.response.setResponseTime( getTickCount() - stime )
+
+// SSE streams have already committed the response — no marshalling, no header
+// writes. Both would be write-after-commit against an open or closed stream.
+if ( arguments.event.isSSE() ) {
+    if ( !isNull( local.actionResults ) ) {
+        return local.actionResults
+    }
+    return
+}
+
+// Did the controllers set a view to be rendered? ...
+```
+
+The debug-mode block at lines 106-112 needs no guard: it only mutates the
+in-memory `Response` object and never touches the wire.
 
 A REST handler streaming is then well-defined:
 
@@ -539,18 +601,59 @@ that loops terminate when a client drops.
 
 ## 8. Open questions
 
-1. **Should `toAi()` be refactored onto this API?** It would delete the
-   hand-rolled `SSE()` call in `Router.cfc:2088-2120` and give AI streams the
-   interception points for free. Behavior-compatible except that `cors: "*"`
-   would become configurable — arguably a fix, technically a behavior change.
-2. **`async = true` and request scope.** BoxLang's async mode runs the callback
-   on a background thread. ColdBox's `RequestContext` lives in `request` scope,
-   so a detached callback may lose it. Recommend documenting `async` as
-   advanced-use and defaulting to `false` until the context-propagation behavior
-   is verified against a real BoxLang web runtime.
-3. **Should `sendView()` exist at all?** It couples streaming to the `Renderer`.
-   Argued yes: HTMX SSE swaps are a major use case and the alternative is every
-   app hand-rolling `getRenderer().view()` plus newline escaping.
-4. **Minimum BoxLang version detection.** `server.boxlang` exists, but this spec
-   does not yet pin how to read the version to enforce `>= 1.7.0`. Needs
-   verification against a live runtime before implementation.
+**Decided since the first draft:** CORS is a config setting, not a hardcoded
+default (§3.5); `RestHandler` gets the early-exit guard (§6); the runtime check
+is `server.keyExists( "boxlang" )` with no version detection (§2).
+
+### Blocking
+
+1. **How hard a break is the `toAi()` CORS change?** Removing the hardcoded
+   `cors: "*"` means existing AI streams stop sending
+   `Access-Control-Allow-Origin` unless the app sets `sse = { cors : "*" }`.
+   Three options: (a) ship it as a documented breaking change in 8.3.0 — the old
+   behavior was arguably a security bug; (b) default `this.sse.cors = "*"` for
+   one minor to preserve behavior, then flip in 9.0; (c) keep a separate
+   `toAi`-specific default. Recommend (a).
+
+2. **Where does the setting live?** This spec puts `this.sse` at the top level of
+   `Settings.cfc`, a sibling of `this.flash`, so apps write `sse = { ... }` in
+   `config/Coldbox.cfc`. The alternative is nesting inside `this.coldbox` so it
+   reads `coldbox.sse`. Flash sets the precedent for top-level; confirm that is
+   the pattern you want.
+
+3. **Should modules override SSE settings?** Modules can already declare
+   `variables.settings` and `parentSettings` in `ModuleConfig`. Should a module
+   be able to declare its own `cors`/`keepAliveInterval` defaults for its own
+   streaming routes, or is one global block sufficient?
+
+### Non-blocking
+
+4. **`async = true` and request scope.** BoxLang's async mode runs the callback
+   on a background thread; ColdBox's `RequestContext` is request-scoped, so a
+   detached callback may lose `rc`/`prc` and `sendView()`. Needs verification on
+   a live BoxLang web runtime. Default stays `false` regardless.
+
+5. **Long-lived streams vs. the tail of the request lifecycle.** A stream can
+   hold the request open for minutes. `Bootstrap` still runs `postProcess` and
+   flash autosave when it finally closes. Flash is a page-transition concept and
+   almost certainly should not fire for a stream — recommend `sse()` disables
+   flash autosave for the request. `postProcess` firing late is probably fine but
+   worth a deliberate decision.
+
+6. **Event caching collision.** If someone puts `cache=true` on a streaming
+   action, `Bootstrap.cfc:243-290` will try to cache rendered content that does
+   not exist. `sse()` should probably clear the cacheable entry outright rather
+   than let it silently cache an empty response.
+
+7. **Should an aborted `preSSEConnection` have a default status?** The example in
+   §4.6 sets 429 itself. If an interceptor returns `true` without setting a
+   status, should the framework default to 403, or send nothing and let the
+   connection close bare?
+
+8. **`sendView()` and layouts.** Assumed layout-less — SSE frames are fragments,
+   not pages. Confirm, or add an explicit `layout` argument.
+
+9. **Naming.** `sse()` / `toSSE()` is explicit but locks the name to one
+   transport. If BoxLang later adds other streaming primitives, `stream()` /
+   `toStream()` would age better. Recommend keeping `sse()` — it matches the BIF
+   and the client-side `EventSource` contract.
