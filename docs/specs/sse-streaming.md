@@ -159,7 +159,7 @@ existing `AsyncManager` inside the callback and emit from the streaming thread.
 6. Announce **`preSSEConnection`** with `{ event, options }`. An interceptor
    returning `true` short-circuits the chain and **aborts the stream** — this is
    the auth/rate-limit hook, and it reuses the existing short-circuit semantics
-   in `InterceptorState.cfc:410-422`. See §3.6 for how a rejection is rendered.
+   in `InterceptorState.cfc:410-422`. See §3.7 for how a rejection is rendered.
 7. Invoke the BIF, wrapping the raw BoxLang emitter in a ColdBox `SSEEmitter`
    before handing it to the user callback.
 8. On any exception inside the callback, announce **`onSSEError`**, log through
@@ -317,7 +317,102 @@ So a stream served from a module's handler inherits that module's SSE
 configuration automatically, and an explicit argument to `event.sse()` still
 wins over both.
 
-### 3.6 Interception points
+### 3.6 Content negotiation — streaming as a format
+
+Both URL shapes are supported. They are not alternatives; they serve different
+situations.
+
+| Shape | How | Use when |
+|---|---|---|
+| **Explicit route** | `route( "/events" ).toSSE( ... )` | The endpoint only ever streams |
+| **Negotiated** | `Accept: text/event-stream` on an existing endpoint | A resource has both a JSON and a streaming representation |
+
+The negotiated form matches how OpenAI, Anthropic, MCP's Streamable HTTP
+transport, Spring and ASP.NET Core all expose streams: one URL, with the client
+declaring what it wants.
+
+#### Wiring
+
+`RoutingService.detectExtension()` (`RoutingService.cfc:706`) already resolves
+`rc.format` two ways — a URL extension, then an `Accept` header reduction. Both
+need a small change:
+
+**1. URL extension.** Add `sse` to `Router.VALID_EXTENSIONS` (`Router.cfc:151`):
+
+```java
+this.VALID_EXTENSIONS = "json,jsont,xml,cfm,cfml,html,htm,rss,pdf,sse"
+```
+
+That alone makes `GET /api/messages.sse` set `rc.format = "sse"`, via the
+existing `isValidExtension()` branch at line 716.
+
+**2. Accept header.** This does **not** come free. The reduction at lines 749-751
+is a substring test:
+
+```java
+.listFilter( function( thisExtension ){
+    return ( thisAccept.findNoCase( thisExtension ) );
+} )
+```
+
+`"text/event-stream".findNoCase( "sse" )` is `0`, so the media type would never
+match its extension. Every currently-valid extension happens to appear literally
+inside its own media type (`application/json` contains `json`), which is why the
+shortcut has worked so far. SSE is the first case where it breaks.
+
+The fix is an explicit alias map consulted before the substring reduce:
+
+```java
+// Router.cfc — media types whose name does not contain the extension string
+variables.mimeExtensionAliases = {
+    "text/event-stream" : "sse"
+}
+```
+
+Keeping this as a general map rather than a special case for SSE means the next
+media type with the same mismatch is a one-line addition.
+
+#### `event.wantsSSE()`
+
+A convenience predicate on `RequestContext`, so handlers do not hand-compare
+strings:
+
+```java
+boolean function wantsSSE(){
+    return getValue( "format", "" ) == "sse"
+}
+```
+
+#### Usage
+
+One route, one action, two representations:
+
+```java
+function index( event, rc, prc ){
+    if ( event.wantsSSE() ) {
+        return event.sse( ( emitter ) => {
+            messageService.subscribe( ( msg ) => emitter.send( msg, "message" ) )
+        } )
+    }
+    return messageService.list()
+}
+```
+
+#### Deliberately *not* changing `toAi()`
+
+`toAi()` keeps its explicit `POST {base}/stream` sub-route. It is a documented,
+shipped contract in 8.1, and clients are written against those URLs. Nothing here
+deprecates it — negotiation is a new capability available to application
+endpoints, not a migration `toAi()` is required to make.
+
+`renderData( formats = "..." )` is also left alone. That path
+(`renderWithFormats()`, `RequestContext.cfc:1974`) assumes every format
+terminates in a buffered `renderData()` call, which a stream cannot do. Adding
+`sse` there would mean a special-cased branch inside a method whose entire
+contract is "marshal a value and return it". The explicit `wantsSSE()` check
+above stays outside that machinery.
+
+### 3.7 Interception points
 
 Appended to the ENUM in `system/web/services/InterceptorService.cfc:44`:
 
@@ -546,10 +641,10 @@ function updates( event, rc, prc ){
 
 | File | Change |
 |---|---|
-| `system/web/context/RequestContext.cfc` | Add `sse()`, `isSSE()`, `isSSESupported()`, private `ensureSSESupport()` and `getSSESetting()` |
+| `system/web/context/RequestContext.cfc` | Add `sse()`, `isSSE()`, `isSSESupported()`, `wantsSSE()`, private `ensureSSESupport()` and `getSSESetting()` |
 | `system/web/context/SSEEmitter.cfc` | **New** — decorator over the BoxLang emitter |
-| `system/web/routing/Router.cfc` | Add `toSSE()`; add `sse` + `sseCallback` to `initRouteDefinition()` (line 1119); replace the hardcoded `cors: "*"` in `toAi()` (line 2116) with the setting |
-| `system/web/services/RoutingService.cfc` | Add an `sse` branch to `processRoute()`, next to the existing `response` branch |
+| `system/web/routing/Router.cfc` | Add `toSSE()`; add `sse` + `sseCallback` to `initRouteDefinition()` (line 1119); add `sse` to `VALID_EXTENSIONS` (line 151); add the `mimeExtensionAliases` map; replace the hardcoded `cors: "*"` in `toAi()` (line 2116) with the setting |
+| `system/web/services/RoutingService.cfc` | Add an `sse` branch to `processRoute()`, next to the existing `response` branch; consult `mimeExtensionAliases` in `detectExtension()` before the substring reduce (line 749) |
 | `system/web/services/InterceptorService.cfc` | Append 3 interception points to the ENUM (line 44) |
 | `system/web/config/Settings.cfc` | Add the `this.sse` defaults block |
 | `system/web/config/ApplicationLoader.cfc` | Add `parseSSE()` to the parser chain, following `parseFlashScope()` |
@@ -702,47 +797,29 @@ that loops terminate when a client drops.
 | 4 | `async` + request scope | **Not exposed.** `async` and `timeout` are dropped from the ColdBox API; streams are always synchronous. (§3.1) |
 | 5 | Flash on long streams | **Disabled** for SSE requests. (§5.2) |
 | 6 | Event caching collision | **Cacheable entry cleared** outright by `sse()`. (§5.1) |
-| 7 | Aborted `preSSEConnection` | **Defaults to 403**, overridable by status, or renderable via `setView()` / `setLayout()`. (§3.6) |
+| 7 | Aborted `preSSEConnection` | **Defaults to 403**, overridable by status, or renderable via `setView()` / `setLayout()`. (§3.7) |
+| 8 | Format negotiation | **Support both shapes.** Explicit `toSSE()` routes *and* `Accept: text/event-stream` negotiation. `toAi()` keeps its explicit `/stream` sub-route unchanged. (§3.6) |
+| 9 | Naming | **Keep `sse()` / `toSSE()`** — matches the BIF and the client-side `EventSource` contract. |
+| 10 | `postProcess` on long streams | **Accepted as-is.** It fires when the stream closes; timing interceptors will see long durations by design. |
 | — | `sendView()` and layouts | Layout-less by default; `layout` argument plus a `sendLayout()` method. (§3.3) |
 | — | Runtime check | `server.keyExists( "boxlang" )`, no version detection. (§2) |
 | — | `RestHandler` | Early exit covering both marshalling and header flush. (§6) |
 
 ### Still open
 
-1. **Should `sse` join the format-negotiation path?** Every real-world SSE REST
-   API — OpenAI, Anthropic, MCP's Streamable HTTP transport, Spring, ASP.NET
-   Core — streams from the **same** URL as the JSON response, with `Accept:
-   text/event-stream` or a `stream: true` body flag selecting the shape. MCP
-   explicitly deprecated its two-endpoint HTTP+SSE design in favor of one
-   endpoint for exactly this reason.
+Nothing blocking. Two items to verify during implementation rather than design:
 
-   `toAi()` currently does the opposite, registering a separate
-   `POST {base}/stream` sub-route. ColdBox already has the machinery to do it the
-   industry-standard way: `RoutingService.detectExtension()` reduces the `Accept`
-   header into `rc.format` against `Router.VALID_EXTENSIONS`, and
-   `RestHandler.aroundHandler:54-56` already calls
-   `prc.response.setFormat( rc.format )`. Adding `sse` to `VALID_EXTENSIONS` and
-   the negotiation path would enable:
+1. **`text/event-stream` must not shadow other Accept values.** The alias map in
+   §3.6 is consulted before the substring reduce in `detectExtension()`. Confirm
+   with a browser's default `Accept` header
+   (`text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8`) that
+   adding `sse` to `VALID_EXTENSIONS` does not change any currently-resolved
+   format. The existing `!match.findNoCase( "htm" )` guard at
+   `RoutingService.cfc:755` should already cover the common case, but it needs a
+   regression test.
 
-   ```java
-   function index( event, rc, prc ){
-       if ( event.getValue( "format", "" ) == "sse" ) {
-           return event.sse( ( emitter ) => { ... } )
-       }
-       return messageService.list()
-   }
-   ```
-
-   One URL, `Accept` decides. Recommend yes. This does not block the rest of the
-   spec — it is additive — but it affects whether `toAi()`'s `/stream` sub-route
-   should eventually be deprecated.
-
-2. **Naming.** `sse()` / `toSSE()` is explicit but locks the name to one
-   transport. If BoxLang later adds other streaming primitives, `stream()` /
-   `toStream()` would age better. Recommend keeping `sse()` — it matches the BIF
-   and the client-side `EventSource` contract.
-
-3. **`postProcess` on long-lived streams.** Flash is handled (§5.2), but
-   `postProcess` still fires only when the stream finally closes, which may be
-   minutes after the request began. Probably correct, but interceptors doing
-   per-request timing will see wildly skewed numbers and should be aware.
+2. **`SSEEmitter` newline escaping.** The SSE wire format requires multi-line
+   payloads to be split across repeated `data:` lines. `sendView()` and
+   `sendLayout()` emit rendered HTML, which is almost always multi-line, so this
+   is the emitter's most load-bearing detail and deserves direct test coverage —
+   including `\r\n` from Windows-authored views.
