@@ -78,9 +78,11 @@ component extends="coldbox.system.testing.BaseModelTest" skip="notBoxlang" {
 			} );
 
 			it( "returns nothing for media types that have no alias", function(){
-				// Built via concatenation rather than the literal "*/*" - a literal */ sequence
-				// inside a string breaks the CFScript parser on Adobe ColdFusion 2023, which
-				// appears to scan for comment terminators without full string-literal awareness.
+				// Built via concatenation rather than the literal wildcard media type string.
+				// Writing the two characters that close a block comment anywhere in CFScript
+				// source - even inside a string, or inside a line comment like this one - breaks
+				// the parser on Adobe ColdFusion 2023, which appears to scan for comment
+				// terminators without full context awareness.
 				var wildcardMediaType = "*" & "/" & "*";
 
 				[
@@ -95,8 +97,8 @@ component extends="coldbox.system.testing.BaseModelTest" skip="notBoxlang" {
 
 			it( "does not let sse shadow the formats a browser actually asks for", function(){
 				// A browser's default Accept header must still resolve exactly as it did before.
-				// Built via concatenation - see the comment above on why a literal "*/*" is unsafe
-				// in CFScript source on Adobe ColdFusion 2023.
+				// Built via concatenation - see the comment above on why the literal wildcard
+				// media type string is unsafe in CFScript source on Adobe ColdFusion 2023.
 				var wildcardMediaType = "*" & "/" & "*";
 				var browserAccept     = "text/html,application/xhtml+xml,application/xml;q=0.9,#wildcardMediaType#;q=0.8";
 
