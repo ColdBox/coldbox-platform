@@ -50,7 +50,11 @@ component extends="coldbox.system.testing.BaseModelTest" skip="notBoxlang" {
 			} );
 
 			it( "keeps every pre-existing extension valid", function(){
-				[
+				// Assigned to a variable rather than calling .each() straight off the array
+				// literal - chaining a member function directly onto a bracket literal breaks
+				// the parser on Adobe ColdFusion 2023 (RouterAITest.cfc's already-working .each()
+				// calls are all on variables, never literals).
+				var preExistingExtensions = [
 					"json",
 					"jsont",
 					"xml",
@@ -60,7 +64,9 @@ component extends="coldbox.system.testing.BaseModelTest" skip="notBoxlang" {
 					"htm",
 					"rss",
 					"pdf"
-				].each( ( ext ) => {
+				];
+
+				preExistingExtensions.each( ( ext ) => {
 					expect( variables.router.isValidExtension( ext ) ).toBeTrue();
 				} );
 			} );
@@ -83,14 +89,15 @@ component extends="coldbox.system.testing.BaseModelTest" skip="notBoxlang" {
 				// source - even inside a string, or inside a line comment like this one - breaks
 				// the parser on Adobe ColdFusion 2023, which appears to scan for comment
 				// terminators without full context awareness.
-				var wildcardMediaType = "*" & "/" & "*";
-
-				[
+				var wildcardMediaType     = "*" & "/" & "*";
+				var mediaTypesWithNoAlias = [
 					"application/json",
 					"text/html",
 					wildcardMediaType,
 					""
-				].each( ( mediaType ) => {
+				];
+
+				mediaTypesWithNoAlias.each( ( mediaType ) => {
 					expect( variables.router.getMimeExtensionAlias( mediaType ) ).toBeEmpty();
 				} );
 			} );
@@ -99,14 +106,13 @@ component extends="coldbox.system.testing.BaseModelTest" skip="notBoxlang" {
 				// A browser's default Accept header must still resolve exactly as it did before.
 				// Built via concatenation - see the comment above on why the literal wildcard
 				// media type string is unsafe in CFScript source on Adobe ColdFusion 2023.
-				var wildcardMediaType = "*" & "/" & "*";
-				var browserAccept     = "text/html,application/xhtml+xml,application/xml;q=0.9,#wildcardMediaType#;q=0.8";
+				var wildcardMediaType    = "*" & "/" & "*";
+				var browserAccept        = "text/html,application/xhtml+xml,application/xml;q=0.9,#wildcardMediaType#;q=0.8";
+				var browserAcceptEntries = browserAccept.listToArray();
 
-				browserAccept
-					.listToArray()
-					.each( ( thisAccept ) => {
-						expect( variables.router.getMimeExtensionAlias( thisAccept ) ).toBeEmpty();
-					} );
+				browserAcceptEntries.each( ( thisAccept ) => {
+					expect( variables.router.getMimeExtensionAlias( thisAccept ) ).toBeEmpty();
+				} );
 			} );
 		} );
 
