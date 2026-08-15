@@ -66,6 +66,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			"postEvent",
 			"postProcess",
 			"preProxyResults",
+			// Server-Sent Events
+			"preSSEConnection",
+			"postSSEConnection",
+			"onSSEError",
 			// Layout-View Events
 			"preLayout",
 			"preRender",

@@ -413,7 +413,9 @@ component serializable="false" accessors="true" {
 			interceptorService.announce( "postProcess" );
 
 			// ****** FLASH AUTO-SAVE *******/
-			if ( cbController.getSetting( "flash" ).autoSave ) {
+			// Streams are skipped: flash is a page transition concept, and a stream can be held
+			// open for minutes, so persisting here would attach values to an unrelated later request.
+			if ( cbController.getSetting( "flash" ).autoSave && !event.isSSE() ) {
 				cbController
 					.getRequestService()
 					.getFlashScope()

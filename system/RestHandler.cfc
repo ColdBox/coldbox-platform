@@ -114,6 +114,15 @@ component extends="EventHandler" {
 		// end timer
 		arguments.prc.response.setResponseTime( getTickCount() - stime );
 
+		// SSE streams have already committed the response. Both the marshalling below and the
+		// header flush further down would be write-after-commit, so bail out entirely.
+		if ( arguments.event.isSSE() ) {
+			if ( !isNull( local.actionResults ) ) {
+				return local.actionResults;
+			}
+			return;
+		}
+
 		// Did the controllers set a view to be rendered? If not use renderdata, else just delegate to view.
 		if (
 			isNull( local.actionResults )

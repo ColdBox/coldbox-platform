@@ -157,6 +157,9 @@ component accessors="true" {
 		/* ::::::::::::::::::::::::::::::::::::::::: Flash Scope Configuration :::::::::::::::::::::::::::::::::::::::::::: */
 		parseFlashScope( oConfig, configStruct );
 
+		/* ::::::::::::::::::::::::::::::::::::::::: Server-Sent Events Configuration :::::::::::::::::::::::::::::::::::::::::::: */
+		parseSSE( oConfig, configStruct );
+
 		/* ::::::::::::::::::::::::::::::::::::::::: Executors Config  :::::::::::::::::::::::::::::::::::::::::::: */
 		parseExecutors( oConfig, configStruct );
 
@@ -716,6 +719,24 @@ component accessors="true" {
 	/**
 	 * Parse Flash Scope
 	 */
+	/**
+	 * Parse the Server-Sent Events settings
+	 */
+	function parseSSE( required oConfig, required config ){
+		var fwSettingsStruct = variables.coldboxSettings;
+
+		// Default Config Structure
+		arguments.config.sse = duplicate( fwSettingsStruct.sse );
+
+		// Check if we have defined the DSL in the application config
+		var sseDSL = arguments.oConfig.getPropertyMixin( "sse", "variables", {} );
+
+		// check if empty or not, if not, then append and override
+		if ( NOT structIsEmpty( sseDSL ) ) {
+			structAppend( arguments.config.sse, sseDSL, true );
+		}
+	}
+
 	function parseFlashScope( required oConfig, required config ){
 		var flashScopeDSL    = {};
 		var fwSettingsStruct = variables.coldboxSettings;

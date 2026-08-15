@@ -138,4 +138,50 @@ component {
 		return true;
 	}
 
+	/**
+	 * Expectation for testing that an SSE stream emitted a frame with the given event name.
+	 * Works against a MockSSEEmitter or any object exposing getSentEvents().
+	 *
+	 * <pre>
+	 * expect( emitter ).toHaveSentSSEEvent( "tick" )
+	 * expect( emitter ).toHaveSentSSEEvent( "tick", 10 )
+	 * </pre>
+	 */
+	function toHaveSentSSEEvent( expectation, args = {} ){
+		// handle both positional and named arguments
+		param args.event = "";
+		if ( structKeyExists( args, 1 ) ) {
+			args.event = args[ 1 ];
+		}
+		param args.count = "";
+		if ( structKeyExists( args, 2 ) ) {
+			args.count = args[ 2 ];
+		}
+		param args.message = "";
+		if ( structKeyExists( args, 3 ) ) {
+			args.message = args[ 3 ];
+		}
+
+		if ( !len( args.event ) ) {
+			expectation.message = "No SSE event name provided.";
+			return false;
+		}
+
+		var sentEvents = expectation.actual.getSentEvents();
+		var matches    = sentEvents.filter( ( frame ) => frame.event == args.event );
+
+		if ( !matches.len() ) {
+			expectation.message = "#args.message#. No SSE frame was sent with event name [#args.event#]. Sent events were [#sentEvents.map( ( frame ) => frame.event ).toList()#].";
+			return false;
+		}
+
+		// Optional exact frame count for that event name
+		if ( len( args.count ) && matches.len() != args.count ) {
+			expectation.message = "#args.message#. Expected [#args.count#] SSE frames named [#args.event#] but received [#matches.len()#].";
+			return false;
+		}
+
+		return true;
+	}
+
 }

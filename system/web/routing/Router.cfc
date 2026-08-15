@@ -148,7 +148,18 @@ component
 		/************************************** CONSTANTS *********************************************/
 
 		// STATIC Valid Extensions
-		variables.VALID_EXTENSIONS = "json,jsont,xml,cfm,cfml,html,htm,rss,pdf";
+		variables.VALID_EXTENSIONS = "json,jsont,xml,cfm,cfml,html,htm,rss,pdf,sse";
+
+		/**
+		 * Media types whose name does not contain their extension string.
+		 *
+		 * Accept header matching works by testing whether the incoming media type contains the
+		 * extension name, which holds for every historical extension: `application/json` contains
+		 * `json`, `text/xml` contains `xml`. It does not hold for Server-Sent Events, since
+		 * `text/event-stream` shares no substring with `sse`, so those types need an explicit
+		 * alias here or they would never resolve.
+		 */
+		variables.MIME_EXTENSION_ALIASES = { "text/event-stream" : "sse" };
 
 		/************************************** ROUTING DEFAULTS: Due to ACF11 Bugs on Properties *********************************************/
 
@@ -229,6 +240,23 @@ component
 	 */
 	boolean function isValidExtension( required extension ){
 		return variables.validExtensions.listFindNoCase( arguments.extension ) > 0;
+	}
+
+	/**
+	 * Resolve a media type to a format extension when the two share no substring.
+	 *
+	 * @mediaType The incoming Accept header media type, e.g. `text/event-stream`
+	 *
+	 * @return The mapped extension, or an empty string when there is no alias
+	 */
+	string function getMimeExtensionAlias( required string mediaType ){
+		var cleaned = arguments.mediaType
+			.listFirst( ";" )
+			.trim()
+			.lCase();
+		return variables.MIME_EXTENSION_ALIASES.keyExists( cleaned ) && isValidExtension(
+			variables.MIME_EXTENSION_ALIASES[ cleaned ]
+		) ? variables.MIME_EXTENSION_ALIASES[ cleaned ] : "";
 	}
 
 	/****************************************************************************************************************************/
@@ -763,7 +791,9 @@ component
 		struct prc                    = {},
 		string viewModule             = "",
 		string layoutModule           = "",
-		struct meta                   = {}
+		struct meta                   = {},
+		boolean sse                   = "false",
+		any sseCallback               = ""
 	){
 		// The route construct we will save
 		var thisRoute = {};
@@ -1146,6 +1176,8 @@ component
 			"redirect"              : "", // The redirection location
 			"response"              : "", // Do we have an inline response closure
 			"responsePlaceholders"  : [], // Pre-parsed {token} list for string responses
+			"sse"                   : false, // Flag indicating this route streams Server-Sent Events
+			"sseCallback"           : "", // The streaming closure for SSE routes
 			"ssl"                   : false, // Are we forcing SSL
 			"statusCode"            : 200, // The response status code
 			"valuePairTranslation"  : true, // If we translate name-value pairs in the URL by convention
@@ -1908,6 +1940,83 @@ component
 	}
 
 	/**
+	 * Terminate the route by streaming a Server-Sent Events response. BoxLang only.
+	 *
+	 * Use this for endpoints that only ever stream. For a resource that has both a JSON and a
+	 * streaming representation, prefer content negotiation: leave the route pointing at a
+	 * handler and branch on `event.wantsSSE()` inside the action.
+	 *
+	 * <pre>
+	 * route( "/events/heartbeat" ).toSSE( ( event, rc, prc, emitter ) => {
+	 *     while( emitter.isOpen() ){
+	 *         emitter.send( { "ts" : now() }, "heartbeat" )
+	 *         sleep( 5000 )
+	 *     }
+	 * } );
+	 * </pre>
+	 *
+	 * @callback A closure/lambda receiving ( event, rc, prc, emitter )
+	 *
+	 * @return Router
+	 *
+	 * @throws InvalidArgumentException If the callback is not a closure or lambda
+	 * @throws SSENotSupportedException If BoxLang is not the active runtime
+	 */
+	function toSSE( required callback ){
+		// Guard at route registration time so misconfigurations surface on startup.
+		// Note this only requires BoxLang, unlike toAi()/toMCP() which also need the bxai module.
+		ensureSSESupport();
+
+		// Arg Check
+		if ( !isClosure( arguments.callback ) && !isCustomFunction( arguments.callback ) ) {
+			throw(
+				type   : "InvalidArgumentException",
+				message: "The 'callback' argument is not of type closure or lambda"
+			);
+		}
+		// process a with closure if not empty
+		if ( !variables.withClosure.isEmpty() ) {
+			processWith( arguments );
+		}
+		// Construct arguments
+		variables.thisRoute.append( { sse : true, sseCallback : arguments.callback }, true );
+		// register the route
+		addRoute( argumentCollection = variables.thisRoute );
+		// reinit
+		variables.thisRoute = initRouteDefinition();
+		return this;
+	}
+
+	/**
+	 * Verifies that BoxLang is the active runtime so Server-Sent Events can stream.
+	 *
+	 * Deliberately narrower than ensureBoxLang(): the `SSE()` BIF is core BoxLang, so streaming
+	 * must not inherit toAi()'s dependency on the bxai module.
+	 *
+	 * @throws SSENotSupportedException If BoxLang is not the active runtime
+	 */
+	private function ensureSSESupport(){
+		if ( !server.keyExists( "boxlang" ) ) {
+			throw(
+				type   : "SSENotSupportedException",
+				message: "Server-Sent Events require BoxLang.",
+				detail : "toSSE() is a BoxLang only feature."
+			);
+		}
+		return this;
+	}
+
+	/**
+	 * The global Server-Sent Events settings, falling back to framework defaults.
+	 *
+	 * Defaulted rather than looked up bare so a router built outside a fully configured
+	 * application - a mocked router in a test, for instance - does not blow up on a missing setting.
+	 */
+	private struct function getSSEDefaults(){
+		return variables.controller.getSetting( "sse", { "keepAliveInterval" : 30000, "retry" : 0, "cors" : "*" } );
+	}
+
+	/**
 	 * Terminate the route to be the entry point for module routing
 	 * <pre>
 	 * route( "/api/v1" ).toModuleRouting( "API" );
@@ -2112,8 +2221,8 @@ component
 								emitter.close();
 							}
 						},
-						keepAliveInterval: 30000,
-						cors             : "*"
+						keepAliveInterval: getSSEDefaults().keepAliveInterval,
+						cors             : getSSEDefaults().cors
 					);
 					return "";
 				}
