@@ -2378,7 +2378,7 @@ component
 
 		// Inline response closure: resolves the server name and delegates to MCPRequestProcessor
 		var mcpResponseClosure = ( event, rc, prc ) => {
-			var resolvedServerName = rc.keyExists( "mcpServer" ) ? rc.mcpServer : serverName
+			var resolvedServerName                              = rc.keyExists( "mcpServer" ) ? rc.mcpServer : serverName
 			return bxModules.bxai.models.mcp.MCPRequestProcessor::processHttp( resolvedServerName );
 		};
 
