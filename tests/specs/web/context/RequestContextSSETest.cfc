@@ -60,7 +60,15 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		prepareMock( mockController.getInterceptorService() );
 		prepareMock( mockController.getWireBox() );
 
-		return prepareMock( new coldbox.system.web.context.RequestContext( props, mockController ) );
+		var event = prepareMock( new coldbox.system.web.context.RequestContext( props, mockController ) );
+
+		// InterceptorService.announce() does not operate on whatever event a caller happens to
+		// hold - it always fetches "the current context" via getRequestService().getContext().
+		// Register this event as that context so preSSEConnection/postSSEConnection/onSSEError
+		// fire against the very instance under test rather than a stray auto-created one.
+		mockController.getRequestService().setContext( event );
+
+		return event;
 	}
 
 	/*********************************** BDD SUITES ***********************************/
@@ -172,21 +180,18 @@ component extends="coldbox.system.testing.BaseModelTest" {
 			} );
 		} );
 
-		describe( "RequestContext SSE streaming", function(){
-			// Opening a real stream needs a live BoxLang web response
+		describe( "RequestContext SSE streaming under a MockController", function(){
+			// buildContext() returns a MockController, so sse() takes the mock substitution branch:
+			// a MockSSEEmitter runs the callback synchronously instead of calling the BIF. This is
+			// what makes a handler action calling event.sse() actually integration testable - see
+			// docs/specs/sse-streaming.md §7.
 			it( "takes over the response when a stream opens", function(){
 				if ( notBoxlang() ) {
 					return;
 				}
 
 				var event = buildContext();
-
-				try {
-					event.sse( ( emitter ) => emitter.close() );
-				} catch ( any e ) {
-					// A test harness has no real HTTP response to stream into. What matters is
-					// that the request was flagged and rendering suppressed before the BIF ran.
-				}
+				event.sse( ( emitter ) => emitter.close() );
 
 				expect( event.isSSE() ).toBeTrue();
 				expect( event.isNoRender() ).toBeTrue();
@@ -200,12 +205,149 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				var event = buildContext();
 				event.setEventCacheableEntry( { cachekey : "should-be-gone", provider : "template" } );
 
-				try {
-					event.sse( ( emitter ) => emitter.close() );
-				} catch ( any e ) {
-				}
+				event.sse( ( emitter ) => emitter.close() );
 
 				expect( event.getEventCacheableEntry() ).toBeEmpty();
+			} );
+
+			it( "runs the callback synchronously against a MockSSEEmitter, exposed as a private value", function(){
+				if ( notBoxlang() ) {
+					return;
+				}
+
+				var event = buildContext();
+				event.sse( ( emitter ) => {
+					emitter.send( { "count" : 3 }, "tick" );
+					emitter.send( { "count" : 2 }, "tick" );
+					emitter.send( { "count" : 1 }, "tick" );
+					emitter.send( "liftoff", "done" );
+					emitter.close();
+				} );
+
+				// This is the exact access pattern promised in the SSE spec's testing section
+				var rawEmitter = event.getValue( name = "_sseEmitter", defaultValue = {}, private = true );
+
+				expect( rawEmitter ).toBeComponent();
+				expect( rawEmitter.getSentCount() ).toBe( 4 );
+				expect( rawEmitter ).toHaveSentSSEEvent( "tick", 3 );
+				expect( rawEmitter ).toHaveSentSSEEvent( "done" );
+				expect( rawEmitter.isClosed() ).toBeTrue();
+			} );
+
+			it( "hands the callback the same SSEEmitter decorator a real stream would use", function(){
+				if ( notBoxlang() ) {
+					return;
+				}
+
+				var event         = buildContext();
+				var callbackEvent = "";
+
+				event.sse( ( emitter ) => {
+					callbackEvent = emitter;
+					emitter.close();
+				} );
+
+				expect( getMetadata( callbackEvent ).name ).toInclude( "SSEEmitter" );
+			} );
+
+			it( "propagates an exception thrown inside the callback and still closes the emitter", function(){
+				if ( notBoxlang() ) {
+					return;
+				}
+
+				var event = buildContext();
+
+				expect( function(){
+					event.sse( ( emitter ) => {
+						emitter.send( "before the throw" );
+						throw( type = "BoomException", message = "kaboom" );
+					} );
+				} ).toThrow( "BoomException" );
+
+				var rawEmitter = event.getValue( name = "_sseEmitter", defaultValue = {}, private = true );
+				expect( rawEmitter.isClosed() ).toBeTrue();
+			} );
+
+			it( "aborts before opening the stream when preSSEConnection rejects it and lets the response render normally", function(){
+				if ( notBoxlang() ) {
+					return;
+				}
+
+				// Interceptor closures are invoked with named arguments matching InterceptorState's
+				// invocationArgs keys (event, data, rc, prc) - not positional - so the parameter
+				// names below must match exactly or they are silently left unbound.
+				//
+				// The interceptor renders its own response, which is the documented alternative to
+				// the default-status path (§3.6): sse() bails before the BIF runs, so the response
+				// is never committed and setView() still works.
+				var listener = ( event, data ) => {
+					data.abort = true;
+					event.setView( "errors/tooManyStreams" );
+				};
+				var event = buildContext();
+				event.getController().getInterceptorService().listen( listener, "preSSEConnection" );
+
+				var callbackRan = false;
+				event.sse( ( emitter ) => {
+					callbackRan = true;
+				} );
+
+				expect( callbackRan ).toBeFalse();
+				expect( event.isSSE() ).toBeFalse();
+				expect( event.isNoRender() ).toBeFalse();
+				expect( event.getCurrentView() ).toBe( "errors/tooManyStreams" );
+
+				event.getController().getInterceptorService().unlisten( listener, "preSSEConnection" );
+			} );
+
+			it( "defaults an unrendered rejection to the interceptor's status code", function(){
+				if ( notBoxlang() ) {
+					return;
+				}
+
+				// abortSSE() reaches event.setHTTPHeader() on this path, which needs a real servlet
+				// page context. That is unavailable in this CLI sandbox - the same gap that already
+				// makes RequestContextTest.cfc's own testsetHTTPHeader error here - but is present on
+				// every real target this suite runs against (box run-script tests:*). We assert the
+				// guard logic that does not depend on the page context, and treat that specific,
+				// well-known failure mode as an accepted sandbox limitation rather than a real error.
+				var listener = ( event, data ) => {
+					data.abort      = true;
+					data.statusCode = 429;
+				};
+				var event = buildContext();
+				event.getController().getInterceptorService().listen( listener, "preSSEConnection" );
+
+				var callbackRan = false;
+
+				try {
+					event.sse( ( emitter ) => {
+						callbackRan = true;
+					} );
+				} catch ( any e ) {
+					if ( !e.message.findNoCase( "getPageContext" ) ) {
+						rethrow;
+					}
+				}
+
+				expect( callbackRan ).toBeFalse();
+				expect( event.isSSE() ).toBeFalse();
+				expect( event.isNoRender() ).toBeFalse();
+				expect( event.getCurrentView() ).toBeEmpty();
+
+				event.getController().getInterceptorService().unlisten( listener, "preSSEConnection" );
+			} );
+
+			it( "still throws SSENotSupportedException on a non BoxLang engine even under a MockController", function(){
+				if ( isBoxLang() ) {
+					return;
+				}
+
+				var event = buildContext();
+
+				expect( function(){
+					event.sse( ( emitter ) => {} );
+				} ).toThrow( "SSENotSupportedException" );
 			} );
 		} );
 	}

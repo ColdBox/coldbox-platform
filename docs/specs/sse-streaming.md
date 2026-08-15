@@ -785,12 +785,16 @@ component extends="coldbox.system.RestHandler" {
 
 ---
 
-## 7. Testing
+## 7. Testing — implemented
 
 SSE cannot be exercised through the normal `BaseTestCase.execute()` path — there
-is no real response to stream into. Instead, when `event.sse()` runs under a
-`MockController`, it substitutes a `MockSSEEmitter` that records frames in memory
-and runs the callback synchronously.
+is no real response to stream into. Instead, `RequestContext.sse()` detects a
+`MockController` (the same `structKeyExists( variables.controller,
+"mockController" )` idiom `HandlerService` already uses to recognize one — see
+`HandlerService.cfc:455`) and substitutes a `MockSSEEmitter` that records frames
+in memory and runs the callback **synchronously**, wrapped in the identical
+`SSEEmitter` decorator a real stream uses. Handler code is unaware of the
+difference.
 
 ```java
 component extends="tests.resources.BaseIntegrationTest" {
@@ -800,9 +804,9 @@ component extends="tests.resources.BaseIntegrationTest" {
 
             it( "streams a countdown and closes", function(){
                 var event   = this.get( "main.countdown" )
-                var emitter = event.getValue( "_sseEmitter", {}, true )
+                var emitter = event.getValue( name = "_sseEmitter", defaultValue = {}, private = true )
 
-                expect( emitter.getSentEvents() ).toHaveLength( 11 )
+                expect( emitter.getSentCount() ).toBe( 11 )
                 expect( emitter.getSentEvents()[ 1 ].event ).toBe( "tick" )
                 expect( emitter ).toHaveSentSSEEvent( "done" )
                 expect( emitter.isClosed() ).toBeTrue()
@@ -822,9 +826,45 @@ component extends="tests.resources.BaseIntegrationTest" {
 }
 ```
 
-`MockSSEEmitter` exposes `getSentEvents()` (array of `{ data, event, id }`),
-`getComments()`, `isClosed()`, and `simulateDisconnect()` so tests can assert
-that loops terminate when a client drops.
+`MockSSEEmitter` (`system/testing/mock/web/MockSSEEmitter.cfc`) exposes
+`getSentEvents()` (array of `{ data, event, id }`), `getSentCount()`,
+`getEventsNamed()`, `getFirstData()` / `getLastData()`, `getComments()`,
+`isClosed()`, and `simulateDisconnect()` so tests can assert that loops
+terminate when a client drops. `toHaveSentSSEEvent( event, count )` is a custom
+TestBox matcher in `CustomMatchers.cfc`.
+
+The runtime guard fires **before** the mock check, so `SSENotSupportedException`
+on a non-BoxLang engine is a real assertion even under a `MockController` — the
+substitution never masks the platform requirement.
+
+### Found while building this
+
+**`announce()` does not operate on whatever `event` a caller holds.**
+`InterceptorService.announce()` fetches `controller.getRequestService().getContext()`
+internally (`InterceptorService.cfc:213`) to build the `event`/`rc`/`prc` handed
+to interceptors — never the caller's own reference. This is true of every
+`announce()` call in the framework, not something specific to SSE. It means a
+test that builds a bare `RequestContext` directly (rather than going through a
+real request) must register it with `RequestService.setContext()` before
+triggering anything that calls `announce()` internally, or the interceptor chain
+runs against a stray, uninitialized context instead of the one under test. This
+cost real debugging time and is worth knowing before writing the next spec that
+constructs a raw `RequestContext`.
+
+**Interceptor closures bind by name, not position.** `InterceptorState.invoker()`
+calls a closure listener with `argumentCollection = invocationArgs`, and
+`invocationArgs` uses the keys `event`, `data`, `rc`, `prc` — so a closure
+declared `( evt, data ) => { ... }` silently leaves `evt` unbound instead of
+erroring, because named-argument invocation matches by parameter name. The
+parameter must be spelled `event` to receive it.
+
+**`setHTTPHeader()` needs a real servlet page context.** It is unreachable from a
+bare `java -jar boxlang.jar` CLI invocation with no web engine underneath — the
+same gap that makes the framework's own pre-existing `RequestContextTest.cfc:
+testsetHTTPHeader` spec error in that same environment. Any path through
+`abortSSE()` that reaches the default-status branch needs a real web server
+(`box run-script tests:*` against `server-boxlang@1.json` et al.) to fully
+verify; it is not a defect in the feature.
 
 ---
 

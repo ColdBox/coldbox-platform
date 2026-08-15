@@ -1641,17 +1641,30 @@ component serializable="false" accessors="true" {
 		var userCallback = arguments.callback;
 
 		try {
-			// Delegated rather than called inline: an unqualified SSE() here would resolve back to
-			// this very method, whose signature matches the BIF's named arguments, and recurse.
-			new coldbox.system.web.context.SSEStreamer().stream(
-				callback          = ( emitter ) => {
-					oEmitter = new coldbox.system.web.context.SSEEmitter( emitter, variables.controller );
-					userCallback( oEmitter );
-				},
-				keepAliveInterval = options.keepAliveInterval,
-				retry             = options.retry,
-				cors              = options.cors
-			);
+			if ( isMockedRequest() ) {
+				// Under a MockController there is no live HTTP response to stream into, so we swap
+				// in a MockSSEEmitter and run the callback synchronously. It is wrapped in the same
+				// SSEEmitter decorator a real stream uses, so handler code is identical either way.
+				// The raw mock is stashed separately so specs can assert on what was actually sent -
+				// see MockSSEEmitter and the `_sseEmitter` private value.
+				var rawMockEmitter = new coldbox.system.testing.mock.web.MockSSEEmitter();
+				setPrivateValue( name = "_sseEmitter", value = rawMockEmitter );
+
+				oEmitter = new coldbox.system.web.context.SSEEmitter( rawMockEmitter, variables.controller );
+				userCallback( oEmitter );
+			} else {
+				// Delegated rather than called inline: an unqualified SSE() here would resolve back
+				// to this very method, whose signature matches the BIF's named arguments, and recurse.
+				new coldbox.system.web.context.SSEStreamer().stream(
+					callback          = ( emitter ) => {
+						oEmitter = new coldbox.system.web.context.SSEEmitter( emitter, variables.controller );
+						userCallback( oEmitter );
+					},
+					keepAliveInterval = options.keepAliveInterval,
+					retry             = options.retry,
+					cors              = options.cors
+				);
+			}
 		} catch ( any e ) {
 			variables.controller
 				.getInterceptorService()
@@ -1812,6 +1825,17 @@ component serializable="false" accessors="true" {
 			);
 		}
 		return this;
+	}
+
+	/**
+	 * Is this request running under a MockController?
+	 *
+	 * There is no live HTTP response to stream into under test, so `sse()` uses this to decide
+	 * whether to open a real stream or substitute a MockSSEEmitter. Same detection idiom as
+	 * `HandlerService` uses to recognize a mock controller.
+	 */
+	private boolean function isMockedRequest(){
+		return structKeyExists( variables.controller, "mockController" );
 	}
 
 	/**
