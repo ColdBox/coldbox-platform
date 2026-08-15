@@ -156,6 +156,61 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				} );
 			} );
 
+			story( "I want every registered route to carry the full route definition shape", function(){
+				given( "an ordinary route with no AI/MCP/SSE modifiers", function(){
+					then( "it still carries defaulted ai, aiRunnable, mcp and mcpServer keys", function(){
+						router.route( "/luis", "main.index" );
+						var thisRoute = router.getRoutes()[ 1 ];
+
+						expect( thisRoute ).toHaveKey( "ai" );
+						expect( thisRoute.ai ).toBeFalse();
+						expect( thisRoute ).toHaveKey( "aiRunnable" );
+						expect( thisRoute.aiRunnable ).toBe( "" );
+						expect( thisRoute ).toHaveKey( "mcp" );
+						expect( thisRoute.mcp ).toBeFalse();
+						expect( thisRoute ).toHaveKey( "mcpServer" );
+						expect( thisRoute.mcpServer ).toBe( "" );
+					} );
+				} );
+			} );
+
+			story( "I want addRoute() and initRouteDefinition() to never drift apart", function(){
+				given( "the canonical route definition shape and addRoute()'s declared parameters", function(){
+					then( "every settable key in the shape has a matching addRoute() parameter", function(){
+						// Keys that are computed internally during registration rather than accepted as
+						// caller input - these are legitimately absent from addRoute()'s signature.
+						var computedOnlyKeys = [ "responsePlaceholders" ];
+
+						var definitionKeys = router.getRouteDefinitionKeys();
+						var routerMetadata = getMetadata( router );
+						var addRouteParams = [];
+
+						// Plain for-in loops rather than .filter()/.map() member calls - the array
+						// nested inside a function's metadata (fn.parameters) isn't guaranteed to
+						// support CF array member functions on every engine (observed missing on
+						// Adobe ColdFusion).
+						for ( var fn in routerMetadata.functions ) {
+							if ( fn.name == "addRoute" ) {
+								for ( var param in fn.parameters ) {
+									addRouteParams.append( param.name );
+								}
+								break;
+							}
+						}
+
+						for ( var key in definitionKeys ) {
+							if ( computedOnlyKeys.findNoCase( key ) ) {
+								continue;
+							}
+							expect( addRouteParams ).toInclude(
+								key,
+								"initRouteDefinition() key '#key#' has no matching addRoute() parameter - it will be silently absent (not defaulted) from any route that doesn't explicitly pass it"
+							);
+						}
+					} );
+				} );
+			} );
+
 			story( "I want to register fluent routes with no modifiers or terminators", function(){
 				given( "no inline target", function(){
 					then( "it should store the route pointer", function(){

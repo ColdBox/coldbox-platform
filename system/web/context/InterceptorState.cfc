@@ -120,7 +120,8 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 	}
 
 	/**
-	 * Process this state's interceptors. If you use the asynchronous facilities, you will get a thread structure report as a result
+	 * Process this state's interceptors. If you use the asynchronous facilities, you will get a thread structure report as a result.
+	 * On the synchronous path (the default), returns true if an interceptor short-circuited the chain by returning true; false otherwise.
 	 *
 	 * @event            The event context object.
 	 * @data             A data structure used to pass intercepted information.
@@ -151,7 +152,7 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 		} else if ( arguments.asyncAll AND !variables.utility.inThread() ) {
 			return processAsyncAll( argumentCollection = arguments )
 		} else {
-			processSync(
+			return processSync(
 				event  = arguments.event,
 				data   = arguments.data,
 				buffer = arguments.buffer
@@ -345,8 +346,10 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 	 * @event  The event context object.
 	 * @data   A data structure used to pass intercepted information.
 	 * @buffer hint="The request buffer object that can be used to produce output from interceptor chains
+	 *
+	 * @return True if an interceptor short-circuited the chain by returning true; false otherwise
 	 */
-	function processSync( required event, required data, required buffer ){
+	boolean function processSync( required event, required data, required buffer ){
 		var interceptorChain = variables.interceptorChain
 		var interceptorCount = interceptorChain.len()
 		var log              = getLogger()
@@ -362,11 +365,12 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 			if ( canDebug ) {
 				log.debug( "Finished '#state#' execution chain" )
 			}
-			return
+			return false
 		}
 
-		var currentEvent   = ""
-		var invocationArgs = {
+		var currentEvent      = ""
+		var wasShortCircuited = false
+		var invocationArgs    = {
 			"event"         : arguments.event,
 			"data"          : arguments.data,
 			"interceptData" : arguments.data, // Remove by ColdBox 7 DEPRECATED
@@ -418,6 +422,7 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 					log                  = log
 				)
 			) {
+				wasShortCircuited = true
 				break;
 			}
 		}
@@ -426,6 +431,8 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 		if ( canDebug ) {
 			log.debug( "Finished '#state#' execution chain" )
 		}
+
+		return wasShortCircuited
 	}
 
 	/**
@@ -589,7 +596,7 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 
 		// Closure or object?
 		if ( arguments.interceptorIsClosure ) {
-			arguments.interceptor( argumentCollection = arguments.invocationArgs )
+			var results = arguments.interceptor( argumentCollection = arguments.invocationArgs )
 		} else {
 			var results = invoke(
 				arguments.interceptor,

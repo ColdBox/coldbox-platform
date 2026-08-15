@@ -793,7 +793,11 @@ component
 		string layoutModule           = "",
 		struct meta                   = {},
 		boolean sse                   = "false",
-		any sseCallback               = ""
+		any sseCallback               = "",
+		boolean ai                    = "false",
+		any aiRunnable                = "",
+		boolean mcp                   = "false",
+		string mcpServer              = ""
 	){
 		// The route construct we will save
 		var thisRoute = {};
@@ -1151,7 +1155,15 @@ component
 		if ( !variables.onGroup ) {
 			variables.withClosure = {};
 		}
-		// Return a new route definition
+		return routeDefinitionShape();
+	}
+
+	/**
+	 * The canonical struct shape of a registered route. Side-effect free - used both to seed a
+	 * new route definition (initRouteDefinition()) and for pure introspection
+	 * (getRouteDefinitionKeys()), which must not reset any in-flight fluent registration state.
+	 */
+	private struct function routeDefinitionShape(){
 		return {
 			"action"                : "", // The action to execute
 			"append"                : true, // Was this route appended or pre/prended
@@ -1192,6 +1204,18 @@ component
 			"mcp"                   : false, // Flag indicating this is an MCP server route
 			"mcpServer"             : "" // The MCP server name to expose
 		};
+	}
+
+	/**
+	 * Get the full set of keys that make up a registered route's canonical struct shape.
+	 *
+	 * Useful for route table introspection/tooling, and used to guard against addRoute()'s
+	 * parameters drifting out of sync with this definition - a parameter missing here means
+	 * that key is silently absent (not defaulted) from any route registered without explicitly
+	 * passing it.
+	 */
+	array function getRouteDefinitionKeys(){
+		return routeDefinitionShape().keyArray();
 	}
 
 	/**

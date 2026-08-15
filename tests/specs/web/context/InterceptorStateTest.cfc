@@ -115,6 +115,171 @@
 		this.state.unregister( "nothing baby" );
 	}
 
+	function testProcessReturnsFalseWhenNoInterceptorShortCircuits(){
+		mockBuffer = createStub();
+		var result = this.state.process(
+			event  = this.event,
+			data   = structNew(),
+			buffer = mockBuffer
+		);
+
+		assertFalse( result );
+	}
+
+	function testProcessReturnsFalseWhenChainIsEmpty(){
+		this.state.unregister( this.key );
+		mockBuffer = createStub();
+		var result = this.state.process(
+			event  = this.event,
+			data   = structNew(),
+			buffer = mockBuffer
+		);
+
+		assertFalse( result );
+	}
+
+	function testProcessReturnsTrueWhenAnObjectInterceptorShortCircuits(){
+		this.state.unregister( this.key );
+		var shortCircuitInterceptor = createMock( "coldbox.tests.resources.MockInterceptor" )
+			.$( "unitTest" )
+			.$results( true );
+		this.state.register(
+			this.key,
+			shortCircuitInterceptor,
+			{
+				async         : false,
+				asyncPriority : "normal",
+				eventPattern  : ""
+			}
+		);
+
+		mockBuffer = createStub();
+		var result = this.state.process(
+			event  = this.event,
+			data   = structNew(),
+			buffer = mockBuffer
+		);
+
+		assertTrue( result );
+	}
+
+	function testProcessReturnsTrueWhenAClosureInterceptorShortCircuits(){
+		this.state.unregister( this.key );
+		var shortCircuitClosure = function( event, data ){
+			return true;
+		};
+		this.state.register(
+			this.key,
+			shortCircuitClosure,
+			{
+				async         : false,
+				asyncPriority : "normal",
+				eventPattern  : ""
+			}
+		);
+
+		mockBuffer = createStub();
+		var result = this.state.process(
+			event  = this.event,
+			data   = structNew(),
+			buffer = mockBuffer
+		);
+
+		assertTrue( result );
+	}
+
+	function testProcessStopsRemainingInterceptorsOnceShortCircuited(){
+		this.state.unregister( this.key );
+
+		var laterInterceptorRan = false;
+		var shortCircuitClosure = function( event, data ){
+			return true;
+		};
+		var laterClosure = function( event, data ){
+			laterInterceptorRan = true;
+		};
+
+		this.state.register(
+			this.key,
+			shortCircuitClosure,
+			{
+				async         : false,
+				asyncPriority : "normal",
+				eventPattern  : ""
+			}
+		);
+		this.state.register(
+			"cbox_interceptor_later",
+			laterClosure,
+			{
+				async         : false,
+				asyncPriority : "normal",
+				eventPattern  : ""
+			}
+		);
+
+		mockBuffer = createStub();
+		this.state.process(
+			event  = this.event,
+			data   = structNew(),
+			buffer = mockBuffer
+		);
+
+		assertFalse( laterInterceptorRan );
+	}
+
+	function testInvokerCapturesAClosureInterceptorsReturnValue(){
+		makepublic( this.state, "invoker" );
+		mockEvent  = getMockRequestContext().$( "getCollection", {} ).$( "getPrivateCollection", {} );
+		mockBuffer = createStub();
+
+		var result = this.state.invoker(
+			interceptor = function( event, data, buffer, rc, prc ){
+				return true;
+			},
+			interceptorKey = "closureShortCircuit",
+			invocationArgs = {
+				event         : mockEvent,
+				data          : {},
+				interceptData : {},
+				buffer        : mockBuffer,
+				rc            : {},
+				prc           : {}
+			},
+			canDebug = false,
+			state    = this.state.getState(),
+			log      = mockLogger
+		);
+
+		assertTrue( result );
+	}
+
+	function testInvokerReturnsFalseWhenAClosureInterceptorReturnsNothing(){
+		makepublic( this.state, "invoker" );
+		mockEvent  = getMockRequestContext().$( "getCollection", {} ).$( "getPrivateCollection", {} );
+		mockBuffer = createStub();
+
+		var result = this.state.invoker(
+			interceptor = function( event, data, buffer, rc, prc ){
+				// intentionally does not return anything
+			},
+			interceptorKey = "closureNoReturn",
+			invocationArgs = {
+				event         : mockEvent,
+				data          : {},
+				interceptData : {},
+				buffer        : mockBuffer,
+				rc            : {},
+				prc           : {}
+			},
+			canDebug = false,
+			state    = this.state.getState(),
+			log      = mockLogger
+		);
+
+		assertFalse( result );
+	}
+
 	function testInvoker(){
 		// debug( this.state.getState() );
 

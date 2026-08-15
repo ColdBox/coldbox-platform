@@ -115,6 +115,56 @@
 		assertFalse( called );
 	}
 
+	function testAnnounceReturnsTrueWhenAnInterceptorShortCircuits(){
+		iService.listen( function( event, data ){
+			return true;
+		}, "onCall" );
+
+		var result = iService.announce( "onCall" );
+
+		assertTrue( result );
+	}
+
+	function testAnnounceReturnsFalseWhenNoInterceptorShortCircuits(){
+		var ran = false;
+		iService.listen( function( event, data ){
+			ran = true;
+			return false;
+		}, "onCall" );
+
+		var result = iService.announce( "onCall" );
+
+		assertTrue( ran );
+		assertFalse( result );
+	}
+
+	function testAnnounceReturnsFalseWhenTheRegisteredStateHasNoInterceptors(){
+		// listen()/unlisten() creates the state container but leaves it with no interceptors
+		var listener = function(){
+		};
+		iService.listen( listener, "onEmptyState" );
+		iService.unlisten( listener, "onEmptyState" );
+
+		var result = iService.announce( "onEmptyState" );
+
+		assertFalse( result );
+	}
+
+	function testAnnounceStopsLaterInterceptorsOnceOneShortCircuits(){
+		var laterInterceptorRan = false;
+
+		iService.listen( function( event, data ){
+			return true;
+		}, "onCall" );
+		iService.listen( function( event, data ){
+			laterInterceptorRan = true;
+		}, "onCall" );
+
+		iService.announce( "onCall" );
+
+		assertFalse( laterInterceptorRan );
+	}
+
 	function testAnnounceFlushesBufferedInterceptorOutput(){
 		iService.listen( function( event, data, buffer ){
 			arguments.buffer.append( "buffered output" )
