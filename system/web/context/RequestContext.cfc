@@ -1622,11 +1622,7 @@ component serializable="false" accessors="true" {
 		// Give interceptors a chance to reject the connection. Note the abort travels in the
 		// data struct: a `true` return breaks the interceptor chain but is not reported back
 		// to the caller on the synchronous path.
-		var interceptData = {
-			"options"    : options,
-			"abort"      : false,
-			"statusCode" : 403
-		};
+		var interceptData = { "options" : options, "abort" : false, "statusCode" : 403 };
 		variables.controller.getInterceptorService().announce( "preSSEConnection", interceptData );
 
 		if ( interceptData.abort ) {
@@ -1656,7 +1652,7 @@ component serializable="false" accessors="true" {
 				// Delegated rather than called inline: an unqualified SSE() here would resolve back
 				// to this very method, whose signature matches the BIF's named arguments, and recurse.
 				new coldbox.system.web.context.SSEStreamer().stream(
-					callback          = ( emitter ) => {
+					callback = ( emitter ) => {
 						oEmitter = new coldbox.system.web.context.SSEEmitter( emitter, variables.controller );
 						userCallback( oEmitter );
 					},
@@ -1802,9 +1798,7 @@ component serializable="false" accessors="true" {
 
 		var globalSettings = variables.controller.getSetting( "sse", defaults );
 
-		return globalSettings.keyExists( arguments.key ) ? globalSettings[ arguments.key ] : defaults[
-			arguments.key
-		];
+		return globalSettings.keyExists( arguments.key ) ? globalSettings[ arguments.key ] : defaults[ arguments.key ];
 	}
 
 	/**

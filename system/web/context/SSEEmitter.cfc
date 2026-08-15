@@ -83,7 +83,11 @@ component accessors="true" {
 	 *
 	 * @return SSEEmitter
 	 */
-	function send( required any data, string event = "", string id = "" ){
+	function send(
+		required any data,
+		string event = "",
+		string id    = ""
+	){
 		if ( isClosed() ) {
 			return this
 		}
@@ -149,8 +153,7 @@ component accessors="true" {
 	 *
 	 * @view   The view to render
 	 * @args   Arguments to pass into the view, available as `args`
-	 * @layout Optional layout to wrap the view in. Layout-less by default - SSE frames
-	 *         are usually fragments, not pages.
+	 * @layout Optional layout to wrap the view in. Layout-less by default - SSE frames are usually fragments, not pages.
 	 * @module The module to render the view from explicitly
 	 * @event  The SSE event name
 	 * @id     The SSE event id

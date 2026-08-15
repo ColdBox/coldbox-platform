@@ -32,33 +32,31 @@ component extends="coldbox.system.testing.BaseModelTest" skip="notBoxlang" {
 			modules           : {}
 		};
 
-		var settings = {
-			"keepAliveInterval" : 30000,
-			"retry"             : 0,
-			"cors"              : "*"
-		};
+		var settings = { "keepAliveInterval" : 30000, "retry" : 0, "cors" : "*" };
 		settings.append( arguments.sseSettings, true );
 
 		var theModuleSettings = arguments.moduleSettings;
 
 		// A callback rather than $args matching: getSetting() is called with a default value that
 		// varies per call site, so exact argument matching is too brittle here.
-		var mockController = getMockController().$( "getSetting" ).$callback( function(){
-			var name = arguments[ 1 ];
+		var mockController = getMockController()
+			.$( "getSetting" )
+			.$callback( function(){
+				var name = arguments[ 1 ];
 
-			switch ( name ) {
-				case "modules":
-					return props.modules;
-				case "AppMapping":
-					return "";
-				case "sse":
-					return settings;
-				case "moduleSettings":
-					return theModuleSettings;
-			}
+				switch ( name ) {
+					case "modules":
+						return props.modules;
+					case "AppMapping":
+						return "";
+					case "sse":
+						return settings;
+					case "moduleSettings":
+						return theModuleSettings;
+				}
 
-			return structKeyExists( arguments, 2 ) ? arguments[ 2 ] : "";
-		} );
+				return structKeyExists( arguments, 2 ) ? arguments[ 2 ] : "";
+			} );
 
 		prepareMock( mockController.getInterceptorService() );
 		prepareMock( mockController.getWireBox() );
@@ -125,7 +123,7 @@ component extends="coldbox.system.testing.BaseModelTest" skip="notBoxlang" {
 
 			describe( "setting resolution", function(){
 				it( "falls back to the global block when no module is active", function(){
-					var event = buildContext( { "cors" : "https://global.example.com" } );
+					var event   = buildContext( { "cors" : "https://global.example.com" } );
 					var options = event.getSSEOptions();
 
 					expect( options.cors ).toBe( "https://global.example.com" );
@@ -194,7 +192,11 @@ component extends="coldbox.system.testing.BaseModelTest" skip="notBoxlang" {
 				} );
 
 				// This is the exact access pattern promised in the SSE spec's testing section
-				var rawEmitter = event.getValue( name = "_sseEmitter", defaultValue = {}, private = true );
+				var rawEmitter = event.getValue(
+					name         = "_sseEmitter",
+					defaultValue = {},
+					private      = true
+				);
 
 				expect( rawEmitter ).toBeComponent();
 				expect( rawEmitter.getSentCount() ).toBe( 4 );
@@ -225,7 +227,11 @@ component extends="coldbox.system.testing.BaseModelTest" skip="notBoxlang" {
 					} );
 				} ).toThrow( "BoomException" );
 
-				var rawEmitter = event.getValue( name = "_sseEmitter", defaultValue = {}, private = true );
+				var rawEmitter = event.getValue(
+					name         = "_sseEmitter",
+					defaultValue = {},
+					private      = true
+				);
 				expect( rawEmitter.isClosed() ).toBeTrue();
 			} );
 
@@ -242,7 +248,10 @@ component extends="coldbox.system.testing.BaseModelTest" skip="notBoxlang" {
 					event.setView( "errors/tooManyStreams" );
 				};
 				var event = buildContext();
-				event.getController().getInterceptorService().listen( listener, "preSSEConnection" );
+				event
+					.getController()
+					.getInterceptorService()
+					.listen( listener, "preSSEConnection" );
 
 				var callbackRan = false;
 				event.sse( ( emitter ) => {
@@ -254,7 +263,10 @@ component extends="coldbox.system.testing.BaseModelTest" skip="notBoxlang" {
 				expect( event.isNoRender() ).toBeFalse();
 				expect( event.getCurrentView() ).toBe( "errors/tooManyStreams" );
 
-				event.getController().getInterceptorService().unlisten( listener, "preSSEConnection" );
+				event
+					.getController()
+					.getInterceptorService()
+					.unlisten( listener, "preSSEConnection" );
 			} );
 
 			it( "defaults an unrendered rejection to the interceptor's status code", function(){
@@ -269,7 +281,10 @@ component extends="coldbox.system.testing.BaseModelTest" skip="notBoxlang" {
 					data.statusCode = 429;
 				};
 				var event = buildContext();
-				event.getController().getInterceptorService().listen( listener, "preSSEConnection" );
+				event
+					.getController()
+					.getInterceptorService()
+					.listen( listener, "preSSEConnection" );
 
 				var callbackRan = false;
 
@@ -288,7 +303,10 @@ component extends="coldbox.system.testing.BaseModelTest" skip="notBoxlang" {
 				expect( event.isNoRender() ).toBeFalse();
 				expect( event.getCurrentView() ).toBeEmpty();
 
-				event.getController().getInterceptorService().unlisten( listener, "preSSEConnection" );
+				event
+					.getController()
+					.getInterceptorService()
+					.unlisten( listener, "preSSEConnection" );
 			} );
 		} );
 	}

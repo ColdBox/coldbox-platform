@@ -250,7 +250,10 @@ component
 	 * @return The mapped extension, or an empty string when there is no alias
 	 */
 	string function getMimeExtensionAlias( required string mediaType ){
-		var cleaned = arguments.mediaType.listFirst( ";" ).trim().lCase();
+		var cleaned = arguments.mediaType
+			.listFirst( ";" )
+			.trim()
+			.lCase();
 		return variables.MIME_EXTENSION_ALIASES.keyExists( cleaned ) && isValidExtension(
 			variables.MIME_EXTENSION_ALIASES[ cleaned ]
 		) ? variables.MIME_EXTENSION_ALIASES[ cleaned ] : "";
@@ -1956,8 +1959,8 @@ component
 	 *
 	 * @return Router
 	 *
-	 * @throws InvalidArgumentException  If the callback is not a closure or lambda
-	 * @throws SSENotSupportedException  If BoxLang is not the active runtime
+	 * @throws InvalidArgumentException If the callback is not a closure or lambda
+	 * @throws SSENotSupportedException If BoxLang is not the active runtime
 	 */
 	function toSSE( required callback ){
 		// Guard at route registration time so misconfigurations surface on startup.
@@ -1976,13 +1979,7 @@ component
 			processWith( arguments );
 		}
 		// Construct arguments
-		variables.thisRoute.append(
-			{
-				sse         : true,
-				sseCallback : arguments.callback
-			},
-			true
-		);
+		variables.thisRoute.append( { sse : true, sseCallback : arguments.callback }, true );
 		// register the route
 		addRoute( argumentCollection = variables.thisRoute );
 		// reinit
@@ -2016,14 +2013,7 @@ component
 	 * application - a mocked router in a test, for instance - does not blow up on a missing setting.
 	 */
 	private struct function getSSEDefaults(){
-		return variables.controller.getSetting(
-			"sse",
-			{
-				"keepAliveInterval" : 30000,
-				"retry"             : 0,
-				"cors"              : "*"
-			}
-		);
+		return variables.controller.getSetting( "sse", { "keepAliveInterval" : 30000, "retry" : 0, "cors" : "*" } );
 	}
 
 	/**
@@ -2388,7 +2378,7 @@ component
 
 		// Inline response closure: resolves the server name and delegates to MCPRequestProcessor
 		var mcpResponseClosure = ( event, rc, prc ) => {
-			var resolvedServerName                              = rc.keyExists( "mcpServer" ) ? rc.mcpServer : serverName
+			var resolvedServerName = rc.keyExists( "mcpServer" ) ? rc.mcpServer : serverName
 			return bxModules.bxai.models.mcp.MCPRequestProcessor::processHttp( resolvedServerName );
 		};
 

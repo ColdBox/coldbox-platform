@@ -52,7 +52,11 @@ component accessors="true" {
 	 * @event The SSE event name
 	 * @id    The SSE event id
 	 */
-	function send( required any data, string event = "", string id = "" ){
+	function send(
+		required any data,
+		string event = "",
+		string id    = ""
+	){
 		variables.sentEvents.append( {
 			"data"  : arguments.data,
 			"event" : arguments.event,

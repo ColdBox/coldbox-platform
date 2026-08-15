@@ -50,7 +50,17 @@ component extends="coldbox.system.testing.BaseModelTest" skip="notBoxlang" {
 			} );
 
 			it( "keeps every pre-existing extension valid", function(){
-				[ "json", "jsont", "xml", "cfm", "cfml", "html", "htm", "rss", "pdf" ].each( ( ext ) => {
+				[
+					"json",
+					"jsont",
+					"xml",
+					"cfm",
+					"cfml",
+					"html",
+					"htm",
+					"rss",
+					"pdf"
+				].each( ( ext ) => {
 					expect( variables.router.isValidExtension( ext ) ).toBeTrue();
 				} );
 			} );
@@ -68,14 +78,27 @@ component extends="coldbox.system.testing.BaseModelTest" skip="notBoxlang" {
 			} );
 
 			it( "returns nothing for media types that have no alias", function(){
-				[ "application/json", "text/html", "*/*", "" ].each( ( mediaType ) => {
+				// Built via concatenation rather than the literal "*/*" - a literal */ sequence
+				// inside a string breaks the CFScript parser on Adobe ColdFusion 2023, which
+				// appears to scan for comment terminators without full string-literal awareness.
+				var wildcardMediaType = "*" & "/" & "*";
+
+				[
+					"application/json",
+					"text/html",
+					wildcardMediaType,
+					""
+				].each( ( mediaType ) => {
 					expect( variables.router.getMimeExtensionAlias( mediaType ) ).toBeEmpty();
 				} );
 			} );
 
 			it( "does not let sse shadow the formats a browser actually asks for", function(){
-				// A browser's default Accept header must still resolve exactly as it did before
-				var browserAccept = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
+				// A browser's default Accept header must still resolve exactly as it did before.
+				// Built via concatenation - see the comment above on why a literal "*/*" is unsafe
+				// in CFScript source on Adobe ColdFusion 2023.
+				var wildcardMediaType = "*" & "/" & "*";
+				var browserAccept     = "text/html,application/xhtml+xml,application/xml;q=0.9,#wildcardMediaType#;q=0.8";
 
 				browserAccept
 					.listToArray()
@@ -91,7 +114,10 @@ component extends="coldbox.system.testing.BaseModelTest" skip="notBoxlang" {
 			} );
 
 			it( "registers a streaming route", function(){
-				variables.router.route( "/events/heartbeat" ).toSSE( ( event, rc, prc, emitter ) => {} );
+				variables.router
+					.route( "/events/heartbeat" )
+					.toSSE( ( event, rc, prc, emitter ) => {
+					} );
 
 				var routes = variables.router.getRoutes();
 				expect( routes ).toHaveLength( 1 );
@@ -111,7 +137,8 @@ component extends="coldbox.system.testing.BaseModelTest" skip="notBoxlang" {
 					.route( "/events/secure" )
 					.withSSL()
 					.header( "X-Stream", "yes" )
-					.toSSE( ( event, rc, prc, emitter ) => {} );
+					.toSSE( ( event, rc, prc, emitter ) => {
+					} );
 
 				var route = variables.router.getRoutes()[ 1 ];
 				expect( route.ssl ).toBeTrue();
@@ -119,7 +146,10 @@ component extends="coldbox.system.testing.BaseModelTest" skip="notBoxlang" {
 			} );
 
 			it( "resets the fluent route state so the next route starts clean", function(){
-				variables.router.route( "/events" ).toSSE( ( event, rc, prc, emitter ) => {} );
+				variables.router
+					.route( "/events" )
+					.toSSE( ( event, rc, prc, emitter ) => {
+					} );
 				variables.router.route( "/plain", "main.index" );
 
 				var routes = variables.router.getRoutes();

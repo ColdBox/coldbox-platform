@@ -91,7 +91,10 @@ component extends="coldbox.system.testing.BaseModelTest" skip="notBoxlang" {
 				} );
 
 				it( "counts every frame it sends", function(){
-					variables.emitter.send( "a" ).send( "b" ).send( "c" );
+					variables.emitter
+						.send( "a" )
+						.send( "b" )
+						.send( "c" );
 
 					expect( variables.emitter.getSentCount() ).toBe( 3 );
 				} );
@@ -252,13 +255,17 @@ component extends="coldbox.system.testing.BaseModelTest" skip="notBoxlang" {
 
 			describe( "sendData()", function(){
 				it( "marshalls through the DataMarshaller", function(){
-					var mockMarshaller = createStub().$( "marshallData", '{"ok":true}' );
+					var mockMarshaller = createStub().$( "marshallData", "{""ok"":true}" );
 					variables.mockController.$( "getDataMarshaller", mockMarshaller );
 
-					variables.emitter.sendData( data = { ok : true }, type = "json", event = "payload" );
+					variables.emitter.sendData(
+						data  = { ok : true },
+						type  = "json",
+						event = "payload"
+					);
 
 					expect( variables.mockEmitter ).toHaveSentSSEEvent( "payload" );
-					expect( variables.mockEmitter.getFirstData() ).toBe( '{"ok":true}' );
+					expect( variables.mockEmitter.getFirstData() ).toBe( "{""ok"":true}" );
 				} );
 			} );
 
