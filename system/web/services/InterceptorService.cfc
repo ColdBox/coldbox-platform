@@ -184,6 +184,11 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	/**
 	 * Announce an interception to the system. If you use the asynchronous facilities, you will get a thread structure report as a result.
 	 *
+	 * On the default synchronous path, returns true if an interceptor short-circuited the chain by
+	 * returning true from its handler; false otherwise. Interceptors that never return a boolean, and
+	 * states with no registered interceptors, resolve to false. Use this to detect that an interceptor
+	 * consumed/rejected the announcement, e.g. `if ( interceptorService.announce( "preSSEConnection", data ) ) { ... }`.
+	 *
 	 * This is needed so interceptors can write to the page output buffer
 	 *
 	 * @output           true
