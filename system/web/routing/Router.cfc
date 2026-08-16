@@ -137,15 +137,16 @@ component
 		/************************************** FLUENT CONSTRUCTS *********************************************/
 
 		// With closure
-		variables.withClosure          = {};
+		variables.withClosure = {};
 		// Module closure
-		variables.thisModule           = "";
+		variables.thisModule  = "";
 		// Groupt Pivot
-		variables.onGroup              = false;
+		variables.onGroup     = false;
+		// Routing pointer
+		variables.thisRoute   = initRouteDefinition();
+
 		// Stack of group-level middleware arrays, outermost first, so nested groups accumulate in order
 		variables.groupMiddlewareStack = [];
-		// Routing pointer
-		variables.thisRoute            = initRouteDefinition();
 
 		/************************************** CONSTANTS *********************************************/
 
