@@ -156,7 +156,7 @@ component extends="coldbox.system.web.services.BaseService" {
 		arguments.context.removeEventCacheableEntry()
 
 		// Get metadata entry for event that's fired.
-		var eventDictionary = variables.handlerService.getEventMetaDataEntry( currentEvent )
+		var eventDictionary = variables.handlerService.getEventMetaDataEntry( currentEvent, arguments.context )
 
 		// Verify that it is cacheable, else quit, no need for testing anymore.
 		if ( NOT eventDictionary.cacheable ) {

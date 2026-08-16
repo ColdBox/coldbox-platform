@@ -167,12 +167,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// method check finalized.
 
 		// Store metadata in execution bean
-		if ( !variables.handlerCaching || !arguments.ehBean.isMetadataLoaded() ) {
-			var md = getMetadata( oEventHandler )
-			arguments.ehBean
-				.setActionMetadata( oEventHandler._actionMetadata( arguments.ehBean.getMethod() ) )
-				.setHandlerMetadata( md.keyExists( "annotations" ) ? md.annotations : md )
-		}
+		ensureHandlerMetadata( arguments.ehBean, oEventHandler )
 
 		// Are they trying to execute an internal ColdBox method?
 		if ( arguments.ehBean.actionMetadataExists( "cbMethod" ) ) {
@@ -189,7 +184,11 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			arguments.ehBean.getFullEvent() EQ oRequestContext.getCurrentEvent()
 		) {
 			// Get event action caching metadata
-			var eventDictionaryEntry = getEventCachingMetadata( arguments.ehBean, oEventHandler );
+			var eventDictionaryEntry = getEventCachingMetadata(
+				arguments.ehBean,
+				oEventHandler,
+				oRequestContext
+			);
 
 			// Do we need to cache this event's output after it executes??
 			if ( eventDictionaryEntry.cacheable ) {
@@ -570,14 +569,29 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	/**
 	 * Get an event string's metadata entry. If not found, then you will get a new metadata entry using the `getNewMDEntry()` method.
 	 *
-	 * @targetEvent The event to match for metadata.
+	 * @targetEvent    The event to match for metadata.
+	 * @requestContext The request context for the current request, passed through to a closure suffix untouched.
 	 */
-	struct function getEventMetadataEntry( required targetEvent ){
+	struct function getEventMetadataEntry( required targetEvent, required requestContext ){
 		if ( NOT structKeyExists( variables.eventCacheDictionary, arguments.targetEvent ) ) {
 			return getNewMDEntry()
 		}
 
-		return variables.eventCacheDictionary[ arguments.targetEvent ]
+		var mdEntry = variables.eventCacheDictionary[ arguments.targetEvent ]
+
+		// Fast path: a static suffix needs no per-request work, hand back the memoized entry
+		if ( isSimpleValue( mdEntry.suffix ) ) {
+			return mdEntry
+		}
+
+		// Closure suffix: resolve it for THIS request. getHandlerBean() gives back a bean whose
+		// action/handler metadata is only guaranteed loaded when handlerCaching lets it reuse a
+		// previously-executed instance - ensureHandlerMetadata() closes that gap so a closure
+		// reading eventHandlerBean.getActionMetadata(...) sees the same data the store-side
+		// getEventCachingMetadata() call already guarantees, regardless of that setting.
+		var bean = getHandlerBean( arguments.targetEvent )
+		ensureHandlerMetadata( bean )
+		return resolveCacheSuffix( mdEntry, bean, arguments.requestContext )
 	}
 
 	/**
@@ -784,12 +798,17 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	/**
 	 * Return the event caching metadata for an action execution context.
 	 *
-	 * @ehBean        The event handler bean
-	 * @oEventHandler The event handler to execute
+	 * @ehBean         The event handler bean
+	 * @oEventHandler  The event handler to execute
+	 * @requestContext The request context for the current request, passed through to a closure suffix untouched.
 	 *
 	 * @return strc
 	 */
-	private struct function getEventCachingMetadata( required ehBean, required oEventHandler ){
+	private struct function getEventCachingMetadata(
+		required ehBean,
+		required oEventHandler,
+		required requestContext
+	){
 		var cacheKey = arguments.ehBean.getFullEvent();
 
 		// Double lock for race conditions
@@ -828,15 +847,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 						mdEntry.lastModified = arguments.ehBean.getActionMetadata( "lastModified", false );
 						mdEntry.cacheControl = arguments.ehBean.getActionMetadata( "cacheControl", "" );
 
-						// Handler Event Cache Key Suffix, this is global to the event
-						if (
-							isClosure( arguments.oEventHandler.EVENT_CACHE_SUFFIX ) ||
-							isCustomFunction( arguments.oEventHandler.EVENT_CACHE_SUFFIX )
-						) {
-							mdEntry.suffix = oEventHandler.EVENT_CACHE_SUFFIX( arguments.ehBean );
-						} else {
-							mdEntry.suffix = arguments.oEventHandler.EVENT_CACHE_SUFFIX;
-						}
+						// Handler Event Cache Key Suffix, this is global to the event.
+						// Stored AS DECLARED: a closure must NOT be evaluated here because this
+						// entry is memoized for the life of the app, and a request-time value
+						// (locale, session, slug) would freeze into every later request's cache
+						// key. resolveCacheSuffix() evaluates it on every read instead.
+						mdEntry.suffix = arguments.oEventHandler.EVENT_CACHE_SUFFIX;
 
 						// if the cacheFilter has a length and is a method, then we need to verify and store the resulting closure
 						if ( len( mdEntry.cacheFilter ) ) {
@@ -879,7 +895,75 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		}
 		// end if
 
-		return variables.eventCacheDictionary[ cacheKey ];
+		return resolveCacheSuffix(
+			variables.eventCacheDictionary[ cacheKey ],
+			arguments.ehBean,
+			arguments.requestContext
+		);
+	}
+
+	/**
+	 * Ensure an event handler bean has its action/handler metadata loaded, building and
+	 * reflecting a handler instance only if it doesn't already have one to reuse.
+	 *
+	 * Factored out of getHandler() so the event-caching suffix lookup path
+	 * (getEventMetadataEntry()) can guarantee the same metadata is present on the bean it hands
+	 * to an EVENT_CACHE_SUFFIX closure, whether or not handlerCaching lets getHandlerBean() reuse
+	 * a bean instance that a prior getHandler() call already populated.
+	 *
+	 * @ehBean        The event handler bean to load metadata onto
+	 * @oEventHandler An already-built handler instance to reflect, if the caller has one; built via newHandler() otherwise
+	 */
+	private function ensureHandlerMetadata( required ehBean, oEventHandler ){
+		if ( arguments.ehBean.isMetadataLoaded() ) {
+			return arguments.ehBean;
+		}
+
+		var handler = isNull( arguments.oEventHandler ) ? newHandler( arguments.ehBean ) : arguments.oEventHandler;
+		var md      = getMetadata( handler );
+
+		arguments.ehBean
+			.setActionMetadata( handler._actionMetadata( arguments.ehBean.getMethod() ) )
+			.setHandlerMetadata( md.keyExists( "annotations" ) ? md.annotations : md );
+
+		return arguments.ehBean;
+	}
+
+	/**
+	 * Resolve a metadata entry's cache-key suffix for the CURRENT request.
+	 *
+	 * A static string suffix passes the entry through untouched. A closure suffix is
+	 * evaluated now, on a shallow COPY of the entry - the memoized entry keeps the
+	 * closure so every request re-evaluates it (locale, session, slug use cases).
+	 *
+	 * The closure receives ( eventHandlerBean, event ) and runs twice per request
+	 * (serve-side key lookup + store-side key build), so it must be deterministic
+	 * within a request: read request-stable inputs only, never time or randomness,
+	 * and mutate nothing - the same contract the hashed rc and the stored
+	 * cacheFilter closure already have.
+	 *
+	 * @mdEntry        The memoized event caching metadata entry
+	 * @ehBean         The event handler bean, passed to the closure as its first argument
+	 * @requestContext The request context for the current request, passed to the closure as its second argument
+	 */
+	private struct function resolveCacheSuffix(
+		required struct mdEntry,
+		required ehBean,
+		required requestContext
+	){
+		// We check for isClosure and isCustomFunction for ACF/Lucee/BoxLang compatibility
+		if (
+			!isClosure( arguments.mdEntry.suffix ) &&
+			!isCustomFunction( arguments.mdEntry.suffix )
+		) {
+			return arguments.mdEntry;
+		}
+
+		var resolved    = structCopy( arguments.mdEntry );
+		var suffixUDF   = arguments.mdEntry.suffix;
+		resolved.suffix = suffixUDF( arguments.ehBean, arguments.requestContext );
+
+		return resolved;
 	}
 
 }
