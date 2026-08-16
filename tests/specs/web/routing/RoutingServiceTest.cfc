@@ -404,12 +404,13 @@
 			} );
 
 			it( "resolves a string target as a WireBox ID on every call", function(){
-				getController()
-					.getWireBox()
+				var wirebox = getController().getWireBox();
+				wirebox
 					.registerNewInstance(
 						name         = "RouteMiddlewareTestTarget",
 						instancePath = "tests.resources.routing.SampleMiddleware"
-					);
+					)
+					.setScope( wirebox.getBinder().SCOPES.SINGLETON );
 
 				mockEvent.$(
 					"getCurrentRouteRecord",

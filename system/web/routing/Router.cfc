@@ -525,15 +525,16 @@ component
 		// default/prefix merge, so they're inherited via their own stack instead. Pushed even when
 		// empty so the stack depth always matches the current group nesting depth. Entries are
 		// normalized to the same { target, point } shape middleware() produces.
-		var groupMiddleware = structKeyExists( arguments.options, "middleware" ) ? arguments.options.middleware : [];
-		variables.groupMiddlewareStack.append(
-			groupMiddleware.map( ( entry ) => {
-				return ( isStruct( entry ) && entry.keyExists( "target" ) ) ? entry : {
-					"target" : entry,
-					"point"  : "preProcess"
-				};
-			} )
-		);
+		var groupMiddleware   = structKeyExists( arguments.options, "middleware" ) ? arguments.options.middleware : [];
+		var normalizedGroupMW = [];
+		for ( var entry in groupMiddleware ) {
+			if ( isStruct( entry ) && entry.keyExists( "target" ) ) {
+				normalizedGroupMW.append( entry );
+			} else {
+				normalizedGroupMW.append( { "target" : entry, "point" : "preProcess" } );
+			}
+		}
+		variables.groupMiddlewareStack.append( normalizedGroupMW );
 		// Execute the body
 		arguments.body( arguments.options );
 
