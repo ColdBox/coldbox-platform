@@ -196,9 +196,13 @@ component extends="coldbox.system.testing.BaseModelTest" {
 
 					event.cacheControl( { "public" : true, "max-age" : 60 } );
 
+					// Directive order is not guaranteed - plain CFML structs are not guaranteed
+					// insertion-ordered on every engine (Lucee in particular), and per RFC 9111
+					// Cache-Control's directive order carries no semantic meaning anyway.
 					var headerCall = event.$callLog().setHTTPHeader[ 1 ];
 					expect( headerCall.name ).toBe( "Cache-Control" );
-					expect( headerCall.value ).toBe( "public, max-age=60" );
+					expect( headerCall.value ).toInclude( "public" );
+					expect( headerCall.value ).toInclude( "max-age=60" );
 				} );
 
 				it( "defaults to no-cache", function(){
