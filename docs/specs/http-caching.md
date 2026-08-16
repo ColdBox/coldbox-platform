@@ -1,6 +1,6 @@
 # Spec: HTTP Caching Primitives in ColdBox
 
-**Status:** Draft — no implementation yet
+**Status:** Tier 1 (event-caching-integrated) implemented — see `system/web/context/RequestContext.cfc`, `system/web/context/Response.cfc`, `system/Bootstrap.cfc`. Tier 2 (§4.3, standalone) remains unimplemented.
 **Target:** ColdBox 8.3.0 (or next minor)
 **Runtime:** BoxLang + CFML (Adobe, Lucee) — pure HTTP header mechanics, no BIF dependency
 **Related:** ColdBox's existing Event Caching (`system/Bootstrap.cfc`, `HandlerService.cfc`);
@@ -10,11 +10,11 @@
 
 ## 1. Motivation
 
-A case-insensitive grep across `system/` for `etag`, `last-modified`, `cache-control`,
-`if-none-match`, `if-modified-since`, and `304` returns **zero hits** (the lone `"304"` string
-anywhere in the codebase is a status-text lookup entry, unrelated to caching). ColdBox has no
-concept of HTTP-level conditional requests or cache negotiation. Every response — cached
-server-side or not — always sends a full `200` with a full body.
+Before this work, a case-insensitive grep across `system/` for `etag`, `last-modified`,
+`cache-control`, `if-none-match`, `if-modified-since`, and `304` returned **zero hits** (the lone
+`"304"` string anywhere in the codebase was a status-text lookup entry, unrelated to caching).
+ColdBox had no concept of HTTP-level conditional requests or cache negotiation — every response,
+cached server-side or not, always sent a full `200` with a full body.
 
 That is a real gap for anything that talks to a browser, CDN, or reverse proxy: API resources
 that rarely change, static-ish content endpoints, polling clients, HTMX partials. All of them

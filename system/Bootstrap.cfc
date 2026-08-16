@@ -267,24 +267,20 @@ component serializable="false" accessors="true" {
 				} );
 
 				// ****** HTTP CACHING - TIER 1 conditional-GET (docs/specs/http-caching.md §4.2) ******
-				// Replay whatever conditional-GET headers were stored alongside this entry, and -
-				// if an ETag was stored - compare it to the client's If-None-Match before touching
-				// the body at all. A match is strictly cheaper than the full replay below: the hash
-				// was computed once, back when this entry was written, not on this request.
-				var cachedETagMatch = false;
+				// Replay whatever conditional-GET headers were stored alongside this entry, reusing
+				// event.etag()/event.lastModified() for the actual header-set + match logic rather
+				// than re-implementing it here - same matching rules (weak comparison, If-None-Match
+				// lists/`*`, the If-Modified-Since-is-ignored-when-If-None-Match-is-present
+				// precedence) whether the tag was just computed or is being replayed from cache.
+				var cachedNotModified = false;
 				if ( structKeyExists( local.refResults.eventCaching, "etag" ) ) {
-					var cachedETag = """" & local.refResults.eventCaching.etag & """";
-					event.setHTTPHeader( name = "ETag", value = cachedETag );
-					cachedETagMatch = (
-						listFindNoCase( "GET,HEAD", event.getHTTPMethod() ) > 0 &&
-						event.getHTTPHeader( "If-None-Match", "" ) == cachedETag
+					cachedNotModified = event.etag(
+						value = local.refResults.eventCaching.etag,
+						weak  = local.refResults.eventCaching.etagWeak ?: false
 					);
 				}
 				if ( structKeyExists( local.refResults.eventCaching, "lastModified" ) ) {
-					event.setHTTPHeader(
-						name  = "Last-Modified",
-						value = event.toHTTPDate( local.refResults.eventCaching.lastModified )
-					);
+					cachedNotModified = event.lastModified( local.refResults.eventCaching.lastModified ) || cachedNotModified;
 				}
 				if ( structKeyExists( local.refResults.eventCaching, "cacheControl" ) ) {
 					event.setHTTPHeader(
@@ -293,10 +289,9 @@ component serializable="false" accessors="true" {
 					);
 				}
 
-				// Cached Status Code
-				if ( cachedETagMatch ) {
-					event.setHTTPHeader( statusCode = 304 );
-				} else if (
+				// Cached Status Code - a conditional-GET match already set 304 via etag()/lastModified() above.
+				if (
+					!cachedNotModified &&
 					isNumeric( local.refResults.eventCaching.statusCode ) && local.refResults.eventCaching.statusCode > 0
 				) {
 					event.setHTTPHeader( statusCode = local.refResults.eventCaching.statusCode );
@@ -304,7 +299,7 @@ component serializable="false" accessors="true" {
 
 				// Render Content as binary or just output - skipped entirely on a conditional-GET
 				// match, which is the whole point: no body write at all, not even a replay.
-				if ( !cachedETagMatch ) {
+				if ( !cachedNotModified ) {
 					if ( local.refResults.eventCaching.isBinary ) {
 						cbController
 							.getDataMarshaller()
@@ -398,7 +393,8 @@ component serializable="false" accessors="true" {
 						// Computed once, right here at write time, and stored on the entry so every
 						// subsequent cache hit can compare against it for free - no per-request hashing.
 						if ( eCacheEntry.etag ) {
-							cacheEntry.etag = hash( renderedContent, "MD5" );
+							cacheEntry.etag     = hash( renderedContent, "MD5" );
+							cacheEntry.etagWeak = eCacheEntry.etagWeak;
 							event.setHTTPHeader(
 								name  = "ETag",
 								value = ( eCacheEntry.etagWeak ? "W/" : "" ) & """#cacheEntry.etag#"""

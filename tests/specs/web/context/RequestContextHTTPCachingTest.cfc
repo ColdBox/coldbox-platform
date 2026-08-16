@@ -118,12 +118,69 @@ component extends="coldbox.system.testing.BaseModelTest" {
 
 					expect( event.etag( "abc123" ) ).toBeTrue();
 				} );
+
+				it( "matches a wildcard If-None-Match", function(){
+					var event = buildContext();
+					event.$( "getHTTPMethod", "GET" );
+					event
+						.$( "getHTTPHeader" )
+						.$args( "If-None-Match", "" )
+						.$results( "*" );
+					event.$( "setHTTPHeader" );
+					event.$( "noExecution" );
+
+					expect( event.etag( "abc123" ) ).toBeTrue();
+				} );
+
+				it( "matches any entry in a comma-separated If-None-Match list", function(){
+					var event = buildContext();
+					event.$( "getHTTPMethod", "GET" );
+					event
+						.$( "getHTTPHeader" )
+						.$args( "If-None-Match", "" )
+						.$results( """xyz789"", ""abc123"", ""other""" );
+					event.$( "setHTTPHeader" );
+					event.$( "noExecution" );
+
+					expect( event.etag( "abc123" ) ).toBeTrue();
+				} );
+
+				it( "matches a weak client tag against a strong server tag (weak comparison)", function(){
+					var event = buildContext();
+					event.$( "getHTTPMethod", "GET" );
+					event
+						.$( "getHTTPHeader" )
+						.$args( "If-None-Match", "" )
+						.$results( "W/""abc123""" );
+					event.$( "setHTTPHeader" );
+					event.$( "noExecution" );
+
+					expect( event.etag( "abc123" ) ).toBeTrue();
+				} );
+
+				it( "does not match a genuinely different tag in a list", function(){
+					var event = buildContext();
+					event.$( "getHTTPMethod", "GET" );
+					event
+						.$( "getHTTPHeader" )
+						.$args( "If-None-Match", "" )
+						.$results( """xyz789"", ""other""" );
+					event.$( "setHTTPHeader" );
+					event.$( "noExecution" );
+
+					expect( event.etag( "abc123" ) ).toBeFalse();
+					expect( event.$never( "noExecution" ) ).toBeTrue();
+				} );
 			} );
 
 			describe( "lastModified()", function(){
 				it( "sets Last-Modified and returns false when there is no If-Modified-Since", function(){
 					var event = buildContext();
 					event.$( "getHTTPMethod", "GET" );
+					event
+						.$( "getHTTPHeader" )
+						.$args( "If-None-Match", "" )
+						.$results( "" );
 					event
 						.$( "getHTTPHeader" )
 						.$args( "If-Modified-Since", "" )
@@ -145,6 +202,10 @@ component extends="coldbox.system.testing.BaseModelTest" {
 					event.$( "getHTTPMethod", "GET" );
 					event
 						.$( "getHTTPHeader" )
+						.$args( "If-None-Match", "" )
+						.$results( "" );
+					event
+						.$( "getHTTPHeader" )
 						.$args( "If-Modified-Since", "" )
 						.$results( clientKnowsAsOf );
 					event.$( "setHTTPHeader" );
@@ -163,6 +224,10 @@ component extends="coldbox.system.testing.BaseModelTest" {
 					event.$( "getHTTPMethod", "GET" );
 					event
 						.$( "getHTTPHeader" )
+						.$args( "If-None-Match", "" )
+						.$results( "" );
+					event
+						.$( "getHTTPHeader" )
 						.$args( "If-Modified-Since", "" )
 						.$results( clientKnowsAsOf );
 					event.$( "setHTTPHeader" );
@@ -179,12 +244,40 @@ component extends="coldbox.system.testing.BaseModelTest" {
 					event.$( "getHTTPMethod", "GET" );
 					event
 						.$( "getHTTPHeader" )
+						.$args( "If-None-Match", "" )
+						.$results( "" );
+					event
+						.$( "getHTTPHeader" )
 						.$args( "If-Modified-Since", "" )
 						.$results( "not-a-date" );
 					event.$( "setHTTPHeader" );
 					event.$( "noExecution" );
 
 					expect( () => event.lastModified( now() ) ).notToThrow();
+					expect( event.$never( "noExecution" ) ).toBeTrue();
+				} );
+
+				it( "ignores a matching If-Modified-Since when If-None-Match is also present", function(){
+					var event           = buildContext();
+					var resourceDate    = dateAdd( "h", -1, now() );
+					var clientKnowsAsOf = event.toHTTPDate( now() );
+					event.$( "getHTTPMethod", "GET" );
+					event
+						.$( "getHTTPHeader" )
+						.$args( "If-None-Match", "" )
+						.$results( """some-other-tag""" );
+					event
+						.$( "getHTTPHeader" )
+						.$args( "If-Modified-Since", "" )
+						.$results( clientKnowsAsOf );
+					event.$( "setHTTPHeader" );
+					event.$( "noExecution" );
+
+					// Per RFC 7232 §3.3: a request carrying If-None-Match ignores If-Modified-Since
+					// entirely, even though the date alone would have matched.
+					var result = event.lastModified( resourceDate );
+
+					expect( result ).toBeFalse();
 					expect( event.$never( "noExecution" ) ).toBeTrue();
 				} );
 			} );
@@ -224,11 +317,14 @@ component extends="coldbox.system.testing.BaseModelTest" {
 
 			describe( "toHTTPDate()", function(){
 				it( "matches the RFC 7231 example date exactly", function(){
-					var event          = buildContext();
-					// The canonical example from RFC 7231 §7.1.1.1
-					var rfcExampleDate = createDateTime( 1994, 11, 6, 8, 49, 37 );
+					var event             = buildContext();
+					// The canonical example from RFC 7231 §7.1.1.1, given as UTC. toHTTPDate()
+					// converts its input from local time, so feed it the local equivalent of that
+					// UTC instant - keeps the assertion stable regardless of the runner's timezone.
+					var rfcExampleDateUTC = createDateTime( 1994, 11, 6, 8, 49, 37 );
+					var localEquivalent   = dateConvert( "utc2local", rfcExampleDateUTC );
 
-					expect( event.toHTTPDate( rfcExampleDate ) ).toBe( "Sun, 06 Nov 1994 08:49:37 GMT" );
+					expect( event.toHTTPDate( localEquivalent ) ).toBe( "Sun, 06 Nov 1994 08:49:37 GMT" );
 				} );
 			} );
 

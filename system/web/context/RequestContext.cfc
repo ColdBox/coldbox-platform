@@ -1869,7 +1869,7 @@ component serializable="false" accessors="true" {
 		var tag = ( arguments.weak ? "W/" : "" ) & """#arguments.value#""";
 		setHTTPHeader( name = "ETag", value = tag );
 
-		if ( isSafeHTTPMethod() && getHTTPHeader( "If-None-Match", "" ) == tag ) {
+		if ( isSafeHTTPMethod() && matchesIfNoneMatch( tag ) ) {
 			noExecution();
 			setHTTPHeader( statusCode = 304 );
 			return true;
@@ -1884,6 +1884,10 @@ component serializable="false" accessors="true" {
 	 * seconds - callers with sub-second timestamps should round down, never up, to avoid a false
 	 * negative (reporting the resource as modified when it was not).
 	 *
+	 * Per RFC 7232 §3.3, a request carrying an If-None-Match header MUST have its If-Modified-Since
+	 * ignored - the entity tag is the more precise signal, so a request with both never short-circuits
+	 * here, even if the date matches (call `etag()` for that comparison instead).
+	 *
 	 * @value The last-modified timestamp of the resource
 	 *
 	 * @return True if the request was short-circuited with a 304
@@ -1894,6 +1898,7 @@ component serializable="false" accessors="true" {
 		var since = getHTTPHeader( "If-Modified-Since", "" );
 		if (
 			isSafeHTTPMethod() &&
+			!len( getHTTPHeader( "If-None-Match", "" ) ) &&
 			len( since ) &&
 			isDate( since ) &&
 			parseDateTime( since ) >= arguments.value
@@ -1943,6 +1948,38 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
+	 * Checks a fully-quoted (and, if weak, `W/`-prefixed) entity tag against the incoming
+	 * If-None-Match header, per RFC 7232 §3.2/§2.3.2:
+	 * - `*` always matches - a GET/HEAD that reached this point has *some* current representation,
+	 *   which is all `If-None-Match: *` asks about.
+	 * - The header may be a comma-separated list of entity tags; a match against any one counts.
+	 * - If-None-Match always uses *weak* comparison, so the `W/` prefix is stripped from both sides
+	 *   before comparing - a weak and a strong tag with the same opaque value are still a match.
+	 *
+	 * Splits on a bare comma rather than a quoted-string-aware parser - sufficient for the opaque
+	 * hash-style values this framework generates and accepts, which never contain a literal comma.
+	 *
+	 * @tag The tag to check for a match
+	 */
+	private boolean function matchesIfNoneMatch( required string tag ){
+		var header = trim( getHTTPHeader( "If-None-Match", "" ) );
+		if ( !len( header ) ) {
+			return false;
+		}
+		if ( header == "*" ) {
+			return true;
+		}
+
+		var normalizedTag = reReplace( arguments.tag, "^W/", "" );
+		for ( var candidate in listToArray( header, "," ) ) {
+			if ( reReplace( trim( candidate ), "^W/", "" ) == normalizedTag ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * Format a date as an RFC 7231 HTTP-date (e.g. `Sun, 06 Nov 1994 08:49:37 GMT`), for use in
 	 * `Last-Modified`, `Expires` and similar headers.
 	 *
@@ -1952,9 +1989,13 @@ component serializable="false" accessors="true" {
 	 * `dateTimeFormat()` actually implements is not something to gamble on in framework code that
 	 * has to run identically on BoxLang, Lucee and Adobe.
 	 *
-	 * @value The date/time to format. Assumed to already be in the desired output timezone - this function does no conversion of its own.
+	 *        `now()` and date literals) - converted to UTC internally so the trailing "GMT" is accurate
+	 *        regardless of the server's own timezone.
+	 *
+	 * @value The date/time to format, as a local server-time value (the CFML/BoxLang default for
 	 */
 	string function toHTTPDate( required date value ){
+		var utcValue = dateConvert( "local2utc", arguments.value );
 		var dayNames = [
 			"Sun",
 			"Mon",
@@ -1979,13 +2020,13 @@ component serializable="false" accessors="true" {
 			"Dec"
 		];
 
-		return dayNames[ dayOfWeek( arguments.value ) ] & ", " &
-		numberFormat( day( arguments.value ), "00" ) & " " &
-		monthNames[ month( arguments.value ) ] & " " &
-		year( arguments.value ) & " " &
-		numberFormat( hour( arguments.value ), "00" ) & ":" &
-		numberFormat( minute( arguments.value ), "00" ) & ":" &
-		numberFormat( second( arguments.value ), "00" ) & " GMT";
+		return dayNames[ dayOfWeek( utcValue ) ] & ", " &
+		numberFormat( day( utcValue ), "00" ) & " " &
+		monthNames[ month( utcValue ) ] & " " &
+		year( utcValue ) & " " &
+		numberFormat( hour( utcValue ), "00" ) & ":" &
+		numberFormat( minute( utcValue ), "00" ) & ":" &
+		numberFormat( second( utcValue ), "00" ) & " GMT";
 	}
 
 	/**
