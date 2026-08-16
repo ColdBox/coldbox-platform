@@ -95,14 +95,6 @@ component {
 		"cors"              : "*"
 	};
 
-	// HTTP Caching defaults - Tier 1 automatic ETag/Last-Modified, opt-in per handler via
-	// cache="true" combined with etag="true"/lastModified="true" (see docs/specs/http-caching.md)
-	this.httpCaching = {
-		// Global kill switch - disables reading the etag/etagWeak/lastModified/cacheControl
-		// annotations entirely, regardless of what any individual handler sets.
-		"enabled" : true
-	};
-
 	// Async Configs
 	this.async = { "schedulerThreads" : 20 };
 

@@ -366,13 +366,24 @@ default ever causing a cross-user cache leak. `public` is opt-in only.
 
 ### 4.7 Settings block
 
-Sibling to the existing `this.eventCaching` (`Settings.cfc:35`) and the SSE feature's
-`this.sse` block:
+**Tier 1 needs no settings block of its own.** Every one of its annotations
+(`etag`/`etagWeak`/`lastModified`/`cacheControl`) is only ever read inside the
+same `getEventCachingMetadata()` branch that already requires `cache="true"`
+*and* the existing global `this.coldbox.eventCaching` switch
+(`Settings.cfc:35`) to be `true` (`HandlerService.cfc:186-190`). A separate
+`this.httpCaching.enabled` toggle was drafted and then removed during
+implementation - it could never independently disable anything the existing
+`eventCaching` switch didn't already disable, since Tier 1 has no code path
+that runs without both. Per-handler, simply not setting the annotations is
+already the finest-grained control there is.
+
+A settings block **would** earn its place once Tier 2 (§4.3) is implemented,
+since that tier runs independently of `cache="true"`/`eventCaching` entirely
+and genuinely needs its own opt-in:
 
 ```java
 this.httpCaching = {
-    "enabled"             : true,
-    // Global opt-in: enable Tier 2 automatically for every rendered GET/HEAD
+    // Tier 2 only: enable an ETag automatically for every rendered GET/HEAD
     // response that doesn't otherwise set an etag annotation. Off by default -
     // this changes response bytes for every endpoint in the app.
     "autoETag"            : false,
@@ -530,8 +541,8 @@ this.httpCaching = {
 | `system/web/services/HandlerService.cfc` | Extend `getNewMDEntry()` defaults (`:764-776`) and `getEventCachingMetadata()` (`:801-811`) with the new annotations |
 | `system/Bootstrap.cfc` | Extend the cache-write branch (`:340-378`) to compute+store the hash/timestamp when opted in; extend the cache-hit branch (`:245-289`) to check `If-None-Match`/`If-Modified-Since` before replay |
 | `system/web/services/InterceptorService.cfc` | (If the interception-point approach is chosen for Tier 2) add `preResponseWrite` to the ENUM |
-| `system/web/config/Settings.cfc` | Add `this.httpCaching` defaults block |
-| `system/web/config/ApplicationLoader.cfc` | Add `parseHTTPCaching()` to the parser chain |
+| `system/web/config/Settings.cfc` | Add `this.httpCaching` defaults block - **Tier 2 only**, see §4.7 |
+| `system/web/config/ApplicationLoader.cfc` | Add `parseHTTPCaching()` to the parser chain - **Tier 2 only**, see §4.7 |
 | `system/RestHandler.cfc` | Extend the existing `isSSE()` guard clause in `aroundHandler` to also check a new `isNoExecution()` predicate |
 | `system/web/context/RequestContext.cfc` (guard addition) | Add `isNoExecution()` — `isNoExecution` is currently only a `property`, with no bare boolean-predicate accessor |
 
