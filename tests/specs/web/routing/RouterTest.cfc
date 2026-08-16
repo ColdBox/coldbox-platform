@@ -609,6 +609,24 @@ component extends="coldbox.system.testing.BaseModelTest" {
 						expect( router.getRoutes()[ 1 ].middleware ).toHaveLength( 1 );
 					} );
 				} );
+
+				given( "a middlewareGroup() name referenced before the group is registered", function(){
+					then( "it is treated as a literal target instead of being expanded", function(){
+						// Documents a known ordering requirement: expansion happens immediately at
+						// registration time, not lazily at request time, so a group must be
+						// registered before anything references it by name.
+						router
+							.route( "/z" )
+							.middleware( "lateGroup" )
+							.toHandler( "z" );
+						router.middlewareGroup( "lateGroup", [ "RequireApiKey" ] );
+
+						var middleware = router.getRoutes()[ 1 ].middleware;
+						expect( middleware ).toHaveLength( 1 );
+						expect( middleware[ 1 ].target ).toBe( "lateGroup" );
+						expect( middleware[ 1 ] ).notToHaveKey( "group" );
+					} );
+				} );
 			} );
 
 			story( "Router will throw exception if a non-closure or string is passed to the body of a toResponse()", function(){

@@ -1456,6 +1456,8 @@ component
 	 *
 	 * A target may also be the name of a bundle registered via `middlewareGroup()` - it expands to
 	 * that bundle's own targets in place, at this call's point unless a member declares its own.
+	 * The group must already be registered when this runs, since expansion happens immediately -
+	 * referencing one too early silently treats the name as a literal target instead of expanding it.
 	 *
 	 * <pre>
 	 * // inline closure
@@ -1500,6 +1502,11 @@ component
 	 *
 	 * Groups are flat: an entry may not itself be the name of another group - a bundle is always a
 	 * concrete list of closures/WireBox IDs/objects, never a pointer to another bundle.
+	 *
+	 * Register a group before any `.middleware()`/`group()` call that references it by name - name
+	 * resolution happens immediately, at registration time, not lazily at request time. A name that
+	 * doesn't match a registered group yet is silently treated as a literal target (e.g. a WireBox ID)
+	 * instead of being expanded, so referencing a group too early fails quietly rather than throwing.
 	 *
 	 * <pre>
 	 * middlewareGroup( "api", [ "RequireApiKey", "RateLimiter" ] );
