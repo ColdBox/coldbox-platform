@@ -440,6 +440,72 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		return discoveredEvent;
 	}
 
+	/**
+	 * Run the currently matched route's middleware (`Router.middleware()`) for the given interception
+	 * point. A no-op if no route matched, or the matched route registered no middleware for this point.
+	 *
+	 * Mirrors `InterceptorState.processSync()`'s short-circuit contract: a target returning `true`
+	 * stops the remaining middleware at this point for this route. It does not, by itself, skip the
+	 * handler or the render - the target must do that explicitly (`event.relocate()`,
+	 * `event.renderData().noExecution()`, etc), exactly like any other preProcess/postProcess interceptor.
+	 *
+	 * @event The ColdBox Request context
+	 * @point The interception point to run middleware for, e.g. `preProcess` or `postProcess`
+	 *
+	 * @return True if a middleware target short-circuited the chain by returning true; false otherwise
+	 */
+	boolean function runRouteMiddleware( required event, required string point ){
+		var routeRecord = arguments.event.getCurrentRouteRecord();
+
+		if ( !structKeyExists( routeRecord, "middleware" ) || !routeRecord.middleware.len() ) {
+			return false;
+		}
+
+		var invocationArgs = {
+			"event" : arguments.event,
+			"rc"    : arguments.event.getCollection(),
+			"prc"   : arguments.event.getPrivateCollection()
+		};
+
+		for ( var entry in routeRecord.middleware ) {
+			if ( entry.point != arguments.point ) {
+				continue;
+			}
+
+			var target  = resolveMiddlewareTarget( entry.target );
+			var results = "";
+
+			if ( isClosure( target ) || isCustomFunction( target ) ) {
+				results = target( argumentCollection = invocationArgs );
+			} else if ( structKeyExists( target, arguments.point ) ) {
+				results = invoke( target, arguments.point, invocationArgs );
+			} else {
+				// No method matching this point on the target - nothing to run
+				continue;
+			}
+
+			if ( !isNull( local.results ) && isBoolean( results ) && results ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Resolve a route middleware target: a WireBox ID string is resolved via `getInstance()` on every
+	 * call so it respects the mapping's own declared scope; anything else (a closure or an already
+	 * built object instance) is returned as-is.
+	 *
+	 * @target The middleware target to resolve
+	 */
+	private function resolveMiddlewareTarget( required target ){
+		if ( isSimpleValue( arguments.target ) ) {
+			return variables.wirebox.getInstance( arguments.target );
+		}
+		return arguments.target;
+	}
+
 	/****************************************************************************************************************************/
 	/* 											ROUTE DISPATCHING METHODS														*/
 	/****************************************************************************************************************************/

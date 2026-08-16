@@ -282,6 +282,158 @@
 				expect( discoveredEventPOST ).toBe( "api-v1:MyOtherHandler.create" );
 			} );
 		} );
+
+		describe( "route-scoped middleware (runRouteMiddleware())", function(){
+			beforeEach( function(){
+				mockEvent = createMock( "coldbox.system.web.context.RequestContext" ).init(
+					controller = getController(),
+					properties = {
+						defaultLayout : "Main.cfm",
+						defaultView   : "",
+						eventName     : "event",
+						modules       : {}
+					}
+				);
+			} );
+
+			it( "no-ops when no route matched", function(){
+				mockEvent.$( "getCurrentRouteRecord", {} );
+				expect( routingService.runRouteMiddleware( mockEvent, "preProcess" ) ).toBeFalse();
+			} );
+
+			it( "no-ops when the matched route has no middleware", function(){
+				mockEvent.$( "getCurrentRouteRecord", { middleware : [] } );
+				expect( routingService.runRouteMiddleware( mockEvent, "preProcess" ) ).toBeFalse();
+			} );
+
+			it( "invokes an inline closure target", function(){
+				var called = false;
+				var target = function( event, rc, prc ){
+					called = true;
+				};
+				mockEvent.$(
+					"getCurrentRouteRecord",
+					{ middleware : [ { target : target, point : "preProcess" } ] }
+				);
+
+				routingService.runRouteMiddleware( mockEvent, "preProcess" );
+
+				expect( called ).toBeTrue();
+			} );
+
+			it( "only runs middleware registered for the requested point", function(){
+				var preCalls  = 0;
+				var postCalls = 0;
+				mockEvent.$(
+					"getCurrentRouteRecord",
+					{
+						middleware : [
+							{
+								target : function( event, rc, prc ){
+									preCalls++;
+								},
+								point : "preProcess"
+							},
+							{
+								target : function( event, rc, prc ){
+									postCalls++;
+								},
+								point : "postProcess"
+							}
+						]
+					}
+				);
+
+				routingService.runRouteMiddleware( mockEvent, "preProcess" );
+
+				expect( preCalls ).toBe( 1 );
+				expect( postCalls ).toBe( 0 );
+			} );
+
+			it( "short-circuits the remaining middleware when a target returns true", function(){
+				var secondCalled = false;
+				mockEvent.$(
+					"getCurrentRouteRecord",
+					{
+						middleware : [
+							{
+								target : function( event, rc, prc ){
+									return true;
+								},
+								point : "preProcess"
+							},
+							{
+								target : function( event, rc, prc ){
+									secondCalled = true;
+								},
+								point : "preProcess"
+							}
+						]
+					}
+				);
+
+				var result = routingService.runRouteMiddleware( mockEvent, "preProcess" );
+
+				expect( result ).toBeTrue();
+				expect( secondCalled ).toBeFalse();
+			} );
+
+			it( "invokes a duck-typed object target with no base class by its point-named method", function(){
+				var target = new tests.resources.routing.SampleMiddleware();
+				mockEvent.$(
+					"getCurrentRouteRecord",
+					{ middleware : [ { target : target, point : "preProcess" } ] }
+				);
+
+				routingService.runRouteMiddleware( mockEvent, "preProcess" );
+
+				expect( target.getWasCalled() ).toBeTrue();
+			} );
+
+			it( "skips a target with no method matching the requested point", function(){
+				var target = new tests.resources.routing.SampleMiddleware();
+				mockEvent.$(
+					"getCurrentRouteRecord",
+					{ middleware : [ { target : target, point : "someOtherPoint" } ] }
+				);
+
+				expect( function(){
+					routingService.runRouteMiddleware( mockEvent, "someOtherPoint" );
+				} ).notToThrow();
+				expect( target.getWasCalled() ).toBeFalse();
+			} );
+
+			it( "resolves a string target as a WireBox ID on every call", function(){
+				var wirebox = getController().getWireBox();
+				wirebox
+					.registerNewInstance(
+						name         = "RouteMiddlewareTestTarget",
+						instancePath = "tests.resources.routing.SampleMiddleware"
+					)
+					.setScope( wirebox.getBinder().SCOPES.SINGLETON );
+
+				mockEvent.$(
+					"getCurrentRouteRecord",
+					{
+						middleware : [
+							{
+								target : "RouteMiddlewareTestTarget",
+								point  : "preProcess"
+							}
+						]
+					}
+				);
+
+				routingService.runRouteMiddleware( mockEvent, "preProcess" );
+
+				expect(
+					getController()
+						.getWireBox()
+						.getInstance( "RouteMiddlewareTestTarget" )
+						.getWasCalled()
+				).toBeTrue();
+			} );
+		} );
 	}
 
 	/**

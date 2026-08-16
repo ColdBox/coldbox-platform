@@ -145,6 +145,11 @@ component
 		// Routing pointer
 		variables.thisRoute   = initRouteDefinition();
 
+		// Stack of group-level middleware arrays, outermost first, so nested groups accumulate in order
+		variables.groupMiddlewareStack = [];
+		// Named, reusable middleware bundles registered via middlewareGroup(), keyed by name
+		variables.middlewareGroups     = {};
+
 		/************************************** CONSTANTS *********************************************/
 
 		// STATIC Valid Extensions
@@ -510,7 +515,7 @@ component
 	 * } )
 	 * </pre>
 	 *
-	 * @options The route options that match routing, look at the <code>addRoute()</code> method
+	 * @options The route options that match routing, look at the <code>addRoute()</code> method. A `middleware` array (same target values <code>middleware()</code> accepts) applies to every route registered within the body, ahead of any middleware the route registers for itself.
 	 * @body    The closure or lambda to contain all the routing methods to be grouped with the options data.
 	 */
 	function group( struct options = {}, body ){
@@ -519,12 +524,25 @@ component
 
 		// set the withClosure
 		variables.withClosure.append( arguments.options );
-		// Execute the body
-		arguments.body( arguments.options );
+		// Push this group's middleware onto the stack - arrays aren't part of the withClosure
+		// default/prefix merge, so they're inherited via their own stack instead. Pushed even when
+		// empty so the stack depth always matches the current group nesting depth. Entries are
+		// normalized to the same { target, point } shape middleware() produces - options.middleware
+		// may be a single target (not wrapped in an array), a struct missing its own `point`, or the
+		// name of a middlewareGroup() bundle, which normalizeMiddlewareEntries() expands in place.
+		var groupMiddleware = structKeyExists( arguments.options, "middleware" ) ? arguments.options.middleware : [];
+		variables.groupMiddlewareStack.append( normalizeMiddlewareEntries( groupMiddleware ) );
 
-		// Pivot out of the group and do cleanup
-		variables.onGroup     = false;
-		variables.withClosure = {};
+		try {
+			// Execute the body
+			arguments.body( arguments.options );
+		} finally {
+			// Pivot out of the group and do cleanup - always, even if the body threw, so a failed
+			// registration can't leak this group's middleware/options into whatever registers next.
+			variables.groupMiddlewareStack.deleteAt( variables.groupMiddlewareStack.len() );
+			variables.onGroup     = false;
+			variables.withClosure = {};
+		}
 
 		return this;
 	}
@@ -797,7 +815,9 @@ component
 		boolean ai                    = "false",
 		any aiRunnable                = "",
 		boolean mcp                   = "false",
-		string mcpServer              = ""
+		string mcpServer              = "",
+		array middleware              = [],
+		array withoutMiddleware       = []
 	){
 		// The route construct we will save
 		var thisRoute = {};
@@ -815,6 +835,42 @@ component
 
 		// Process all incoming arguments into the route to store
 		thisRoute.append( arguments );
+
+		// Inherit group-level middleware (outermost group first), followed by this route's own
+		// entries registered via .middleware(). Arrays don't participate in processWith()'s
+		// default/prefix merge, so group inheritance is tracked explicitly on its own stack.
+		if ( variables.groupMiddlewareStack.len() ) {
+			var inheritedMiddleware = [];
+			for ( var groupEntries in variables.groupMiddlewareStack ) {
+				inheritedMiddleware.append( groupEntries, true );
+			}
+			inheritedMiddleware.append( thisRoute.middleware, true );
+			thisRoute.middleware = inheritedMiddleware;
+		}
+
+		// Strip any middleware this route opted out of via withoutMiddleware() - matched by target
+		// name (a WireBox ID) or by the middlewareGroup() name an entry was expanded from. "*"
+		// strips everything, inherited or this route's own. Closures/objects have no name to match,
+		// so they can only be excluded by not attaching them in the first place.
+		if ( thisRoute.withoutMiddleware.len() ) {
+			if ( thisRoute.withoutMiddleware.findNoCase( "*" ) ) {
+				thisRoute.middleware = [];
+			} else {
+				var filteredMiddleware = [];
+				for ( var mwEntry in thisRoute.middleware ) {
+					var excludedByTarget = isSimpleValue( mwEntry.target ) && thisRoute.withoutMiddleware.findNoCase(
+						mwEntry.target
+					);
+					var excludedByGroup = mwEntry.keyExists( "group" ) && thisRoute.withoutMiddleware.findNoCase(
+						mwEntry.group
+					);
+					if ( !excludedByTarget && !excludedByGroup ) {
+						filteredMiddleware.append( mwEntry );
+					}
+				}
+				thisRoute.middleware = filteredMiddleware;
+			}
+		}
 
 		// Cleanup Route: Add trailing / to make it easier to parse
 		if ( right( thisRoute.pattern, 1 ) IS NOT "/" ) {
@@ -1176,6 +1232,7 @@ component
 			"layout"                : "", // The layout to proxy to
 			"layoutModule"          : "", // If the layout comes from a module
 			"meta"                  : {}, // Route metadata if any
+			"middleware"            : [], // Route-scoped middleware entries: [ { target, point } ]
 			"module"                : "", // The module event we must execute
 			"moduleRouting"         : "", // This routes to a module
 			"name"                  : "", // The named route
@@ -1197,6 +1254,7 @@ component
 			"view"                  : "", // The view to proxy to
 			"viewModule"            : "", // If the view comes from a module
 			"viewNoLayout"          : false, // If we use a layout or not
+			"withoutMiddleware"     : [], // Middleware target/group names excluded from this route
 			// AI Routing
 			"ai"                    : false, // Flag indicating this is an AI runnable route
 			"aiRunnable"            : "", // The AI runnable WireBox ID or instance
@@ -1377,6 +1435,178 @@ component
 	/****************************************************************************************************************************/
 	/* 													MODIFIERS																*/
 	/****************************************************************************************************************************/
+
+	/**
+	 * Attach route-scoped middleware. Middleware runs at a ColdBox interception point (`preProcess`
+	 * by default, or `postProcess`), but only for requests that matched this route - it is
+	 * <code>InterceptorState</code>'s point-based dispatch, scoped to one route instead of the whole app.
+	 *
+	 * A target can be:
+	 * - A closure/lambda: `function( event, rc, prc ){ ... }`
+	 * - A WireBox ID: resolved via `getInstance()` on every request, so it respects whatever scope
+	 *   (singleton, prototype, etc) the mapping was registered with.
+	 * - Any object, WireBox-managed or not, that has a method named after the point (`preProcess()`/
+	 *   `postProcess()`) - the same duck-typed convention ColdBox interceptors themselves already use.
+	 *   No base class or interface is required.
+	 *
+	 * Returning `true` from a target short-circuits the remaining middleware for this route at this
+	 * point - it does not, by itself, skip the handler or the render. To actually stop the request,
+	 * call `event.relocate()`, `event.renderData().noExecution()`, `event.etag()`, etc, exactly as you
+	 * would from any other preProcess/postProcess interceptor.
+	 *
+	 * A target may also be the name of a bundle registered via `middlewareGroup()` - it expands to
+	 * that bundle's own targets in place, at this call's point unless a member declares its own.
+	 * The group must already be registered when this runs, since expansion happens immediately -
+	 * referencing one too early silently treats the name as a literal target instead of expanding it.
+	 *
+	 * <pre>
+	 * // inline closure
+	 * route( "/admin/:action" ).middleware( function( event, rc, prc ){
+	 *     if ( !auth.isLoggedIn() ) {
+	 *         event.relocate( "login" );
+	 *         return true;
+	 *     }
+	 * } ).toHandler( "admin" );
+	 *
+	 * // a WireBox ID, or any class with a preProcess()/postProcess() method
+	 * route( "/api/reports" ).middleware( "AuditLog", "postProcess" ).to( "reports.index" );
+	 *
+	 * // multiple targets in one call, all on the same point
+	 * route( "/api/orders" ).middleware( [ "RateLimiter", "RequireApiKey" ] ).toHandler( "orders" );
+	 *
+	 * // a name registered via middlewareGroup() - expands to that bundle's targets
+	 * route( "/api/orders" ).middleware( "api" ).toHandler( "orders" );
+	 * </pre>
+	 *
+	 * @target A closure/lambda, a WireBox ID, an object instance, a `middlewareGroup()` name, or an array of any mix of those.
+	 * @point  The interception point to run this middleware at. Defaults to `preProcess`.
+	 */
+	function middleware( required any target, string point = "preProcess" ){
+		// process a with closure if not empty
+		if ( !variables.withClosure.isEmpty() ) {
+			processWith( arguments );
+		}
+
+		variables.thisRoute.middleware.append(
+			normalizeMiddlewareEntries( arguments.target, arguments.point ),
+			true
+		);
+
+		return this;
+	}
+
+	/**
+	 * Register a named, reusable bundle of middleware that can be referenced by name from
+	 * `.middleware()` or a `group( { middleware : [ ... ] } )` call, instead of repeating the same
+	 * target list at every call site - the same role Laravel's `$middlewareGroups` plays.
+	 *
+	 * Groups are flat: an entry may not itself be the name of another group - a bundle is always a
+	 * concrete list of closures/WireBox IDs/objects, never a pointer to another bundle.
+	 *
+	 * Register a group before any `.middleware()`/`group()` call that references it by name - name
+	 * resolution happens immediately, at registration time, not lazily at request time. A name that
+	 * doesn't match a registered group yet is silently treated as a literal target (e.g. a WireBox ID)
+	 * instead of being expanded, so referencing a group too early fails quietly rather than throwing.
+	 *
+	 * <pre>
+	 * middlewareGroup( "api", [ "RequireApiKey", "RateLimiter" ] );
+	 *
+	 * route( "/orders" ).middleware( "api" ).toHandler( "orders" );
+	 *
+	 * group( { pattern : "/api", middleware : [ "api" ] }, function(){
+	 *     route( "/users" ).toHandler( "users" );
+	 * } );
+	 * </pre>
+	 *
+	 * @name       The group name, referenced later as a middleware target.
+	 * @middleware The middleware targets in this group - the same values `.middleware()` accepts.
+	 * @point      The interception point for any member that doesn't declare its own via `{ target, point }`.
+	 */
+	function middlewareGroup(
+		required string name,
+		required any middleware,
+		string point = "preProcess"
+	){
+		variables.middlewareGroups[ arguments.name ] = normalizeMiddlewareEntries(
+			arguments.middleware,
+			arguments.point
+		);
+		return this;
+	}
+
+	/**
+	 * Exclude middleware this route would otherwise inherit - most commonly from an enclosing
+	 * `group()` - from running for this specific route. Mirrors Laravel's `Route::withoutMiddleware()`.
+	 *
+	 * Matches by the same name used to attach the middleware: a WireBox ID, or the name of a
+	 * `middlewareGroup()` - excluding a group name drops every member it expanded to, not just a
+	 * same-named single target. Pass `"*"` to strip all middleware, inherited or this route's own.
+	 *
+	 * Closures and object instances have no name to match, so they can only be kept off a route by
+	 * not attaching them in the first place - the same limitation Laravel has for anonymous middleware.
+	 *
+	 * <pre>
+	 * middlewareGroup( "api", [ "RequireApiKey", "RateLimiter" ] );
+	 *
+	 * group( { pattern : "/api", middleware : [ "api" ] }, function(){
+	 *     route( "/users" ).toHandler( "users" );                              // runs "api"
+	 *     route( "/health" ).withoutMiddleware( "api" ).toHandler( "health" ); // opts out
+	 * } );
+	 * </pre>
+	 *
+	 * @target A middleware target name, a `middlewareGroup()` name, `"*"` for all, or an array of any mix.
+	 */
+	function withoutMiddleware( required any target ){
+		var targets = isArray( arguments.target ) ? arguments.target : [ arguments.target ];
+		variables.thisRoute.withoutMiddleware.append( targets, true );
+		return this;
+	}
+
+	/**
+	 * Normalize a mixed set of middleware targets - closures, WireBox IDs, object instances,
+	 * `{ target, point }` structs, or the name of a previously registered `middlewareGroup()` - into
+	 * the canonical `{ target, point, group }` entry shape `addRoute()` and `runRouteMiddleware()`
+	 * expect. A name that resolves to a registered group expands to that group's own entries, each
+	 * tagged with the group name it came from so `withoutMiddleware()` can exclude the whole bundle
+	 * later without knowing its individual members.
+	 *
+	 * Groups are flat - a group's own members are never expanded again here - so there's no risk of
+	 * a group indirectly referencing itself.
+	 *
+	 * @entries      A single target, or an array of any mix of the above.
+	 * @defaultPoint The interception point to use for any entry that doesn't declare its own.
+	 */
+	private array function normalizeMiddlewareEntries( required any entries, string defaultPoint = "preProcess" ){
+		var rawEntries = isArray( arguments.entries ) ? arguments.entries : [ arguments.entries ];
+		var normalized = [];
+
+		for ( var entry in rawEntries ) {
+			var target = entry;
+			var point  = arguments.defaultPoint;
+
+			if ( isStruct( entry ) && entry.keyExists( "target" ) ) {
+				target = entry.target;
+				point  = entry.keyExists( "point" ) ? entry.point : arguments.defaultPoint;
+			}
+
+			// A name that matches a registered middleware group expands to that group's members,
+			// each tagged with the group name so withoutMiddleware() can exclude it as a whole.
+			if ( isSimpleValue( target ) && variables.middlewareGroups.keyExists( target ) ) {
+				for ( var groupEntry in variables.middlewareGroups[ target ] ) {
+					normalized.append( {
+						"target" : groupEntry.target,
+						"point"  : groupEntry.point,
+						"group"  : target
+					} );
+				}
+				continue;
+			}
+
+			normalized.append( { "target" : target, "point" : point } );
+		}
+
+		return normalized;
+	}
 
 	/**
 	 * Add a header to a route

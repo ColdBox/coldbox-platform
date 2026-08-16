@@ -233,6 +233,8 @@ component serializable="false" accessors="true" {
 
 			// ****** PRE PROCESS *******/
 			interceptorService.announce( "preProcess" );
+			// Route-scoped middleware runs after the global preProcess chain, closest to the handler
+			cbController.getRoutingService().runRouteMiddleware( event, "preProcess" );
 			if ( len( cbController.getSetting( "RequestStartHandler" ) ) ) {
 				cbController.runEvent(
 					event        : cbController.getSetting( "RequestStartHandler" ),
@@ -474,6 +476,8 @@ component serializable="false" accessors="true" {
 					prePostExempt = true
 				);
 			}
+			// Route-scoped middleware runs before the global postProcess chain, closest to the handler
+			cbController.getRoutingService().runRouteMiddleware( event, "postProcess" );
 			interceptorService.announce( "postProcess" );
 
 			// ****** FLASH AUTO-SAVE *******/

@@ -356,6 +356,279 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				} );
 			} );
 
+			story( "I want to attach route-scoped middleware", function(){
+				given( "a single middleware target with no explicit point", function(){
+					then( "it defaults to preProcess and accumulates in order", function(){
+						var authCheck = function( event, rc, prc ){
+						};
+						router
+							.route( "/admin" )
+							.middleware( authCheck )
+							.middleware( "AuditLog", "postProcess" )
+							.toHandler( "admin" );
+
+						var middleware = router.getRoutes()[ 1 ].middleware;
+						expect( middleware ).toHaveLength( 2 );
+						expect( middleware[ 1 ].target ).toBe( authCheck );
+						expect( middleware[ 1 ].point ).toBe( "preProcess" );
+						expect( middleware[ 2 ].target ).toBe( "AuditLog" );
+						expect( middleware[ 2 ].point ).toBe( "postProcess" );
+					} );
+				} );
+
+				given( "an array of targets in a single call", function(){
+					then( "each target is registered individually on the same point", function(){
+						router
+							.route( "/api/orders" )
+							.middleware( [ "RateLimiter", "RequireApiKey" ] )
+							.toHandler( "orders" );
+
+						var middleware = router.getRoutes()[ 1 ].middleware;
+						expect( middleware ).toHaveLength( 2 );
+						expect( middleware[ 1 ].target ).toBe( "RateLimiter" );
+						expect( middleware[ 1 ].point ).toBe( "preProcess" );
+						expect( middleware[ 2 ].target ).toBe( "RequireApiKey" );
+						expect( middleware[ 2 ].point ).toBe( "preProcess" );
+					} );
+				} );
+
+				given( "a route with no middleware() calls", function(){
+					then( "it still carries the defaulted empty middleware array", function(){
+						router.route( "/plain" );
+						expect( router.getThisRoute().middleware ).toBeArray().toBeEmpty();
+					} );
+				} );
+
+				given( "a group with middleware options", function(){
+					then( "every route inside inherits it ahead of its own middleware", function(){
+						router.group( { pattern : "/api", middleware : [ "RequireApiKey" ] }, function( options ){
+							router
+								.route( "/users" )
+								.middleware( "RateLimiter" )
+								.toHandler( "users" );
+							router.route( "/products" ).toHandler( "products" );
+						} );
+
+						var routes = router.getRoutes();
+						expect( routes ).toHaveLength( 2 );
+
+						expect( routes[ 1 ].middleware ).toHaveLength( 2 );
+						expect( routes[ 1 ].middleware[ 1 ].target ).toBe( "RequireApiKey" );
+						expect( routes[ 1 ].middleware[ 2 ].target ).toBe( "RateLimiter" );
+
+						expect( routes[ 2 ].middleware ).toHaveLength( 1 );
+						expect( routes[ 2 ].middleware[ 1 ].target ).toBe( "RequireApiKey" );
+					} );
+				} );
+
+				given( "a route registered outside any group", function(){
+					then( "it does not inherit a previously-run group's middleware", function(){
+						router.group( { pattern : "/api", middleware : [ "RequireApiKey" ] }, function( options ){
+							router.route( "/users" ).toHandler( "users" );
+						} );
+						router.route( "/public" ).toHandler( "public" );
+
+						var routes = router.getRoutes();
+						expect( routes[ 2 ].middleware ).toBeArray().toBeEmpty();
+					} );
+				} );
+
+				given( "nested groups each contributing middleware", function(){
+					then( "the outer group's middleware runs before the inner group's", function(){
+						router.group( { pattern : "/api", middleware : [ "RequireApiKey" ] }, function( options ){
+							router.group( { pattern : "/admin", middleware : [ "RequireAdmin" ] }, function( innerOptions ){
+								router.route( "/users" ).toHandler( "users" );
+							} );
+						} );
+
+						var middleware = router.getRoutes()[ 1 ].middleware;
+						expect( middleware ).toHaveLength( 2 );
+						expect( middleware[ 1 ].target ).toBe( "RequireApiKey" );
+						expect( middleware[ 2 ].target ).toBe( "RequireAdmin" );
+					} );
+				} );
+
+				given( "a group middleware option that is a single target, not wrapped in an array", function(){
+					then( "it is normalized to a one-entry list rather than iterated as a collection", function(){
+						router.group( { pattern : "/api", middleware : "RequireApiKey" }, function( options ){
+							router.route( "/users" ).toHandler( "users" );
+						} );
+
+						var middleware = router.getRoutes()[ 1 ].middleware;
+						expect( middleware ).toHaveLength( 1 );
+						expect( middleware[ 1 ].target ).toBe( "RequireApiKey" );
+						expect( middleware[ 1 ].point ).toBe( "preProcess" );
+					} );
+				} );
+
+				given( "a group middleware entry given as a struct with no point key", function(){
+					then( "point defaults to preProcess instead of throwing later", function(){
+						router.group(
+							{
+								pattern    : "/api",
+								middleware : [ { target : "RequireApiKey" } ]
+							},
+							function( options ){
+								router.route( "/users" ).toHandler( "users" );
+							}
+						);
+
+						var middleware = router.getRoutes()[ 1 ].middleware;
+						expect( middleware[ 1 ].target ).toBe( "RequireApiKey" );
+						expect( middleware[ 1 ].point ).toBe( "preProcess" );
+					} );
+				} );
+
+				given( "a group body that throws", function(){
+					then( "group state is still cleaned up so it does not leak into later routes", function(){
+						expect( function(){
+							router.group( { pattern : "/api", middleware : [ "RequireApiKey" ] }, function( options ){
+								throw( message = "boom", type = "TestBoom" );
+							} );
+						} ).toThrow( type = "TestBoom" );
+
+						router.route( "/public" ).toHandler( "public" );
+
+						var routes = router.getRoutes();
+						expect( routes[ routes.len() ].middleware ).toBeArray().toBeEmpty();
+						expect( routes[ routes.len() ].pattern ).toBe( "public/" );
+					} );
+				} );
+
+				given( "a middlewareGroup() referenced from .middleware()", function(){
+					then( "it expands to the group's members, tagged with the group name", function(){
+						router.middlewareGroup( "api", [ "RequireApiKey", "RateLimiter" ] );
+						router
+							.route( "/orders" )
+							.middleware( "api" )
+							.toHandler( "orders" );
+
+						var middleware = router.getRoutes()[ 1 ].middleware;
+						expect( middleware ).toHaveLength( 2 );
+						expect( middleware[ 1 ].target ).toBe( "RequireApiKey" );
+						expect( middleware[ 1 ].point ).toBe( "preProcess" );
+						expect( middleware[ 1 ].group ).toBe( "api" );
+						expect( middleware[ 2 ].target ).toBe( "RateLimiter" );
+						expect( middleware[ 2 ].group ).toBe( "api" );
+					} );
+				} );
+
+				given( "a middlewareGroup() referenced from a group()'s middleware option", function(){
+					then( "every route in the body inherits the expanded group members", function(){
+						router.middlewareGroup( "api", [ "RequireApiKey", "RateLimiter" ] );
+						router.group( { pattern : "/api", middleware : [ "api" ] }, function( options ){
+							router.route( "/users" ).toHandler( "users" );
+						} );
+
+						var middleware = router.getRoutes()[ 1 ].middleware;
+						expect( middleware ).toHaveLength( 2 );
+						expect( middleware[ 1 ].target ).toBe( "RequireApiKey" );
+						expect( middleware[ 2 ].target ).toBe( "RateLimiter" );
+					} );
+				} );
+
+				given( "a middlewareGroup() entry given its own point", function(){
+					then( "that member keeps its own point instead of the group's default", function(){
+						router.middlewareGroup(
+							"audited",
+							[
+								"RequireApiKey",
+								{ target : "AuditLog", point : "postProcess" }
+							]
+						);
+						router
+							.route( "/orders" )
+							.middleware( "audited" )
+							.toHandler( "orders" );
+
+						var middleware = router.getRoutes()[ 1 ].middleware;
+						expect( middleware[ 1 ].point ).toBe( "preProcess" );
+						expect( middleware[ 2 ].target ).toBe( "AuditLog" );
+						expect( middleware[ 2 ].point ).toBe( "postProcess" );
+					} );
+				} );
+
+				given( "withoutMiddleware() naming a single WireBox ID target", function(){
+					then( "only that target is stripped from the merged middleware list", function(){
+						router.group(
+							{
+								pattern    : "/api",
+								middleware : [ "RequireApiKey", "RateLimiter" ]
+							},
+							function( options ){
+								router
+									.route( "/health" )
+									.withoutMiddleware( "RateLimiter" )
+									.toHandler( "health" );
+							}
+						);
+
+						var middleware = router.getRoutes()[ 1 ].middleware;
+						expect( middleware ).toHaveLength( 1 );
+						expect( middleware[ 1 ].target ).toBe( "RequireApiKey" );
+					} );
+				} );
+
+				given( "withoutMiddleware() naming a middlewareGroup()", function(){
+					then( "every member that group expanded to is stripped", function(){
+						router.middlewareGroup( "api", [ "RequireApiKey", "RateLimiter" ] );
+						router.group( { pattern : "/api", middleware : [ "api" ] }, function( options ){
+							router.route( "/users" ).toHandler( "users" );
+							router
+								.route( "/health" )
+								.withoutMiddleware( "api" )
+								.toHandler( "health" );
+						} );
+
+						var routes = router.getRoutes();
+						expect( routes[ 1 ].middleware ).toHaveLength( 2 );
+						expect( routes[ 2 ].middleware ).toBeArray().toBeEmpty();
+					} );
+				} );
+
+				given( "withoutMiddleware( '*' )", function(){
+					then( "every middleware for that route is stripped, inherited or its own", function(){
+						router.group( { pattern : "/api", middleware : [ "RequireApiKey" ] }, function( options ){
+							router
+								.route( "/health" )
+								.middleware( "RateLimiter" )
+								.withoutMiddleware( "*" )
+								.toHandler( "health" );
+						} );
+
+						expect( router.getRoutes()[ 1 ].middleware ).toBeArray().toBeEmpty();
+					} );
+				} );
+
+				given( "a route with no withoutMiddleware() calls", function(){
+					then( "its middleware is unaffected", function(){
+						router.group( { pattern : "/api", middleware : [ "RequireApiKey" ] }, function( options ){
+							router.route( "/users" ).toHandler( "users" );
+						} );
+
+						expect( router.getRoutes()[ 1 ].middleware ).toHaveLength( 1 );
+					} );
+				} );
+
+				given( "a middlewareGroup() name referenced before the group is registered", function(){
+					then( "it is treated as a literal target instead of being expanded", function(){
+						// Documents a known ordering requirement: expansion happens immediately at
+						// registration time, not lazily at request time, so a group must be
+						// registered before anything references it by name.
+						router
+							.route( "/z" )
+							.middleware( "lateGroup" )
+							.toHandler( "z" );
+						router.middlewareGroup( "lateGroup", [ "RequireApiKey" ] );
+
+						var middleware = router.getRoutes()[ 1 ].middleware;
+						expect( middleware ).toHaveLength( 1 );
+						expect( middleware[ 1 ].target ).toBe( "lateGroup" );
+						expect( middleware[ 1 ] ).notToHaveKey( "group" );
+					} );
+				} );
+			} );
+
 			story( "Router will throw exception if a non-closure or string is passed to the body of a toResponse()", function(){
 				given( "Anything but a closure or string to the toResponse() body", function(){
 					then( "an InvalidArgumentException will be thrown", function(){
