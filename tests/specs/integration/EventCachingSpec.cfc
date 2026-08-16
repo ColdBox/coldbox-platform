@@ -356,13 +356,26 @@
 			} );
 
 			// HTTP Caching - Tier 1 (docs/specs/http-caching.md §4.2/§4.4)
+			//
+			// execute() is a headless request simulator (system/testing/BaseTestCase.cfc) - it
+			// runs the handler and render steps directly rather than going through Bootstrap.cfc's
+			// actual onRequest cycle, so it never reaches the real event-caching *write* to
+			// CacheBox (every other test in this file only ever asserts against
+			// cbox_eventCacheableEntry for the same reason - none of them read the cache store
+			// back either). These specs are scoped to what execute() can actually observe: that
+			// the new annotations flow correctly into that same pre-execution metadata. The
+			// write-time hash computation and the conditional-GET short-circuit decision itself
+			// are covered directly against RequestContext in RequestContextHTTPCachingTest.cfc.
 
 			it( "flows the etag annotation into the cacheable entry metadata", function(){
 				var event = execute( event = "eventcaching.withETag", renderResults = true );
 				var prc   = event.getPrivateCollection();
 
-				expect( prc.cbox_eventCacheableEntry ).toBeStruct().toHaveKey( "etag" );
+				expect( prc.cbox_eventCacheableEntry ).toBeStruct().toHaveKey( "etag,etagWeak,cacheControl" );
 				expect( prc.cbox_eventCacheableEntry.etag ).toBeTrue();
+				// Neither annotation was set on this action, so both resolve to their defaults
+				expect( prc.cbox_eventCacheableEntry.etagWeak ).toBeFalse();
+				expect( prc.cbox_eventCacheableEntry.cacheControl ).toBeEmpty();
 			} );
 
 			it( "flows the lastModified annotation into the cacheable entry metadata", function(){
@@ -373,42 +386,17 @@
 				expect( prc.cbox_eventCacheableEntry.lastModified ).toBeTrue();
 			} );
 
-			it( "computes and stores an ETag hash on the cache entry once, at write time", function(){
-				var event    = execute( event = "eventcaching.withETag", renderResults = true );
-				var prc      = event.getPrivateCollection();
-				var cacheKey = prc.cbox_eventCacheableEntry.cacheKey;
-				var cached   = getCache( "template" ).get( cacheKey );
+			it( "defaults etag/etagWeak/lastModified/cacheControl to off for handlers that never set them", function(){
+				var event = execute( event = "eventcaching", renderResults = true );
+				var prc   = event.getPrivateCollection();
 
-				expect( cached ).toBeStruct().toHaveKey( "etag" );
-				// MD5 hex digest
-				expect( cached.etag ).toMatch( "^[0-9A-Fa-f]{32}$" );
-			} );
-
-			it( "produces the same stored ETag across identical content, proving the hash is deterministic", function(){
-				getCache( "template" ).clearEvent( "eventcaching.withETag" );
-
-				var event1    = execute( event = "eventcaching.withETag", renderResults = true );
-				var cacheKey1 = event1.getPrivateCollection().cbox_eventCacheableEntry.cacheKey;
-				var etag1     = getCache( "template" ).get( cacheKey1 ).etag;
-
-				getCache( "template" ).clearEvent( "eventcaching.withETag" );
-				setup();
-
-				var event2    = execute( event = "eventcaching.withETag", renderResults = true );
-				var cacheKey2 = event2.getPrivateCollection().cbox_eventCacheableEntry.cacheKey;
-				var etag2     = getCache( "template" ).get( cacheKey2 ).etag;
-
-				expect( etag1 ).toBe( etag2 );
-			} );
-
-			it( "derives a Cache-Control max-age from cacheTimeout when none is explicitly set", function(){
-				var event    = execute( event = "eventcaching.withETag", renderResults = true );
-				var prc      = event.getPrivateCollection();
-				var cacheKey = prc.cbox_eventCacheableEntry.cacheKey;
-				var cached   = getCache( "template" ).get( cacheKey );
-
-				expect( cached ).toBeStruct().toHaveKey( "cacheControl" );
-				expect( cached.cacheControl ).toBe( "private, max-age=600" );
+				expect( prc.cbox_eventCacheableEntry )
+					.toBeStruct()
+					.toHaveKey( "etag,etagWeak,lastModified,cacheControl" );
+				expect( prc.cbox_eventCacheableEntry.etag ).toBeFalse();
+				expect( prc.cbox_eventCacheableEntry.etagWeak ).toBeFalse();
+				expect( prc.cbox_eventCacheableEntry.lastModified ).toBeFalse();
+				expect( prc.cbox_eventCacheableEntry.cacheControl ).toBeEmpty();
 			} );
 
 			var formats = [ "json", "xml", "pdf" ];
