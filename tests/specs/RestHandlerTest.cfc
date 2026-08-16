@@ -70,6 +70,54 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				expect( handler ).toBeComponent();
 			} );
 
+			it( "does not marshal a body or flush headers once a conditional-GET has already committed a 304", function(){
+				var event = mockRequestContext;
+				var prc   = event.getPrivateCollection();
+				event.getResponse();
+
+				event.$( "isSSE", false );
+				event.$( "isNoExecution", true );
+				event.$( "renderData" );
+				event.$( "setHTTPHeader" );
+
+				handler.aroundHandler(
+					event        = event,
+					rc           = event.getCollection(),
+					prc          = prc,
+					targetAction = function( event, rc, prc ){
+					},
+					eventArguments = {}
+				);
+
+				expect( event.$never( "renderData" ) ).toBeTrue();
+				expect( event.$never( "setHTTPHeader" ) ).toBeTrue();
+			} );
+
+			it( "still marshals normally when isNoExecution() is false", function(){
+				var event = mockRequestContext;
+				var prc   = event.getPrivateCollection();
+				event.getResponse();
+
+				event.$( "isSSE", false );
+				event.$( "isNoExecution", false );
+				event.$( "renderData" );
+				// The header-flush loop further down aroundHandler() calls the real
+				// setHTTPHeader(), which needs a real servlet page context unavailable in this
+				// sandbox - stubbed here since it is not what this test is verifying.
+				event.$( "setHTTPHeader" );
+
+				handler.aroundHandler(
+					event        = event,
+					rc           = event.getCollection(),
+					prc          = prc,
+					targetAction = function( event, rc, prc ){
+					},
+					eventArguments = {}
+				);
+
+				expect( event.$once( "renderData" ) ).toBeTrue();
+			} );
+
 			it( "can handle onExpectationFailed", function(){
 				makePublic( handler, "onExpectationFailed" );
 				handler.onExpectationFailed();

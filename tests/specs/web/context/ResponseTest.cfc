@@ -58,6 +58,32 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				expect( variables.response.getHeaders() ).toBeEmpty();
 			} );
 
+			it( "can set an ETag header fluently", function(){
+				variables.response.withETag( "abc123" );
+				expect( variables.response.getHeader( "ETag" ) ).toBe( """abc123""" );
+			} );
+
+			it( "can set a weak ETag header fluently", function(){
+				variables.response.withETag( value = "abc123", weak = true );
+				expect( variables.response.getHeader( "ETag" ) ).toBe( "W/""abc123""" );
+			} );
+
+			it( "replaces rather than duplicates an existing ETag header", function(){
+				variables.response.withETag( "first" ).withETag( "second" );
+				expect( variables.response.getHeaders().len() ).toBe( 1 );
+				expect( variables.response.getHeader( "ETag" ) ).toBe( """second""" );
+			} );
+
+			it( "can set a Cache-Control header fluently", function(){
+				variables.response.withCacheControl( { "public" : true, "max-age" : 60 } );
+				expect( variables.response.getHeader( "Cache-Control" ) ).toBe( "public, max-age=60" );
+			} );
+
+			it( "defaults Cache-Control to no-cache", function(){
+				variables.response.withCacheControl();
+				expect( variables.response.getHeader( "Cache-Control" ) ).toBe( "no-cache" );
+			} );
+
 
 			it( "can handle pagination", function(){
 				response.setPagination( 0, 100, 1, 1000, 10 );

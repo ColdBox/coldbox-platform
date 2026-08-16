@@ -355,6 +355,62 @@
 				expect( prc1.cbox_eventCacheableEntry.cacheKey ).notToBe( prc2.cbox_eventCacheableEntry.cacheKey );
 			} );
 
+			// HTTP Caching - Tier 1 (docs/specs/http-caching.md §4.2/§4.4)
+
+			it( "flows the etag annotation into the cacheable entry metadata", function(){
+				var event = execute( event = "eventcaching.withETag", renderResults = true );
+				var prc   = event.getPrivateCollection();
+
+				expect( prc.cbox_eventCacheableEntry ).toBeStruct().toHaveKey( "etag" );
+				expect( prc.cbox_eventCacheableEntry.etag ).toBeTrue();
+			} );
+
+			it( "flows the lastModified annotation into the cacheable entry metadata", function(){
+				var event = execute( event = "eventcaching.withLastModified", renderResults = true );
+				var prc   = event.getPrivateCollection();
+
+				expect( prc.cbox_eventCacheableEntry ).toBeStruct().toHaveKey( "lastModified" );
+				expect( prc.cbox_eventCacheableEntry.lastModified ).toBeTrue();
+			} );
+
+			it( "computes and stores an ETag hash on the cache entry once, at write time", function(){
+				var event    = execute( event = "eventcaching.withETag", renderResults = true );
+				var prc      = event.getPrivateCollection();
+				var cacheKey = prc.cbox_eventCacheableEntry.cacheKey;
+				var cached   = getCache( "template" ).get( cacheKey );
+
+				expect( cached ).toBeStruct().toHaveKey( "etag" );
+				// MD5 hex digest
+				expect( cached.etag ).toMatch( "^[0-9A-Fa-f]{32}$" );
+			} );
+
+			it( "produces the same stored ETag across identical content, proving the hash is deterministic", function(){
+				getCache( "template" ).clearEvent( "eventcaching.withETag" );
+
+				var event1    = execute( event = "eventcaching.withETag", renderResults = true );
+				var cacheKey1 = event1.getPrivateCollection().cbox_eventCacheableEntry.cacheKey;
+				var etag1     = getCache( "template" ).get( cacheKey1 ).etag;
+
+				getCache( "template" ).clearEvent( "eventcaching.withETag" );
+				setup();
+
+				var event2    = execute( event = "eventcaching.withETag", renderResults = true );
+				var cacheKey2 = event2.getPrivateCollection().cbox_eventCacheableEntry.cacheKey;
+				var etag2     = getCache( "template" ).get( cacheKey2 ).etag;
+
+				expect( etag1 ).toBe( etag2 );
+			} );
+
+			it( "derives a Cache-Control max-age from cacheTimeout when none is explicitly set", function(){
+				var event    = execute( event = "eventcaching.withETag", renderResults = true );
+				var prc      = event.getPrivateCollection();
+				var cacheKey = prc.cbox_eventCacheableEntry.cacheKey;
+				var cached   = getCache( "template" ).get( cacheKey );
+
+				expect( cached ).toBeStruct().toHaveKey( "cacheControl" );
+				expect( cached.cacheControl ).toBe( "private, max-age=600" );
+			} );
+
 			var formats = [ "json", "xml", "pdf" ];
 			for ( var thisFormat in formats ) {
 				it(

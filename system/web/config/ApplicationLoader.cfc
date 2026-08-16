@@ -160,6 +160,9 @@ component accessors="true" {
 		/* ::::::::::::::::::::::::::::::::::::::::: Server-Sent Events Configuration :::::::::::::::::::::::::::::::::::::::::::: */
 		parseSSE( oConfig, configStruct );
 
+		/* ::::::::::::::::::::::::::::::::::::::::: HTTP Caching Configuration :::::::::::::::::::::::::::::::::::::::::::: */
+		parseHTTPCaching( oConfig, configStruct );
+
 		/* ::::::::::::::::::::::::::::::::::::::::: Executors Config  :::::::::::::::::::::::::::::::::::::::::::: */
 		parseExecutors( oConfig, configStruct );
 
@@ -734,6 +737,28 @@ component accessors="true" {
 		// check if empty or not, if not, then append and override
 		if ( NOT structIsEmpty( sseDSL ) ) {
 			structAppend( arguments.config.sse, sseDSL, true );
+		}
+	}
+
+	/**
+	 * Parse the HTTP Caching settings
+	 */
+	function parseHTTPCaching( required oConfig, required config ){
+		var fwSettingsStruct = variables.coldboxSettings;
+
+		// Default Config Structure
+		arguments.config.httpCaching = duplicate( fwSettingsStruct.httpCaching );
+
+		// Check if we have defined the DSL in the application config
+		var httpCachingDSL = arguments.oConfig.getPropertyMixin( "httpCaching", "variables", {} );
+
+		// check if empty or not, if not, then append and override
+		if ( NOT structIsEmpty( httpCachingDSL ) ) {
+			structAppend(
+				arguments.config.httpCaching,
+				httpCachingDSL,
+				true
+			);
 		}
 	}
 

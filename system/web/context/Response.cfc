@@ -300,6 +300,43 @@ component accessors="true" {
 	}
 
 	/**
+	 * Sets the ETag response header
+	 *
+	 * @value The entity tag value. Quoting is handled here - pass the raw value.
+	 * @weak  Mark as a weak validator (`W/"..."`)
+	 *
+	 * @return Returns the Response object for chaining
+	 */
+	Response function withETag( required string value, boolean weak = false ){
+		return setHeader( "ETag", ( arguments.weak ? "W/" : "" ) & """#arguments.value#""" )
+	}
+
+	/**
+	 * Sets the Cache-Control response header from a directive struct
+	 *
+	 * Boolean `true` values become bare directives (`"public"`, `"no-cache"`); any other value
+	 * becomes `"key=value"`.
+	 *
+	 * @directives e.g. `{ "public" : true, "max-age" : 60, "stale-while-revalidate" : 30 }`
+	 *
+	 * @return Returns the Response object for chaining
+	 */
+	Response function withCacheControl( struct directives = { "no-cache" : true } ){
+		return setHeader(
+			"Cache-Control",
+			arguments.directives
+				.reduce( ( acc, key, val ) => {
+					// isBoolean() is loosely true for any castable value (isBoolean(60) is true in
+					// CFML/BoxLang), so numerics must be excluded explicitly or a directive like
+					// max-age=60 silently loses its value and becomes the bare token "max-age".
+					acc.append( ( isBoolean( val ) && !isNumeric( val ) && val ) ? key : "#key#=#val#" )
+					return acc
+				}, [] )
+				.toList( ", " )
+		)
+	}
+
+	/**
 	 * Set the pagination data
 	 *
 	 * @offset       The offset

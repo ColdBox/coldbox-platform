@@ -114,9 +114,11 @@ component extends="EventHandler" {
 		// end timer
 		arguments.prc.response.setResponseTime( getTickCount() - stime );
 
-		// SSE streams have already committed the response. Both the marshalling below and the
-		// header flush further down would be write-after-commit, so bail out entirely.
-		if ( arguments.event.isSSE() ) {
+		// SSE streams, and a conditional-GET already resolved with event.etag()/lastModified()
+		// (docs/specs/http-caching.md §6), have both already committed the response - the
+		// marshalling below and the header flush further down would be write-after-commit
+		// against either, so bail out entirely.
+		if ( arguments.event.isSSE() || arguments.event.isNoExecution() ) {
 			if ( !isNull( local.actionResults ) ) {
 				return local.actionResults;
 			}
