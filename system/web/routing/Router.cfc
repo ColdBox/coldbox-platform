@@ -525,24 +525,35 @@ component
 		// Push this group's middleware onto the stack - arrays aren't part of the withClosure
 		// default/prefix merge, so they're inherited via their own stack instead. Pushed even when
 		// empty so the stack depth always matches the current group nesting depth. Entries are
-		// normalized to the same { target, point } shape middleware() produces.
-		var groupMiddleware   = structKeyExists( arguments.options, "middleware" ) ? arguments.options.middleware : [];
+		// normalized to the same { target, point } shape middleware() produces - options.middleware
+		// may be a single target (not wrapped in an array) or a struct missing its own `point`.
+		var groupMiddleware = structKeyExists( arguments.options, "middleware" ) ? arguments.options.middleware : [];
+		if ( !isArray( groupMiddleware ) ) {
+			groupMiddleware = [ groupMiddleware ];
+		}
 		var normalizedGroupMW = [];
 		for ( var entry in groupMiddleware ) {
 			if ( isStruct( entry ) && entry.keyExists( "target" ) ) {
-				normalizedGroupMW.append( entry );
+				normalizedGroupMW.append( {
+					"target" : entry.target,
+					"point"  : entry.keyExists( "point" ) ? entry.point : "preProcess"
+				} );
 			} else {
 				normalizedGroupMW.append( { "target" : entry, "point" : "preProcess" } );
 			}
 		}
 		variables.groupMiddlewareStack.append( normalizedGroupMW );
-		// Execute the body
-		arguments.body( arguments.options );
 
-		// Pivot out of the group and do cleanup
-		variables.groupMiddlewareStack.deleteAt( variables.groupMiddlewareStack.len() );
-		variables.onGroup     = false;
-		variables.withClosure = {};
+		try {
+			// Execute the body
+			arguments.body( arguments.options );
+		} finally {
+			// Pivot out of the group and do cleanup - always, even if the body threw, so a failed
+			// registration can't leak this group's middleware/options into whatever registers next.
+			variables.groupMiddlewareStack.deleteAt( variables.groupMiddlewareStack.len() );
+			variables.onGroup     = false;
+			variables.withClosure = {};
+		}
 
 		return this;
 	}

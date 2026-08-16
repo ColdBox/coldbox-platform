@@ -447,6 +447,53 @@ component extends="coldbox.system.testing.BaseModelTest" {
 						expect( middleware[ 2 ].target ).toBe( "RequireAdmin" );
 					} );
 				} );
+
+				given( "a group middleware option that is a single target, not wrapped in an array", function(){
+					then( "it is normalized to a one-entry list rather than iterated as a collection", function(){
+						router.group( { pattern : "/api", middleware : "RequireApiKey" }, function( options ){
+							router.route( "/users" ).toHandler( "users" );
+						} );
+
+						var middleware = router.getRoutes()[ 1 ].middleware;
+						expect( middleware ).toHaveLength( 1 );
+						expect( middleware[ 1 ].target ).toBe( "RequireApiKey" );
+						expect( middleware[ 1 ].point ).toBe( "preProcess" );
+					} );
+				} );
+
+				given( "a group middleware entry given as a struct with no point key", function(){
+					then( "point defaults to preProcess instead of throwing later", function(){
+						router.group(
+							{
+								pattern    : "/api",
+								middleware : [ { target : "RequireApiKey" } ]
+							},
+							function( options ){
+								router.route( "/users" ).toHandler( "users" );
+							}
+						);
+
+						var middleware = router.getRoutes()[ 1 ].middleware;
+						expect( middleware[ 1 ].target ).toBe( "RequireApiKey" );
+						expect( middleware[ 1 ].point ).toBe( "preProcess" );
+					} );
+				} );
+
+				given( "a group body that throws", function(){
+					then( "group state is still cleaned up so it does not leak into later routes", function(){
+						expect( function(){
+							router.group( { pattern : "/api", middleware : [ "RequireApiKey" ] }, function( options ){
+								throw( message = "boom", type = "TestBoom" );
+							} );
+						} ).toThrow( type = "TestBoom" );
+
+						router.route( "/public" ).toHandler( "public" );
+
+						var routes = router.getRoutes();
+						expect( routes[ routes.len() ].middleware ).toBeArray().toBeEmpty();
+						expect( routes[ routes.len() ].pattern ).toBe( "public/" );
+					} );
+				} );
 			} );
 
 			story( "Router will throw exception if a non-closure or string is passed to the body of a toResponse()", function(){
