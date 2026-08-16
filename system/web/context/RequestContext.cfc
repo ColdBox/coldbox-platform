@@ -1833,6 +1833,203 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
+	 * Is this request currently flagged to skip event execution?
+	 *
+	 * Set by `noExecution()`. Framework guard points (e.g. `RestHandler.aroundHandler`) use this
+	 * to avoid a write-after-commit against a response that a conditional-GET already resolved
+	 * with a bare status code, the same way `isSSE()` guards against writing to a committed stream.
+	 */
+	boolean function isNoExecution(){
+		return variables.isNoExecution;
+	}
+
+	/**
+	 * Sets the ETag response header and checks it against an incoming If-None-Match.
+	 *
+	 * On a match, short-circuits the request: calls `noExecution()` and responds `304` with no
+	 * body. Never short-circuits unsafe HTTP methods (anything but GET/HEAD), regardless of
+	 * whether the entity tags match, since a conditional-GET result has no meaning for a mutation.
+	 *
+	 * <pre>
+	 * function show( event, rc, prc ){
+	 *     prc.product = productService.get( rc.id )
+	 *     if( event.etag( prc.product.getHash() ) ){
+	 *         return
+	 *     }
+	 *     event.setView( "products/show" )
+	 * }
+	 * </pre>
+	 *
+	 * @value The entity tag value. Quoting is handled here - pass the raw value.
+	 * @weak  Mark as a weak validator (`W/"..."`) - use for a semantically-but-not-byte-identical representation.
+	 *
+	 * @return True if the request was short-circuited with a 304
+	 */
+	boolean function etag( required string value, boolean weak = false ){
+		var tag = ( arguments.weak ? "W/" : "" ) & """#arguments.value#""";
+		setHTTPHeader( name = "ETag", value = tag );
+
+		if ( isSafeHTTPMethod() && matchesIfNoneMatch( tag ) ) {
+			noExecution();
+			setHTTPHeader( statusCode = 304 );
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Sets the Last-Modified response header and checks it against an incoming If-Modified-Since.
+	 *
+	 * On a match, short-circuits the request the same way `etag()` does. HTTP-date granularity is
+	 * seconds - callers with sub-second timestamps should round down, never up, to avoid a false
+	 * negative (reporting the resource as modified when it was not).
+	 *
+	 * Per RFC 7232 §3.3, a request carrying an If-None-Match header MUST have its If-Modified-Since
+	 * ignored - the entity tag is the more precise signal, so a request with both never short-circuits
+	 * here, even if the date matches (call `etag()` for that comparison instead).
+	 *
+	 * @value The last-modified timestamp of the resource
+	 *
+	 * @return True if the request was short-circuited with a 304
+	 */
+	boolean function lastModified( required date value ){
+		setHTTPHeader( name = "Last-Modified", value = toHTTPDate( arguments.value ) );
+
+		var since = getHTTPHeader( "If-Modified-Since", "" );
+		if (
+			isSafeHTTPMethod() &&
+			!len( getHTTPHeader( "If-None-Match", "" ) ) &&
+			len( since ) &&
+			isDate( since ) &&
+			parseDateTime( since ) >= arguments.value
+		) {
+			noExecution();
+			setHTTPHeader( statusCode = 304 );
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Sets the Cache-Control response header from a directive struct.
+	 *
+	 * Boolean `true` values become bare directives (`"public"`, `"no-cache"`); any other value
+	 * becomes `"key=value"`.
+	 *
+	 * @directives e.g. `{ "public" : true, "max-age" : 60, "stale-while-revalidate" : 30 }`
+	 *
+	 * @return RequestContext
+	 */
+	function cacheControl( struct directives = { "no-cache" : true } ){
+		setHTTPHeader(
+			name  = "Cache-Control",
+			value = arguments.directives
+				.reduce( ( acc, key, val ) => {
+					// isBoolean() is loosely true for any castable value (isBoolean(60) is true in
+					// CFML/BoxLang), so numerics must be excluded explicitly or a directive like
+					// max-age=60 silently loses its value and becomes the bare token "max-age".
+					acc.append( ( isBoolean( val ) && !isNumeric( val ) && val ) ? key : "#key#=#val#" );
+					return acc;
+				}, [] )
+				.toList( ", " )
+		);
+		return this;
+	}
+
+	/**
+	 * Is the current request's HTTP method safe to answer with a conditional-GET short-circuit?
+	 *
+	 * Only GET and HEAD are safe - a 304 in response to a POST/PUT/PATCH/DELETE would be a
+	 * specification violation and a correctness hazard, so `etag()`/`lastModified()` refuse to
+	 * short-circuit anything else regardless of whether the entity tags/dates match.
+	 */
+	private boolean function isSafeHTTPMethod(){
+		return listFindNoCase( "GET,HEAD", getHTTPMethod() ) > 0;
+	}
+
+	/**
+	 * Checks a fully-quoted (and, if weak, `W/`-prefixed) entity tag against the incoming
+	 * If-None-Match header, per RFC 7232 §3.2/§2.3.2:
+	 * - `*` always matches - a GET/HEAD that reached this point has *some* current representation,
+	 *   which is all `If-None-Match: *` asks about.
+	 * - The header may be a comma-separated list of entity tags; a match against any one counts.
+	 * - If-None-Match always uses *weak* comparison, so the `W/` prefix is stripped from both sides
+	 *   before comparing - a weak and a strong tag with the same opaque value are still a match.
+	 *
+	 * Splits on a bare comma rather than a quoted-string-aware parser - sufficient for the opaque
+	 * hash-style values this framework generates and accepts, which never contain a literal comma.
+	 *
+	 * @tag The tag to check for a match
+	 */
+	private boolean function matchesIfNoneMatch( required string tag ){
+		var header = trim( getHTTPHeader( "If-None-Match", "" ) );
+		if ( !len( header ) ) {
+			return false;
+		}
+		if ( header == "*" ) {
+			return true;
+		}
+
+		var normalizedTag = reReplace( arguments.tag, "^W/", "" );
+		for ( var candidate in listToArray( header, "," ) ) {
+			if ( reReplace( trim( candidate ), "^W/", "" ) == normalizedTag ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Format a date as an RFC 7231 HTTP-date (e.g. `Sun, 06 Nov 1994 08:49:37 GMT`), for use in
+	 * `Last-Modified`, `Expires` and similar headers.
+	 *
+	 * Built from individual date parts rather than a `dateTimeFormat()` mask: CFML's classic mask
+	 * letters ("ddd" for an abbreviated weekday name) and Java's `DateTimeFormatter` pattern
+	 * letters ("EEE" for the same thing) are not the same dialect, and which one a given engine's
+	 * `dateTimeFormat()` actually implements is not something to gamble on in framework code that
+	 * has to run identically on BoxLang, Lucee and Adobe.
+	 *
+	 *        `now()` and date literals) - converted to UTC internally so the trailing "GMT" is accurate
+	 *        regardless of the server's own timezone.
+	 *
+	 * @value The date/time to format, as a local server-time value (the CFML/BoxLang default for
+	 */
+	string function toHTTPDate( required date value ){
+		var utcValue = dateConvert( "local2utc", arguments.value );
+		var dayNames = [
+			"Sun",
+			"Mon",
+			"Tue",
+			"Wed",
+			"Thu",
+			"Fri",
+			"Sat"
+		];
+		var monthNames = [
+			"Jan",
+			"Feb",
+			"Mar",
+			"Apr",
+			"May",
+			"Jun",
+			"Jul",
+			"Aug",
+			"Sep",
+			"Oct",
+			"Nov",
+			"Dec"
+		];
+
+		return dayNames[ dayOfWeek( utcValue ) ] & ", " &
+		numberFormat( day( utcValue ), "00" ) & " " &
+		monthNames[ month( utcValue ) ] & " " &
+		year( utcValue ) & " " &
+		numberFormat( hour( utcValue ), "00" ) & ":" &
+		numberFormat( minute( utcValue ), "00" ) & ":" &
+		numberFormat( second( utcValue ), "00" ) & " GMT";
+	}
+
+	/**
 	 * Get the routed structure of key-value pairs. What the ses interceptor could match.
 	 *
 	 * @return RequestContext

@@ -58,6 +58,37 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				expect( variables.response.getHeaders() ).toBeEmpty();
 			} );
 
+			it( "can set an ETag header fluently", function(){
+				variables.response.withETag( "abc123" );
+				expect( variables.response.getHeader( "ETag" ) ).toBe( """abc123""" );
+			} );
+
+			it( "can set a weak ETag header fluently", function(){
+				variables.response.withETag( value = "abc123", weak = true );
+				expect( variables.response.getHeader( "ETag" ) ).toBe( "W/""abc123""" );
+			} );
+
+			it( "replaces rather than duplicates an existing ETag header", function(){
+				variables.response.withETag( "first" ).withETag( "second" );
+				expect( variables.response.getHeaders().len() ).toBe( 1 );
+				expect( variables.response.getHeader( "ETag" ) ).toBe( """second""" );
+			} );
+
+			it( "can set a Cache-Control header fluently", function(){
+				variables.response.withCacheControl( { "public" : true, "max-age" : 60 } );
+				// Directive order is not guaranteed - plain CFML structs are not guaranteed
+				// insertion-ordered on every engine (Lucee in particular), and per RFC 9111
+				// Cache-Control's directive order carries no semantic meaning anyway.
+				var cacheControlHeader = variables.response.getHeader( "Cache-Control" );
+				expect( cacheControlHeader ).toInclude( "public" );
+				expect( cacheControlHeader ).toInclude( "max-age=60" );
+			} );
+
+			it( "defaults Cache-Control to no-cache", function(){
+				variables.response.withCacheControl();
+				expect( variables.response.getHeader( "Cache-Control" ) ).toBe( "no-cache" );
+			} );
+
 
 			it( "can handle pagination", function(){
 				response.setPagination( 0, 100, 1, 1000, 10 );

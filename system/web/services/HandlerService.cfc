@@ -771,7 +771,13 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			"provider"          : "template",
 			"cacheInclude"      : "*",
 			"cacheExclude"      : "",
-			"cacheFilter"       : ""
+			"cacheFilter"       : "",
+			// HTTP caching (docs/specs/http-caching.md) - "free" Tier 1 auto ETag/Last-Modified,
+			// piggybacked on this same cache entry by Bootstrap.cfc, only when cache=true
+			"etag"              : false,
+			"etagWeak"          : false,
+			"lastModified"      : false,
+			"cacheControl"      : ""
 		}
 	}
 
@@ -809,6 +815,18 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 						mdEntry.cacheInclude = arguments.ehBean.getActionMetadata( "cacheInclude", "*" );
 						mdEntry.cacheExclude = arguments.ehBean.getActionMetadata( "cacheExclude", "" );
 						mdEntry.cacheFilter  = arguments.ehBean.getActionMetadata( "cacheFilter", "" );
+
+						// HTTP caching (docs/specs/http-caching.md §4) - Tier 1 only: an ETag
+						// and/or Last-Modified computed once at cache-write time, reused on every
+						// hit until the entry expires. Deliberately opt-in, so an existing
+						// cache="true" handler that never sets these sees no behavior change. No
+						// separate on/off switch: this whole block already only runs when
+						// eventCaching is enabled, same as cacheInclude/cacheExclude/cacheFilter
+						// above.
+						mdEntry.etag         = arguments.ehBean.getActionMetadata( "etag", false );
+						mdEntry.etagWeak     = arguments.ehBean.getActionMetadata( "etagWeak", false );
+						mdEntry.lastModified = arguments.ehBean.getActionMetadata( "lastModified", false );
+						mdEntry.cacheControl = arguments.ehBean.getActionMetadata( "cacheControl", "" );
 
 						// Handler Event Cache Key Suffix, this is global to the event
 						if (

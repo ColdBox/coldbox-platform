@@ -266,26 +266,53 @@ component serializable="false" accessors="true" {
 					event.setHTTPHeader( name = key, value = value );
 				} );
 
-				// Cached Status Code
+				// ****** HTTP CACHING - TIER 1 conditional-GET (docs/specs/http-caching.md §4.2) ******
+				// Replay whatever conditional-GET headers were stored alongside this entry, reusing
+				// event.etag()/event.lastModified() for the actual header-set + match logic rather
+				// than re-implementing it here - same matching rules (weak comparison, If-None-Match
+				// lists/`*`, the If-Modified-Since-is-ignored-when-If-None-Match-is-present
+				// precedence) whether the tag was just computed or is being replayed from cache.
+				var cachedNotModified = false;
+				if ( structKeyExists( local.refResults.eventCaching, "etag" ) ) {
+					cachedNotModified = event.etag(
+						value = local.refResults.eventCaching.etag,
+						weak  = local.refResults.eventCaching.etagWeak ?: false
+					);
+				}
+				if ( structKeyExists( local.refResults.eventCaching, "lastModified" ) ) {
+					cachedNotModified = event.lastModified( local.refResults.eventCaching.lastModified ) || cachedNotModified;
+				}
+				if ( structKeyExists( local.refResults.eventCaching, "cacheControl" ) ) {
+					event.setHTTPHeader(
+						name  = "Cache-Control",
+						value = local.refResults.eventCaching.cacheControl
+					);
+				}
+
+				// Cached Status Code - a conditional-GET match already set 304 via etag()/lastModified() above.
 				if (
+					!cachedNotModified &&
 					isNumeric( local.refResults.eventCaching.statusCode ) && local.refResults.eventCaching.statusCode > 0
 				) {
 					event.setHTTPHeader( statusCode = local.refResults.eventCaching.statusCode );
 				}
 
-				// Render Content as binary or just output
-				if ( local.refResults.eventCaching.isBinary ) {
-					cbController
-						.getDataMarshaller()
-						.renderContent(
-							type     = "#local.refResults.eventCaching.contentType#",
-							variable = "#local.refResults.eventCaching.renderedContent#"
-						);
-				} else {
-					cbController
-						.getDataMarshaller()
-						.renderContent( type = "#local.refResults.eventCaching.contentType#", reset = true );
-					writeOutput( local.refResults.eventCaching.renderedContent );
+				// Render Content as binary or just output - skipped entirely on a conditional-GET
+				// match, which is the whole point: no body write at all, not even a replay.
+				if ( !cachedNotModified ) {
+					if ( local.refResults.eventCaching.isBinary ) {
+						cbController
+							.getDataMarshaller()
+							.renderContent(
+								type     = "#local.refResults.eventCaching.contentType#",
+								variable = "#local.refResults.eventCaching.renderedContent#"
+							);
+					} else {
+						cbController
+							.getDataMarshaller()
+							.renderContent( type = "#local.refResults.eventCaching.contentType#", reset = true );
+						writeOutput( local.refResults.eventCaching.renderedContent );
+					}
 				}
 			} else {
 				// ****** EXECUTE MAIN EVENT *******/
@@ -360,6 +387,43 @@ component serializable="false" accessors="true" {
 							isBinary        : false,
 							responseHeaders : event.getResponseHeaders()
 						};
+
+						// ****** HTTP CACHING - TIER 1 (docs/specs/http-caching.md §4.2/§4.4) ******
+						// Opt-in via etag/lastModified/cacheControl annotations alongside cache=true.
+						// Computed once, right here at write time, and stored on the entry so every
+						// subsequent cache hit can compare against it for free - no per-request hashing.
+						if ( eCacheEntry.etag ) {
+							cacheEntry.etag     = hash( renderedContent, "MD5" );
+							cacheEntry.etagWeak = eCacheEntry.etagWeak;
+							event.setHTTPHeader(
+								name  = "ETag",
+								value = ( eCacheEntry.etagWeak ? "W/" : "" ) & """#cacheEntry.etag#"""
+							);
+						}
+						if ( eCacheEntry.lastModified ) {
+							cacheEntry.lastModified = now();
+							event.setHTTPHeader(
+								name  = "Last-Modified",
+								value = event.toHTTPDate( cacheEntry.lastModified )
+							);
+						}
+						if ( len( eCacheEntry.cacheControl ) ) {
+							cacheEntry.cacheControl = eCacheEntry.cacheControl;
+						} else if (
+							( eCacheEntry.etag || eCacheEntry.lastModified ) &&
+							isNumeric( eCacheEntry.timeout )
+						) {
+							// No explicit directive, but the handler opted into conditional-GET
+							// support - default to telling the client the same lifetime the
+							// handler already told CacheBox (in minutes; Cache-Control wants
+							// seconds), rather than saying nothing at all. A blank cacheTimeout
+							// means "use the provider's default", which we can't translate to a
+							// max-age, so no default is inferred in that case.
+							cacheEntry.cacheControl = "private, max-age=#eCacheEntry.timeout * 60#";
+						}
+						if ( structKeyExists( cacheEntry, "cacheControl" ) ) {
+							event.setHTTPHeader( name = "Cache-Control", value = cacheEntry.cacheControl );
+						}
 
 						// is this a render data entry? If So, append data
 						if ( !renderData.isEmpty() ) {

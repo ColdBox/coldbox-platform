@@ -259,6 +259,32 @@
     }
 
 
+	// HTTP Caching - Tier 1 (docs/specs/http-caching.md §4.2) - ETag computed once at
+	// cache-write time and reused on every hit
+	function withETag( event, rc, prc )
+		cache="true"
+		cacheTimeout="10"
+		etag="true"
+	{
+		prc.data = [
+			{ id : "static-1", name : "luis" },
+			{ id : "static-2", name : "lucas" }
+		];
+
+		return prc.data;
+	}
+
+	// HTTP Caching - Tier 1 Last-Modified variant
+	function withLastModified( event, rc, prc )
+		cache="true"
+		cacheTimeout="10"
+		lastModified="true"
+	{
+		prc.data = [ { id : "static-1", name : "luis" } ];
+
+		return prc.data;
+	}
+
 	function cacheKeys( event, rc, prc ){
 		var keys = {
 			"template" : getCache( "template" ).getKeys(),
