@@ -137,13 +137,15 @@ component
 		/************************************** FLUENT CONSTRUCTS *********************************************/
 
 		// With closure
-		variables.withClosure = {};
+		variables.withClosure          = {};
 		// Module closure
-		variables.thisModule  = "";
+		variables.thisModule           = "";
 		// Groupt Pivot
-		variables.onGroup     = false;
+		variables.onGroup              = false;
+		// Stack of group-level middleware arrays, outermost first, so nested groups accumulate in order
+		variables.groupMiddlewareStack = [];
 		// Routing pointer
-		variables.thisRoute   = initRouteDefinition();
+		variables.thisRoute            = initRouteDefinition();
 
 		/************************************** CONSTANTS *********************************************/
 
@@ -510,7 +512,7 @@ component
 	 * } )
 	 * </pre>
 	 *
-	 * @options The route options that match routing, look at the <code>addRoute()</code> method
+	 * @options The route options that match routing, look at the <code>addRoute()</code> method. A `middleware` array (same target values <code>middleware()</code> accepts) applies to every route registered within the body, ahead of any middleware the route registers for itself.
 	 * @body    The closure or lambda to contain all the routing methods to be grouped with the options data.
 	 */
 	function group( struct options = {}, body ){
@@ -519,10 +521,24 @@ component
 
 		// set the withClosure
 		variables.withClosure.append( arguments.options );
+		// Push this group's middleware onto the stack - arrays aren't part of the withClosure
+		// default/prefix merge, so they're inherited via their own stack instead. Pushed even when
+		// empty so the stack depth always matches the current group nesting depth. Entries are
+		// normalized to the same { target, point } shape middleware() produces.
+		var groupMiddleware = structKeyExists( arguments.options, "middleware" ) ? arguments.options.middleware : [];
+		variables.groupMiddlewareStack.append(
+			groupMiddleware.map( ( entry ) => {
+				return ( isStruct( entry ) && entry.keyExists( "target" ) ) ? entry : {
+					"target" : entry,
+					"point"  : "preProcess"
+				};
+			} )
+		);
 		// Execute the body
 		arguments.body( arguments.options );
 
 		// Pivot out of the group and do cleanup
+		variables.groupMiddlewareStack.deleteAt( variables.groupMiddlewareStack.len() );
 		variables.onGroup     = false;
 		variables.withClosure = {};
 
@@ -797,7 +813,8 @@ component
 		boolean ai                    = "false",
 		any aiRunnable                = "",
 		boolean mcp                   = "false",
-		string mcpServer              = ""
+		string mcpServer              = "",
+		array middleware              = []
 	){
 		// The route construct we will save
 		var thisRoute = {};
@@ -815,6 +832,18 @@ component
 
 		// Process all incoming arguments into the route to store
 		thisRoute.append( arguments );
+
+		// Inherit group-level middleware (outermost group first), followed by this route's own
+		// entries registered via .middleware(). Arrays don't participate in processWith()'s
+		// default/prefix merge, so group inheritance is tracked explicitly on its own stack.
+		if ( variables.groupMiddlewareStack.len() ) {
+			var inheritedMiddleware = [];
+			for ( var groupEntries in variables.groupMiddlewareStack ) {
+				inheritedMiddleware.append( groupEntries, true );
+			}
+			inheritedMiddleware.append( thisRoute.middleware, true );
+			thisRoute.middleware = inheritedMiddleware;
+		}
 
 		// Cleanup Route: Add trailing / to make it easier to parse
 		if ( right( thisRoute.pattern, 1 ) IS NOT "/" ) {
@@ -1176,6 +1205,7 @@ component
 			"layout"                : "", // The layout to proxy to
 			"layoutModule"          : "", // If the layout comes from a module
 			"meta"                  : {}, // Route metadata if any
+			"middleware"            : [], // Route-scoped middleware entries: [ { target, point } ]
 			"module"                : "", // The module event we must execute
 			"moduleRouting"         : "", // This routes to a module
 			"name"                  : "", // The named route
@@ -1377,6 +1407,57 @@ component
 	/****************************************************************************************************************************/
 	/* 													MODIFIERS																*/
 	/****************************************************************************************************************************/
+
+	/**
+	 * Attach route-scoped middleware. Middleware runs at a ColdBox interception point (`preProcess`
+	 * by default, or `postProcess`), but only for requests that matched this route - it is
+	 * <code>InterceptorState</code>'s point-based dispatch, scoped to one route instead of the whole app.
+	 *
+	 * A target can be:
+	 * - A closure/lambda: `function( event, rc, prc ){ ... }`
+	 * - A WireBox ID: resolved via `getInstance()` on every request, so it respects whatever scope
+	 *   (singleton, prototype, etc) the mapping was registered with.
+	 * - Any object, WireBox-managed or not, that has a method named after the point (`preProcess()`/
+	 *   `postProcess()`) - the same duck-typed convention ColdBox interceptors themselves already use.
+	 *   No base class or interface is required.
+	 *
+	 * Returning `true` from a target short-circuits the remaining middleware for this route at this
+	 * point - it does not, by itself, skip the handler or the render. To actually stop the request,
+	 * call `event.relocate()`, `event.renderData().noExecution()`, `event.etag()`, etc, exactly as you
+	 * would from any other preProcess/postProcess interceptor.
+	 *
+	 * <pre>
+	 * // inline closure
+	 * route( "/admin/:action" ).middleware( function( event, rc, prc ){
+	 *     if ( !auth.isLoggedIn() ) {
+	 *         event.relocate( "login" );
+	 *         return true;
+	 *     }
+	 * } ).toHandler( "admin" );
+	 *
+	 * // a WireBox ID, or any class with a preProcess()/postProcess() method
+	 * route( "/api/reports" ).middleware( "AuditLog", "postProcess" ).to( "reports.index" );
+	 *
+	 * // multiple targets in one call, all on the same point
+	 * route( "/api/orders" ).middleware( [ "RateLimiter", "RequireApiKey" ] ).toHandler( "orders" );
+	 * </pre>
+	 *
+	 * @target A closure/lambda, a WireBox ID, an object instance, or an array of any mix of those.
+	 * @point  The interception point to run this middleware at. Defaults to `preProcess`.
+	 */
+	function middleware( required any target, string point = "preProcess" ){
+		// process a with closure if not empty
+		if ( !variables.withClosure.isEmpty() ) {
+			processWith( arguments );
+		}
+
+		var targets = isArray( arguments.target ) ? arguments.target : [ arguments.target ];
+		for ( var thisTarget in targets ) {
+			variables.thisRoute.middleware.append( { "target" : thisTarget, "point" : arguments.point } );
+		}
+
+		return this;
+	}
 
 	/**
 	 * Add a header to a route
@@ -2402,7 +2483,7 @@ component
 
 		// Inline response closure: resolves the server name and delegates to MCPRequestProcessor
 		var mcpResponseClosure = ( event, rc, prc ) => {
-			var resolvedServerName                              = rc.keyExists( "mcpServer" ) ? rc.mcpServer : serverName
+			var resolvedServerName = rc.keyExists( "mcpServer" ) ? rc.mcpServer : serverName
 			return bxModules.bxai.models.mcp.MCPRequestProcessor::processHttp( resolvedServerName );
 		};
 

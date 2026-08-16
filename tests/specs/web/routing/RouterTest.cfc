@@ -356,6 +356,99 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				} );
 			} );
 
+			story( "I want to attach route-scoped middleware", function(){
+				given( "a single middleware target with no explicit point", function(){
+					then( "it defaults to preProcess and accumulates in order", function(){
+						var authCheck = function( event, rc, prc ){
+						};
+						router
+							.route( "/admin" )
+							.middleware( authCheck )
+							.middleware( "AuditLog", "postProcess" )
+							.toHandler( "admin" );
+
+						var middleware = router.getRoutes()[ 1 ].middleware;
+						expect( middleware ).toHaveLength( 2 );
+						expect( middleware[ 1 ].target ).toBe( authCheck );
+						expect( middleware[ 1 ].point ).toBe( "preProcess" );
+						expect( middleware[ 2 ].target ).toBe( "AuditLog" );
+						expect( middleware[ 2 ].point ).toBe( "postProcess" );
+					} );
+				} );
+
+				given( "an array of targets in a single call", function(){
+					then( "each target is registered individually on the same point", function(){
+						router
+							.route( "/api/orders" )
+							.middleware( [ "RateLimiter", "RequireApiKey" ] )
+							.toHandler( "orders" );
+
+						var middleware = router.getRoutes()[ 1 ].middleware;
+						expect( middleware ).toHaveLength( 2 );
+						expect( middleware[ 1 ].target ).toBe( "RateLimiter" );
+						expect( middleware[ 1 ].point ).toBe( "preProcess" );
+						expect( middleware[ 2 ].target ).toBe( "RequireApiKey" );
+						expect( middleware[ 2 ].point ).toBe( "preProcess" );
+					} );
+				} );
+
+				given( "a route with no middleware() calls", function(){
+					then( "it still carries the defaulted empty middleware array", function(){
+						router.route( "/plain" );
+						expect( router.getThisRoute().middleware ).toBeArray().toBeEmpty();
+					} );
+				} );
+
+				given( "a group with middleware options", function(){
+					then( "every route inside inherits it ahead of its own middleware", function(){
+						router.group( { pattern : "/api", middleware : [ "RequireApiKey" ] }, function( options ){
+							router
+								.route( "/users" )
+								.middleware( "RateLimiter" )
+								.toHandler( "users" );
+							router.route( "/products" ).toHandler( "products" );
+						} );
+
+						var routes = router.getRoutes();
+						expect( routes ).toHaveLength( 2 );
+
+						expect( routes[ 1 ].middleware ).toHaveLength( 2 );
+						expect( routes[ 1 ].middleware[ 1 ].target ).toBe( "RequireApiKey" );
+						expect( routes[ 1 ].middleware[ 2 ].target ).toBe( "RateLimiter" );
+
+						expect( routes[ 2 ].middleware ).toHaveLength( 1 );
+						expect( routes[ 2 ].middleware[ 1 ].target ).toBe( "RequireApiKey" );
+					} );
+				} );
+
+				given( "a route registered outside any group", function(){
+					then( "it does not inherit a previously-run group's middleware", function(){
+						router.group( { pattern : "/api", middleware : [ "RequireApiKey" ] }, function( options ){
+							router.route( "/users" ).toHandler( "users" );
+						} );
+						router.route( "/public" ).toHandler( "public" );
+
+						var routes = router.getRoutes();
+						expect( routes[ 2 ].middleware ).toBeArray().toBeEmpty();
+					} );
+				} );
+
+				given( "nested groups each contributing middleware", function(){
+					then( "the outer group's middleware runs before the inner group's", function(){
+						router.group( { pattern : "/api", middleware : [ "RequireApiKey" ] }, function( options ){
+							router.group( { pattern : "/admin", middleware : [ "RequireAdmin" ] }, function( innerOptions ){
+								router.route( "/users" ).toHandler( "users" );
+							} );
+						} );
+
+						var middleware = router.getRoutes()[ 1 ].middleware;
+						expect( middleware ).toHaveLength( 2 );
+						expect( middleware[ 1 ].target ).toBe( "RequireApiKey" );
+						expect( middleware[ 2 ].target ).toBe( "RequireAdmin" );
+					} );
+				} );
+			} );
+
 			story( "Router will throw exception if a non-closure or string is passed to the body of a toResponse()", function(){
 				given( "Anything but a closure or string to the toResponse() body", function(){
 					then( "an InvalidArgumentException will be thrown", function(){
