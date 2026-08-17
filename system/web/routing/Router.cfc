@@ -2449,11 +2449,9 @@ component
 					var runnableInstance = isSimpleValue( capturedRunnable ) ? getInstance( capturedRunnable ) : capturedRunnable
 					var body             = event.getHTTPContent( json: true )
 					var aiContext        = resolveAiContext( body )
-					var result           = runnableInstance.run(
-						body.input ?: {},
-						body.params ?: {},
-						( body.options ?: {} ).append( aiContext, true )
-					)
+					var options          = body.options ?: {}
+					options.append( aiContext, true )
+					var result = runnableInstance.run( body.input ?: {}, body.params ?: {}, options )
 					event.setHTTPHeader( name = "X-Thread-Id", value = aiContext.threadId )
 					return {
 						"output"   : result,
@@ -2485,7 +2483,8 @@ component
 					var runnableInstance = isSimpleValue( capturedRunnable ) ? getInstance( capturedRunnable ) : capturedRunnable;
 					var body             = event.getHTTPContent( json: true );
 					var aiContext        = resolveAiContext( body );
-					var options          = ( body.options ?: {} ).append( aiContext, true );
+					var options          = body.options ?: {};
+					options.append( aiContext, true );
 
 					// Headers must go out before the stream opens
 					event.setHTTPHeader( name = "X-Thread-Id", value = aiContext.threadId );
@@ -2541,8 +2540,9 @@ component
 					var body             = event.getHTTPContent( json: true )
 					var params           = body.params ?: {}
 					var aiContext        = resolveAiContext( body )
-					var options          = ( body.options ?: {} ).append( aiContext, true )
-					var inputs           = body.inputs ?: []
+					var options          = body.options ?: {}
+					options.append( aiContext, true )
+					var inputs = body.inputs ?: []
 
 					// Map the incoming outputs - context is resolved once per request and shared
 					// by every item in the batch, same as params/options already are.
