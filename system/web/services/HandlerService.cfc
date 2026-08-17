@@ -825,7 +825,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * @routeRecord    The current request's matched route record, i.e. `event.getCurrentRouteRecord()`. An empty struct when no route matched.
 	 * @requestContext The request context for the current request, passed to a closure `cacheSuffix` untouched.
 	 */
-	private struct function getRouteCachingMetadata( required struct routeRecord, required requestContext ){
+	private function getRouteCachingMetadata( required struct routeRecord, required requestContext ){
 		if ( !arguments.routeRecord.keyExists( "cache" ) || !arguments.routeRecord.cache ) {
 			return;
 		}
