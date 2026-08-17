@@ -250,6 +250,11 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				physicalPath   : expandPath( "/" & replace( arguments.invocationPath, ".", "/", "all" ) ),
 				invocationPath : arguments.invocationPath
 			}
+			// Register the module path with the CFML engine. This lets scheduled tasks find
+			// module components when no web request is active. (COLDBOX-1419)
+			var explicitLocation                                       = variables.moduleRegistry[ arguments.moduleName ]
+			variables.mappingRegistry[ explicitLocation.locationPath ] = explicitLocation.physicalPath
+			variables.util.addMapping( name: explicitLocation.locationPath, path: explicitLocation.physicalPath )
 		}
 
 		// Check if passed module name is not loaded into the registry
@@ -1506,7 +1511,14 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 */
 	private function scanModulesDirectory( required dirPath ){
 		var expandedPath = expandPath( arguments.dirpath )
-		var dirEntries   = directoryList( expandedPath, false, "query", "", "asc" )
+
+		// Register this module folder with the CFML engine. This lets scheduled tasks find
+		// module components when no web request is active. (COLDBOX-1419)
+		var mappingName                          = arguments.dirPath.startsWith( "/" ) ? arguments.dirPath : "/" & arguments.dirPath
+		variables.mappingRegistry[ mappingName ] = expandedPath
+		variables.util.addMapping( name: mappingName, path: expandedPath )
+
+		var dirEntries = directoryList( expandedPath, false, "query", "", "asc" )
 		for ( var item in dirEntries ) {
 			// Only directories and no . folders
 			if ( item.type == "Dir" && !item.name.startsWith( "." ) ) {
