@@ -2368,6 +2368,26 @@ component
 	 *     .toAi( "ChatRunnable" );
 	 * </pre>
 	 *
+	 * ### Conversational context (invoke/stream/batch)
+	 *
+	 * Alongside `input`/`params`/`options`, the request body may carry `userId`, `conversationId`,
+	 * and `threadId`. Whatever's resolved is merged into `options` before the runnable is called
+	 * (`options.userId`, `options.conversationId`, `options.threadId`), and `threadId` is always
+	 * echoed back to the caller - as `threadId` on the JSON response (invoke/batch) and as an
+	 * `X-Thread-Id` response header on all three, plus a leading `thread` SSE frame on stream (since
+	 * EventSource clients can't read response headers):
+	 *
+	 * - `userId` - defaults to `Controller.getUserSessionIdentifier()` if not supplied
+	 * - `conversationId` - passed through only if supplied; no default is generated
+	 * - `threadId` - passed through if supplied, otherwise a new one is minted - always present in
+	 *   the response so a follow-up call can continue the same thread
+	 *
+	 * <pre>
+	 * // POST /api/chat/invoke  { "input": "hi", "threadId": "t-123" }
+	 * // → runnable.run( "hi", {}, { userId: "<session id>", threadId: "t-123" } )
+	 * // → { "output": ..., "success": true, "threadId": "t-123" }
+	 * </pre>
+	 *
 	 * @runnable A WireBox ID string or a live IAiRunnable instance
 	 *
 	 * @return Router instance for chaining
@@ -2428,12 +2448,18 @@ component
 				"response" : ( event, rc, prc ) => {
 					var runnableInstance = isSimpleValue( capturedRunnable ) ? getInstance( capturedRunnable ) : capturedRunnable
 					var body             = event.getHTTPContent( json: true )
+					var aiContext        = resolveAiContext( body )
 					var result           = runnableInstance.run(
 						body.input ?: {},
 						body.params ?: {},
-						body.options ?: {}
+						( body.options ?: {} ).append( aiContext, true )
 					)
-					return { "output" : result, "success" : true }
+					event.setHTTPHeader( name = "X-Thread-Id", value = aiContext.threadId )
+					return {
+						"output"   : result,
+						"success"  : true,
+						"threadId" : aiContext.threadId
+					}
 				}
 			} )
 
@@ -2458,8 +2484,19 @@ component
 				"response" : ( event, rc, prc ) => {
 					var runnableInstance = isSimpleValue( capturedRunnable ) ? getInstance( capturedRunnable ) : capturedRunnable;
 					var body             = event.getHTTPContent( json: true );
+					var aiContext        = resolveAiContext( body );
+					var options          = ( body.options ?: {} ).append( aiContext, true );
+
+					// Headers must go out before the stream opens
+					event.setHTTPHeader( name = "X-Thread-Id", value = aiContext.threadId );
+
 					SSE(
 						callback: ( emitter ) => {
+							// Lead with the resolved thread id - EventSource clients cannot read
+							// response headers, so this is the only way a browser caller learns a
+							// server-generated threadId in time to persist it for the next request.
+							emitter.send( { "threadId" : aiContext.threadId }, "thread" );
+
 							runnableInstance.stream(
 								( chunk ) => {
 									if ( !emitter.isClosed() ) {
@@ -2468,7 +2505,7 @@ component
 								},
 								body.input ?: {},
 								body.params ?: {},
-								body.options ?: {}
+								options
 							);
 							if ( !emitter.isClosed() ) {
 								emitter.send( "[DONE]", "done" );
@@ -2503,10 +2540,12 @@ component
 					var runnableInstance = isSimpleValue( capturedRunnable ) ? getInstance( capturedRunnable ) : capturedRunnable
 					var body             = event.getHTTPContent( json: true )
 					var params           = body.params ?: {}
-					var options          = body.options ?: {}
+					var aiContext        = resolveAiContext( body )
+					var options          = ( body.options ?: {} ).append( aiContext, true )
 					var inputs           = body.inputs ?: []
 
-					// Map the incoming outputs
+					// Map the incoming outputs - context is resolved once per request and shared
+					// by every item in the batch, same as params/options already are.
 					var outputs = inputs.map( ( input ) => {
 						try {
 							return {
@@ -2517,7 +2556,8 @@ component
 							return { error : e.message, success : false };
 						}
 					} )
-					return { "outputs" : outputs }
+					event.setHTTPHeader( name = "X-Thread-Id", value = aiContext.threadId )
+					return { "outputs" : outputs, "threadId" : aiContext.threadId }
 				}
 			} )
 
@@ -2581,6 +2621,35 @@ component
 		variables.thisRoute = initRouteDefinition()
 
 		return this;
+	}
+
+	/**
+	 * Resolve the conversational identity/thread context for an AI request - shared by the
+	 * invoke/stream/batch sub-routes toAi() registers.
+	 *
+	 * - `userId`: the request body's `userId` if provided, else the framework's own request/session
+	 *   tracking identifier (`Controller.getUserSessionIdentifier()`) - so every call is attributable
+	 *   to *someone* even when the caller doesn't manage its own user identity.
+	 * - `conversationId`: passed through as-is when provided. No default is generated - an absent
+	 *   conversationId means the caller isn't tracking conversations, and inventing one would imply
+	 *   a continuity that doesn't exist.
+	 * - `threadId`: the request body's `threadId` if provided, else a freshly generated one. Always
+	 *   present in the result so the caller can echo it back on the next request to continue the
+	 *   same thread, whether they supplied it or a new one had to be minted.
+	 *
+	 * @body The parsed JSON request body - invoke/stream/batch all pass their raw body here
+	 *
+	 * @return `{ userId, threadId, conversationId? }`
+	 */
+	private struct function resolveAiContext( required struct body ){
+		var ctx = {
+			"userId"   : len( arguments.body.userId ?: "" ) ? arguments.body.userId : variables.controller.getUserSessionIdentifier(),
+			"threadId" : len( arguments.body.threadId ?: "" ) ? arguments.body.threadId : createUUID()
+		};
+		if ( len( arguments.body.conversationId ?: "" ) ) {
+			ctx.conversationId = arguments.body.conversationId;
+		}
+		return ctx;
 	}
 
 	/**
