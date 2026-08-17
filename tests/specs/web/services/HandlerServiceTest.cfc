@@ -204,7 +204,7 @@ component extends="tests.resources.BaseIntegrationTest" {
 
 			// Mirrors the keys Router.cfc's routeDefinitionShape()/addRoute() put on a matched
 			// route record - tests build one by hand so they don't depend on the Router at all.
-			function buildRouteRecord( struct overrides = {} ){
+			var buildRouteRecord = function( struct overrides = {} ){
 				var base = {
 					"cache"                  : true,
 					"cacheTimeout"           : 60,
@@ -221,7 +221,7 @@ component extends="tests.resources.BaseIntegrationTest" {
 				};
 				base.append( arguments.overrides, true );
 				return base;
-			}
+			};
 
 			it( "returns null for a route record with no cache key at all", () => {
 				var result = variables.handlerService.getRouteCachingMetadata( {}, getRequestContext() );
