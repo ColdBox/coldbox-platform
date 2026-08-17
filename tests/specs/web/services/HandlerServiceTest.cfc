@@ -195,6 +195,112 @@ component extends="tests.resources.BaseIntegrationTest" {
 			} );
 		} );
 
+		describe( "Route-level cache rules (Router.cfc's withCache())", () => {
+			beforeEach( () => {
+				setup();
+				variables.handlerService = controller.getHandlerService();
+				makePublic( variables.handlerService, "getRouteCachingMetadata" );
+			} );
+
+			// Mirrors the keys Router.cfc's routeDefinitionShape()/addRoute() put on a matched
+			// route record - tests build one by hand so they don't depend on the Router at all.
+			function buildRouteRecord( struct overrides = {} ){
+				var base = {
+					"cache"                  : true,
+					"cacheTimeout"           : 60,
+					"cacheLastAccessTimeout" : "",
+					"cacheProvider"          : "template",
+					"cacheSuffix"            : "",
+					"cacheInclude"           : "*",
+					"cacheExclude"           : "",
+					"cacheFilter"            : "",
+					"etag"                   : false,
+					"etagWeak"               : false,
+					"lastModified"           : false,
+					"cacheControl"           : ""
+				};
+				base.append( arguments.overrides, true );
+				return base;
+			}
+
+			it( "returns null for a route record with no cache key at all", () => {
+				var result = variables.handlerService.getRouteCachingMetadata( {}, getRequestContext() );
+				expect( isNull( result ) ).toBeTrue();
+			} );
+
+			it( "returns null when the route record declares cache=false", () => {
+				var result = variables.handlerService.getRouteCachingMetadata(
+					buildRouteRecord( { cache : false } ),
+					getRequestContext()
+				);
+				expect( isNull( result ) ).toBeTrue();
+			} );
+
+			it( "builds a cacheable entry from a route record with cache=true", () => {
+				var result = variables.handlerService.getRouteCachingMetadata(
+					buildRouteRecord(),
+					getRequestContext()
+				);
+				expect( result.cacheable ).toBeTrue();
+				expect( result.timeout ).toBe( 60 );
+				expect( result.provider ).toBe( "template" );
+			} );
+
+			it( "evaluates a closure cacheSuffix immediately, passing it the event", () => {
+				var context = getRequestContext();
+				context.setValue( "tenant", "acme" );
+				var record = buildRouteRecord( { cacheSuffix : ( event ) => event.getValue( "tenant", "" ) } );
+
+				var result = variables.handlerService.getRouteCachingMetadata( record, context );
+
+				expect( result.suffix ).toBe( "acme" );
+			} );
+
+			it( "stores a static string cacheSuffix untouched", () => {
+				var result = variables.handlerService.getRouteCachingMetadata(
+					buildRouteRecord( { cacheSuffix : "v2" } ),
+					getRequestContext()
+				);
+				expect( result.suffix ).toBe( "v2" );
+			} );
+
+			it( "carries the Tier 1 HTTP caching flags through", () => {
+				var record = buildRouteRecord( {
+					etag         : true,
+					etagWeak     : true,
+					lastModified : true,
+					cacheControl : "private, max-age=30"
+				} );
+
+				var result = variables.handlerService.getRouteCachingMetadata( record, getRequestContext() );
+
+				expect( result.etag ).toBeTrue();
+				expect( result.etagWeak ).toBeTrue();
+				expect( result.lastModified ).toBeTrue();
+				expect( result.cacheControl ).toBe( "private, max-age=30" );
+			} );
+
+			it( "getEventMetadataEntry() prefers route rules over an event with no handler cache annotation", () => {
+				var context = getRequestContext();
+				context.setPrivateValue( "currentRouteRecord", buildRouteRecord() );
+
+				var entry = variables.handlerService.getEventMetadataEntry( "main.index", context );
+
+				expect( entry.cacheable ).toBeTrue();
+				expect( entry.timeout ).toBe( 60 );
+			} );
+
+			it( "getEventMetadataEntry() falls back to the handler-annotation path when the route declares no cache rule", () => {
+				var context = getRequestContext();
+				// no currentRouteRecord set on this context - defaults to {}
+
+				var entry = variables.handlerService.getEventMetadataEntry( "main.index", context );
+
+				// main.index carries no cache="true" annotation, so behavior is unchanged from before this feature
+				expect( entry.cacheable ).toBeFalse();
+			} );
+		} );
+
 		describe( "Hot-path caching optimizations", () => {
 			beforeEach( () => {
 				setup();

@@ -131,7 +131,7 @@ it's worth naming plainly rather than pretending it's the same thing.
 |---|---|---|---|
 | File-based routing | Convention-based handler/action routing (`handlers/`) + an explicit, richly-typed DSL (`Router.cfc`, placeholder constraints like `:id-numeric`, `:slug-alpha`, `:x-regex:`, named routes, `resources()`/`apiResources()`, subdomain routing, route conditions) | Not real — ColdBox's DSL is more expressive than Nuxt's filename conventions, just less "magic" | Skip |
 | Layers (`extends`) | HMVC modules (`ModuleService.cfc`, 1549 lines): dependency graphs, inception/nesting, `-bundle` dirs, three-tier settings override, `viewParentLookup`/`layoutParentLookup` (`ModuleService.cfc:1208-1214`), per-module injectors/executors/schedulers, symmetric `reload()`/`unload()` | Partially — modules already cover "package a slice of an app and mount it," but there's no config-level "extend a whole base app/layer" the way Nuxt layers a starter template | Adapt, low priority |
-| Route rules / `cachedEventHandler` | Handler-level event caching (`cache="true"` annotations, `Bootstrap.cfc` pre-execution lookup) but **no route-struct cache keys** — `routeDefinitionShape()` has no `cache`/`cacheTimeout`/`cacheProvider` | Real gap | **Adopt** |
+| Route rules / `cachedEventHandler` | `Router.cfc`'s `.withCache()` — route-struct `cache`/`cacheTimeout`/`cacheProvider`/etc, taking precedence over the handler's own annotations | Closed | **Shipped** |
 | `useStorage()` | CacheBox is a strictly richer multi-provider cache abstraction already; no unifying *generic KV* facade at the framework layer, but that's arguably module territory | Small, low urgency | Skip / module territory |
 | Auto-imports / typed routes | WireBox DI removes most manual imports already; route names + `buildLink()` give reverse routing, but nothing statically types a URL against the registered route table | Real but narrow | Skip (poor fit for CFML/BoxLang's type system) |
 | DevTools | `Whoops.cfm` (`system/exceptions/Whoops.cfm`, 712 lines: stack frames, open-in-editor for 9 editors, scope inspector, reinit button) exists but is **opt-in**, not wired anywhere as the default handler; `getRouteDefinitionKeys()` gives route-shape introspection but no live route table, no interceptor-chain viewer, no module graph | Real gap | **Adopt** |
@@ -164,24 +164,35 @@ ground truth:
   (passthrough-only), and `threadId` (generated via `createUUID()` if
   absent, always echoed back) via `resolveAiContext()`
   (`Router.cfc:2644`).
+- **Route-level cache rules** — `.withCache()` on `Router.cfc`, taking
+  precedence over a handler's own `cache="true"` annotation for any request
+  matching that route. See Recommendation 1 below for the detail.
 
 The document below only recommends what's still genuinely open.
 
 ## Recommendations, prioritized
 
-### 1. Route-level cache rules (adopt)
+### 1. Route-level cache rules — shipped
 
 Nitro's `routeRules`/`cachedEventHandler` declare cache behavior where the
 URL is declared, not buried in a handler annotation. ColdBox's Event Caching
-already does the hard part (CacheBox-backed, wired into `Bootstrap.cfc`'s
-pre-execution path) — the gap is purely that `routeDefinitionShape()`
-(`Router.cfc:1222`) has no cache keys. Proposal: add `cache`, `cacheTimeout`,
-`cacheProvider`, and an optional `cacheKey` closure to the route struct,
-consumed the same way route-scoped middleware is — checked at match time in
-`RoutingService`, translated into the same event-caching metadata
-`HandlerService.cfc` already understands. This is additive, reuses existing
-CacheBox plumbing, and needs no new subsystem — the same shape of change
-that made route-scoped middleware low-risk.
+already did the hard part (CacheBox-backed, wired into `Bootstrap.cfc`'s
+pre-execution path) — the gap was purely that `routeDefinitionShape()`
+had no cache keys. Closed: `Router.cfc` now exposes `.withCache( timeout,
+lastAccessTimeout, provider, suffix, cacheInclude, cacheExclude, cacheFilter,
+etag, etagWeak, lastModified, cacheControl )`, mirroring every handler-level
+cache annotation one-for-one, plus the Tier 1 HTTP caching flags. A route
+that opts in takes full precedence over that same event's handler
+annotations for any request matching it — see `HandlerService.cfc`'s
+`getRouteCachingMetadata()`, consulted first by both the pre-execution cache
+lookup (`getEventMetadataEntry()`) and the post-execution cache write
+(`getEventCachingMetadata()`). Deliberately not memoized the way the
+handler-annotation dictionary is, since a route record is already a cheap
+struct read — which is also what lets two different routes pointing at the
+same event carry two different cache policies, something a handler
+annotation alone could never do. Zero new subsystem: it rides the exact same
+`EventURLFacade`/CacheBox/Bootstrap.cfc plumbing a `cache="true"` annotation
+always has.
 
 ### 2. First-party DevTools / introspection surface (adopt)
 
