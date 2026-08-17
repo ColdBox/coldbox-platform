@@ -573,6 +573,16 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * @requestContext The request context for the current request, passed through to a closure suffix untouched.
 	 */
 	struct function getEventMetadataEntry( required targetEvent, required requestContext ){
+		// Route-level cache rules (Router.cfc's .withCache()) take full precedence over this
+		// handler's own annotations for this request - see getRouteCachingMetadata()'s docblock.
+		var routeCacheEntry = getRouteCachingMetadata(
+			arguments.requestContext.getCurrentRouteRecord(),
+			arguments.requestContext
+		);
+		if ( !isNull( routeCacheEntry ) ) {
+			return routeCacheEntry;
+		}
+
 		if ( NOT structKeyExists( variables.eventCacheDictionary, arguments.targetEvent ) ) {
 			return getNewMDEntry()
 		}
@@ -796,6 +806,56 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	}
 
 	/**
+	 * Build a cache metadata entry from route-level cache rules (`Router.cfc`'s `.withCache()`),
+	 * used INSTEAD of the handler-annotation dictionary (`getNewMDEntry()`/`eventCacheDictionary`)
+	 * whenever the current request's matched route opted into caching. Returns `null` when the
+	 * route didn't match (an empty route record) or didn't declare `cache=true`, so callers fall
+	 * through to the existing handler-annotation-driven path with zero behavior change.
+	 *
+	 * Deliberately NOT memoized the way the handler-annotation dictionary is: a route record is
+	 * already a plain struct sitting on the matched route (no reflection needed to read it), so
+	 * re-deriving this fresh on every request is cheap - and it's what lets two different routes
+	 * that point at the same event carry two different cache policies, which the event-name-keyed
+	 * handler dictionary can never do (it only knows the event, not which route reached it).
+	 *
+	 * The returned struct matches `getNewMDEntry()`'s shape exactly, so every downstream consumer
+	 * (`EventURLFacade.buildEventKey()`, Bootstrap.cfc's Tier 1 conditional-GET block) needs no
+	 * changes to understand a route-driven entry vs a handler-driven one.
+	 *
+	 * @routeRecord    The current request's matched route record, i.e. `event.getCurrentRouteRecord()`. An empty struct when no route matched.
+	 * @requestContext The request context for the current request, passed to a closure `cacheSuffix` untouched.
+	 */
+	private function getRouteCachingMetadata( required struct routeRecord, required requestContext ){
+		if ( !arguments.routeRecord.keyExists( "cache" ) || !arguments.routeRecord.cache ) {
+			return;
+		}
+
+		var mdEntry               = getNewMDEntry();
+		mdEntry.cacheable         = true;
+		mdEntry.timeout           = arguments.routeRecord.cacheTimeout;
+		mdEntry.lastAccessTimeout = arguments.routeRecord.cacheLastAccessTimeout;
+		mdEntry.provider          = arguments.routeRecord.cacheProvider;
+		mdEntry.cacheInclude      = arguments.routeRecord.cacheInclude;
+		mdEntry.cacheExclude      = arguments.routeRecord.cacheExclude;
+		mdEntry.cacheFilter       = arguments.routeRecord.cacheFilter;
+		mdEntry.etag              = arguments.routeRecord.etag;
+		mdEntry.etagWeak          = arguments.routeRecord.etagWeak;
+		mdEntry.lastModified      = arguments.routeRecord.lastModified;
+		mdEntry.cacheControl      = arguments.routeRecord.cacheControl;
+
+		// A route-level suffix closure receives ( event ) only - unlike EVENT_CACHE_SUFFIX's
+		// ( eventHandlerBean, event ), a route has no reflected handler action metadata to hand it.
+		// Evaluated now, on every call, the same "never freeze a request-time value" contract
+		// resolveCacheSuffix() documents for the handler-annotation suffix.
+		var suffix     = arguments.routeRecord.cacheSuffix;
+		mdEntry.suffix = ( isClosure( suffix ) || isCustomFunction( suffix ) )
+		 ? suffix( arguments.requestContext )
+		 : suffix;
+
+		return mdEntry;
+	}
+
+	/**
 	 * Return the event caching metadata for an action execution context.
 	 *
 	 * @ehBean         The event handler bean
@@ -809,6 +869,16 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		required oEventHandler,
 		required requestContext
 	){
+		// Route-level cache rules (Router.cfc's .withCache()) take full precedence over this
+		// handler's own annotations for this request - see getRouteCachingMetadata()'s docblock.
+		var routeCacheEntry = getRouteCachingMetadata(
+			arguments.requestContext.getCurrentRouteRecord(),
+			arguments.requestContext
+		);
+		if ( !isNull( routeCacheEntry ) ) {
+			return routeCacheEntry;
+		}
+
 		var cacheKey = arguments.ehBean.getFullEvent();
 
 		// Double lock for race conditions

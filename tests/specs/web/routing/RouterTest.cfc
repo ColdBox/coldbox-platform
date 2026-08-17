@@ -629,6 +629,107 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				} );
 			} );
 
+			story( "I want to cache a route's output via route-level rules", function(){
+				given( "a route with no withCache() call", function(){
+					then( "it defaults to non-cacheable with the standard cache key defaults", function(){
+						router.route( "/luis" ).toHandler( "main" );
+						var thisRoute = router.getRoutes()[ 1 ];
+
+						expect( thisRoute.cache ).toBeFalse();
+						expect( thisRoute.cacheTimeout ).toBe( "" );
+						expect( thisRoute.cacheLastAccessTimeout ).toBe( "" );
+						expect( thisRoute.cacheProvider ).toBe( "template" );
+						expect( thisRoute.cacheSuffix ).toBe( "" );
+						expect( thisRoute.cacheInclude ).toBe( "*" );
+						expect( thisRoute.cacheExclude ).toBe( "" );
+						expect( thisRoute.cacheFilter ).toBe( "" );
+						expect( thisRoute.etag ).toBeFalse();
+						expect( thisRoute.etagWeak ).toBeFalse();
+						expect( thisRoute.lastModified ).toBeFalse();
+						expect( thisRoute.cacheControl ).toBe( "" );
+					} );
+				} );
+
+				given( "withCache() with only a timeout", function(){
+					then( "cache flips on and the timeout is stored, everything else stays default", function(){
+						router
+							.route( "/products" )
+							.withCache( timeout = 60 )
+							.toHandler( "products" );
+						var thisRoute = router.getRoutes()[ 1 ];
+
+						expect( thisRoute.cache ).toBeTrue();
+						expect( thisRoute.cacheTimeout ).toBe( 60 );
+						expect( thisRoute.cacheProvider ).toBe( "template" );
+						expect( thisRoute.etag ).toBeFalse();
+					} );
+				} );
+
+				given( "withCache() with a provider, includes and excludes", function(){
+					then( "each is stored on the route untouched", function(){
+						router
+							.route( "/reports" )
+							.withCache(
+								timeout      = 30,
+								provider     = "reports",
+								cacheInclude = "id,type",
+								cacheExclude = "debug"
+							)
+							.toHandler( "reports" );
+						var thisRoute = router.getRoutes()[ 1 ];
+
+						expect( thisRoute.cacheProvider ).toBe( "reports" );
+						expect( thisRoute.cacheInclude ).toBe( "id,type" );
+						expect( thisRoute.cacheExclude ).toBe( "debug" );
+					} );
+				} );
+
+				given( "withCache() with etag/etagWeak/lastModified/cacheControl", function(){
+					then( "the Tier 1 HTTP caching flags are stored on the route", function(){
+						router
+							.route( "/api/products/:id" )
+							.withCache(
+								timeout      = 60,
+								etag         = true,
+								etagWeak     = true,
+								lastModified = true,
+								cacheControl = "private, max-age=120"
+							)
+							.toHandler( "products" );
+						var thisRoute = router.getRoutes()[ 1 ];
+
+						expect( thisRoute.etag ).toBeTrue();
+						expect( thisRoute.etagWeak ).toBeTrue();
+						expect( thisRoute.lastModified ).toBeTrue();
+						expect( thisRoute.cacheControl ).toBe( "private, max-age=120" );
+					} );
+				} );
+
+				given( "withCache() with a closure suffix", function(){
+					then( "the closure is stored untouched, not evaluated at registration time", function(){
+						router
+							.route( "/tenant/products" )
+							.withCache( suffix = ( event ) => "tenant-scoped" )
+							.toHandler( "products" );
+						var thisRoute = router.getRoutes()[ 1 ];
+
+						expect( isClosure( thisRoute.cacheSuffix ) || isCustomFunction( thisRoute.cacheSuffix ) ).toBeTrue();
+					} );
+				} );
+
+				given( "withCache() with a static string suffix", function(){
+					then( "the string is stored as-is", function(){
+						router
+							.route( "/products" )
+							.withCache( suffix = "v2" )
+							.toHandler( "products" );
+						var thisRoute = router.getRoutes()[ 1 ];
+
+						expect( thisRoute.cacheSuffix ).toBe( "v2" );
+					} );
+				} );
+			} );
+
 			story( "Router will throw exception if a non-closure or string is passed to the body of a toResponse()", function(){
 				given( "Anything but a closure or string to the toResponse() body", function(){
 					then( "an InvalidArgumentException will be thrown", function(){

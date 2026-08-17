@@ -817,7 +817,19 @@ component
 		boolean mcp                   = "false",
 		string mcpServer              = "",
 		array middleware              = [],
-		array withoutMiddleware       = []
+		array withoutMiddleware       = [],
+		boolean cache                 = "false",
+		any cacheTimeout              = "",
+		any cacheLastAccessTimeout    = "",
+		string cacheProvider          = "template",
+		any cacheSuffix               = "",
+		string cacheInclude           = "*",
+		string cacheExclude           = "",
+		any cacheFilter               = "",
+		boolean etag                  = "false",
+		boolean etagWeak              = "false",
+		boolean lastModified          = "false",
+		string cacheControl           = ""
 	){
 		// The route construct we will save
 		var thisRoute = {};
@@ -1221,46 +1233,59 @@ component
 	 */
 	private struct function routeDefinitionShape(){
 		return {
-			"action"                : "", // The action to execute
-			"append"                : true, // Was this route appended or pre/prended
-			"condition"             : "", // The condition closure which must be true for the route to match
-			"constraints"           : {}, // If we have any regex constraints on placeholders.
-			"domain"                : "", // The domain attached to the route
-			"event"                 : "", // The full event syntax to execute
-			"handler"               : "", // The handler to execute
-			"headers"               : {}, // The HTTP response headers to respond with
-			"layout"                : "", // The layout to proxy to
-			"layoutModule"          : "", // If the layout comes from a module
-			"meta"                  : {}, // Route metadata if any
-			"middleware"            : [], // Route-scoped middleware entries: [ { target, point } ]
-			"module"                : "", // The module event we must execute
-			"moduleRouting"         : "", // This routes to a module
-			"name"                  : "", // The named route
-			"namespace"             : "", // The namespace this route belongs to
-			"namespaceRouting"      : "", // This routes to a namespace
-			"packageResolverExempt" : false, // If true, it does not resolve packages by convention, by default we do
-			"pattern"               : "", // The regex pattern used for matching
-			"prc"                   : {}, // The PRC params to add incorporate if matched
-			"rc"                    : {}, // The RC params to add incorporate if matched
-			"redirect"              : "", // The redirection location
-			"response"              : "", // Do we have an inline response closure
-			"responsePlaceholders"  : [], // Pre-parsed {token} list for string responses
-			"sse"                   : false, // Flag indicating this route streams Server-Sent Events
-			"sseCallback"           : "", // The streaming closure for SSE routes
-			"ssl"                   : false, // Are we forcing SSL
-			"statusCode"            : 200, // The response status code
-			"valuePairTranslation"  : true, // If we translate name-value pairs in the URL by convention
-			"verbs"                 : "", // The HTTP Verbs allowed
-			"view"                  : "", // The view to proxy to
-			"viewModule"            : "", // If the view comes from a module
-			"viewNoLayout"          : false, // If we use a layout or not
-			"withoutMiddleware"     : [], // Middleware target/group names excluded from this route
+			"action"                 : "", // The action to execute
+			"append"                 : true, // Was this route appended or pre/prended
+			"condition"              : "", // The condition closure which must be true for the route to match
+			"constraints"            : {}, // If we have any regex constraints on placeholders.
+			"domain"                 : "", // The domain attached to the route
+			"event"                  : "", // The full event syntax to execute
+			"handler"                : "", // The handler to execute
+			"headers"                : {}, // The HTTP response headers to respond with
+			"layout"                 : "", // The layout to proxy to
+			"layoutModule"           : "", // If the layout comes from a module
+			"meta"                   : {}, // Route metadata if any
+			"middleware"             : [], // Route-scoped middleware entries: [ { target, point } ]
+			"module"                 : "", // The module event we must execute
+			"moduleRouting"          : "", // This routes to a module
+			"name"                   : "", // The named route
+			"namespace"              : "", // The namespace this route belongs to
+			"namespaceRouting"       : "", // This routes to a namespace
+			"packageResolverExempt"  : false, // If true, it does not resolve packages by convention, by default we do
+			"pattern"                : "", // The regex pattern used for matching
+			"prc"                    : {}, // The PRC params to add incorporate if matched
+			"rc"                     : {}, // The RC params to add incorporate if matched
+			"redirect"               : "", // The redirection location
+			"response"               : "", // Do we have an inline response closure
+			"responsePlaceholders"   : [], // Pre-parsed {token} list for string responses
+			"sse"                    : false, // Flag indicating this route streams Server-Sent Events
+			"sseCallback"            : "", // The streaming closure for SSE routes
+			"ssl"                    : false, // Are we forcing SSL
+			"statusCode"             : 200, // The response status code
+			"valuePairTranslation"   : true, // If we translate name-value pairs in the URL by convention
+			"verbs"                  : "", // The HTTP Verbs allowed
+			"view"                   : "", // The view to proxy to
+			"viewModule"             : "", // If the view comes from a module
+			"viewNoLayout"           : false, // If we use a layout or not
+			"withoutMiddleware"      : [], // Middleware target/group names excluded from this route
 			// AI Routing
-			"ai"                    : false, // Flag indicating this is an AI runnable route
-			"aiRunnable"            : "", // The AI runnable WireBox ID or instance
+			"ai"                     : false, // Flag indicating this is an AI runnable route
+			"aiRunnable"             : "", // The AI runnable WireBox ID or instance
 			// MCP Routing
-			"mcp"                   : false, // Flag indicating this is an MCP server route
-			"mcpServer"             : "" // The MCP server name to expose
+			"mcp"                    : false, // Flag indicating this is an MCP server route
+			"mcpServer"              : "", // The MCP server name to expose
+			// Route-Level Caching - overrides the handler's own cache="true" annotation when true
+			"cache"                  : false, // Flag indicating this route caches its output
+			"cacheTimeout"           : "", // Cache timeout, in minutes. Blank uses the cache provider's default
+			"cacheLastAccessTimeout" : "", // Cache last access timeout, in minutes
+			"cacheProvider"          : "template", // The CacheBox provider to store the cached output in
+			"cacheSuffix"            : "", // A static string or a closure( event ) evaluated per-request for the cache key suffix
+			"cacheInclude"           : "*", // RC keys to include in the cache key, comma-delimited, "*" for all
+			"cacheExclude"           : "", // RC keys to exclude from the cache key, comma-delimited
+			"cacheFilter"            : "", // A closure( rc ):struct to fully customize which RC keys build the cache key
+			"etag"                   : false, // Tier 1 HTTP caching: compute a strong ETag alongside the cached entry
+			"etagWeak"               : false, // Compute the ETag above as a weak validator (W/"...") instead of strong
+			"lastModified"           : false, // Tier 1 HTTP caching: stamp the cached entry with a Last-Modified time
+			"cacheControl"           : "" // Cache-Control header value to send; defaults to a max-age derived from cacheTimeout when etag/lastModified is set
 		};
 	}
 
@@ -1559,6 +1584,80 @@ component
 	function withoutMiddleware( required any target ){
 		var targets = isArray( arguments.target ) ? arguments.target : [ arguments.target ];
 		variables.thisRoute.withoutMiddleware.append( targets, true );
+		return this;
+	}
+
+	/**
+	 * Cache this route's output - the route-level equivalent of a handler action's `cache="true"`
+	 * annotation, declared where the URL is declared instead of on the handler. When a route opts
+	 * in here, its rules take full precedence over that handler's own cache annotations for any
+	 * request matching this route: the handler's `cache`/`cacheTimeout`/etc are ignored entirely,
+	 * which lets two different routes pointing at the same event carry two different cache
+	 * policies - something a handler annotation alone can never do, since it's shared by every
+	 * route that reaches that action.
+	 *
+	 * Reuses the exact same CacheBox-backed Event Caching machinery a handler annotation drives:
+	 * same cache providers, same conditional-GET Tier 1 layer (`etag`/`etagWeak`/`lastModified`/
+	 * `cacheControl`), same `cacheInclude`/`cacheExclude`/`cacheFilter` request-collection scoping.
+	 * See `docs/specs/http-caching.md` for the Tier 1 conditional-GET contract these four params opt into.
+	 *
+	 * <pre>
+	 * // cache for 60 minutes, default RC-based key
+	 * route( "/api/products" ).withCache( timeout = 60 ).to( "products.index" );
+	 *
+	 * // add conditional-GET support - a client with a matching ETag gets a 304, no body
+	 * route( "/api/products/:id" ).withCache( timeout = 60, etag = true ).to( "products.show" );
+	 *
+	 * // scope the cache key to just :id, ignoring any other querystring noise
+	 * route( "/api/products/:id" ).withCache( timeout = 60, cacheInclude = "id" ).to( "products.show" );
+	 *
+	 * // per-request dynamic suffix, e.g. multi-tenant isolation
+	 * route( "/api/products" ).withCache( suffix = ( event ) => event.getValue( "tenant", "" ) ).to( "products.index" );
+	 * </pre>
+	 *
+	 * @timeout           Cache timeout, in minutes. Blank uses the cache provider's default.
+	 * @lastAccessTimeout Cache last access timeout, in minutes.
+	 * @provider          The CacheBox provider to store the cached output in. Defaults to `template`.
+	 * @suffix            A static string, or a closure/lambda `function( event )` evaluated fresh on every request, appended to the cache key.
+	 * @cacheInclude      RC keys to include in the cache key, comma-delimited. Defaults to `*` (all).
+	 * @cacheExclude      RC keys to exclude from the cache key, comma-delimited.
+	 * @cacheFilter       A closure/lambda `function( rc ):struct` to fully customize which RC keys build the cache key, in place of `cacheInclude`/`cacheExclude`.
+	 * @etag              Tier 1 HTTP caching: compute an ETag alongside the cached entry so a matching `If-None-Match` gets a 304 with no body.
+	 * @etagWeak          Compute the ETag above as a weak validator (`W/"..."`) instead of strong.
+	 * @lastModified      Tier 1 HTTP caching: stamp the cached entry with a Last-Modified time so a matching `If-Modified-Since` gets a 304.
+	 * @cacheControl      `Cache-Control` header value to send. Defaults to a `max-age` derived from `timeout` when `etag`/`lastModified` is set and no explicit value is given.
+	 */
+	function withCache(
+		any timeout           = "",
+		any lastAccessTimeout = "",
+		string provider       = "template",
+		any suffix            = "",
+		string cacheInclude   = "*",
+		string cacheExclude   = "",
+		any cacheFilter       = "",
+		boolean etag          = false,
+		boolean etagWeak      = false,
+		boolean lastModified  = false,
+		string cacheControl   = ""
+	){
+		// process a with closure if not empty
+		if ( !variables.withClosure.isEmpty() ) {
+			processWith( arguments );
+		}
+
+		variables.thisRoute.cache                  = true;
+		variables.thisRoute.cacheTimeout           = arguments.timeout;
+		variables.thisRoute.cacheLastAccessTimeout = arguments.lastAccessTimeout;
+		variables.thisRoute.cacheProvider          = arguments.provider;
+		variables.thisRoute.cacheSuffix            = arguments.suffix;
+		variables.thisRoute.cacheInclude           = arguments.cacheInclude;
+		variables.thisRoute.cacheExclude           = arguments.cacheExclude;
+		variables.thisRoute.cacheFilter            = arguments.cacheFilter;
+		variables.thisRoute.etag                   = arguments.etag;
+		variables.thisRoute.etagWeak               = arguments.etagWeak;
+		variables.thisRoute.lastModified           = arguments.lastModified;
+		variables.thisRoute.cacheControl           = arguments.cacheControl;
+
 		return this;
 	}
 
