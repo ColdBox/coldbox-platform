@@ -1364,11 +1364,10 @@ component accessors="true" {
 			} )
 			.each( function( key, thisMapping ){
 				try {
-					// process the metadata
+					// Read the mapped object's metadata.
 					arguments.thisMapping.process( binder = this, injector = variables.injector );
 				} catch ( any e ) {
-					// Remove bad mapping
-					variables.mappings.delete( key );
+					// Keep the mapping so the next lookup can try again.
 					mappingError = e;
 				}
 			} );
