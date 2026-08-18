@@ -130,6 +130,114 @@ component extends="tests.resources.BaseIntegrationTest" {
 				} );
 			} );
 		} );
+
+		feature( "Mappings survive a failed first processing (COLDBOX-1420)", function(){
+			beforeEach( function( currentSpec ){
+				variables.injector1420  = new coldbox.system.ioc.Injector();
+				variables.ghostPath1420 = expandPath( "/tests/resources/Ghost1420.cfc" );
+			} );
+
+			afterEach( function( currentSpec ){
+				if ( fileExists( variables.ghostPath1420 ) ) {
+					fileDelete( variables.ghostPath1420 );
+				}
+			} );
+
+			story( "I want explicit mappings to stay registered when their first processing fails", function(){
+				given( "an explicit mapping to a path that does not exist", function(){
+					then( "the mapping stays registered and a retry throws the original error, not InstanceNotFoundException", function(){
+						injector1420
+							.getBinder()
+							.map( "ghost1420@demo" )
+							.to( "tests.resources.DoesNotExist1420" );
+
+						var firstErrorType = "NONE";
+						try {
+							injector1420.getInstance( "ghost1420@demo" );
+						} catch ( any e ) {
+							firstErrorType = e.type;
+						}
+						expect( firstErrorType ).notToBe( "NONE", "The first getInstance() should have thrown" );
+						expect( firstErrorType ).notToBe( "Injector.InstanceNotFoundException" );
+
+						// The mapping must still be registered after the failure
+						expect( injector1420.getBinder().mappingExists( "ghost1420@demo" ) ).toBeTrue();
+
+						// A second lookup retries processing and throws the original error again
+						var secondErrorType = "NONE";
+						try {
+							injector1420.getInstance( "ghost1420@demo" );
+						} catch ( any e ) {
+							secondErrorType = e.type;
+						}
+						expect( secondErrorType ).notToBe( "NONE", "The second getInstance() should have thrown" );
+						expect( secondErrorType ).notToBe( "Injector.InstanceNotFoundException" );
+					} );
+				} );
+
+				given( "an explicit mapping whose file is missing on the first lookup but present on the second", function(){
+					then( "the second lookup recovers and builds the instance", function(){
+						injector1420
+							.getBinder()
+							.map( "ghostFile1420@demo" )
+							.to( "tests.resources.Ghost1420" );
+
+						// First lookup fails because the file does not exist yet
+						var firstErrorType = "NONE";
+						try {
+							injector1420.getInstance( "ghostFile1420@demo" );
+						} catch ( any e ) {
+							firstErrorType = e.type;
+						}
+						expect( firstErrorType ).notToBe( "NONE", "The first getInstance() should have thrown" );
+						expect( injector1420.getBinder().mappingExists( "ghostFile1420@demo" ) ).toBeTrue();
+
+						// Restore the file and retry the same mapping
+						fileWrite( variables.ghostPath1420, "component {}" );
+						var instance = injector1420.getInstance( "ghostFile1420@demo" );
+						expect( isObject( instance ) ).toBeTrue();
+					} );
+				} );
+
+				given( "a mapping registered under several names to a bad path", function(){
+					then( "all names stay registered after a failed lookup", function(){
+						injector1420
+							.getBinder()
+							.map( [ "aliasA1420", "aliasB1420" ] )
+							.to( "tests.resources.DoesNotExist1420" );
+
+						try {
+							injector1420.getInstance( "aliasA1420" );
+						} catch ( any e ) {
+							// Expected: the bad path makes processing fail. This spec only checks the mappings below.
+						}
+
+						expect( injector1420.getBinder().mappingExists( "aliasA1420" ) ).toBeTrue();
+						expect( injector1420.getBinder().mappingExists( "aliasB1420" ) ).toBeTrue();
+					} );
+				} );
+			} );
+
+			story( "I want processMappings() to keep mappings that fail processing", function(){
+				given( "a binder with a mapping to a bad path", function(){
+					then( "processMappings() throws but keeps the mapping registered", function(){
+						injector1420
+							.getBinder()
+							.map( "bad1420" )
+							.to( "tests.resources.DoesNotExist1420" );
+
+						var errorType = "NONE";
+						try {
+							injector1420.getBinder().processMappings();
+						} catch ( any e ) {
+							errorType = e.type;
+						}
+						expect( errorType ).notToBe( "NONE", "processMappings() should have thrown" );
+						expect( injector1420.getBinder().mappingExists( "bad1420" ) ).toBeTrue();
+					} );
+				} );
+			} );
+		} );
 	}
 
 }

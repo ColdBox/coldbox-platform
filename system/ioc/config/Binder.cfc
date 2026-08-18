@@ -1367,8 +1367,7 @@ component accessors="true" {
 					// process the metadata
 					arguments.thisMapping.process( binder = this, injector = variables.injector );
 				} catch ( any e ) {
-					// Remove bad mapping
-					variables.mappings.delete( key );
+					// Keep the mapping registered and unprocessed so a later lookup can retry (COLDBOX-1420)
 					mappingError = e;
 				}
 			} );
