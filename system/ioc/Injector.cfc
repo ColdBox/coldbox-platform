@@ -575,16 +575,9 @@ component serializable="false" accessors="true" {
 
 		// Check if the mapping has been discovered yet, and if it hasn't it must be autowired enabled in order to process.
 		if ( NOT mapping.isDiscovered() ) {
-			try {
-				// process inspection of instance
-				mapping.process( binder = variables.binder, injector = this );
-			} catch ( any e ) {
-				// Remove bad mapping
-				var mappings = variables.binder.getMappings();
-				mappings.delete( name );
-				// rethrow
-				throw( object = e );
-			}
+			// Read the mapped object's metadata.
+			// Keep the mapping after an error so the next lookup can try again.
+			mapping.process( binder = variables.binder, injector = this );
 		}
 
 		// Request object from scope now, we now have it from the scope created, initialized and wired
