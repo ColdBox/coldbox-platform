@@ -445,11 +445,15 @@ component
 				viewPath          = arguments.viewPath,
 				viewHelperPath    = arguments.viewHelperPath,
 				args              = arguments.args,
-				rendererVariables = ( isNull( attributes.rendererVariables ) ? variables : attributes.rendererVariables ),
-				event             = event,
-				rc                = event.getCollection(),
-				prc               = event.getPrivateCollection(),
-				viewVariables     = arguments.viewVariables
+				rendererVariables = (
+					isDefined( "attributes.rendererVariables" ) && !isNull( attributes.rendererVariables )
+					 ? attributes.rendererVariables
+					 : variables
+				),
+				event         = event,
+				rc            = event.getCollection(),
+				prc           = event.getPrivateCollection(),
+				viewVariables = arguments.viewVariables
 			);
 		}
 

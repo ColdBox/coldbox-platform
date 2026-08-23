@@ -97,8 +97,7 @@
 		results = cache.get( "test" );
 		assertEquals( results, testval );
 
-		results = cache.get( "test2" );
-		assertFalse( isDefined( "results" ) );
+		assertTrue( isNull( cache.get( "test2" ) ) );
 	}
 
 	function testGetOrSet(){

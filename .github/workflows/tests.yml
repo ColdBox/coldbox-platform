@@ -80,6 +80,11 @@ jobs:
           box server start serverConfigFile="server-${{ matrix.cfengine }}.json" --noSaveSettings --debug
           curl http://127.0.0.1:8599/test-harness
 
+      - name: Run Adobe Full Null Regression
+        if: ${{ matrix.cfengine == 'adobe@2025' }}
+        run: |
+          curl --fail-with-body http://127.0.0.1:8599/tests/full-null/index.cfm
+
       - name: Run Tests
         run: |
           box run-script tests

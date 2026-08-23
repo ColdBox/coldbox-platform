@@ -4,6 +4,15 @@
 		config = createMock( className = "coldbox.system.logging.config.LogBoxConfig" ).init();
 	}
 
+	function testLoadsMinimalDataDSLThroughPublicAPI(){
+		var freshConfig = new coldbox.system.logging.config.LogBoxConfig()
+			.init()
+			.loadDataDSL( { "appenders" : {} } );
+
+		assertEquals( "*", freshConfig.getRoot().appenders );
+		assertTrue( structIsEmpty( freshConfig.getAllCategories() ) );
+	}
+
 	function testAddAppender(){
 		config.appender( "luis", "coldbox.system.logging.AbstractAppender" );
 		config.appender( "luis2", "coldbox.system.logging.AbstractAppender" );

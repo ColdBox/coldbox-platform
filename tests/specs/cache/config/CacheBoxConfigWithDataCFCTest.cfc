@@ -5,6 +5,17 @@
 		dataConfigPath = "coldbox.tests.resources.CacheBoxConfigData";
 	}
 
+	function testLoadsMinimalDataDSLThroughPublicAPI(){
+		var config = new coldbox.system.cache.config.CacheBoxConfig()
+			.init()
+			.loadDataDSL( { "defaultCache" : { "coldboxEnabled" : false } } );
+		var memento = config.getMemento();
+
+		assertFalse( structIsEmpty( memento.defaultCache ) );
+		assertTrue( structIsEmpty( memento.caches ) );
+		assertTrue( arrayIsEmpty( memento.listeners ) );
+	}
+
 	function testLoader(){
 		// My Data Object
 		dataConfig = createObject( "component", dataConfigPath );

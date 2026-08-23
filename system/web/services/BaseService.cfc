@@ -45,7 +45,7 @@ component accessors="true" {
 	 * Get the service logger
 	 */
 	function getLogger(){
-		if ( isNull( variables.log ) ) {
+		if ( !structKeyExists( variables, "log" ) || isNull( variables.log ) ) {
 			variables.log = variables.controller.getLogBox().getLogger( this )
 		}
 		return variables.log
@@ -55,7 +55,7 @@ component accessors="true" {
 	 * Get the Env delegate
 	 */
 	function getEnvDelegate(){
-		if ( isNull( variables.envDelegate ) ) {
+		if ( !structKeyExists( variables, "envDelegate" ) || isNull( variables.envDelegate ) ) {
 			variables.envDelegate = variables.controller.getWireBox().getInstance( "Env@coreDelegates" )
 		}
 		return variables.envDelegate
@@ -65,7 +65,7 @@ component accessors="true" {
 	 * Get the LogBox instance (lazy-cached)
 	 */
 	function getLogBox(){
-		if ( isNull( variables.logBox ) ) {
+		if ( !structKeyExists( variables, "logBox" ) || isNull( variables.logBox ) ) {
 			variables.logBox = variables.controller.getLogBox()
 		}
 		return variables.logBox
@@ -75,7 +75,7 @@ component accessors="true" {
 	 * Get the CacheBox instance (lazy-cached)
 	 */
 	function getCacheBox(){
-		if ( isNull( variables.cacheBox ) ) {
+		if ( !structKeyExists( variables, "cacheBox" ) || isNull( variables.cacheBox ) ) {
 			variables.cacheBox = variables.controller.getCacheBox()
 		}
 		return variables.cacheBox

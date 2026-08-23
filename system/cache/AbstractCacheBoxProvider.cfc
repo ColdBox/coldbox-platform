@@ -514,7 +514,7 @@ component
 	 * @return coldbox.system.core.util.Util
 	 */
 	function getUtility(){
-		if ( isNull( variables.utility ) ) {
+		if ( !structKeyExists( variables, "utility" ) || isNull( variables.utility ) ) {
 			variables.utility = new coldbox.system.core.util.Util();
 		}
 		return variables.utility;
@@ -722,7 +722,7 @@ component
 	 */
 	function randomUUID(){
 		// our UUID creation helper
-		if ( isNull( variables.uuidHelper ) ) {
+		if ( !structKeyExists( variables, "uuidHelper" ) || isNull( variables.uuidHelper ) ) {
 			variables.uuidHelper = createObject( "java", "java.util.UUID" );
 		}
 		return variables.uuidHelper.randomUUID();
@@ -776,7 +776,7 @@ component
 
 		// Validate configuration values, if they don't exist, then default them to DEFAULTS
 		for ( var key in variables.DEFAULTS ) {
-			if ( NOT len( variables.configuration[ key ] ) ) {
+			if ( isNull( variables.configuration[ key ] ) || NOT len( variables.configuration[ key ] ) ) {
 				variables.configuration[ key ] = variables.DEFAULTS[ key ];
 			}
 		}

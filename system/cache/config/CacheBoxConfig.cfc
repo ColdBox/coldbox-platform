@@ -91,7 +91,7 @@ component accessors="true" {
 		var cacheBoxDSL = arguments.rawDSL;
 
 		// Is default configuration defined
-		if ( isNull( cacheBoxDSL.defaultCache ) ) {
+		if ( !structKeyExists( cacheBoxDSL, "defaultCache" ) || isNull( cacheBoxDSL.defaultCache ) ) {
 			throw(
 				"No default cache defined",
 				"Please define the 'defaultCache'",
@@ -104,17 +104,17 @@ component accessors="true" {
 
 		// Register LogBox Configuration
 		this.logBoxConfig( variables.DEFAULTS.logBoxConfig );
-		if ( !isNull( cacheBoxDSL.logBoxConfig ) ) {
+		if ( structKeyExists( cacheBoxDSL, "logBoxConfig" ) && !isNull( cacheBoxDSL.logBoxConfig ) ) {
 			this.logBoxConfig( cacheBoxDSL.logBoxConfig );
 		}
 
 		// Register Server Scope Registration
-		if ( !isNull( cacheBoxDSL.scopeRegistration ) ) {
+		if ( structKeyExists( cacheBoxDSL, "scopeRegistration" ) && !isNull( cacheBoxDSL.scopeRegistration ) ) {
 			this.scopeRegistration( argumentCollection = cacheBoxDSL.scopeRegistration );
 		}
 
 		// Register Caches
-		if ( !isNull( cacheBoxDSL.caches ) ) {
+		if ( structKeyExists( cacheBoxDSL, "caches" ) && !isNull( cacheBoxDSL.caches ) ) {
 			for ( var key in cacheBoxDSL.caches ) {
 				cacheBoxDSL.caches[ key ].name = key;
 				this.cache( argumentCollection = cacheBoxDSL.caches[ key ] );
@@ -122,7 +122,7 @@ component accessors="true" {
 		}
 
 		// Register listeners
-		if ( !isNull( cacheBoxDSL.listeners ) ) {
+		if ( structKeyExists( cacheBoxDSL, "listeners" ) && !isNull( cacheBoxDSL.listeners ) ) {
 			for ( var key in cacheBoxDSL.listeners ) {
 				this.listener( argumentCollection = key );
 			}

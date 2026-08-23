@@ -17,7 +17,7 @@ component accessors="false" {
 	 * Get the underlying string builder, creating it only when output is produced.
 	 */
 	function get(){
-		if ( isNull( variables.builder ) ) {
+		if ( !structKeyExists( variables, "builder" ) || isNull( variables.builder ) ) {
 			variables.builder = createObject( "java", "java.lang.StringBuilder" ).init( "" )
 		}
 
@@ -62,7 +62,7 @@ component accessors="false" {
 	 * Check if the underlying builder has been created.
 	 */
 	boolean function hasContent(){
-		return !isNull( variables.builder )
+		return structKeyExists( variables, "builder" ) && !isNull( variables.builder )
 	}
 
 	/**

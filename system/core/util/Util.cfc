@@ -9,7 +9,7 @@ component {
 
 	private function getClassMappingHelper(){
 		// Lazy load the helper
-		if ( isNull( variables.classMappingHelper ) ) {
+		if ( !structKeyExists( variables, "classMappingHelper" ) || isNull( variables.classMappingHelper ) ) {
 			if ( server.keyExists( "boxlang" ) ) {
 				variables.classMappingHelper = new BoxLangMappingHelper();
 			} else if ( listFindNoCase( "Lucee", server.coldfusion.productname ) ) {
@@ -121,7 +121,7 @@ component {
 	 * @return java.net.InetAddress
 	 */
 	private function getInetAddress(){
-		if ( isNull( variables.inetAddress ) ) {
+		if ( !structKeyExists( variables, "inetAddress" ) || isNull( variables.inetAddress ) ) {
 			variables.inetAddress = createObject( "java", "java.net.InetAddress" );
 		}
 		return variables.inetAddress;
@@ -297,7 +297,7 @@ component {
 	 * @return coldbox.system.core.dynamic.MixerUtil
 	 */
 	function getMixerUtil(){
-		if ( isNull( variables.mixerUtil ) ) {
+		if ( !structKeyExists( variables, "mixerUtil" ) || isNull( variables.mixerUtil ) ) {
 			variables.mixerUtil = new coldbox.system.core.dynamic.MixerUtil();
 		}
 		return variables.mixerUtil;

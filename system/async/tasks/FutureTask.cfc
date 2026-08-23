@@ -21,7 +21,7 @@ component accessors="true" {
 	 * @native The native Future class we are wrapping
 	 */
 	FutureTask function init( native ){
-		if ( isNull( arguments.native ) ) {
+		if ( !structKeyExists( arguments, "native" ) || isNull( arguments.native ) ) {
 			arguments.native = createObject( "java", "java.util.concurrent.FutureTask" );
 		}
 		variables.native = arguments.native;
@@ -70,12 +70,12 @@ component accessors="true" {
 		}
 
 		// If we have results, return them
-		if ( !isNull( local.results ) ) {
+		if ( structKeyExists( local, "results" ) && !isNull( local.results ) ) {
 			return local.results;
 		}
 
 		// If we didn't, do we have a default value
-		if ( !isNull( arguments.defaultValue ) ) {
+		if ( structKeyExists( arguments, "defaultValue" ) && !isNull( arguments.defaultValue ) ) {
 			return arguments.defaultValue;
 		}
 		// Else return null

@@ -46,12 +46,12 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true" 
 
 		// Get extra configuration details from cacheProvider's configuration for this diskstore
 		// Auto Expand
-		if ( isNull( config.autoExpandPath ) ) {
+		if ( !structKeyExists( config, "autoExpandPath" ) || isNull( config.autoExpandPath ) ) {
 			config.autoExpandPath = true;
 		}
 
 		// Check directory path
-		if ( isNull( config.directoryPath ) ) {
+		if ( !structKeyExists( config, "directoryPath" ) || isNull( config.directoryPath ) ) {
 			throw(
 				message = "The 'directoryPath' configuration property was not found in the cache configuration",
 				detail  = "Please check the cache configuration and add the 'directoryPath' property. Current Configuration: #config.toString()#",

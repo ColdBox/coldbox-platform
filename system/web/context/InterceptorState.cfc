@@ -620,7 +620,7 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 	 * Get the service logger
 	 */
 	function getLogger(){
-		if ( isNull( variables.log ) ) {
+		if ( !structKeyExists( variables, "log" ) || isNull( variables.log ) ) {
 			variables.log = variables.controller.getLogBox().getLogger( this )
 		}
 		return variables.log
