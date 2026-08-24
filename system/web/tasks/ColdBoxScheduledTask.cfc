@@ -105,6 +105,27 @@ component extends="coldbox.system.async.tasks.ScheduledTask" accessors="true" {
 	}
 
 	/**
+	 * Runs this task on the scheduler's background thread.
+	 * Registers module paths with the CFML engine before the task starts. Adobe ColdFusion
+	 * can lose mappings that code adds while the application runs. Scheduled tasks also
+	 * skip the mapping setup used by web requests. Without this setup, a task may not find
+	 * its module components. (COLDBOX-1419)
+	 *
+	 * @force Run the task even if it is disabled or blocked by a constraint
+	 */
+	function run( boolean force = false ){
+		try {
+			if ( !isNull( variables.controller ) ) {
+				variables.controller.getModuleService().loadMappings();
+			}
+		} catch ( any e ) {
+			// Log the mapping error and let the task continue.
+			err( "Error loading module mappings for task (#getName()#) : #e.message & e.detail#" );
+		}
+		super.run( argumentCollection = arguments );
+	}
+
+	/**
 	 * This method verifies if the running task is constrained to run on specific valid constraints:
 	 *
 	 * - when

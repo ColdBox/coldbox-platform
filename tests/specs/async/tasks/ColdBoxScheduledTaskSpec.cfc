@@ -86,6 +86,50 @@ component extends="tests.resources.BaseIntegrationTest" {
 				expect( t.getCache().getKeys() ).toInclude( t.getFixationCacheKey() );
 			} );
 
+			describe( "module mappings for scheduled tasks (COLDBOX-1419)", function(){
+				it( "loads module mappings before the task runs", function(){
+					var t = prepareMock(
+						scheduler
+							.task( "cbTask-mapping-replay" )
+							.call( function(){
+								return "ran";
+							} )
+					);
+
+					var mockModuleService = createEmptyMock( "coldbox.system.web.services.ModuleService" ).$( "loadMappings" );
+					var mockController    = createStub().$( "getModuleService", mockModuleService );
+					t.$property( propertyName: "controller", mock: mockController );
+
+					t.run( force = true );
+
+					expect( mockModuleService.$once( "loadMappings" ) ).toBeTrue();
+					expect( t.getStats().totalSuccess ).toBe( 1 );
+				} );
+
+				it( "runs the task when loading module mappings fails", function(){
+					var t = prepareMock(
+						scheduler
+							.task( "cbTask-mapping-replay-fail" )
+							.call( function(){
+								return "ran";
+							} )
+					);
+
+					var mockModuleService = createEmptyMock( "coldbox.system.web.services.ModuleService" ).$(
+						method        : "loadMappings",
+						throwException: true,
+						throwType     : "MockMappingException"
+					);
+					var mockController = createStub().$( "getModuleService", mockModuleService );
+					t.$property( propertyName: "controller", mock: mockController );
+
+					t.run( force = true );
+
+					expect( mockModuleService.$once( "loadMappings" ) ).toBeTrue();
+					expect( t.getStats().totalSuccess ).toBe( 1 );
+				} );
+			} );
+
 			describe( "schedule synchronization", function(){
 				it( "stores schedule metadata in cache lock", function(){
 					var t = scheduler

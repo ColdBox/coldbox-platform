@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- [COLDBOX-1419] Scheduled tasks could not load module components on engines that lose path mappings between requests, including Adobe ColdFusion behind IIS. ColdBox now stores mappings for module folders and registered module paths. Scheduled tasks register these paths with the CFML engine before the task starts.
+
 ## [8.1.0] - 2026-04-14
 
 - <https://coldbox.ortusbooks.com/readme/release-history/whats-new-with-8.1.0>
