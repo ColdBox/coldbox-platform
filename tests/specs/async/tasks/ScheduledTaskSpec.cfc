@@ -178,6 +178,28 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 					expect( t.getPeriod() ).toBe( 31536000 );
 					expect( t.getTimeUnit() ).toBe( "seconds" );
 				} );
+
+				it( "can align every() + startOnTime() to the next period boundary instead of firing immediately", function(){
+					var t = scheduler.task( "test" ).every( 1800, "seconds" ).startOnTime( "00:00" );
+					t.start();
+					expect( t.getDelay() ).toBeGT( 0 );
+					expect( t.getDelay() ).toBeLTE( 1800 );
+				} );
+
+				it( "every() without startOnTime() still fires immediately (unchanged behavior)", function(){
+					var t = scheduler.task( "test" ).every( 1800, "seconds" );
+					t.start();
+					expect( t.getDelay() ).toBe( 0 );
+				} );
+
+				it( "explicit delay() takes precedence over startOnTime() alignment", function(){
+					var t = scheduler.task( "test" )
+						.every( 1800, "seconds" )
+						.startOnTime( "00:00" )
+						.delay( 5, "seconds", true );
+					t.start();
+					expect( t.getDelay() ).toBe( 5 );
+				} );
 			} );
 
 			describe( "can register frequencies with constraints", function(){
