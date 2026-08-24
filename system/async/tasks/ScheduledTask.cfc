@@ -834,6 +834,13 @@ component accessors="true" {
 			}
 		}
 
+		// If this is an interval-based (every()) task with an explicit daily start time and no
+		// initial delay was set some other way, align the first execution to the next period
+		// boundary counted from that start time instead of firing immediately on registration.
+		if ( variables.period > 0 && variables.delay == 0 && len( variables.startTime ) ) {
+			calculateStartTimeAlignedDelay();
+		}
+
 		debugLog(
 			"start",
 			{
@@ -1548,6 +1555,43 @@ component accessors="true" {
 			.get( arguments.periodValue )
 			.toSeconds( javacast( "long", arguments.periodMultiplier ) );
 		variables.timeUnit = "seconds";
+	}
+
+	/**
+	 * When an interval-based task ( every() ) has an explicit daily start time
+	 * ( startOnTime() / between() ) but no initial delay was set some other way, this
+	 * calculates an initial delay that aligns the first execution to the next period
+	 * boundary counted from that start time, instead of firing immediately on registration.
+	 */
+	private function calculateStartTimeAlignedDelay(){
+		var now    = getJavaNow();
+		var anchor = now
+			.withHour( javacast( "int", getToken( variables.startTime, 1, ":" ) ) )
+			.withMinute( javacast( "int", getToken( variables.startTime, 2, ":" ) ) )
+			.withSecond( javacast( "int", 0 ) )
+			.withNano( javacast( "int", 0 ) );
+
+		var periodSeconds = variables.timeUnitHelper
+			.get( variables.timeUnit )
+			.toSeconds( javacast( "long", variables.period ) );
+
+		if ( periodSeconds <= 0 ) {
+			return;
+		}
+
+		var jDuration      = variables.dateTimeHelper.duration().getNative();
+		var elapsedSeconds = jDuration.between( anchor, now ).getSeconds();
+		if ( elapsedSeconds > 0 ) {
+			var periodsElapsed = int( elapsedSeconds / periodSeconds ) + 1;
+			anchor             = anchor.plusSeconds( javacast( "long", periodsElapsed * periodSeconds ) );
+		}
+
+		// Set delay/period directly (in seconds), matching the smart every*At() helpers
+		variables.delay         = jDuration.between( now, anchor ).getSeconds();
+		variables.delayTimeUnit = "seconds";
+		variables.period        = periodSeconds;
+		variables.timeUnit      = "seconds";
+		variables.stats.nextRun = anchor.toString();
 	}
 
 	/**
