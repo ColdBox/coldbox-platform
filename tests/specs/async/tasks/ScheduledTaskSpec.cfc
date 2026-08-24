@@ -180,7 +180,10 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 				} );
 
 				it( "can align every() + startOnTime() to the next period boundary instead of firing immediately", function(){
-					var t = scheduler.task( "test" ).every( 1800, "seconds" ).startOnTime( "00:00" );
+					var t = scheduler
+						.task( "test" )
+						.every( 1800, "seconds" )
+						.startOnTime( "00:00" );
 					t.start();
 					expect( t.getDelay() ).toBeGT( 0 );
 					expect( t.getDelay() ).toBeLTE( 1800 );
@@ -193,7 +196,8 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 				} );
 
 				it( "explicit delay() takes precedence over startOnTime() alignment", function(){
-					var t = scheduler.task( "test" )
+					var t = scheduler
+						.task( "test" )
 						.every( 1800, "seconds" )
 						.startOnTime( "00:00" )
 						.delay( 5, "seconds", true );

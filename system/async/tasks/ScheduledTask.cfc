@@ -1583,7 +1583,7 @@ component accessors="true" {
 		var elapsedSeconds = jDuration.between( anchor, now ).getSeconds();
 		if ( elapsedSeconds > 0 ) {
 			var periodsElapsed = int( elapsedSeconds / periodSeconds ) + 1;
-			anchor = anchor.plusSeconds( javacast( "long", periodsElapsed * periodSeconds ) );
+			anchor             = anchor.plusSeconds( javacast( "long", periodsElapsed * periodSeconds ) );
 		}
 
 		// Set delay/period directly (in seconds), matching the smart every*At() helpers
