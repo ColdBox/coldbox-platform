@@ -155,6 +155,48 @@
 		// debug(md);
 	}
 
+	/**
+	 * The tests above pass timespans, which is why the missing minute conversion went unnoticed. CacheBox's
+	 * own contract is minutes - ConcurrentStore.set documents "Timeout in minutes", and CacheBoxProvider,
+	 * LuceeProvider and CFProvider all treat it that way - so a bare number has to mean the same thing here.
+	 */
+	function testSetWithMinuteTimeouts(){
+		testVal = { name : "luis", age : 32 };
+		cache.clearAll();
+
+		cache.set( "test", testVal, 2, 1 );
+
+		md = cache.getCachedObjectMetadata( "test" );
+		assertEquals( 120, md.timeout, "2 CacheBox minutes must not become 2 seconds" );
+		assertEquals( 60, md.lastAccessTimeout, "1 CacheBox minute must not become 1 second" );
+	}
+
+	function testSetQuietWithMinuteTimeouts(){
+		testVal = { name : "luis", age : 32 };
+		cache.clearAll();
+
+		cache.setQuiet( "test", testVal, 2, 1 );
+
+		md = cache.getCachedObjectMetadata( "test" );
+		assertEquals( 120, md.timeout );
+		assertEquals( 60, md.lastAccessTimeout );
+	}
+
+	/**
+	 * isNumeric() answers true for a java.time.Duration, so a timespan cannot be told from a minute count
+	 * that way - without an explicit check an already-converted value is converted a second time.
+	 */
+	function testSetLeavesATimespanAlone(){
+		testVal = { name : "luis", age : 32 };
+		cache.clearAll();
+
+		cache.set( "test", testVal, createTimespan( 0, 0, 2, 0 ), createTimespan( 0, 0, 1, 0 ) );
+
+		md = cache.getCachedObjectMetadata( "test" );
+		assertEquals( 120, md.timeout );
+		assertEquals( 60, md.lastAccessTimeout );
+	}
+
 	function testGetSize(){
 		testVal = { name : "luis", age : 32 };
 		cache.clearAll();
