@@ -167,8 +167,16 @@
 		cache.set( "test", testVal, 2, 1 );
 
 		md = cache.getCachedObjectMetadata( "test" );
-		assertEquals( 120, md.timeout, "2 CacheBox minutes must not become 2 seconds" );
-		assertEquals( 60, md.lastAccessTimeout, "1 CacheBox minute must not become 1 second" );
+		assertEquals(
+			120,
+			md.timeout,
+			"2 CacheBox minutes must not become 2 seconds"
+		);
+		assertEquals(
+			60,
+			md.lastAccessTimeout,
+			"1 CacheBox minute must not become 1 second"
+		);
 	}
 
 	function testSetQuietWithMinuteTimeouts(){
@@ -190,7 +198,12 @@
 		testVal = { name : "luis", age : 32 };
 		cache.clearAll();
 
-		cache.set( "test", testVal, createTimespan( 0, 0, 2, 0 ), createTimespan( 0, 0, 1, 0 ) );
+		cache.set(
+			"test",
+			testVal,
+			createTimespan( 0, 0, 2, 0 ),
+			createTimespan( 0, 0, 1, 0 )
+		);
 
 		md = cache.getCachedObjectMetadata( "test" );
 		assertEquals( 120, md.timeout );
