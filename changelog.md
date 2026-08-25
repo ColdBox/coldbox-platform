@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- `BoxLangProvider` did not convert CacheBox's minute-based timeouts before handing them to BoxLang's
+  cache, which reads a bare number as seconds, so every timeout expired sixty times too soon. A region
+  moved from `CacheBoxProvider` to `BoxLangProvider` kept a 10 minute object for 10 seconds.
+  `LuceeProvider` and `CFProvider` already convert.
+
 ## [8.1.0] - 2026-04-14
 
 - <https://coldbox.ortusbooks.com/readme/release-history/whats-new-with-8.1.0>
