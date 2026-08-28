@@ -634,6 +634,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			// build routing argument struct based on module/namespace context
 			var contextRouting = {
 				action           : reReplaceNoCase( requestString, results.route.regexpattern, "" ),
+				domain           : arguments.domain,
 				event            : arguments.event,
 				excludedPatterns : arguments.excludedPatterns
 			};
@@ -695,6 +696,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				// Return found Route recursively.
 				return findRoute(
 					action           = packagedRequestString,
+					domain           = arguments.domain,
 					event            = arguments.event,
 					module           = arguments.module,
 					excludedPatterns = arguments.excludedPatterns

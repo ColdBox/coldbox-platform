@@ -281,6 +281,54 @@
 
 				expect( discoveredEventPOST ).toBe( "api-v1:MyOtherHandler.create" );
 			} );
+
+			it( "preserves the request domain when resolving module routes", function(){
+				var moduleName = "domainRoutingTest";
+				var router     = getController().getRoutingService().getRouter();
+				var modules    = getController().getSetting( "modules" );
+				var mockEvent  = createMock( "coldbox.system.web.context.RequestContext" ).init(
+					controller = getController(),
+					properties = {
+						defaultLayout : "Main.cfm",
+						defaultView   : "",
+						eventName     : "event",
+						modules       : {}
+					}
+				);
+
+				modules[ moduleName ] = { resources : [], routes : [] };
+
+				try {
+					router.addModuleRoutes(
+						pattern = "/domain-module",
+						module  = moduleName,
+						append  = false
+					);
+					router.addRoute(
+						pattern = "/ceremony",
+						event   = "Passkeys.authenticate",
+						domain  = "allowed.example",
+						module  = moduleName
+					);
+
+					var allowed = routingService.findRoute(
+						action = "/domain-module/ceremony",
+						domain = "allowed.example",
+						event  = mockEvent
+					);
+					var denied = routingService.findRoute(
+						action = "/domain-module/ceremony",
+						domain = "denied.example",
+						event  = mockEvent
+					);
+
+					expect( allowed.route.event ).toBe( "Passkeys.authenticate" );
+					expect( denied.route.event ).notToBe( "Passkeys.authenticate" );
+				} finally {
+					router.removeModuleRoutes( moduleName );
+					structDelete( modules, moduleName );
+				}
+			} );
 		} );
 
 		describe( "route-scoped middleware (runRouteMiddleware())", function(){
