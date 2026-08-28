@@ -660,10 +660,23 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			// process context discovery of incoming pattern
 			var contextRoute = findRoute( argumentCollection = contextRouting );
 
+			if ( !contextRoute.route.isEmpty() ) {
+				return contextRoute;
+			}
+
 			// A module or namespace mount point is not itself an executable route.
-			// Return the nested result even when it is empty so a failed domain or
-			// condition match cannot fall back to the mount point.
-			return contextRoute;
+			// When its nested table declines the request, continue through the outer
+			// table so application fallbacks can handle unmatched domains or conditions.
+			var nextExcludedPatterns = duplicate( arguments.excludedPatterns );
+			nextExcludedPatterns.append( results.route.pattern );
+			return findRoute(
+				action           = arguments.action,
+				domain           = arguments.domain,
+				event            = arguments.event,
+				module           = arguments.module,
+				namespace        = arguments.namespace,
+				excludedPatterns = nextExcludedPatterns
+			);
 		}
 
 		// Save current routed details in PRC
