@@ -155,8 +155,9 @@ component accessors="true" {
 		}
 
 		// Filter by key
-		if ( !isNull( variables.handlerMetadata[ arguments.key ] ) ) {
-			return variables.handlerMetadata[ arguments.key ]
+		var annotations = variables.handlerMetadata.keyExists( "annotations" ) ? variables.handlerMetadata.annotations : variables.handlerMetadata
+		if ( structKeyExists( annotations, arguments.key ) ) {
+			return annotations[ arguments.key ]
 		}
 
 		// Nothing found, just return the default value of empty string

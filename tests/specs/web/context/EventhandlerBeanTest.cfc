@@ -129,4 +129,16 @@
 		expect( this.ehBean.isMetadataLoaded() ).toBe( true );
 		</cfscript>
 	</cffunction>
+
+	<cffunction name="testGetNestedHandlerMetadata" access="public" returnType="void">
+		<cfscript>
+		this.ehBean.setHandlerMetadata( {
+			name        : "PasskeyRegistration",
+			annotations : { secured : "" }
+		} );
+
+		expect( this.ehBean.getHandlerMetadata( "secured", false ) ).toBe( "" );
+		expect( this.ehBean.getHandlerMetadata( "missing", false ) ).toBeFalse();
+		</cfscript>
+	</cffunction>
 </cfcomponent>
