@@ -69,7 +69,7 @@ component accessors="true" {
 	 * Get the ColdBox Utility object
 	 */
 	private function getUtil(){
-		if ( isNull( variables.utility ) ) {
+		if ( !structKeyExists( variables, "utility" ) || isNull( variables.utility ) ) {
 			variables.utility = new coldbox.system.core.util.Util();
 		}
 		return variables.utility;
@@ -103,13 +103,13 @@ component accessors="true" {
 		}
 
 		// Register Root Logger
-		if ( isNull( logBoxDSL.root ) ) {
+		if ( !structKeyExists( logBoxDSL, "root" ) || isNull( logBoxDSL.root ) ) {
 			logBoxDSL.root = { appenders : "*" };
 		}
 		root( argumentCollection = logBoxDSL.root );
 
 		// Register Categories
-		if ( !isNull( logBoxDSL.categories ) ) {
+		if ( structKeyExists( logBoxDSL, "categories" ) && !isNull( logBoxDSL.categories ) ) {
 			for ( var key in logBoxDSL.categories ) {
 				logBoxDSL.categories[ key ].name = key;
 				category( argumentCollection = logBoxDSL.categories[ key ] );
@@ -117,27 +117,27 @@ component accessors="true" {
 		}
 
 		// Register Level Categories
-		if ( !isNull( logBoxDSL.debug ) ) {
+		if ( structKeyExists( logBoxDSL, "debug" ) && !isNull( logBoxDSL.debug ) ) {
 			DEBUG( argumentCollection = getUtil().arrayToStruct( logBoxDSL.debug ) );
 		}
-		if ( !isNull( logBoxDSL.info ) ) {
+		if ( structKeyExists( logBoxDSL, "info" ) && !isNull( logBoxDSL.info ) ) {
 			INFO( argumentCollection = getUtil().arrayToStruct( logBoxDSL.info ) );
 		}
-		if ( !isNull( logBoxDSL.warn ) ) {
+		if ( structKeyExists( logBoxDSL, "warn" ) && !isNull( logBoxDSL.warn ) ) {
 			WARN( argumentCollection = getUtil().arrayToStruct( logBoxDSL.warn ) );
 		}
-		if ( !isNull( logBoxDSL.error ) ) {
+		if ( structKeyExists( logBoxDSL, "error" ) && !isNull( logBoxDSL.error ) ) {
 			ERROR( argumentCollection = getUtil().arrayToStruct( logBoxDSL.error ) );
 		}
-		if ( !isNull( logBoxDSL.fatal ) ) {
+		if ( structKeyExists( logBoxDSL, "fatal" ) && !isNull( logBoxDSL.fatal ) ) {
 			FATAL( argumentCollection = getUtil().arrayToStruct( logBoxDSL.fatal ) );
 		}
-		if ( !isNull( logBoxDSL.off ) ) {
+		if ( structKeyExists( logBoxDSL, "off" ) && !isNull( logBoxDSL.off ) ) {
 			OFF( argumentCollection = getUtil().arrayToStruct( logBoxDSL.off ) );
 		}
 
 		// Register serializeExtraInfo
-		if ( !isNull( logBoxDSL.serializeExtraInfo ) ) {
+		if ( structKeyExists( logBoxDSL, "serializeExtraInfo" ) && !isNull( logBoxDSL.serializeExtraInfo ) ) {
 			variables.serializeExtraInfo = logBoxDSL.serializeExtraInfo;
 		}
 

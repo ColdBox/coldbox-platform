@@ -579,7 +579,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			arguments.requestContext.getCurrentRouteRecord(),
 			arguments.requestContext
 		);
-		if ( !isNull( routeCacheEntry ) ) {
+		if ( structKeyExists( local, "routeCacheEntry" ) && !isNull( local.routeCacheEntry ) ) {
 			return routeCacheEntry;
 		}
 
@@ -875,7 +875,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			arguments.requestContext.getCurrentRouteRecord(),
 			arguments.requestContext
 		);
-		if ( !isNull( routeCacheEntry ) ) {
+		if ( structKeyExists( local, "routeCacheEntry" ) && !isNull( local.routeCacheEntry ) ) {
 			return routeCacheEntry;
 		}
 
@@ -922,7 +922,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 						// entry is memoized for the life of the app, and a request-time value
 						// (locale, session, slug) would freeze into every later request's cache
 						// key. resolveCacheSuffix() evaluates it on every read instead.
-						mdEntry.suffix = arguments.oEventHandler.EVENT_CACHE_SUFFIX;
+						mdEntry.suffix = structKeyExists( arguments.oEventHandler, "EVENT_CACHE_SUFFIX" )
+						 ? arguments.oEventHandler.EVENT_CACHE_SUFFIX
+						 : "";
 
 						// if the cacheFilter has a length and is a method, then we need to verify and store the resulting closure
 						if ( len( mdEntry.cacheFilter ) ) {
@@ -989,8 +991,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			return arguments.ehBean;
 		}
 
-		var handler = isNull( arguments.oEventHandler ) ? newHandler( arguments.ehBean ) : arguments.oEventHandler;
-		var md      = getMetadata( handler );
+		var handler = (
+			structKeyExists( arguments, "oEventHandler" ) && !isNull( arguments.oEventHandler )
+			 ? arguments.oEventHandler
+			 : newHandler( arguments.ehBean )
+		);
+		var md = getMetadata( handler );
 
 		arguments.ehBean
 			.setActionMetadata( handler._actionMetadata( arguments.ehBean.getMethod() ) )

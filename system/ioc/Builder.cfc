@@ -79,7 +79,7 @@ component serializable="false" accessors="true" {
 	 * @return coldbox.system.ioc.dsl.ColdBoxDSL
 	 */
 	function getColdBoxDSL(){
-		if ( isNull( variables.coldboxDSL ) ) {
+		if ( !structKeyExists( variables, "coldboxDSL" ) || isNull( variables.coldboxDSL ) ) {
 			variables.coldboxDSL = new coldbox.system.ioc.dsl.ColdBoxDSL( variables.injector );
 		}
 		return variables.coldboxDSL;
@@ -91,7 +91,7 @@ component serializable="false" accessors="true" {
 	 * @return coldbox.system.ioc.dsl.CacheBoxDSL
 	 */
 	function getCacheBoxDSL(){
-		if ( isNull( variables.cacheBoxDSL ) ) {
+		if ( !structKeyExists( variables, "cacheBoxDSL" ) || isNull( variables.cacheBoxDSL ) ) {
 			variables.cacheBoxDSL = new coldbox.system.ioc.dsl.CacheBoxDSL( variables.injector );
 		}
 		return variables.cacheBoxDSL;
@@ -103,7 +103,7 @@ component serializable="false" accessors="true" {
 	 * @return coldbox.system.ioc.dsl.LogBoxDSL
 	 */
 	function getLogBoxDSL(){
-		if ( isNull( variables.logBoxDSL ) ) {
+		if ( !structKeyExists( variables, "logBoxDSL" ) || isNull( variables.logBoxDSL ) ) {
 			variables.logBoxDSL = new coldbox.system.ioc.dsl.LogBoxDSL( variables.injector );
 		}
 		return variables.logBoxDSL;

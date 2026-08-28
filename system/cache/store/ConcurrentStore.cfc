@@ -258,7 +258,7 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true" 
 	 * @return java.util.Collections
 	 */
 	private function getJavaCollections(){
-		if ( isNull( variables.collections ) ) {
+		if ( !structKeyExists( variables, "collections" ) || isNull( variables.collections ) ) {
 			variables.collections = createObject( "java", "java.util.Collections" );
 		}
 		return variables.collections;

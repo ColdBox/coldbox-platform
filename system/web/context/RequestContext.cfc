@@ -1552,7 +1552,7 @@ component serializable="false" accessors="true" {
 	 * @return coldbox.system.web.context.Response
 	 */
 	function getResponse(){
-		if ( isNull( variables.privateContext.response ) ) {
+		if ( !structKeyExists( variables.privateContext, "response" ) || isNull( variables.privateContext.response ) ) {
 			variables.privateContext.response = new coldbox.system.web.context.Response();
 		}
 		return variables.privateContext.response;
@@ -1901,13 +1901,30 @@ component serializable="false" accessors="true" {
 			!len( getHTTPHeader( "If-None-Match", "" ) ) &&
 			len( since ) &&
 			isDate( since ) &&
-			parseDateTime( since ) >= arguments.value
+			isHTTPDateAtOrAfter( since, arguments.value )
 		) {
 			noExecution();
 			setHTTPHeader( statusCode = 304 );
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * Compare an RFC 7231 HTTP date to a CFML date without relying on the runtime's
+	 * timezone-dependent `parseDateTime()` handling of the trailing GMT zone.
+	 */
+	private boolean function isHTTPDateAtOrAfter( required string httpDate, required date value ){
+		try {
+			var formatter = createObject( "java", "java.time.format.DateTimeFormatter" ).RFC_1123_DATE_TIME;
+			var parsed    = createObject( "java", "java.time.ZonedDateTime" )
+				.parse( javacast( "string", arguments.httpDate ), formatter )
+				.toInstant();
+
+			return parsed.getEpochSecond() >= arguments.value.toInstant().getEpochSecond();
+		} catch ( any e ) {
+			return false;
+		}
 	}
 
 	/**

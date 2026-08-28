@@ -159,7 +159,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * BDD: The main setup method for running ColdBox Integration enabled tests
 	 */
 	function beforeAll(){
-		if ( isNull( variables._ranBeforeAll ) ) {
+		if ( !structKeyExists( variables, "_ranBeforeAll" ) || isNull( variables._ranBeforeAll ) ) {
 			beforeTests();
 			variables._ranBeforeAll = true;
 		}
@@ -169,7 +169,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * BDD: The main teardown for ColdBox enabled applications after all tests execute
 	 */
 	function afterAll(){
-		if ( isNull( variables._ranAfterAll ) ) {
+		if ( !structKeyExists( variables, "_ranAfterAll" ) || isNull( variables._ranAfterAll ) ) {
 			afterTests();
 			variables._ranAfterAll = true;
 		}
@@ -406,6 +406,9 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 			// Make sure our routing service can be manipulated
 			prepareMock( routingService )
 				.$( "getCGIElement" )
+				.$args( "path_info", requestContext )
+				.$results( "" )
+				.$( "getCGIElement" )
 				.$args( "script_name", requestContext )
 				.$results( "" )
 				.$( "getCGIElement" )
@@ -437,6 +440,9 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 				requestContext.collectionAppend( routeParts.queryStringCollection );
 				// mock the cleaned paths so SES routes will be recognized
 				prepareMock( routingService )
+					.$( "getCGIElement" )
+					.$args( "path_info", requestContext )
+					.$results( "" )
 					.$( "getCGIElement" )
 					.$args( "path_info", requestContext )
 					.$results( routeParts.route );
@@ -804,7 +810,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 		numeric asyncJoinTimeout = 0
 	){
 		// Backwards Compat: Remove by ColdBox 7
-		if ( !isNull( arguments.interceptData ) ) {
+		if ( structKeyExists( arguments, "interceptData" ) && !isNull( arguments.interceptData ) ) {
 			arguments.data = arguments.interceptData;
 		}
 		return getController().getInterceptorService().announce( argumentCollection = arguments );
@@ -867,7 +873,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * @return coldbox.system.core.util.Util
 	 */
 	function getUtil(){
-		if ( isNull( variables.cbUtil ) ) {
+		if ( !structKeyExists( variables, "cbUtil" ) || isNull( variables.cbUtil ) ) {
 			variables.cbUtil = new coldbox.system.core.util.Util();
 		}
 		return variables.cbUtil;
@@ -879,7 +885,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * @return coldbox.system.core.delegates.Env
 	 */
 	function getEnv(){
-		if ( isNull( variables.env ) ) {
+		if ( !structKeyExists( variables, "env" ) || isNull( variables.env ) ) {
 			variables.env = new coldbox.system.core.delegates.Env();
 		}
 		return variables.env;

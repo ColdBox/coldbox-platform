@@ -359,7 +359,7 @@ component accessors=true serializable=false {
 	 */
 	CacheFactory function shutdown(){
 		// Log startup
-		if ( !isNull( variables.log ) ) {
+		if ( isObject( variables.log ) ) {
 			if ( variables.log.canDebug() ) {
 				variables.log.debug( "Shutdown of cache factory: #getFactoryID()# requested and started." );
 			}
@@ -376,7 +376,7 @@ component accessors=true serializable=false {
 			var cache = getCache( item );
 
 			// Log it
-			if ( !isNull( variables.log ) ) {
+			if ( isObject( variables.log ) ) {
 				if ( variables.log.canDebug() ) {
 					variables.log.debug( "Shutting down cache: #item# on factoryID: #getFactoryID()#." );
 				}
@@ -392,7 +392,7 @@ component accessors=true serializable=false {
 			variables.eventManager.announce( "afterCacheShutdown", { cache : cache } );
 
 			// log
-			if ( !isNull( variables.log ) ) {
+			if ( isObject( variables.log ) ) {
 				if ( variables.log.canDebug() ) {
 					variables.log.debug( "Cache: #item# was shut down on factoryID: #getFactoryID()#." );
 				}
@@ -423,7 +423,7 @@ component accessors=true serializable=false {
 		}
 
 		// Log shutdown complete
-		if ( !isNull( variables.log ) ) {
+		if ( isObject( variables.log ) ) {
 			if ( variables.log.canDebug() ) {
 				variables.log.debug( "Shutdown of cache factory: #getFactoryID()# completed." );
 			}
@@ -490,7 +490,7 @@ component accessors=true serializable=false {
 	 * Remove the cache factory from scope registration if enabled, else does nothing
 	 */
 	CacheFactory function removeFromScope(){
-		if ( isNull( variables.config ) ) {
+		if ( !structKeyExists( variables, "config" ) || isNull( variables.config ) ) {
 			return this;
 		}
 

@@ -460,10 +460,10 @@ component serializable="false" accessors="true" {
 		var routeString     = 0;
 
 		// Determine relocation type
-		if ( !isNull( arguments.url ) && len( arguments.url ) ) {
+		if ( structKeyExists( arguments, "url" ) && !isNull( arguments.url ) && len( arguments.url ) ) {
 			relocationType = "URL";
 		}
-		if ( !isNull( arguments.URI ) && len( arguments.URI ) ) {
+		if ( structKeyExists( arguments, "URI" ) && !isNull( arguments.URI ) && len( arguments.URI ) ) {
 			relocationType = "URI";
 		}
 
@@ -493,7 +493,7 @@ component serializable="false" accessors="true" {
 			case "URL": {
 				relocationURL = arguments.URL;
 				// Check SSL?
-				if ( !isNull( arguments.ssl ) ) {
+				if ( structKeyExists( arguments, "ssl" ) && !isNull( arguments.ssl ) ) {
 					relocationURL = updateSSL( relocationURL, arguments.ssl );
 				}
 				// Query String?
@@ -551,7 +551,7 @@ component serializable="false" accessors="true" {
 					relocationURL = relocationURL & "/";
 				}
 				// Check SSL?
-				if ( !isNull( arguments.ssl ) ) {
+				if ( structKeyExists( arguments, "ssl" ) && !isNull( arguments.ssl ) ) {
 					relocationURL = updateSSL( relocationURL, arguments.ssl );
 				}
 
@@ -725,7 +725,7 @@ component serializable="false" accessors="true" {
 
 		// Do we have an object coming back?
 		if (
-			!isNull( local.results.data ) &&
+			structKeyExists( local.results, "data" ) &&
 			isObject( local.results.data )
 		) {
 			// Verify $renderdata method convention
@@ -740,7 +740,7 @@ component serializable="false" accessors="true" {
 
 		// Do we need to do action renderings?
 		if (
-			!isNull( local.results.data ) &&
+			structKeyExists( local.results, "data" ) &&
 			local.results.ehBean.getActionMetadata( "renderdata", "html" ) neq "html"
 		) {
 			// Do action Rendering
@@ -753,7 +753,7 @@ component serializable="false" accessors="true" {
 		}
 
 		// Are we caching
-		if ( isCachingOn && !isNull( local.results.data ) ) {
+		if ( isCachingOn && structKeyExists( local.results, "data" ) ) {
 			oCache.set(
 				objectKey         = cacheKey,
 				object            = local.results.data,
@@ -763,7 +763,7 @@ component serializable="false" accessors="true" {
 		}
 
 		// Are we returning data?
-		if ( !isNull( local.results.data ) ) {
+		if ( structKeyExists( local.results, "data" ) ) {
 			return local.results.data;
 		}
 	}

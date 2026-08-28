@@ -618,7 +618,7 @@ component serializable="false" accessors="true" {
 	 * @return coldbox.system.async.AsyncManager
 	 */
 	any function async() cbMethod{
-		if ( isNull( variables.asyncManager ) ) {
+		if ( !structKeyExists( variables, "asyncManager" ) || isNull( variables.asyncManager ) ) {
 			variables.asyncManager = variables.wirebox.getInstance( "asyncManager@coldbox" );
 		}
 		return variables.asyncManager;
@@ -752,7 +752,7 @@ component serializable="false" accessors="true" {
 	 * @return coldbox.system.async.time.DateTimeHelper
 	 */
 	DateTimeHelper function getDateTimeHelper(){
-		if ( isNull( variables.cbDateTimeHelper ) ) {
+		if ( !structKeyExists( variables, "cbDateTimeHelper" ) || isNull( variables.cbDateTimeHelper ) ) {
 			variables.cbDateTimeHelper = variables.wirebox.getInstance(
 				"coldbox.system.async.time.DateTimeHelper"
 			);
