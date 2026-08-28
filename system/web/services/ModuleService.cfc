@@ -843,7 +843,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				var conventionsRouteExists = mConfig.router
 					.getRoutes()
 					.findAll( ( item ) => {
-						return ( item.pattern == "/:handler/:action" || item.pattern == ":handler/:action" )
+						return reFindNoCase( "^/?\:handler/\:action\??/?$", item.pattern )
 					} )
 				if ( arrayLen( conventionsRouteExists ) == 0 ) {
 					mConfig.router.route( "/:handler/:action?" ).end()

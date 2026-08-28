@@ -634,6 +634,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			// build routing argument struct based on module/namespace context
 			var contextRouting = {
 				action           : reReplaceNoCase( requestString, results.route.regexpattern, "" ),
+				domain           : arguments.domain,
 				event            : arguments.event,
 				excludedPatterns : arguments.excludedPatterns
 			};
@@ -659,10 +660,14 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			// process context discovery of incoming pattern
 			var contextRoute = findRoute( argumentCollection = contextRouting );
 
-			// Return if route Not found.
 			if ( !contextRoute.route.isEmpty() ) {
 				return contextRoute;
 			}
+
+			// A module or namespace mount point is not itself an executable route.
+			// Return the empty nested result so a failed domain or condition match
+			// cannot fall back to the mount point.
+			return contextRoute;
 		}
 
 		// Save current routed details in PRC
@@ -695,6 +700,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				// Return found Route recursively.
 				return findRoute(
 					action           = packagedRequestString,
+					domain           = arguments.domain,
 					event            = arguments.event,
 					module           = arguments.module,
 					excludedPatterns = arguments.excludedPatterns
