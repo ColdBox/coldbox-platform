@@ -665,18 +665,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			}
 
 			// A module or namespace mount point is not itself an executable route.
-			// When its nested table declines the request, continue through the outer
-			// table so application fallbacks can handle unmatched domains or conditions.
-			var nextExcludedPatterns = duplicate( arguments.excludedPatterns );
-			nextExcludedPatterns.append( results.route.pattern );
-			return findRoute(
-				action           = arguments.action,
-				domain           = arguments.domain,
-				event            = arguments.event,
-				module           = arguments.module,
-				namespace        = arguments.namespace,
-				excludedPatterns = nextExcludedPatterns
-			);
+			// Return the empty nested result so a failed domain or condition match
+			// cannot fall back to the mount point.
+			return contextRoute;
 		}
 
 		// Save current routed details in PRC

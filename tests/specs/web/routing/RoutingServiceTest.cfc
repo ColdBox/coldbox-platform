@@ -283,11 +283,10 @@
 			} );
 
 			it( "preserves the request domain when resolving module routes", function(){
-				var moduleName     = "domainRoutingTest";
-				var router         = getController().getRoutingService().getRouter();
-				var modules        = getController().getSetting( "modules" );
-				var originalRoutes = duplicate( router.getRoutes() );
-				var mockEvent      = createMock( "coldbox.system.web.context.RequestContext" ).init(
+				var moduleName = "domainRoutingTest";
+				var router     = getController().getRoutingService().getRouter();
+				var modules    = getController().getSetting( "modules" );
+				var mockEvent  = createMock( "coldbox.system.web.context.RequestContext" ).init(
 					controller = getController(),
 					properties = {
 						defaultLayout : "Main.cfm",
@@ -300,11 +299,6 @@
 				modules[ moduleName ] = { resources : [], routes : [] };
 
 				try {
-					router.addRoute(
-						pattern = "/domain-module/ceremony",
-						event   = "Fallback.notFound",
-						append  = false
-					);
 					router.addModuleRoutes(
 						pattern = "/domain-module",
 						module  = moduleName,
@@ -328,10 +322,9 @@
 					);
 
 					expect( allowed.route.event ).toBe( "Passkeys.authenticate" );
-					expect( denied.route.event ).toBe( "Fallback.notFound" );
+					expect( denied.route ).toBeEmpty();
 				} finally {
 					router.removeModuleRoutes( moduleName );
-					router.setRoutes( originalRoutes );
 					structDelete( modules, moduleName );
 				}
 			} );
