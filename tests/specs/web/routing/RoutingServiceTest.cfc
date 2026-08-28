@@ -323,7 +323,7 @@
 					);
 
 					expect( allowed.route.event ).toBe( "Passkeys.authenticate" );
-					expect( denied.route.event ).notToBe( "Passkeys.authenticate" );
+					expect( denied.route ).toBeEmpty();
 				} finally {
 					router.removeModuleRoutes( moduleName );
 					structDelete( modules, moduleName );
