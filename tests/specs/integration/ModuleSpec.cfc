@@ -111,6 +111,16 @@ component extends="tests.resources.BaseIntegrationTest" {
 
 					expect( routing ).notToBeEmpty();
 				} );
+
+				then( "an explicit convention route should not be registered twice", () => {
+					var routingService   = getController().getRoutingService();
+					var routing          = routingService.getModuleRoutes( "resourcesTest" );
+					var conventionRoutes = routing.filter( ( item ) => {
+						return reFindNoCase( "^/?\:handler/\:action\??/?$", item.pattern );
+					} );
+
+					expect( conventionRoutes ).toHaveLength( 1 );
+				} );
 			} );
 		} );
 
