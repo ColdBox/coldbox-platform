@@ -141,6 +141,20 @@ component extends="coldbox.system.testing.BaseModelTest" {
 						expect( routes[ 3 ].pattern ).toBe( "api/users/:id/" );
 					} );
 				} );
+
+				given( "a grouped route with a domain", function(){
+					then( "it should preserve the domain for fluent and inline routes", function(){
+						router.group( { domain : ":tenant.example.com" }, function(){
+							router.route( "/fluent" ).to( "main.fluent" )
+							router.route( "/inline", "main.inline" )
+						} )
+
+						var routes = router.getRoutes()
+						expect( routes ).toHaveLength( 2 )
+						expect( routes[ 1 ].domain ).toBe( ":tenant.example.com" )
+						expect( routes[ 2 ].domain ).toBe( ":tenant.example.com" )
+					} )
+				} )
 			} );
 
 			story( "I want to register routes with a toAction() terminator", function(){

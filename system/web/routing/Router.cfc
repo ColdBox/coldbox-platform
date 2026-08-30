@@ -1331,6 +1331,12 @@ component
 			if ( !variables.withClosure.isEmpty() ) {
 				processWith( arguments );
 			}
+			// route() does not declare domain directly, but group() can add it to the
+			// arguments collection. Preserve it in the fluent route definition so it
+			// reaches addRoute() below.
+			if ( arguments.keyExists( "domain" ) ) {
+				variables.thisRoute.domain = arguments.domain
+			}
 			// Prepare Routing Structure
 			var args = {};
 			// Simple => Event
@@ -1338,6 +1344,7 @@ component
 				args = {
 					pattern : arguments.pattern,
 					event   : arguments.target,
+					domain  : variables.thisRoute.domain,
 					verbs   : ( variables.thisRoute.keyExists( "verbs" ) ? variables.thisRoute.verbs : "" ),
 					name    : arguments.name
 				};
@@ -1347,6 +1354,7 @@ component
 				args = {
 					pattern  : arguments.pattern,
 					response : arguments.target,
+					domain   : variables.thisRoute.domain,
 					verbs    : ( variables.thisRoute.keyExists( "verbs" ) ? variables.thisRoute.verbs : "" ),
 					name     : arguments.name
 				};
@@ -1360,6 +1368,11 @@ component
 			// process a with closure if not empty
 			if ( !variables.withClosure.isEmpty() ) {
 				processWith( arguments );
+			}
+			// Materialize a domain supplied by group() before a fluent terminator
+			// registers variables.thisRoute.
+			if ( arguments.keyExists( "domain" ) ) {
+				variables.thisRoute.domain = arguments.domain
 			}
 
 			// Store data and continue
