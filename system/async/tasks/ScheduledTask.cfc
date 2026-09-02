@@ -805,11 +805,6 @@ component accessors="true" {
 	 * @return A ScheduledFuture from where you can monitor the task, an empty ScheduledFuture if the task was not registered
 	 */
 	ScheduledFuture function start(){
-		// If we have overlaps and the spaced delay is 0 then grab it from the period
-		if ( variables.noOverlaps && variables.spacedDelay == 0 ) {
-			variables.spacedDelay = variables.period;
-		}
-
 		// If we have a delay and a delayTimeUnit, then we need to compare to our
 		// current timeUnit and convert to support the delay
 		// ( only if our time unit is seconds , if not we disable the delay )
@@ -839,6 +834,14 @@ component accessors="true" {
 		// boundary counted from that start time instead of firing immediately on registration.
 		if ( variables.period > 0 && variables.delay == 0 && len( variables.startTime ) ) {
 			calculateStartTimeAlignedDelay();
+		}
+
+		// If we have noOverlaps and the spaced delay is 0 then grab it from the period.
+		// This must happen AFTER any start-time alignment above, since that can convert
+		// the period/timeUnit (e.g. minutes -> seconds); otherwise spacedDelay would be
+		// snapshotted in the original unit while timeUnit has already changed.
+		if ( variables.noOverlaps && variables.spacedDelay == 0 ) {
+			variables.spacedDelay = variables.period;
 		}
 
 		debugLog(
