@@ -15,6 +15,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   cache, which reads a bare number as seconds, so every timeout expired sixty times too soon. A region
   moved from `CacheBoxProvider` to `BoxLangProvider` kept a 10 minute object for 10 seconds.
   `LuceeProvider` and `CFProvider` already convert.
+- [COLDBOX-1434](https://ortussolutions.atlassian.net/browse/COLDBOX-1434): `ScheduledTask` combining
+  `withNoOverlaps()` with a daily start time (`between()`/`startOnTime()`) snapshotted `spacedDelay`
+  from `period` before the start-time alignment converted `period`/`timeUnit` to seconds, so the
+  original unit's value (e.g. `1` for "1 minute") was scheduled using the converted `timeUnit`
+  ("seconds") instead. A `1` minute task with `withNoOverlaps()` and an aligned start time re-fired
+  every second instead of every 60 seconds.
 
 ## [8.1.0] - 2026-04-14
 

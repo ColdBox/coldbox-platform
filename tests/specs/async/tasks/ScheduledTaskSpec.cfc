@@ -204,6 +204,46 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 					t.start();
 					expect( t.getDelay() ).toBe( 5 );
 				} );
+
+				it( "keeps spacedDelay consistent with the converted period/timeUnit when withNoOverlaps() is combined with startOnTime()/between() (COLDBOX-1434)", function(){
+					var t = scheduler
+						.task( "test" )
+						.every( 1, "minutes" )
+						.between( "00:00", "23:59" )
+						.withNoOverlaps();
+					t.start();
+
+					// startOnTime()/between() align the period to seconds : 1 minute -> 60 seconds
+					expect( t.getTimeUnit() ).toBe( "seconds" );
+					expect( t.getPeriod() ).toBe( 60 );
+					// spacedDelay must be derived from the ALREADY converted period, not the
+					// original "1" ( minute ) value, or it gets scheduled as 1 second instead of 60
+					expect( t.getSpacedDelay() ).toBe( t.getPeriod() );
+				} );
+
+				it( "keeps spacedDelay consistent for withNoOverlaps() without a start time (unchanged behavior)", function(){
+					var t = scheduler
+						.task( "test" )
+						.every( 1, "minutes" )
+						.withNoOverlaps();
+					t.start();
+
+					expect( t.getTimeUnit() ).toBe( "minutes" );
+					expect( t.getPeriod() ).toBe( 1 );
+					expect( t.getSpacedDelay() ).toBe( t.getPeriod() );
+				} );
+
+				it( "does not override an explicitly set spacedDelay() when combined with startOnTime()", function(){
+					var t = scheduler
+						.task( "test" )
+						.every( 1, "minutes" )
+						.startOnTime( "00:00" )
+						.spacedDelay( 3600, "seconds" )
+						.withNoOverlaps();
+					t.start();
+
+					expect( t.getSpacedDelay() ).toBe( 3600 );
+				} );
 			} );
 
 			describe( "can register frequencies with constraints", function(){
