@@ -2885,10 +2885,8 @@ component
 	 * route( "/gateways" ).toAiGateway();
 	 * </pre>
 	 *
-	 * @gateway The registered gateway name to pin this mount to. Defaults to empty, which mounts
-	 *          a `:gateway` placeholder serving every gateway in the registry
-	 * @session A WireBox ID string or a live GatewaySession instance to dispatch inbound messages
-	 *          into. Defaults to empty, which parses without dispatching
+	 * @gateway The registered gateway name to pin this mount to, or empty for a `:gateway` placeholder mount
+	 * @session A WireBox ID or a live GatewaySession to dispatch into, or empty to parse without dispatching
 	 *
 	 * @return Router instance for chaining
 	 *
@@ -2959,7 +2957,10 @@ component
 					if ( event.getHTTPMethod() == "GET" ) {
 						return writeGatewayResult(
 							event,
-							bxModules.bxai.models.gateway.http.GatewayRequestProcessor::processHandshake( gatewayName, rc )
+							bxModules.bxai.models.gateway.http.GatewayRequestProcessor::processHandshake(
+								gatewayName,
+								rc
+							)
 						);
 					}
 
@@ -3066,11 +3067,11 @@ component
 					}
 
 					return {
-						"pattern"   : basePath,
-						"gateway"   : pinnedGateway,
-						"dispatches": !isNull( resolveGatewaySession( capturedSession ) ),
-						"gateways"  : registered,
-						"endpoints" : [
+						"pattern"    : basePath,
+						"gateway"    : pinnedGateway,
+						"dispatches" : !isNull( resolveGatewaySession( capturedSession ) ),
+						"gateways"   : registered,
+						"endpoints"  : [
 							{
 								"verb"        : "POST",
 								"path"        : basePath & gatewaySegment & "/events",
@@ -3168,10 +3169,11 @@ component
 	 * @result The `{ statusCode, body, contentType, headers }` result from GatewayRequestProcessor
 	 */
 	private any function writeGatewayResult( required event, required struct result ){
-		var contentType = arguments.result.contentType ?: "application/json";
-		var thisEvent   = arguments.event;
+		var contentType   = arguments.result.contentType ?: "application/json";
+		var thisEvent     = arguments.event;
+		var resultHeaders = arguments.result.headers ?: {};
 
-		( arguments.result.headers ?: {} ).each( ( key, value ) => {
+		resultHeaders.each( ( key, value ) => {
 			thisEvent.setHTTPHeader( name = key, value = value );
 		} );
 

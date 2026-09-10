@@ -65,7 +65,8 @@ component extends="coldbox.system.testing.BaseModelTest" skip="notBoxlang" {
 					then( "every sub-route should carry gateway=true and the gateway name", function(){
 						router.route( "/webhooks/slack" ).toAiGateway( "slack" )
 
-						router.getRoutes().each( ( r ) => {
+						var routes = router.getRoutes()
+						routes.each( ( r ) => {
 							expect( r.gateway ).toBeTrue()
 							expect( r.gatewayName ).toBe( "slack" )
 						} )
@@ -76,7 +77,8 @@ component extends="coldbox.system.testing.BaseModelTest" skip="notBoxlang" {
 					then( "every sub-route should carry it as gatewaySession", function(){
 						router.route( "/gateways" ).toAiGateway( session = "SupportAgentSession" )
 
-						router.getRoutes().each( ( r ) => {
+						var routes = router.getRoutes()
+						routes.each( ( r ) => {
 							expect( r.gatewaySession ).toBe( "SupportAgentSession" )
 						} )
 					} )
@@ -86,9 +88,8 @@ component extends="coldbox.system.testing.BaseModelTest" skip="notBoxlang" {
 					then( "the events route should answer both GET and POST", function(){
 						router.route( "/gateways" ).toAiGateway()
 
-						var eventsRoute = router
-							.getRoutes()
-							.filter( ( r ) => r.pattern == "gateways/:gateway/events/" )[ 1 ]
+						var routes      = router.getRoutes()
+						var eventsRoute = routes.filter( ( r ) => r.pattern == "gateways/:gateway/events/" )[ 1 ]
 
 						expect( eventsRoute.verbs ).toBe( "GET,POST" )
 					} )
@@ -97,7 +98,10 @@ component extends="coldbox.system.testing.BaseModelTest" skip="notBoxlang" {
 						router.route( "/gateways" ).toAiGateway()
 
 						var byPattern = {}
-						router.getRoutes().each( ( r ) => byPattern[ r.pattern ] = r )
+						var routes    = router.getRoutes()
+						routes.each( ( r ) => {
+							byPattern[ r.pattern ] = r;
+						} )
 
 						expect( byPattern[ "gateways/interactions/:requestID/" ].verbs ).toBe( "GET" )
 						expect( byPattern[ "gateways/interactions/:requestID/decisions/" ].verbs ).toBe( "POST" )
@@ -125,7 +129,8 @@ component extends="coldbox.system.testing.BaseModelTest" skip="notBoxlang" {
 							.withSSL()
 							.toAiGateway()
 
-						router.getRoutes().each( ( r ) => {
+						var routes = router.getRoutes()
+						routes.each( ( r ) => {
 							expect( r.ssl ).toBeTrue()
 						} )
 					} )
@@ -138,7 +143,8 @@ component extends="coldbox.system.testing.BaseModelTest" skip="notBoxlang" {
 							.withCondition( ( route, params, event ) => true )
 							.toAiGateway()
 
-						router.getRoutes().each( ( r ) => {
+						var routes = router.getRoutes()
+						routes.each( ( r ) => {
 							expect( isClosure( r.condition ) || isCustomFunction( r.condition ) ).toBeTrue()
 						} )
 					} )
