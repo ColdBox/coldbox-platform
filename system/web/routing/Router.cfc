@@ -816,6 +816,9 @@ component
 		any aiRunnable                = "",
 		boolean mcp                   = "false",
 		string mcpServer              = "",
+		boolean gateway               = "false",
+		string gatewayName            = "",
+		any gatewaySession            = "",
 		array middleware              = [],
 		array withoutMiddleware       = [],
 		boolean cache                 = "false",
@@ -1273,6 +1276,10 @@ component
 			// MCP Routing
 			"mcp"                    : false, // Flag indicating this is an MCP server route
 			"mcpServer"              : "", // The MCP server name to expose
+			// AI Gateway Routing
+			"gateway"                : false, // Flag indicating this is an AI gateway route
+			"gatewayName"            : "", // The gateway name this route is pinned to, empty for a :gateway placeholder mount
+			"gatewaySession"         : "", // The GatewaySession WireBox ID or instance inbound messages dispatch into
 			// Route-Level Caching - overrides the handler's own cache="true" annotation when true
 			"cache"                  : false, // Flag indicating this route caches its output
 			"cacheTimeout"           : "", // Cache timeout, in minutes. Blank uses the cache provider's default
@@ -2427,8 +2434,8 @@ component
 
 	/**
 	 * Verifies that BoxLang is the active runtime and that the bxai module is installed.
-	 * Used as a guard by toAi() and toMCP() at route-registration time so misconfigurations
-	 * are caught on startup rather than at request time.
+	 * Used as a guard by toAi(), toMCP() and toAiGateway() at route-registration time so
+	 * misconfigurations are caught on startup rather than at request time.
 	 *
 	 * @throws BoxLangRequiredException If BoxLang is not the active runtime
 	 * @throws ModuleNotFoundException  If the bxai module is not installed
@@ -2437,14 +2444,14 @@ component
 		if ( !server.keyExists( "boxlang" ) ) {
 			throw(
 				type   : "BoxLangRequiredException",
-				message: "BoxLang is required for AI/MCP routing. toAi() and toMCP() are BoxLang-only features."
+				message: "BoxLang is required for AI routing. toAi(), toMCP() and toAiGateway() are BoxLang-only features."
 			);
 		}
 
 		if ( !getModuleList().keyArray().findNoCase( "bxai" ) ) {
 			throw(
 				type   : "ModuleNotFoundException",
-				message: "The BoxLang AI module (bxai) is required for AI/MCP routing. Install it via: box install bxai"
+				message: "The BoxLang AI module (bxai) is required for AI routing. Install it via: box install bxai"
 			);
 		}
 	}
@@ -2465,7 +2472,7 @@ component
 	 *   void function stream( function onChunk, any input={}, struct params={}, struct options={} )
 	 *
 	 * Any route modifiers already set (withCondition, withDomain, withSSL, etc.) are inherited
-	 * by all five sub-routes.
+	 * by every sub-route.
 	 *
 	 * <pre>
 	 * // Using WireBox ID — resolved lazily at request time
@@ -2835,6 +2842,349 @@ component
 		variables.thisRoute = initRouteDefinition();
 
 		return this;
+	}
+
+	/**
+	 * Terminates the route by registering the family of sub-routes that expose a BoxLang AI
+	 * Gateway over HTTP: inbound platform events, the URL-verification handshake platforms
+	 * perform before they will POST anywhere, and the human-in-the-loop interaction endpoints.
+	 *
+	 * Given a base pattern (e.g. "/gateways"), the following sub-routes are registered:
+	 *
+	 *   POST {pattern}[/:gateway]/events                 → verify, parse, and dispatch  [202 JSON]
+	 *   GET  {pattern}[/:gateway]/events                 → the platform's URL handshake [gateway's own]
+	 *   GET  {pattern}/interactions/:requestID           → poll a pending interaction   [JSON]
+	 *   POST {pattern}/interactions/:requestID/decisions → submit a human's decision    [JSON]
+	 *   GET  {pattern}/info                              → registered gateways          [JSON]
+	 *
+	 * GET and POST deliberately share the `/events` path — one route answering both verbs — since
+	 * a platform is given ONE URL to store and verifies it with a GET before it ever POSTs to it.
+	 *
+	 * Pass a `gateway` name to pin the mount to one gateway. Leave it out and the terminator
+	 * inserts its own `:gateway` placeholder, so a single mount serves every gateway registered
+	 * in `aiGatewayRegistry()`.
+	 *
+	 * Pass a `session` — a WireBox ID or a live GatewaySession from `aiGatewaySession()` — and
+	 * every inbound message is dispatched as an agent turn and acked `202` immediately, without
+	 * waiting on the turn: a platform webhook times out in seconds while an agent turn does not.
+	 * The response reports which thread each message landed on so the caller can correlate the
+	 * reply that arrives later. Leave it out and inbound events are verified and parsed only,
+	 * returning the normalized messages for the application to dispatch itself.
+	 *
+	 * Any route modifiers already set (withCondition, withDomain, withSSL, etc.) are inherited
+	 * by all five sub-routes.
+	 *
+	 * <pre>
+	 * // One mount serving every registered gateway, dispatching into a session by WireBox ID
+	 * route( "/gateways" ).toAiGateway( session: "SupportAgentSession" );
+	 *
+	 * // Pinned to a single gateway: POST/GET /webhooks/slack/events
+	 * route( "/webhooks/slack" ).toAiGateway( "slack", "SupportAgentSession" );
+	 *
+	 * // Verify and parse only, dispatching nothing
+	 * route( "/gateways" ).toAiGateway();
+	 * </pre>
+	 *
+	 * @gateway The registered gateway name to pin this mount to, or empty for a `:gateway` placeholder mount
+	 * @session A WireBox ID or a live GatewaySession to dispatch into, or empty to parse without dispatching
+	 *
+	 * @return Router instance for chaining
+	 *
+	 * @throws BoxLangRequiredException If BoxLang is not the active runtime
+	 * @throws ModuleNotFoundException  If the bxai module is not installed
+	 * @throws InvalidArgumentException If session is not a WireBox ID string or an object
+	 */
+	function toAiGateway( string gateway = "", any session = "" ){
+		// Guard: BoxLang + bxai must be present at route-registration time
+		ensureBoxLang()
+
+		// Validate argument type
+		if (
+			( !isSimpleValue( arguments.session ) && !isObject( arguments.session ) ) ||
+			isNumeric( arguments.session )
+		) {
+			throw(
+				type   : "InvalidArgumentException",
+				message: "The 'session' argument must be a WireBox ID string or a GatewaySession instance"
+			)
+		}
+
+		// Capture base path and route name from the current fluent state, exactly as toAi() does,
+		// then build each sub-route as its own explicit routeArgs struct.
+		var basePath = variables.thisRoute.pattern
+		var baseName = len( variables.thisRoute.name ) ? variables.thisRoute.name : basePath
+
+		// A pinned mount needs no placeholder; an unpinned one takes the gateway name from the URL.
+		var gatewaySegment = len( trim( arguments.gateway ) ) ? "" : "/:gateway"
+
+		// Shared modifiers forwarded to every sub-route (mirrors toAi()/resources()).
+		// `gateway` here is the route-metadata FLAG — the name it was pinned to is `gatewayName`.
+		var sharedArgs = {
+			condition      : variables.thisRoute.condition,
+			domain         : variables.thisRoute.domain,
+			ssl            : variables.thisRoute.ssl,
+			headers        : variables.thisRoute.headers,
+			module         : variables.thisRoute.module,
+			namespace      : variables.thisRoute.namespace,
+			meta           : variables.thisRoute.meta,
+			gateway        : true,
+			gatewayName    : arguments.gateway,
+			gatewaySession : arguments.session,
+			statusCode     : 200
+		}
+
+		// Captured in local variables so the closures can close over them
+		var pinnedGateway   = arguments.gateway
+		var capturedSession = arguments.session
+
+		// =====================================================================================
+		// EVENTS ROUTE
+		// =====================================================================================
+
+		// GET/POST {base}[/:gateway]/events — one route, because a platform is given ONE URL and
+		// verifies it with a GET before it ever POSTs to it. Two routes sharing a pattern would
+		// merge into one anyway (see addRoute), so the verb branch lives inside the closure.
+		var routeArgs = sharedArgs
+			.copy()
+			.append( {
+				"pattern"  : "#basePath##gatewaySegment#/events",
+				"name"     : "#baseName#.gateway.events",
+				"verbs"    : "GET,POST",
+				"response" : ( event, rc, prc ) => {
+					var gatewayName = resolveGatewayName( pinnedGateway, rc )
+
+					// The platform's URL-verification handshake, answered by the gateway itself
+					if ( event.getHTTPMethod() == "GET" ) {
+						return writeGatewayResult(
+							event,
+							bxModules.bxai.models.gateway.http.GatewayRequestProcessor::processHandshake(
+								gatewayName,
+								rc
+							)
+						);
+					}
+
+					var gatewaySession = resolveGatewaySession( capturedSession )
+					var result         = "";
+
+					// Passed positionally rather than as a null-valued named argument, so a mount
+					// with no session is genuinely a parse-only call.
+					if ( isNull( gatewaySession ) ) {
+						result = bxModules.bxai.models.gateway.http.GatewayRequestProcessor::processInbound(
+							gatewayName,
+							event.getHTTPContent(),
+							getGatewayRequestHeaders()
+						);
+					} else {
+						result = bxModules.bxai.models.gateway.http.GatewayRequestProcessor::processInbound(
+							gatewayName,
+							event.getHTTPContent(),
+							getGatewayRequestHeaders(),
+							gatewaySession
+						);
+					}
+
+					return writeGatewayResult( event, result );
+				}
+			} )
+
+		// process a with closure if not empty
+		if ( !variables.withClosure.isEmpty() ) {
+			processWith( routeArgs )
+		}
+		// Register the route
+		addRoute( argumentCollection = routeArgs )
+
+		// =====================================================================================
+		// INTERACTION ROUTE
+		// =====================================================================================
+
+		// GET {base}/interactions/:requestID — poll a pending human-in-the-loop interaction
+		routeArgs = sharedArgs
+			.copy()
+			.append( {
+				"pattern"  : "#basePath#/interactions/:requestID",
+				"name"     : "#baseName#.gateway.interaction",
+				"verbs"    : "GET",
+				"response" : ( event, rc, prc ) => {
+					var result = bxModules.bxai.models.gateway.http.GatewayRequestProcessor::readInteraction(
+						rc.requestID ?: ""
+					);
+					return writeGatewayResult( event, result );
+				}
+			} )
+
+		// process a with closure if not empty
+		if ( !variables.withClosure.isEmpty() ) {
+			processWith( routeArgs )
+		}
+		// Register the route
+		addRoute( argumentCollection = routeArgs )
+
+		// =====================================================================================
+		// DECISION ROUTE
+		// =====================================================================================
+
+		// POST {base}/interactions/:requestID/decisions — submit a human's signed decision
+		routeArgs = sharedArgs
+			.copy()
+			.append( {
+				"pattern"  : "#basePath#/interactions/:requestID/decisions",
+				"name"     : "#baseName#.gateway.decision",
+				"verbs"    : "POST",
+				"response" : ( event, rc, prc ) => {
+					var result = bxModules.bxai.models.gateway.http.GatewayRequestProcessor::submitDecision(
+						rc.requestID ?: "",
+						event.getHTTPContent(),
+						getGatewayRequestHeaders()
+					);
+					return writeGatewayResult( event, result );
+				}
+			} )
+
+		// process a with closure if not empty
+		if ( !variables.withClosure.isEmpty() ) {
+			processWith( routeArgs )
+		}
+		// Register the route
+		addRoute( argumentCollection = routeArgs )
+
+		// =====================================================================================
+		// INFO ROUTE
+		// =====================================================================================
+
+		// GET {base}/info — what this mount serves, and which gateways are registered behind it
+		routeArgs = sharedArgs
+			.copy()
+			.append( {
+				"pattern"  : "#basePath#/info",
+				"name"     : "#baseName#.gateway.info",
+				"verbs"    : "GET",
+				"response" : ( event, rc, prc ) => {
+					var registered = aiGatewayRegistry().listGateways()
+					if ( len( pinnedGateway ) ) {
+						registered = registered.filter( ( key, gateway ) => key == pinnedGateway )
+					}
+
+					return {
+						"pattern"    : basePath,
+						"gateway"    : pinnedGateway,
+						"dispatches" : !isNull( resolveGatewaySession( capturedSession ) ),
+						"gateways"   : registered,
+						"endpoints"  : [
+							{
+								"verb"        : "POST",
+								"path"        : basePath & gatewaySegment & "/events",
+								"description" : "Inbound platform event"
+							},
+							{
+								"verb"        : "GET",
+								"path"        : basePath & gatewaySegment & "/events",
+								"description" : "Platform URL verification handshake"
+							},
+							{
+								"verb"        : "GET",
+								"path"        : basePath & "/interactions/:requestID",
+								"description" : "Poll a pending human interaction"
+							},
+							{
+								"verb"        : "POST",
+								"path"        : basePath & "/interactions/:requestID/decisions",
+								"description" : "Submit a human decision"
+							},
+							{
+								"verb"        : "GET",
+								"path"        : basePath & "/info",
+								"description" : "Endpoint metadata"
+							}
+						]
+					}
+				}
+			} )
+
+		// process a with closure if not empty
+		if ( !variables.withClosure.isEmpty() ) {
+			processWith( routeArgs )
+		}
+		// Register the route
+		addRoute( argumentCollection = routeArgs )
+
+		// Reset fluent state for the next route definition
+		variables.thisRoute = initRouteDefinition()
+
+		return this;
+	}
+
+	/**
+	 * Which gateway a toAiGateway() sub-route is talking to: the name the mount was pinned to
+	 * always wins, so a `:gateway` placeholder (or a stray `gateway` value in the request
+	 * collection) can never redirect a pinned mount at another gateway.
+	 *
+	 * @pinnedGateway The name passed to toAiGateway(), empty for a placeholder mount
+	 * @rc            The request collection, carrying the matched `:gateway` placeholder
+	 */
+	private string function resolveGatewayName( required string pinnedGateway, required struct rc ){
+		return len( arguments.pinnedGateway ) ? arguments.pinnedGateway : ( arguments.rc.gateway ?: "" );
+	}
+
+	/**
+	 * Resolve the GatewaySession a toAiGateway() route dispatches into: a live instance is used
+	 * as-is, a WireBox ID is resolved per request (so registering the route never forces the
+	 * session to be constructed), and an empty value means "parse, don't dispatch".
+	 *
+	 * @session The `session` argument toAiGateway() was given
+	 *
+	 * @return The GatewaySession, or null when the route dispatches nothing
+	 */
+	private any function resolveGatewaySession( required any session ){
+		if ( isObject( arguments.session ) ) {
+			return arguments.session;
+		}
+		if ( !len( trim( arguments.session ) ) ) {
+			return javacast( "null", "" );
+		}
+		return getInstance( arguments.session );
+	}
+
+	/**
+	 * The inbound request headers, for gateway signature verification. Defensive in exactly the
+	 * way RequestContext.getHTTPHeader() is: read from a thread there is no request to read.
+	 */
+	private struct function getGatewayRequestHeaders(){
+		try {
+			return getHTTPRequestData( false ).headers;
+		} catch ( any e ) {
+			return {};
+		}
+	}
+
+	/**
+	 * Render a bx-ai gateway result as the response.
+	 *
+	 * Both the status code and the content type come back from the gateway per request — a 401
+	 * on a bad signature, a plain-text challenge echo on a handshake — so this renders directly
+	 * instead of returning a body for the route's static `statusCode` to wrap.
+	 *
+	 * @event  The request context
+	 * @result The `{ statusCode, body, contentType, headers }` result from GatewayRequestProcessor
+	 */
+	private any function writeGatewayResult( required event, required struct result ){
+		var contentType   = arguments.result.contentType ?: "application/json";
+		var thisEvent     = arguments.event;
+		var resultHeaders = arguments.result.headers ?: {};
+
+		resultHeaders.each( ( key, value ) => {
+			thisEvent.setHTTPHeader( name = key, value = value );
+		} );
+
+		thisEvent.renderData(
+			type        = findNoCase( "json", contentType ) ? "JSON" : "PLAIN",
+			data        = arguments.result.body ?: {},
+			contentType = contentType,
+			statusCode  = arguments.result.statusCode ?: 200
+		);
+
+		return "";
 	}
 
 	/**

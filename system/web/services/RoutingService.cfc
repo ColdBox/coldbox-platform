@@ -429,6 +429,18 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 							verbs     : routeResults.route.verbs
 						}
 					);
+				} else if ( routeResults.route.gateway ?: false ) {
+					var loggedGateway = len( routeResults.route.gatewayName ) ? routeResults.route.gatewayName : (
+						routeResults.params.gateway ?: ""
+					);
+					getLogger().debug(
+						"Executing AI gateway route: #routeResults.route.pattern#",
+						{
+							route   : routeResults.route.pattern,
+							gateway : loggedGateway,
+							verbs   : routeResults.route.verbs
+						}
+					);
 				}
 			}
 			renderResponse( routeResults.route, arguments.event );
@@ -899,11 +911,27 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		}
 		// Closure/Lambda
 		else {
+			// Tracked so a closure that renders the response ITSELF is not flattened back onto the
+			// route's static statusCode by the renderData() call at the bottom of this method. An AI
+			// gateway route is the case in point: its status code and content type come back from the
+			// gateway per request (a 401 on a bad signature, a plain-text challenge on a handshake),
+			// not from the route definition. Only renderData set DURING the closure counts — one an
+			// interceptor set before the route ran is left to whatever set it.
+			var priorRenderData = event.getRenderData();
+			var hadRenderData   = !priorRenderData.isEmpty();
+
 			theResponse = aRoute.response(
 				event,
 				event.getCollection(),
 				event.getPrivateCollection()
 			);
+
+			// The closure rendered the response itself — nothing left to marshall here
+			var closureRenderData = event.getRenderData();
+			if ( !hadRenderData && !closureRenderData.isEmpty() ) {
+				event.noExecution();
+				return;
+			}
 		}
 
 		// render it out
