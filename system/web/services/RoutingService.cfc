@@ -429,6 +429,15 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 							verbs     : routeResults.route.verbs
 						}
 					);
+				} else if ( routeResults.route.gateway ?: false ) {
+					getLogger().debug(
+						"Executing AI gateway route: #routeResults.route.pattern#",
+						{
+							route   : routeResults.route.pattern,
+							gateway : len( routeResults.route.gatewayName ) ? routeResults.route.gatewayName : ( routeResults.params.gateway ?: "" ),
+							verbs   : routeResults.route.verbs
+						}
+					);
 				}
 			}
 			renderResponse( routeResults.route, arguments.event );
@@ -875,6 +884,13 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	private any function renderResponse( required route, required event ){
 		var aRoute      = arguments.route;
 		var theResponse = "";
+		// Tracked so a closure that renders the response ITSELF is not flattened back onto the
+		// route's static statusCode by the renderData() call at the bottom of this method. An AI
+		// gateway route is the case in point: its status code and content type come back from the
+		// gateway per request (a 401 on a bad signature, a plain-text challenge on a handshake),
+		// not from the route definition. Only renderData set DURING the closure counts — one an
+		// interceptor set before the route ran is left to whatever set it.
+		var hadRenderData = !arguments.event.getRenderData().isEmpty();
 
 		// standardize status codes if not found.
 		if ( !structKeyExists( aRoute, "statusCode" ) ) {
@@ -904,6 +920,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				event.getCollection(),
 				event.getPrivateCollection()
 			);
+
+			// The closure rendered the response itself — nothing left to marshall here
+			if ( !hadRenderData && !event.getRenderData().isEmpty() ) {
+				event.noExecution();
+				return;
+			}
 		}
 
 		// render it out
