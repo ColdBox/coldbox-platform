@@ -779,7 +779,7 @@ component serializable="false" accessors="true" {
 	 */
 	function locateInstance( required name ){
 		var scanLocations = variables.binder.getScanLocations();
-		var className       = replace( arguments.name, ".", "/", "all" );
+		var className     = replace( arguments.name, ".", "/", "all" );
 
 		// If we find a :, then avoid doing lookups on the i/o system.
 		// This qualifies as a DSL
@@ -800,7 +800,11 @@ component serializable="false" accessors="true" {
 		}
 
 		// Not found, so let's do full namespace location
-		if ( fileExists( expandPath( "/" & className & ".cfc" ) ) || fileExists( expandPath( "/" & className & ".bx" ) ) ) {
+		if (
+			fileExists( expandPath( "/" & className & ".cfc" ) ) || fileExists(
+				expandPath( "/" & className & ".bx" )
+			)
+		) {
 			return arguments.name;
 		}
 
