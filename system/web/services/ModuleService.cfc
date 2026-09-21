@@ -840,10 +840,16 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				}
 
 				// Add convention based routing if it does not exist.
+				// Note: we specifically look for the OPTIONAL action variant ("/:handler/:action?")
+				// since that is the only pattern capable of matching a handler-only (single segment)
+				// URL. A module that only declares the mandatory variant ("/:handler/:action") does
+				// NOT provide that capability, so it must not suppress this auto-injection or
+				// single-segment module routes (e.g. "/cbadmin/entries") silently fall through to
+				// the parent application's own routing table.
 				var conventionsRouteExists = mConfig.router
 					.getRoutes()
 					.findAll( ( item ) => {
-						return reFindNoCase( "^/?\:handler/\:action\??/?$", item.pattern )
+						return reFindNoCase( "^/?\:handler/\:action\?/?$", item.pattern )
 					} )
 				if ( arrayLen( conventionsRouteExists ) == 0 ) {
 					mConfig.router.route( "/:handler/:action?" ).end()
