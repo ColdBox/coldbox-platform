@@ -44,6 +44,39 @@ component extends="tests.resources.BaseIntegrationTest" {
 				variables.moduleService.reload( "test-module" );
 				expect( variables.moduleService.getModuleRegistry() ).toHaveKey( "test-module" );
 			} )
+
+			it( "Still resolves a handler-only URL for a module with only a mandatory-action route", function(){
+				variables.moduleService.registerAndActivateModule( "test-module-conventions", "tests.resources" );
+
+				// A module that only declares "/:handler/:action" (mandatory action, like
+				// ContentBox's contentbox-admin module) must still resolve a handler-only,
+				// single-segment URL by way of ColdBox's auto-injected optional-action
+				// convention route ("/:handler/:action?"). If ColdBox fails to auto-inject it
+				// (the regression this test guards against), this lookup returns an empty route
+				// and the request would fall through to the parent application's own routes.
+				var mockEvent = createMock( "coldbox.system.web.context.RequestContext" ).init(
+					controller = getController(),
+					properties = {
+						defaultLayout : "Main.cfm",
+						defaultView   : "",
+						eventName     : "event",
+						modules       : {}
+					}
+				);
+
+				var results = getController()
+					.getRoutingService()
+					.findRoute(
+						action = "home",
+						event  = mockEvent,
+						module = "test-module-conventions"
+					);
+
+				expect( results.route ).notToBeEmpty(
+					"Expected a route match; the request would otherwise fall through to the parent app's routes."
+				);
+				expect( results.params.handler ?: "" ).toBe( "home" );
+			} )
 		} );
 	}
 
