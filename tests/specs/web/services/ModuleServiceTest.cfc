@@ -45,7 +45,7 @@ component extends="tests.resources.BaseIntegrationTest" {
 				expect( variables.moduleService.getModuleRegistry() ).toHaveKey( "test-module" );
 			} )
 
-			it( "Still resolves a handler-only URL when a module only declares the mandatory-action convention route", function(){
+			it( "Still resolves a handler-only URL for a module with only a mandatory-action route", function(){
 				variables.moduleService.registerAndActivateModule( "test-module-conventions", "tests.resources" );
 
 				// A module that only declares "/:handler/:action" (mandatory action, like
@@ -64,14 +64,16 @@ component extends="tests.resources.BaseIntegrationTest" {
 					}
 				);
 
-				var results = getController().getRoutingService().findRoute(
-					action = "home",
-					event  = mockEvent,
-					module = "test-module-conventions"
-				);
+				var results = getController()
+					.getRoutingService()
+					.findRoute(
+						action = "home",
+						event  = mockEvent,
+						module = "test-module-conventions"
+					);
 
 				expect( results.route ).notToBeEmpty(
-					"Expected the handler-only URL 'home' to match a route within the module; got no match, meaning the request would fall through to the parent app's routes."
+					"Expected a route match; the request would otherwise fall through to the parent app's routes."
 				);
 				expect( results.params.handler ?: "" ).toBe( "home" );
 			} )
