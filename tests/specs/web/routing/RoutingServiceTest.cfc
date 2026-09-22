@@ -297,6 +297,11 @@
 				);
 
 				modules[ moduleName ] = { resources : [], routes : [] };
+				// Write the mutated struct back explicitly: getSetting() can hand back a
+				// struct that's about to be swapped out from under us by a concurrent
+				// settings reload, so mutating the reference alone is a race. This closes
+				// that window immediately before addModuleRoutes() reads it back.
+				getController().setSetting( name = "modules", value = modules );
 
 				try {
 					router.addModuleRoutes(
@@ -326,6 +331,7 @@
 				} finally {
 					router.removeModuleRoutes( moduleName );
 					structDelete( modules, moduleName );
+					getController().setSetting( name = "modules", value = modules );
 				}
 			} );
 		} );
