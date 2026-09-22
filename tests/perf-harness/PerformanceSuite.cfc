@@ -1,8 +1,8 @@
 /**
  * ColdBox Performance Analysis Suite
  *
- * Compares bleeding-edge (BE) vs stable ColdBox 8.1 across four CFML engines:
- *   BoxLang, BoxLang-CFML, Adobe CF 2025, Lucee 7
+ * Compares bleeding-edge (BE / 8.2-dev) vs ColdBox 8.1 stable vs ColdBox 7.x latest
+ * across four CFML engines: BoxLang, BoxLang-CFML, Adobe CF 2025, Lucee 7.
  *
  * Measures:
  *   • Engine cold start (server restart + no bytecode cache)
@@ -13,7 +13,7 @@
  * Usage (from repo root):
  *   box task run tests/perf-harness/PerformanceSuite.cfc
  *   box task run tests/perf-harness/PerformanceSuite.cfc engines=boxlang-cfml
- *   box task run tests/perf-harness/PerformanceSuite.cfc versions=be iterations=100 coldStart=false
+ *   box task run tests/perf-harness/PerformanceSuite.cfc versions=be,seven iterations=100 coldStart=false
  *   box run-script perf:run
  *   box run-script perf:run:quick
  */
@@ -59,41 +59,68 @@ component {
 		}
 	}
 
+	// Ordered so reports/log output always present versions in a stable, sensible sequence.
+	variables.VERSION_ORDER = [ "be", "stable", "seven" ]
+
+	variables.VERSIONS = {
+		"be" : {
+			label     : "BE (8.2-dev)",
+			shortLabel: "BE",
+			appDir    : "be-app",
+			// The BE app maps /coldbox straight to the repo root — nothing to install.
+			installDir: "",
+			semver    : ""
+		},
+		"stable" : {
+			label     : "8.1 Stable",
+			shortLabel: "Stable",
+			appDir    : "stable-app",
+			installDir: "coldbox/",
+			semver    : "8.1.x"
+		},
+		"seven" : {
+			label     : "7.x Latest",
+			shortLabel: "Seven",
+			appDir    : "seven-app",
+			installDir: "coldbox/",
+			semver    : "7.x"
+		}
+	}
+
+	// Baselines that BE is compared against in delta columns/rows. Both are optional —
+	// deltas only render when BE and the given baseline were both actually tested.
+	variables.BASELINE_VERSIONS = [ "stable", "seven" ]
+
 	variables.SCENARIOS = [
 		{
 			id          : "health",
 			name        : "Health Check",
 			description : "Minimal ColdBox lifecycle — no DI, no view, text response",
-			bePath      : "/tests/perf-harness/be-app/index.cfm?event=Main.health",
-			stablePath  : "/tests/perf-harness/stable-app/index.cfm?event=Main.health"
+			event       : "Main.health"
 		},
 		{
 			id          : "view",
 			name        : "Simple View",
 			description : "View rendering + layout pipeline",
-			bePath      : "/tests/perf-harness/be-app/index.cfm?event=Main.index",
-			stablePath  : "/tests/perf-harness/stable-app/index.cfm?event=Main.index"
+			event       : "Main.index"
 		},
 		{
 			id          : "api",
 			name        : "JSON API",
 			description : "WireBox DI + JSON serialization via renderData",
-			bePath      : "/tests/perf-harness/be-app/index.cfm?event=Api.list",
-			stablePath  : "/tests/perf-harness/stable-app/index.cfm?event=Api.list"
+			event       : "Api.list"
 		},
 		{
 			id          : "complex",
 			name        : "Complex View",
 			description : "Multiple model injections + view with data loops",
-			bePath      : "/tests/perf-harness/be-app/index.cfm?event=Main.complex",
-			stablePath  : "/tests/perf-harness/stable-app/index.cfm?event=Main.complex"
+			event       : "Main.complex"
 		},
 		{
 			id          : "module",
 			name        : "Module Request",
 			description : "Full HMVC module routing + module-scoped DI",
-			bePath      : "/tests/perf-harness/be-app/index.cfm?event=perf-module%3AItems.index",
-			stablePath  : "/tests/perf-harness/stable-app/index.cfm?event=perf-module%3AItems.index"
+			event       : "perf-module%3AItems.index"
 		}
 	]
 
@@ -105,7 +132,7 @@ component {
 	 * Run the full performance analysis suite.
 	 *
 	 * @engines       Comma-separated engine IDs or "all". Options: boxlang, boxlang-cfml, adobe-2025, lucee-7
-	 * @versions      Comma-separated versions to test. Options: be, stable
+	 * @versions      Comma-separated versions to test. Options: be, stable, seven
 	 * @iterations    Number of warm requests per scenario for latency measurement
 	 * @warmup        Number of warmup requests to discard before measuring
 	 * @throughputSecs Seconds to run the sequential throughput test per version
@@ -114,7 +141,7 @@ component {
 	 */
 	function run(
 		string  engines        = "all",
-		string  versions       = "be,stable",
+		string  versions       = "be,stable,seven",
 		numeric iterations     = 50,
 		numeric warmup         = 10,
 		numeric throughputSecs = 10,
@@ -135,11 +162,11 @@ component {
 		log( "" )
 
 		var engineList  = parseEngineList( arguments.engines )
-		var versionList = listToArray( arguments.versions )
+		var versionList = parseVersionList( arguments.versions )
 
-		// Ensure stable ColdBox is installed before tests begin
-		if( versionList.findNoCase( "stable" ) ){
-			ensureStableColdBox()
+		// Ensure any non-BE version (stable, seven, ...) is installed before tests begin
+		for( var v in versionList ){
+			if( v != "be" ) ensureVersionInstalled( v )
 		}
 
 		var results = {
@@ -148,6 +175,7 @@ component {
 			warmup        : arguments.warmup,
 			throughputSecs: arguments.throughputSecs,
 			coldStartRun  : arguments.coldStart,
+			versionsTested: versionList,
 			engines       : {}
 		}
 
@@ -163,7 +191,7 @@ component {
 
 			for( var version in versionList ){
 				log( "" )
-				log( "  ▶ Version: #version#" )
+				log( "  ▶ Version: #variables.VERSIONS[ version ].label#" )
 
 				var vData = {
 					version      : version,
@@ -184,7 +212,7 @@ component {
 				if( !arguments.coldStart ){
 					log( "    → Starting server..." )
 					startServer( engine )
-					var healthUrl = variables.BASE_URL & ( version == "be" ? variables.SCENARIOS[ 1 ].bePath : variables.SCENARIOS[ 1 ].stablePath )
+					var healthUrl = buildUrl( variables.SCENARIOS[ 1 ], version )
 					if( !waitForServer( healthUrl, 120 ) ){
 						log( "    ✗ Server did not start in time — skipping #engine.name# #version#" )
 						continue
@@ -198,14 +226,14 @@ component {
 
 				// 4. Warmup
 				log( "    → Warming up (#arguments.warmup# requests)..." )
-				var warmupUrl = variables.BASE_URL & ( version == "be" ? variables.SCENARIOS[ 1 ].bePath : variables.SCENARIOS[ 1 ].stablePath )
+				var warmupUrl = buildUrl( variables.SCENARIOS[ 1 ], version )
 				for( var w = 1; w <= arguments.warmup; w++ ){
 					try { cfhttp( url=warmupUrl, method="GET", timeout=15, result="wr" ) } catch( any e ){}
 				}
 
 				// 5. Per-scenario latency
 				for( var scenario in variables.SCENARIOS ){
-					var scenarioUrl = variables.BASE_URL & ( version == "be" ? scenario.bePath : scenario.stablePath )
+					var scenarioUrl = buildUrl( scenario, version )
 					log( "    → Scenario [#scenario.name#] (#arguments.iterations# req)..." )
 					vData.scenarios[ scenario.id ] = measureScenario( scenarioUrl, arguments.iterations )
 					var s = vData.scenarios[ scenario.id ]
@@ -213,7 +241,7 @@ component {
 				}
 
 				// 6. Throughput (sequential)
-				var tUrl = variables.BASE_URL & ( version == "be" ? variables.SCENARIOS[ 1 ].bePath : variables.SCENARIOS[ 1 ].stablePath )
+				var tUrl = buildUrl( variables.SCENARIOS[ 1 ], version )
 				log( "    → Throughput (#arguments.throughputSecs#s sequential)..." )
 				vData.throughput = measureThroughput( tUrl, arguments.throughputSecs )
 				log( "      #vData.throughput.rps# RPS (#vData.throughput.totalRequests# requests)" )
@@ -254,21 +282,42 @@ component {
 		return listToArray( arguments.engines )
 	}
 
-	private void function ensureStableColdBox(){
-		var stableDir  = variables.TASK_DIR & "stable-app/"
-		var coldboxDir = stableDir & "coldbox/"
-		if( directoryExists( coldboxDir ) ){
-			log( "  ✓ Stable ColdBox already installed at #coldboxDir#" )
+	// Parses the requested version list but always emits them in VERSION_ORDER,
+	// so downstream loops/report generation get a stable, predictable sequence.
+	private array function parseVersionList( required string versions ){
+		var requested = listToArray( arguments.versions )
+		return variables.VERSION_ORDER.filter( function( v ){
+			return requested.findNoCase( v ) > 0
+		} )
+	}
+
+	// Builds the request URL for a given scenario + version, e.g.
+	// http://localhost:8599/tests/perf-harness/stable-app/index.cfm?event=Main.health
+	private string function buildUrl( required struct scenario, required string version ){
+		var appDir = variables.VERSIONS[ arguments.version ].appDir
+		return variables.BASE_URL & "/tests/perf-harness/#appDir#/index.cfm?event=#arguments.scenario.event#"
+	}
+
+	private void function ensureVersionInstalled( required string version ){
+		var vMeta = variables.VERSIONS[ arguments.version ]
+		// "be" (bleeding edge) maps straight to the repo root — nothing to install
+		if( !len( vMeta.installDir ) ){
 			return
 		}
-		log( "  Installing ColdBox stable 8.1.x into stable-app/..." )
+		var appDir       = variables.TASK_DIR & vMeta.appDir & "/"
+		var installedDir = appDir & vMeta.installDir
+		if( directoryExists( installedDir ) ){
+			log( "  ✓ #vMeta.label# already installed at #installedDir#" )
+			return
+		}
+		log( "  Installing ColdBox #vMeta.semver# into #vMeta.appDir#/..." )
 		try {
-			command( "cd '#stableDir#'" ).run()
+			command( "cd '#appDir#'" ).run()
 			command( "install" ).run()
 			command( "cd '#variables.REPO_ROOT#'" ).run()
-			log( "  ✓ Stable ColdBox installed." )
+			log( "  ✓ #vMeta.label# installed." )
 		} catch( any e ){
-			log( "  ✗ Could not install stable ColdBox: #e.message#. Skipping stable version." )
+			log( "  ✗ Could not install #vMeta.label#: #e.message#. Skipping this version." )
 		}
 	}
 
@@ -329,8 +378,7 @@ component {
 	// ══════════════════════════════════════════════════════════════════════════
 
 	private struct function measureColdStart( required struct engine, required string version ){
-		var healthPath = ( arguments.version == "be" ) ? variables.SCENARIOS[ 1 ].bePath : variables.SCENARIOS[ 1 ].stablePath
-		var healthUrl  = variables.BASE_URL & healthPath
+		var healthUrl = buildUrl( variables.SCENARIOS[ 1 ], arguments.version )
 
 		// Stop any running instance
 		stopServer( arguments.engine )
@@ -372,9 +420,8 @@ component {
 	}
 
 	private struct function measureAppBootstrap( required string version ){
-		var healthPath = ( arguments.version == "be" ) ? variables.SCENARIOS[ 1 ].bePath : variables.SCENARIOS[ 1 ].stablePath
-		var reinitUrl  = variables.BASE_URL & healthPath & "&bsReinit=1"
-		var healthUrl  = variables.BASE_URL & healthPath
+		var healthUrl = buildUrl( variables.SCENARIOS[ 1 ], arguments.version )
+		var reinitUrl = healthUrl & "&bsReinit=1"
 
 		// Trigger ColdBox re-initialization
 		try {
@@ -467,13 +514,18 @@ component {
 	// ══════════════════════════════════════════════════════════════════════════
 
 	private void function generateMarkdownReport( required struct results, required string filePath ){
-		var md = []
-		var r  = arguments.results
-		var ts = dateTimeFormat( r.generated, "yyyy-mm-dd HH:nn:ss" )
+		var md          = []
+		var r           = arguments.results
+		var ts          = dateTimeFormat( r.generated, "yyyy-mm-dd HH:nn:ss" )
+		var versionList = r.versionsTested
+		var baselines   = versionList.filter( function( v ){ return variables.BASELINE_VERSIONS.findNoCase( v ) > 0 } )
+		var hasBE       = versionList.findNoCase( "be" ) > 0
 
 		md.append( "# ColdBox Performance Analysis Report" )
 		md.append( "" )
 		md.append( "Generated: #ts# | Iterations: #r.iterations# | Warmup: #r.warmup# | Cold Start: #r.coldStartRun#" )
+		md.append( "" )
+		md.append( "Versions tested: " & versionList.map( function( v ){ return variables.VERSIONS[ v ].label } ).toList( ", " ) )
 		md.append( "" )
 
 		// ── Cold Start Table ──────────────────────────────────────────────────
@@ -484,10 +536,11 @@ component {
 			md.append( "|--------|---------|:-----------------:|:-------------------:|:----------:|" )
 			for( var engineId in r.engines ){
 				var eng = r.engines[ engineId ]
-				for( var ver in eng.versions ){
+				for( var ver in versionList ){
+					if( !eng.versions.keyExists( ver ) ) continue
 					var vd = eng.versions[ ver ]
 					if( !vd.coldStart.isEmpty() && vd.coldStart.success ){
-						md.append( "| #eng.name# | #ver# | #vd.coldStart.serverStartMs# | #vd.coldStart.firstResponseMs# | #vd.coldStart.totalMs# |" )
+						md.append( "| #eng.name# | #variables.VERSIONS[ver].shortLabel# | #vd.coldStart.serverStartMs# | #vd.coldStart.firstResponseMs# | #vd.coldStart.totalMs# |" )
 					}
 				}
 			}
@@ -497,21 +550,44 @@ component {
 		// ── App Bootstrap Table ───────────────────────────────────────────────
 		md.append( "## ColdBox App Bootstrap Time (Re-init)" )
 		md.append( "" )
-		md.append( "| Engine | BE (ms) | Stable (ms) | Delta |" )
-		md.append( "|--------|:-------:|:-----------:|:-----:|" )
+		var bootHeader  = "| Engine |"
+		var bootDivider = "|--------|"
+		for( var ver in versionList ){
+			bootHeader  &= " #variables.VERSIONS[ver].shortLabel# (ms) |"
+			bootDivider &= ":------:|"
+		}
+		if( hasBE ){
+			for( var base in baselines ){
+				bootHeader  &= " Δ BE-#variables.VERSIONS[base].shortLabel# |"
+				bootDivider &= ":------:|"
+			}
+		}
+		md.append( bootHeader )
+		md.append( bootDivider )
 		for( var engineId in r.engines ){
-			var eng    = r.engines[ engineId ]
-			var beMs   = eng.versions.keyExists( "be" )     ? eng.versions.be.appBootstrap.ms     : "-"
-			var stMs   = eng.versions.keyExists( "stable" ) ? eng.versions.stable.appBootstrap.ms : "-"
-			var delta  = ( isNumeric( beMs ) && isNumeric( stMs ) && stMs > 0 ) ? formatDelta( beMs, stMs ) : "-"
-			md.append( "| #eng.name# | #beMs# | #stMs# | #delta# |" )
+			var eng = r.engines[ engineId ]
+			var row = "| #eng.name# |"
+			for( var ver in versionList ){
+				var ms = ( eng.versions.keyExists( ver ) ) ? eng.versions[ ver ].appBootstrap.ms : "-"
+				row &= " #ms# |"
+			}
+			if( hasBE ){
+				for( var base in baselines ){
+					var delta = "-"
+					if( eng.versions.keyExists( "be" ) && eng.versions.keyExists( base ) ){
+						delta = formatDelta( eng.versions.be.appBootstrap.ms, eng.versions[ base ].appBootstrap.ms )
+					}
+					row &= " #delta# |"
+				}
+			}
+			md.append( row )
 		}
 		md.append( "" )
 
 		// ── Scenario Latency Tables ───────────────────────────────────────────
 		md.append( "## Warm Request Latency by Scenario" )
 		md.append( "" )
-		md.append( "> All times in milliseconds. Delta shows BE change vs Stable (negative = BE faster)." )
+		md.append( "> All times in milliseconds. Delta shows BE change vs the given baseline (negative = BE faster)." )
 		md.append( "" )
 
 		for( var scenario in variables.SCENARIOS ){
@@ -524,23 +600,28 @@ component {
 
 			for( var engineId in r.engines ){
 				var eng = r.engines[ engineId ]
-				for( var ver in eng.versions ){
+				for( var ver in versionList ){
+					if( !eng.versions.keyExists( ver ) ) continue
 					var vd = eng.versions[ ver ]
 					if( vd.scenarios.keyExists( scenario.id ) ){
 						var s = vd.scenarios[ scenario.id ]
-						md.append( "| #eng.name# | #ver# | #s.min# | #s.avg# | #s.p95# | #s.p99# | #s.max# | #s.errors# (#s.errorPct#%%) |" )
+						md.append( "| #eng.name# | #variables.VERSIONS[ver].shortLabel# | #s.min# | #s.avg# | #s.p95# | #s.p99# | #s.max# | #s.errors# (#s.errorPct#%%) |" )
 					}
 				}
 			}
 
-			// Delta row (BE vs stable per engine)
-			for( var engineId in r.engines ){
-				var eng = r.engines[ engineId ]
-				if( eng.versions.keyExists( "be" ) && eng.versions.keyExists( "stable" ) ){
-					var beS = eng.versions.be.scenarios[ scenario.id ]     ?: {}
-					var stS = eng.versions.stable.scenarios[ scenario.id ] ?: {}
-					if( !beS.isEmpty() && !stS.isEmpty() ){
-						md.append( "| **#eng.name# Δ** | be vs stable | #deltaMs(beS.min,stS.min)# | #deltaMs(beS.avg,stS.avg)# | #deltaMs(beS.p95,stS.p95)# | #deltaMs(beS.p99,stS.p99)# | #deltaMs(beS.max,stS.max)# | — |" )
+			// Delta rows (BE vs each tested baseline, per engine)
+			if( hasBE ){
+				for( var engineId in r.engines ){
+					var eng = r.engines[ engineId ]
+					if( !eng.versions.keyExists( "be" ) ) continue
+					for( var base in baselines ){
+						if( !eng.versions.keyExists( base ) ) continue
+						var beS = eng.versions.be.scenarios[ scenario.id ]     ?: {}
+						var blS = eng.versions[ base ].scenarios[ scenario.id ] ?: {}
+						if( !beS.isEmpty() && !blS.isEmpty() ){
+							md.append( "| **#eng.name# Δ** | be vs #variables.VERSIONS[base].shortLabel# | #deltaMs(beS.min,blS.min)# | #deltaMs(beS.avg,blS.avg)# | #deltaMs(beS.p95,blS.p95)# | #deltaMs(beS.p99,blS.p99)# | #deltaMs(beS.max,blS.max)# | — |" )
+						}
 					}
 				}
 			}
@@ -550,18 +631,48 @@ component {
 		// ── Throughput Table ──────────────────────────────────────────────────
 		md.append( "## Throughput (Sequential RPS on Health Check, #r.throughputSecs#s)" )
 		md.append( "" )
-		md.append( "| Engine | BE RPS | Stable RPS | Delta | BE Requests | Stable Requests |" )
-		md.append( "|--------|:------:|:----------:|:-----:|:-----------:|:---------------:|" )
+		var thHeader  = "| Engine |"
+		var thDivider = "|--------|"
+		for( var ver in versionList ){
+			thHeader  &= " #variables.VERSIONS[ver].shortLabel# RPS |"
+			thDivider &= ":------:|"
+		}
+		if( hasBE ){
+			for( var base in baselines ){
+				thHeader  &= " Δ BE-#variables.VERSIONS[base].shortLabel# |"
+				thDivider &= ":------:|"
+			}
+		}
+		for( var ver in versionList ){
+			thHeader  &= " #variables.VERSIONS[ver].shortLabel# Requests |"
+			thDivider &= ":------:|"
+		}
+		md.append( thHeader )
+		md.append( thDivider )
 		for( var engineId in r.engines ){
-			var eng  = r.engines[ engineId ]
-			var beT  = eng.versions.keyExists( "be" )     ? eng.versions.be.throughput     : {}
-			var stT  = eng.versions.keyExists( "stable" ) ? eng.versions.stable.throughput : {}
-			var beRps  = !beT.isEmpty() ? beT.rps             : "-"
-			var stRps  = !stT.isEmpty() ? stT.rps             : "-"
-			var beReqs = !beT.isEmpty() ? beT.totalRequests    : "-"
-			var stReqs = !stT.isEmpty() ? stT.totalRequests    : "-"
-			var delta  = ( isNumeric( beRps ) && isNumeric( stRps ) && stRps > 0 ) ? formatDelta( beRps, stRps ) : "-"
-			md.append( "| #eng.name# | #beRps# | #stRps# | #delta# | #beReqs# | #stReqs# |" )
+			var eng = r.engines[ engineId ]
+			var row = "| #eng.name# |"
+			for( var ver in versionList ){
+				var rps = ( eng.versions.keyExists( ver ) && !eng.versions[ ver ].throughput.isEmpty() ) ? eng.versions[ ver ].throughput.rps : "-"
+				row &= " #rps# |"
+			}
+			if( hasBE ){
+				for( var base in baselines ){
+					var delta = "-"
+					if(
+						eng.versions.keyExists( "be" ) && !eng.versions.be.throughput.isEmpty() &&
+						eng.versions.keyExists( base ) && !eng.versions[ base ].throughput.isEmpty()
+					){
+						delta = formatDelta( eng.versions.be.throughput.rps, eng.versions[ base ].throughput.rps )
+					}
+					row &= " #delta# |"
+				}
+			}
+			for( var ver in versionList ){
+				var reqs = ( eng.versions.keyExists( ver ) && !eng.versions[ ver ].throughput.isEmpty() ) ? eng.versions[ ver ].throughput.totalRequests : "-"
+				row &= " #reqs# |"
+			}
+			md.append( row )
 		}
 		md.append( "" )
 
@@ -577,61 +688,74 @@ component {
 	// ══════════════════════════════════════════════════════════════════════════
 
 	private void function generateHTMLReport( required struct results, required string filePath ){
-		var r    = arguments.results
-		var ts   = dateTimeFormat( r.generated, "yyyy-mm-dd HH:nn:ss" )
-		var json = serializeJSON( r )
+		var r           = arguments.results
+		var ts          = dateTimeFormat( r.generated, "yyyy-mm-dd HH:nn:ss" )
+		var versionList = r.versionsTested
+		var hasBE       = versionList.findNoCase( "be" ) > 0
+		var baselines   = versionList.filter( function( v ){ return variables.BASELINE_VERSIONS.findNoCase( v ) > 0 } )
 
-		// Build engine labels and colour-coded bars
+		// Colour palette per version (BE always blue, then purple/teal for baselines)
+		var versionColors = {
+			"be"     : "rgba(13,110,253,0.7)",
+			"stable" : "rgba(111,66,193,0.7)",
+			"seven"  : "rgba(32,201,151,0.7)"
+		}
+		var versionBadges = {
+			"be"     : "bg-primary",
+			"stable" : "bg-secondary",
+			"seven"  : "bg-success"
+		}
+
+		// Build engine labels
 		var engineNames = []
 		for( var eid in r.engines ) engineNames.append( r.engines[ eid ].name )
 
-		var beBootstrap     = []
-		var stableBootstrap = []
-		var beColdStart     = []
-		var stableColdStart = []
-		var beRPS           = []
-		var stableRPS       = []
+		// Bootstrap / cold start / RPS series, one array per tested version
+		var bootstrapSeries = {}
+		var coldStartSeries = {}
+		var rpsSeries       = {}
+		for( var ver in versionList ){
+			bootstrapSeries[ ver ] = []
+			coldStartSeries[ ver ] = []
+			rpsSeries[ ver ]       = []
+		}
 		for( var eid in r.engines ){
 			var eng = r.engines[ eid ]
-			beBootstrap.append(     eng.versions.keyExists( "be" )     && eng.versions.be.appBootstrap.keyExists("ms")         ? eng.versions.be.appBootstrap.ms             : 0 )
-			stableBootstrap.append( eng.versions.keyExists( "stable" ) && eng.versions.stable.appBootstrap.keyExists("ms")     ? eng.versions.stable.appBootstrap.ms         : 0 )
-			beColdStart.append(     eng.versions.keyExists( "be" )     && !eng.versions.be.coldStart.isEmpty()                 ? eng.versions.be.coldStart.totalMs            : 0 )
-			stableColdStart.append( eng.versions.keyExists( "stable" ) && !eng.versions.stable.coldStart.isEmpty()             ? eng.versions.stable.coldStart.totalMs        : 0 )
-			beRPS.append(           eng.versions.keyExists( "be" )     && !eng.versions.be.throughput.isEmpty()                ? eng.versions.be.throughput.rps               : 0 )
-			stableRPS.append(       eng.versions.keyExists( "stable" ) && !eng.versions.stable.throughput.isEmpty()            ? eng.versions.stable.throughput.rps           : 0 )
+			for( var ver in versionList ){
+				var has = eng.versions.keyExists( ver )
+				bootstrapSeries[ ver ].append( ( has && eng.versions[ ver ].appBootstrap.keyExists( "ms" ) ) ? eng.versions[ ver ].appBootstrap.ms : 0 )
+				coldStartSeries[ ver ].append( ( has && !eng.versions[ ver ].coldStart.isEmpty() ) ? eng.versions[ ver ].coldStart.totalMs : 0 )
+				rpsSeries[ ver ].append( ( has && !eng.versions[ ver ].throughput.isEmpty() ) ? eng.versions[ ver ].throughput.rps : 0 )
+			}
 		}
 
-		// Build per-scenario chart data
-		var scenarioCharts = ""
+		// Build per-scenario chart data (avg + p95 per version)
+		var scenarioCharts    = ""
 		var scenarioTablesHTML = ""
 		var sidx = 0
 		for( var scenario in variables.SCENARIOS ){
 			sidx++
-			var beAvgs     = []
-			var stableAvgs = []
-			var beP95s     = []
-			var stableP95s = []
-			for( var eid in r.engines ){
-				var eng = r.engines[ eid ]
-				var beS  = ( eng.versions.keyExists("be")     && eng.versions.be.scenarios.keyExists(scenario.id) )     ? eng.versions.be.scenarios[ scenario.id ]     : {}
-				var stS  = ( eng.versions.keyExists("stable") && eng.versions.stable.scenarios.keyExists(scenario.id) ) ? eng.versions.stable.scenarios[ scenario.id ] : {}
-				beAvgs.append(     !beS.isEmpty()  ? beS.avg  : 0 )
-				stableAvgs.append( !stS.isEmpty()  ? stS.avg  : 0 )
-				beP95s.append(     !beS.isEmpty()  ? beS.p95  : 0 )
-				stableP95s.append( !stS.isEmpty()  ? stS.p95  : 0 )
+			var datasets = []
+			for( var ver in versionList ){
+				var avgs = []
+				var p95s = []
+				for( var eid in r.engines ){
+					var eng = r.engines[ eid ]
+					var vs  = ( eng.versions.keyExists( ver ) && eng.versions[ ver ].scenarios.keyExists( scenario.id ) ) ? eng.versions[ ver ].scenarios[ scenario.id ] : {}
+					avgs.append( !vs.isEmpty() ? vs.avg : 0 )
+					p95s.append( !vs.isEmpty() ? vs.p95 : 0 )
+				}
+				datasets.append( "{ label: '#variables.VERSIONS[ver].shortLabel# Avg', data: #serializeJSON(avgs)#, backgroundColor: '#versionColors[ver]#' }" )
+				var fadedColor = replaceNoCase( versionColors[ ver ], "0.7", "0.3" )
+				datasets.append( "{ label: '#variables.VERSIONS[ver].shortLabel# P95', data: #serializeJSON(p95s)#, backgroundColor: '#fadedColor#' }" )
 			}
 
 			scenarioCharts &= "
 			{
 				id: 'chart_scenario_#sidx#',
-				title: '#jsStringFormat(scenario.name)# — Avg Response Time (ms)',
+				title: '#jsStringFormat(scenario.name)# — Avg/P95 Response Time (ms)',
 				labels: #serializeJSON(engineNames)#,
-				datasets: [
-					{ label: 'BE Avg', data: #serializeJSON(beAvgs)#, backgroundColor: 'rgba(59,130,246,0.7)' },
-					{ label: 'Stable Avg', data: #serializeJSON(stableAvgs)#, backgroundColor: 'rgba(168,85,247,0.7)' },
-					{ label: 'BE P95', data: #serializeJSON(beP95s)#, backgroundColor: 'rgba(59,130,246,0.3)' },
-					{ label: 'Stable P95', data: #serializeJSON(stableP95s)#, backgroundColor: 'rgba(168,85,247,0.3)' }
-				]
+				datasets: [#datasets.toList(",")#]
 			},"
 
 			// Table
@@ -640,12 +764,13 @@ component {
 			scenarioTablesHTML &= "<th>Engine</th><th>Version</th><th>Min</th><th>Avg</th><th>P95</th><th>P99</th><th>Max</th><th>Errors</th></tr></thead><tbody>"
 			for( var eid in r.engines ){
 				var eng = r.engines[ eid ]
-				for( var ver in eng.versions ){
+				for( var ver in versionList ){
+					if( !eng.versions.keyExists( ver ) ) continue
 					var vd = eng.versions[ ver ]
 					if( vd.scenarios.keyExists( scenario.id ) ){
 						var s   = vd.scenarios[ scenario.id ]
 						var cls = ( ver == "be" ) ? "table-primary" : "table-light"
-						scenarioTablesHTML &= "<tr class=""#cls#""><td>#eng.name#</td><td><span class=""badge #(ver=='be'?'bg-primary':'bg-secondary')#"">#ver#</span></td>"
+						scenarioTablesHTML &= "<tr class=""#cls#""><td>#eng.name#</td><td><span class=""badge #versionBadges[ver]#"">#variables.VERSIONS[ver].shortLabel#</span></td>"
 						scenarioTablesHTML &= "<td>#s.min#</td><td><strong>#s.avg#</strong></td><td>#s.p95#</td><td>#s.p99#</td><td>#s.max#</td><td>#s.errors# (#s.errorPct#%%)</td></tr>"
 					}
 				}
@@ -653,17 +778,18 @@ component {
 			scenarioTablesHTML &= "</tbody></table></div>"
 		}
 
-		// Build cold-start table HTML
+		// Cold-start table HTML
 		var coldStartHTML = ""
 		if( r.coldStartRun ){
 			coldStartHTML = "<div class=""table-responsive""><table class=""table table-sm table-hover table-bordered""><thead class=""table-dark""><tr><th>Engine</th><th>Version</th><th>Server Start (ms)</th><th>First Response (ms)</th><th>Total (ms)</th></tr></thead><tbody>"
 			for( var eid in r.engines ){
 				var eng = r.engines[ eid ]
-				for( var ver in eng.versions ){
+				for( var ver in versionList ){
+					if( !eng.versions.keyExists( ver ) ) continue
 					var vd  = eng.versions[ ver ]
 					var cls = ( ver == "be" ) ? "table-primary" : "table-light"
 					if( !vd.coldStart.isEmpty() && vd.coldStart.success ){
-						coldStartHTML &= "<tr class=""#cls#""><td>#eng.name#</td><td><span class=""badge #(ver=='be'?'bg-primary':'bg-secondary')#"">#ver#</span></td>"
+						coldStartHTML &= "<tr class=""#cls#""><td>#eng.name#</td><td><span class=""badge #versionBadges[ver]#"">#variables.VERSIONS[ver].shortLabel#</span></td>"
 						coldStartHTML &= "<td>#vd.coldStart.serverStartMs#</td><td>#vd.coldStart.firstResponseMs#</td><td><strong>#vd.coldStart.totalMs#</strong></td></tr>"
 					}
 				}
@@ -672,28 +798,68 @@ component {
 		}
 
 		// Bootstrap table HTML
-		var bootstrapTableHTML = "<div class=""table-responsive""><table class=""table table-sm table-hover table-bordered""><thead class=""table-dark""><tr><th>Engine</th><th>BE (ms)</th><th>Stable (ms)</th><th>Delta</th></tr></thead><tbody>"
+		var bootstrapTableHTML = "<div class=""table-responsive""><table class=""table table-sm table-hover table-bordered""><thead class=""table-dark""><tr><th>Engine</th>"
+		for( var ver in versionList ) bootstrapTableHTML &= "<th>#variables.VERSIONS[ver].shortLabel# (ms)</th>"
+		if( hasBE ) for( var base in baselines ) bootstrapTableHTML &= "<th>Δ BE-#variables.VERSIONS[base].shortLabel#</th>"
+		bootstrapTableHTML &= "</tr></thead><tbody>"
 		for( var eid in r.engines ){
-			var eng  = r.engines[ eid ]
-			var beMs = eng.versions.keyExists("be")     ? eng.versions.be.appBootstrap.ms     : "-"
-			var stMs = eng.versions.keyExists("stable") ? eng.versions.stable.appBootstrap.ms : "-"
-			var delt = ( isNumeric(beMs) && isNumeric(stMs) && stMs > 0 ) ? formatDeltaHTML(beMs, stMs) : "<span>—</span>"
-			bootstrapTableHTML &= "<tr><td>#eng.name#</td><td>#beMs#</td><td>#stMs#</td><td>#delt#</td></tr>"
+			var eng = r.engines[ eid ]
+			bootstrapTableHTML &= "<tr><td>#eng.name#</td>"
+			for( var ver in versionList ){
+				var ms = eng.versions.keyExists( ver ) ? eng.versions[ ver ].appBootstrap.ms : "-"
+				bootstrapTableHTML &= "<td>#ms#</td>"
+			}
+			if( hasBE ){
+				for( var base in baselines ){
+					var delt = "<span>—</span>"
+					if( eng.versions.keyExists( "be" ) && eng.versions.keyExists( base ) ){
+						delt = formatDeltaHTML( eng.versions.be.appBootstrap.ms, eng.versions[ base ].appBootstrap.ms )
+					}
+					bootstrapTableHTML &= "<td>#delt#</td>"
+				}
+			}
+			bootstrapTableHTML &= "</tr>"
 		}
 		bootstrapTableHTML &= "</tbody></table></div>"
 
 		// Throughput table HTML
-		var throughputTableHTML = "<div class=""table-responsive""><table class=""table table-sm table-hover table-bordered""><thead class=""table-dark""><tr><th>Engine</th><th>BE RPS</th><th>Stable RPS</th><th>Delta</th><th>BE Requests</th><th>Stable Requests</th></tr></thead><tbody>"
+		var throughputTableHTML = "<div class=""table-responsive""><table class=""table table-sm table-hover table-bordered""><thead class=""table-dark""><tr><th>Engine</th>"
+		for( var ver in versionList ) throughputTableHTML &= "<th>#variables.VERSIONS[ver].shortLabel# RPS</th>"
+		if( hasBE ) for( var base in baselines ) throughputTableHTML &= "<th>Δ BE-#variables.VERSIONS[base].shortLabel#</th>"
+		for( var ver in versionList ) throughputTableHTML &= "<th>#variables.VERSIONS[ver].shortLabel# Requests</th>"
+		throughputTableHTML &= "</tr></thead><tbody>"
 		for( var eid in r.engines ){
-			var eng    = r.engines[ eid ]
-			var beT    = eng.versions.keyExists("be")     ? eng.versions.be.throughput     : {}
-			var stT    = eng.versions.keyExists("stable") ? eng.versions.stable.throughput : {}
-			var beRps2 = !beT.isEmpty() ? beT.rps          : "-"
-			var stRps2 = !stT.isEmpty() ? stT.rps          : "-"
-			var delt   = ( isNumeric(beRps2) && isNumeric(stRps2) && stRps2 > 0 ) ? formatDeltaHTML(beRps2, stRps2) : "<span>—</span>"
-			throughputTableHTML &= "<tr><td>#eng.name#</td><td>#beRps2#</td><td>#stRps2#</td><td>#delt#</td><td>#(!beT.isEmpty()?beT.totalRequests:'-')#</td><td>#(!stT.isEmpty()?stT.totalRequests:'-')#</td></tr>"
+			var eng = r.engines[ eid ]
+			throughputTableHTML &= "<tr><td>#eng.name#</td>"
+			for( var ver in versionList ){
+				var rps = ( eng.versions.keyExists( ver ) && !eng.versions[ ver ].throughput.isEmpty() ) ? eng.versions[ ver ].throughput.rps : "-"
+				throughputTableHTML &= "<td>#rps#</td>"
+			}
+			if( hasBE ){
+				for( var base in baselines ){
+					var delt = "<span>—</span>"
+					if(
+						eng.versions.keyExists( "be" ) && !eng.versions.be.throughput.isEmpty() &&
+						eng.versions.keyExists( base ) && !eng.versions[ base ].throughput.isEmpty()
+					){
+						delt = formatDeltaHTML( eng.versions.be.throughput.rps, eng.versions[ base ].throughput.rps )
+					}
+					throughputTableHTML &= "<td>#delt#</td>"
+				}
+			}
+			for( var ver in versionList ){
+				var reqs = ( eng.versions.keyExists( ver ) && !eng.versions[ ver ].throughput.isEmpty() ) ? eng.versions[ ver ].throughput.totalRequests : "-"
+				throughputTableHTML &= "<td>#reqs#</td>"
+			}
+			throughputTableHTML &= "</tr>"
 		}
 		throughputTableHTML &= "</tbody></table></div>"
+
+		// Legend HTML
+		var legendHTML = ""
+		for( var ver in versionList ){
+			legendHTML &= "<span class=""badge #versionBadges[ver]# me-2"">#variables.VERSIONS[ver].shortLabel#</span> #variables.VERSIONS[ver].label# &nbsp;"
+		}
 
 		var html = "<!DOCTYPE html>
 <html lang=""en"">
@@ -708,7 +874,6 @@ component {
   .card { box-shadow: 0 1px 4px rgba(0,0,0,.08); border: none; margin-bottom: 1.5rem; }
   .card-header { font-weight: 600; background: ##343a40; color: #fff; border-radius: .5rem .5rem 0 0 !important; }
   canvas { max-height: 350px; }
-  .badge-be { background: ##0d6efd; } .badge-stable { background: ##6f42c1; }
   .delta-better { color: ##198754; font-weight: 600; }
   .delta-worse  { color: ##dc3545; font-weight: 600; }
 </style>
@@ -730,8 +895,7 @@ component {
 
   <!-- Legend -->
   <div class=""mb-4"">
-    <span class=""badge bg-primary me-2"">BE</span> Bleeding edge (development branch) &nbsp;
-    <span class=""badge bg-secondary me-2"">Stable</span> ColdBox 8.1.x
+    #legendHTML#
   </div>
 
   <!-- Cold Start -->
@@ -764,13 +928,11 @@ component {
 
 </div>
 <script>
-const LABELS       = #serializeJSON(engineNames)#;
-const BE_BOOT      = #serializeJSON(beBootstrap)#;
-const STABLE_BOOT  = #serializeJSON(stableBootstrap)#;
-const BE_RPS       = #serializeJSON(beRPS)#;
-const STABLE_RPS   = #serializeJSON(stableRPS)#;
-const BE_COLD      = #serializeJSON(beColdStart)#;
-const STABLE_COLD  = #serializeJSON(stableColdStart)#;
+const LABELS = #serializeJSON(engineNames)#;
+
+const BOOT_SERIES = #serializeJSON(bootstrapSeries)#;
+const RPS_SERIES  = #serializeJSON(rpsSeries)#;
+const VERSION_META = #serializeJSON( versionList.reduce( function( acc, v ){ acc[v] = { label: variables.VERSIONS[v].shortLabel, color: versionColors[v] }; return acc }, {} ) )#;
 
 const SCENARIO_CHARTS = [#scenarioCharts#];
 
@@ -788,15 +950,16 @@ function barChart( id, title, labels, datasets ) {
   } );
 }
 
-barChart( 'chartBootstrap', 'App Bootstrap Time (ms)', LABELS, [
-  { label: 'BE',     data: BE_BOOT,     backgroundColor: 'rgba(13,110,253,0.7)'  },
-  { label: 'Stable', data: STABLE_BOOT, backgroundColor: 'rgba(111,66,193,0.7)' }
-] );
+function seriesToDatasets( seriesObj ) {
+  return Object.keys( seriesObj ).map( key => ( {
+    label: VERSION_META[ key ] ? VERSION_META[ key ].label : key,
+    data: seriesObj[ key ],
+    backgroundColor: VERSION_META[ key ] ? VERSION_META[ key ].color : 'rgba(100,100,100,0.7)'
+  } ) );
+}
 
-barChart( 'chartThroughput', 'Requests Per Second', LABELS, [
-  { label: 'BE',     data: BE_RPS,     backgroundColor: 'rgba(13,110,253,0.7)'  },
-  { label: 'Stable', data: STABLE_RPS, backgroundColor: 'rgba(111,66,193,0.7)' }
-] );
+barChart( 'chartBootstrap', 'App Bootstrap Time (ms)', LABELS, seriesToDatasets( BOOT_SERIES ) );
+barChart( 'chartThroughput', 'Requests Per Second', LABELS, seriesToDatasets( RPS_SERIES ) );
 
 const scContainer = document.getElementById( 'scenarioCharts' );
 SCENARIO_CHARTS.forEach( ( cfg, i ) => {

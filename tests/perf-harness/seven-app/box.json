@@ -1,0 +1,10 @@
+{
+    "name": "ColdBox 7.x Perf App",
+    "version": "1.0.0",
+    "dependencies": {
+        "coldbox": "7.x"
+    },
+    "installPaths": {
+        "coldbox": "coldbox/"
+    }
+}
