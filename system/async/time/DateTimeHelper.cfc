@@ -286,6 +286,43 @@ component singleton {
 	}
 
 	/**
+	 * This utility method gives us the next occurrence of a specific day of the month in Java format.
+	 * If the requested day does not exist in the target month (e.g. day 31 in a 30-day month), it is
+	 * clamped to the last day of that month instead, so callers always get a valid single occurrence.
+	 *
+	 * @day      The day of the month to target (1-31)
+	 * @time     The specific time using 24 hour format => HH:mm, defaults to midnight
+	 * @addMonth Boolean to specify adding a month to today's date
+	 * @now      The date to use as the starting point, defaults to now()
+	 * @timezone The timezone to use for the current date/time. Defaults to the system timezone
+	 *
+	 * @return Java LocalDateTime object
+	 */
+	public function getNextDayOfMonthOccurrence(
+		required numeric day,
+		string time      = "00:00",
+		boolean addMonth = false,
+		date now         = now(),
+		string timezone  = getSystemTimezoneAsString()
+	){
+		var target = toLocalDateTime(
+			arguments.addMonth ? dateAdd( "m", 1, arguments.now ) : arguments.now,
+			arguments.timezone
+		);
+		// Clamp the day to the last day of the target month if it doesn't exist there
+		var lastDayOfMonth = target
+			.with( createObject( "java", "java.time.temporal.TemporalAdjusters" ).lastDayOfMonth() )
+			.getDayOfMonth();
+		var effectiveDay = min( arguments.day, lastDayOfMonth );
+
+		return target
+			.with( this.ChronoField.DAY_OF_MONTH, javacast( "int", effectiveDay ) )
+			.withHour( javacast( "int", getToken( arguments.time, 1, ":" ) ) )
+			.withMinute( javacast( "int", getToken( arguments.time, 2, ":" ) ) )
+			.withSecond( javacast( "int", 0 ) );
+	}
+
+	/**
 	 * Validates an incoming string to adhere to HH:mm while allowing a user to simply enter an hour value
 	 *
 	 * @time The time to check

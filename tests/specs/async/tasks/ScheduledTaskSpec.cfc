@@ -340,6 +340,27 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 					expect( t.isConstrained() ).toBeFalse( "!Day is #target#" );
 				} );
 
+				it( "clamps a day of the month constraint to the last day when it doesn't exist in the month", function(){
+					// April only has 30 days, so day 31 should clamp to April 30
+					var t = prepareMock( scheduler.task( "test" ) );
+					t.setDayOfTheMonth( 31 );
+
+					var april29 = t
+						.getJavaNow()
+						.withMonth( javacast( "int", 4 ) )
+						.withDayOfMonth( javacast( "int", 29 ) );
+					var april30 = t
+						.getJavaNow()
+						.withMonth( javacast( "int", 4 ) )
+						.withDayOfMonth( javacast( "int", 30 ) );
+
+					t.$( "getJavaNow", april29 );
+					expect( t.isConstrained() ).toBeTrue( "April 29 should still be constrained when day=31" );
+
+					t.$( "getJavaNow", april30 );
+					expect( t.isConstrained() ).toBeFalse( "April 30 (clamped last day) should run when day=31" );
+				} );
+
 				xit( "can have a last business day of the month constraint", function(){
 					var dateTimeHelper = prepareMock( new coldbox.system.async.time.DateTimeHelper() );
 					var mockNow        = dateTimeHelper.now();
