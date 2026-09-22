@@ -113,8 +113,14 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			variables.wirebox.getInstance( arguments.name, { name : arguments.name } ).setName( arguments.name )
 		)
 
-		// Reconfigure the Logger Category due to virtual inheritance
-		oScheduler.getLog().setCategory( arguments.path )
+		// Reconfigure the Logger due to virtual inheritance: the injected `log` property was resolved
+		// against the shared base scheduler class ({this} inside the virtual-inheritance mixer always
+		// points at a fresh instance of the *base* scheduler, not this concrete one), so every
+		// virtually-inherited scheduler's `log` starts out as the exact same cached LogBox Logger
+		// instance. Mutating that shared instance's category (the old approach) just means whichever
+		// scheduler loads last wins the category for everyone. Replace it outright with a Logger
+		// resolved from this scheduler's own unique path instead, so each one gets its own instance.
+		oScheduler.setLog( variables.wirebox.getLogBox().getLogger( arguments.path ) )
 
 		// Register the Scheduler as an Interceptor as well.
 		variables.interceptorService.registerInterceptor( interceptorObject = oScheduler )
