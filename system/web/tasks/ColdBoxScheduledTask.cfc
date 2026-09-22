@@ -414,6 +414,43 @@ component extends="coldbox.system.async.tasks.ScheduledTask" accessors="true" {
 	}
 
 	/**
+	 * Determine the next real-world occurrence of this task's date-based scheduling constraint, if any.
+	 *
+	 * Tasks like <code>everyMonthOn()</code>, <code>onFirstBusinessDayOfTheMonth()</code>, and
+	 * <code>onLastBusinessDayOfTheMonth()</code> are internally polled daily (their <code>period</code>
+	 * is a fixed 1-day tick) and gated by <code>isConstrained()</code> so the business logic only fires
+	 * on the correct day. That means <code>getPeriod()</code>/<code>getTimeUnit()</code> reflect the
+	 * internal polling cadence, not the real monthly cadence, so they cannot be used as-is to size the
+	 * server fixation lock. This method computes the actual next occurrence instead.
+	 *
+	 * @return Java LocalDateTime of the next occurrence, or null if this task has no such constraint
+	 */
+	private function getNextConstraintOccurrence(){
+		if ( getFirstBusinessDay() ) {
+			return variables.dateTimeHelper.getFirstBusinessDayOfTheMonth(
+				time    : getTaskTime(),
+				addMonth: true,
+				timezone: this.getTimezone()
+			);
+		}
+		if ( getLastBusinessDay() ) {
+			return variables.dateTimeHelper.getLastBusinessDayOfTheMonth(
+				time    : getTaskTime(),
+				addMonth: true,
+				timezone: this.getTimezone()
+			);
+		}
+		if ( getDayOfTheMonth() > 0 ) {
+			return variables.dateTimeHelper.getNextDayOfMonthOccurrence(
+				day     : getDayOfTheMonth(),
+				time    : getTaskTime(),
+				addMonth: true,
+				timezone: this.getTimezone()
+			);
+		}
+	}
+
+	/**
 	 * Calculate the cache lock timeout in minutes based on the task's period.
 	 * This ensures the lock persists until the next scheduled run while allowing failover.
 	 * Falls back to serverLockTimeout if period cannot be determined.
@@ -421,6 +458,16 @@ component extends="coldbox.system.async.tasks.ScheduledTask" accessors="true" {
 	 * @return numeric The timeout in minutes
 	 */
 	private numeric function calculateLockTimeout(){
+		// Date-based constraints (monthly/business-day) are polled daily internally, so their period
+		// doesn't reflect the real cadence. Compute the real next occurrence instead.
+		var nextOccurrence = getNextConstraintOccurrence();
+		if ( !isNull( local.nextOccurrence ) ) {
+			return max(
+				1,
+				ceiling( variables.dateTimeHelper.now( this.getTimezone().getId() ).until( local.nextOccurrence, variables.dateTimeHelper.MINUTES ) )
+			);
+		}
+
 		// If we have a period set, convert it to minutes
 		if ( getPeriod() > 0 ) {
 			return max(

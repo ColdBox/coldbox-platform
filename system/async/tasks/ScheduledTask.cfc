@@ -579,12 +579,11 @@ component accessors="true" {
 		}
 
 		// Do we have a day of the month constraint? and the same as the running date/time? Else skip it
-		// If the day assigned is greater than the days in the month, then we let it thru
-		// as the user intended to run it at the end of the month
+		// If the day assigned is greater than the days in the month, we clamp to the last day of the
+		// month so the task still runs exactly once that month instead of being unconstrained for it.
 		if (
 			variables.dayOfTheMonth > 0 &&
-			now.getDayOfMonth() != variables.dayOfTheMonth &&
-			variables.dayOfTheMonth <= daysInMonth( now.toString() )
+			now.getDayOfMonth() != min( variables.dayOfTheMonth, daysInMonth( now.toString() ) )
 		) {
 			return true;
 		}
@@ -1172,6 +1171,7 @@ component accessors="true" {
 		setInitialDelayPeriodAndTimeUnit( now, nextRun );
 		// Set constraints
 		variables.dayOfTheMonth = arguments.day;
+		variables.taskTime      = arguments.time;
 
 		return this;
 	}
