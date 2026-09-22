@@ -339,14 +339,17 @@ component {
 		}
 	}
 
-	// The CLI's bundled Lucee (5.4.8.2) has a parser bug where a bracket-syntax
-	// cfhttp() call as the direct child of a try{} block fails with a syntax
-	// error. Routing every call through this helper keeps cfhttp out of try
-	// bodies entirely.
+	// The CLI's bundled Lucee (5.4.8.2) has two bugs around script-syntax
+	// cfhttp(): a parser bug when it's the direct child of a try{} block, and
+	// its result="varName" attribute silently fails to populate the variable
+	// when called from a component method. Routing every call through this
+	// helper — which delegates to a tag-based <cfhttp> via include — avoids
+	// both.
 	private struct function httpGet( required string url, numeric timeout=15 ){
-		var httpResult = {}
-		cfhttp( url=arguments.url, method="GET", timeout=arguments.timeout, result="httpResult" )
-		return httpResult
+		variables._httpGetUrl     = arguments.url
+		variables._httpGetTimeout = arguments.timeout
+		include "_httpGet.cfm"
+		return variables._httpGetResult
 	}
 
 	private void function stopServer( required struct engine ){
