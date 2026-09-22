@@ -25,6 +25,15 @@ component {
 	this.mappings[ "/coldbox"   ] = stableAppPath & "coldbox/"
 	// /cbperfapp → shared ColdBox application components
 	this.mappings[ "/cbperfapp" ] = sharedApp
+	// BoxLang derives a component's canonical type name from its physical path
+	// relative to the webroot, not from the /coldbox mapping alias above — so
+	// with the shared repo-root webroot, a class instantiated as
+	// `new coldbox.system.logging.LogEvent()` ends up with the canonical name
+	// `tests.perf-harness.stable-app.coldbox.system.logging.LogEvent`, which
+	// doesn't match a typed argument declared as `coldbox.system.logging.LogEvent`
+	// elsewhere. Remapping the root to this app's own folder makes that
+	// physical-path derivation agree with the mapping again.
+	this.mappings[ "/" ] = stableAppPath
 
 	// ─── ColdBox bootstrap settings ───────────────────────────────────────────
 	COLDBOX_APP_ROOT_PATH = sharedApp
