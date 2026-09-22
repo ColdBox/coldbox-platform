@@ -339,17 +339,37 @@ component {
 		}
 	}
 
-	// The CLI's bundled Lucee (5.4.8.2) has two bugs around script-syntax
-	// cfhttp(): a parser bug when it's the direct child of a try{} block, and
-	// its result="varName" attribute silently fails to populate the variable
-	// when called from a component method. Routing every call through this
-	// helper — which delegates to a tag-based <cfhttp> via include — avoids
-	// both.
+	// The CLI's bundled Lucee (5.4.8.2) has multiple bugs around cfhttp() when
+	// called from inside a component method: a parser bug when it's the
+	// direct child of a try{} block, and its result="varName" attribute
+	// silently fails to populate the variable (both in script syntax and via
+	// a tag-based include). Bypassing cfhttp with a plain java.net
+	// HttpURLConnection sidesteps all of it.
 	private struct function httpGet( required string url, numeric timeout=15 ){
-		variables._httpGetUrl     = arguments.url
-		variables._httpGetTimeout = arguments.timeout
-		include "_httpGet.cfm"
-		return variables._httpGetResult
+		var timeoutMs = javacast( "int", arguments.timeout * 1000 )
+		var conn      = createObject( "java", "java.net.URL" ).init( arguments.url ).openConnection()
+		conn.setRequestMethod( "GET" )
+		conn.setConnectTimeout( timeoutMs )
+		conn.setReadTimeout( timeoutMs )
+		var status = 0
+		var body   = ""
+		try {
+			status = conn.getResponseCode()
+			var reader = createObject( "java", "java.io.BufferedReader" ).init(
+				createObject( "java", "java.io.InputStreamReader" ).init( conn.getInputStream() )
+			)
+			var sb   = createObject( "java", "java.lang.StringBuilder" ).init()
+			var line = reader.readLine()
+			while( !isNull( line ) ){
+				sb.append( line )
+				line = reader.readLine()
+			}
+			body = sb.toString()
+			reader.close()
+		} catch( any e ){
+			status = conn.getResponseCode()
+		}
+		return { statusCode: status, filecontent: body }
 	}
 
 	private void function stopServer( required struct engine ){
@@ -621,7 +641,7 @@ component {
 					var vd = eng.versions[ ver ]
 					if( vd.scenarios.keyExists( scenario.id ) ){
 						var s = vd.scenarios[ scenario.id ]
-						md.append( "| #eng.name# | #variables.VERSIONS[ver].shortLabel# | #s.min# | #s.avg# | #s.p95# | #s.p99# | #s.max# | #s.errors# (#s.errorPct#%%) |" )
+						md.append( "| #eng.name# | #variables.VERSIONS[ver].shortLabel# | #s.min# | #s.avg# | #s.p95# | #s.p99# | #s.max# | #s.errors# (#s.errorPct#%) |" )
 					}
 				}
 			}
@@ -787,7 +807,7 @@ component {
 						var s   = vd.scenarios[ scenario.id ]
 						var cls = ( ver == "be" ) ? "table-primary" : "table-light"
 						scenarioTablesHTML &= "<tr class=""#cls#""><td>#eng.name#</td><td><span class=""badge #versionBadges[ver]#"">#variables.VERSIONS[ver].shortLabel#</span></td>"
-						scenarioTablesHTML &= "<td>#s.min#</td><td><strong>#s.avg#</strong></td><td>#s.p95#</td><td>#s.p99#</td><td>#s.max#</td><td>#s.errors# (#s.errorPct#%%)</td></tr>"
+						scenarioTablesHTML &= "<td>#s.min#</td><td><strong>#s.avg#</strong></td><td>#s.p95#</td><td>#s.p99#</td><td>#s.max#</td><td>#s.errors# (#s.errorPct#%)</td></tr>"
 					}
 				}
 			}
@@ -999,7 +1019,7 @@ SCENARIO_CHARTS.forEach( ( cfg, i ) => {
 	private string function formatDelta( required numeric be, required numeric stable ){
 		if( arguments.stable == 0 ) return "-"
 		var pct = round( ( ( arguments.be - arguments.stable ) / arguments.stable ) * 100 * 10 ) / 10
-		return ( pct < 0 ) ? "#pct#%% ✓" : "+#pct#%%"
+		return ( pct < 0 ) ? "#pct#% ✓" : "+#pct#%"
 	}
 
 	private string function deltaMs( required numeric be, required numeric stable ){
@@ -1012,7 +1032,7 @@ SCENARIO_CHARTS.forEach( ( cfg, i ) => {
 		var pct = round( ( ( arguments.be - arguments.stable ) / arguments.stable ) * 100 * 10 ) / 10
 		var cls = ( pct < 0 ) ? "delta-better" : "delta-worse"
 		var pfx = ( pct < 0 ) ? "" : "+"
-		return "<span class=""#cls#"">#pfx##pct#%%</span>"
+		return "<span class=""#cls#"">#pfx##pct#%</span>"
 	}
 
 	private void function logMsg( required string msg ){
