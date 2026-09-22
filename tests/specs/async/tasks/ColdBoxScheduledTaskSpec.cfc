@@ -205,7 +205,9 @@ component extends="tests.resources.BaseIntegrationTest" {
 						.everyMonthOn( todayDay );
 
 					expect( monthlyTask.canRunOnThisServer() ).toBeTrue();
-					var monthlyMeta = monthlyTask.getCache().getCachedObjectMetadata( monthlyTask.getFixationCacheKey() );
+					var monthlyMeta = monthlyTask
+						.getCache()
+						.getCachedObjectMetadata( monthlyTask.getFixationCacheKey() );
 					// The old bug hard-coded exactly 1440 minutes (1 day); a real month is at least 28 days
 					expect( monthlyMeta.timeout ).toBeGT( 1440 );
 					expect( monthlyMeta.timeout ).toBeLTE( 32 * 24 * 60 );
@@ -217,20 +219,30 @@ component extends="tests.resources.BaseIntegrationTest" {
 						.task( "first-biz-day-lock-timeout" )
 						.onOneServer()
 						.onFirstBusinessDayOfTheMonth();
-					var firstBizOldValue = dateTimeUtils.timeUnitToMinutes( firstBizTask.getPeriod(), firstBizTask.getTimeUnit() );
+					var firstBizOldValue = dateTimeUtils.timeUnitToMinutes(
+						firstBizTask.getPeriod(),
+						firstBizTask.getTimeUnit()
+					);
 
 					expect( firstBizTask.canRunOnThisServer() ).toBeTrue();
-					var firstBizMeta = firstBizTask.getCache().getCachedObjectMetadata( firstBizTask.getFixationCacheKey() );
+					var firstBizMeta = firstBizTask
+						.getCache()
+						.getCachedObjectMetadata( firstBizTask.getFixationCacheKey() );
 					expect( firstBizMeta.timeout ).notToBe( firstBizOldValue );
 
 					var lastBizTask = scheduler
 						.task( "last-biz-day-lock-timeout" )
 						.onOneServer()
 						.onLastBusinessDayOfTheMonth();
-					var lastBizOldValue = dateTimeUtils.timeUnitToMinutes( lastBizTask.getPeriod(), lastBizTask.getTimeUnit() );
+					var lastBizOldValue = dateTimeUtils.timeUnitToMinutes(
+						lastBizTask.getPeriod(),
+						lastBizTask.getTimeUnit()
+					);
 
 					expect( lastBizTask.canRunOnThisServer() ).toBeTrue();
-					var lastBizMeta = lastBizTask.getCache().getCachedObjectMetadata( lastBizTask.getFixationCacheKey() );
+					var lastBizMeta = lastBizTask
+						.getCache()
+						.getCachedObjectMetadata( lastBizTask.getFixationCacheKey() );
 					expect( lastBizMeta.timeout ).notToBe( lastBizOldValue );
 				} );
 

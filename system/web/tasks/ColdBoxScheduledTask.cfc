@@ -464,7 +464,11 @@ component extends="coldbox.system.async.tasks.ScheduledTask" accessors="true" {
 		if ( !isNull( local.nextOccurrence ) ) {
 			return max(
 				1,
-				ceiling( variables.dateTimeHelper.now( this.getTimezone().getId() ).until( local.nextOccurrence, variables.dateTimeHelper.MINUTES ) )
+				ceiling(
+					variables.dateTimeHelper
+						.now( this.getTimezone().getId() )
+						.until( local.nextOccurrence, variables.dateTimeHelper.MINUTES )
+				)
 			);
 		}
 
