@@ -148,18 +148,18 @@ component {
 		boolean coldStart      = true,
 		boolean generateReport = true
 	){
-		log( "" )
-		log( "╔═══════════════════════════════════════════════════════════════╗" )
-		log( "║           ColdBox Performance Analysis Suite                  ║" )
-		log( "╚═══════════════════════════════════════════════════════════════╝" )
-		log( "" )
-		log( "  Repo root  : #variables.REPO_ROOT#" )
-		log( "  Engines    : #arguments.engines#" )
-		log( "  Versions   : #arguments.versions#" )
-		log( "  Iterations : #arguments.iterations#" )
-		log( "  Warmup     : #arguments.warmup#" )
-		log( "  Cold start : #arguments.coldStart#" )
-		log( "" )
+		logMsg( "" )
+		logMsg( "╔═══════════════════════════════════════════════════════════════╗" )
+		logMsg( "║           ColdBox Performance Analysis Suite                  ║" )
+		logMsg( "╚═══════════════════════════════════════════════════════════════╝" )
+		logMsg( "" )
+		logMsg( "  Repo root  : #variables.REPO_ROOT#" )
+		logMsg( "  Engines    : #arguments.engines#" )
+		logMsg( "  Versions   : #arguments.versions#" )
+		logMsg( "  Iterations : #arguments.iterations#" )
+		logMsg( "  Warmup     : #arguments.warmup#" )
+		logMsg( "  Cold start : #arguments.coldStart#" )
+		logMsg( "" )
 
 		var engineList  = parseEngineList( arguments.engines )
 		var versionList = parseVersionList( arguments.versions )
@@ -184,14 +184,14 @@ component {
 			var engine = variables.ENGINES[ engineId ]
 			results.engines[ engineId ] = { name: engine.name, versions: {} }
 
-			log( "" )
-			log( "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" )
-			log( "  Engine: #engine.name#" )
-			log( "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" )
+			logMsg( "" )
+			logMsg( "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" )
+			logMsg( "  Engine: #engine.name#" )
+			logMsg( "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" )
 
 			for( var version in versionList ){
-				log( "" )
-				log( "  ▶ Version: #variables.VERSIONS[ version ].label#" )
+				logMsg( "" )
+				logMsg( "  ▶ Version: #variables.VERSIONS[ version ].label#" )
 
 				var vData = {
 					version      : version,
@@ -203,53 +203,56 @@ component {
 
 				// 1. Cold start — stop server, wipe class cache, restart, time first response
 				if( arguments.coldStart ){
-					log( "    → Measuring cold start (server restart + cache clear)..." )
+					logMsg( "    → Measuring cold start (server restart + cache clear)..." )
 					vData.coldStart = measureColdStart( engine, version )
-					log( "      Cold start: #vData.coldStart.totalMs#ms (server up in #vData.coldStart.serverStartMs#ms, first response in #vData.coldStart.firstResponseMs#ms)" )
+					logMsg( "      Cold start: #vData.coldStart.totalMs#ms (server up in #vData.coldStart.serverStartMs#ms, first response in #vData.coldStart.firstResponseMs#ms)" )
 				}
 
 				// 2. Ensure server is running (may already be up from cold start)
 				if( !arguments.coldStart ){
-					log( "    → Starting server..." )
+					logMsg( "    → Starting server..." )
 					startServer( engine )
 					var healthUrl = buildUrl( variables.SCENARIOS[ 1 ], version )
 					if( !waitForServer( healthUrl, 120 ) ){
-						log( "    ✗ Server did not start in time — skipping #engine.name# #version#" )
-						continue
+						logMsg( "    ✗ Server did not start in time — skipping #engine.name# #version#" )
+						continue;
 					}
 				}
 
 				// 3. App bootstrap (re-init ColdBox, time first request)
-				log( "    → Measuring app bootstrap time..." )
+				logMsg( "    → Measuring app bootstrap time..." )
 				vData.appBootstrap = measureAppBootstrap( version )
-				log( "      Bootstrap: #vData.appBootstrap.ms#ms" )
+				logMsg( "      Bootstrap: #vData.appBootstrap.ms#ms" )
 
 				// 4. Warmup
-				log( "    → Warming up (#arguments.warmup# requests)..." )
+				logMsg( "    → Warming up (#arguments.warmup# requests)..." )
 				var warmupUrl = buildUrl( variables.SCENARIOS[ 1 ], version )
 				for( var w = 1; w <= arguments.warmup; w++ ){
-					try { cfhttp( url=warmupUrl, method="GET", timeout=15, result="wr" ) } catch( any e ){}
+					try {
+						httpGet( url=warmupUrl, timeout=15 )
+					} catch( any e ){
+					}
 				}
 
 				// 5. Per-scenario latency
 				for( var scenario in variables.SCENARIOS ){
 					var scenarioUrl = buildUrl( scenario, version )
-					log( "    → Scenario [#scenario.name#] (#arguments.iterations# req)..." )
+					logMsg( "    → Scenario [#scenario.name#] (#arguments.iterations# req)..." )
 					vData.scenarios[ scenario.id ] = measureScenario( scenarioUrl, arguments.iterations )
 					var s = vData.scenarios[ scenario.id ]
-					log( "      avg=#s.avg#ms  p95=#s.p95#ms  p99=#s.p99#ms  errors=#s.errors#" )
+					logMsg( "      avg=#s.avg#ms  p95=#s.p95#ms  p99=#s.p99#ms  errors=#s.errors#" )
 				}
 
 				// 6. Throughput (sequential)
 				var tUrl = buildUrl( variables.SCENARIOS[ 1 ], version )
-				log( "    → Throughput (#arguments.throughputSecs#s sequential)..." )
+				logMsg( "    → Throughput (#arguments.throughputSecs#s sequential)..." )
 				vData.throughput = measureThroughput( tUrl, arguments.throughputSecs )
-				log( "      #vData.throughput.rps# RPS (#vData.throughput.totalRequests# requests)" )
+				logMsg( "      #vData.throughput.rps# RPS (#vData.throughput.totalRequests# requests)" )
 
 				results.engines[ engineId ].versions[ version ] = vData
 
 				// Stop server after each version test to avoid port conflicts
-				log( "    → Stopping server..." )
+				logMsg( "    → Stopping server..." )
 				stopServer( engine )
 				sleep( 2000 )
 			}
@@ -257,20 +260,20 @@ component {
 
 		// ── Generate reports ──────────────────────────────────────────────────
 		if( arguments.generateReport ){
-			log( "" )
-			log( "  Generating reports..." )
+			logMsg( "" )
+			logMsg( "  Generating reports..." )
 			var ts       = dateTimeFormat( results.generated, "yyyymmdd_HHnnss" )
 			var mdPath   = variables.REPORT_DIR & "perf-report-#ts#.md"
 			var htmlPath = variables.REPORT_DIR & "perf-report-#ts#.html"
 			generateMarkdownReport( results, mdPath )
 			generateHTMLReport( results, htmlPath )
-			log( "  ✓ Markdown : #mdPath#" )
-			log( "  ✓ HTML     : #htmlPath#" )
+			logMsg( "  ✓ Markdown : #mdPath#" )
+			logMsg( "  ✓ HTML     : #htmlPath#" )
 		}
 
-		log( "" )
-		log( "  ✓ Performance analysis complete!" )
-		log( "" )
+		logMsg( "" )
+		logMsg( "  ✓ Performance analysis complete!" )
+		logMsg( "" )
 	}
 
 	// ══════════════════════════════════════════════════════════════════════════
@@ -307,17 +310,17 @@ component {
 		var appDir       = variables.TASK_DIR & vMeta.appDir & "/"
 		var installedDir = appDir & vMeta.installDir
 		if( directoryExists( installedDir ) ){
-			log( "  ✓ #vMeta.label# already installed at #installedDir#" )
+			logMsg( "  ✓ #vMeta.label# already installed at #installedDir#" )
 			return
 		}
-		log( "  Installing ColdBox #vMeta.semver# into #vMeta.appDir#/..." )
+		logMsg( "  Installing ColdBox #vMeta.semver# into #vMeta.appDir#/..." )
 		try {
 			command( "cd '#appDir#'" ).run()
 			command( "install" ).run()
 			command( "cd '#variables.REPO_ROOT#'" ).run()
-			log( "  ✓ #vMeta.label# installed." )
+			logMsg( "  ✓ #vMeta.label# installed." )
 		} catch( any e ){
-			log( "  ✗ Could not install #vMeta.label#: #e.message#. Skipping this version." )
+			logMsg( "  ✗ Could not install #vMeta.label#: #e.message#. Skipping this version." )
 		}
 	}
 
@@ -329,18 +332,28 @@ component {
 		try {
 			command( "server start" )
 				.params( serverConfigFile=arguments.engine.serverConfig )
-				.flag( "force" )
+				.flags( "force" )
 				.run()
 		} catch( any e ){
-			log( "  ✗ Server start error: #e.message#" )
+			logMsg( "  ✗ Server start error: #e.message#" )
 		}
+	}
+
+	// The CLI's bundled Lucee (5.4.8.2) has a parser bug where a bracket-syntax
+	// cfhttp() call as the direct child of a try{} block fails with a syntax
+	// error. Routing every call through this helper keeps cfhttp out of try
+	// bodies entirely.
+	private struct function httpGet( required string url, numeric timeout=15 ){
+		var httpResult = {}
+		cfhttp( url=arguments.url, method="GET", timeout=arguments.timeout, result="httpResult" )
+		return httpResult
 	}
 
 	private void function stopServer( required struct engine ){
 		try {
 			command( "server stop" )
 				.params( name=arguments.engine.serverName )
-				.flag( "force" )
+				.flags( "force" )
 				.run()
 		} catch( any e ){
 			// Server may not be running — ignore
@@ -351,7 +364,7 @@ component {
 		var deadline = getTickCount() + ( arguments.timeout * 1000 )
 		while( getTickCount() < deadline ){
 			try {
-				cfhttp( url=arguments.healthUrl, method="GET", timeout=5, result="probe" )
+				var probe = httpGet( url=arguments.healthUrl, timeout=5 )
 				if( probe.statusCode contains "200" ) return true
 			} catch( any e ){}
 			sleep( 2000 )
@@ -365,9 +378,9 @@ component {
 			if( directoryExists( fullPath ) ){
 				try {
 					directoryDelete( fullPath, true )
-					log( "      Cleared: #fullPath#" )
+					logMsg( "      Cleared: #fullPath#" )
 				} catch( any e ){
-					log( "      Warning — could not clear #fullPath#: #e.message#" )
+					logMsg( "      Warning — could not clear #fullPath#: #e.message#" )
 				}
 			}
 		}
@@ -398,7 +411,7 @@ component {
 		while( getTickCount() < deadline ){
 			try {
 				var reqStart = getTickCount()
-				cfhttp( url=healthUrl, method="GET", timeout=10, result="cr" )
+				var cr       = httpGet( url=healthUrl, timeout=10 )
 				if( cr.statusCode contains "200" ){
 					firstResponseMs = getTickCount() - reqStart
 					serverReady     = true
@@ -425,7 +438,7 @@ component {
 
 		// Trigger ColdBox re-initialization
 		try {
-			cfhttp( url=reinitUrl, method="GET", timeout=30, result="ri" )
+			httpGet( url=reinitUrl, timeout=30 )
 		} catch( any e ){}
 
 		sleep( 500 )
@@ -433,7 +446,7 @@ component {
 		// Time the first post-reinit request (full bootstrap cost)
 		var start = getTickCount()
 		try {
-			cfhttp( url=healthUrl, method="GET", timeout=30, result="br" )
+			httpGet( url=healthUrl, timeout=30 )
 		} catch( any e ){}
 
 		return { ms: getTickCount() - start }
@@ -446,7 +459,7 @@ component {
 		for( var i = 1; i <= arguments.count; i++ ){
 			var start = getTickCount()
 			try {
-				cfhttp( url=arguments.url, method="GET", timeout=30, result="sr" )
+				var sr = httpGet( url=arguments.url, timeout=30 )
 				if( !( sr.statusCode contains "200" ) ) errors++
 			} catch( any e ){
 				errors++
@@ -485,7 +498,7 @@ component {
 
 		while( getTickCount() < deadline ){
 			try {
-				cfhttp( url=arguments.url, method="GET", timeout=10, result="tr" )
+				var tr = httpGet( url=arguments.url, timeout=10 )
 				if( tr.statusCode contains "200" ) requests++
 				else errors++
 			} catch( any e ){
@@ -521,7 +534,7 @@ component {
 		var baselines   = versionList.filter( function( v ){ return variables.BASELINE_VERSIONS.findNoCase( v ) > 0 } )
 		var hasBE       = versionList.findNoCase( "be" ) > 0
 
-		md.append( "# ColdBox Performance Analysis Report" )
+		md.append( "## ColdBox Performance Analysis Report" )
 		md.append( "" )
 		md.append( "Generated: #ts# | Iterations: #r.iterations# | Warmup: #r.warmup# | Cold Start: #r.coldStartRun#" )
 		md.append( "" )
@@ -530,14 +543,14 @@ component {
 
 		// ── Cold Start Table ──────────────────────────────────────────────────
 		if( r.coldStartRun ){
-			md.append( "## Engine Cold Start (First Request, No Bytecode Cache)" )
+			md.append( "#### Engine Cold Start (First Request, No Bytecode Cache)" )
 			md.append( "" )
 			md.append( "| Engine | Version | Server Start (ms) | First Response (ms) | Total (ms) |" )
 			md.append( "|--------|---------|:-----------------:|:-------------------:|:----------:|" )
 			for( var engineId in r.engines ){
 				var eng = r.engines[ engineId ]
 				for( var ver in versionList ){
-					if( !eng.versions.keyExists( ver ) ) continue
+					if( !eng.versions.keyExists( ver ) ) continue;
 					var vd = eng.versions[ ver ]
 					if( !vd.coldStart.isEmpty() && vd.coldStart.success ){
 						md.append( "| #eng.name# | #variables.VERSIONS[ver].shortLabel# | #vd.coldStart.serverStartMs# | #vd.coldStart.firstResponseMs# | #vd.coldStart.totalMs# |" )
@@ -548,7 +561,7 @@ component {
 		}
 
 		// ── App Bootstrap Table ───────────────────────────────────────────────
-		md.append( "## ColdBox App Bootstrap Time (Re-init)" )
+		md.append( "#### ColdBox App Bootstrap Time (Re-init)" )
 		md.append( "" )
 		var bootHeader  = "| Engine |"
 		var bootDivider = "|--------|"
@@ -585,13 +598,13 @@ component {
 		md.append( "" )
 
 		// ── Scenario Latency Tables ───────────────────────────────────────────
-		md.append( "## Warm Request Latency by Scenario" )
+		md.append( "#### Warm Request Latency by Scenario" )
 		md.append( "" )
 		md.append( "> All times in milliseconds. Delta shows BE change vs the given baseline (negative = BE faster)." )
 		md.append( "" )
 
 		for( var scenario in variables.SCENARIOS ){
-			md.append( "### #scenario.name#" )
+			md.append( "###### #scenario.name#" )
 			md.append( "" )
 			md.append( "_#scenario.description#_" )
 			md.append( "" )
@@ -601,7 +614,7 @@ component {
 			for( var engineId in r.engines ){
 				var eng = r.engines[ engineId ]
 				for( var ver in versionList ){
-					if( !eng.versions.keyExists( ver ) ) continue
+					if( !eng.versions.keyExists( ver ) ) continue;
 					var vd = eng.versions[ ver ]
 					if( vd.scenarios.keyExists( scenario.id ) ){
 						var s = vd.scenarios[ scenario.id ]
@@ -614,9 +627,9 @@ component {
 			if( hasBE ){
 				for( var engineId in r.engines ){
 					var eng = r.engines[ engineId ]
-					if( !eng.versions.keyExists( "be" ) ) continue
+					if( !eng.versions.keyExists( "be" ) ) continue;
 					for( var base in baselines ){
-						if( !eng.versions.keyExists( base ) ) continue
+						if( !eng.versions.keyExists( base ) ) continue;
 						var beS = eng.versions.be.scenarios[ scenario.id ]     ?: {}
 						var blS = eng.versions[ base ].scenarios[ scenario.id ] ?: {}
 						if( !beS.isEmpty() && !blS.isEmpty() ){
@@ -629,7 +642,7 @@ component {
 		}
 
 		// ── Throughput Table ──────────────────────────────────────────────────
-		md.append( "## Throughput (Sequential RPS on Health Check, #r.throughputSecs#s)" )
+		md.append( "#### Throughput (Sequential RPS on Health Check, #r.throughputSecs#s)" )
 		md.append( "" )
 		var thHeader  = "| Engine |"
 		var thDivider = "|--------|"
@@ -765,7 +778,7 @@ component {
 			for( var eid in r.engines ){
 				var eng = r.engines[ eid ]
 				for( var ver in versionList ){
-					if( !eng.versions.keyExists( ver ) ) continue
+					if( !eng.versions.keyExists( ver ) ) continue;
 					var vd = eng.versions[ ver ]
 					if( vd.scenarios.keyExists( scenario.id ) ){
 						var s   = vd.scenarios[ scenario.id ]
@@ -785,7 +798,7 @@ component {
 			for( var eid in r.engines ){
 				var eng = r.engines[ eid ]
 				for( var ver in versionList ){
-					if( !eng.versions.keyExists( ver ) ) continue
+					if( !eng.versions.keyExists( ver ) ) continue;
 					var vd  = eng.versions[ ver ]
 					var cls = ( ver == "be" ) ? "table-primary" : "table-light"
 					if( !vd.coldStart.isEmpty() && vd.coldStart.success ){
@@ -872,7 +885,7 @@ component {
 <style>
   body { font-family: system-ui, -apple-system, sans-serif; background: ##f8f9fa; }
   .card { box-shadow: 0 1px 4px rgba(0,0,0,.08); border: none; margin-bottom: 1.5rem; }
-  .card-header { font-weight: 600; background: ##343a40; color: #fff; border-radius: .5rem .5rem 0 0 !important; }
+  .card-header { font-weight: 600; background: ##343a40; color: ##fff; border-radius: .5rem .5rem 0 0 !important; }
   canvas { max-height: 350px; }
   .delta-better { color: ##198754; font-weight: 600; }
   .delta-worse  { color: ##dc3545; font-weight: 600; }
@@ -999,12 +1012,8 @@ SCENARIO_CHARTS.forEach( ( cfg, i ) => {
 		return "<span class=""#cls#"">#pfx##pct#%%</span>"
 	}
 
-	private void function log( required string msg ){
-		try {
-			print.line( arguments.msg )
-		} catch( any e ){
-			systemOutput( arguments.msg, true )
-		}
+	private void function logMsg( required string msg ){
+		systemOutput( arguments.msg, true )
 	}
 
 }
