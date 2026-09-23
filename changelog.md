@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [8.2.0] - 2026-09-23
+
 - <https://coldbox.ortusbooks.com/readme/release-history/whats-new-with-8.2.0>
 
 ## [8.1.0] - 2026-04-14
@@ -50,7 +52,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - <https://coldbox.ortusbooks.com/readme/release-history/whats-new-with-8.0.0>
 - <https://coldbox.ortusbooks.com/readme/upgrading-to-coldbox-8>
 
-[unreleased]: https://github.com/ColdBox/coldbox-platform/compare/v8.1.0...HEAD
+[unreleased]: https://github.com/ColdBox/coldbox-platform/compare/v8.2.0...HEAD
+[8.2.0]: https://github.com/ColdBox/coldbox-platform/compare/v8.1.0...v8.2.0
 [8.1.0]: https://github.com/ColdBox/coldbox-platform/compare/v8.0.5...v8.1.0
 [8.0.5]: https://github.com/ColdBox/coldbox-platform/compare/v8.0.4...v8.0.5
 [8.0.4]: https://github.com/ColdBox/coldbox-platform/compare/v8.0.3...v8.0.4
