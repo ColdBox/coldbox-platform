@@ -829,19 +829,21 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * @requestContext The request context for the current request, passed to a closure `cacheSuffix` untouched.
 	 */
 	private function getRouteCachingMetadata( required struct routeRecord, required requestContext ){
-		// Memoized per HTTP request: the matched route record - and thus this result - cannot
-		// change for the life of a request (it's set once during initial routing), but this is
-		// called once from getEventMetadataEntry() (pre-dispatch cacheability check) and again
-		// from getEventCachingMetadata() (at dispatch), so caching it here avoids resolving it
-		// twice. `request` scope is per-HTTP-request and thread-isolated, safe to use even though
-		// this service is an application-wide singleton. An empty struct is the "no route cache"
-		// memo, since a real entry always has multiple keys.
-		if ( structKeyExists( request, "cbox_routeCacheMetadata" ) ) {
-			return request.cbox_routeCacheMetadata.isEmpty() ? javacast( "null", "" ) : request.cbox_routeCacheMetadata;
+		// Memoized on the request CONTEXT instance - not the raw `request` scope, which spans
+		// every logical request processed within a single physical HTTP request (e.g. TestBox
+		// runs its whole spec suite in one request) and would leak one test's/request's result
+		// into the next. The matched route record cannot change for the life of a given
+		// requestContext, but this is called once from getEventMetadataEntry() (pre-dispatch
+		// cacheability check) and again from getEventCachingMetadata() (at dispatch), so caching
+		// it here avoids resolving it twice. An empty struct is the "no route cache" memo, since
+		// a real entry always has multiple keys.
+		if ( arguments.requestContext.privateValueExists( "cbox_routeCacheMetadata" ) ) {
+			var cached = arguments.requestContext.getPrivateValue( "cbox_routeCacheMetadata" );
+			return cached.isEmpty() ? javacast( "null", "" ) : cached;
 		}
 
 		if ( !arguments.routeRecord.keyExists( "cache" ) || !arguments.routeRecord.cache ) {
-			request.cbox_routeCacheMetadata = {};
+			arguments.requestContext.setPrivateValue( "cbox_routeCacheMetadata", {} );
 			return;
 		}
 
@@ -867,7 +869,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		 ? suffix( arguments.requestContext )
 		 : suffix;
 
-		request.cbox_routeCacheMetadata = mdEntry;
+		arguments.requestContext.setPrivateValue( "cbox_routeCacheMetadata", mdEntry );
 		return mdEntry;
 	}
 
