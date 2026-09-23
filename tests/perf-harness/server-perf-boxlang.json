@@ -1,6 +1,6 @@
 {
     "app": {
-        "cfengine": "boxlang@1.17.5",
+        "cfengine": "boxlang@1",
         "serverHomeDirectory": "../../.engine/boxlang"
     },
     "name": "coldbox-perf-boxlang",
@@ -15,7 +15,7 @@
     },
     "JVM": {
         "heapSize": "1024",
-        "javaHome": "/usr/lib/jvm/java-21-openjdk-amd64"
+        "javaVersion":"openjdk21_jre"
     },
     "cfconfig": { "file": "../../.cfconfig.json" },
     "env": { "BOXLANG_DEBUG": false }
