@@ -191,22 +191,20 @@ component {
 			var engine = variables.ENGINES[ engineId ]
 			results.engines[ engineId ] = { name: engine.name, versions: {} }
 
+			// Drop any version/engine combo known to be unsupported from this
+			// engine's matrix entirely, rather than attempting and skipping it.
+			var engineVersionList = versionList.filter( function( v ){
+				return !variables.UNSUPPORTED_COMBOS.some( function( combo ){
+					return combo.engine == engineId && combo.version == v
+				} )
+			} )
+
 			logMsg( "" )
 			logMsg( "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" )
 			logMsg( "  Engine: #engine.name#" )
 			logMsg( "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" )
 
-			for( var version in versionList ){
-				if(
-					variables.UNSUPPORTED_COMBOS.some( function( combo ){
-						return combo.engine == engineId && combo.version == version
-					} )
-				){
-					logMsg( "" )
-					logMsg( "  ▶ Version: #variables.VERSIONS[ version ].label# — skipped (not validated on #engine.name#)" )
-					continue;
-				}
-
+			for( var version in engineVersionList ){
 				logMsg( "" )
 				logMsg( "  ▶ Version: #variables.VERSIONS[ version ].label#" )
 
