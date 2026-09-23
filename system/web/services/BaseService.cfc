@@ -45,9 +45,7 @@ component accessors="true" {
 	 * Get the service logger
 	 */
 	function getLogger(){
-		// The declared `log` property guarantees the variables-scope slot already exists,
-		// so isNull() alone is enough - no need for the redundant structKeyExists() check.
-		if ( isNull( variables.log ) ) {
+		if ( !structKeyExists( variables, "log" ) || isNull( variables.log ) ) {
 			variables.log = variables.controller.getLogBox().getLogger( this )
 		}
 		return variables.log
