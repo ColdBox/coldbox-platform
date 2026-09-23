@@ -23,7 +23,7 @@ component serializable="false" accessors="true" {
 	// Lock Timeout for startup operations
 	property name="lockTimeout";
 	// The application hash used for locks
-	property name="appHash" default="#getBaseTemplatePath()#";
+	property name="appHash";
 	// By default if an app is reiniting and a request hits it, we will fail fast with a message
 	property name="COLDBOX_FAIL_FAST";
 
@@ -35,6 +35,10 @@ component serializable="false" accessors="true" {
 	param name="COLDBOX_WEB_MAPPING"   default="";
 	param name="lockTimeout" default="30" type="numeric";
 	param name="COLDBOX_FAIL_FAST" default="true";
+
+	// Set here instead of as a property default: Adobe CF only allows constant property defaults.
+	// It must exist before reloadChecks() uses it, even if loadColdBox() has not run yet.
+	param name="appHash" default="#hash( getBaseTemplatePath() & application.applicationname )#";
 
 	/**
 	 * Constructor, called by your Application CFC
