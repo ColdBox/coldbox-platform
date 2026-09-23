@@ -12,7 +12,7 @@ component singleton {
 				id       : i,
 				name     : "Product #i#",
 				sku      : "SKU-#numberFormat( i, "00000" )#",
-				price    : precisionEvaluate( i * 9.99 ),
+				price    : round( ( i * 9.99 ) * 100 ) / 100,
 				category : variables.CATEGORIES[ ( ( i - 1 ) mod variables.CATEGORIES.len() ) + 1 ],
 				inStock  : ( i mod 4 != 0 ),
 				tags     : [ "tag#i#", "perf", "test" ]

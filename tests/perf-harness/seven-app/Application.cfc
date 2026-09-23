@@ -1,46 +1,46 @@
 /**
- * Bootstrap for the Stable ColdBox 8.1 performance app.
- * Maps /coldbox to ./coldbox/ (installed via box install coldbox@8.1.x).
+ * Bootstrap for the ColdBox 7.x (latest) performance app.
+ * Maps /coldbox to ./coldbox/ (installed via box install coldbox@7.x).
  * Maps /cbperfapp to the shared ../app/ directory.
  * COLDBOX_APP_ROOT_PATH points to ../app/ so ColdBox discovers handlers/views there.
  */
 component {
 
 	// ─── Application properties ───────────────────────────────────────────────
-	this.name              = "ColdBoxPerfStable_" & hash( getCurrentTemplatePath() )
+	this.name              = "ColdBoxPerfSeven_" & hash( getCurrentTemplatePath() )
 	this.sessionManagement = true
 	this.sessionTimeout    = createTimespan( 0, 0, 10, 0 )
 	this.setClientCookies  = false
 	this.timezone          = "UTC"
 
 	// ─── Path resolution ──────────────────────────────────────────────────────
-	// stableAppPath = /…/tests/perf-harness/stable-app/
-	// sharedApp     = /…/tests/perf-harness/app/
-	stableAppPath = getDirectoryFromPath( getCurrentTemplatePath() )
-	repoRoot      = reReplaceNoCase( stableAppPath, "tests[/\\]perf-harness[/\\]stable-app[/\\]", "" )
-	sharedApp     = repoRoot & "tests/perf-harness/app/"
+	// sevenAppPath = /…/tests/perf-harness/seven-app/
+	// sharedApp    = /…/tests/perf-harness/app/
+	sevenAppPath = getDirectoryFromPath( getCurrentTemplatePath() )
+	repoRoot     = reReplaceNoCase( sevenAppPath, "tests[/\\]perf-harness[/\\]seven-app[/\\]", "" )
+	sharedApp    = repoRoot & "tests/perf-harness/app/"
 
 	// ─── CF Mappings ──────────────────────────────────────────────────────────
-	// /coldbox  → stable 8.1 installed in stable-app/coldbox/
-	this.mappings[ "/coldbox"   ] = stableAppPath & "coldbox/"
+	// /coldbox  → ColdBox 7.x installed in seven-app/coldbox/
+	this.mappings[ "/coldbox"   ] = sevenAppPath & "coldbox/"
 	// /cbperfapp → shared ColdBox application components
 	this.mappings[ "/cbperfapp" ] = sharedApp
 	// BoxLang derives a component's canonical type name from its physical path
 	// relative to the webroot, not from the /coldbox mapping alias above — so
 	// with the shared repo-root webroot, a class instantiated as
 	// `new coldbox.system.logging.LogEvent()` ends up with the canonical name
-	// `tests.perf-harness.stable-app.coldbox.system.logging.LogEvent`, which
+	// `tests.perf-harness.seven-app.coldbox.system.logging.LogEvent`, which
 	// doesn't match a typed argument declared as `coldbox.system.logging.LogEvent`
 	// elsewhere. Remapping the root to this app's own folder makes that
 	// physical-path derivation agree with the mapping again.
-	this.mappings[ "/" ] = stableAppPath
+	this.mappings[ "/" ] = sevenAppPath
 
 	// ─── ColdBox bootstrap settings ───────────────────────────────────────────
 	COLDBOX_APP_ROOT_PATH = sharedApp
 	COLDBOX_CONFIG_FILE   = "cbperfapp.config.ColdBox"
-	COLDBOX_APP_KEY       = "cbperf_stable"
+	COLDBOX_APP_KEY       = "cbperf_seven"
 	COLDBOX_APP_MAPPING   = "cbperfapp"
-	COLDBOX_WEB_MAPPING   = "tests/perf-harness/stable-app"
+	COLDBOX_WEB_MAPPING   = "tests/perf-harness/seven-app"
 	COLDBOX_FAIL_FAST     = true
 
 	// ─── Lifecycle ────────────────────────────────────────────────────────────
@@ -60,7 +60,7 @@ component {
 	public boolean function onRequestStart( string targetPage ){
 		// Allow reinit via ?bsReinit=1
 		if( structKeyExists( url, "bsReinit" ) || !structKeyExists( application, "cbBootstrap" ) ){
-			lock name="cbperf_stable_reinit" type="exclusive" timeout="10" throwonTimeout=true {
+			lock name="cbperf_seven_reinit" type="exclusive" timeout="10" throwonTimeout=true {
 				structDelete( application, "cbBootstrap" )
 				onApplicationStart()
 			}
