@@ -91,6 +91,13 @@ component {
 	// deltas only render when BE and the given baseline were both actually tested.
 	variables.BASELINE_VERSIONS = [ "stable", "seven" ]
 
+	// engine/version combinations known to be unsupported — skipped rather than
+	// attempted and left to fail. ColdBox 7.x on native BoxLang isn't validated:
+	// its InterceptorService.cfc assumes a component's `extends` metadata key is
+	// absent when there's no superclass, but BoxLang always includes it as an
+	// empty struct, so `.name` access throws on every request.
+	variables.UNSUPPORTED_COMBOS = [ { engine: "boxlang", version: "seven" } ]
+
 	variables.SCENARIOS = [
 		{
 			id          : "health",
@@ -190,6 +197,16 @@ component {
 			logMsg( "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" )
 
 			for( var version in versionList ){
+				if(
+					variables.UNSUPPORTED_COMBOS.some( function( combo ){
+						return combo.engine == engineId && combo.version == version
+					} )
+				){
+					logMsg( "" )
+					logMsg( "  ▶ Version: #variables.VERSIONS[ version ].label# — skipped (not validated on #engine.name#)" )
+					continue;
+				}
+
 				logMsg( "" )
 				logMsg( "  ▶ Version: #variables.VERSIONS[ version ].label#" )
 
