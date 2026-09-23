@@ -1,6 +1,6 @@
 {
     "app": {
-        "cfengine": "boxlang@1",
+        "cfengine": "boxlang@1.17.5",
         "serverHomeDirectory": "../../.engine/boxlang"
     },
     "name": "coldbox-perf-boxlang",
