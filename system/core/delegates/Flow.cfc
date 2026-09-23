@@ -10,7 +10,7 @@ component accessors=true {
 	 * Pivots if used in delegate or normal mode.
 	 */
 	private function getParent(){
-		return isNull( $parent ) ? this : $parent;
+		return structKeyExists( variables, "$parent" ) && !isNull( variables.$parent ) ? variables.$parent : this;
 	}
 
 	/**

@@ -87,8 +87,10 @@ component serializable="false" accessors="true" {
 	property name="asyncManager";
 
 	// BoxLang Detection
-	variables.IS_BOXLANG = server.keyExists( "boxlang" );
-	variables.IS_CLI     = variables.IS_BOXLANG && server.boxlang.cliMode ? true : false;
+	variables.IS_BOXLANG        = server.keyExists( "boxlang" )
+	variables.IS_CLI            = variables.IS_BOXLANG && server.boxlang.cliMode ? true : false
+	// Locate file cache
+	variables.locateTargetCache = {}
 
 	/**
 	 * Constructor
@@ -98,66 +100,66 @@ component serializable="false" accessors="true" {
 	 */
 	function init( required appRootPath, appKey = "cbController" ){
 		// Get application name
-		variables.appName  = application.applicationName;
+		variables.appName  = application.applicationName
 		// These will be lazy loaded on first use since the framework isn't ready to create it yet
-		variables.renderer = "";
-		variables.wireBox  = "";
+		variables.renderer = ""
+		variables.wireBox  = ""
 
 		// Create Utility
-		variables.util         = new coldbox.system.core.util.Util();
+		variables.util         = new coldbox.system.core.util.Util()
 		// services scope
-		variables.services     = structNew( "ordered" );
+		variables.services     = structNew( "ordered" )
 		// CFML Engine Utility
-		variables.CFMLEngine   = new coldbox.system.core.util.CFMLEngine();
+		variables.CFMLEngine   = new coldbox.system.core.util.CFMLEngine()
 		// Register the application's async manager
-		variables.asyncManager = new coldbox.system.async.AsyncManager();
+		variables.asyncManager = new coldbox.system.async.AsyncManager()
 
 		// Set Main Application Properties
-		variables.coldboxInitiated = false;
-		variables.appKey           = arguments.appKey;
+		variables.coldboxInitiated = false
+		variables.appKey           = arguments.appKey
 		// Fix Application Path to last / standard.
 		if ( NOT reFind( "(/|\\)$", arguments.appRootPath ) ) {
-			arguments.appRootPath = appRootPath & "/";
+			arguments.appRootPath = appRootPath & "/"
 		}
-		variables.appHash         = hash( arguments.appRootPath & variables.appName );
-		variables.appRootPath     = arguments.appRootPath;
+		variables.appHash         = hash( arguments.appRootPath & variables.appName )
+		variables.appRootPath     = arguments.appRootPath
 		// The App Settings
-		variables.configSettings  = {};
+		variables.configSettings  = {}
 		// The Framework Settings
-		variables.coldboxSettings = loadColdBoxSettings();
+		variables.coldboxSettings = loadColdBoxSettings()
 
 		// Create and register the ColdBox Async Scheduler Executor
 		variables.asyncManager.newScheduledExecutor(
 			name   : "coldbox-tasks",
 			threads: variables.coldboxSettings.async.schedulerThreads
-		);
+		)
 
 		// Create the Loader Service
-		services.loaderService = new coldbox.system.web.services.LoaderService( this );
+		services.loaderService = new coldbox.system.web.services.LoaderService( this )
 		// LogBox Default Configuration & Creation
-		variables.logBox       = services.loaderService.createDefaultLogBox();
-		variables.log          = variables.logBox.getLogger( this );
-		variables.log.info( "+ LogBox created" );
+		variables.logBox       = services.loaderService.createDefaultLogBox()
+		variables.log          = variables.logBox.getLogger( this )
+		variables.log.info( "+ LogBox created" )
 
 		// Setup the ColdBox Services
-		services.requestService     = new coldbox.system.web.services.RequestService( this );
-		services.interceptorService = new coldbox.system.web.services.InterceptorService( this );
-		services.handlerService     = new coldbox.system.web.services.HandlerService( this );
-		services.routingService     = new coldbox.system.web.services.RoutingService( this );
-		services.moduleService      = new coldbox.system.web.services.ModuleService( this );
-		services.schedulerService   = new coldbox.system.web.services.SchedulerService( this );
+		services.requestService     = new coldbox.system.web.services.RequestService( this )
+		services.interceptorService = new coldbox.system.web.services.InterceptorService( this )
+		services.handlerService     = new coldbox.system.web.services.HandlerService( this )
+		services.routingService     = new coldbox.system.web.services.RoutingService( this )
+		services.moduleService      = new coldbox.system.web.services.ModuleService( this )
+		services.schedulerService   = new coldbox.system.web.services.SchedulerService( this )
 
-		variables.log.info( "+ ColdBox services created" );
+		variables.log.info( "+ ColdBox services created" )
 
 		// CacheBox Instance Reference, no init just yet
-		variables.cacheBox = createObject( "component", "coldbox.system.cache.CacheFactory" );
-		variables.log.info( "+ Controller CacheBox created" );
+		variables.cacheBox = createObject( "component", "coldbox.system.cache.CacheFactory" )
+		variables.log.info( "+ Controller CacheBox created" )
 
 		// WireBox Instance Reference, no init just yet
-		variables.wireBox = createObject( "component", "coldbox.system.ioc.Injector" );
-		variables.log.info( "+ Controller WireBox created" );
+		variables.wireBox = createObject( "component", "coldbox.system.ioc.Injector" )
+		variables.log.info( "+ Controller WireBox created" )
 
-		return this;
+		return this
 	}
 
 	/****************************************************************
@@ -285,6 +287,15 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
+	 * Get the ColdBox version from the settings
+	 *
+	 * @return The ColdBox version
+	 */
+	function getColdBoxVersion(){
+		return getColdBoxSetting( "version", "unknown" )
+	}
+
+	/**
 	 * Get a ColdBox setting
 	 *
 	 * @name         The key to get
@@ -363,15 +374,15 @@ component serializable="false" accessors="true" {
 	 * @throws InvalidModuleException - The module passed is invalid
 	 */
 	struct function getModuleConfig( required module ){
-		var mConfig = getSetting( "modules" );
+		var mConfig = getSetting( "modules" )
 		if ( structKeyExists( mConfig, arguments.module ) ) {
-			return mConfig[ arguments.module ];
+			return mConfig[ arguments.module ]
 		}
 		throw(
-			message = "The module you passed #arguments.module# is invalid.",
-			detail  = "The loaded modules are #structKeyList( mConfig )#",
+			message = "The module you passed [#arguments.module#] is invalid.",
+			detail  = "The loaded modules are: #structKeyList( mConfig )#",
 			type    = "InvalidModuleException"
-		);
+		)
 	}
 
 	/**
@@ -449,10 +460,10 @@ component serializable="false" accessors="true" {
 		var routeString     = 0;
 
 		// Determine relocation type
-		if ( !isNull( arguments.url ) && len( arguments.url ) ) {
+		if ( structKeyExists( arguments, "url" ) && !isNull( arguments.url ) && len( arguments.url ) ) {
 			relocationType = "URL";
 		}
-		if ( !isNull( arguments.URI ) && len( arguments.URI ) ) {
+		if ( structKeyExists( arguments, "URI" ) && !isNull( arguments.URI ) && len( arguments.URI ) ) {
 			relocationType = "URI";
 		}
 
@@ -482,7 +493,7 @@ component serializable="false" accessors="true" {
 			case "URL": {
 				relocationURL = arguments.URL;
 				// Check SSL?
-				if ( !isNull( arguments.ssl ) ) {
+				if ( structKeyExists( arguments, "ssl" ) && !isNull( arguments.ssl ) ) {
 					relocationURL = updateSSL( relocationURL, arguments.ssl );
 				}
 				// Query String?
@@ -540,7 +551,7 @@ component serializable="false" accessors="true" {
 					relocationURL = relocationURL & "/";
 				}
 				// Check SSL?
-				if ( !isNull( arguments.ssl ) ) {
+				if ( structKeyExists( arguments, "ssl" ) && !isNull( arguments.ssl ) ) {
 					relocationURL = updateSSL( relocationURL, arguments.ssl );
 				}
 
@@ -714,7 +725,7 @@ component serializable="false" accessors="true" {
 
 		// Do we have an object coming back?
 		if (
-			!isNull( local.results.data ) &&
+			structKeyExists( local.results, "data" ) &&
 			isObject( local.results.data )
 		) {
 			// Verify $renderdata method convention
@@ -729,7 +740,7 @@ component serializable="false" accessors="true" {
 
 		// Do we need to do action renderings?
 		if (
-			!isNull( local.results.data ) &&
+			structKeyExists( local.results, "data" ) &&
 			local.results.ehBean.getActionMetadata( "renderdata", "html" ) neq "html"
 		) {
 			// Do action Rendering
@@ -742,7 +753,7 @@ component serializable="false" accessors="true" {
 		}
 
 		// Are we caching
-		if ( isCachingOn && !isNull( local.results.data ) ) {
+		if ( isCachingOn && structKeyExists( local.results, "data" ) ) {
 			oCache.set(
 				objectKey         = cacheKey,
 				object            = local.results.data,
@@ -752,7 +763,7 @@ component serializable="false" accessors="true" {
 		}
 
 		// Are we returning data?
-		if ( !isNull( local.results.data ) ) {
+		if ( structKeyExists( local.results, "data" ) ) {
 			return local.results.data;
 		}
 	}
@@ -1108,23 +1119,31 @@ component serializable="false" accessors="true" {
 	 * @pathToCheck The relative or absolute file path to verify and locate
 	 */
 	function locateFilePath( required pathToCheck ){
-		var foundPath = "";
+		var foundPath    = ""
+		var pathCheckKey = "file:#arguments.pathToCheck#"
+		var pathFound    = locateTargetCache[ pathCheckKey ] ?: javacast( "null", "" )
+		if ( !isNull( pathFound ) ) {
+			return pathFound
+		}
 
 		// Check 1: Inside of App Root
 		if ( fileExists( variables.appRootPath & arguments.pathToCheck ) ) {
-			foundPath = variables.appRootPath & arguments.pathToCheck;
+			foundPath = variables.appRootPath & arguments.pathToCheck
 		}
 		// Check 2: Expand the Path
 		else if ( fileExists( expandPath( arguments.pathToCheck ) ) ) {
-			foundPath = expandPath( arguments.pathToCheck );
+			foundPath = expandPath( arguments.pathToCheck )
 		}
 		// Check 3: Absolute Path
 		else if ( fileExists( arguments.pathToCheck ) ) {
-			foundPath = arguments.pathToCheck;
+			foundPath = arguments.pathToCheck
 		}
 
+		// Cache the result
+		locateTargetCache[ pathCheckKey ] = foundPath
+
 		// Return
-		return foundPath;
+		return foundPath
 	}
 
 	/**
@@ -1133,23 +1152,31 @@ component serializable="false" accessors="true" {
 	 * @pathToCheck The relative or absolute directory path to verify and locate
 	 */
 	function locateDirectoryPath( required pathToCheck ){
-		var foundPath = "";
+		var foundPath    = ""
+		var pathCheckKey = "dir:#arguments.pathToCheck#"
+		var pathFound    = locateTargetCache[ pathCheckKey ] ?: javacast( "null", "" )
+		if ( !isNull( pathFound ) ) {
+			return pathFound
+		}
 
 		// Check 1: Inside of App Root
 		if ( directoryExists( variables.appRootPath & arguments.pathToCheck ) ) {
-			foundPath = variables.appRootPath & arguments.pathToCheck;
+			foundPath = variables.appRootPath & arguments.pathToCheck
 		}
 		// Check 2: Expand the Path
 		else if ( directoryExists( expandPath( arguments.pathToCheck ) ) ) {
-			foundPath = expandPath( arguments.pathToCheck );
+			foundPath = expandPath( arguments.pathToCheck )
 		}
 		// Check 3: Absolute Path
 		else if ( directoryExists( arguments.pathToCheck ) ) {
-			foundPath = arguments.pathToCheck;
+			foundPath = arguments.pathToCheck
 		}
 
+		// Cache the result
+		locateTargetCache[ pathCheckKey ] = foundPath
+
 		// Return
-		return foundPath;
+		return foundPath
 	}
 
 	/****************************************************************

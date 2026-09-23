@@ -327,8 +327,8 @@ component
 		return cache( getConfiguration().cacheName ).getOrSet(
 			arguments.objectKey,
 			arguments.produce,
-			arguments.timeout,
-			arguments.lastAccessTimeout,
+			toTimespan( arguments.timeout ),
+			toTimespan( arguments.lastAccessTimeout ),
 			arguments.extra
 		);
 	}
@@ -354,8 +354,8 @@ component
 		cache( getConfiguration().cacheName ).set(
 			arguments.objectKey,
 			arguments.object,
-			arguments.timeout,
-			arguments.lastAccessTimeout,
+			toTimespan( arguments.timeout ),
+			toTimespan( arguments.lastAccessTimeout ),
 			arguments.extra
 		);
 
@@ -393,8 +393,8 @@ component
 		cache( getConfiguration().cacheName ).set(
 			arguments.objectKey,
 			arguments.object,
-			arguments.timeout,
-			arguments.lastAccessTimeout,
+			toTimespan( arguments.timeout ),
+			toTimespan( arguments.lastAccessTimeout ),
 			arguments.extra
 		);
 
@@ -501,6 +501,35 @@ component
 			false
 		);
 		return this;
+	}
+
+
+	/**
+	 * Converts a CacheBox timeout to a timespan BoxLang's cache understands.
+	 *
+	 * CacheBox expresses every timeout in minutes, and BoxLang's cache reads a bare number as seconds, so
+	 * an unconverted value expires sixty times too soon - a region moved here from CacheBoxProvider keeps
+	 * a 10 minute object for 10 seconds. LuceeProvider and CFProvider both convert; only this one did not.
+	 *
+	 * An already-converted value is handed back untouched, and cannot be detected with isNumeric():
+	 * BoxLang's createTimespan() returns a java.time.Duration and isNumeric() answers true for one, so a
+	 * Duration would otherwise be fed back through createTimespan() as though it were a minute count.
+	 *
+	 * Anything else - "" and 0 both meaning "no timeout" to CacheBox - passes through unchanged, so the
+	 * only behaviour that changes is the case that was wrong.
+	 *
+	 * @timeout A CacheBox timeout in minutes, or a timespan
+	 */
+	private any function toTimespan( required any timeout ){
+		if ( isInstanceOf( arguments.timeout, "java.time.Duration" ) ) {
+			return arguments.timeout;
+		}
+
+		if ( !isNumeric( arguments.timeout ) || arguments.timeout <= 0 ) {
+			return arguments.timeout;
+		}
+
+		return createTimespan( 0, 0, arguments.timeout, 0 );
 	}
 
 }

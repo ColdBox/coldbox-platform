@@ -575,16 +575,9 @@ component serializable="false" accessors="true" {
 
 		// Check if the mapping has been discovered yet, and if it hasn't it must be autowired enabled in order to process.
 		if ( NOT mapping.isDiscovered() ) {
-			try {
-				// process inspection of instance
-				mapping.process( binder = variables.binder, injector = this );
-			} catch ( any e ) {
-				// Remove bad mapping
-				var mappings = variables.binder.getMappings();
-				mappings.delete( name );
-				// rethrow
-				throw( object = e );
-			}
+			// Read the mapped object's metadata.
+			// Keep the mapping after an error so the next lookup can try again.
+			mapping.process( binder = variables.binder, injector = this );
 		}
 
 		// Request object from scope now, we now have it from the scope created, initialized and wired
@@ -781,13 +774,16 @@ component serializable="false" accessors="true" {
 	 * Tries to locate a specific instance by scanning all scan locations and returning the instantiation path. If model not found then the returned instantiation path will be empty
 	 *
 	 * @name The model instance name to locate
+	 *
+	 * @return The instantiation path of the located model instance, or an empty string if not found.
 	 */
 	function locateInstance( required name ){
 		var scanLocations = variables.binder.getScanLocations();
-		var CFCName       = replace( arguments.name, ".", "/", "all" );
+		var className     = replace( arguments.name, ".", "/", "all" );
 
 		// If we find a :, then avoid doing lookups on the i/o system.
-		if ( find( ":", CFCName ) ) {
+		// This qualifies as a DSL
+		if ( find( ":", className ) ) {
 			return "";
 		}
 
@@ -795,8 +791,8 @@ component serializable="false" accessors="true" {
 		for ( var thisScanPath in scanLocations ) {
 			// Check if located? If so, return instantiation path
 			if (
-				fileExists( scanLocations[ thisScanPath ] & CFCName & ".cfc" ) || fileExists(
-					scanLocations[ thisScanPath ] & CFCName & ".bx"
+				fileExists( scanLocations[ thisScanPath ] & className & ".cfc" ) || fileExists(
+					scanLocations[ thisScanPath ] & className & ".bx"
 				)
 			) {
 				return thisScanPath & "." & arguments.name;
@@ -804,7 +800,11 @@ component serializable="false" accessors="true" {
 		}
 
 		// Not found, so let's do full namespace location
-		if ( fileExists( expandPath( "/" & CFCName & ".cfc" ) ) || fileExists( expandPath( "/" & CFCName & ".bx" ) ) ) {
+		if (
+			fileExists( expandPath( "/" & className & ".cfc" ) ) || fileExists(
+				expandPath( "/" & className & ".bx" )
+			)
+		) {
 			return arguments.name;
 		}
 

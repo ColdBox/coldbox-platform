@@ -24,11 +24,11 @@ component extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.c
 		describe( "Event Pool Suites", function(){
 			beforeEach( function( currentSpec ){
 				setup();
-				pool = model.init( "onTest" );
+				variables.pool = model.init( "onTest" );
 			} );
 
 			it( "can register objects", function(){
-				target = createObject( "component", "tests.resources.Event" );
+				var target = createObject( "component", "tests.resources.Event" );
 				pool.register( "myEvent", target );
 
 				assertTrue( pool.exists( "myEvent" ) );
@@ -62,12 +62,97 @@ component extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.c
 			it( "can process event pools", function(){
 				target = createObject( "component", "tests.resources.Event" );
 				pool.register( "myEvent", target );
-				data = { hello : "Luis Majano", from : "#createUUID()#" };
+				var data = { hello : "Luis Majano", from : "#createUUID()#" };
 
 				assertequals( arrayLen( target.logs ), 0 );
 				pool.process( data );
 
 				assertTrue( arrayLen( target.logs ) );
+			} );
+
+			it( "builds listener chain on register", function(){
+				expect( pool.getListenerChain() ).toBeArray().toBeEmpty();
+
+				var target1 = createObject( "component", "tests.resources.Event" );
+				var target2 = createObject( "component", "tests.resources.Event" );
+
+				pool.register( "event1", target1 );
+				expect( pool.getListenerChain() ).toHaveLength( 1 );
+				expect( pool.getListenerChain()[ 1 ].key ).toBe( "event1" );
+				expect( pool.getListenerChain()[ 1 ].target ).toBe( target1 );
+
+				pool.register( "event2", target2 );
+				expect( pool.getListenerChain() ).toHaveLength( 2 );
+				expect( pool.getListenerChain()[ 2 ].key ).toBe( "event2" );
+				expect( pool.getListenerChain()[ 2 ].target ).toBe( target2 );
+			} );
+
+			it( "rebuilds listener chain on unregister", function(){
+				var target1 = createObject( "component", "tests.resources.Event" );
+				var target2 = createObject( "component", "tests.resources.Event" );
+
+				pool.register( "event1", target1 );
+				pool.register( "event2", target2 );
+				expect( pool.getListenerChain() ).toHaveLength( 2 );
+
+				pool.unregister( "event1" );
+				expect( pool.getListenerChain() ).toHaveLength( 1 );
+				expect( pool.getListenerChain()[ 1 ].key ).toBe( "event2" );
+			} );
+
+			it( "processes listeners in registration order", function(){
+				var callOrder = [];
+
+				var target1 = createObject( "component", "tests.resources.Event" );
+				var target2 = createObject( "component", "tests.resources.Event" );
+				var target3 = createObject( "component", "tests.resources.Event" );
+
+				// Override the onTest method to track call order
+				target1.onTest = function( event, data, interceptData ){
+					callOrder.append( "first" );
+				};
+				target2.onTest = function( event, data, interceptData ){
+					callOrder.append( "second" );
+				};
+				target3.onTest = function( event, data, interceptData ){
+					callOrder.append( "third" );
+				};
+
+				pool.register( "first", target1 );
+				pool.register( "second", target2 );
+				pool.register( "third", target3 );
+
+				pool.process( {} );
+
+				expect( callOrder ).toBe( [ "first", "second", "third" ] );
+			} );
+
+			it( "stops chain when invoker returns true", function(){
+				var callOrder = [];
+
+				var target1 = createObject( "component", "tests.resources.Event" );
+				var target2 = createObject( "component", "tests.resources.Event" );
+				var target3 = createObject( "component", "tests.resources.Event" );
+
+				target1.onTest = function( event, data, interceptData ){
+					callOrder.append( "first" );
+					return false;
+				};
+				target2.onTest = function( event, data, interceptData ){
+					callOrder.append( "second" );
+					return true; // Stop the chain
+				};
+				target3.onTest = function( event, data, interceptData ){
+					callOrder.append( "third" );
+				};
+
+				pool.register( "first", target1 );
+				pool.register( "second", target2 );
+				pool.register( "third", target3 );
+
+				pool.process( {} );
+
+				expect( callOrder ).toBe( [ "first", "second" ] );
 			} );
 		} );
 	}

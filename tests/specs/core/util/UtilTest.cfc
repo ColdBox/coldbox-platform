@@ -5,6 +5,13 @@
 		class1 = createObject( "component", "tests.resources.Class1" );
 	}
 
+	function testLazyLoadsMixerUtilThroughPublicAPI(){
+		var freshUtil = new coldbox.system.core.util.Util();
+
+		assertTrue( isInstanceOf( freshUtil.getMixerUtil(), "coldbox.system.core.dynamic.MixerUtil" ) );
+		assertSame( freshUtil.getMixerUtil(), freshUtil.getMixerUtil() );
+	}
+
 	function isInstanceCheck(){
 		test = createObject( "component", "coldbox.tests.testHandlers.BaseTest" );
 		assertTrue( util.isInstanceCheck( test, "coldbox.system.EventHandler" ) );

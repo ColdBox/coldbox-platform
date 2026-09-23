@@ -144,7 +144,7 @@ component accessors="true" {
 			getFlash()
 				// Process only keys that are marked as keep and content exists
 				.filter( function( key, value ){
-					return arguments.value.keep && !isNull( arguments.value.content );
+					return arguments.value.keep && structKeyExists( arguments.value, "content" );
 				} )
 				.each( function( key, value ){
 					// Inflate into RC?

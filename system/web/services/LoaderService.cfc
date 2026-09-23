@@ -12,9 +12,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * @controller The controller instance to bind the service with
 	 */
 	function init( required controller ){
-		variables.controller = arguments.controller;
-		variables.log        = "";
-		return this;
+		variables.controller = arguments.controller
+		return this
 	}
 
 	/**
@@ -35,94 +34,106 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		createAppLoader( arguments.overrideConfigFile ).loadConfiguration(
 			arguments.overrideAppMapping,
 			arguments.overrideWebMapping
-		);
-		// Prep services
-		var coldBoxSettings = variables.controller.getColdBoxSettings();
-		var services        = variables.controller.getServices();
-		var configSettings  = variables.controller.getConfigSettings();
+		)
+		// Get commonly used variables
+		var coldBoxSettings = variables.controller.getColdBoxSettings()
+		var services        = variables.controller.getServices()
+		var configSettings  = variables.controller.getConfigSettings()
+		var logBox          = variables.controller.getLogBox()
+		var wireBox         = variables.controller.getWireBox()
 
 		// Do we need to create a controller decorator?
 		if ( len( configSettings.controllerDecorator ) ) {
-			createControllerDecorator();
+			createControllerDecorator()
 		}
 
 		// Check if application has loaded logbox settings so we can reconfigure, else using defaults.
 		if ( NOT structIsEmpty( configSettings.logBoxConfig ) ) {
 			// reconfigure LogBox with user configurations
-			variables.controller.getLogBox().configure( variables.controller.getLogBox().getConfig() );
+			logBox.configure( logBox.getConfig() )
 			// Reset the controller main logger
-			variables.controller.setLog( variables.controller.getLogBox().getLogger( variables.controller ) );
+			controller.setLog( logBox.getLogger( controller ) )
 		}
 
 		// Seed a local logger
-		variables.log = variables.controller.getLogBox().getLogger( this );
+		variables.log = logBox.getLogger( this )
+		var canInfo   = variables.log.canInfo()
 		// Clear the Cache Dictionaries, just to make sure, we are in reload mode.
-		services.handlerService.clearDictionaries();
+		services.handlerService.clearDictionaries()
 		// Configure interceptors for operation from the configuration file
-		services.interceptorService.configure();
+		services.interceptorService.configure()
 
 		// Create WireBox Container
-		createWireBox();
+		createWireBox()
 		// Create CacheBox
-		createCacheBox();
+		createCacheBox()
 
 		// Execute onConfigurationLoad for coldbox internal services()
 		for ( var thisService in services ) {
-			services[ thisService ].onConfigurationLoad();
-			variables.log.info( "+ #thisService# configured" );
+			services[ thisService ].onConfigurationLoad()
+			if ( canInfo ) {
+				variables.log.info( "+ #thisService# configured" )
+			}
 		}
 
 		// Auto Map Root Models
 		if ( configSettings.autoMapModels && directoryExists( configSettings.modelsPath ) ) {
-			variables.controller
-				.getWireBox()
-				.getBinder()
-				.mapDirectory( configSettings.ModelsInvocationPath );
-			variables.log.info( "+ Automatically mapped all root models" );
+			wireBox.getBinder().mapDirectory( configSettings.ModelsInvocationPath )
+			if ( canInfo ) {
+				variables.log.info( "+ Automatically mapped all root models" )
+			}
 		}
 
 		// Load up App Executors
-		createAppExecutors();
+		createAppExecutors()
 
 		// Activate All Modules
-		services.moduleService.activateAllModules();
+		services.moduleService.activateAllModules()
 		// Execute afterConfigurationLoad
-		services.interceptorService.announce( "afterConfigurationLoad" );
+		services.interceptorService.announce( "afterConfigurationLoad" )
 		// Rescan interceptors in case modules had interception points to register
-		services.interceptorService.rescanInterceptors();
+		services.interceptorService.rescanInterceptors()
 		// Rebuild flash here just in case modules or afterConfigurationLoad changes settings.
-		services.requestService.rebuildFlashScope();
+		services.requestService.rebuildFlashScope()
 		// Internal event for interceptors to load global UDF Helpers
-		services.interceptorService.announce( "cbLoadInterceptorHelpers" );
+		services.interceptorService.announce( "cbLoadInterceptorHelpers" )
 		// Load up the global app scheduler, to guarantee all modules are loaded
-		services.schedulerService.loadGlobalScheduler();
+		services.schedulerService.loadGlobalScheduler()
 		// Startup the renderer for operation
-		variables.controller.getRenderer().startup();
+		variables.controller.getRenderer().startup()
+		// Execute afterAspectsLoad for coldbox internal services()
+		// This is the last step before the framework is ready to serve requests
+		// Modules have been loaded and activated.
+		for ( var thisService in services ) {
+			services[ thisService ].afterAspectsLoad()
+		}
 		// Execute afterAspectsLoad: all module interceptions are registered and flash rebuilt if needed
-		services.interceptorService.announce( "afterAspectsLoad" );
+		services.interceptorService.announce( "afterAspectsLoad" )
 		// Flag the initiation, Framework is ready to serve requests. Praise be to GOD.
-		variables.controller.setColdboxInitiated( true );
+		variables.controller.setColdboxInitiated( true )
 		// Startup the schedulers now that the entire application has been loaded and runnning
-		services.schedulerService.startupSchedulers();
+		services.schedulerService.startupSchedulers()
 		// Log it
-		variables.log.info( "+++ ColdBox is ready to serve requests" );
+		if ( canInfo ) {
+			variables.log.info( "+++ ColdBox is ready to serve requests" )
+		}
 
 		// We are now done, rock and roll!!
-		return this;
+		return this
 	}
 
 	/**
 	 * Create and register the application's executors
 	 */
 	LoaderService function createAppExecutors(){
-		variables.controller
-			.getSetting( "executors" )
-			.each( function( key, config ){
-				arguments.config.name = arguments.key;
-				variables.controller.getAsyncManager().newExecutor( argumentCollection = arguments.config );
-				variables.log.info( "+ Registered App Executor: #arguments.key#" );
-			} );
-		return this;
+		var executors = variables.controller.getSetting( "executors" )
+		for ( var thisEecutorName in executors ) {
+			var config  = executors[ thisEecutorName ]
+			config.name = thisEecutorName
+			variables.controller.getAsyncManager().newExecutor( argumentCollection = config )
+			variables.log.info( "+ Registered App Executor: #thisEecutorName#" )
+		}
+		return this
 	}
 
 	/**
@@ -133,19 +144,19 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		var decorator = createObject( "component", controller.getSetting( "ControllerDecorator" ) ).init(
 			variables.controller
 		);
-		var services = variables.controller.getServices();
+		var services = variables.controller.getServices()
 
 		// Call configuration on it
-		decorator.configure();
+		decorator.configure()
 		// Override in persistence scope
-		application[ variables.controller.getAppKey() ] = decorator;
+		application[ variables.controller.getAppKey() ] = decorator
 
 		// Override locally now in all services
 		for ( var thisService in services ) {
-			services[ thisService ].setController( decorator );
+			services[ thisService ].setController( decorator )
 		}
 
-		return this;
+		return this
 	}
 
 	/**
@@ -157,82 +168,76 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		return new coldbox.system.logging.LogBox(
 			new coldbox.system.logging.config.LogBoxConfig( CFCConfigPath: "coldbox.system.web.config.LogBox" ),
 			variables.controller
-		);
+		)
 	}
 
 	/**
 	 * Create the main ColdBox Injector instance and map all ColdBox Global Classes
 	 */
 	LoaderService function createWireBox(){
-		var wireboxData = variables.controller.getSetting( "WireBox" );
+		var wireboxData = variables.controller.getSetting( "WireBox" )
+		var wirebox     = variables.controller.getWireBox()
+
 		// Setup the WireBox instance
-		variables.controller
-			.getWireBox()
-			.init(
-				wireboxData.binderPath,
-				variables.controller.getConfigSettings(),
-				variables.controller
-			);
+		wirebox.init(
+			wireboxData.binderPath,
+			variables.controller.getConfigSettings(),
+			variables.controller
+		)
+		variables.log.info( "+ Application's WireBox configured" )
 
-		variables.log.info( "+ Application's WireBox configured" );
-
-		var binder = controller.getWireBox().getBinder();
+		var binder = wirebox.getBinder()
 
 		// Map Renderer
-		binder.map( "Renderer@coldbox" ).to( "coldbox.system.web.Renderer" );
+		binder.map( "Renderer@coldbox" ).to( "coldbox.system.web.Renderer" )
 		// Map Data Marshaller
-		binder.map( "DataMarshaller@coldbox" ).to( "coldbox.system.core.conversion.DataMarshaller" );
+		binder.map( "DataMarshaller@coldbox" ).to( "coldbox.system.core.conversion.DataMarshaller" )
 		// Map XML Converter
-		binder.map( "XMLConverter@coldbox" ).to( "coldbox.system.core.conversion.XMLConverter" );
+		binder.map( "XMLConverter@coldbox" ).to( "coldbox.system.core.conversion.XMLConverter" )
 		// Map Object Converter
-		binder.map( "ObjectMarshaller@coldbox" ).to( "coldbox.system.core.conversion.ObjectMarshaller" );
+		binder.map( "ObjectMarshaller@coldbox" ).to( "coldbox.system.core.conversion.ObjectMarshaller" )
 		// Map Async Manager
-		binder
-			.map( "AsyncManager@coldbox" )
-			.toProvider( function(){
-				return variables.controller.getAsyncManager();
-			} );
+		binder.map( "AsyncManager@coldbox" ).toValue( variables.controller.getAsyncManager() )
 		// Map Delegates: core and ColdBox based delegates
-		binder.mapDirectory( packagePath = "coldbox.system.core.delegates", namespace = "@coreDelegates" );
-		binder.mapDirectory( packagePath = "coldbox.system.web.delegates", namespace = "@cbDelegates" );
+		binder.mapDirectory( packagePath = "coldbox.system.core.delegates", namespace = "@coreDelegates" )
+		binder.mapDirectory( packagePath = "coldbox.system.web.delegates", namespace = "@cbDelegates" )
 
-		variables.log.info( "+ ColdBox Global Classes registered" );
+		variables.log.info( "+ ColdBox Global Classes registered" )
 
-		return this;
+		return this
 	}
 
 	/**
 	 * Create the application's CacheBox instance
 	 */
 	LoaderService function createCacheBox(){
-		var config           = new coldbox.system.cache.config.CacheBoxConfig();
-		var cacheBoxSettings = controller.getSetting( "cacheBox" );
-		var cacheBox         = "";
+		var config           = new coldbox.system.cache.config.CacheBoxConfig()
+		var cacheBoxSettings = controller.getSetting( "cacheBox" )
+		var cacheBox         = ""
 
 		// Load by File
 		if ( len( cacheBoxSettings.configFile ) ) {
 			// load by config file type
 			if ( listLast( cacheBoxSettings.configFile, "." ) eq "xml" ) {
-				config.init( XMLConfig = cacheBoxSettings.configFile );
+				config.init( XMLConfig = cacheBoxSettings.configFile )
 			} else {
-				config.init( CFCConfigPath = cacheBoxSettings.configFile );
+				config.init( CFCConfigPath = cacheBoxSettings.configFile )
 			}
 		}
 		// Load by DSL
 		else if ( NOT structIsEmpty( cacheBoxSettings.dsl ) ) {
-			config.loadDataDSL( cacheBoxSettings.dsl );
+			config.loadDataDSL( cacheBoxSettings.dsl )
 		}
 		// Load by XML
 		else {
-			config.parseAndLoad( cacheBoxSettings.xml );
+			config.parseAndLoad( cacheBoxSettings.xml )
 		}
 
 		// Create CacheBox
-		variables.controller.getCacheBox().init( config, variables.controller );
+		variables.controller.getCacheBox().init( config, variables.controller )
+		variables.log.info( "+ Application's CacheBox configured" )
 
-		variables.log.info( "+ Application's CacheBox configured" );
-
-		return this;
+		return this
 	}
 
 	/**
@@ -241,57 +246,43 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * @force If true, it forces all shutdowns this is usually true when doing reinits
 	 */
 	LoaderService function processShutdown( boolean force = false ){
-		if ( !isSimpleValue( variables.log ) ) {
-			variables.log.info( "† Shutting down ColdBox..." );
-		}
+		variables.log.info( "† Shutting down ColdBox..." )
 
 		// Announce shutdown
-		variables.controller.getInterceptorService().announce( "onColdBoxShutdown" );
+		variables.controller.getInterceptorService().announce( "onColdBoxShutdown" )
 
 		// Start shutting things down
-		var wireBox = variables.controller.getWireBox();
+		var wireBox = variables.controller.getWireBox()
 
 		// Process services reinit
-		structEach( variables.controller.getServices(), function( key, thisService ){
-			if ( !isSimpleValue( variables.log ) ) {
-				variables.log.info( "† Shutting down ColdBox #arguments.key# service..." );
-			}
-			thisService.onShutdown( force = force );
-		} );
+		var services = variables.controller.getServices()
+		for ( var thisService in services ) {
+			variables.log.info( "† Shutting down [#thisService#] service..." )
+			services[ thisService ].onShutdown( force = force )
+		}
 
 		// Shutdown any services like cache engine, etc.
-		if ( !isSimpleValue( variables.log ) ) {
-			variables.log.info( "† Shutting down CacheBox..." );
+		variables.log.info( "† Shutting down CacheBox..." )
+		variables.controller.getCacheBox().shutdown()
+
+		// Shutdown all ColdBox Scheduler Tasks, no need to delete them as WireBox will be nuked!
+		variables.log.info( "† Shutting down ColdBox Task Scheduler..." )
+
+		try {
+			wirebox.getInstance( "AsyncManager@coldbox" ).shutdownAllExecutors( force = arguments.force )
+		} catch ( any e ) {
+			variables.log.error( "† Error getting the async manager to shutdown all executors...", e )
 		}
-		variables.controller.getCacheBox().shutdown();
 
 		// Shutdown WireBox if it exists
 		if ( isObject( wirebox ) ) {
-			if ( !isSimpleValue( variables.log ) ) {
-				variables.log.info( "† Shutting down WireBox..." );
-			}
-			wirebox.shutdown();
-		}
-
-		// Shutdown all ColdBox Scheduler Tasks, no need to delete them as WireBox will be nuked!
-		if ( !isSimpleValue( variables.log ) ) {
-			variables.log.info( "† Shutting down ColdBox Task Scheduler..." );
-		}
-
-		try {
-			var asyncManager = wirebox.getInstance( "AsyncManager@coldbox" );
-			asyncManager.shutdownAllExecutors( force = arguments.force );
-		} catch ( any e ) {
-			if ( !isSimpleValue( variables.log ) && variables.log.canError() ) {
-				variables.log.error( "† Error getting the async manager to shutdown all executors...", e );
-			}
+			variables.log.info( "† Shutting down WireBox..." )
+			wirebox.shutdown()
 		}
 
 		// Shutdown LogBox LAST
-		if ( !isSimpleValue( variables.log ) ) {
-			variables.log.info( "† Shutting down LogBox..." );
-		}
-		variables.controller.getLogBox().shutdown();
+		variables.log.info( "† Shutting down LogBox..." )
+		variables.controller.getLogBox().shutdown()
 
 		return this;
 	}
@@ -311,7 +302,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		var configFileLocation = coldboxSettings.configConvention;
 
 		// Overriding Marker defaults to false
-		coldboxSettings[ "ConfigFileLocationOverride" ] = false;
+		coldboxSettings[ "ConfigFileLocationOverride" ] = false
 
 		// verify coldbox.cfc exists in convention: /app/config/Coldbox.cfc
 		if (
@@ -319,17 +310,17 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				appRootPath & replace( configFileLocation, ".", "/", "all" ) & ".bx"
 			)
 		) {
-			coldboxSettings[ "ConfigFileLocation" ] = configFileLocation;
+			coldboxSettings[ "ConfigFileLocation" ] = configFileLocation
 		}
 
 		// Overriding the config file location? Maybe unit testing?
 		if ( len( arguments.overrideConfigFile ) ) {
-			coldboxSettings[ "ConfigFileLocation" ]         = arguments.overrideConfigFile;
-			coldboxSettings[ "ConfigFileLocationOverride" ] = true;
+			coldboxSettings[ "ConfigFileLocation" ]         = arguments.overrideConfigFile
+			coldboxSettings[ "ConfigFileLocationOverride" ] = true
 		}
 
 		// Create it and return it now that config file location is set in the location settings
-		return new coldbox.system.web.config.ApplicationLoader( variables.controller );
+		return new coldbox.system.web.config.ApplicationLoader( variables.controller )
 	}
 
 }

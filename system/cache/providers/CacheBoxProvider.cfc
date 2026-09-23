@@ -144,6 +144,15 @@ component
 	 */
 	property name="stats";
 
+	variables.EVICTION_POLICIES = { "FIFO" : {}, "LFU" : {}, "LIFO" : {}, "LRU" : {} }
+	variables.OBJECT_STORES     = {
+		"BlackHoleStore"               : {},
+		"ConcurrentSoftReferenceStore" : {},
+		"ConcurrentStore"              : {},
+		"DiskStore"                    : {},
+		"JDBCStore"                    : {}
+	}
+
 	// CacheBox Provider Property Defaults
 	variables.DEFAULTS = {
 		objectDefaultTimeout           : 60,
@@ -646,10 +655,10 @@ component
 	 * @return coldbox.system.cache.policies.IEvictionPolicy
 	 */
 	function locateEvictionPolicy( required policy ){
-		if ( fileExists( expandPath( "/coldbox/system/cache/policies/#arguments.policy#.cfc" ) ) ) {
-			return "coldbox.system.cache.policies.#arguments.policy#";
+		if ( variables.EVICTION_POLICIES.keyExists( arguments.policy ) ) {
+			return "coldbox.system.cache.policies.#arguments.policy#"
 		}
-		return arguments.policy;
+		return arguments.policy
 	}
 
 	/**
@@ -660,10 +669,10 @@ component
 	 * @return coldbox.system.cache.store.IObjectStore
 	 */
 	function locateObjectStore( required store ){
-		if ( fileExists( expandPath( "/coldbox/system/cache/store/#arguments.store#.cfc" ) ) ) {
-			return "coldbox.system.cache.store.#arguments.store#";
+		if ( variables.OBJECT_STORES.keyExists( arguments.store ) ) {
+			return "coldbox.system.cache.store.#arguments.store#"
 		}
-		return arguments.store;
+		return arguments.store
 	}
 
 	/**

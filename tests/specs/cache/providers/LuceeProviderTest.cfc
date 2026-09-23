@@ -92,7 +92,7 @@
 		// assertEquals( 1, cache.getStats().getHits() );
 
 		results = cache.get( "test2" );
-		assertFalse( isDefined( "results" ) );
+		assertTrue( isNull( results ) );
 		// assertEquals( 1, cache.getStats().getMisses() );
 	}
 

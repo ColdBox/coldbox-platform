@@ -65,12 +65,12 @@ component
 	 */
 	function init( required name, required asyncManager ){
 		// Super init
-		super.init( arguments.name, arguments.asyncManager );
+		super.init( arguments.name, arguments.asyncManager )
 		// CacheBox Region
-		variables.cacheName      = "template";
+		variables.cacheName      = "template"
 		// Server fixation
-		variables.serverFixation = false;
-		return this;
+		variables.serverFixation = false
+		return this
 	}
 
 	/**
@@ -94,19 +94,18 @@ component
 			.getInstance(
 				"coldbox.system.web.tasks.ColdBoxScheduledTask",
 				{
-					name     : arguments.name,
-					executor : variables.executor,
-					debug    : arguments.debug
+					name      : arguments.name,
+					executor  : variables.executor,
+					debug     : arguments.debug,
+					scheduler : this
 				}
 			)
-			// Set ourselves into the task
-			.setScheduler( this )
 			// Set the default cachename into the task
 			.setCacheName( getCacheName() )
 			// Server fixation
 			.setServerFixation( getServerFixation() )
 			// Set default timezone into the task
-			.setTimezone( this.getTimezone().getId() );
+			.setTimezone( this.getTimezone().getId() )
 
 		// Register the task by name
 		variables.tasks[ arguments.name ] = {
@@ -129,12 +128,12 @@ component
 			// The exception stacktrace if something went wrong scheduling the task
 			"stacktrace"   : "",
 			// Server Host
-			"inetHost"     : variables.util.discoverInetHost(),
+			"inetHost"     : variables.inetHost,
 			// Server IP
-			"localIp"      : variables.util.getServerIp()
-		};
+			"localIp"      : variables.localIp
+		}
 
-		return oColdBoxTask;
+		return oColdBoxTask
 	}
 
 }

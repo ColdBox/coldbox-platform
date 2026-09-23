@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<urlrewrite>
+
+    <!-- BE app: rewrite non-file requests to be-app/index.cfm -->
+    <rule>
+        <name>BE App SES</name>
+        <condition type="request-uri" operator="notequal">^/tests/perf-harness/be-app/index\.cfm</condition>
+        <condition type="request-uri">^/tests/perf-harness/be-app/(.+)$</condition>
+        <from>^/tests/perf-harness/be-app/(.+)$</from>
+        <to type="forward">/tests/perf-harness/be-app/index.cfm</to>
+    </rule>
+
+    <!-- Stable app: rewrite non-file requests to stable-app/index.cfm -->
+    <rule>
+        <name>Stable App SES</name>
+        <condition type="request-uri" operator="notequal">^/tests/perf-harness/stable-app/index\.cfm</condition>
+        <condition type="request-uri">^/tests/perf-harness/stable-app/(.+)$</condition>
+        <from>^/tests/perf-harness/stable-app/(.+)$</from>
+        <to type="forward">/tests/perf-harness/stable-app/index.cfm</to>
+    </rule>
+
+</urlrewrite>

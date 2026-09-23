@@ -1,0 +1,354 @@
+﻿component extends="coldbox.system.testing.BaseModelTest" {
+
+	function setUp(){
+		// Prepare mocks
+		mockLogBox = createEmptyMock( "coldbox.system.logging.LogBox" );
+		mockLogger = createEmptyMock( "coldbox.system.logging.Logger" ).$( "canDebug", false );
+		mockLogBox.$( "getLogger", mockLogger );
+		mockRequestService = createEmptyMock( "coldbox.system.web.services.RequestService" ).$(
+			"getContext",
+			getMockRequestContext()
+		);
+		mockController = createMock( "coldbox.system.web.Controller" )
+			.init( expandPath( "/cbtestharness" ) )
+			.$( "getRequestService", mockRequestService );
+
+		this.state = createMock( "coldbox.system.web.context.InterceptorState" );
+		this.event = getMockRequestContext();
+		this.event.$( "getEventName", "event" );
+		this.mock  = createMock( "coldbox.tests.resources.MockInterceptor" );
+		this.mock2 = createMock( "coldbox.tests.resources.MockInterceptor" );
+		this.key   = "cbox_interceptor_" & "mock";
+
+		this.state.init( "unittest", mockLogBox, mockController );
+
+		// register one interceptor for testing
+		mockMetadata = {
+			async         : false,
+			asyncPriority : "normal",
+			eventPattern  : ""
+		};
+		this.state.register( this.key, this.mock, mockMetadata );
+	}
+
+	function testgetInterceptor(){
+		assertEquals( this.state.getInterceptor( this.key ), this.mock );
+	}
+
+	function testgetinterceptors(){
+		assertTrue( this.state.getInterceptors().size() );
+	}
+
+	function testgetstate(){
+		assertEquals( this.state.getState(), "unittest" );
+	}
+
+	function testprocess(){
+		mockBuffer = createStub();
+		this.state.process(
+			event  = this.event,
+			data   = structNew(),
+			buffer = mockBuffer
+		);
+		assertEquals( this.event.getValue( "unittest" ), true );
+
+		// Now process with other method for event pattern
+		this.event.setValue( "unittest", false );
+		this.mock.unittest = variables.unittest;
+		this.state.unregister( this.key );
+		this.state.register(
+			this.key,
+			this.mock,
+			{
+				async         : false,
+				asyncPriority : "normal",
+				eventPattern  : "^UnitTest"
+			}
+		);
+		this.state.process(
+			event  = this.event,
+			data   = structNew(),
+			buffer = mockBuffer
+		);
+		assertEquals( false, this.event.getValue( "unittest" ) );
+
+		// Now add event
+		this.event.setValue( "event", "UnitTest.test" );
+		this.state.process(
+			event  = this.event,
+			data   = structNew(),
+			buffer = mockBuffer
+		);
+		assertEquals( true, this.event.getValue( "unittest" ) );
+	}
+
+	function testregister(){
+		mockMetadata = {
+			async         : false,
+			asyncPriority : "normal",
+			eventPattern  : ""
+		};
+		this.state.register( this.key, this.mock, mockMetadata );
+		assertEquals( this.state.getInterceptor( this.key ), this.mock );
+		assertEquals( this.state.getMetadataMap( this.key ), mockMetadata );
+		// debug( this.state.getMetadataMap() );
+	}
+
+	function testsetstate(){
+		this.state.setState( "nothing" );
+		assertEquals( this.state.getState(), "nothing" );
+	}
+
+	function testunregister(){
+		this.state.unregister( this.key );
+		assertFalse( this.state.getINterceptors().size() );
+		assertFalse( structKeyExists( this.state.getMetadataMap(), this.key ) );
+
+		this.event.setValue( "unittest", false );
+		this.state.process(
+			event  = this.event,
+			data   = structNew(),
+			buffer = createStub()
+		);
+		assertFalse( this.event.getValue( "unittest" ) );
+
+		this.state.unregister( "nothing baby" );
+	}
+
+	function testProcessReturnsFalseWhenNoInterceptorShortCircuits(){
+		mockBuffer = createStub();
+		var result = this.state.process(
+			event  = this.event,
+			data   = structNew(),
+			buffer = mockBuffer
+		);
+
+		assertFalse( result );
+	}
+
+	function testProcessReturnsFalseWhenChainIsEmpty(){
+		this.state.unregister( this.key );
+		mockBuffer = createStub();
+		var result = this.state.process(
+			event  = this.event,
+			data   = structNew(),
+			buffer = mockBuffer
+		);
+
+		assertFalse( result );
+	}
+
+	function testProcessReturnsTrueWhenAnObjectInterceptorShortCircuits(){
+		this.state.unregister( this.key );
+		var shortCircuitInterceptor = createMock( "coldbox.tests.resources.MockInterceptor" )
+			.$( "unitTest" )
+			.$results( true );
+		this.state.register(
+			this.key,
+			shortCircuitInterceptor,
+			{
+				async         : false,
+				asyncPriority : "normal",
+				eventPattern  : ""
+			}
+		);
+
+		mockBuffer = createStub();
+		var result = this.state.process(
+			event  = this.event,
+			data   = structNew(),
+			buffer = mockBuffer
+		);
+
+		assertTrue( result );
+	}
+
+	function testProcessReturnsTrueWhenAClosureInterceptorShortCircuits(){
+		this.state.unregister( this.key );
+		var shortCircuitClosure = function( event, data ){
+			return true;
+		};
+		this.state.register(
+			this.key,
+			shortCircuitClosure,
+			{
+				async         : false,
+				asyncPriority : "normal",
+				eventPattern  : ""
+			}
+		);
+
+		mockBuffer = createStub();
+		var result = this.state.process(
+			event  = this.event,
+			data   = structNew(),
+			buffer = mockBuffer
+		);
+
+		assertTrue( result );
+	}
+
+	function testProcessStopsRemainingInterceptorsOnceShortCircuited(){
+		this.state.unregister( this.key );
+
+		var laterInterceptorRan = false;
+		var shortCircuitClosure = function( event, data ){
+			return true;
+		};
+		var laterClosure = function( event, data ){
+			laterInterceptorRan = true;
+		};
+
+		this.state.register(
+			this.key,
+			shortCircuitClosure,
+			{
+				async         : false,
+				asyncPriority : "normal",
+				eventPattern  : ""
+			}
+		);
+		this.state.register(
+			"cbox_interceptor_later",
+			laterClosure,
+			{
+				async         : false,
+				asyncPriority : "normal",
+				eventPattern  : ""
+			}
+		);
+
+		mockBuffer = createStub();
+		this.state.process(
+			event  = this.event,
+			data   = structNew(),
+			buffer = mockBuffer
+		);
+
+		assertFalse( laterInterceptorRan );
+	}
+
+	function testInvokerCapturesAClosureInterceptorsReturnValue(){
+		makepublic( this.state, "invoker" );
+		mockEvent  = getMockRequestContext().$( "getCollection", {} ).$( "getPrivateCollection", {} );
+		mockBuffer = createStub();
+
+		var result = this.state.invoker(
+			interceptor = function( event, data, buffer, rc, prc ){
+				return true;
+			},
+			interceptorKey = "closureShortCircuit",
+			invocationArgs = {
+				event         : mockEvent,
+				data          : {},
+				interceptData : {},
+				buffer        : mockBuffer,
+				rc            : {},
+				prc           : {}
+			},
+			canDebug = false,
+			state    = this.state.getState(),
+			log      = mockLogger
+		);
+
+		assertTrue( result );
+	}
+
+	function testInvokerReturnsFalseWhenAClosureInterceptorReturnsNothing(){
+		makepublic( this.state, "invoker" );
+		mockEvent  = getMockRequestContext().$( "getCollection", {} ).$( "getPrivateCollection", {} );
+		mockBuffer = createStub();
+
+		var result = this.state.invoker(
+			interceptor = function( event, data, buffer, rc, prc ){
+				// intentionally does not return anything
+			},
+			interceptorKey = "closureNoReturn",
+			invocationArgs = {
+				event         : mockEvent,
+				data          : {},
+				interceptData : {},
+				buffer        : mockBuffer,
+				rc            : {},
+				prc           : {}
+			},
+			canDebug = false,
+			state    = this.state.getState(),
+			log      = mockLogger
+		);
+
+		assertFalse( result );
+	}
+
+	function testInvoker(){
+		// debug( this.state.getState() );
+
+		// 1: Execute Normally
+		// register one interceptor for testing
+		this.state.unregister( this.key );
+		mockMetadata = {
+			async         : false,
+			asyncPriority : "normal",
+			eventPattern  : ""
+		};
+		mockInterceptor = createMock( "coldbox.tests.resources.MockInterceptor" ).$( "unittest" );
+		this.state.register( this.key, mockInterceptor, mockMetadata );
+
+		// Invoke
+		makepublic( this.state, "invoker" );
+		assertTrue( mockInterceptor.$never( "unittest" ) );
+		mockEvent  = getMockRequestContext().$( "getCollection", {} ).$( "getPrivateCollection", {} );
+		mockBuffer = createStub();
+		this.state.invoker(
+			interceptor    = mockInterceptor,
+			interceptorKey = this.key,
+			invocationArgs = {
+				event         : mockEvent,
+				data          : {},
+				interceptData : {},
+				buffer        : mockBuffer,
+				rc            : {},
+				prc           : {}
+			},
+			canDebug = false,
+			state    = this.state.getState(),
+			log      = mockLogger
+		);
+		assertTrue( mockInterceptor.$once( "unittest" ) );
+	}
+
+	function testInvokerThreaded(){
+		// Mocks
+		mockBuffer = createStub();
+		getMockRequestContext().$( "getCollection", {} ).$( "getPrivateCollection", {} );
+
+		// 1: Execute Threaded
+		// register one interceptor for testing
+		this.state.unregister( this.key );
+		mockMetadata    = { async : true, asyncPriority : "high", eventPattern : "" };
+		mockInterceptor = createMock( "coldbox.tests.resources.MockInterceptor" ).$( "unittest" );
+		this.state.register( this.key, mockInterceptor, mockMetadata );
+
+		// Invoke
+		makePublic( this.state, "invokerAsync" );
+		assertTrue( mockInterceptor.$never( "unittest" ) );
+		this.state.invokerAsync(
+			getMockRequestContext(),
+			{},
+			this.key,
+			"high",
+			mockBuffer
+		);
+		sleep( 500 );
+		assertTrue( mockInterceptor.$once( "unittest" ) );
+		// debug( cfthread );
+	}
+
+	/**
+	 * @eventPattern ^UnitTest
+	 */
+	private function unittest( event, data ){
+		arguments.event.setValue( "unittest", true );
+	}
+
+}

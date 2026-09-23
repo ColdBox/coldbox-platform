@@ -190,6 +190,62 @@ component extends="tests.resources.BaseIntegrationTest" {
 					// Lock timeout should be at least 5 minutes
 				} );
 
+				it( "calculates a lock timeout spanning the real monthly cadence, not the internal daily poll", function(){
+					// everyMonthOn() is internally polled once a day (gated by isConstrained()), so its
+					// period/timeUnit reflect that 1-day poll, not the real ~30 day gap between actual runs.
+					// The fixation lock must be sized off the real next occurrence instead.
+					// Target "today's" day-of-month so the next occurrence is always ~1 real calendar
+					// month away, regardless of what day this test happens to run on.
+					var todayDay      = day( now() );
+					var dateTimeUtils = new coldbox.system.async.time.DateTimeHelper();
+
+					var monthlyTask = scheduler
+						.task( "monthly-lock-timeout" )
+						.onOneServer()
+						.everyMonthOn( todayDay );
+
+					expect( monthlyTask.canRunOnThisServer() ).toBeTrue();
+					var monthlyMeta = monthlyTask
+						.getCache()
+						.getCachedObjectMetadata( monthlyTask.getFixationCacheKey() );
+					// The old bug hard-coded exactly 1440 minutes (1 day); a real month is at least 28 days
+					expect( monthlyMeta.timeout ).toBeGT( 1440 );
+					expect( monthlyMeta.timeout ).toBeLTE( 32 * 24 * 60 );
+
+					// First/last business day of month can legitimately fall within a day of "now" if this
+					// test happens to run right at a month boundary, so we compare against what the OLD
+					// (buggy) period-based calculation would have produced instead of a fixed threshold.
+					var firstBizTask = scheduler
+						.task( "first-biz-day-lock-timeout" )
+						.onOneServer()
+						.onFirstBusinessDayOfTheMonth();
+					var firstBizOldValue = dateTimeUtils.timeUnitToMinutes(
+						firstBizTask.getPeriod(),
+						firstBizTask.getTimeUnit()
+					);
+
+					expect( firstBizTask.canRunOnThisServer() ).toBeTrue();
+					var firstBizMeta = firstBizTask
+						.getCache()
+						.getCachedObjectMetadata( firstBizTask.getFixationCacheKey() );
+					expect( firstBizMeta.timeout ).notToBe( firstBizOldValue );
+
+					var lastBizTask = scheduler
+						.task( "last-biz-day-lock-timeout" )
+						.onOneServer()
+						.onLastBusinessDayOfTheMonth();
+					var lastBizOldValue = dateTimeUtils.timeUnitToMinutes(
+						lastBizTask.getPeriod(),
+						lastBizTask.getTimeUnit()
+					);
+
+					expect( lastBizTask.canRunOnThisServer() ).toBeTrue();
+					var lastBizMeta = lastBizTask
+						.getCache()
+						.getCachedObjectMetadata( lastBizTask.getFixationCacheKey() );
+					expect( lastBizMeta.timeout ).notToBe( lastBizOldValue );
+				} );
+
 				it( "handles missing schedule metadata gracefully", function(){
 					var t = scheduler
 						.task( "sync-test-5" )

@@ -130,6 +130,114 @@ component extends="tests.resources.BaseIntegrationTest" {
 				} );
 			} );
 		} );
+
+		feature( "Keep mappings after a processing error (COLDBOX-1420)", function(){
+			beforeEach( function( currentSpec ){
+				variables.injector1420  = new coldbox.system.ioc.Injector();
+				variables.ghostPath1420 = expandPath( "/tests/resources/Ghost1420.cfc" );
+			} );
+
+			afterEach( function( currentSpec ){
+				if ( fileExists( variables.ghostPath1420 ) ) {
+					fileDelete( variables.ghostPath1420 );
+				}
+			} );
+
+			story( "Keep explicit mappings after a processing error", function(){
+				given( "a mapping for a component that does not exist", function(){
+					then( "each lookup reports a component error and keeps the mapping", function(){
+						injector1420
+							.getBinder()
+							.map( "ghost1420@demo" )
+							.to( "tests.resources.DoesNotExist1420" );
+
+						var firstErrorType = "NONE";
+						try {
+							injector1420.getInstance( "ghost1420@demo" );
+						} catch ( any e ) {
+							firstErrorType = e.type;
+						}
+						expect( firstErrorType ).notToBe( "NONE", "The first lookup should report an error" );
+						expect( firstErrorType ).notToBe( "Injector.InstanceNotFoundException" );
+
+						// The failed lookup must not remove the mapping.
+						expect( injector1420.getBinder().mappingExists( "ghost1420@demo" ) ).toBeTrue();
+
+						// The second lookup must try to read the component again.
+						var secondErrorType = "NONE";
+						try {
+							injector1420.getInstance( "ghost1420@demo" );
+						} catch ( any e ) {
+							secondErrorType = e.type;
+						}
+						expect( secondErrorType ).notToBe( "NONE", "The second lookup should report an error" );
+						expect( secondErrorType ).notToBe( "Injector.InstanceNotFoundException" );
+					} );
+				} );
+
+				given( "a mapped component added after the first lookup", function(){
+					then( "the second lookup creates the instance", function(){
+						injector1420
+							.getBinder()
+							.map( "ghostFile1420@demo" )
+							.to( "tests.resources.Ghost1420" );
+
+						// The first lookup fails because the component file does not exist.
+						var firstErrorType = "NONE";
+						try {
+							injector1420.getInstance( "ghostFile1420@demo" );
+						} catch ( any e ) {
+							firstErrorType = e.type;
+						}
+						expect( firstErrorType ).notToBe( "NONE", "The first lookup should report an error" );
+						expect( injector1420.getBinder().mappingExists( "ghostFile1420@demo" ) ).toBeTrue();
+
+						// Add the component file and try the same mapping again.
+						fileWrite( variables.ghostPath1420, "component {}" );
+						var instance = injector1420.getInstance( "ghostFile1420@demo" );
+						expect( isObject( instance ) ).toBeTrue();
+					} );
+				} );
+
+				given( "one missing component mapped under two names", function(){
+					then( "a failed lookup keeps both names", function(){
+						injector1420
+							.getBinder()
+							.map( [ "aliasA1420", "aliasB1420" ] )
+							.to( "tests.resources.DoesNotExist1420" );
+
+						try {
+							injector1420.getInstance( "aliasA1420" );
+						} catch ( any e ) {
+							// The missing component error is expected.
+						}
+
+						expect( injector1420.getBinder().mappingExists( "aliasA1420" ) ).toBeTrue();
+						expect( injector1420.getBinder().mappingExists( "aliasB1420" ) ).toBeTrue();
+					} );
+				} );
+			} );
+
+			story( "Keep failed mappings during processMappings()", function(){
+				given( "a mapping for a component that does not exist", function(){
+					then( "processMappings() reports the error and keeps the mapping", function(){
+						injector1420
+							.getBinder()
+							.map( "bad1420" )
+							.to( "tests.resources.DoesNotExist1420" );
+
+						var errorType = "NONE";
+						try {
+							injector1420.getBinder().processMappings();
+						} catch ( any e ) {
+							errorType = e.type;
+						}
+						expect( errorType ).notToBe( "NONE", "processMappings() should report an error" );
+						expect( injector1420.getBinder().mappingExists( "bad1420" ) ).toBeTrue();
+					} );
+				} );
+			} );
+		} );
 	}
 
 }

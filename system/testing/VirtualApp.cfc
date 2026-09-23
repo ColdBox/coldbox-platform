@@ -91,7 +91,7 @@ component accessors="true" {
 	 * Verifies if the ColdBox application is in application scope and running
 	 */
 	boolean function isRunning(){
-		return !isNull( application.cbController );
+		return structKeyExists( application, "cbController" ) && !isNull( application.cbController );
 	}
 
 	/**
@@ -109,7 +109,7 @@ component accessors="true" {
 	 * @force If true, it forces all shutdowns this is usually true when doing reinits. Defaults to true for testing.
 	 */
 	function shutdown( boolean force = true ){
-		if ( !isNull( application.cbController ) ) {
+		if ( structKeyExists( application, "cbController" ) && !isNull( application.cbController ) ) {
 			application.cbController.getLoaderService().processShutdown( force = arguments.force );
 		}
 		structDelete( application, "cbController" );

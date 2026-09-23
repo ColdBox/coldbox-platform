@@ -50,13 +50,12 @@ component singleton {
 			password   = "#arguments.password#"
 		);
 
-		if (
-			qSettingColumns.filter( ( thisRow ) => {
-				// systemOutput( thisRow, true );
-				return thisRow.column_name == targetColumn
-			} ).recordCount > 0
-		) {
-			return true;
+		// Simple loop avoids query reconstruction issues with nullable
+		// metadata columns on some engines (e.g. BoxLang + Derby).
+		for ( var row in qSettingColumns ) {
+			if ( row.column_name == targetColumn ) {
+				return true;
+			}
 		}
 		return false;
 	}

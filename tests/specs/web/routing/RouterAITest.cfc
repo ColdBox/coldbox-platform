@@ -104,6 +104,62 @@ component extends="coldbox.system.testing.BaseModelTest" skip="notBoxlang" {
 				} )
 			} )
 
+			story( "I want conversational context resolution on toAi() sub-routes", function(){
+				beforeEach( function(){
+					makePublic( router, "resolveAiContext" )
+				} )
+
+				given( "no userId in the request body", function(){
+					then( "it defaults to the controller's session identifier", function(){
+						controller.$( "getUserSessionIdentifier" ).$results( "mock-session-id" )
+						var ctx = router.resolveAiContext( {} )
+						expect( ctx.userId ).toBe( "mock-session-id" )
+					} )
+				} )
+
+				given( "a userId in the request body", function(){
+					then( "it is passed through untouched", function(){
+						var ctx = router.resolveAiContext( { "userId" : "explicit-user" } )
+						expect( ctx.userId ).toBe( "explicit-user" )
+					} )
+				} )
+
+				given( "no conversationId in the request body", function(){
+					then( "the result carries no conversationId key at all", function(){
+						var ctx = router.resolveAiContext( {} )
+						expect( ctx ).notToHaveKey( "conversationId" )
+					} )
+				} )
+
+				given( "a conversationId in the request body", function(){
+					then( "it is passed through untouched", function(){
+						var ctx = router.resolveAiContext( { "conversationId" : "conv-42" } )
+						expect( ctx.conversationId ).toBe( "conv-42" )
+					} )
+				} )
+
+				given( "no threadId in the request body", function(){
+					then( "a new one is generated and always present in the result", function(){
+						var ctx = router.resolveAiContext( {} )
+						expect( ctx.threadId ).toBeString()
+						expect( ctx.threadId ).notToBeEmpty()
+					} )
+
+					then( "two separate calls generate two different thread ids", function(){
+						var first  = router.resolveAiContext( {} )
+						var second = router.resolveAiContext( {} )
+						expect( first.threadId ).notToBe( second.threadId )
+					} )
+				} )
+
+				given( "a threadId in the request body", function(){
+					then( "it is passed through untouched, not regenerated", function(){
+						var ctx = router.resolveAiContext( { "threadId" : "thread-99" } )
+						expect( ctx.threadId ).toBe( "thread-99" )
+					} )
+				} )
+			} )
+
 			story( "I want argument validation on toAi()", function(){
 				given( "a numeric value as runnable", function(){
 					then( "it should throw InvalidArgumentException", function(){

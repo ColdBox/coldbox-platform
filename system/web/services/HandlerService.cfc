@@ -27,9 +27,24 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	property name="eventCaching" type="boolean";
 
 	/**
+	 * The default event action
+	 */
+	property name="eventAction" type="string";
+
+	/**
 	 * Handler bean cache dictionary
 	 */
 	property name="handlerBeanCacheDictionary" type="struct";
+
+	/**
+	 * The registered event handlers
+	 */
+	property name="registeredHandlers" type="struct";
+
+	/**
+	 * The external registered event handlers
+	 */
+	property name="registeredExternalHandlers" type="struct";
 
 	/**
 	 * Constructor
@@ -37,43 +52,43 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * @controller ColdBox Controller
 	 */
 	function init( required controller ){
-		// controlle + wirebox references
-		variables.controller = arguments.controller;
-
+		// controller reference
+		variables.controller                 = arguments.controller
 		// Setup the Event Handler Cache Dictionary
-		variables.handlerCacheDictionary     = {};
+		variables.handlerCacheDictionary     = {}
 		// Setup the Event Cache Dictionary
-		variables.eventCacheDictionary       = {};
+		variables.eventCacheDictionary       = {}
 		// Setup the Handler Bean Cache Dictionary
-		variables.handlerBeanCacheDictionary = {};
+		variables.handlerBeanCacheDictionary = {}
+		// Default registries
+		variables.registeredHandlers         = {}
+		variables.registeredExternalHandlers = {}
 
-		return this;
+		return this
 	}
 
 	/**
 	 * Once configuration file loads setup the services with app specific variables
 	 */
 	function onConfigurationLoad(){
-		// local logger
-		variables.log = variables.controller.getLogBox().getLogger( this );
+		// Configuration data and dependencies
+		variables.eventAction                  = variables.controller.getColdBoxSetting( "EventAction" )
+		variables.eventCaching                 = variables.controller.getSetting( "EventCaching" )
+		variables.eventName                    = variables.controller.getSetting( "EventName" )
+		variables.handlerCaching               = variables.controller.getSetting( "HandlerCaching" )
+		variables.handlersExternalLocation     = variables.controller.getSetting( "HandlersExternalLocation" )
+		variables.handlersExternalLocationPath = variables.controller.getSetting( "handlersExternalLocationPath" )
+		variables.handlersInvocationPath       = variables.controller.getSetting( "HandlersInvocationPath" )
+		variables.handlersPath                 = variables.controller.getSetting( "handlersPath" )
+		variables.interceptorService           = variables.controller.getInterceptorService()
+		variables.invalidEventHandler          = variables.controller.getSetting( "invalidEventHandler" )
+		variables.implicitViews                = variables.controller.getSetting( "ImplicitViews" )
+		variables.modules                      = variables.controller.getSetting( "modules" )
+		variables.templateCache                = variables.controller.getCache( "template" )
+		variables.wirebox                      = variables.controller.getWireBox()
 
 		// execute the handler registrations after configurations loaded
-		registerHandlers();
-
-		// Configuration data and dependencies
-		variables.eventAction                = variables.controller.getColdBoxSetting( "EventAction" );
-		variables.registeredHandlers         = variables.controller.getSetting( "RegisteredHandlers" );
-		variables.registeredExternalHandlers = variables.controller.getSetting( "RegisteredExternalHandlers" );
-		variables.eventName                  = variables.controller.getSetting( "EventName" );
-		variables.invalidEventHandler        = variables.controller.getSetting( "invalidEventHandler" );
-		variables.handlerCaching             = variables.controller.getSetting( "HandlerCaching" );
-		variables.eventCaching               = variables.controller.getSetting( "EventCaching" );
-		variables.handlersInvocationPath     = variables.controller.getSetting( "HandlersInvocationPath" );
-		variables.handlersExternalLocation   = variables.controller.getSetting( "HandlersExternalLocation" );
-		variables.templateCache              = variables.controller.getCache( "template" );
-		variables.modules                    = variables.controller.getSetting( "modules" );
-		variables.interceptorService         = variables.controller.getInterceptorService();
-		variables.wirebox                    = variables.controller.getWireBox();
+		registerHandlers()
 	}
 
 	/**
@@ -93,7 +108,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			// lazy load checks for wirebox
 			injectorSeedBaseClasses( injector );
 			// feed this handler to wirebox with virtual inheritance just in case, use registerNewInstance so its thread safe
-			var mapping = injector
+			injector
 				.registerNewInstance( name = handlerPath, instancePath = handlerPath )
 				.setVirtualInheritance( "coldbox.system.EventHandler" )
 				.setThreadSafe( true )
@@ -103,25 +118,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				.setExtraAttributes( { handlerPath : handlerPath, isHandler : true } );
 		}
 
+		configureRestHandlerMapping( injector.getBinder().getMapping( handlerPath ), injector );
+
 		// retrieve, build and wire from wirebox
 		var handler = injector.getInstance( handlerPath );
-
-		// Is this a rest handler by annotation? If so, incorporate it's methods
-		if (
-			injector
-				.getBinder()
-				.getMapping( handlerPath )
-				.getObjectMetadata()
-				.keyExists( "restHandler" )
-			&&
-			!structKeyExists( handler, "restHandler" )
-		) {
-			structEach( variables.wirebox.getInstance( "coldbox.system.RestHandler" ), function( functionName, functionTarget ){
-				if ( !structKeyExists( handler, functionName ) ) {
-					handler[ functionName ] = functionTarget;
-				}
-			} );
-		}
 
 		return handler;
 	}
@@ -138,20 +138,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 */
 	function getHandler( required ehBean, required requestContext ){
 		var oRequestContext = arguments.requestContext;
-		var oEventURLFacade = variables.templateCache.getEventURLFacade();
 
 		// Create Runnable Object via WireBox
-		var oEventHandler       = newHandler( arguments.ehBean );
-		// Process An Invalid Event logic, which is reused
-		var processInvalidEvent = function(){
-			// The handler exists but the action requested does not, let's go into invalid execution mode
-			var targetInvalidEvent = invalidEvent( ehBean.getFullEvent(), ehBean );
-			// If we get here, then the invalid event kicked in and exists, else an exception is thrown above
-			// set the invalid event handler as the current event
-			oRequestContext.overrideEvent( targetInvalidEvent );
-			// Go retrieve the handler that will handle the invalid event so it can execute.
-			return getHandler( getHandlerBean( targetInvalidEvent ), oRequestContext );
-		};
+		var oEventHandler = newHandler( arguments.ehBean );
 
 		/* ::::::::::::::::::::::::::::::::::::::::: EVENT METHOD TESTING :::::::::::::::::::::::::::::::::::::::::::: */
 
@@ -167,27 +156,23 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 			// Test for Implicit View Dispatch
 			if (
-				controller.getSetting( "ImplicitViews" ) AND
+				variables.implicitViews AND
 				isViewDispatch( arguments.ehBean.getFullEvent(), arguments.ehBean )
 			) {
 				return oEventHandler;
 			}
 			// Invalid Event processing
-			return processInvalidEvent();
+			return processInvalidEvent( arguments.ehBean, oRequestContext );
 		}
 		// method check finalized.
 
 		// Store metadata in execution bean
-		if ( !variables.handlerCaching || !arguments.ehBean.isMetadataLoaded() ) {
-			arguments.ehBean
-				.setActionMetadata( oEventHandler._actionMetadata( arguments.ehBean.getMethod() ) )
-				.setHandlerMetadata( getMetadata( oEventHandler ) );
-		}
+		ensureHandlerMetadata( arguments.ehBean, oEventHandler )
 
 		// Are they trying to execute an internal ColdBox method?
 		if ( arguments.ehBean.actionMetadataExists( "cbMethod" ) ) {
 			// Invalid Event processing
-			return processInvalidEvent();
+			return processInvalidEvent( arguments.ehBean, oRequestContext )
 		}
 
 		/* ::::::::::::::::::::::::::::::::::::::::: EVENT CACHING :::::::::::::::::::::::::::::::::::::::::::: */
@@ -199,7 +184,11 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			arguments.ehBean.getFullEvent() EQ oRequestContext.getCurrentEvent()
 		) {
 			// Get event action caching metadata
-			var eventDictionaryEntry = getEventCachingMetadata( arguments.ehBean, oEventHandler );
+			var eventDictionaryEntry = getEventCachingMetadata(
+				arguments.ehBean,
+				oEventHandler,
+				oRequestContext
+			);
 
 			// Do we need to cache this event's output after it executes??
 			if ( eventDictionaryEntry.cacheable ) {
@@ -208,11 +197,13 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				structAppend( eventCachingData, eventDictionaryEntry, true );
 
 				// Create the Cache Key to save
-				eventCachingData.cacheKey = oEventURLFacade.buildEventKey(
-					targetEvent     = arguments.ehBean.getFullEvent(),
-					targetContext   = oRequestContext,
-					eventDictionary = eventDictionaryEntry
-				);
+				eventCachingData.cacheKey = variables.templateCache
+					.getEventURLFacade()
+					.buildEventKey(
+						targetEvent     = arguments.ehBean.getFullEvent(),
+						targetContext   = oRequestContext,
+						eventDictionary = eventDictionaryEntry
+					);
 
 				// Event is cacheable and we need to flag it so the Renderer caches it
 				oRequestContext.setEventCacheableEntry( eventCachingData );
@@ -239,34 +230,32 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		}
 
 		// New event, prepare it
-		var handlersList         = variables.registeredHandlers;
-		var handlersExternalList = variables.registeredExternalHandlers;
-		var oHandlerBean         = new coldbox.system.web.context.EventHandlerBean( variables.handlersInvocationPath );
-		var moduleSettings       = variables.modules;
+		var oHandlerBean   = new coldbox.system.web.context.EventHandlerBean( variables.handlersInvocationPath );
+		var moduleSettings = variables.modules;
 
-		// Rip the handler and method
-		var handlerReceived = listLast( reReplace( arguments.event, "\.[^.]*$", "" ), ":" );
-		var methodReceived  = listLast( arguments.event, "." );
+		// Rip the handler and method using string functions (no regex)
+		var lastDotPos      = arguments.event.lastIndexOf( "." );
+		var handlerPortion  = lastDotPos > 0 ? arguments.event.substring( 0, lastDotPos ) : arguments.event;
+		var handlerReceived = listLast( handlerPortion, ":" );
+		var methodReceived  = lastDotPos > 0 ? arguments.event.substring( lastDotPos + 1 ) : arguments.event;
 
 		// Verify if this is a module call
 		if ( find( ":", arguments.event ) ) {
 			var moduleReceived = listFirst( arguments.event, ":" );
 			// Does this module exist?
 			if ( structKeyExists( moduleSettings, moduleReceived ) ) {
-				// Verify handler in module handlers
-				var handlerIndex = listFindNoCase(
-					moduleSettings[ moduleReceived ].registeredHandlers,
-					handlerReceived
-				);
-				if ( handlerIndex ) {
+				// Get module's handler struct for O(1) lookup
+				var moduleHandlers = moduleSettings[ moduleReceived ].registeredHandlers ?: {};
+				// Verify handler in module handlers using O(1) struct lookup
+				if ( structKeyExists( moduleHandlers, handlerReceived ) ) {
 					// Prepare bean data
-					oHandlerBean
-						.setInvocationPath( moduleSettings[ moduleReceived ].handlerInvocationPath )
-						.setHandler(
-							listGetAt( moduleSettings[ moduleReceived ].registeredHandlers, handlerIndex )
-						)
-						.setMethod( methodReceived )
-						.setModule( moduleReceived );
+					prepareHandlerBean(
+						ehBean        = oHandlerBean,
+						handlerRecord = moduleHandlers[ handlerReceived ],
+						method        = methodReceived,
+						fullEvent     = arguments.event,
+						module        = moduleReceived
+					)
 
 					// put bean in cache if enabled
 					if ( variables.handlerCaching ) {
@@ -275,23 +264,26 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 					return oHandlerBean;
 				} else {
-					variables.log.error(
-						"Invalid Module (#moduleReceived#) Handler: #handlerReceived#. Valid handlers are #moduleSettings[ moduleReceived ].registeredHandlers#"
+					getLogger().error(
+						"Invalid Module (#moduleReceived#) Handler: #handlerReceived#. Valid handlers are #structKeyList( moduleHandlers )#"
 					);
 				}
 			}
 
 			// Log Error
-			variables.log.error(
+			getLogger().error(
 				"Invalid Module Event Called: #arguments.event#. The module: #moduleReceived# is not valid. Valid Modules are: #structKeyList( moduleSettings )#"
 			);
 		} else {
-			// Try to do list localization in the registry for full event string.
-			var handlerIndex = listFindNoCase( handlersList, handlerReceived );
-			// Check for conventions location
-			if ( handlerIndex ) {
+			// O(1) struct lookup for handler in conventions location
+			if ( structKeyExists( variables.registeredHandlers, handlerReceived ) ) {
 				// Prepare bean data
-				oHandlerBean.setHandler( listGetAt( handlersList, handlerIndex ) ).setMethod( MethodReceived );
+				prepareHandlerBean(
+					ehBean        = oHandlerBean,
+					handlerRecord = variables.registeredHandlers[ handlerReceived ],
+					method        = methodReceived,
+					fullEvent     = arguments.event
+				)
 
 				// put bean in cache if enabled
 				if ( variables.handlerCaching ) {
@@ -301,14 +293,15 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				return oHandlerBean;
 			}
 
-			// Check for external location
-			handlerIndex = listFindNoCase( handlersExternalList, handlerReceived );
-			if ( handlerIndex ) {
+			// O(1) struct lookup for handler in external location
+			if ( structKeyExists( variables.registeredExternalHandlers, handlerReceived ) ) {
 				// Prepare bean data
-				oHandlerBean
-					.setInvocationPath( variables.handlersExternalLocation )
-					.setHandler( listGetAt( handlersExternalList, handlerIndex ) )
-					.setMethod( MethodReceived );
+				prepareHandlerBean(
+					ehBean        = oHandlerBean,
+					handlerRecord = variables.registeredExternalHandlers[ handlerReceived ],
+					method        = methodReceived,
+					fullEvent     = arguments.event
+				)
 
 				// put bean in cache if enabled
 				if ( variables.handlerCaching ) {
@@ -346,38 +339,39 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * @return HandlerService
 	 */
 	function defaultActionCheck( required event ){
-		var handlersList         = variables.registeredHandlers;
-		var handlersExternalList = variables.registeredExternalHandlers;
-		var currentEvent         = arguments.event.getCurrentEvent();
-		var modulesConfig        = variables.modules;
+		var currentEvent  = arguments.event.getCurrentEvent();
+		var modulesConfig = variables.modules;
 
 		// Module Check?
 		if ( find( ":", currentEvent ) ) {
-			var module = listFirst( currentEvent, ":" );
-			if (
-				structKeyExists( modulesConfig, module ) AND
-				listFindNoCase(
-					modulesConfig[ module ].registeredHandlers,
-					reReplaceNoCase( currentEvent, "^([^:.]*):", "" )
-				)
-			) {
-				// Append the default event action
-				currentEvent = currentEvent & "." & variables.eventAction;
-				// Save it as the current Event
-				event.setValue( variables.eventName, currentEvent );
+			var separatorIndex = find( ":", currentEvent );
+			var module         = left( currentEvent, separatorIndex - 1 );
+			if ( structKeyExists( modulesConfig, module ) ) {
+				// Get module's handler struct for O(1) lookup
+				var moduleHandlers = modulesConfig[ module ].registeredHandlers ?: {};
+				var handlerKey     = mid(
+					currentEvent,
+					separatorIndex + 1,
+					len( currentEvent )
+				);
+				if ( structKeyExists( moduleHandlers, handlerKey ) ) {
+					// Save it as the current Event
+					event.setValue( variables.eventName, moduleHandlers[ handlerKey ].defaultEvent );
+				}
 			}
 			return this;
 		}
 
-		// Do a Default Action Test First, if default action desired.
-		if (
-			listFindNoCase( handlersList, currentEvent ) OR
-			listFindNoCase( handlersExternalList, currentEvent )
-		) {
-			// Append the default event action
-			currentEvent = currentEvent & "." & variables.eventAction;
+		// O(1) struct lookup for default action test
+		if ( structKeyExists( variables.registeredHandlers, currentEvent ) ) {
 			// Save it as the current Event now with the default action
-			event.setValue( variables.eventName, currentEvent );
+			event.setValue( variables.eventName, variables.registeredHandlers[ currentEvent ].defaultEvent );
+		} else if ( structKeyExists( variables.registeredExternalHandlers, currentEvent ) ) {
+			// Save it as the current Event now with the default action
+			event.setValue(
+				variables.eventName,
+				variables.registeredExternalHandlers[ currentEvent ].defaultEvent
+			);
 		}
 
 		return this;
@@ -411,8 +405,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			targetView = renderer.locateView( cEvent );
 		}
 
-		// CFML View
-		if ( fileExists( expandPath( targetView ) ) ) {
+		// locateView/locateModuleView return a path with .cfm/.bxm extension only when
+		// the file was verified to exist — no need for a redundant filesystem call here.
+		if ( right( targetView, 4 ) == ".cfm" || right( targetView, 4 ) == ".bxm" ) {
 			arguments.ehBean.setViewDispatch( true );
 			return true;
 		}
@@ -460,7 +455,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			) {
 				var exceptionMessage = "The invalidEventHandler event (#variables.invalidEventHandler#) is also invalid: #arguments.event#";
 				// Extra Debugging for illusive CI/Tests exceptions: Remove at one point if discovered.
-				variables.log.error(
+				getLogger().error(
 					exceptionMessage,
 					{
 						event              : arguments.event,
@@ -504,7 +499,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			.setHTTPHeader( statusCode = 404 );
 
 		// Invalid Event Detected, log it in the Application log, not a coldbox log but an app log
-		variables.log.error(
+		getLogger().error(
 			"Invalid Event detected: #arguments.event#. Path info: #CGI.PATH_INFO#, query string: #CGI.QUERY_STRING#"
 		);
 
@@ -523,42 +518,42 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * @throws HandlersDirectoryNotFoundException
 	 */
 	function registerHandlers(){
-		var handlersPath                 = variables.controller.getSetting( "handlersPath" );
-		var handlersExternalLocationPath = variables.controller.getSetting( "handlersExternalLocationPath" );
-		var handlersExternalArray        = [];
-
 		/* ::::::::::::::::::::::::::::::::::::::::: HANDLERS BY CONVENTION :::::::::::::::::::::::::::::::::::::::::::: */
 
-		// Get recursive Array listing
-		var handlerArray = getHandlerListing( handlersPath );
-
-		// Set registered Handlers
-		variables.registeredHandlers = arrayToList( handlerArray );
-		variables.controller.setSetting( name = "registeredHandlers", value = variables.registeredHandlers );
+		// Register handlers by convention, this will throw an error if the directory does not exist, which is good because it is a convention and should be there.
+		variables.registeredHandlers = getHandlerListing(
+			directory     : variables.handlersPath,
+			invocationPath: variables.handlersInvocationPath,
+			source        : "conventions"
+		)
+		// Store the registered handlers in the controller for global access, this is used for things like the handler list in the admin and other places.
+		variables.controller.setSetting( name = "registeredHandlers", value = variables.registeredHandlers )
 
 		/* ::::::::::::::::::::::::::::::::::::::::: EXTERNAL HANDLERS :::::::::::::::::::::::::::::::::::::::::::: */
 
-		if ( len( handlersExternalLocationPath ) ) {
+		if ( len( variables.handlersExternalLocationPath ) ) {
 			// Check for handlers Directory Location
-			if ( !directoryExists( handlersExternalLocationPath ) ) {
+			if ( !directoryExists( variables.handlersExternalLocationPath ) ) {
 				throw(
-					message = "The external handlers directory: #HandlersExternalLocationPath# does not exist please check your application structure.",
+					message = "The external handlers directory: #variables.handlersExternalLocationPath# does not exist please check your application structure.",
 					type    = "HandlersDirectoryNotFoundException"
-				);
+				)
 			}
 
-			// Get recursive Array listing
-			handlersExternalArray = getHandlerListing( handlersExternalLocationPath );
+			// Get struct listing for O(1) lookups with enrichment metadata
+			variables.registeredExternalHandlers = getHandlerListing(
+				directory     : variables.handlersExternalLocationPath,
+				invocationPath: variables.handlersExternalLocation,
+				source        : "external"
+			)
 		}
 
-		// Set registered External Handlers
-		variables.registeredExternalHandlers = arrayToList( handlersExternalArray );
 		variables.controller.setSetting(
 			name  = "registeredExternalHandlers",
 			value = variables.registeredExternalHandlers
-		);
+		)
 
-		return this;
+		return this
 	}
 
 	/**
@@ -567,52 +562,198 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * @return HandlerService
 	 */
 	function clearDictionaries(){
-		variables.eventCacheDictionary = {};
+		variables.eventCacheDictionary.clear()
 		return this;
 	}
 
 	/**
 	 * Get an event string's metadata entry. If not found, then you will get a new metadata entry using the `getNewMDEntry()` method.
 	 *
-	 * @targetEvent The event to match for metadata.
+	 * @targetEvent    The event to match for metadata.
+	 * @requestContext The request context for the current request, passed through to a closure suffix untouched.
 	 */
-	struct function getEventMetadataEntry( required targetEvent ){
-		if ( NOT structKeyExists( variables.eventCacheDictionary, arguments.targetEvent ) ) {
-			return getNewMDEntry();
+	struct function getEventMetadataEntry( required targetEvent, required requestContext ){
+		// Route-level cache rules (Router.cfc's .withCache()) take full precedence over this
+		// handler's own annotations for this request - see getRouteCachingMetadata()'s docblock.
+		var routeCacheEntry = getRouteCachingMetadata(
+			arguments.requestContext.getCurrentRouteRecord(),
+			arguments.requestContext
+		);
+		if ( structKeyExists( local, "routeCacheEntry" ) && !isNull( local.routeCacheEntry ) ) {
+			return routeCacheEntry;
 		}
 
-		return variables.eventCacheDictionary[ arguments.targetEvent ];
+		if ( NOT structKeyExists( variables.eventCacheDictionary, arguments.targetEvent ) ) {
+			return getNewMDEntry()
+		}
+
+		var mdEntry = variables.eventCacheDictionary[ arguments.targetEvent ]
+
+		// Fast path: suffixIsDynamic is precomputed once when the entry is memoized (see
+		// getEventCachingMetadata()), so a static suffix needs no per-request work here - just
+		// a boolean field read, no function calls. Fall back to computing it directly for an
+		// entry that doesn't carry the field (e.g. built some other way than that method).
+		if ( !( mdEntry.suffixIsDynamic ?: ( isClosure( mdEntry.suffix ) || isCustomFunction( mdEntry.suffix ) ) ) ) {
+			return mdEntry
+		}
+
+		// Closure suffix: resolve it for THIS request. getHandlerBean() gives back a bean whose
+		// action/handler metadata is only guaranteed loaded when handlerCaching lets it reuse a
+		// previously-executed instance - ensureHandlerMetadata() closes that gap so a closure
+		// reading eventHandlerBean.getActionMetadata(...) sees the same data the store-side
+		// getEventCachingMetadata() call already guarantees, regardless of that setting.
+		var bean = getHandlerBean( arguments.targetEvent )
+		ensureHandlerMetadata( bean )
+		return resolveCacheSuffix( mdEntry, bean, arguments.requestContext )
 	}
 
 	/**
-	 * Retrieve handler listings from disk
+	 * Retrieve handler listings from disk as a struct for O(1) lookups.
+	 * Keys are handler names (case-insensitive), values are structs with handler metadata.
 	 *
-	 * @directory The path to retrieve
+	 * @directory      The path to retrieve
+	 * @invocationPath The dot-notation invocation path for this handler directory
+	 * @source         The source type: "conventions", "external", or "module"
+	 * @moduleName     The module name (empty string for non-module handlers)
+	 *
+	 * @return struct with handler names as keys and metadata structs as values
 	 */
-	array function getHandlerListing( required directory ){
+	struct function getHandlerListing(
+		required directory,
+		string invocationPath = "",
+		string source         = "",
+		string moduleName     = ""
+	){
 		// Convert windows \ to java /
-		arguments.directory = replace( arguments.directory, "\", "/", "all" );
+		arguments.directory = replace( arguments.directory, "\", "/", "all" )
 
-		return directoryList(
+		var util        = variables.controller.getUtil()
+		var handlerList = {}
+		var files       = directoryList(
 			arguments.directory,
 			true,
 			"array",
 			"*.cfc|*.bx"
-		).map( function( item ){
-			var thisAbsolutePath = replace( item, "\", "/", "all" );
-			var cleanHandler     = replaceNoCase( thisAbsolutePath, directory, "", "all" );
+		)
+
+		for ( var item in files ) {
+			var thisAbsolutePath = replace( item, "\", "/", "all" )
+			var cleanHandler     = replaceNoCase(
+				thisAbsolutePath,
+				arguments.directory,
+				"",
+				"all"
+			)
 			// Clean OS separators to dot notation.
-			cleanHandler         = removeChars(
+			cleanHandler = removeChars(
 				replaceNoCase( cleanHandler, "/", ".", "all" ),
 				1,
 				1
-			);
-			// Clean Extension
-			return variables.controller.getUtil().ripExtension( cleanhandler );
-		} );
+			)
+			// Rip extension first to get handler name
+			var handlerName            = util.ripExtension( cleanHandler )
+			// Get file extension
+			var extension              = listLast( cleanHandler, "." )
+			// Build runnable path if invocationPath provided
+			var runnable               = len( invocationPath ) ? invocationPath & "." & handlerName : ""
+			var defaultEvent           = len( moduleName ) ? moduleName & ":" & handlerName & "." & variables.eventAction : handlerName & "." & variables.eventAction
+			// Store in struct with metadata
+			handlerList[ handlerName ] = {
+				handler        : handlerName,
+				path           : thisAbsolutePath,
+				extension      : extension,
+				invocationPath : invocationPath,
+				runnable       : runnable,
+				defaultEvent   : defaultEvent,
+				source         : source,
+				moduleName     : moduleName
+			}
+		}
+
+		return handlerList
 	}
 
 	/************************************ PRIVATE ************************************/
+
+	/**
+	 * Prepare a handler bean from registered handler metadata.
+	 *
+	 * @ehBean        The event handler bean to prepare
+	 * @handlerRecord The registered handler metadata
+	 * @method        The method to execute
+	 * @fullEvent     The full event string
+	 * @module        The module assignment, if any
+	 *
+	 * @return EventHandlerBean
+	 */
+	private function prepareHandlerBean(
+		required ehBean,
+		required struct handlerRecord,
+		required string method,
+		required string fullEvent,
+		string module = ""
+	){
+		return arguments.ehBean
+			.setHandlerRecord( arguments.handlerRecord )
+			.setMethod( arguments.method )
+			.setModule( arguments.module )
+			.setFullEvent( arguments.fullEvent )
+	}
+
+	/**
+	 * Configure REST handler virtual inheritance from the handler metadata once per mapping.
+	 *
+	 * @mapping  The handler WireBox mapping
+	 * @injector The injector that owns the mapping
+	 *
+	 * @return HandlerService
+	 */
+	private function configureRestHandlerMapping( required mapping, required injector ){
+		var extraAttributes = arguments.mapping.getExtraAttributes()
+
+		if ( structKeyExists( extraAttributes, "restHandlerVirtualInheritanceConfigured" ) ) {
+			return this
+		}
+
+		if ( !arguments.mapping.isDiscovered() ) {
+			arguments.mapping.process( binder = arguments.injector.getBinder(), injector = arguments.injector )
+		}
+
+		if (
+			arguments.mapping.getObjectMetadata().keyExists( "restHandler" ) &&
+			(
+				!len( arguments.mapping.getVirtualInheritance() ) ||
+				arguments.mapping.getVirtualInheritance() == "coldbox.system.EventHandler"
+			)
+		) {
+			injectorSeedBaseClasses( arguments.injector )
+			arguments.mapping.setVirtualInheritance( "coldbox.system.RestHandler" )
+		}
+
+		extraAttributes.restHandlerVirtualInheritanceConfigured = true
+
+		return this
+	}
+
+	/**
+	 * Process an invalid event by resolving the configured invalid event handler.
+	 *
+	 * @ehBean         The event handler bean representing the invalid event
+	 * @requestContext The current request context
+	 *
+	 * @return The handler that should process the invalid event
+	 */
+	private function processInvalidEvent( required ehBean, required requestContext ){
+		// The handler exists but the action requested does not, let's go into invalid execution mode
+		var targetInvalidEvent = invalidEvent( arguments.ehBean.getFullEvent(), arguments.ehBean );
+
+		// If we get here, then the invalid event kicked in and exists, else an exception is thrown above
+		// set the invalid event handler as the current event
+		arguments.requestContext.overrideEvent( targetInvalidEvent );
+
+		// Go retrieve the handler that will handle the invalid event so it can execute.
+		return getHandler( getHandlerBean( targetInvalidEvent ), arguments.requestContext );
+	}
 
 	/**
 	 * Verifies setup of base handler classes in WireBox
@@ -628,7 +769,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 					name        : "coldbox.system.EventHandler",
 					instancePath: "coldbox.system.EventHandler"
 				)
-				.setScope( "singleton" );
+				.setScope( "singleton" )
 		}
 		if ( NOT arguments.injector.getBinder().mappingExists( "coldbox.system.RestHandler" ) ) {
 			arguments.injector
@@ -636,10 +777,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 					name        : "coldbox.system.RestHandler",
 					instancePath: "coldbox.system.RestHandler"
 				)
-				.setScope( "singleton" );
+				.setScope( "singleton" )
 		}
 
-		return this;
+		return this
 	}
 
 	/**
@@ -657,19 +798,105 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			"provider"          : "template",
 			"cacheInclude"      : "*",
 			"cacheExclude"      : "",
-			"cacheFilter"       : ""
-		};
+			"cacheFilter"       : "",
+			// HTTP caching (docs/specs/http-caching.md) - "free" Tier 1 auto ETag/Last-Modified,
+			// piggybacked on this same cache entry by Bootstrap.cfc, only when cache=true
+			"etag"              : false,
+			"etagWeak"          : false,
+			"lastModified"      : false,
+			"cacheControl"      : ""
+		}
+	}
+
+	/**
+	 * Build a cache metadata entry from route-level cache rules (`Router.cfc`'s `.withCache()`),
+	 * used INSTEAD of the handler-annotation dictionary (`getNewMDEntry()`/`eventCacheDictionary`)
+	 * whenever the current request's matched route opted into caching. Returns `null` when the
+	 * route didn't match (an empty route record) or didn't declare `cache=true`, so callers fall
+	 * through to the existing handler-annotation-driven path with zero behavior change.
+	 *
+	 * Deliberately NOT memoized the way the handler-annotation dictionary is: a route record is
+	 * already a plain struct sitting on the matched route (no reflection needed to read it), so
+	 * re-deriving this fresh on every request is cheap - and it's what lets two different routes
+	 * that point at the same event carry two different cache policies, which the event-name-keyed
+	 * handler dictionary can never do (it only knows the event, not which route reached it).
+	 *
+	 * The returned struct matches `getNewMDEntry()`'s shape exactly, so every downstream consumer
+	 * (`EventURLFacade.buildEventKey()`, Bootstrap.cfc's Tier 1 conditional-GET block) needs no
+	 * changes to understand a route-driven entry vs a handler-driven one.
+	 *
+	 * @routeRecord    The current request's matched route record, i.e. `event.getCurrentRouteRecord()`. An empty struct when no route matched.
+	 * @requestContext The request context for the current request, passed to a closure `cacheSuffix` untouched.
+	 */
+	private function getRouteCachingMetadata( required struct routeRecord, required requestContext ){
+		// Memoized on the request CONTEXT instance - not the raw `request` scope, which spans
+		// every logical request processed within a single physical HTTP request (e.g. TestBox
+		// runs its whole spec suite in one request) and would leak one test's/request's result
+		// into the next. The matched route record cannot change for the life of a given
+		// requestContext, but this is called once from getEventMetadataEntry() (pre-dispatch
+		// cacheability check) and again from getEventCachingMetadata() (at dispatch), so caching
+		// it here avoids resolving it twice. An empty struct is the "no route cache" memo, since
+		// a real entry always has multiple keys.
+		if ( arguments.requestContext.privateValueExists( "cbox_routeCacheMetadata" ) ) {
+			var cached = arguments.requestContext.getPrivateValue( "cbox_routeCacheMetadata" );
+			return cached.isEmpty() ? javacast( "null", "" ) : cached;
+		}
+
+		if ( !arguments.routeRecord.keyExists( "cache" ) || !arguments.routeRecord.cache ) {
+			arguments.requestContext.setPrivateValue( "cbox_routeCacheMetadata", {} );
+			return;
+		}
+
+		var mdEntry               = getNewMDEntry();
+		mdEntry.cacheable         = true;
+		mdEntry.timeout           = arguments.routeRecord.cacheTimeout;
+		mdEntry.lastAccessTimeout = arguments.routeRecord.cacheLastAccessTimeout;
+		mdEntry.provider          = arguments.routeRecord.cacheProvider;
+		mdEntry.cacheInclude      = arguments.routeRecord.cacheInclude;
+		mdEntry.cacheExclude      = arguments.routeRecord.cacheExclude;
+		mdEntry.cacheFilter       = arguments.routeRecord.cacheFilter;
+		mdEntry.etag              = arguments.routeRecord.etag;
+		mdEntry.etagWeak          = arguments.routeRecord.etagWeak;
+		mdEntry.lastModified      = arguments.routeRecord.lastModified;
+		mdEntry.cacheControl      = arguments.routeRecord.cacheControl;
+
+		// A route-level suffix closure receives ( event ) only - unlike EVENT_CACHE_SUFFIX's
+		// ( eventHandlerBean, event ), a route has no reflected handler action metadata to hand it.
+		// Evaluated now, on every call, the same "never freeze a request-time value" contract
+		// resolveCacheSuffix() documents for the handler-annotation suffix.
+		var suffix     = arguments.routeRecord.cacheSuffix;
+		mdEntry.suffix = ( isClosure( suffix ) || isCustomFunction( suffix ) )
+		 ? suffix( arguments.requestContext )
+		 : suffix;
+
+		arguments.requestContext.setPrivateValue( "cbox_routeCacheMetadata", mdEntry );
+		return mdEntry;
 	}
 
 	/**
 	 * Return the event caching metadata for an action execution context.
 	 *
-	 * @ehBean        The event handler bean
-	 * @oEventHandler The event handler to execute
+	 * @ehBean         The event handler bean
+	 * @oEventHandler  The event handler to execute
+	 * @requestContext The request context for the current request, passed through to a closure suffix untouched.
 	 *
 	 * @return strc
 	 */
-	private struct function getEventCachingMetadata( required ehBean, required oEventHandler ){
+	private struct function getEventCachingMetadata(
+		required ehBean,
+		required oEventHandler,
+		required requestContext
+	){
+		// Route-level cache rules (Router.cfc's .withCache()) take full precedence over this
+		// handler's own annotations for this request - see getRouteCachingMetadata()'s docblock.
+		var routeCacheEntry = getRouteCachingMetadata(
+			arguments.requestContext.getCurrentRouteRecord(),
+			arguments.requestContext
+		);
+		if ( structKeyExists( local, "routeCacheEntry" ) && !isNull( local.routeCacheEntry ) ) {
+			return routeCacheEntry;
+		}
+
 		var cacheKey = arguments.ehBean.getFullEvent();
 
 		// Double lock for race conditions
@@ -696,15 +923,26 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 						mdEntry.cacheExclude = arguments.ehBean.getActionMetadata( "cacheExclude", "" );
 						mdEntry.cacheFilter  = arguments.ehBean.getActionMetadata( "cacheFilter", "" );
 
-						// Handler Event Cache Key Suffix, this is global to the event
-						if (
-							isClosure( arguments.oEventHandler.EVENT_CACHE_SUFFIX ) ||
-							isCustomFunction( arguments.oEventHandler.EVENT_CACHE_SUFFIX )
-						) {
-							mdEntry.suffix = oEventHandler.EVENT_CACHE_SUFFIX( arguments.ehBean );
-						} else {
-							mdEntry.suffix = arguments.oEventHandler.EVENT_CACHE_SUFFIX;
-						}
+						// HTTP caching (docs/specs/http-caching.md §4) - Tier 1 only: an ETag
+						// and/or Last-Modified computed once at cache-write time, reused on every
+						// hit until the entry expires. Deliberately opt-in, so an existing
+						// cache="true" handler that never sets these sees no behavior change. No
+						// separate on/off switch: this whole block already only runs when
+						// eventCaching is enabled, same as cacheInclude/cacheExclude/cacheFilter
+						// above.
+						mdEntry.etag         = arguments.ehBean.getActionMetadata( "etag", false );
+						mdEntry.etagWeak     = arguments.ehBean.getActionMetadata( "etagWeak", false );
+						mdEntry.lastModified = arguments.ehBean.getActionMetadata( "lastModified", false );
+						mdEntry.cacheControl = arguments.ehBean.getActionMetadata( "cacheControl", "" );
+
+						// Handler Event Cache Key Suffix, this is global to the event.
+						// Stored AS DECLARED: a closure must NOT be evaluated here because this
+						// entry is memoized for the life of the app, and a request-time value
+						// (locale, session, slug) would freeze into every later request's cache
+						// key. resolveCacheSuffix() evaluates it on every read instead.
+						mdEntry.suffix = structKeyExists( arguments.oEventHandler, "EVENT_CACHE_SUFFIX" )
+						 ? arguments.oEventHandler.EVENT_CACHE_SUFFIX
+						 : "";
 
 						// if the cacheFilter has a length and is a method, then we need to verify and store the resulting closure
 						if ( len( mdEntry.cacheFilter ) ) {
@@ -738,6 +976,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 					}
 					// end cache metadata is true
 
+					// Precompute once whether the suffix needs per-request resolution, so
+					// resolveCacheSuffix() and getEventMetadataEntry()'s fast path can do a plain
+					// boolean field read instead of calling isClosure()/isCustomFunction() on
+					// every request.
+					mdEntry.suffixIsDynamic = isClosure( mdEntry.suffix ) || isCustomFunction( mdEntry.suffix );
+
 					// Save md Entry in dictionary
 					variables.eventCacheDictionary[ cacheKey ] = mdEntry;
 				}
@@ -747,7 +991,82 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		}
 		// end if
 
-		return variables.eventCacheDictionary[ cacheKey ];
+		return resolveCacheSuffix(
+			variables.eventCacheDictionary[ cacheKey ],
+			arguments.ehBean,
+			arguments.requestContext
+		);
+	}
+
+	/**
+	 * Ensure an event handler bean has its action/handler metadata loaded, building and
+	 * reflecting a handler instance only if it doesn't already have one to reuse.
+	 *
+	 * Factored out of getHandler() so the event-caching suffix lookup path
+	 * (getEventMetadataEntry()) can guarantee the same metadata is present on the bean it hands
+	 * to an EVENT_CACHE_SUFFIX closure, whether or not handlerCaching lets getHandlerBean() reuse
+	 * a bean instance that a prior getHandler() call already populated.
+	 *
+	 * @ehBean        The event handler bean to load metadata onto
+	 * @oEventHandler An already-built handler instance to reflect, if the caller has one; built via newHandler() otherwise
+	 */
+	private function ensureHandlerMetadata( required ehBean, oEventHandler ){
+		if ( arguments.ehBean.isMetadataLoaded() ) {
+			return arguments.ehBean;
+		}
+
+		var handler = (
+			structKeyExists( arguments, "oEventHandler" ) && !isNull( arguments.oEventHandler )
+			 ? arguments.oEventHandler
+			 : newHandler( arguments.ehBean )
+		);
+		var md = getMetadata( handler );
+
+		arguments.ehBean
+			.setActionMetadata( handler._actionMetadata( arguments.ehBean.getMethod() ) )
+			.setHandlerMetadata( md.keyExists( "annotations" ) ? md.annotations : md );
+
+		return arguments.ehBean;
+	}
+
+	/**
+	 * Resolve a metadata entry's cache-key suffix for the CURRENT request.
+	 *
+	 * A static string suffix passes the entry through untouched. A closure suffix is
+	 * evaluated now, on a shallow COPY of the entry - the memoized entry keeps the
+	 * closure so every request re-evaluates it (locale, session, slug use cases).
+	 *
+	 * The closure receives ( eventHandlerBean, event ) and runs twice per request
+	 * (serve-side key lookup + store-side key build), so it must be deterministic
+	 * within a request: read request-stable inputs only, never time or randomness,
+	 * and mutate nothing - the same contract the hashed rc and the stored
+	 * cacheFilter closure already have.
+	 *
+	 * @mdEntry        The memoized event caching metadata entry
+	 * @ehBean         The event handler bean, passed to the closure as its first argument
+	 * @requestContext The request context for the current request, passed to the closure as its second argument
+	 */
+	private struct function resolveCacheSuffix(
+		required struct mdEntry,
+		required ehBean,
+		required requestContext
+	){
+		// suffixIsDynamic is precomputed once when the entry is memoized (see
+		// getEventCachingMetadata()), so the common static-suffix case is a single boolean field
+		// read instead of two function calls on every request. Fall back to computing it
+		// directly for an entry that doesn't carry the field (e.g. built some other way).
+		var suffixIsDynamic = arguments.mdEntry.suffixIsDynamic ?: (
+			isClosure( arguments.mdEntry.suffix ) || isCustomFunction( arguments.mdEntry.suffix )
+		);
+		if ( !suffixIsDynamic ) {
+			return arguments.mdEntry;
+		}
+
+		var resolved    = structCopy( arguments.mdEntry );
+		var suffixUDF   = arguments.mdEntry.suffix;
+		resolved.suffix = suffixUDF( arguments.ehBean, arguments.requestContext );
+
+		return resolved;
 	}
 
 }

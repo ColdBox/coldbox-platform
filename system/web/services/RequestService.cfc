@@ -12,34 +12,43 @@ component extends="coldbox.system.web.services.BaseService" {
 	 * @controller The ColdBox Controller.
 	 */
 	function init( required controller ){
-		setController( arguments.controller );
+		setController( arguments.controller )
 
-		variables.flashScope    = "";
-		variables.flashData     = "";
-		variables.flashDataHash = "";
+		variables.flashScope    = ""
+		variables.flashData     = ""
+		variables.flashDataHash = ""
 
-		return this;
+		return this
 	}
 
 	/**
 	 * Once configuration loads this method is fired by the service loader.
 	 */
 	function onConfigurationLoad(){
-		// Local Configuration data and dependencies
-		variables.log                = controller.getLogBox().getLogger( this );
-		variables.eventName          = controller.getSetting( "eventName" );
-		variables.eventCaching       = controller.getSetting( "eventCaching" );
-		variables.interceptorService = controller.getInterceptorService();
-		variables.routingService     = controller.getRoutingService();
-		variables.handlerService     = controller.getHandlerService();
-		variables.cacheBox           = controller.getCacheBox();
-		variables.cache              = controller.getCache();
-		variables.templateCache      = controller.getCache( "template" );
-		variables.flashData          = controller.getSetting( "flash" );
-		variables.flashDataHash      = hash( variables.flashData.toString() );
-
+		variables.interceptorService = controller.getInterceptorService()
+		variables.routingService     = controller.getRoutingService()
+		variables.handlerService     = controller.getHandlerService()
+		variables.cacheBox           = controller.getCacheBox()
+		variables.cache              = controller.getCache()
+		variables.templateCache      = controller.getCache( "template" )
 		// build out Flash RAM
-		buildFlashScope();
+		variables.flashData          = controller.getSetting( "flash" )
+		variables.flashDataHash      = hash( variables.flashData.toString() )
+		buildFlashScope()
+		// Re-cache settings that may be changed during testing or runtime
+		variables.jsonPayloadToRC = controller.getSetting( "jsonPayloadToRC" )
+		variables.defaultEvent    = controller.getSetting( "DefaultEvent" )
+	}
+
+	/**
+	 * Once aspects load this method is fired by the service loader.
+	 */
+	function afterAspectsLoad(){
+		// Local Configuration data and dependencies
+		variables.eventName       = controller.getSetting( "eventName" )
+		variables.eventCaching    = controller.getSetting( "eventCaching" )
+		variables.jsonPayloadToRC = controller.getSetting( "jsonPayloadToRC" )
+		variables.defaultEvent    = controller.getSetting( "DefaultEvent" )
 	}
 
 	/**
@@ -51,80 +60,79 @@ component extends="coldbox.system.web.services.BaseService" {
 	 * @return coldbox.system.web.context.RequestContext
 	 */
 	any function requestCapture( event, boolean proxyCall = false ){
-		var context = getContext();
-		var rc      = context.getCollection();
-		var prc     = context.getCollection( private = true );
+		var context = getContext()
+		var rc      = context.getCollection()
+		var prc     = context.getCollection( private = true )
 
 		// Capture FORM/URL or direct overrride
 		if ( isDefined( "FORM" ) ) {
-			structAppend( rc, FORM );
+			structAppend( rc, FORM )
 		}
 		if ( isDefined( "URL" ) ) {
-			structAppend( rc, URL );
+			structAppend( rc, URL )
 		}
 
 		// If the inbound content body is a JSON payload capture it
-		if (
-			controller.getSetting( "jsonPayloadToRC" ) &&
-			len( context.getHTTPContent() ) &&
-			isJSON( context.getHTTPContent() )
-		) {
-			var payload = context.getHTTPContent( json = true );
-			if ( isStruct( payload ) ) {
-				structAppend( rc, payload );
+		if ( variables.jsonPayloadToRC ) {
+			var httpContent = context.getHTTPContent()
+			if ( len( httpContent ) && isJSON( httpContent ) ) {
+				var payload = context.getHTTPContent( json = true )
+				if ( isStruct( payload ) ) {
+					structAppend( rc, payload )
+				}
 			}
 		}
 
 		// Configure decorator if available?
 		if ( structKeyExists( context, "configure" ) ) {
-			context.configure();
+			context.configure()
 		}
 
 		// First, process the request through the RoutingService
 		if ( !arguments.proxyCall ) {
-			variables.routingService.requestCapture( context );
+			variables.routingService.requestCapture( context )
 		}
 
 		// Do we have an override
 		if ( !isNull( arguments.event ) && len( arguments.event ) ) {
-			rc[ variables.eventName ] = arguments.event;
+			rc[ variables.eventName ] = arguments.event
 		}
 
 		// Remove FW reserved commands just in case before collection snapshot
-		var fwCache = structKeyExists( rc, "fwCache" );
-		structDelete( rc, "fwCache" );
+		var fwCache = structKeyExists( rc, "fwCache" )
+		structDelete( rc, "fwCache" )
 
 		// Take snapshot of incoming collection
-		prc[ "cbox_incomingContextHash" ] = hash( rc.toString() );
+		prc[ "cbox_incomingContextHash" ] = hash( rc.toString() )
 
 		// Do we have flash elements to inflate?
 		if ( variables.flashScope.flashExists() ) {
-			if ( variables.log.canDebug() ) {
-				variables.log.debug( "Flash RAM detected, inflating flash." );
+			if ( getLogger().canDebug() ) {
+				getLogger().debug( "Flash RAM detected, inflating flash." );
 			}
-			variables.flashScope.inflateFlash();
+			variables.flashScope.inflateFlash()
 		}
 
 		// Default Event Determination
 		if ( NOT structKeyExists( rc, variables.eventName ) ) {
-			rc[ variables.eventName ] = controller.getSetting( "DefaultEvent" );
+			rc[ variables.eventName ] = variables.defaultEvent
 		}
 
 		// Event More Than 1 Check, grab the first event instance, other's are discarded
 		if ( listLen( rc[ variables.eventName ] ) GTE 2 ) {
-			rc[ variables.eventName ] = getToken( rc[ variables.eventName ], 2, "," );
+			rc[ variables.eventName ] = getToken( rc[ variables.eventName ], 2, "," )
 		}
 
 		// Default Event Action Checks
-		variables.handlerService.defaultActionCheck( context );
+		variables.handlerService.defaultActionCheck( context )
 
 		// Execute onRequestCapture interceptionPoint
-		variables.interceptorService.announce( "onRequestCapture" );
+		variables.interceptorService.announce( "onRequestCapture" )
 
 		// Are we using event caching?
-		eventCachingTest( context, fwCache );
+		eventCachingTest( context, fwCache )
 
-		return context;
+		return context
 	}
 
 	/**
@@ -135,52 +143,53 @@ component extends="coldbox.system.web.services.BaseService" {
 	 * @fwCache                Flag to hard purge the cache if needed
 	 */
 	RequestService function eventCachingTest( required context, boolean fwCache = false ){
-		var eventCache      = {};
-		var oEventURLFacade = variables.templateCache.getEventURLFacade();
-		var currentEvent    = arguments.context.getCurrentEvent();
-
-		// Are we using event caching?
-		if ( variables.eventCaching ) {
-			// Cleanup the cache key, just in case, maybe ses interceptor has been used.
-			arguments.context.removeEventCacheableEntry();
-
-			// Get metadata entry for event that's fired.
-			var eventDictionary = variables.handlerService.getEventMetaDataEntry( currentEvent );
-
-			// Verify that it is cacheable, else quit, no need for testing anymore.
-			if ( NOT eventDictionary.cacheable ) {
-				return this;
-			}
-
-			// Incorporate metadata about event
-			eventCache.append( eventDictionary, true );
-			// Build the event cache key according to incoming request
-			eventCache[ "cacheKey" ] = oEventURLFacade.buildEventKey(
-				targetEvent     = currentEvent,
-				targetContext   = arguments.context,
-				eventDictionary = eventDictionary
-			);
-
-			// Check for Event Cache Purge
-			if ( arguments.fwCache ) {
-				// Clear the key from the cache
-				variables.cacheBox.getCache( eventDictionary.provider ).clear( eventCache.cacheKey );
-
-				// Return don't show cached version
-				return this;
-			}
-
-			// Event has been found, flag it so we can render it from cache if it still survives
-			arguments.context.setEventCacheableEntry( eventCache );
-
-			// debug logging
-			if ( variables.log.canDebug() ) {
-				variables.log.debug( "Event caching detected for : #eventCache.toString()#" );
-			}
+		// Not using event caching? Bail early before doing any work. This is the common path.
+		if ( !variables.eventCaching ) {
+			return this;
 		}
-		// end if using event caching.
 
-		return this;
+		var oEventURLFacade = variables.templateCache.getEventURLFacade()
+		var currentEvent    = arguments.context.getCurrentEvent()
+		var eventCache      = {}
+
+		// Cleanup the cache key, just in case, maybe ses interceptor has been used.
+		arguments.context.removeEventCacheableEntry()
+
+		// Get metadata entry for event that's fired.
+		var eventDictionary = variables.handlerService.getEventMetaDataEntry( currentEvent, arguments.context )
+
+		// Verify that it is cacheable, else quit, no need for testing anymore.
+		if ( NOT eventDictionary.cacheable ) {
+			return this
+		}
+
+		// Incorporate metadata about event
+		eventCache.append( eventDictionary, true )
+		// Build the event cache key according to incoming request
+		eventCache[ "cacheKey" ] = oEventURLFacade.buildEventKey(
+			targetEvent     = currentEvent,
+			targetContext   = arguments.context,
+			eventDictionary = eventDictionary
+		)
+
+		// Check for Event Cache Purge
+		if ( arguments.fwCache ) {
+			// Clear the key from the cache
+			variables.cacheBox.getCache( eventDictionary.provider ).clear( eventCache.cacheKey )
+
+			// Return don't show cached version
+			return this
+		}
+
+		// Event has been found, flag it so we can render it from cache if it still survives
+		arguments.context.setEventCacheableEntry( eventCache )
+
+		// debug logging
+		if ( getLogger().canDebug() ) {
+			getLogger().debug( "Event caching detected for : #eventCache.toString()#" )
+		}
+
+		return this
 	}
 
 	/**
@@ -191,19 +200,19 @@ component extends="coldbox.system.web.services.BaseService" {
 	 * @return coldbox.system.web.context.RequestContext
 	 */
 	function getContext( string classPath = "coldbox.system.web.context.RequestContext" ){
-		var thisContext = getContextFromScope();
+		var thisContext = getContextFromScope()
 		if ( !isNull( thisContext ) ) {
-			return thisContext;
+			return thisContext
 		}
 
 		lock scope="request" timeout="30" {
 			// Double check once inside lock
-			var thisContext = getContextFromScope();
+			var thisContext = getContextFromScope()
 			if ( !isNull( thisContext ) ) {
-				return thisContext;
+				return thisContext
 			}
 
-			return createContext( classPath );
+			return createContext( classPath )
 		}
 	}
 
@@ -213,7 +222,7 @@ component extends="coldbox.system.web.services.BaseService" {
 	 * @return coldbox.system.web.context.RequestContext or null if not found
 	 */
 	private function getContextFromScope(){
-		return request[ "cb_requestContext" ] ?: javacast( "null", "" );
+		return request[ "cb_requestContext" ] ?: javacast( "null", "" )
 	}
 
 	/**
@@ -222,30 +231,30 @@ component extends="coldbox.system.web.services.BaseService" {
 	 * @context Request Context object
 	 */
 	RequestService function setContext( required context ){
-		request.cb_requestContext = arguments.context;
-		return this;
+		request.cb_requestContext = arguments.context
+		return this
 	}
 
 	/**
 	 * Remove the context from scope
 	 */
 	RequestService function removeContext(){
-		structDelete( request, "cb_requestContext" );
-		return this;
+		structDelete( request, "cb_requestContext" )
+		return this
 	}
 
 	/**
 	 * Does the request context exist in request scope
 	 */
 	boolean function contextExists(){
-		return structKeyExists( request, "cb_requestContext" );
+		return structKeyExists( request, "cb_requestContext" )
 	}
 
 	/**
 	 * Return the flash scope instance in use by the framework.
 	 */
 	any function getFlashScope(){
-		return variables.flashScope;
+		return variables.flashScope
 	}
 
 	/**
@@ -253,58 +262,58 @@ component extends="coldbox.system.web.services.BaseService" {
 	 */
 	RequestService function rebuildFlashScope(){
 		if ( variables.flashDataHash neq hash( controller.getSetting( "flash" ).toString() ) ) {
-			buildFlashScope();
+			buildFlashScope()
 		}
-		return this;
+		return this
 	}
 
 	/**
 	 * Build's the Flash RAM Scope as defined in the application spec.
 	 */
 	RequestService function buildFlashScope(){
-		var flashPath = "";
+		var flashPath = ""
 
 		// Verify Flash decisions
 		if ( variables.flashData.scope == "session" and !getApplicationMetadata().sessionManagement ) {
-			log.error(
+			getLogger().error(
 				"Flash RAM was set to use session but session is undefined, changing it to cache for you so we don't blow up."
-			);
-			variables.flashData.scope = "cache";
+			)
+			variables.flashData.scope = "cache"
 		}
 		if ( variables.flashData.scope == "client" and !getApplicationMetadata().clientManagement ) {
-			log.error(
+			getLogger().error(
 				"Flash RAM was set to use client but client is undefined, changing it to cache for you so we don't blow up."
-			);
-			variables.flashData.scope = "cache";
+			)
+			variables.flashData.scope = "cache"
 		}
 
 		// Shorthand Flash Types
 		switch ( variables.flashData.scope ) {
 			case "session": {
-				flashpath = "coldbox.system.web.flash.SessionFlash";
+				flashpath = "coldbox.system.web.flash.SessionFlash"
 				break;
 			}
 			case "client": {
-				writeDump( "Client Flash Has Been Removed, Please use session or cache" );
+				writeDump( "Client Flash Has Been Removed, Please use session or cache" )
 				abort;
 			}
 			case "cache": {
-				flashpath = "coldbox.system.web.flash.ColdboxCacheFlash";
+				flashpath = "coldbox.system.web.flash.ColdboxCacheFlash"
 				break;
 			}
 			case "mock": {
-				flashpath = "coldbox.system.web.flash.MockFlash";
+				flashpath = "coldbox.system.web.flash.MockFlash"
 				break;
 			}
 			default: {
-				flashPath = variables.flashData.scope;
+				flashPath = variables.flashData.scope
 			}
 		}
 
 		// Create Flash RAM object
-		variables.flashScope = createObject( "component", flashPath ).init( controller, variables.flashData );
+		variables.flashScope = createObject( "component", flashPath ).init( controller, variables.flashData )
 
-		return this;
+		return this
 	}
 
 	/****************************************** PRIVATE ******************************************************/
@@ -315,32 +324,33 @@ component extends="coldbox.system.web.services.BaseService" {
 	 * @return coldbox.system.web.context.RequestContext
 	 */
 	function createContext( string classPath = "coldbox.system.web.context.RequestContext" ){
-		var oDecorator = "";
+		var oDecorator         = ""
+		var decoratorClassPath = variables.controller.getSetting(
+			name         = "RequestContextDecorator",
+			defaultValue = ""
+		)
 
 		// Create the original request context
 		var oContext = createObject( "component", arguments.classPath ).init(
 			properties: variables.controller.getConfigSettings(),
 			controller: variables.controller
-		);
+		)
 
 		// Determine if we have a decorator, if we do, then decorate it.
-		if ( len( variables.controller.getSetting( name = "RequestContextDecorator", defaultValue = "" ) ) ) {
+		if ( len( decoratorClassPath ) ) {
 			// Create the decorator
-			oDecorator = createObject(
-				"component",
-				variables.controller.getSetting( name = "RequestContextDecorator" )
-			).init( oContext, variables.controller );
+			oDecorator = createObject( "component", decoratorClassPath ).init( oContext, variables.controller )
 			// Set Request Context in storage
-			setContext( oDecorator );
+			setContext( oDecorator )
 			// Return
-			return oDecorator;
+			return oDecorator
 		}
 
 		// Set Request Context in storage
-		setContext( oContext );
+		setContext( oContext )
 
 		// Return Context
-		return oContext;
+		return oContext
 	}
 
 }

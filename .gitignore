@@ -41,3 +41,6 @@ test-harness/config/runtime.properties.cfm
 /settings.xml
 /.settings/
 grapher/data/**
+
+# AI
+.agents/skills/**

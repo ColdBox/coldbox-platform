@@ -185,11 +185,12 @@ component accessors="true" {
 	/**
 	 * Constructor
 	 *
-	 * @name     The name of this task
-	 * @executor The executor this task will run under and be linked to
-	 * @task     The closure or cfc that represents the task (optional)
-	 * @method   The method on the cfc to call, defaults to "run" (optional)
-	 * @debug    Add debugging logs to System out, disabled by default
+	 * @name      The name of this task
+	 * @executor  The executor this task will run under and be linked to
+	 * @task      The closure or cfc that represents the task (optional)
+	 * @method    The method on the cfc to call, defaults to "run" (optional)
+	 * @debug     Add debugging logs to System out, disabled by default
+	 * @scheduler The scheduler to set into the task (optional)
 	 */
 	ScheduledTask function init(
 		required name,
@@ -197,46 +198,52 @@ component accessors="true" {
 		any task = "",
 		method   = "run",
 		debug    = false,
-		group    = ""
+		group    = "",
+		scheduler
 	){
-		// Utility class
-		variables.util             = new coldbox.system.core.util.Util();
+		// Store scheduler if sent!
+		if ( !isNull( arguments.scheduler ) ) {
+			variables.scheduler = arguments.scheduler
+			variables.util      = variables.scheduler.getUtil()
+		} else {
+			variables.scheduler = ""
+			variables.util      = new coldbox.system.core.util.Util()
+		}
+
 		// Link up the executor and name
-		variables.executor         = arguments.executor;
-		variables.name             = arguments.name;
-		variables.group            = arguments.group;
+		variables.executor         = arguments.executor
+		variables.name             = arguments.name
+		variables.group            = arguments.group
 		// time unit helper
-		variables.dateTimeHelper   = new coldbox.system.async.time.DateTimeHelper();
-		variables.timeUnitHelper   = new coldbox.system.async.time.TimeUnit();
+		variables.dateTimeHelper   = new coldbox.system.async.time.DateTimeHelper()
+		variables.timeUnitHelper   = new coldbox.system.async.time.TimeUnit()
 		// Init Properties
-		variables.task             = arguments.task;
-		variables.method           = arguments.method;
+		variables.task             = arguments.task
+		variables.method           = arguments.method
 		// Default Frequencies
-		variables.delay            = 0;
-		variables.delayTimeUnit    = "";
-		variables.period           = 0;
-		variables.spacedDelay      = 0;
-		variables.timeUnit         = "milliseconds";
-		variables.noOverlaps       = false;
+		variables.delay            = 0
+		variables.delayTimeUnit    = ""
+		variables.period           = 0
+		variables.spacedDelay      = 0
+		variables.timeUnit         = "milliseconds"
+		variables.noOverlaps       = false
 		// Constraints
-		variables.annually         = false;
-		variables.debug            = arguments.debug;
-		variables.disabled         = false;
-		variables.whenClosure      = "";
-		variables.dayOfTheMonth    = 0;
-		variables.dayOfTheWeek     = 0;
-		variables.weekends         = false;
-		variables.weekdays         = false;
-		variables.firstBusinessDay = false;
-		variables.lastBusinessDay  = false;
-		variables.taskTime         = "";
-		variables.startOnDateTime  = "";
-		variables.endOnDateTime    = "";
-		variables.startTime        = "";
-		variables.endTime          = "";
-		variables.scheduled        = false;
-		// Probable Scheduler or not
-		variables.scheduler        = "";
+		variables.annually         = false
+		variables.debug            = arguments.debug
+		variables.disabled         = false
+		variables.whenClosure      = ""
+		variables.dayOfTheMonth    = 0
+		variables.dayOfTheWeek     = 0
+		variables.weekends         = false
+		variables.weekdays         = false
+		variables.firstBusinessDay = false
+		variables.lastBusinessDay  = false
+		variables.taskTime         = ""
+		variables.startOnDateTime  = ""
+		variables.endOnDateTime    = ""
+		variables.startTime        = ""
+		variables.endTime          = ""
+		variables.scheduled        = false
 		// Prepare execution tracking stats
 		variables.stats            = {
 			// Save name just in case
@@ -260,17 +267,17 @@ component accessors="true" {
 			// If the task has never ran or not
 			"neverRun"          : true,
 			// Server Host
-			"inetHost"          : variables.util.discoverInetHost(),
+			"inetHost"          : isNull( arguments.scheduler ) ? variables.util.discoverInetHost() : arguments.scheduler.getInetHost(),
 			// Server IP
-			"localIp"           : variables.util.getServerIp()
-		};
+			"localIp"           : isNull( arguments.scheduler ) ? variables.util.getServerIp() : arguments.scheduler.getLocalIp()
+		}
 		// Prepare for the user to store metadata
-		variables.meta          = {};
+		variables.meta          = {}
 		// Life cycle methods
-		variables.beforeTask    = "";
-		variables.afterTask     = "";
-		variables.onTaskSuccess = "";
-		variables.onTaskFailure = "";
+		variables.beforeTask    = ""
+		variables.afterTask     = ""
+		variables.onTaskSuccess = ""
+		variables.onTaskFailure = ""
 
 		debugLog(
 			"init",
@@ -280,9 +287,9 @@ component accessors="true" {
 				method : variables.method,
 				debug  : variables.debug
 			}
-		);
+		)
 
-		return this;
+		return this
 	}
 
 	/**
@@ -572,12 +579,11 @@ component accessors="true" {
 		}
 
 		// Do we have a day of the month constraint? and the same as the running date/time? Else skip it
-		// If the day assigned is greater than the days in the month, then we let it thru
-		// as the user intended to run it at the end of the month
+		// If the day assigned is greater than the days in the month, we clamp to the last day of the
+		// month so the task still runs exactly once that month instead of being unconstrained for it.
 		if (
 			variables.dayOfTheMonth > 0 &&
-			now.getDayOfMonth() != variables.dayOfTheMonth &&
-			variables.dayOfTheMonth <= daysInMonth( now.toString() )
+			now.getDayOfMonth() != min( variables.dayOfTheMonth, daysInMonth( now.toString() ) )
 		) {
 			return true;
 		}
@@ -798,11 +804,6 @@ component accessors="true" {
 	 * @return A ScheduledFuture from where you can monitor the task, an empty ScheduledFuture if the task was not registered
 	 */
 	ScheduledFuture function start(){
-		// If we have overlaps and the spaced delay is 0 then grab it from the period
-		if ( variables.noOverlaps && variables.spacedDelay == 0 ) {
-			variables.spacedDelay = variables.period;
-		}
-
 		// If we have a delay and a delayTimeUnit, then we need to compare to our
 		// current timeUnit and convert to support the delay
 		// ( only if our time unit is seconds , if not we disable the delay )
@@ -825,6 +826,21 @@ component accessors="true" {
 					variables.delayTimeUnit
 				);
 			}
+		}
+
+		// If this is an interval-based (every()) task with an explicit daily start time and no
+		// initial delay was set some other way, align the first execution to the next period
+		// boundary counted from that start time instead of firing immediately on registration.
+		if ( variables.period > 0 && variables.delay == 0 && len( variables.startTime ) ) {
+			calculateStartTimeAlignedDelay();
+		}
+
+		// If we have noOverlaps and the spaced delay is 0 then grab it from the period.
+		// This must happen AFTER any start-time alignment above, since that can convert
+		// the period/timeUnit (e.g. minutes -> seconds); otherwise spacedDelay would be
+		// snapshotted in the original unit while timeUnit has already changed.
+		if ( variables.noOverlaps && variables.spacedDelay == 0 ) {
+			variables.spacedDelay = variables.period;
 		}
 
 		debugLog(
@@ -1155,6 +1171,7 @@ component accessors="true" {
 		setInitialDelayPeriodAndTimeUnit( now, nextRun );
 		// Set constraints
 		variables.dayOfTheMonth = arguments.day;
+		variables.taskTime      = arguments.time;
 
 		return this;
 	}
@@ -1541,6 +1558,43 @@ component accessors="true" {
 			.get( arguments.periodValue )
 			.toSeconds( javacast( "long", arguments.periodMultiplier ) );
 		variables.timeUnit = "seconds";
+	}
+
+	/**
+	 * When an interval-based task ( every() ) has an explicit daily start time
+	 * ( startOnTime() / between() ) but no initial delay was set some other way, this
+	 * calculates an initial delay that aligns the first execution to the next period
+	 * boundary counted from that start time, instead of firing immediately on registration.
+	 */
+	private function calculateStartTimeAlignedDelay(){
+		var now    = getJavaNow();
+		var anchor = now
+			.withHour( javacast( "int", getToken( variables.startTime, 1, ":" ) ) )
+			.withMinute( javacast( "int", getToken( variables.startTime, 2, ":" ) ) )
+			.withSecond( javacast( "int", 0 ) )
+			.withNano( javacast( "int", 0 ) );
+
+		var periodSeconds = variables.timeUnitHelper
+			.get( variables.timeUnit )
+			.toSeconds( javacast( "long", variables.period ) );
+
+		if ( periodSeconds <= 0 ) {
+			return;
+		}
+
+		var jDuration      = variables.dateTimeHelper.duration().getNative();
+		var elapsedSeconds = jDuration.between( anchor, now ).getSeconds();
+		if ( elapsedSeconds > 0 ) {
+			var periodsElapsed = int( elapsedSeconds / periodSeconds ) + 1;
+			anchor             = anchor.plusSeconds( javacast( "long", periodsElapsed * periodSeconds ) );
+		}
+
+		// Set delay/period directly (in seconds), matching the smart every*At() helpers
+		variables.delay         = jDuration.between( now, anchor ).getSeconds();
+		variables.delayTimeUnit = "seconds";
+		variables.period        = periodSeconds;
+		variables.timeUnit      = "seconds";
+		variables.stats.nextRun = anchor.toString();
 	}
 
 	/**

@@ -23,7 +23,7 @@ component serializable="false" accessors="true" {
 	// Lock Timeout for startup operations
 	property name="lockTimeout";
 	// The application hash used for locks
-	property name="appHash";
+	property name="appHash" default="#getBaseTemplatePath()#";
 	// By default if an app is reiniting and a request hits it, we will fail fast with a message
 	property name="COLDBOX_FAIL_FAST";
 
@@ -33,7 +33,6 @@ component serializable="false" accessors="true" {
 	param name="COLDBOX_APP_KEY"       default="cbController";
 	param name="COLDBOX_APP_MAPPING"   default="";
 	param name="COLDBOX_WEB_MAPPING"   default="";
-	param name="appHash"               default="#hash( getBaseTemplatePath() & application.applicationname )#";
 	param name="lockTimeout" default="30" type="numeric";
 	param name="COLDBOX_FAIL_FAST" default="true";
 
@@ -55,18 +54,18 @@ component serializable="false" accessors="true" {
 		any COLDBOX_FAIL_FAST      = true,
 		string COLDBOX_WEB_MAPPING = ""
 	){
-		variables.COLDBOX_CONFIG_FILE   = arguments.COLDBOX_CONFIG_FILE;
-		variables.COLDBOX_APP_ROOT_PATH = arguments.COLDBOX_APP_ROOT_PATH;
-		variables.COLDBOX_APP_MAPPING   = arguments.COLDBOX_APP_MAPPING;
-		variables.COLDBOX_WEB_MAPPING   = arguments.COLDBOX_WEB_MAPPING;
-		variables.COLDBOX_FAIL_FAST     = arguments.COLDBOX_FAIL_FAST;
+		variables.COLDBOX_CONFIG_FILE   = arguments.COLDBOX_CONFIG_FILE
+		variables.COLDBOX_APP_ROOT_PATH = arguments.COLDBOX_APP_ROOT_PATH
+		variables.COLDBOX_APP_MAPPING   = arguments.COLDBOX_APP_MAPPING
+		variables.COLDBOX_WEB_MAPPING   = arguments.COLDBOX_WEB_MAPPING
+		variables.COLDBOX_FAIL_FAST     = arguments.COLDBOX_FAIL_FAST
 
 		// App Key Check
 		if ( structKeyExists( arguments, "COLDBOX_APP_KEY" ) AND len( trim( arguments.COLDBOX_APP_KEY ) ) ) {
-			variables.COLDBOX_APP_KEY = arguments.COLDBOX_APP_KEY;
+			variables.COLDBOX_APP_KEY = arguments.COLDBOX_APP_KEY
 		}
 
-		return this;
+		return this
 	}
 
 	/**
@@ -75,11 +74,15 @@ component serializable="false" accessors="true" {
 	 * @throws InvalidColdBoxMapping
 	 */
 	function loadColdBox(){
-		var appKey = locateAppKey();
+		var appKey    = locateAppKey()
+		var startTime = getTickCount()
+
+		// Param the incoming app hash
+		variables.appHash = "#hash( getBaseTemplatePath() & application.applicationname )#";
 
 		// Cleanup of old code, just in case
 		if ( structKeyExists( application, appKey ) ) {
-			structDelete( application, appKey );
+			structDelete( application, appKey )
 		}
 
 		// Verify Mapping
@@ -89,11 +92,11 @@ component serializable="false" accessors="true" {
 				detail  = "It seems that you do not have a '/coldbox' mapping in your application and we cannot continue to process the request.
 				Make sure ColdBox is installed correctly or create a mapping to the ColdBox system folder.",
 				type = "InvalidColdBoxMapping"
-			);
+			)
 		}
 
 		// Create Brand New Controller
-		application[ appKey ] = new coldbox.system.web.Controller( variables.COLDBOX_APP_ROOT_PATH, appKey );
+		application[ appKey ] = new coldbox.system.web.Controller( variables.COLDBOX_APP_ROOT_PATH, appKey )
 		// Setup the Framework And Application
 		application[ appKey ]
 			.getLoaderService()
@@ -101,29 +104,36 @@ component serializable="false" accessors="true" {
 				variables.COLDBOX_CONFIG_FILE,
 				variables.COLDBOX_APP_MAPPING,
 				variables.COLDBOX_WEB_MAPPING
-			);
+			)
 		// Get the reinit key
 		// Application Start Handler
 		try {
 			if ( len( application[ appKey ].getSetting( "ApplicationStartHandler" ) ) ) {
 				application[ appKey ].runEvent(
 					event = application[ appKey ].getSetting( "ApplicationStartHandler" )
-				);
+				)
 			}
 		} catch ( any e ) {
 			// process the exception
-			writeOutput( processException( application[ appKey ], e ) );
+			writeOutput( processException( application[ appKey ], e ) )
 			// abort it, something went really wrong.
 			abort;
 		}
 
 		// Check if fwreinit is sent, if sent, ignore it, we are loading the framework
-		var reinitKey = application[ appKey ].getSetting( "reinitKey", "fwreinit" );
+		var reinitKey = application[ appKey ].getSetting( "reinitKey", "fwreinit" )
 		if ( structKeyExists( url, reinitKey ) ) {
-			structDelete( url, reinitKey );
+			structDelete( url, reinitKey )
 		}
 
-		return this;
+		// Log startup time
+		var elapsedMs = getTickCount() - startTime
+		application[ appKey ]
+			.getLogBox()
+			.getLogger( this )
+			.info( "=> ColdBox Application started in [#elapsedMs#] ms" );
+
+		return this
 	}
 
 	/**
@@ -223,6 +233,8 @@ component serializable="false" accessors="true" {
 
 			// ****** PRE PROCESS *******/
 			interceptorService.announce( "preProcess" );
+			// Route-scoped middleware runs after the global preProcess chain, closest to the handler
+			cbController.getRoutingService().runRouteMiddleware( event, "preProcess" );
 			if ( len( cbController.getSetting( "RequestStartHandler" ) ) ) {
 				cbController.runEvent(
 					event        : cbController.getSetting( "RequestStartHandler" ),
@@ -256,26 +268,53 @@ component serializable="false" accessors="true" {
 					event.setHTTPHeader( name = key, value = value );
 				} );
 
-				// Cached Status Code
+				// ****** HTTP CACHING - TIER 1 conditional-GET (docs/specs/http-caching.md §4.2) ******
+				// Replay whatever conditional-GET headers were stored alongside this entry, reusing
+				// event.etag()/event.lastModified() for the actual header-set + match logic rather
+				// than re-implementing it here - same matching rules (weak comparison, If-None-Match
+				// lists/`*`, the If-Modified-Since-is-ignored-when-If-None-Match-is-present
+				// precedence) whether the tag was just computed or is being replayed from cache.
+				var cachedNotModified = false;
+				if ( structKeyExists( local.refResults.eventCaching, "etag" ) ) {
+					cachedNotModified = event.etag(
+						value = local.refResults.eventCaching.etag,
+						weak  = local.refResults.eventCaching.etagWeak ?: false
+					);
+				}
+				if ( structKeyExists( local.refResults.eventCaching, "lastModified" ) ) {
+					cachedNotModified = event.lastModified( local.refResults.eventCaching.lastModified ) || cachedNotModified;
+				}
+				if ( structKeyExists( local.refResults.eventCaching, "cacheControl" ) ) {
+					event.setHTTPHeader(
+						name  = "Cache-Control",
+						value = local.refResults.eventCaching.cacheControl
+					);
+				}
+
+				// Cached Status Code - a conditional-GET match already set 304 via etag()/lastModified() above.
 				if (
+					!cachedNotModified &&
 					isNumeric( local.refResults.eventCaching.statusCode ) && local.refResults.eventCaching.statusCode > 0
 				) {
 					event.setHTTPHeader( statusCode = local.refResults.eventCaching.statusCode );
 				}
 
-				// Render Content as binary or just output
-				if ( local.refResults.eventCaching.isBinary ) {
-					cbController
-						.getDataMarshaller()
-						.renderContent(
-							type     = "#local.refResults.eventCaching.contentType#",
-							variable = "#local.refResults.eventCaching.renderedContent#"
-						);
-				} else {
-					cbController
-						.getDataMarshaller()
-						.renderContent( type = "#local.refResults.eventCaching.contentType#", reset = true );
-					writeOutput( local.refResults.eventCaching.renderedContent );
+				// Render Content as binary or just output - skipped entirely on a conditional-GET
+				// match, which is the whole point: no body write at all, not even a replay.
+				if ( !cachedNotModified ) {
+					if ( local.refResults.eventCaching.isBinary ) {
+						cbController
+							.getDataMarshaller()
+							.renderContent(
+								type     = "#local.refResults.eventCaching.contentType#",
+								variable = "#local.refResults.eventCaching.renderedContent#"
+							);
+					} else {
+						cbController
+							.getDataMarshaller()
+							.renderContent( type = "#local.refResults.eventCaching.contentType#", reset = true );
+						writeOutput( local.refResults.eventCaching.renderedContent );
+					}
 				}
 			} else {
 				// ****** EXECUTE MAIN EVENT *******/
@@ -344,12 +383,49 @@ component serializable="false" accessors="true" {
 						var cacheEntry = {
 							renderedContent : renderedContent,
 							renderData      : !renderData.isEmpty(),
-							contentType     : !isNull( renderData.contentType ) ? renderData.contentType : getPageContextResponse().getContentType(),
+							contentType     : !isNull( renderData.contentType ) ? renderData.contentType : getPageContextResponse().getContentType() ?: "text/html",
 							encoding        : "UTF-8",
 							statusCode      : getPageContextResponse().getStatus(),
 							isBinary        : false,
 							responseHeaders : event.getResponseHeaders()
 						};
+
+						// ****** HTTP CACHING - TIER 1 (docs/specs/http-caching.md §4.2/§4.4) ******
+						// Opt-in via etag/lastModified/cacheControl annotations alongside cache=true.
+						// Computed once, right here at write time, and stored on the entry so every
+						// subsequent cache hit can compare against it for free - no per-request hashing.
+						if ( eCacheEntry.etag ) {
+							cacheEntry.etag     = hash( renderedContent, "MD5" );
+							cacheEntry.etagWeak = eCacheEntry.etagWeak;
+							event.setHTTPHeader(
+								name  = "ETag",
+								value = ( eCacheEntry.etagWeak ? "W/" : "" ) & """#cacheEntry.etag#"""
+							);
+						}
+						if ( eCacheEntry.lastModified ) {
+							cacheEntry.lastModified = now();
+							event.setHTTPHeader(
+								name  = "Last-Modified",
+								value = event.toHTTPDate( cacheEntry.lastModified )
+							);
+						}
+						if ( len( eCacheEntry.cacheControl ) ) {
+							cacheEntry.cacheControl = eCacheEntry.cacheControl;
+						} else if (
+							( eCacheEntry.etag || eCacheEntry.lastModified ) &&
+							isNumeric( eCacheEntry.timeout )
+						) {
+							// No explicit directive, but the handler opted into conditional-GET
+							// support - default to telling the client the same lifetime the
+							// handler already told CacheBox (in minutes; Cache-Control wants
+							// seconds), rather than saying nothing at all. A blank cacheTimeout
+							// means "use the provider's default", which we can't translate to a
+							// max-age, so no default is inferred in that case.
+							cacheEntry.cacheControl = "private, max-age=#eCacheEntry.timeout * 60#";
+						}
+						if ( structKeyExists( cacheEntry, "cacheControl" ) ) {
+							event.setHTTPHeader( name = "Cache-Control", value = cacheEntry.cacheControl );
+						}
 
 						// is this a render data entry? If So, append data
 						if ( !renderData.isEmpty() ) {
@@ -400,10 +476,14 @@ component serializable="false" accessors="true" {
 					prePostExempt = true
 				);
 			}
+			// Route-scoped middleware runs before the global postProcess chain, closest to the handler
+			cbController.getRoutingService().runRouteMiddleware( event, "postProcess" );
 			interceptorService.announce( "postProcess" );
 
 			// ****** FLASH AUTO-SAVE *******/
-			if ( cbController.getSetting( "flash" ).autoSave ) {
+			// Streams are skipped: flash is a page transition concept, and a stream can be held
+			// open for minutes, so persisting here would attach values to an unrelated later request.
+			if ( cbController.getSetting( "flash" ).autoSave && !event.isSSE() ) {
 				cbController
 					.getRequestService()
 					.getFlashScope()
@@ -514,43 +594,47 @@ component serializable="false" accessors="true" {
 	 */
 	boolean function onMissingTemplate( required template ){
 		// get reference
-		var cbController = application[ locateAppKey() ];
+		var cbController = application[ locateAppKey() ]
 		// Execute Missing Template Handler if it exists
 		if ( len( cbController.getSetting( "MissingTemplateHandler" ) ) ) {
 			// Save missing template in RC and right handler for this call.
-			var event = cbController.getRequestService().getContext();
+			var event = cbController.getRequestService().getContext()
 			event
 				.setValue( "missingTemplate", arguments.template )
 				.setValue(
 					cbController.getSetting( "EventName" ),
 					cbController.getSetting( "MissingTemplateHandler" )
-				);
+				)
 
 			// Process it
 			if ( fileExists( cbController.locateFilePath( "index.bxm" ) ) ) {
-				onRequestStart( "index.bxm" );
+				onRequestStart( "index.bxm" )
 			} else {
-				onRequestStart( "index.cfm" );
+				onRequestStart( "index.cfm" )
 			}
 
 			// Return processed
-			return true;
+			return true
 		}
 
-		return false;
+		return false
 	}
 
 	/**
 	 * ON session start
 	 */
 	function onSessionStart(){
-		// get reference
-		var cbController = application[ locateAppKey() ];
+		// Exit if we don't have the app key in scope, means we are not ready to process session start yet.
+		if ( !application.keyExists( locateAppKey() ) ) {
+			return;
+		}
+		var cbController = application[ locateAppKey() ]
 		// Session start interceptors
-		cbController.getInterceptorService().announce( "sessionStart", session );
+		cbController.getInterceptorService().announce( "sessionStart", session )
 		// Execute Session Start Handler
-		if ( len( cbController.getSetting( "SessionStartHandler" ) ) ) {
-			cbController.runEvent( event = cbController.getSetting( "SessionStartHandler" ), prePostExempt = true );
+		var sessionHandler = cbController.getSetting( name: "SessionStartHandler", defaultValue = "" )
+		if ( len( sessionHandler ) ) {
+			cbController.runEvent( event = sessionHandler, prePostExempt = true )
 		}
 	}
 
@@ -558,36 +642,36 @@ component serializable="false" accessors="true" {
 	 * ON session end
 	 */
 	function onSessionEnd( required struct sessionScope, struct appScope ){
-		var cbController = "";
+		var cbController = ""
 
 		// Check for cb Controller
 		if ( structKeyExists( arguments.appScope, locateAppKey() ) ) {
-			cbController = arguments.appScope[ locateAppKey() ];
+			cbController = arguments.appScope[ locateAppKey() ]
 		}
 
 		// Only process if ColdBox is initiated
 		if ( not isSimpleValue( cbController ) && cbController.getColdboxInitiated() ) {
 			// Get Context
-			var event = cbController.getRequestService().getContext();
+			var event = cbController.getRequestService().getContext()
 
 			// Execute interceptors
 			var iData = {
 				sessionReference     : arguments.sessionScope,
 				applicationReference : arguments.appScope
-			};
-			cbController.getInterceptorService().announce( "sessionEnd", iData );
+			}
+			cbController.getInterceptorService().announce( "sessionEnd", iData )
 
 			// Execute Session End Handler
 			if ( len( cbController.getSetting( "SessionEndHandler" ) ) ) {
 				// Place session reference on event object
 				event
 					.setValue( "sessionReference", arguments.sessionScope )
-					.setValue( "applicationReference", arguments.appScope );
+					.setValue( "applicationReference", arguments.appScope )
 				// Execute the Handler
 				cbController.runEvent(
 					event         = cbController.getSetting( "SessionEndHandler" ),
 					prepostExempt = true
-				);
+				)
 			}
 		}
 	}
@@ -597,28 +681,28 @@ component serializable="false" accessors="true" {
 	 */
 	boolean function onApplicationStart(){
 		// Load ColdBox
-		loadColdBox();
-		return true;
+		loadColdBox()
+		return true
 	}
 
 	/**
 	 * Tear down the application and execute shutdown procedures
 	 */
 	function onApplicationEnd( struct appScope ){
-		var cbController = arguments.appScope[ locateAppKey() ];
+		var cbController = arguments.appScope[ locateAppKey() ]
 
 		// Execute Application End interceptors
-		cbController.getInterceptorService().announce( "applicationEnd" );
+		cbController.getInterceptorService().announce( "applicationEnd" )
 		// Execute Application End Handler
 		if ( len( cbController.getSetting( "applicationEndHandler" ) ) ) {
 			cbController.runEvent(
 				event         = cbController.getSetting( "applicationEndHandler" ),
 				prePostExempt = true
-			);
+			)
 		}
 
 		// Controlled service shutdown operations
-		cbController.getLoaderService().processShutdown();
+		cbController.getLoaderService().processShutdown()
 	}
 
 	/************************************** PRIVATE HELPERS *********************************************/
@@ -631,36 +715,36 @@ component serializable="false" accessors="true" {
 	 */
 	private string function processException( required controller, required exception ){
 		// prepare exception facade object + app logger
-		var oException = new coldbox.system.web.context.ExceptionBean( arguments.exception );
-		var appLogger  = arguments.controller.getLogBox().getLogger( this );
-		var event      = arguments.controller.getRequestService().getContext();
-		var rc         = event.getCollection();
-		var prc        = event.getPrivateCollection();
+		var oException = new coldbox.system.web.context.ExceptionBean( arguments.exception )
+		var appLogger  = arguments.controller.getLogBox().getLogger( this )
+		var event      = arguments.controller.getRequestService().getContext()
+		var rc         = event.getCollection()
+		var prc        = event.getPrivateCollection()
 
 		// Announce interception
-		arguments.controller.getInterceptorService().announce( "onException", { exception : arguments.exception } );
+		arguments.controller.getInterceptorService().announce( "onException", { exception : arguments.exception } )
 
 		// Store exception in private context
-		event.setPrivateValue( "exception", oException );
+		event.setPrivateValue( "exception", oException )
 
 		// Set Exception Header
-		getPageContextResponse().setStatus( 500 );
+		getPageContextResponse().setStatus( 500 )
 
 		// Run custom Exception handler if Found, else run default exception routines
 		if ( len( arguments.controller.getSetting( "ExceptionHandler" ) ) ) {
 			try {
-				arguments.controller.runEvent( arguments.controller.getSetting( "Exceptionhandler" ) );
+				arguments.controller.runEvent( arguments.controller.getSetting( "Exceptionhandler" ) )
 			} catch ( Any e ) {
 				// Log Original Error First
 				appLogger.error(
 					"Original Error: #arguments.exception.message# #arguments.exception.detail# ",
 					arguments.exception
-				);
+				)
 				// Log Exception Handler Error
 				appLogger.error(
 					"Error running exception handler: #arguments.controller.getSetting( "ExceptionHandler" )# #e.message# #e.detail#",
 					e
-				);
+				)
 				// rethrow error
 				rethrow;
 			}
@@ -669,19 +753,19 @@ component serializable="false" accessors="true" {
 			appLogger.error(
 				"Error: #arguments.exception.message# #arguments.exception.detail# ",
 				arguments.exception
-			);
+			)
 		}
 
 		// Render out error via CustomErrorTemplate or Core
-		var customErrorTemplate = arguments.controller.getSetting( "CustomErrorTemplate" );
+		var customErrorTemplate = arguments.controller.getSetting( "CustomErrorTemplate" )
 		if ( len( customErrorTemplate ) ) {
 			// Get app location path
-			var appLocation = "/";
+			var appLocation = "/"
 			if ( len( arguments.controller.getSetting( "AppMapping" ) ) ) {
-				appLocation = appLocation & arguments.controller.getSetting( "AppMapping" ) & "/";
+				appLocation = appLocation & arguments.controller.getSetting( "AppMapping" ) & "/"
 			}
-			var bugReportRelativePath = appLocation & reReplace( customErrorTemplate, "^/", "" );
-			var bugReportAbsolutePath = customErrorTemplate;
+			var bugReportRelativePath = appLocation & reReplace( customErrorTemplate, "^/", "" )
+			var bugReportAbsolutePath = customErrorTemplate
 
 			// Show Bug Report
 			savecontent variable="local.exceptionReport" {
@@ -699,7 +783,7 @@ component serializable="false" accessors="true" {
 			}
 		}
 
-		return local.exceptionReport;
+		return local.exceptionReport
 	}
 
 	/**

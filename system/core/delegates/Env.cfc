@@ -84,7 +84,7 @@ component singleton {
 	 * Retrieve an instance of Java System
 	 */
 	function getJavaSystem(){
-		if ( isNull( variables.javaSystem ) ) {
+		if ( !structKeyExists( variables, "javaSystem" ) || isNull( variables.javaSystem ) ) {
 			variables.javaSystem = createObject( "java", "java.lang.System" );
 		}
 		return variables.javaSystem;

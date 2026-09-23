@@ -17,6 +17,13 @@ component extends="testbox.system.BaseSpec" {
 	function run( testResults, testBox ){
 		// all your suites go here.
 		describe( "Env spec", function(){
+			it( "lazy loads Java System through the public API", function(){
+				var freshEnv = new coldbox.system.core.delegates.Env();
+
+				expect( freshEnv.getJavaSystem() ).toBeInstanceOf( "java.lang.System" );
+				expect( freshEnv.getJavaSystem() ).toBeSameInstanceAs( freshEnv.getJavaSystem() );
+			} );
+
 			it( "can get a system property", function(){
 				var systemMock = createObject( "java", "java.lang.System" );
 				systemMock.setProperty( "foo", "bar" );

@@ -39,7 +39,7 @@ jobs:
             timeoutMinutes: 8
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Setup Database and Fixtures
         run: |
@@ -80,6 +80,11 @@ jobs:
           box server start serverConfigFile="server-${{ matrix.cfengine }}.json" --noSaveSettings --debug
           curl http://127.0.0.1:8599/test-harness
 
+      - name: Run Adobe Full Null Regression
+        if: ${{ matrix.cfengine == 'adobe@2025' }}
+        run: |
+          curl --fail-with-body http://127.0.0.1:8599/tests/full-null/index.cfm
+
       - name: Run Tests
         run: |
           box run-script tests
@@ -88,7 +93,7 @@ jobs:
         run: echo "CFENGINE_VERSION=$(box echo ${serverInfo.engineName@coldbox-${{ matrix.cfengine }}}@${serverInfo.engineVersion@coldbox-${{ matrix.cfengine }}})" >> $GITHUB_ENV
 
       - name: Publish Test Reports
-        uses: mikepenz/action-junit-report@v6.4.0
+        uses: mikepenz/action-junit-report@v6.4.2
         if: always()
         with:
           report_paths: |

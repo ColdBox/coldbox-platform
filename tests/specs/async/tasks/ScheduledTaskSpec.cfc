@@ -178,6 +178,72 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 					expect( t.getPeriod() ).toBe( 31536000 );
 					expect( t.getTimeUnit() ).toBe( "seconds" );
 				} );
+
+				it( "can align every() + startOnTime() to the next period boundary instead of firing immediately", function(){
+					var t = scheduler
+						.task( "test" )
+						.every( 1800, "seconds" )
+						.startOnTime( "00:00" );
+					t.start();
+					expect( t.getDelay() ).toBeGT( 0 );
+					expect( t.getDelay() ).toBeLTE( 1800 );
+				} );
+
+				it( "every() without startOnTime() still fires immediately (unchanged behavior)", function(){
+					var t = scheduler.task( "test" ).every( 1800, "seconds" );
+					t.start();
+					expect( t.getDelay() ).toBe( 0 );
+				} );
+
+				it( "explicit delay() takes precedence over startOnTime() alignment", function(){
+					var t = scheduler
+						.task( "test" )
+						.every( 1800, "seconds" )
+						.startOnTime( "00:00" )
+						.delay( 5, "seconds", true );
+					t.start();
+					expect( t.getDelay() ).toBe( 5 );
+				} );
+
+				it( "keeps spacedDelay consistent with the converted period/timeUnit when withNoOverlaps() is combined with startOnTime()/between() (COLDBOX-1434)", function(){
+					var t = scheduler
+						.task( "test" )
+						.every( 1, "minutes" )
+						.between( "00:00", "23:59" )
+						.withNoOverlaps();
+					t.start();
+
+					// startOnTime()/between() align the period to seconds : 1 minute -> 60 seconds
+					expect( t.getTimeUnit() ).toBe( "seconds" );
+					expect( t.getPeriod() ).toBe( 60 );
+					// spacedDelay must be derived from the ALREADY converted period, not the
+					// original "1" ( minute ) value, or it gets scheduled as 1 second instead of 60
+					expect( t.getSpacedDelay() ).toBe( t.getPeriod() );
+				} );
+
+				it( "keeps spacedDelay consistent for withNoOverlaps() without a start time (unchanged behavior)", function(){
+					var t = scheduler
+						.task( "test" )
+						.every( 1, "minutes" )
+						.withNoOverlaps();
+					t.start();
+
+					expect( t.getTimeUnit() ).toBe( "minutes" );
+					expect( t.getPeriod() ).toBe( 1 );
+					expect( t.getSpacedDelay() ).toBe( t.getPeriod() );
+				} );
+
+				it( "does not override an explicitly set spacedDelay() when combined with startOnTime()", function(){
+					var t = scheduler
+						.task( "test" )
+						.every( 1, "minutes" )
+						.startOnTime( "00:00" )
+						.spacedDelay( 3600, "seconds" )
+						.withNoOverlaps();
+					t.start();
+
+					expect( t.getSpacedDelay() ).toBe( 3600 );
+				} );
 			} );
 
 			describe( "can register frequencies with constraints", function(){
@@ -272,6 +338,27 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 					var target = t.getJavaNow().getDayOfMonth();
 					t.setDayOfTheMonth( t.getJavaNow().getDayOfMonth() );
 					expect( t.isConstrained() ).toBeFalse( "!Day is #target#" );
+				} );
+
+				it( "clamps a day of the month constraint to the last day when it doesn't exist in the month", function(){
+					// April only has 30 days, so day 31 should clamp to April 30
+					var t = prepareMock( scheduler.task( "test" ) );
+					t.setDayOfTheMonth( 31 );
+
+					var april29 = t
+						.getJavaNow()
+						.withMonth( javacast( "int", 4 ) )
+						.withDayOfMonth( javacast( "int", 29 ) );
+					var april30 = t
+						.getJavaNow()
+						.withMonth( javacast( "int", 4 ) )
+						.withDayOfMonth( javacast( "int", 30 ) );
+
+					t.$( "getJavaNow", april29 );
+					expect( t.isConstrained() ).toBeTrue( "April 29 should still be constrained when day=31" );
+
+					t.$( "getJavaNow", april30 );
+					expect( t.isConstrained() ).toBeFalse( "April 30 (clamped last day) should run when day=31" );
 				} );
 
 				xit( "can have a last business day of the month constraint", function(){

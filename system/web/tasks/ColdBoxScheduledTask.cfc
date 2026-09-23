@@ -53,29 +53,31 @@ component extends="coldbox.system.async.tasks.ScheduledTask" accessors="true" {
 	/**
 	 * Constructor
 	 *
-	 * @name     The name of this task
-	 * @executor The executor this task will run under and be linked to
-	 * @task     The closure or cfc that represents the task (optional)
-	 * @method   The method on the cfc to call, defaults to "run" (optional)
+	 * @name      The name of this task
+	 * @executor  The executor this task will run under and be linked to
+	 * @task      The closure or cfc that represents the task (optional)
+	 * @method    The method on the cfc to call, defaults to "run" (optional)
+	 * @scheduler The scheduler to set into the task (optional)
 	 */
 	ColdBoxScheduledTask function init(
 		required name,
 		required executor,
 		any task = "",
-		method   = "run"
+		method   = "run",
+		scheduler
 	){
 		// init
-		super.init( argumentCollection = arguments );
+		super.init( argumentCollection = arguments )
 		// seed environments
-		variables.environments      = [];
+		variables.environments      = []
 		// Can we run on all servers, or just one
-		variables.serverFixation    = false;
+		variables.serverFixation    = false
 		// How long in minutes will the lock be set for before it expires.
-		variables.serverLockTimeout = 60;
+		variables.serverLockTimeout = 60
 		// CacheBox Region
-		variables.cacheName         = "template";
+		variables.cacheName         = "template"
 
-		return this;
+		return this
 	}
 
 	/**
@@ -85,10 +87,10 @@ component extends="coldbox.system.async.tasks.ScheduledTask" accessors="true" {
 	 */
 	ColdBoxScheduledTask function onEnvironment( required environment ){
 		if ( isSimpleValue( arguments.environment ) ) {
-			arguments.environment = listToArray( arguments.environment );
+			arguments.environment = listToArray( arguments.environment )
 		}
-		variables.environments = arguments.environment;
-		return this;
+		variables.environments = arguments.environment
+		return this
 	}
 
 	/**
@@ -98,8 +100,8 @@ component extends="coldbox.system.async.tasks.ScheduledTask" accessors="true" {
 	 * caching engine like: Redis, Couchbase, Mongo, Elastic, DB etc.
 	 */
 	ColdBoxScheduledTask function onOneServer(){
-		variables.serverFixation = true;
-		return this;
+		variables.serverFixation = true
+		return this
 	}
 
 	/**
@@ -324,8 +326,8 @@ component extends="coldbox.system.async.tasks.ScheduledTask" accessors="true" {
 	){
 		try {
 			var dateTimeHelper = new coldbox.system.async.time.DateTimeHelper();
-			var now            = dateTimeHelper.now( getTimezone().getId() );
-			var anchor         = dateTimeHelper.toLocalDateTime( arguments.scheduleStart, getTimezone().getId() );
+			var now            = dateTimeHelper.now( this.getTimezone().getId() );
+			var anchor         = dateTimeHelper.toLocalDateTime( arguments.scheduleStart, this.getTimezone().getId() );
 
 			// Calculate how much time has passed since the schedule started
 			var chronoUnit       = getChronoUnit( arguments.timeUnit );
@@ -363,26 +365,26 @@ component extends="coldbox.system.async.tasks.ScheduledTask" accessors="true" {
 	 */
 	private function adjustDelayToAlignWith( required targetTime ){
 		try {
-			var dateTimeHelper = new coldbox.system.async.time.DateTimeHelper();
-			var now            = dateTimeHelper.now( getTimezone().getId() );
-			var chronoUnit     = getChronoUnit( getTimeUnit() );
+			var dateTimeHelper = new coldbox.system.async.time.DateTimeHelper()
+			var now            = dateTimeHelper.now( this.getTimezone().getId() )
+			var chronoUnit     = getChronoUnit( getTimeUnit() )
 
 			// Calculate the delay in our timeUnit
-			var delayAmount = now.until( arguments.targetTime, chronoUnit );
+			var delayAmount = now.until( arguments.targetTime, chronoUnit )
 
 			// If the target is in the past, set minimal delay
 			if ( delayAmount <= 0 ) {
-				delayAmount = 1;
+				delayAmount = 1
 			}
 
 			// Update the task's delay
-			delay( delayAmount, getTimeUnit(), true );
+			this.delay( delayAmount, getTimeUnit(), true )
 
 			variables.log.debug(
 				"Task (#getName()#): Adjusted initial delay to #delayAmount# #getTimeUnit()# to align with cluster schedule"
-			);
+			)
 		} catch ( any e ) {
-			variables.log.error( "Error adjusting delay for task (#getName()#): #e.message#", e );
+			variables.log.error( "Error adjusting delay for task (#getName()#): #e.message#", e )
 		}
 	}
 
@@ -412,6 +414,43 @@ component extends="coldbox.system.async.tasks.ScheduledTask" accessors="true" {
 	}
 
 	/**
+	 * Determine the next real-world occurrence of this task's date-based scheduling constraint, if any.
+	 *
+	 * Tasks like <code>everyMonthOn()</code>, <code>onFirstBusinessDayOfTheMonth()</code>, and
+	 * <code>onLastBusinessDayOfTheMonth()</code> are internally polled daily (their <code>period</code>
+	 * is a fixed 1-day tick) and gated by <code>isConstrained()</code> so the business logic only fires
+	 * on the correct day. That means <code>getPeriod()</code>/<code>getTimeUnit()</code> reflect the
+	 * internal polling cadence, not the real monthly cadence, so they cannot be used as-is to size the
+	 * server fixation lock. This method computes the actual next occurrence instead.
+	 *
+	 * @return Java LocalDateTime of the next occurrence, or null if this task has no such constraint
+	 */
+	private function getNextConstraintOccurrence(){
+		if ( getFirstBusinessDay() ) {
+			return variables.dateTimeHelper.getFirstBusinessDayOfTheMonth(
+				time    : getTaskTime(),
+				addMonth: true,
+				timezone: this.getTimezone()
+			);
+		}
+		if ( getLastBusinessDay() ) {
+			return variables.dateTimeHelper.getLastBusinessDayOfTheMonth(
+				time    : getTaskTime(),
+				addMonth: true,
+				timezone: this.getTimezone()
+			);
+		}
+		if ( getDayOfTheMonth() > 0 ) {
+			return variables.dateTimeHelper.getNextDayOfMonthOccurrence(
+				day     : getDayOfTheMonth(),
+				time    : getTaskTime(),
+				addMonth: true,
+				timezone: this.getTimezone()
+			);
+		}
+	}
+
+	/**
 	 * Calculate the cache lock timeout in minutes based on the task's period.
 	 * This ensures the lock persists until the next scheduled run while allowing failover.
 	 * Falls back to serverLockTimeout if period cannot be determined.
@@ -419,6 +458,20 @@ component extends="coldbox.system.async.tasks.ScheduledTask" accessors="true" {
 	 * @return numeric The timeout in minutes
 	 */
 	private numeric function calculateLockTimeout(){
+		// Date-based constraints (monthly/business-day) are polled daily internally, so their period
+		// doesn't reflect the real cadence. Compute the real next occurrence instead.
+		var nextOccurrence = getNextConstraintOccurrence();
+		if ( !isNull( local.nextOccurrence ) ) {
+			return max(
+				1,
+				ceiling(
+					variables.dateTimeHelper
+						.now( this.getTimezone().getId() )
+						.until( local.nextOccurrence, variables.dateTimeHelper.MINUTES )
+				)
+			);
+		}
+
 		// If we have a period set, convert it to minutes
 		if ( getPeriod() > 0 ) {
 			return max(

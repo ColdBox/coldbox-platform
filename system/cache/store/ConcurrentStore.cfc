@@ -120,7 +120,7 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true" 
 	function getQuiet( required objectKey ){
 		// retrieve from map
 		var results = variables.pool.get( arguments.objectKey );
-		if ( !isNull( results ) ) {
+		if ( !isNull( local.results ) ) {
 			return results.object;
 		}
 	}
@@ -258,7 +258,7 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true" 
 	 * @return java.util.Collections
 	 */
 	private function getJavaCollections(){
-		if ( isNull( variables.collections ) ) {
+		if ( !structKeyExists( variables, "collections" ) || isNull( variables.collections ) ) {
 			variables.collections = createObject( "java", "java.util.Collections" );
 		}
 		return variables.collections;

@@ -1552,10 +1552,498 @@ component serializable="false" accessors="true" {
 	 * @return coldbox.system.web.context.Response
 	 */
 	function getResponse(){
-		if ( isNull( variables.privateContext.response ) ) {
+		if ( !structKeyExists( variables.privateContext, "response" ) || isNull( variables.privateContext.response ) ) {
 			variables.privateContext.response = new coldbox.system.web.context.Response();
 		}
 		return variables.privateContext.response;
+	}
+
+	/***********************************************************************************************************/
+	/************************************** SERVER-SENT EVENTS (BoxLang) ***************************************/
+	/***********************************************************************************************************/
+
+	/**
+	 * Stream a Server-Sent Events response. BoxLang only.
+	 *
+	 * This takes over the response: ColdBox rendering is suppressed, any event cache entry is
+	 * discarded, and the flash scope is not auto-saved. The callback receives a ColdBox
+	 * `SSEEmitter` which can render views, marshall data, and silently no-ops once the client
+	 * disconnects.
+	 *
+	 * <pre>
+	 * event.sse( ( emitter ) => {
+	 *     while( emitter.isOpen() ){
+	 *         emitter.send( { "ts" : now() }, "tick" )
+	 *         sleep( 1000 )
+	 *     }
+	 * } )
+	 * </pre>
+	 *
+	 * @callback          A closure/lambda receiving ( emitter )
+	 * @keepAliveInterval Milliseconds between automatic keep-alive comments. 0 disables.
+	 * @retry             Client reconnect hint in milliseconds. 0 omits the field.
+	 * @cors              CORS origin. `*` for all, empty for none.
+	 * @headers           Additional response headers to set before the stream opens
+	 *
+	 * @return RequestContext
+	 *
+	 * @throws SSENotSupportedException If the active runtime cannot stream
+	 */
+	function sse(
+		required any callback,
+		numeric keepAliveInterval,
+		numeric retry,
+		string cors,
+		struct headers = {}
+	){
+		ensureSSESupport();
+
+		var options = getSSEOptions();
+		if ( !isNull( arguments.keepAliveInterval ) ) {
+			options.keepAliveInterval = arguments.keepAliveInterval;
+		}
+		if ( !isNull( arguments.retry ) ) {
+			options.retry = arguments.retry;
+		}
+		if ( !isNull( arguments.cors ) ) {
+			options.cors = arguments.cors;
+		}
+
+		// Take over the response: no rendering, no event caching, no flash auto-save.
+		// Event caching is cleared rather than ignored, else a `cache=true` streaming action
+		// would cache an empty response and serve it until it expires.
+		setPrivateValue( name = "coldbox_sse", value = true );
+		noRender();
+		removeEventCacheableEntry();
+
+		// Response headers must go out before the stream opens
+		arguments.headers.each( ( name, value ) => setHTTPHeader( name = name, value = value ) );
+
+		// Give interceptors a chance to reject the connection. Note the abort travels in the
+		// data struct: a `true` return breaks the interceptor chain but is not reported back
+		// to the caller on the synchronous path.
+		var interceptData = { "options" : options, "abort" : false, "statusCode" : 403 };
+		variables.controller.getInterceptorService().announce( "preSSEConnection", interceptData );
+
+		if ( interceptData.abort ) {
+			return abortSSE( interceptData.statusCode );
+		}
+
+		var stime    = getTickCount();
+		var oEmitter = "";
+
+		// Capture the user callback so the streaming closure does not have to reach into an
+		// `arguments` scope it does not own
+		var userCallback = arguments.callback;
+
+		try {
+			if ( isMockedRequest() ) {
+				// Under a MockController there is no live HTTP response to stream into, so we swap
+				// in a MockSSEEmitter and run the callback synchronously. It is wrapped in the same
+				// SSEEmitter decorator a real stream uses, so handler code is identical either way.
+				// The raw mock is stashed separately so specs can assert on what was actually sent -
+				// see MockSSEEmitter and the `_sseEmitter` private value.
+				var rawMockEmitter = new coldbox.system.testing.mock.web.MockSSEEmitter();
+				setPrivateValue( name = "_sseEmitter", value = rawMockEmitter );
+
+				oEmitter = new coldbox.system.web.context.SSEEmitter( rawMockEmitter, variables.controller );
+				userCallback( oEmitter );
+			} else {
+				// Delegated rather than called inline: an unqualified SSE() here would resolve back
+				// to this very method, whose signature matches the BIF's named arguments, and recurse.
+				new coldbox.system.web.context.SSEStreamer().stream(
+					callback = ( emitter ) => {
+						oEmitter = new coldbox.system.web.context.SSEEmitter( emitter, variables.controller );
+						userCallback( oEmitter );
+					},
+					keepAliveInterval = options.keepAliveInterval,
+					retry             = options.retry,
+					cors              = options.cors
+				);
+			}
+		} catch ( any e ) {
+			variables.controller
+				.getInterceptorService()
+				.announce(
+					"onSSEError",
+					{
+						"exception" : e,
+						"sentCount" : isObject( oEmitter ) ? oEmitter.getSentCount() : 0
+					}
+				);
+
+			variables.controller
+				.getLogBox()
+				.getLogger( this )
+				.error( "Error streaming SSE response: #e.message# #e.detail#", e.stackTrace );
+
+			// Best effort close so the client is not left hanging on a half-open stream
+			if ( isObject( oEmitter ) ) {
+				try {
+					oEmitter.close();
+				} catch ( any closeError ) {
+				}
+			}
+
+			rethrow;
+		}
+
+		variables.controller
+			.getInterceptorService()
+			.announce(
+				"postSSEConnection",
+				{
+					"sentCount" : isObject( oEmitter ) ? oEmitter.getSentCount() : 0,
+					"duration"  : getTickCount() - stime
+				}
+			);
+
+		return this;
+	}
+
+	/**
+	 * Has this request been taken over by an SSE stream?
+	 *
+	 * Used by the framework to skip work that would be a write-after-commit against a
+	 * response whose headers already went out.
+	 */
+	boolean function isSSE(){
+		return getPrivateValue( name = "coldbox_sse", defaultValue = false );
+	}
+
+	/**
+	 * Can the active runtime stream Server-Sent Events?
+	 *
+	 * Use this to degrade gracefully in applications that must also run on CFML engines.
+	 *
+	 * <pre>
+	 * if( !event.isSSESupported() ){ return event.renderData( type = "json", data = service.latest() ) }
+	 * </pre>
+	 */
+	boolean function isSSESupported(){
+		return server.keyExists( "boxlang" );
+	}
+
+	/**
+	 * Did the client ask for a stream via content negotiation?
+	 *
+	 * True when `rc.format` resolved to `sse`, which happens for an `Accept: text/event-stream`
+	 * header or a `.sse` URL extension.
+	 */
+	boolean function wantsSSE(){
+		return getValue( name = "format", defaultValue = "" ) == "sse";
+	}
+
+	/**
+	 * Abort a stream that an interceptor rejected before it opened.
+	 *
+	 * Because we bail before calling the BIF, the response was never committed, so the normal
+	 * render pipeline is still available. That lets a rejection return a real error page or an
+	 * HTMX error fragment rather than a bare status code.
+	 *
+	 * @statusCode The status to respond with when the interceptor set neither a status nor a view
+	 *
+	 * @return RequestContext
+	 */
+	private function abortSSE( required numeric statusCode ){
+		removePrivateValue( name = "coldbox_sse" );
+		noRender( remove = true );
+
+		// Only default the status when the interceptor did not render its own response
+		if ( !getCurrentView().len() && getRenderData().isEmpty() ) {
+			setHTTPHeader( statusCode = arguments.statusCode );
+		}
+
+		return this;
+	}
+
+	/**
+	 * The fully resolved SSE options for this request.
+	 *
+	 * Module level overrides are folded over the global block, so this reports exactly what a
+	 * stream opened right now would use. Explicit arguments to `sse()` still win over these.
+	 *
+	 * @return struct of keepAliveInterval, retry and cors
+	 */
+	struct function getSSEOptions(){
+		return {
+			"keepAliveInterval" : getSSESetting( "keepAliveInterval" ),
+			"retry"             : getSSESetting( "retry" ),
+			"cors"              : getSSESetting( "cors" )
+		};
+	}
+
+	/**
+	 * Resolve an SSE setting, preferring the current module's overrides over the global block.
+	 *
+	 * @key The setting key: keepAliveInterval, retry or cors
+	 */
+	private any function getSSESetting( required string key ){
+		var defaults      = { "keepAliveInterval" : 30000, "retry" : 0, "cors" : "*" };
+		var currentModule = getCurrentModule();
+
+		// Module level overrides win over the global block
+		if ( len( currentModule ) ) {
+			var moduleSettings = variables.controller.getSetting( "moduleSettings", {} );
+			if (
+				moduleSettings.keyExists( currentModule )
+				&& isStruct( moduleSettings[ currentModule ] )
+				&& moduleSettings[ currentModule ].keyExists( "sse" )
+				&& isStruct( moduleSettings[ currentModule ].sse )
+				&& moduleSettings[ currentModule ].sse.keyExists( arguments.key )
+			) {
+				return moduleSettings[ currentModule ].sse[ arguments.key ];
+			}
+		}
+
+		var globalSettings = variables.controller.getSetting( "sse", defaults );
+
+		return globalSettings.keyExists( arguments.key ) ? globalSettings[ arguments.key ] : defaults[ arguments.key ];
+	}
+
+	/**
+	 * Verify the active runtime can stream Server-Sent Events.
+	 *
+	 * `SSE()` is a core BoxLang BIF with no CFML equivalent. This is a server scope check only:
+	 * ColdBox 8 already requires a BoxLang release that carries the BIF, so version detection
+	 * would guard a state that cannot occur.
+	 *
+	 * @throws SSENotSupportedException If not running on BoxLang
+	 */
+	private function ensureSSESupport(){
+		if ( !isSSESupported() ) {
+			throw(
+				type   : "SSENotSupportedException",
+				message: "Server-Sent Events require BoxLang.",
+				detail : "event.sse() is a BoxLang only feature. Guard calls with event.isSSESupported() to degrade gracefully."
+			);
+		}
+		return this;
+	}
+
+	/**
+	 * Is this request running under a MockController?
+	 *
+	 * There is no live HTTP response to stream into under test, so `sse()` uses this to decide
+	 * whether to open a real stream or substitute a MockSSEEmitter. Same detection idiom as
+	 * `HandlerService` uses to recognize a mock controller.
+	 */
+	private boolean function isMockedRequest(){
+		return structKeyExists( variables.controller, "mockController" );
+	}
+
+	/**
+	 * Is this request currently flagged to skip event execution?
+	 *
+	 * Set by `noExecution()`. Framework guard points (e.g. `RestHandler.aroundHandler`) use this
+	 * to avoid a write-after-commit against a response that a conditional-GET already resolved
+	 * with a bare status code, the same way `isSSE()` guards against writing to a committed stream.
+	 */
+	boolean function isNoExecution(){
+		return variables.isNoExecution;
+	}
+
+	/**
+	 * Sets the ETag response header and checks it against an incoming If-None-Match.
+	 *
+	 * On a match, short-circuits the request: calls `noExecution()` and responds `304` with no
+	 * body. Never short-circuits unsafe HTTP methods (anything but GET/HEAD), regardless of
+	 * whether the entity tags match, since a conditional-GET result has no meaning for a mutation.
+	 *
+	 * <pre>
+	 * function show( event, rc, prc ){
+	 *     prc.product = productService.get( rc.id )
+	 *     if( event.etag( prc.product.getHash() ) ){
+	 *         return
+	 *     }
+	 *     event.setView( "products/show" )
+	 * }
+	 * </pre>
+	 *
+	 * @value The entity tag value. Quoting is handled here - pass the raw value.
+	 * @weak  Mark as a weak validator (`W/"..."`) - use for a semantically-but-not-byte-identical representation.
+	 *
+	 * @return True if the request was short-circuited with a 304
+	 */
+	boolean function etag( required string value, boolean weak = false ){
+		var tag = ( arguments.weak ? "W/" : "" ) & """#arguments.value#""";
+		setHTTPHeader( name = "ETag", value = tag );
+
+		if ( isSafeHTTPMethod() && matchesIfNoneMatch( tag ) ) {
+			noExecution();
+			setHTTPHeader( statusCode = 304 );
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Sets the Last-Modified response header and checks it against an incoming If-Modified-Since.
+	 *
+	 * On a match, short-circuits the request the same way `etag()` does. HTTP-date granularity is
+	 * seconds - callers with sub-second timestamps should round down, never up, to avoid a false
+	 * negative (reporting the resource as modified when it was not).
+	 *
+	 * Per RFC 7232 §3.3, a request carrying an If-None-Match header MUST have its If-Modified-Since
+	 * ignored - the entity tag is the more precise signal, so a request with both never short-circuits
+	 * here, even if the date matches (call `etag()` for that comparison instead).
+	 *
+	 * @value The last-modified timestamp of the resource
+	 *
+	 * @return True if the request was short-circuited with a 304
+	 */
+	boolean function lastModified( required date value ){
+		setHTTPHeader( name = "Last-Modified", value = toHTTPDate( arguments.value ) );
+
+		var since = getHTTPHeader( "If-Modified-Since", "" );
+		if (
+			isSafeHTTPMethod() &&
+			!len( getHTTPHeader( "If-None-Match", "" ) ) &&
+			len( since ) &&
+			isDate( since ) &&
+			isHTTPDateAtOrAfter( since, arguments.value )
+		) {
+			noExecution();
+			setHTTPHeader( statusCode = 304 );
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Compare an RFC 7231 HTTP date to a CFML date without relying on the runtime's
+	 * timezone-dependent `parseDateTime()` handling of the trailing GMT zone.
+	 */
+	private boolean function isHTTPDateAtOrAfter( required string httpDate, required date value ){
+		try {
+			var formatter = createObject( "java", "java.time.format.DateTimeFormatter" ).RFC_1123_DATE_TIME;
+			var parsed    = createObject( "java", "java.time.ZonedDateTime" )
+				.parse( javacast( "string", arguments.httpDate ), formatter )
+				.toInstant();
+
+			return parsed.getEpochSecond() >= arguments.value.toInstant().getEpochSecond();
+		} catch ( any e ) {
+			return false;
+		}
+	}
+
+	/**
+	 * Sets the Cache-Control response header from a directive struct.
+	 *
+	 * Boolean `true` values become bare directives (`"public"`, `"no-cache"`); any other value
+	 * becomes `"key=value"`.
+	 *
+	 * @directives e.g. `{ "public" : true, "max-age" : 60, "stale-while-revalidate" : 30 }`
+	 *
+	 * @return RequestContext
+	 */
+	function cacheControl( struct directives = { "no-cache" : true } ){
+		setHTTPHeader(
+			name  = "Cache-Control",
+			value = arguments.directives
+				.reduce( ( acc, key, val ) => {
+					// isBoolean() is loosely true for any castable value (isBoolean(60) is true in
+					// CFML/BoxLang), so numerics must be excluded explicitly or a directive like
+					// max-age=60 silently loses its value and becomes the bare token "max-age".
+					acc.append( ( isBoolean( val ) && !isNumeric( val ) && val ) ? key : "#key#=#val#" );
+					return acc;
+				}, [] )
+				.toList( ", " )
+		);
+		return this;
+	}
+
+	/**
+	 * Is the current request's HTTP method safe to answer with a conditional-GET short-circuit?
+	 *
+	 * Only GET and HEAD are safe - a 304 in response to a POST/PUT/PATCH/DELETE would be a
+	 * specification violation and a correctness hazard, so `etag()`/`lastModified()` refuse to
+	 * short-circuit anything else regardless of whether the entity tags/dates match.
+	 */
+	private boolean function isSafeHTTPMethod(){
+		return listFindNoCase( "GET,HEAD", getHTTPMethod() ) > 0;
+	}
+
+	/**
+	 * Checks a fully-quoted (and, if weak, `W/`-prefixed) entity tag against the incoming
+	 * If-None-Match header, per RFC 7232 §3.2/§2.3.2:
+	 * - `*` always matches - a GET/HEAD that reached this point has *some* current representation,
+	 *   which is all `If-None-Match: *` asks about.
+	 * - The header may be a comma-separated list of entity tags; a match against any one counts.
+	 * - If-None-Match always uses *weak* comparison, so the `W/` prefix is stripped from both sides
+	 *   before comparing - a weak and a strong tag with the same opaque value are still a match.
+	 *
+	 * Splits on a bare comma rather than a quoted-string-aware parser - sufficient for the opaque
+	 * hash-style values this framework generates and accepts, which never contain a literal comma.
+	 *
+	 * @tag The tag to check for a match
+	 */
+	private boolean function matchesIfNoneMatch( required string tag ){
+		var header = trim( getHTTPHeader( "If-None-Match", "" ) );
+		if ( !len( header ) ) {
+			return false;
+		}
+		if ( header == "*" ) {
+			return true;
+		}
+
+		var normalizedTag = reReplace( arguments.tag, "^W/", "" );
+		for ( var candidate in listToArray( header, "," ) ) {
+			if ( reReplace( trim( candidate ), "^W/", "" ) == normalizedTag ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Format a date as an RFC 7231 HTTP-date (e.g. `Sun, 06 Nov 1994 08:49:37 GMT`), for use in
+	 * `Last-Modified`, `Expires` and similar headers.
+	 *
+	 * Built from individual date parts rather than a `dateTimeFormat()` mask: CFML's classic mask
+	 * letters ("ddd" for an abbreviated weekday name) and Java's `DateTimeFormatter` pattern
+	 * letters ("EEE" for the same thing) are not the same dialect, and which one a given engine's
+	 * `dateTimeFormat()` actually implements is not something to gamble on in framework code that
+	 * has to run identically on BoxLang, Lucee and Adobe.
+	 *
+	 *        `now()` and date literals) - converted to UTC internally so the trailing "GMT" is accurate
+	 *        regardless of the server's own timezone.
+	 *
+	 * @value The date/time to format, as a local server-time value (the CFML/BoxLang default for
+	 */
+	string function toHTTPDate( required date value ){
+		var utcValue = dateConvert( "local2utc", arguments.value );
+		var dayNames = [
+			"Sun",
+			"Mon",
+			"Tue",
+			"Wed",
+			"Thu",
+			"Fri",
+			"Sat"
+		];
+		var monthNames = [
+			"Jan",
+			"Feb",
+			"Mar",
+			"Apr",
+			"May",
+			"Jun",
+			"Jul",
+			"Aug",
+			"Sep",
+			"Oct",
+			"Nov",
+			"Dec"
+		];
+
+		return dayNames[ dayOfWeek( utcValue ) ] & ", " &
+		numberFormat( day( utcValue ), "00" ) & " " &
+		monthNames[ month( utcValue ) ] & " " &
+		year( utcValue ) & " " &
+		numberFormat( hour( utcValue ), "00" ) & ":" &
+		numberFormat( minute( utcValue ), "00" ) & ":" &
+		numberFormat( second( utcValue ), "00" ) & " GMT";
 	}
 
 	/**
@@ -1799,10 +2287,34 @@ component serializable="false" accessors="true" {
 	}
 
 	/**
-	 * Get the HTTP Request Method Type
+	 * Get the original (transport-level) HTTP Request Method Type, ignoring any _method override.
+	 */
+	string function getOriginalHTTPMethod(){
+		return uCase( CGI.REQUEST_METHOD );
+	}
+
+	/**
+	 * Get the effective HTTP Request Method Type.
+	 * Method spoofing via the _method parameter is only honored when the original
+	 * transport-level request method is POST, and only for PUT, PATCH, and DELETE overrides.
+	 * This prevents GET requests from spoofing destructive HTTP methods.
 	 */
 	string function getHTTPMethod(){
-		return getValue( "_method", CGI.REQUEST_METHOD );
+		var originalMethod = getOriginalHTTPMethod();
+
+		// Only honor _method override on POST requests
+		if ( originalMethod != "POST" ) {
+			return originalMethod;
+		}
+
+		var overriddenMethod = uCase( trim( getValue( "_method", "" ) ) );
+
+		// Only allow overriding to PUT, PATCH, or DELETE from POST
+		if ( listFindNoCase( "PUT,PATCH,DELETE", overriddenMethod ) ) {
+			return overriddenMethod;
+		}
+
+		return originalMethod;
 	}
 
 	/**
@@ -1926,7 +2438,18 @@ component serializable="false" accessors="true" {
 	 * Determines if in an Ajax call or not by looking at the request headers
 	 */
 	boolean function isAjax(){
-		return ( getHTTPHeader( "X-Requested-With", "" ) eq "XMLHttpRequest" );
+		var xRequestedWith = getHTTPHeader( "X-Requested-With", "" );
+		var fetchMode      = getHTTPHeader( "Sec-Fetch-Mode", "" );
+		var fetchDest      = getHTTPHeader( "Sec-Fetch-Dest", "" );
+
+		return (
+			xRequestedWith eq "XMLHttpRequest" ||
+			(
+				len( fetchMode ) &&
+				fetchMode neq "navigate" &&
+				fetchDest eq "empty"
+			)
+		);
 	}
 
 	/***********************************************************************************************************/

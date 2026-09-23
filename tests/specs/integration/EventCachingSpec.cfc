@@ -355,6 +355,50 @@
 				expect( prc1.cbox_eventCacheableEntry.cacheKey ).notToBe( prc2.cbox_eventCacheableEntry.cacheKey );
 			} );
 
+			// HTTP Caching - Tier 1 (docs/specs/http-caching.md §4.2/§4.4)
+			//
+			// execute() is a headless request simulator (system/testing/BaseTestCase.cfc) - it
+			// runs the handler and render steps directly rather than going through Bootstrap.cfc's
+			// actual onRequest cycle, so it never reaches the real event-caching *write* to
+			// CacheBox (every other test in this file only ever asserts against
+			// cbox_eventCacheableEntry for the same reason - none of them read the cache store
+			// back either). These specs are scoped to what execute() can actually observe: that
+			// the new annotations flow correctly into that same pre-execution metadata. The
+			// write-time hash computation and the conditional-GET short-circuit decision itself
+			// are covered directly against RequestContext in RequestContextHTTPCachingTest.cfc.
+
+			it( "flows the etag annotation into the cacheable entry metadata", function(){
+				var event = execute( event = "eventcaching.withETag", renderResults = true );
+				var prc   = event.getPrivateCollection();
+
+				expect( prc.cbox_eventCacheableEntry ).toBeStruct().toHaveKey( "etag,etagWeak,cacheControl" );
+				expect( prc.cbox_eventCacheableEntry.etag ).toBeTrue();
+				// Neither annotation was set on this action, so both resolve to their defaults
+				expect( prc.cbox_eventCacheableEntry.etagWeak ).toBeFalse();
+				expect( prc.cbox_eventCacheableEntry.cacheControl ).toBeEmpty();
+			} );
+
+			it( "flows the lastModified annotation into the cacheable entry metadata", function(){
+				var event = execute( event = "eventcaching.withLastModified", renderResults = true );
+				var prc   = event.getPrivateCollection();
+
+				expect( prc.cbox_eventCacheableEntry ).toBeStruct().toHaveKey( "lastModified" );
+				expect( prc.cbox_eventCacheableEntry.lastModified ).toBeTrue();
+			} );
+
+			it( "defaults etag/etagWeak/lastModified/cacheControl to off for handlers that never set them", function(){
+				var event = execute( event = "eventcaching", renderResults = true );
+				var prc   = event.getPrivateCollection();
+
+				expect( prc.cbox_eventCacheableEntry )
+					.toBeStruct()
+					.toHaveKey( "etag,etagWeak,lastModified,cacheControl" );
+				expect( prc.cbox_eventCacheableEntry.etag ).toBeFalse();
+				expect( prc.cbox_eventCacheableEntry.etagWeak ).toBeFalse();
+				expect( prc.cbox_eventCacheableEntry.lastModified ).toBeFalse();
+				expect( prc.cbox_eventCacheableEntry.cacheControl ).toBeEmpty();
+			} );
+
 			var formats = [ "json", "xml", "pdf" ];
 			for ( var thisFormat in formats ) {
 				it(
@@ -449,6 +493,90 @@
 					);
 					// Make sure they match
 					expect( data2 ).notToBe( data );
+				} );
+			} );
+
+			describe( "EVENT_CACHE_SUFFIX", function(){
+				it( "evaluates a closure suffix on every request producing distinct cache keys", function(){
+					getRequestContext().setValue( "slug", "alpha" )
+					var event1 = execute( event = "eventcachingSuffix.index", renderResults = true )
+					var key1   = event1.getPrivateCollection().cbox_eventCacheableEntry.cacheKey
+
+					expect( key1 ).toInclude( "alpha-present" )
+
+					// reset to simulate another request with a different slug
+					setup()
+					getRequestContext().setValue( "slug", "beta" )
+					var event2 = execute( event = "eventcachingSuffix.index", renderResults = true )
+					var key2   = event2.getPrivateCollection().cbox_eventCacheableEntry.cacheKey
+
+					// the closure must re-evaluate per request, not freeze on the first request's value
+					expect( key2 ).toInclude( "beta-present" )
+					expect( key2 ).notToBe( key1 )
+				} );
+
+				it( "produces the same key on the serve-side lookup and the store-side build", function(){
+					getRequestContext().setValue( "slug", "gamma" )
+					var event    = execute( event = "eventcachingSuffix.index", renderResults = true )
+					var storeKey = event.getPrivateCollection().cbox_eventCacheableEntry.cacheKey
+
+					// re-run the real serve-side path: getEventMetadataEntry() -> buildEventKey()
+					controller.getRequestService().eventCachingTest( event )
+					var serveKey = event.getPrivateCollection().cbox_eventCacheableEntry.cacheKey
+
+					// if lookup and storage keys disagree, cached responses are never served
+					expect( serveKey ).toBe( storeKey )
+				} );
+
+				it( "keeps the serve-side and store-side keys in sync even with handlerCaching off", function(){
+					var handlerService = controller.getHandlerService()
+					handlerService.setHandlerCaching( false )
+
+					try {
+						getRequestContext().setValue( "slug", "delta" )
+						var event    = execute( event = "eventcachingSuffix.index", renderResults = true )
+						var storeKey = event.getPrivateCollection().cbox_eventCacheableEntry.cacheKey
+
+						controller.getRequestService().eventCachingTest( event )
+						var serveKey = event.getPrivateCollection().cbox_eventCacheableEntry.cacheKey
+
+						// Both keys must resolve the "present" tag, not just agree with each other -
+						// otherwise a bean with unloaded action metadata on BOTH sides would still
+						// produce two equal-but-wrong ("delta-missing") keys and this test would miss it.
+						expect( storeKey ).toInclude( "delta-present" )
+						expect( serveKey ).toBe( storeKey )
+					} finally {
+						handlerService.setHandlerCaching( true )
+					}
+				} );
+
+				it( "leaves static string suffixes untouched when resolving", function(){
+					var handlerService = controller.getHandlerService()
+					makePublic( handlerService, "resolveCacheSuffix" )
+
+					var mdEntry  = { "cacheable" : true, "suffix" : "static" }
+					var resolved = handlerService.resolveCacheSuffix(
+						mdEntry,
+						handlerService.getHandlerBean( "eventcachingSuffix.index" ),
+						getRequestContext()
+					)
+
+					expect( isSimpleValue( resolved.suffix ) ).toBeTrue()
+					expect( resolved.suffix ).toBe( "static" )
+				} );
+
+				it( "keeps the closure in the memoized dictionary entry after requests", function(){
+					getRequestContext().setValue( "slug", "epsilon" )
+					execute( event = "eventcachingSuffix.index", renderResults = true )
+
+					var dictionary = prepareMock( controller.getHandlerService() ).$getProperty(
+						"eventCacheDictionary",
+						"variables"
+					)
+					var suffix = dictionary[ "eventcachingSuffix.index" ].suffix
+
+					// the dictionary must keep the closure so later requests can re-evaluate it
+					expect( isClosure( suffix ) || isCustomFunction( suffix ) ).toBeTrue()
 				} );
 			} );
 		} );

@@ -19,9 +19,6 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 */
 	function init( required controller ){
 		setController( arguments.controller );
-
-		variables.RESERVED_PATTERNS = [ "handler", "action" ];
-
 		return this;
 	}
 
@@ -30,7 +27,6 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 */
 	function onConfigurationLoad(){
 		// Prepare references for faster access
-		variables.log                          = variables.controller.getLogBox().getLogger( this );
 		variables.handlersPath                 = controller.getSetting( "HandlersPath" );
 		variables.handlersExternalLocationPath = controller.getSetting( "HandlersExternalLocationPath" );
 		variables.modules                      = controller.getSetting( "Modules" );
@@ -62,6 +58,16 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 		// Load the Application Router
 		loadRouter();
+
+		// Cache immutable router flags after the router is fully configured.
+		// These never change after startup, so reading variables.X on every request
+		// is faster than a getter dispatch through the router every time.
+		variables.routerEnabled        = variables.router.getEnabled();
+		variables.looseMatching        = variables.router.getLooseMatching();
+		variables.extensionDetection   = variables.router.getExtensionDetection();
+		variables.multiDomainDiscovery = variables.router.getMultiDomainDiscovery();
+		// J2EE context root never changes for the life of the app
+		variables.contextRoot          = getContextRoot();
 	}
 
 	/****************************************************************************************************************************/
@@ -110,7 +116,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		switch ( routerType ) {
 			case "modern": {
 				// Log it
-				variables.log.info( "Loading Modern Router at: #modernRouter#" );
+				getLogger().info( "Loading Modern Router at: #modernRouter#" );
 				var modernRouterPath = (
 					variables.appMapping.len() ? "#variables.appMapping#.#modernRouter#" : modernRouter
 				);
@@ -132,7 +138,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			}
 			default: {
 				// Log it
-				variables.log.info( "Loading Base ColdBox Router" );
+				getLogger().info( "Loading Base ColdBox Router" );
 				// Register basic router with default routing
 				wirebox
 					.registerNewInstance( name = "router@coldbox", instancePath = baseRouter )
@@ -158,21 +164,21 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		var rc  = event.getCollection();
 		var prc = event.getPrivateCollection();
 
-		// Clean incoming paths
-		var cleanedPaths = getCleanedPaths( rc, arguments.event );
-
-		// Check if disabled or in proxy mode, if it is, then exit out.
-		if ( !variables.router.getEnabled() OR arguments.event.isProxyRequest() ) {
+		// Check if disabled or in proxy mode before any expensive path-cleaning work
+		if ( !variables.routerEnabled OR arguments.event.isProxyRequest() ) {
 			return;
 		}
 
+		// Clean incoming paths
+		var cleanedPaths = getCleanedPaths( rc, arguments.event );
+
 		// Activate and record the incoming URL for multi-domain hosting ONLY
-		if ( variables.router.getMultiDomainDiscovery() ) {
+		if ( variables.multiDomainDiscovery ) {
 			arguments.event.setSESBaseURL( variables.router.composeRoutingUrl() );
 		}
 
 		// Extension detection if enabled, so we can do cool extension formats
-		if ( variables.router.getExtensionDetection() ) {
+		if ( variables.extensionDetection ) {
 			cleanedPaths[ "pathInfo" ] = detectExtension( cleanedPaths[ "pathInfo" ], arguments.event );
 		}
 
@@ -208,7 +214,6 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		required rc,
 		required prc
 	){
-		var httpMethod      = arguments.event.getHttpMethod();
 		var discoveredEvent = "";
 
 		// Check if we found a route, else most likely it is the default event
@@ -216,14 +221,18 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			return;
 		}
 
-		// Process :handler :action pattern params by convention
-		if ( routeresults.params.count() ) {
-			variables.RESERVED_PATTERNS.each( function( item ){
-				if ( routeResults.params.keyExists( item ) ) {
-					routeResults.route[ item ] = routeResults.params[ item ];
-					structDelete( routeResults.params, item );
-				}
-			} );
+		var httpMethod = arguments.event.getHttpMethod();
+
+		// Process :handler :action pattern params by convention — inlined to avoid closure allocation per request
+		if ( routeResults.params.count() ) {
+			if ( routeResults.params.keyExists( "handler" ) ) {
+				routeResults.route[ "handler" ] = routeResults.params[ "handler" ];
+				structDelete( routeResults.params, "handler" );
+			}
+			if ( routeResults.params.keyExists( "action" ) ) {
+				routeResults.route[ "action" ] = routeResults.params[ "action" ];
+				structDelete( routeResults.params, "action" );
+			}
 		}
 
 		// Now route should have all the key/pairs from the URL we need to pass to our event object for processing
@@ -271,8 +280,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			) {
 				// Mark as invalid HTTP Exception
 				arguments.event.setIsInvalidHTTPMethod( true );
-				if ( variables.log.canDebug() ) {
-					variables.log.debug( "Invalid HTTP Method detected: #httpMethod#", routeResults.route );
+				if ( getLogger().canDebug() ) {
+					getLogger().debug( "Invalid HTTP Method detected: #httpMethod#", routeResults.route );
 				}
 			}
 		}
@@ -295,8 +304,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		) {
 			// Mark as invalid HTTP Exception
 			arguments.event.setIsInvalidHTTPMethod( true );
-			if ( variables.log.canDebug() ) {
-				variables.log.debug( "Invalid HTTP Method detected: #httpMethod#", routeResults.route );
+			if ( getLogger().canDebug() ) {
+				getLogger().debug( "Invalid HTTP Method detected: #httpMethod#", routeResults.route );
 			}
 		}
 
@@ -316,8 +325,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				}
 				discoveredEvent &= "#routeResults.route.action[ httpMethod ]#";
 				// Send for logging in debug mode
-				if ( variables.log.canDebug() ) {
-					variables.log.debug(
+				if ( getLogger().canDebug() ) {
+					getLogger().debug(
 						"Matched HTTP Method (#HTTPMethod#) to routed action: #routeResults.route.action[ httpMethod ]#"
 					);
 				}
@@ -329,8 +338,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				// Mark as invalid HTTP Exception
 				discoveredEvent &= ".onInvalidHTTPMethod";
 				arguments.event.setIsInvalidHTTPMethod( true );
-				if ( variables.log.canDebug() ) {
-					variables.log.debug( "Invalid HTTP Method detected: #httpMethod#", routeResults.route );
+				if ( getLogger().canDebug() ) {
+					getLogger().debug( "Invalid HTTP Method detected: #httpMethod#", routeResults.route );
 				}
 			}
 		}
@@ -370,31 +379,69 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			event.setHTTPHeader( name = key, value = value );
 		} );
 
+		// See if this route streams Server-Sent Events
+		if ( routeResults.route.sse ?: false ) {
+			if ( getLogger().canDebug() ) {
+				getLogger().debug( "Streaming SSE route: #routeResults.route.pattern#" );
+			}
+
+			var sseCallback = routeResults.route.sseCallback;
+
+			arguments.event.sse( ( emitter ) => {
+				sseCallback(
+					event,
+					event.getCollection(),
+					event.getPrivateCollection(),
+					emitter
+				);
+			} );
+
+			// The response is committed, nothing left to execute or render
+			arguments.event.noExecution();
+			arguments.event.setRoutedStruct( routeResults.params );
+
+			return discoveredEvent;
+		}
+
 		// See if Response is dispatched
 		if (
 			isClosure( routeResults.route.response ) || isCustomFunction( routeResults.route.response ) || routeResults.route.response.len()
 		) {
 			// Log AI/MCP route execution
-			if ( routeResults.route.ai ?: false ) {
-				variables.log.debug(
-					"Executing AI runnable route: #routeResults.route.pattern#",
-					{
-						route    : routeResults.route.pattern,
-						runnable : isObject( routeResults.route.aiRunnable ) ? getMetadata(
-							routeResults.route.aiRunnable
-						).name : routeResults.route.aiRunnable,
-						verbs : routeResults.route.verbs
-					}
-				);
-			} else if ( routeResults.route.mcp ?: false ) {
-				variables.log.debug(
-					"Executing MCP server route: #routeResults.route.pattern# -> #routeResults.route.mcpServer#",
-					{
-						route     : routeResults.route.pattern,
-						mcpServer : routeResults.route.mcpServer,
-						verbs     : routeResults.route.verbs
-					}
-				);
+			if ( getLogger().canDebug() ) {
+				if ( routeResults.route.ai ?: false ) {
+					getLogger().debug(
+						"Executing AI runnable route: #routeResults.route.pattern#",
+						{
+							route    : routeResults.route.pattern,
+							runnable : isObject( routeResults.route.aiRunnable ) ? getMetadata(
+								routeResults.route.aiRunnable
+							).name : routeResults.route.aiRunnable,
+							verbs : routeResults.route.verbs
+						}
+					);
+				} else if ( routeResults.route.mcp ?: false ) {
+					getLogger().debug(
+						"Executing MCP server route: #routeResults.route.pattern# -> #routeResults.route.mcpServer#",
+						{
+							route     : routeResults.route.pattern,
+							mcpServer : routeResults.route.mcpServer,
+							verbs     : routeResults.route.verbs
+						}
+					);
+				} else if ( routeResults.route.gateway ?: false ) {
+					var loggedGateway = len( routeResults.route.gatewayName ) ? routeResults.route.gatewayName : (
+						routeResults.params.gateway ?: ""
+					);
+					getLogger().debug(
+						"Executing AI gateway route: #routeResults.route.pattern#",
+						{
+							route   : routeResults.route.pattern,
+							gateway : loggedGateway,
+							verbs   : routeResults.route.verbs
+						}
+					);
+				}
 			}
 			renderResponse( routeResults.route, arguments.event );
 		}
@@ -403,6 +450,72 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		arguments.event.setRoutedStruct( routeResults.params );
 
 		return discoveredEvent;
+	}
+
+	/**
+	 * Run the currently matched route's middleware (`Router.middleware()`) for the given interception
+	 * point. A no-op if no route matched, or the matched route registered no middleware for this point.
+	 *
+	 * Mirrors `InterceptorState.processSync()`'s short-circuit contract: a target returning `true`
+	 * stops the remaining middleware at this point for this route. It does not, by itself, skip the
+	 * handler or the render - the target must do that explicitly (`event.relocate()`,
+	 * `event.renderData().noExecution()`, etc), exactly like any other preProcess/postProcess interceptor.
+	 *
+	 * @event The ColdBox Request context
+	 * @point The interception point to run middleware for, e.g. `preProcess` or `postProcess`
+	 *
+	 * @return True if a middleware target short-circuited the chain by returning true; false otherwise
+	 */
+	boolean function runRouteMiddleware( required event, required string point ){
+		var routeRecord = arguments.event.getCurrentRouteRecord();
+
+		if ( !structKeyExists( routeRecord, "middleware" ) || !routeRecord.middleware.len() ) {
+			return false;
+		}
+
+		var invocationArgs = {
+			"event" : arguments.event,
+			"rc"    : arguments.event.getCollection(),
+			"prc"   : arguments.event.getPrivateCollection()
+		};
+
+		for ( var entry in routeRecord.middleware ) {
+			if ( entry.point != arguments.point ) {
+				continue;
+			}
+
+			var target  = resolveMiddlewareTarget( entry.target );
+			var results = "";
+
+			if ( isClosure( target ) || isCustomFunction( target ) ) {
+				results = target( argumentCollection = invocationArgs );
+			} else if ( structKeyExists( target, arguments.point ) ) {
+				results = invoke( target, arguments.point, invocationArgs );
+			} else {
+				// No method matching this point on the target - nothing to run
+				continue;
+			}
+
+			if ( !isNull( local.results ) && isBoolean( results ) && results ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Resolve a route middleware target: a WireBox ID string is resolved via `getInstance()` on every
+	 * call so it respects the mapping's own declared scope; anything else (a closure or an already
+	 * built object instance) is returned as-is.
+	 *
+	 * @target The middleware target to resolve
+	 */
+	private function resolveMiddlewareTarget( required target ){
+		if ( isSimpleValue( arguments.target ) ) {
+			return variables.wirebox.getInstance( arguments.target );
+		}
+		return arguments.target;
 	}
 
 	/****************************************************************************************************************************/
@@ -438,8 +551,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		var _routes = variables.router.getRoutes();
 		// Module call? Switch routes
 		if ( len( arguments.module ) ) {
-			_routes       = variables.router.getModuleRoutes( arguments.module );
-			_routesLength = _routes.len();
+			_routes = variables.router.getModuleRoutes( arguments.module );
 		}
 		// Namespace Call? Switch routes
 		if ( len( arguments.namespace ) ) {
@@ -448,6 +560,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 		// Process routing length
 		var _routesLength = _routes.len();
+		// Cache per-call values to avoid repeated getter dispatches on every loop iteration
+		var looseMatching = variables.looseMatching;
+		var canDebug      = getLogger().canDebug();
 
 		// Remove the leading slash
 		if ( len( requestString ) GT 1 AND left( requestString, 1 ) eq "/" ) {
@@ -467,19 +582,15 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				1,
 				true
 			);
-			if (
-				( match.len[ 1 ] IS NOT 0 AND variables.router.getLooseMatching() )
-				OR
-				( NOT variables.router.getLooseMatching() AND match.len[ 1 ] IS NOT 0 AND match.pos[ 1 ] EQ 1 )
-			) {
+			if ( match.len[ 1 ] IS NOT 0 AND ( looseMatching OR match.pos[ 1 ] EQ 1 ) ) {
 				// Verify condition matching
 				if (
 					( isClosure( _routes[ i ].condition ) || isCustomFunction( _routes[ i ].condition ) )
 					AND NOT _routes[ i ].condition( requestString )
 				) {
 					// Debug logging
-					if ( variables.log.canDebug() ) {
-						variables.log.debug(
+					if ( canDebug ) {
+						getLogger().debug(
 							"SES Route matched but condition closure did not pass: #_routes[ i ].toString()# on routed string: #requestString#"
 						);
 					}
@@ -511,8 +622,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				}
 
 				// Debug logging
-				if ( variables.log.canDebug() ) {
-					variables.log.debug(
+				if ( canDebug ) {
+					getLogger().debug(
 						"Route matched: #results.route.toString()# on routed string: #requestString#"
 					);
 				}
@@ -524,8 +635,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 		// Check if we found a route, else just return empty params struct
 		if ( results.route.isEmpty() ) {
-			if ( variables.log.canDebug() ) {
-				variables.log.debug( "No URL routes matched on routed string: #requestString#" );
+			if ( canDebug ) {
+				getLogger().debug( "No URL routes matched on routed string: #requestString#" );
 			}
 			return results;
 		}
@@ -535,6 +646,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			// build routing argument struct based on module/namespace context
 			var contextRouting = {
 				action           : reReplaceNoCase( requestString, results.route.regexpattern, "" ),
+				domain           : arguments.domain,
 				event            : arguments.event,
 				excludedPatterns : arguments.excludedPatterns
 			};
@@ -560,10 +672,14 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			// process context discovery of incoming pattern
 			var contextRoute = findRoute( argumentCollection = contextRouting );
 
-			// Return if route Not found.
 			if ( !contextRoute.route.isEmpty() ) {
 				return contextRoute;
 			}
+
+			// A module or namespace mount point is not itself an executable route.
+			// Return the empty nested result so a failed domain or condition match
+			// cannot fall back to the mount point.
+			return contextRoute;
 		}
 
 		// Save current routed details in PRC
@@ -590,12 +706,13 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			// reset pattern matching, if packages found.
 			if ( compare( packagedRequestString, requestString ) NEQ 0 ) {
 				// Log package resolved
-				if ( variables.log.canDebug() ) {
-					variables.log.debug( "URL Routing Package Resolved: #packagedRequestString#" );
+				if ( canDebug ) {
+					getLogger().debug( "URL Routing Package Resolved: #packagedRequestString#" );
 				}
 				// Return found Route recursively.
 				return findRoute(
 					action           = packagedRequestString,
+					domain           = arguments.domain,
 					event            = arguments.event,
 					module           = arguments.module,
 					excludedPatterns = arguments.excludedPatterns
@@ -708,8 +825,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				// set the format request collection variable
 				event.setValue( "format", extension );
 				// debug logging
-				if ( variables.log.canDebug() ) {
-					variables.log.debug( "Extension: #extension# detected and set in rc.format" );
+				if ( getLogger().canDebug() ) {
+					getLogger().debug( "Extension: #extension# detected and set in rc.format" );
 				}
 				// remove it from the string and return string for continued parsing.
 				return left( requestString, len( arguments.requestString ) - extensionLen - 1 );
@@ -733,6 +850,13 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 					// If we found, just return
 					if ( previous.len() ) {
 						return previous;
+					}
+					// Explicit aliases first, for media types that share no substring with their
+					// extension. `text/event-stream` does not contain `sse`, so the filter below
+					// would never match it.
+					var alias = variables.router.getMimeExtensionAlias( thisAccept );
+					if ( alias.len() ) {
+						return alias;
 					}
 					// Match towards system valid extensions
 					return variables.router
@@ -772,16 +896,14 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// simple values
 		if ( isSimpleValue( aRoute.response ) ) {
 			// setup default response
-			theResponse      = aRoute.response;
-			// String replacements
-			var replacements = reMatchNoCase( "{[^{]+?}", aRoute.response );
-			for ( var thisReplacement in replacements ) {
-				var thisKey = reReplaceNoCase( thisReplacement, "({|})", "", "all" );
-				if ( event.valueExists( thisKey ) ) {
+			theResponse = aRoute.response;
+			// Apply pre-parsed placeholders (tokens resolved once at route registration)
+			for ( var placeholder in aRoute.responsePlaceholders ) {
+				if ( event.valueExists( placeholder.key ) ) {
 					theResponse = replace(
-						aRoute.response,
-						thisReplacement,
-						event.getValue( thisKey ),
+						theResponse,
+						placeholder.token,
+						event.getValue( placeholder.key ),
 						"all"
 					);
 				}
@@ -789,11 +911,27 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		}
 		// Closure/Lambda
 		else {
+			// Tracked so a closure that renders the response ITSELF is not flattened back onto the
+			// route's static statusCode by the renderData() call at the bottom of this method. An AI
+			// gateway route is the case in point: its status code and content type come back from the
+			// gateway per request (a 401 on a bad signature, a plain-text challenge on a handshake),
+			// not from the route definition. Only renderData set DURING the closure counts — one an
+			// interceptor set before the route ran is left to whatever set it.
+			var priorRenderData = event.getRenderData();
+			var hadRenderData   = !priorRenderData.isEmpty();
+
 			theResponse = aRoute.response(
 				event,
 				event.getCollection(),
 				event.getPrivateCollection()
 			);
+
+			// The closure rendered the response itself — nothing left to marshall here
+			var closureRenderData = event.getRenderData();
+			if ( !hadRenderData && !closureRenderData.isEmpty() ) {
+				event.noExecution();
+				return;
+			}
 		}
 
 		// render it out
@@ -1010,8 +1148,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		);
 
 		// Clean ContextRoots
-		if ( len( getContextRoot() ) ) {
-			results[ "scriptName" ] = replaceNoCase( results[ "scriptName" ], getContextRoot(), "" );
+		if ( len( variables.contextRoot ) ) {
+			results[ "scriptName" ] = replaceNoCase(
+				results[ "scriptName" ],
+				variables.contextRoot,
+				""
+			);
 		}
 
 		// Clean up the path_info from index

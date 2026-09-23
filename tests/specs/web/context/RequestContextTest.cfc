@@ -616,6 +616,45 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		assertTrue( isSimpleValue( test ) );
 	}
 
+	function testIsAjaxWithXMLHttpRequestHeader(){
+		var event = getRequestContext()
+			.$( "getHTTPHeader" )
+			.$args( "X-Requested-With", "" )
+			.$results( "XMLHttpRequest" );
+
+		expect( event.isAjax() ).toBeTrue();
+	}
+
+	function testIsAjaxWithFetchMetadataHeaders(){
+		var event = getRequestContext()
+			.$( "getHTTPHeader" )
+			.$args( "X-Requested-With", "" )
+			.$results( "" )
+			.$( "getHTTPHeader" )
+			.$args( "Sec-Fetch-Mode", "" )
+			.$results( "cors" )
+			.$( "getHTTPHeader" )
+			.$args( "Sec-Fetch-Dest", "" )
+			.$results( "empty" );
+
+		expect( event.isAjax() ).toBeTrue();
+	}
+
+	function testIsAjaxFalseForNavigationRequests(){
+		var event = getRequestContext()
+			.$( "getHTTPHeader" )
+			.$args( "X-Requested-With", "" )
+			.$results( "" )
+			.$( "getHTTPHeader" )
+			.$args( "Sec-Fetch-Mode", "" )
+			.$results( "navigate" )
+			.$( "getHTTPHeader" )
+			.$args( "Sec-Fetch-Dest", "" )
+			.$results( "document" );
+
+		expect( event.isAjax() ).toBeFalse();
+	}
+
 	function testNoLayout(){
 		var event = getRequestContext();
 
@@ -815,6 +854,58 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		// debug( event.getHTMLBaseURL() );
 
 		expect( event.getSesBaseUrl() ).toInclude( event.getSESBasePath() );
+	}
+
+	/**
+	 * Tests for method spoofing security fix (COLDBOX-1406).
+	 * _method override should only be honored when the original request is POST.
+	 */
+	function testGetHTTPMethodNoOverrideOnGET(){
+		var event = getRequestContext().$( "getOriginalHTTPMethod", "GET" );
+		event.setValue( "_method", "DELETE" );
+		expect( event.getHTTPMethod() ).toBe( "GET" );
+	}
+
+	function testGetHTTPMethodNoOverrideOnHEAD(){
+		var event = getRequestContext().$( "getOriginalHTTPMethod", "HEAD" );
+		event.setValue( "_method", "DELETE" );
+		expect( event.getHTTPMethod() ).toBe( "HEAD" );
+	}
+
+	function testGetHTTPMethodNoOverrideOnPUT(){
+		var event = getRequestContext().$( "getOriginalHTTPMethod", "PUT" );
+		event.setValue( "_method", "DELETE" );
+		expect( event.getHTTPMethod() ).toBe( "PUT" );
+	}
+
+	function testGetHTTPMethodPostDeleteOverride(){
+		var event = getRequestContext().$( "getOriginalHTTPMethod", "POST" );
+		event.setValue( "_method", "DELETE" );
+		expect( event.getHTTPMethod() ).toBe( "DELETE" );
+	}
+
+	function testGetHTTPMethodPostPutOverride(){
+		var event = getRequestContext().$( "getOriginalHTTPMethod", "POST" );
+		event.setValue( "_method", "PUT" );
+		expect( event.getHTTPMethod() ).toBe( "PUT" );
+	}
+
+	function testGetHTTPMethodPostPatchOverride(){
+		var event = getRequestContext().$( "getOriginalHTTPMethod", "POST" );
+		event.setValue( "_method", "PATCH" );
+		expect( event.getHTTPMethod() ).toBe( "PATCH" );
+	}
+
+	function testGetHTTPMethodPostWithNoOverride(){
+		var event = getRequestContext().$( "getOriginalHTTPMethod", "POST" );
+		expect( event.getHTTPMethod() ).toBe( "POST" );
+	}
+
+	function testGetHTTPMethodPostGetOverrideIgnored(){
+		// POST _method=GET should not be honored; result stays POST
+		var event = getRequestContext().$( "getOriginalHTTPMethod", "POST" );
+		event.setValue( "_method", "GET" );
+		expect( event.getHTTPMethod() ).toBe( "POST" );
 	}
 
 }

@@ -4,18 +4,18 @@
 		super.setup();
 
 		// Create Mock Objects
-		mockbox            = getMockBox();
-		mockController     = mockBox.createMock( "coldbox.system.testing.mock.web.MockController" );
-		mockRequestContext = getMockRequestContext();
-		mockRequestService = mockBox
+		variables.mockbox            = getMockBox();
+		variables.mockController     = mockBox.createMock( "coldbox.system.testing.mock.web.MockController" );
+		variables.mockRequestContext = getMockRequestContext();
+		variables.mockRequestService = mockBox
 			.createEmptyMock( "coldbox.system.web.services.RequestService" )
 			.$( "getContext", mockRequestContext );
-		mockLogBox   = mockBox.createEmptyMock( "coldbox.system.logging.LogBox" );
-		mockLogger   = mockBox.createEmptyMock( "coldbox.system.logging.Logger" ).$( "canDebug", false );
-		mockFlash    = mockBox.createMock( "coldbox.system.web.flash.MockFlash" ).init( mockController );
-		mockCacheBox = mockBox.createEmptyMock( "coldbox.system.cache.CacheFactory" );
-		mockCache    = mockBox.createEmptyMock( "coldbox.system.cache.providers.CacheBoxColdBoxProvider" );
-		mockWireBox  = mockBox.createEmptyMock( "coldbox.system.ioc.Injector" );
+		variables.mockLogBox   = mockBox.createEmptyMock( "coldbox.system.logging.LogBox" );
+		variables.mockLogger   = mockBox.createEmptyMock( "coldbox.system.logging.Logger" ).$( "canDebug", false );
+		variables.mockFlash    = mockBox.createMock( "coldbox.system.web.flash.MockFlash" ).init( mockController );
+		variables.mockCacheBox = mockBox.createEmptyMock( "coldbox.system.cache.CacheFactory" );
+		variables.mockCache    = mockBox.createEmptyMock( "coldbox.system.cache.providers.CacheBoxColdBoxProvider" );
+		variables.mockWireBox  = mockBox.createEmptyMock( "coldbox.system.ioc.Injector" );
 
 		// Mock model Dependencies
 		mockController.$( "getRequestService", mockRequestService );
@@ -27,7 +27,7 @@
 		mockRequestService.$( "getFlashScope", mockFlash );
 		mockLogBox.$( "getLogger", mockLogger );
 
-		iService = model
+		variables.iService = model
 			.init( mockController )
 			.$( "getCache", mockCache )
 			.$property( "wirebox", "variables", mockWireBox );
@@ -42,15 +42,17 @@
 			.$args( "coldboxConfig" )
 			.$results( mockBox.createStub() );
 		iService.$( "registerInterceptor", iService ).$( "registerInterceptors", iService );
+		iService.$property( "interceptionPointsChanged", "variables", true );
 
 		iService.onConfigurationLoad();
 
 		assertTrue( iService.$once( "registerInterceptors" ) );
+		expect( iService.getInterceptionPointsChanged() ).toBeFalse();
 	}
 
 	function testregisterInterceptors(){
-		var states = "";
-		mockConfig = {
+		var states     = "";
+		var mockConfig = {
 			customInterceptionPoints : [ "myCustom" ],
 			interceptors             : [
 				{
@@ -66,6 +68,9 @@
 		iService.registerInterceptors();
 
 		assertTrue( iService.$count( 1, "registerInterceptor" ) );
+		expect( iService.getInterceptionPointIndex() ).toHaveKey( "myCustom" );
+		expect( iService.getInterceptionPointIndex().myCustom.core ).toBeFalse();
+		expect( iService.getInterceptionPointIndex().myCustom.module ).toBe( "" );
 	}
 
 	function testListen(){
@@ -110,17 +115,84 @@
 		assertFalse( called );
 	}
 
+	function testAnnounceReturnsTrueWhenAnInterceptorShortCircuits(){
+		iService.listen( function( event, data ){
+			return true;
+		}, "onCall" );
+
+		var result = iService.announce( "onCall" );
+
+		assertTrue( result );
+	}
+
+	function testAnnounceReturnsFalseWhenNoInterceptorShortCircuits(){
+		var ran = false;
+		iService.listen( function( event, data ){
+			ran = true;
+			return false;
+		}, "onCall" );
+
+		var result = iService.announce( "onCall" );
+
+		assertTrue( ran );
+		assertFalse( result );
+	}
+
+	function testAnnounceReturnsFalseWhenTheRegisteredStateHasNoInterceptors(){
+		// listen()/unlisten() creates the state container but leaves it with no interceptors
+		var listener = function(){
+		};
+		iService.listen( listener, "onEmptyState" );
+		iService.unlisten( listener, "onEmptyState" );
+
+		var result = iService.announce( "onEmptyState" );
+
+		assertFalse( result );
+	}
+
+	function testAnnounceStopsLaterInterceptorsOnceOneShortCircuits(){
+		var laterInterceptorRan = false;
+
+		iService.listen( function( event, data ){
+			return true;
+		}, "onCall" );
+		iService.listen( function( event, data ){
+			laterInterceptorRan = true;
+		}, "onCall" );
+
+		iService.announce( "onCall" );
+
+		assertFalse( laterInterceptorRan );
+	}
+
+	function testAnnounceFlushesBufferedInterceptorOutput(){
+		iService.listen( function( event, data, buffer ){
+			arguments.buffer.append( "buffered output" )
+		}, "onBufferedOutput" )
+
+		savecontent variable="local.output" {
+			iService.announce( "onBufferedOutput" )
+		}
+
+		expect( local.output ).toBe( "buffered output" )
+	}
+
 	function testInterceptionPoints(){
 		// test registration again
 		assertTrue( arrayLen( iService.getInterceptionPoints() ) gt 0 );
+		expect( iService.getInterceptionPointIndex() ).toHaveKey( "preProcess" );
+		expect( iService.getInterceptionPointIndex().preProcess.name ).toBe( "preProcess" );
+		expect( iService.getInterceptionPointIndex().preProcess.core ).toBeTrue();
+		expect( iService.getInterceptionPointIndex().preProcess.module ).toBe( "" );
+		expect( iService.getInterceptionPointIndex().preProcess.order ).toBeGT( 0 );
 	}
 
 	function testgetStateContainer(){
-		state = iService.getStateContainer( "nothing" );
+		var state = iService.getStateContainer( "nothing" );
 
 		assertFalse( isObject( state ) );
 
-		mockState = createStub().$( "process" );
+		var mockState = createStub().$( "process" );
 		iService.$property(
 			"preProcess",
 			"variables.interceptionStates",
@@ -134,13 +206,13 @@
 	function testUnregister(){
 		// mocks
 		mockCache.INTERCEPTOR_CACHEKEY_PREFIX = "sample";
-		mockState                             = mockBox.createStub().$( "unregister" );
+		var mockState                         = mockBox.createStub().$( "unregister" );
 		iService.$property(
 			"preProcess",
 			"variables.interceptionStates",
 			mockState
 		);
-		mockState2 = mockBox.createStub().$( "unregister" );
+		var mockState2 = mockBox.createStub().$( "unregister" );
 		iService.$property(
 			"preProcess2",
 			"variables.interceptionStates",
@@ -160,20 +232,74 @@
 
 	function testAppendInterceptionPoints(){
 		var aLen = arrayLen( iService.getInterceptionPoints() );
+		expect( iService.getInterceptionPointsChanged() ).toBeFalse();
 
 		// test 1: nothing
 		iService.appendInterceptionPoints( "" );
 		assertEquals( aLen, arrayLen( iService.getInterceptionPoints() ) );
+		expect( iService.getInterceptionPointsChanged() ).toBeFalse();
 
 		// test 2: add points
 		aLen = arrayLen( iService.getInterceptionPoints() );
 		iService.appendInterceptionPoints( "onTest,onLuis" );
 		assertEquals( aLen + 2, arrayLen( iService.getInterceptionPoints() ) );
+		expect( iService.getInterceptionPointIndex().onTest.name ).toBe( "onTest" );
+		expect( iService.getInterceptionPointIndex().onTest.core ).toBeFalse();
+		expect( iService.getInterceptionPointIndex().onTest.module ).toBe( "" );
+		expect( iService.getInterceptionPointsChanged() ).toBeTrue();
+
+		iService.$property(
+			"interceptionPointsChanged",
+			"variables",
+			false
+		);
 
 		// test 3: add points with duplicates
 		aLen = arrayLen( iService.getInterceptionPoints() );
 		iService.appendInterceptionPoints( [ "on1", "on2", "on1" ] );
 		assertEquals( ( aLen + 2 ), arrayLen( iService.getInterceptionPoints() ) );
+		expect( iService.getInterceptionPointsChanged() ).toBeTrue();
+
+		iService.$property(
+			"interceptionPointsChanged",
+			"variables",
+			false
+		);
+
+		// test 4: add module points
+		aLen = arrayLen( iService.getInterceptionPoints() );
+		iService.appendInterceptionPoints( customPoints = "onModulePoint", module = "testModule" );
+		assertEquals( ( aLen + 1 ), arrayLen( iService.getInterceptionPoints() ) );
+		expect( iService.getInterceptionPointIndex().onModulePoint.name ).toBe( "onModulePoint" );
+		expect( iService.getInterceptionPointIndex().onModulePoint.core ).toBeFalse();
+		expect( iService.getInterceptionPointIndex().onModulePoint.module ).toBe( "testModule" );
+		expect( iService.getInterceptionPointsChanged() ).toBeTrue();
+
+		iService.$property(
+			"interceptionPointsChanged",
+			"variables",
+			false
+		);
+
+		// test 5: case-insensitive duplicate checks use the index
+		aLen = arrayLen( iService.getInterceptionPoints() );
+		iService.appendInterceptionPoints( "ONMODULEPOINT" );
+		assertEquals( aLen, arrayLen( iService.getInterceptionPoints() ) );
+		expect( iService.getInterceptionPointIndex().onModulePoint.module ).toBe( "testModule" );
+		expect( iService.getInterceptionPointsChanged() ).toBeFalse();
+	}
+
+	function testRescanInterceptorsOnlyWhenInterceptionPointsChanged(){
+		mockLogger.$( "info" );
+		iService.$( "registerInterceptors", iService );
+
+		iService.rescanInterceptors();
+		assertTrue( iService.$never( "registerInterceptors" ) );
+
+		iService.appendInterceptionPoints( "onStartupAddedPoint" );
+		iService.rescanInterceptors();
+
+		assertTrue( iService.$once( "registerInterceptors" ) );
 	}
 
 	function testSimpleProcessInterception(){
@@ -183,7 +309,7 @@
 
 		// 3: process a mock state
 		mockController.$( "getColdboxInitiated", true );
-		mockState = createStub().$( "process" );
+		var mockState = createStub().$( "process" );
 		iService.$property(
 			"preProcess",
 			"variables.interceptionStates",
@@ -243,6 +369,20 @@
 		iService.registerInterceptor( interceptorObject = obj, customPoints = "unitTest" );
 
 		assertTrue( isObject( iService.getStateContainer( "unittest" ) ) );
+	}
+
+	function testRegisterInterceptorParsesInheritedAndAnnotatedMetadata(){
+		var obj                               = createObject( "component", "coldbox.tests.resources.ChildMetadataInterceptor" )
+		mockCache.INTERCEPTOR_CACHEKEY_PREFIX = "sample"
+		mockLogger.$( "canDebug", false )
+		mockController.$( "getAspectsInitiated", false )
+
+		iService.registerInterceptor( interceptorObject = obj, interceptorName = "childMetadataInterceptor" )
+
+		assertTrue( isObject( iService.getStateContainer( "preProcess" ) ) )
+		assertTrue( isObject( iService.getStateContainer( "postProcess" ) ) )
+		assertTrue( isObject( iService.getStateContainer( "onCustomMetadata" ) ) )
+		expect( iService.getInterceptionPointIndex() ).toHaveKey( "onCustomMetadata" )
 	}
 
 }

@@ -16,7 +16,7 @@
 				getController().getHandlerService().registerHandlers();
 
 				try {
-					assertTrue( listFindNoCase( getController().getSetting( "RegisteredHandlers" ), "dummy" ) );
+					assertTrue( structKeyExists( getController().getSetting( "RegisteredHandlers" ), "dummy" ) );
 				} finally {
 					removeFile( dummyFile );
 				}

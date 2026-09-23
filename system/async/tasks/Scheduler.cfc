@@ -58,6 +58,21 @@ component accessors="true" singleton {
 	property name="startedAt" type="date";
 
 	/**
+	 * Inet Host
+	 */
+	property name="inetHost";
+
+	/**
+	 * Local Ip
+	 */
+	property name="localIp";
+
+	/**
+	 * Utility Object
+	 */
+	property name="util";
+
+	/**
 	 * Constructor
 	 *
 	 * @name         The name of this scheduler
@@ -65,23 +80,26 @@ component accessors="true" singleton {
 	 */
 	function init( required name, required asyncManager ){
 		// Utility class
-		variables.util            = new coldbox.system.core.util.Util();
+		variables.util            = new coldbox.system.core.util.Util()
 		// Default shutdown timeout
-		variables.shutdownTimeout = 30;
+		variables.shutdownTimeout = 30
 		// Name
-		variables.name            = arguments.name;
+		variables.name            = arguments.name
 		// The async manager
-		variables.asyncManager    = arguments.asyncManager;
+		variables.asyncManager    = arguments.asyncManager
 		// The collection of tasks we will run
-		variables.tasks           = structNew( "ordered" );
+		variables.tasks           = structNew( "ordered" )
 		// Default TimeZone to UTC for all tasks
-		variables.timezone        = createObject( "java", "java.time.ZoneId" ).systemDefault();
+		variables.timezone        = createObject( "java", "java.time.ZoneId" ).systemDefault()
 		// Build out the executor for this scheduler
-		createSchedulerExecutor();
+		createSchedulerExecutor()
 		// Bit that denotes if this scheduler has been started or not
-		variables.started = false;
+		variables.started  = false
+		// Inet Host and local IP
+		variables.inetHost = variables.util.discoverInetHost()
+		variables.localIp  = variables.util.getServerIp()
 		// Send notice
-		arguments.asyncManager.out( "√ Scheduler (#arguments.name#) has been registered" );
+		arguments.asyncManager.out( "√ Scheduler (#arguments.name#) has been registered" )
 
 		return this;
 	}
@@ -105,8 +123,8 @@ component accessors="true" singleton {
 	 * @timezone The timezone string identifier
 	 */
 	Scheduler function setTimezone( required timezone ){
-		variables.timezone = createObject( "java", "java.time.ZoneId" ).of( arguments.timezone );
-		return this;
+		variables.timezone = createObject( "java", "java.time.ZoneId" ).of( arguments.timezone )
+		return this
 	}
 
 	/**
@@ -123,22 +141,23 @@ component accessors="true" singleton {
 			lock name="scheduler-#getName()#-startup" type="exclusive" timeout="45" throwOnTimeout="true" {
 				if ( !variables.started ) {
 					// Iterate over tasks and send them off for scheduling
-					variables.tasks.each( ( taskName, taskRecord ) => startupTask( taskName ) );
+					for ( var taskName in variables.tasks ) {
+						startupTask( taskName )
+					}
 					// Mark scheduler as started
-					variables.started   = true;
-					variables.startedAt = now();
+					variables.started   = true
+					variables.startedAt = now()
 					// callback
-					this.onStartup();
+					this.onStartup()
 					// Log it
-					variables.asyncManager.out( "√ Scheduler (#getname()#) has started!" );
+					variables.asyncManager.out( "√ Scheduler (#getname()#) has started!" )
 				}
 				// end double if not started
 			}
 			// end lock
 		}
 		// end if not started
-
-		return this;
+		return this
 	}
 
 	/**
@@ -160,52 +179,53 @@ component accessors="true" singleton {
 	struct function startupTask( any task ){
 		var taskRecord = getTaskRecord(
 			isSimpleValue( arguments.task ) ? arguments.task : arguments.task.getName()
-		);
+		)
 
 		// Verify we can start it up the task or not
 		if ( taskRecord.task.isDisabled() ) {
 			taskRecord.disabled = true;
 			variables.asyncManager.out(
 				"- Scheduler (#getName()#) skipping task (#taskRecord.task.getName()#) as it is disabled."
-			);
-			return taskRecord;
+			)
+			return taskRecord
 		} else {
 			// Log scheduling startup
 			variables.asyncManager.out(
 				"- Scheduler (#getName()#) scheduling task (#taskRecord.task.getName()#)..."
-			);
+			)
 		}
 
 		// Verify that the task record: scheduledAt is empty
 		if ( !isNull( taskRecord.scheduledAt ) && len( taskRecord.scheduledAt ) ) {
 			variables.asyncManager.out(
 				"- Scheduler (#getName()#) skipping task (#taskRecord.task.getName()#) as it is already scheduled."
-			);
-			return taskRecord;
+			)
+			return taskRecord
 		}
 
 		// Send it off for scheduling
 		try {
-			taskRecord.future      = taskRecord.task.start();
-			taskRecord.scheduledAt = now();
-			variables.asyncManager.out( "√ Task (#taskRecord.task.getName()#) scheduled successfully." );
+			taskRecord.future      = taskRecord.task.start()
+			taskRecord.scheduledAt = now()
+			variables.asyncManager.out( "√ Task (#taskRecord.task.getName()#) scheduled successfully." )
 		} catch ( any e ) {
 			variables.asyncManager.err(
 				"X Error scheduling task (#taskRecord.task.getName()#) => #e.message# #e.detail#"
-			);
-			taskRecord.error        = true;
-			taskRecord.errorMessage = e.message & e.detail;
-			taskRecord.stackTrace   = e.stacktrace;
+			)
+			variables.asyncManager.err( e.stacktrace )
+			taskRecord.error        = true
+			taskRecord.errorMessage = e.message & e.detail
+			taskRecord.stackTrace   = e.stacktrace
 		}
 
-		return taskRecord;
+		return taskRecord
 	}
 
 	/**
 	 * Check if this scheduler has started or not
 	 */
 	boolean function hasStarted(){
-		return variables.started;
+		return variables.started
 	}
 
 	/**
@@ -216,21 +236,21 @@ component accessors="true" singleton {
 	 */
 	Scheduler function shutdown( boolean force = false, numeric timeout = variables.shutdownTimeout ){
 		// callback
-		this.onShutdown( argumentCollection = arguments );
+		this.onShutdown( argumentCollection = arguments )
 		// shutdown executor and await termination or kill it now!
 		if ( arguments.force ) {
-			variables.executor.shutdownNow();
+			variables.executor.shutdownNow()
 		} else {
-			variables.executor.shutdownAndAwaitTermination( arguments.timeout );
+			variables.executor.shutdownAndAwaitTermination( arguments.timeout )
 		}
 		// Remove executor
-		variables.asyncManager.deleteExecutor( variables.name & "-scheduler" );
+		variables.asyncManager.deleteExecutor( variables.name & "-scheduler" )
 		// Mark it
-		variables.started = false;
+		variables.started = false
 		// Clear the tasks
-		clearTasks();
+		clearTasks()
 		// Log it
-		variables.asyncManager.out( "√ Scheduler (#getName()#) has been shutdown!" );
+		variables.asyncManager.out( "√ Scheduler (#getName()#) has been shutdown!" )
 		return this;
 	}
 
@@ -242,13 +262,13 @@ component accessors="true" singleton {
 	 * @timeout The timeout in seconds to wait for the shutdown of all tasks, defaults to 30 or whatever you set using the setShutdownTimeout() method
 	 */
 	public Scheduler function restart( boolean force = false, numeric timeout = variables.shutdownTimeout ){
-		variables.asyncManager.out( "√ Scheduler (#arguments.name#) is being restarted" );
-		shutdown( argumentCollection = arguments );
-		createSchedulerExecutor();
-		configure();
-		startup();
-		variables.asyncManager.out( "√ Scheduler (#arguments.name#) has been restarted" );
-		return this;
+		variables.asyncManager.out( "√ Scheduler (#getName()#) is being restarted" )
+		shutdown( argumentCollection = arguments )
+		createSchedulerExecutor()
+		configure()
+		startup()
+		variables.asyncManager.out( "√ Scheduler (#getName()#) has been restarted" )
+		return this
 	}
 
 	/**
@@ -316,8 +336,8 @@ component accessors="true" singleton {
 	 * BEWARE: This will not stop the tasks    , it will just remove them from the scheduler
 	 */
 	public Scheduler function clearTasks(){
-		variables.tasks = structNew( "ordered" );
-		return this;
+		variables.tasks.clear()
+		return this
 	}
 
 	/**
@@ -330,7 +350,7 @@ component accessors="true" singleton {
 	 * @return The registered and disabled Scheduled Task
 	 */
 	ScheduledTask function xtask( required name, boolean debug = false ){
-		return task( argumentCollection = arguments ).disable();
+		return task( argumentCollection = arguments ).disable()
 	}
 
 	/**
@@ -349,11 +369,15 @@ component accessors="true" singleton {
 		// Create task with custom name
 		var oTask = variables.executor
 			// Give me the task broda!
-			.newTask( argumentCollection = arguments )
-			// Register ourselves in the task
-			.setScheduler( this )
+			.newTask(
+				argumentCollection = {
+					name      : arguments.name,
+					debug     : arguments.debug,
+					scheduler : this
+				}
+			)
 			// Set default timezone into the task
-			.setTimezone( this.getTimezone().getId() );
+			.setTimezone( this.getTimezone().getId() )
 
 		// Create the task record.
 		variables.tasks[ arguments.name ] = {
@@ -376,12 +400,12 @@ component accessors="true" singleton {
 			// The exception stacktrace if something went wrong scheduling the task
 			"stacktrace"   : "",
 			// Server Host
-			"inetHost"     : variables.util.discoverInetHost(),
+			"inetHost"     : variables.inetHost,
 			// Server IP
-			"localIp"      : variables.util.getServerIp()
-		};
+			"localIp"      : variables.localIp
+		}
 
-		return oTask;
+		return oTask
 	}
 
 	/**
@@ -390,17 +414,17 @@ component accessors="true" singleton {
 	struct function getTaskStats(){
 		// return back a struct of stats for each registered task
 		return variables.tasks.map( function( key, record ){
-			return arguments.record.task.getStats();
-		} );
+			return arguments.record.task.getStats()
+		} )
 	}
 
 	/**
 	 * Get an array of all the tasks managed by this scheduler
 	 */
 	array function getRegisteredTasks(){
-		var taskKeys = variables.tasks.keyArray();
-		taskKeys.sort( "textnocase" );
-		return taskKeys;
+		var taskKeys = variables.tasks.keyArray()
+		taskKeys.sort( "textnocase" )
+		return taskKeys
 	}
 
 	/**
@@ -409,7 +433,7 @@ component accessors="true" singleton {
 	 * @name The name of the task to search
 	 */
 	boolean function hasTask( required name ){
-		return variables.tasks.keyExists( arguments.name );
+		return variables.tasks.keyExists( arguments.name )
 	}
 
 	/**
@@ -423,9 +447,9 @@ component accessors="true" singleton {
 	 */
 	struct function getTaskRecord( required name ){
 		if ( hasTask( arguments.name ) ) {
-			return variables.tasks[ arguments.name ];
+			return variables.tasks[ arguments.name ]
 		}
-		throw( type: "UnregisteredTaskException", message: "No task found with the name: #arguments.name#" );
+		throw( type: "UnregisteredTaskException", message: "No task found with the name: #arguments.name#" )
 	}
 
 	/**
@@ -437,16 +461,16 @@ component accessors="true" singleton {
 	 */
 	Scheduler function removeTask( required name ){
 		// Remove from executor if registered
-		var taskRecord = getTaskRecord( arguments.name );
+		var taskRecord = getTaskRecord( arguments.name )
 
 		// Check if the task has been registered so we can cancel it
 		if ( isObject( taskRecord.future ) ) {
-			taskRecord.future.cancel( mayInterruptIfRunning = true );
+			taskRecord.future.cancel( mayInterruptIfRunning = true )
 		}
 
 		// Delete it
-		variables.tasks.delete( arguments.name );
-		return this;
+		variables.tasks.delete( arguments.name )
+		return this
 	}
 
 	/**
@@ -459,14 +483,14 @@ component accessors="true" singleton {
 	 * Get the current thread name
 	 */
 	private function getThreadName(){
-		return getCurrentThread().getName();
+		return getCurrentThread().getName()
 	}
 
 	/**
 	 * Get the current thread java object
 	 */
 	private function getCurrentThread(){
-		return createObject( "java", "java.lang.Thread" ).currentThread();
+		return createObject( "java", "java.lang.Thread" ).currentThread()
 	}
 
 	/**
@@ -476,7 +500,7 @@ component accessors="true" singleton {
 		variables.executor = variables.asyncManager.newExecutor(
 			name: variables.name & "-scheduler",
 			type: "scheduled"
-		);
+		)
 	}
 
 }

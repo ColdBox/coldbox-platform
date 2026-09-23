@@ -46,6 +46,29 @@ component extends="tests.specs.async.BaseAsyncSpec" {
 				expect( timeValue ).toBe( "11:00" );
 			} );
 
+			it( "can get the next day of month occurrence, clamping to the last day when it doesn't exist", function(){
+				// April only has 30 days
+				var aprilFirst = createODBCDateTime( "2024-04-01 00:00:00" );
+				var result     = dateTimeHelper.getNextDayOfMonthOccurrence( day = 31, now = aprilFirst );
+				expect( result.getMonthValue() ).toBe( 4 );
+				expect( result.getDayOfMonth() ).toBe( 30 );
+
+				// May has 31 days, so no clamping should occur
+				var mayFirst = createODBCDateTime( "2024-05-01 00:00:00" );
+				var result2  = dateTimeHelper.getNextDayOfMonthOccurrence( day = 31, now = mayFirst );
+				expect( result2.getMonthValue() ).toBe( 5 );
+				expect( result2.getDayOfMonth() ).toBe( 31 );
+
+				// addMonth moves the target into the following month
+				var result3 = dateTimeHelper.getNextDayOfMonthOccurrence(
+					day     : 15,
+					now     : aprilFirst,
+					addMonth: true
+				);
+				expect( result3.getMonthValue() ).toBe( 5 );
+				expect( result3.getDayOfMonth() ).toBe( 15 );
+			} );
+
 			var units = [
 				"CENTURIES",
 				"DAYS",

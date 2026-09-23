@@ -84,4 +84,64 @@
 		assertTrue( arrayLen( event.logs ) );
 	}
 
+	function testEventStateIndex(){
+		// Verify index is built on init
+		expect( manager.getEventStateIndex() ).toHaveKey( "ontest" );
+		expect( manager.getEventStateIndex().ontest ).toBeTrue();
+
+		// Verify eventStatesChanged starts as false
+		expect( manager.getEventStatesChanged() ).toBeFalse();
+	}
+
+	function testAppendInterceptionPointsUsesIndex(){
+		var initialCount = arrayLen( manager.getEventStates() );
+
+		// Add new state
+		manager.appendInterceptionPoints( "onNewState" );
+		expect( arrayLen( manager.getEventStates() ) ).toBe( initialCount + 1 );
+		expect( manager.getEventStateIndex() ).toHaveKey( "onnewstate" );
+		expect( manager.getEventStatesChanged() ).toBeTrue();
+
+		// Reset flag
+		manager.setEventStatesChanged( false );
+
+		// Try to add duplicate (should not add)
+		manager.appendInterceptionPoints( "onNewState" );
+		expect( arrayLen( manager.getEventStates() ) ).toBe( initialCount + 1 );
+		expect( manager.getEventStatesChanged() ).toBeFalse();
+
+		// Try case-insensitive duplicate (should not add)
+		manager.appendInterceptionPoints( "ONNEWSTATE" );
+		expect( arrayLen( manager.getEventStates() ) ).toBe( initialCount + 1 );
+		expect( manager.getEventStatesChanged() ).toBeFalse();
+	}
+
+	function testAppendMultipleStatesWithDuplicates(){
+		var initialCount = arrayLen( manager.getEventStates() );
+
+		// Add multiple states with duplicates
+		manager.appendInterceptionPoints( [ "onState1", "onState2", "onState1", "onState3" ] );
+
+		// Should only add 3 unique states
+		expect( arrayLen( manager.getEventStates() ) ).toBe( initialCount + 3 );
+		expect( manager.getEventStateIndex() ).toHaveKey( "onstate1" );
+		expect( manager.getEventStateIndex() ).toHaveKey( "onstate2" );
+		expect( manager.getEventStateIndex() ).toHaveKey( "onstate3" );
+		expect( manager.getEventStatesChanged() ).toBeTrue();
+	}
+
+	function testParseMetadataUsesIndex(){
+		var event = new tests.resources.Event();
+
+		// Register should use index for O(1) lookups
+		manager.register( event );
+
+		// Verify the event was registered in the correct pools
+		// onTest is in the initial eventStates, onAnnotation has @interceptionPoint
+		expect( isObject( manager.getEventPool( "onTest" ) ) ).toBeTrue();
+		expect( isObject( manager.getEventPool( "onAnnotation" ) ) ).toBeTrue();
+		// onCreate is NOT in eventStates and has no annotation, so no pool created
+		expect( manager.getEventPool( "onCreate" ) ).toBeStruct().toBeEmpty();
+	}
+
 }

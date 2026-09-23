@@ -34,6 +34,7 @@ component {
 		"handlerCaching"           : true,
 		"eventCaching"             : true,
 		"viewCaching"              : true,
+		"viewDiscoveryCaching"     : true,
 		// Default Conventions Events + Views
 		"defaultEvent"             : "main.index",
 		"defaultLayout"            : "Main",
@@ -83,6 +84,16 @@ component {
 	this.configConvention   = "config.Coldbox";
 	this.modulesConvention  = "modules";
 	this.includesConvention = "includes";
+
+	// Server-Sent Events defaults (BoxLang only)
+	this.sse = {
+		// Milliseconds between automatic keep-alive comments. Most proxies idle out at 60s.
+		"keepAliveInterval" : 30000,
+		// Client reconnect hint in milliseconds. 0 omits the field.
+		"retry"             : 0,
+		// CORS origin. Defaults to `*` to preserve the behavior toAi() shipped with in 8.1.
+		"cors"              : "*"
+	};
 
 	// Async Configs
 	this.async = { "schedulerThreads" : 20 };

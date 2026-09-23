@@ -141,6 +141,20 @@ component extends="coldbox.system.testing.BaseModelTest" {
 						expect( routes[ 3 ].pattern ).toBe( "api/users/:id/" );
 					} );
 				} );
+
+				given( "a grouped route with a domain", function(){
+					then( "it should preserve the domain for fluent and inline routes", function(){
+						router.group( { domain : ":tenant.example.com" }, function(){
+							router.route( "/fluent" ).to( "main.fluent" )
+							router.route( "/inline", "main.inline" )
+						} )
+
+						var routes = router.getRoutes()
+						expect( routes ).toHaveLength( 2 )
+						expect( routes[ 1 ].domain ).toBe( ":tenant.example.com" )
+						expect( routes[ 2 ].domain ).toBe( ":tenant.example.com" )
+					} )
+				} )
 			} );
 
 			story( "I want to register routes with a toAction() terminator", function(){
@@ -152,6 +166,61 @@ component extends="coldbox.system.testing.BaseModelTest" {
 							.toAction( "index" );
 						expect( router.getRoutes()[ 1 ].pattern ).toBe( "toAction/" );
 						expect( router.getRoutes()[ 1 ].action ).toBe( "index" );
+					} );
+				} );
+			} );
+
+			story( "I want every registered route to carry the full route definition shape", function(){
+				given( "an ordinary route with no AI/MCP/SSE modifiers", function(){
+					then( "it still carries defaulted ai, aiRunnable, mcp and mcpServer keys", function(){
+						router.route( "/luis", "main.index" );
+						var thisRoute = router.getRoutes()[ 1 ];
+
+						expect( thisRoute ).toHaveKey( "ai" );
+						expect( thisRoute.ai ).toBeFalse();
+						expect( thisRoute ).toHaveKey( "aiRunnable" );
+						expect( thisRoute.aiRunnable ).toBe( "" );
+						expect( thisRoute ).toHaveKey( "mcp" );
+						expect( thisRoute.mcp ).toBeFalse();
+						expect( thisRoute ).toHaveKey( "mcpServer" );
+						expect( thisRoute.mcpServer ).toBe( "" );
+					} );
+				} );
+			} );
+
+			story( "I want addRoute() and initRouteDefinition() to never drift apart", function(){
+				given( "the canonical route definition shape and addRoute()'s declared parameters", function(){
+					then( "every settable key in the shape has a matching addRoute() parameter", function(){
+						// Keys that are computed internally during registration rather than accepted as
+						// caller input - these are legitimately absent from addRoute()'s signature.
+						var computedOnlyKeys = [ "responsePlaceholders" ];
+
+						var definitionKeys = router.getRouteDefinitionKeys();
+						var routerMetadata = getMetadata( router );
+						var addRouteParams = [];
+
+						// Plain for-in loops rather than .filter()/.map() member calls - the array
+						// nested inside a function's metadata (fn.parameters) isn't guaranteed to
+						// support CF array member functions on every engine (observed missing on
+						// Adobe ColdFusion).
+						for ( var fn in routerMetadata.functions ) {
+							if ( fn.name == "addRoute" ) {
+								for ( var param in fn.parameters ) {
+									addRouteParams.append( param.name );
+								}
+								break;
+							}
+						}
+
+						for ( var key in definitionKeys ) {
+							if ( computedOnlyKeys.findNoCase( key ) ) {
+								continue;
+							}
+							expect( addRouteParams ).toInclude(
+								key,
+								"initRouteDefinition() key '#key#' has no matching addRoute() parameter - it will be silently absent (not defaulted) from any route that doesn't explicitly pass it"
+							);
+						}
 					} );
 				} );
 			} );
@@ -297,6 +366,380 @@ component extends="coldbox.system.testing.BaseModelTest" {
 							.toHaveKey( "name" )
 							.toHaveKey( "age" );
 						expect( router.getThisRoute().headers.name ).toBe( "majano" );
+					} );
+				} );
+			} );
+
+			story( "I want to attach route-scoped middleware", function(){
+				given( "a single middleware target with no explicit point", function(){
+					then( "it defaults to preProcess and accumulates in order", function(){
+						var authCheck = function( event, rc, prc ){
+						};
+						router
+							.route( "/admin" )
+							.middleware( authCheck )
+							.middleware( "AuditLog", "postProcess" )
+							.toHandler( "admin" );
+
+						var middleware = router.getRoutes()[ 1 ].middleware;
+						expect( middleware ).toHaveLength( 2 );
+						expect( middleware[ 1 ].target ).toBe( authCheck );
+						expect( middleware[ 1 ].point ).toBe( "preProcess" );
+						expect( middleware[ 2 ].target ).toBe( "AuditLog" );
+						expect( middleware[ 2 ].point ).toBe( "postProcess" );
+					} );
+				} );
+
+				given( "an array of targets in a single call", function(){
+					then( "each target is registered individually on the same point", function(){
+						router
+							.route( "/api/orders" )
+							.middleware( [ "RateLimiter", "RequireApiKey" ] )
+							.toHandler( "orders" );
+
+						var middleware = router.getRoutes()[ 1 ].middleware;
+						expect( middleware ).toHaveLength( 2 );
+						expect( middleware[ 1 ].target ).toBe( "RateLimiter" );
+						expect( middleware[ 1 ].point ).toBe( "preProcess" );
+						expect( middleware[ 2 ].target ).toBe( "RequireApiKey" );
+						expect( middleware[ 2 ].point ).toBe( "preProcess" );
+					} );
+				} );
+
+				given( "a route with no middleware() calls", function(){
+					then( "it still carries the defaulted empty middleware array", function(){
+						router.route( "/plain" );
+						expect( router.getThisRoute().middleware ).toBeArray().toBeEmpty();
+					} );
+				} );
+
+				given( "a group with middleware options", function(){
+					then( "every route inside inherits it ahead of its own middleware", function(){
+						router.group( { pattern : "/api", middleware : [ "RequireApiKey" ] }, function( options ){
+							router
+								.route( "/users" )
+								.middleware( "RateLimiter" )
+								.toHandler( "users" );
+							router.route( "/products" ).toHandler( "products" );
+						} );
+
+						var routes = router.getRoutes();
+						expect( routes ).toHaveLength( 2 );
+
+						expect( routes[ 1 ].middleware ).toHaveLength( 2 );
+						expect( routes[ 1 ].middleware[ 1 ].target ).toBe( "RequireApiKey" );
+						expect( routes[ 1 ].middleware[ 2 ].target ).toBe( "RateLimiter" );
+
+						expect( routes[ 2 ].middleware ).toHaveLength( 1 );
+						expect( routes[ 2 ].middleware[ 1 ].target ).toBe( "RequireApiKey" );
+					} );
+				} );
+
+				given( "a route registered outside any group", function(){
+					then( "it does not inherit a previously-run group's middleware", function(){
+						router.group( { pattern : "/api", middleware : [ "RequireApiKey" ] }, function( options ){
+							router.route( "/users" ).toHandler( "users" );
+						} );
+						router.route( "/public" ).toHandler( "public" );
+
+						var routes = router.getRoutes();
+						expect( routes[ 2 ].middleware ).toBeArray().toBeEmpty();
+					} );
+				} );
+
+				given( "nested groups each contributing middleware", function(){
+					then( "the outer group's middleware runs before the inner group's", function(){
+						router.group( { pattern : "/api", middleware : [ "RequireApiKey" ] }, function( options ){
+							router.group( { pattern : "/admin", middleware : [ "RequireAdmin" ] }, function( innerOptions ){
+								router.route( "/users" ).toHandler( "users" );
+							} );
+						} );
+
+						var middleware = router.getRoutes()[ 1 ].middleware;
+						expect( middleware ).toHaveLength( 2 );
+						expect( middleware[ 1 ].target ).toBe( "RequireApiKey" );
+						expect( middleware[ 2 ].target ).toBe( "RequireAdmin" );
+					} );
+				} );
+
+				given( "a group middleware option that is a single target, not wrapped in an array", function(){
+					then( "it is normalized to a one-entry list rather than iterated as a collection", function(){
+						router.group( { pattern : "/api", middleware : "RequireApiKey" }, function( options ){
+							router.route( "/users" ).toHandler( "users" );
+						} );
+
+						var middleware = router.getRoutes()[ 1 ].middleware;
+						expect( middleware ).toHaveLength( 1 );
+						expect( middleware[ 1 ].target ).toBe( "RequireApiKey" );
+						expect( middleware[ 1 ].point ).toBe( "preProcess" );
+					} );
+				} );
+
+				given( "a group middleware entry given as a struct with no point key", function(){
+					then( "point defaults to preProcess instead of throwing later", function(){
+						router.group(
+							{
+								pattern    : "/api",
+								middleware : [ { target : "RequireApiKey" } ]
+							},
+							function( options ){
+								router.route( "/users" ).toHandler( "users" );
+							}
+						);
+
+						var middleware = router.getRoutes()[ 1 ].middleware;
+						expect( middleware[ 1 ].target ).toBe( "RequireApiKey" );
+						expect( middleware[ 1 ].point ).toBe( "preProcess" );
+					} );
+				} );
+
+				given( "a group body that throws", function(){
+					then( "group state is still cleaned up so it does not leak into later routes", function(){
+						expect( function(){
+							router.group( { pattern : "/api", middleware : [ "RequireApiKey" ] }, function( options ){
+								throw( message = "boom", type = "TestBoom" );
+							} );
+						} ).toThrow( type = "TestBoom" );
+
+						router.route( "/public" ).toHandler( "public" );
+
+						var routes = router.getRoutes();
+						expect( routes[ routes.len() ].middleware ).toBeArray().toBeEmpty();
+						expect( routes[ routes.len() ].pattern ).toBe( "public/" );
+					} );
+				} );
+
+				given( "a middlewareGroup() referenced from .middleware()", function(){
+					then( "it expands to the group's members, tagged with the group name", function(){
+						router.middlewareGroup( "api", [ "RequireApiKey", "RateLimiter" ] );
+						router
+							.route( "/orders" )
+							.middleware( "api" )
+							.toHandler( "orders" );
+
+						var middleware = router.getRoutes()[ 1 ].middleware;
+						expect( middleware ).toHaveLength( 2 );
+						expect( middleware[ 1 ].target ).toBe( "RequireApiKey" );
+						expect( middleware[ 1 ].point ).toBe( "preProcess" );
+						expect( middleware[ 1 ].group ).toBe( "api" );
+						expect( middleware[ 2 ].target ).toBe( "RateLimiter" );
+						expect( middleware[ 2 ].group ).toBe( "api" );
+					} );
+				} );
+
+				given( "a middlewareGroup() referenced from a group()'s middleware option", function(){
+					then( "every route in the body inherits the expanded group members", function(){
+						router.middlewareGroup( "api", [ "RequireApiKey", "RateLimiter" ] );
+						router.group( { pattern : "/api", middleware : [ "api" ] }, function( options ){
+							router.route( "/users" ).toHandler( "users" );
+						} );
+
+						var middleware = router.getRoutes()[ 1 ].middleware;
+						expect( middleware ).toHaveLength( 2 );
+						expect( middleware[ 1 ].target ).toBe( "RequireApiKey" );
+						expect( middleware[ 2 ].target ).toBe( "RateLimiter" );
+					} );
+				} );
+
+				given( "a middlewareGroup() entry given its own point", function(){
+					then( "that member keeps its own point instead of the group's default", function(){
+						router.middlewareGroup(
+							"audited",
+							[
+								"RequireApiKey",
+								{ target : "AuditLog", point : "postProcess" }
+							]
+						);
+						router
+							.route( "/orders" )
+							.middleware( "audited" )
+							.toHandler( "orders" );
+
+						var middleware = router.getRoutes()[ 1 ].middleware;
+						expect( middleware[ 1 ].point ).toBe( "preProcess" );
+						expect( middleware[ 2 ].target ).toBe( "AuditLog" );
+						expect( middleware[ 2 ].point ).toBe( "postProcess" );
+					} );
+				} );
+
+				given( "withoutMiddleware() naming a single WireBox ID target", function(){
+					then( "only that target is stripped from the merged middleware list", function(){
+						router.group(
+							{
+								pattern    : "/api",
+								middleware : [ "RequireApiKey", "RateLimiter" ]
+							},
+							function( options ){
+								router
+									.route( "/health" )
+									.withoutMiddleware( "RateLimiter" )
+									.toHandler( "health" );
+							}
+						);
+
+						var middleware = router.getRoutes()[ 1 ].middleware;
+						expect( middleware ).toHaveLength( 1 );
+						expect( middleware[ 1 ].target ).toBe( "RequireApiKey" );
+					} );
+				} );
+
+				given( "withoutMiddleware() naming a middlewareGroup()", function(){
+					then( "every member that group expanded to is stripped", function(){
+						router.middlewareGroup( "api", [ "RequireApiKey", "RateLimiter" ] );
+						router.group( { pattern : "/api", middleware : [ "api" ] }, function( options ){
+							router.route( "/users" ).toHandler( "users" );
+							router
+								.route( "/health" )
+								.withoutMiddleware( "api" )
+								.toHandler( "health" );
+						} );
+
+						var routes = router.getRoutes();
+						expect( routes[ 1 ].middleware ).toHaveLength( 2 );
+						expect( routes[ 2 ].middleware ).toBeArray().toBeEmpty();
+					} );
+				} );
+
+				given( "withoutMiddleware( '*' )", function(){
+					then( "every middleware for that route is stripped, inherited or its own", function(){
+						router.group( { pattern : "/api", middleware : [ "RequireApiKey" ] }, function( options ){
+							router
+								.route( "/health" )
+								.middleware( "RateLimiter" )
+								.withoutMiddleware( "*" )
+								.toHandler( "health" );
+						} );
+
+						expect( router.getRoutes()[ 1 ].middleware ).toBeArray().toBeEmpty();
+					} );
+				} );
+
+				given( "a route with no withoutMiddleware() calls", function(){
+					then( "its middleware is unaffected", function(){
+						router.group( { pattern : "/api", middleware : [ "RequireApiKey" ] }, function( options ){
+							router.route( "/users" ).toHandler( "users" );
+						} );
+
+						expect( router.getRoutes()[ 1 ].middleware ).toHaveLength( 1 );
+					} );
+				} );
+
+				given( "a middlewareGroup() name referenced before the group is registered", function(){
+					then( "it is treated as a literal target instead of being expanded", function(){
+						// Documents a known ordering requirement: expansion happens immediately at
+						// registration time, not lazily at request time, so a group must be
+						// registered before anything references it by name.
+						router
+							.route( "/z" )
+							.middleware( "lateGroup" )
+							.toHandler( "z" );
+						router.middlewareGroup( "lateGroup", [ "RequireApiKey" ] );
+
+						var middleware = router.getRoutes()[ 1 ].middleware;
+						expect( middleware ).toHaveLength( 1 );
+						expect( middleware[ 1 ].target ).toBe( "lateGroup" );
+						expect( middleware[ 1 ] ).notToHaveKey( "group" );
+					} );
+				} );
+			} );
+
+			story( "I want to cache a route's output via route-level rules", function(){
+				given( "a route with no withCache() call", function(){
+					then( "it defaults to non-cacheable with the standard cache key defaults", function(){
+						router.route( "/luis" ).toHandler( "main" );
+						var thisRoute = router.getRoutes()[ 1 ];
+
+						expect( thisRoute.cache ).toBeFalse();
+						expect( thisRoute.cacheTimeout ).toBe( "" );
+						expect( thisRoute.cacheLastAccessTimeout ).toBe( "" );
+						expect( thisRoute.cacheProvider ).toBe( "template" );
+						expect( thisRoute.cacheSuffix ).toBe( "" );
+						expect( thisRoute.cacheInclude ).toBe( "*" );
+						expect( thisRoute.cacheExclude ).toBe( "" );
+						expect( thisRoute.cacheFilter ).toBe( "" );
+						expect( thisRoute.etag ).toBeFalse();
+						expect( thisRoute.etagWeak ).toBeFalse();
+						expect( thisRoute.lastModified ).toBeFalse();
+						expect( thisRoute.cacheControl ).toBe( "" );
+					} );
+				} );
+
+				given( "withCache() with only a timeout", function(){
+					then( "cache flips on and the timeout is stored, everything else stays default", function(){
+						router
+							.route( "/products" )
+							.withCache( timeout = 60 )
+							.toHandler( "products" );
+						var thisRoute = router.getRoutes()[ 1 ];
+
+						expect( thisRoute.cache ).toBeTrue();
+						expect( thisRoute.cacheTimeout ).toBe( 60 );
+						expect( thisRoute.cacheProvider ).toBe( "template" );
+						expect( thisRoute.etag ).toBeFalse();
+					} );
+				} );
+
+				given( "withCache() with a provider, includes and excludes", function(){
+					then( "each is stored on the route untouched", function(){
+						router
+							.route( "/reports" )
+							.withCache(
+								timeout      = 30,
+								provider     = "reports",
+								cacheInclude = "id,type",
+								cacheExclude = "debug"
+							)
+							.toHandler( "reports" );
+						var thisRoute = router.getRoutes()[ 1 ];
+
+						expect( thisRoute.cacheProvider ).toBe( "reports" );
+						expect( thisRoute.cacheInclude ).toBe( "id,type" );
+						expect( thisRoute.cacheExclude ).toBe( "debug" );
+					} );
+				} );
+
+				given( "withCache() with etag/etagWeak/lastModified/cacheControl", function(){
+					then( "the Tier 1 HTTP caching flags are stored on the route", function(){
+						router
+							.route( "/api/products/:id" )
+							.withCache(
+								timeout      = 60,
+								etag         = true,
+								etagWeak     = true,
+								lastModified = true,
+								cacheControl = "private, max-age=120"
+							)
+							.toHandler( "products" );
+						var thisRoute = router.getRoutes()[ 1 ];
+
+						expect( thisRoute.etag ).toBeTrue();
+						expect( thisRoute.etagWeak ).toBeTrue();
+						expect( thisRoute.lastModified ).toBeTrue();
+						expect( thisRoute.cacheControl ).toBe( "private, max-age=120" );
+					} );
+				} );
+
+				given( "withCache() with a closure suffix", function(){
+					then( "the closure is stored untouched, not evaluated at registration time", function(){
+						router
+							.route( "/tenant/products" )
+							.withCache( suffix = ( event ) => "tenant-scoped" )
+							.toHandler( "products" );
+						var thisRoute = router.getRoutes()[ 1 ];
+
+						expect( isClosure( thisRoute.cacheSuffix ) || isCustomFunction( thisRoute.cacheSuffix ) ).toBeTrue();
+					} );
+				} );
+
+				given( "withCache() with a static string suffix", function(){
+					then( "the string is stored as-is", function(){
+						router
+							.route( "/products" )
+							.withCache( suffix = "v2" )
+							.toHandler( "products" );
+						var thisRoute = router.getRoutes()[ 1 ];
+
+						expect( thisRoute.cacheSuffix ).toBe( "v2" );
 					} );
 				} );
 			} );
@@ -664,6 +1107,62 @@ component extends="coldbox.system.testing.BaseModelTest" {
 					expect( routes[ 2 ] ).toHaveKey( "action" );
 					expect( routes[ 2 ].action ).toBe( { "GET" : "index", "POST" : "create" } );
 				} );
+			} );
+		} );
+
+		describe( "Response placeholder pre-parsing", function(){
+			beforeEach( function( currentSpec ){
+				router = createMock( "coldbox.system.web.routing.Router" )
+					.init()
+					.setController( controller )
+					.setLogBox( controller.getLogBox() )
+					.setLog( controller.getLogBox().getLogger( this ) )
+					.setCacheBox( controller.getCacheBox() )
+					.setWireBox( controller.getWireBox() );
+			} );
+
+			it( "a route with a static string response pre-parses placeholders at registration", function(){
+				router.addRoute( pattern = "/hello/:name", response = "Hello {name}!" );
+				var routes = router.getRoutes();
+				expect( routes ).toHaveLength( 1 );
+				expect( routes[ 1 ] ).toHaveKey( "responsePlaceholders" );
+				expect( routes[ 1 ].responsePlaceholders ).toHaveLength( 1 );
+				expect( routes[ 1 ].responsePlaceholders[ 1 ].token ).toBe( "{name}" );
+				expect( routes[ 1 ].responsePlaceholders[ 1 ].key ).toBe( "name" );
+			} );
+
+			it( "a route with multiple placeholders pre-parses all of them", function(){
+				router.addRoute( pattern = "/greet/:name/:mod", response = "Hello {name} from {mod}" );
+				var routes = router.getRoutes();
+				expect( routes[ 1 ].responsePlaceholders ).toHaveLength( 2 );
+				expect( routes[ 1 ].responsePlaceholders[ 1 ].key ).toBe( "name" );
+				expect( routes[ 1 ].responsePlaceholders[ 2 ].key ).toBe( "mod" );
+			} );
+
+			it( "a route with no placeholders has an empty responsePlaceholders array", function(){
+				router.addRoute( pattern = "/static", response = "No placeholders here" );
+				var routes = router.getRoutes();
+				expect( routes[ 1 ].responsePlaceholders ).toBeArray();
+				expect( routes[ 1 ].responsePlaceholders ).toHaveLength( 0 );
+			} );
+
+			it( "a route with a closure response has an empty responsePlaceholders array", function(){
+				router.addRoute(
+					pattern  = "/closure",
+					response = function( event, rc, prc ){
+						return "hi";
+					}
+				);
+				var routes = router.getRoutes();
+				expect( routes[ 1 ].responsePlaceholders ).toBeArray();
+				expect( routes[ 1 ].responsePlaceholders ).toHaveLength( 0 );
+			} );
+
+			it( "a route with no response has an empty responsePlaceholders array", function(){
+				router.addRoute( pattern = "/noop", event = "main.index" );
+				var routes = router.getRoutes();
+				expect( routes[ 1 ].responsePlaceholders ).toBeArray();
+				expect( routes[ 1 ].responsePlaceholders ).toHaveLength( 0 );
 			} );
 		} );
 	}

@@ -145,10 +145,26 @@ component
 		// Routing pointer
 		variables.thisRoute   = initRouteDefinition();
 
+		// Stack of group-level middleware arrays, outermost first, so nested groups accumulate in order
+		variables.groupMiddlewareStack = [];
+		// Named, reusable middleware bundles registered via middlewareGroup(), keyed by name
+		variables.middlewareGroups     = {};
+
 		/************************************** CONSTANTS *********************************************/
 
 		// STATIC Valid Extensions
-		variables.VALID_EXTENSIONS = "json,jsont,xml,cfm,cfml,html,htm,rss,pdf";
+		variables.VALID_EXTENSIONS = "json,jsont,xml,cfm,cfml,html,htm,rss,pdf,sse";
+
+		/**
+		 * Media types whose name does not contain their extension string.
+		 *
+		 * Accept header matching works by testing whether the incoming media type contains the
+		 * extension name, which holds for every historical extension: `application/json` contains
+		 * `json`, `text/xml` contains `xml`. It does not hold for Server-Sent Events, since
+		 * `text/event-stream` shares no substring with `sse`, so those types need an explicit
+		 * alias here or they would never resolve.
+		 */
+		variables.MIME_EXTENSION_ALIASES = { "text/event-stream" : "sse" };
 
 		/************************************** ROUTING DEFAULTS: Due to ACF11 Bugs on Properties *********************************************/
 
@@ -229,6 +245,23 @@ component
 	 */
 	boolean function isValidExtension( required extension ){
 		return variables.validExtensions.listFindNoCase( arguments.extension ) > 0;
+	}
+
+	/**
+	 * Resolve a media type to a format extension when the two share no substring.
+	 *
+	 * @mediaType The incoming Accept header media type, e.g. `text/event-stream`
+	 *
+	 * @return The mapped extension, or an empty string when there is no alias
+	 */
+	string function getMimeExtensionAlias( required string mediaType ){
+		var cleaned = arguments.mediaType
+			.listFirst( ";" )
+			.trim()
+			.lCase();
+		return variables.MIME_EXTENSION_ALIASES.keyExists( cleaned ) && isValidExtension(
+			variables.MIME_EXTENSION_ALIASES[ cleaned ]
+		) ? variables.MIME_EXTENSION_ALIASES[ cleaned ] : "";
 	}
 
 	/****************************************************************************************************************************/
@@ -482,7 +515,7 @@ component
 	 * } )
 	 * </pre>
 	 *
-	 * @options The route options that match routing, look at the <code>addRoute()</code> method
+	 * @options The route options that match routing, look at the <code>addRoute()</code> method. A `middleware` array (same target values <code>middleware()</code> accepts) applies to every route registered within the body, ahead of any middleware the route registers for itself.
 	 * @body    The closure or lambda to contain all the routing methods to be grouped with the options data.
 	 */
 	function group( struct options = {}, body ){
@@ -491,12 +524,25 @@ component
 
 		// set the withClosure
 		variables.withClosure.append( arguments.options );
-		// Execute the body
-		arguments.body( arguments.options );
+		// Push this group's middleware onto the stack - arrays aren't part of the withClosure
+		// default/prefix merge, so they're inherited via their own stack instead. Pushed even when
+		// empty so the stack depth always matches the current group nesting depth. Entries are
+		// normalized to the same { target, point } shape middleware() produces - options.middleware
+		// may be a single target (not wrapped in an array), a struct missing its own `point`, or the
+		// name of a middlewareGroup() bundle, which normalizeMiddlewareEntries() expands in place.
+		var groupMiddleware = structKeyExists( arguments.options, "middleware" ) ? arguments.options.middleware : [];
+		variables.groupMiddlewareStack.append( normalizeMiddlewareEntries( groupMiddleware ) );
 
-		// Pivot out of the group and do cleanup
-		variables.onGroup     = false;
-		variables.withClosure = {};
+		try {
+			// Execute the body
+			arguments.body( arguments.options );
+		} finally {
+			// Pivot out of the group and do cleanup - always, even if the body threw, so a failed
+			// registration can't leak this group's middleware/options into whatever registers next.
+			variables.groupMiddlewareStack.deleteAt( variables.groupMiddlewareStack.len() );
+			variables.onGroup     = false;
+			variables.withClosure = {};
+		}
 
 		return this;
 	}
@@ -763,7 +809,30 @@ component
 		struct prc                    = {},
 		string viewModule             = "",
 		string layoutModule           = "",
-		struct meta                   = {}
+		struct meta                   = {},
+		boolean sse                   = "false",
+		any sseCallback               = "",
+		boolean ai                    = "false",
+		any aiRunnable                = "",
+		boolean mcp                   = "false",
+		string mcpServer              = "",
+		boolean gateway               = "false",
+		string gatewayName            = "",
+		any gatewaySession            = "",
+		array middleware              = [],
+		array withoutMiddleware       = [],
+		boolean cache                 = "false",
+		any cacheTimeout              = "",
+		any cacheLastAccessTimeout    = "",
+		string cacheProvider          = "template",
+		any cacheSuffix               = "",
+		string cacheInclude           = "*",
+		string cacheExclude           = "",
+		any cacheFilter               = "",
+		boolean etag                  = "false",
+		boolean etagWeak              = "false",
+		boolean lastModified          = "false",
+		string cacheControl           = ""
 	){
 		// The route construct we will save
 		var thisRoute = {};
@@ -781,6 +850,42 @@ component
 
 		// Process all incoming arguments into the route to store
 		thisRoute.append( arguments );
+
+		// Inherit group-level middleware (outermost group first), followed by this route's own
+		// entries registered via .middleware(). Arrays don't participate in processWith()'s
+		// default/prefix merge, so group inheritance is tracked explicitly on its own stack.
+		if ( variables.groupMiddlewareStack.len() ) {
+			var inheritedMiddleware = [];
+			for ( var groupEntries in variables.groupMiddlewareStack ) {
+				inheritedMiddleware.append( groupEntries, true );
+			}
+			inheritedMiddleware.append( thisRoute.middleware, true );
+			thisRoute.middleware = inheritedMiddleware;
+		}
+
+		// Strip any middleware this route opted out of via withoutMiddleware() - matched by target
+		// name (a WireBox ID) or by the middlewareGroup() name an entry was expanded from. "*"
+		// strips everything, inherited or this route's own. Closures/objects have no name to match,
+		// so they can only be excluded by not attaching them in the first place.
+		if ( thisRoute.withoutMiddleware.len() ) {
+			if ( thisRoute.withoutMiddleware.findNoCase( "*" ) ) {
+				thisRoute.middleware = [];
+			} else {
+				var filteredMiddleware = [];
+				for ( var mwEntry in thisRoute.middleware ) {
+					var excludedByTarget = isSimpleValue( mwEntry.target ) && thisRoute.withoutMiddleware.findNoCase(
+						mwEntry.target
+					);
+					var excludedByGroup = mwEntry.keyExists( "group" ) && thisRoute.withoutMiddleware.findNoCase(
+						mwEntry.group
+					);
+					if ( !excludedByTarget && !excludedByGroup ) {
+						filteredMiddleware.append( mwEntry );
+					}
+				}
+				thisRoute.middleware = filteredMiddleware;
+			}
+		}
 
 		// Cleanup Route: Add trailing / to make it easier to parse
 		if ( right( thisRoute.pattern, 1 ) IS NOT "/" ) {
@@ -1065,6 +1170,18 @@ component
 			}
 		}
 
+		// Pre-parse response string placeholders so renderResponse() skips regex on every request
+		if ( isSimpleValue( thisRoute.response ) && len( thisRoute.response ) ) {
+			thisRoute.responsePlaceholders = reMatchNoCase( "{[^{]+?}", thisRoute.response ).map( function( token ){
+				return {
+					token : token,
+					key   : reReplaceNoCase( token, "({|})", "", "all" )
+				};
+			} );
+		} else {
+			thisRoute.responsePlaceholders = [];
+		}
+
 		// Add it to the corresponding routing table
 		// MODULES
 		if ( len( arguments.module ) ) {
@@ -1109,44 +1226,86 @@ component
 		if ( !variables.onGroup ) {
 			variables.withClosure = {};
 		}
-		// Return a new route definition
+		return routeDefinitionShape();
+	}
+
+	/**
+	 * The canonical struct shape of a registered route. Side-effect free - used both to seed a
+	 * new route definition (initRouteDefinition()) and for pure introspection
+	 * (getRouteDefinitionKeys()), which must not reset any in-flight fluent registration state.
+	 */
+	private struct function routeDefinitionShape(){
 		return {
-			"action"                : "", // The action to execute
-			"append"                : true, // Was this route appended or pre/prended
-			"condition"             : "", // The condition closure which must be true for the route to match
-			"constraints"           : {}, // If we have any regex constraints on placeholders.
-			"domain"                : "", // The domain attached to the route
-			"event"                 : "", // The full event syntax to execute
-			"handler"               : "", // The handler to execute
-			"headers"               : {}, // The HTTP response headers to respond with
-			"layout"                : "", // The layout to proxy to
-			"layoutModule"          : "", // If the layout comes from a module
-			"meta"                  : {}, // Route metadata if any
-			"module"                : "", // The module event we must execute
-			"moduleRouting"         : "", // This routes to a module
-			"name"                  : "", // The named route
-			"namespace"             : "", // The namespace this route belongs to
-			"namespaceRouting"      : "", // This routes to a namespace
-			"packageResolverExempt" : false, // If true, it does not resolve packages by convention, by default we do
-			"pattern"               : "", // The regex pattern used for matching
-			"prc"                   : {}, // The PRC params to add incorporate if matched
-			"rc"                    : {}, // The RC params to add incorporate if matched
-			"redirect"              : "", // The redirection location
-			"response"              : "", // Do we have an inline response closure
-			"ssl"                   : false, // Are we forcing SSL
-			"statusCode"            : 200, // The response status code
-			"valuePairTranslation"  : true, // If we translate name-value pairs in the URL by convention
-			"verbs"                 : "", // The HTTP Verbs allowed
-			"view"                  : "", // The view to proxy to
-			"viewModule"            : "", // If the view comes from a module
-			"viewNoLayout"          : false, // If we use a layout or not
+			"action"                 : "", // The action to execute
+			"append"                 : true, // Was this route appended or pre/prended
+			"condition"              : "", // The condition closure which must be true for the route to match
+			"constraints"            : {}, // If we have any regex constraints on placeholders.
+			"domain"                 : "", // The domain attached to the route
+			"event"                  : "", // The full event syntax to execute
+			"handler"                : "", // The handler to execute
+			"headers"                : {}, // The HTTP response headers to respond with
+			"layout"                 : "", // The layout to proxy to
+			"layoutModule"           : "", // If the layout comes from a module
+			"meta"                   : {}, // Route metadata if any
+			"middleware"             : [], // Route-scoped middleware entries: [ { target, point } ]
+			"module"                 : "", // The module event we must execute
+			"moduleRouting"          : "", // This routes to a module
+			"name"                   : "", // The named route
+			"namespace"              : "", // The namespace this route belongs to
+			"namespaceRouting"       : "", // This routes to a namespace
+			"packageResolverExempt"  : false, // If true, it does not resolve packages by convention, by default we do
+			"pattern"                : "", // The regex pattern used for matching
+			"prc"                    : {}, // The PRC params to add incorporate if matched
+			"rc"                     : {}, // The RC params to add incorporate if matched
+			"redirect"               : "", // The redirection location
+			"response"               : "", // Do we have an inline response closure
+			"responsePlaceholders"   : [], // Pre-parsed {token} list for string responses
+			"sse"                    : false, // Flag indicating this route streams Server-Sent Events
+			"sseCallback"            : "", // The streaming closure for SSE routes
+			"ssl"                    : false, // Are we forcing SSL
+			"statusCode"             : 200, // The response status code
+			"valuePairTranslation"   : true, // If we translate name-value pairs in the URL by convention
+			"verbs"                  : "", // The HTTP Verbs allowed
+			"view"                   : "", // The view to proxy to
+			"viewModule"             : "", // If the view comes from a module
+			"viewNoLayout"           : false, // If we use a layout or not
+			"withoutMiddleware"      : [], // Middleware target/group names excluded from this route
 			// AI Routing
-			"ai"                    : false, // Flag indicating this is an AI runnable route
-			"aiRunnable"            : "", // The AI runnable WireBox ID or instance
+			"ai"                     : false, // Flag indicating this is an AI runnable route
+			"aiRunnable"             : "", // The AI runnable WireBox ID or instance
 			// MCP Routing
-			"mcp"                   : false, // Flag indicating this is an MCP server route
-			"mcpServer"             : "" // The MCP server name to expose
+			"mcp"                    : false, // Flag indicating this is an MCP server route
+			"mcpServer"              : "", // The MCP server name to expose
+			// AI Gateway Routing
+			"gateway"                : false, // Flag indicating this is an AI gateway route
+			"gatewayName"            : "", // The gateway name this route is pinned to, empty for a :gateway placeholder mount
+			"gatewaySession"         : "", // The GatewaySession WireBox ID or instance inbound messages dispatch into
+			// Route-Level Caching - overrides the handler's own cache="true" annotation when true
+			"cache"                  : false, // Flag indicating this route caches its output
+			"cacheTimeout"           : "", // Cache timeout, in minutes. Blank uses the cache provider's default
+			"cacheLastAccessTimeout" : "", // Cache last access timeout, in minutes
+			"cacheProvider"          : "template", // The CacheBox provider to store the cached output in
+			"cacheSuffix"            : "", // A static string or a closure( event ) evaluated per-request for the cache key suffix
+			"cacheInclude"           : "*", // RC keys to include in the cache key, comma-delimited, "*" for all
+			"cacheExclude"           : "", // RC keys to exclude from the cache key, comma-delimited
+			"cacheFilter"            : "", // A closure( rc ):struct to fully customize which RC keys build the cache key
+			"etag"                   : false, // Tier 1 HTTP caching: compute a strong ETag alongside the cached entry
+			"etagWeak"               : false, // Compute the ETag above as a weak validator (W/"...") instead of strong
+			"lastModified"           : false, // Tier 1 HTTP caching: stamp the cached entry with a Last-Modified time
+			"cacheControl"           : "" // Cache-Control header value to send; defaults to a max-age derived from cacheTimeout when etag/lastModified is set
 		};
+	}
+
+	/**
+	 * Get the full set of keys that make up a registered route's canonical struct shape.
+	 *
+	 * Useful for route table introspection/tooling, and used to guard against addRoute()'s
+	 * parameters drifting out of sync with this definition - a parameter missing here means
+	 * that key is silently absent (not defaulted) from any route registered without explicitly
+	 * passing it.
+	 */
+	array function getRouteDefinitionKeys(){
+		return routeDefinitionShape().keyArray();
 	}
 
 	/**
@@ -1179,6 +1338,12 @@ component
 			if ( !variables.withClosure.isEmpty() ) {
 				processWith( arguments );
 			}
+			// route() does not declare domain directly, but group() can add it to the
+			// arguments collection. Preserve it in the fluent route definition so it
+			// reaches addRoute() below.
+			if ( arguments.keyExists( "domain" ) ) {
+				variables.thisRoute.domain = arguments.domain
+			}
 			// Prepare Routing Structure
 			var args = {};
 			// Simple => Event
@@ -1186,6 +1351,7 @@ component
 				args = {
 					pattern : arguments.pattern,
 					event   : arguments.target,
+					domain  : variables.thisRoute.domain,
 					verbs   : ( variables.thisRoute.keyExists( "verbs" ) ? variables.thisRoute.verbs : "" ),
 					name    : arguments.name
 				};
@@ -1195,6 +1361,7 @@ component
 				args = {
 					pattern  : arguments.pattern,
 					response : arguments.target,
+					domain   : variables.thisRoute.domain,
 					verbs    : ( variables.thisRoute.keyExists( "verbs" ) ? variables.thisRoute.verbs : "" ),
 					name     : arguments.name
 				};
@@ -1208,6 +1375,11 @@ component
 			// process a with closure if not empty
 			if ( !variables.withClosure.isEmpty() ) {
 				processWith( arguments );
+			}
+			// Materialize a domain supplied by group() before a fluent terminator
+			// registers variables.thisRoute.
+			if ( arguments.keyExists( "domain" ) ) {
+				variables.thisRoute.domain = arguments.domain
 			}
 
 			// Store data and continue
@@ -1308,6 +1480,252 @@ component
 	/****************************************************************************************************************************/
 	/* 													MODIFIERS																*/
 	/****************************************************************************************************************************/
+
+	/**
+	 * Attach route-scoped middleware. Middleware runs at a ColdBox interception point (`preProcess`
+	 * by default, or `postProcess`), but only for requests that matched this route - it is
+	 * <code>InterceptorState</code>'s point-based dispatch, scoped to one route instead of the whole app.
+	 *
+	 * A target can be:
+	 * - A closure/lambda: `function( event, rc, prc ){ ... }`
+	 * - A WireBox ID: resolved via `getInstance()` on every request, so it respects whatever scope
+	 *   (singleton, prototype, etc) the mapping was registered with.
+	 * - Any object, WireBox-managed or not, that has a method named after the point (`preProcess()`/
+	 *   `postProcess()`) - the same duck-typed convention ColdBox interceptors themselves already use.
+	 *   No base class or interface is required.
+	 *
+	 * Returning `true` from a target short-circuits the remaining middleware for this route at this
+	 * point - it does not, by itself, skip the handler or the render. To actually stop the request,
+	 * call `event.relocate()`, `event.renderData().noExecution()`, `event.etag()`, etc, exactly as you
+	 * would from any other preProcess/postProcess interceptor.
+	 *
+	 * A target may also be the name of a bundle registered via `middlewareGroup()` - it expands to
+	 * that bundle's own targets in place, at this call's point unless a member declares its own.
+	 * The group must already be registered when this runs, since expansion happens immediately -
+	 * referencing one too early silently treats the name as a literal target instead of expanding it.
+	 *
+	 * <pre>
+	 * // inline closure
+	 * route( "/admin/:action" ).middleware( function( event, rc, prc ){
+	 *     if ( !auth.isLoggedIn() ) {
+	 *         event.relocate( "login" );
+	 *         return true;
+	 *     }
+	 * } ).toHandler( "admin" );
+	 *
+	 * // a WireBox ID, or any class with a preProcess()/postProcess() method
+	 * route( "/api/reports" ).middleware( "AuditLog", "postProcess" ).to( "reports.index" );
+	 *
+	 * // multiple targets in one call, all on the same point
+	 * route( "/api/orders" ).middleware( [ "RateLimiter", "RequireApiKey" ] ).toHandler( "orders" );
+	 *
+	 * // a name registered via middlewareGroup() - expands to that bundle's targets
+	 * route( "/api/orders" ).middleware( "api" ).toHandler( "orders" );
+	 * </pre>
+	 *
+	 * @target A closure/lambda, a WireBox ID, an object instance, a `middlewareGroup()` name, or an array of any mix of those.
+	 * @point  The interception point to run this middleware at. Defaults to `preProcess`.
+	 */
+	function middleware( required any target, string point = "preProcess" ){
+		// process a with closure if not empty
+		if ( !variables.withClosure.isEmpty() ) {
+			processWith( arguments );
+		}
+
+		variables.thisRoute.middleware.append(
+			normalizeMiddlewareEntries( arguments.target, arguments.point ),
+			true
+		);
+
+		return this;
+	}
+
+	/**
+	 * Register a named, reusable bundle of middleware that can be referenced by name from
+	 * `.middleware()` or a `group( { middleware : [ ... ] } )` call, instead of repeating the same
+	 * target list at every call site - the same role Laravel's `$middlewareGroups` plays.
+	 *
+	 * Groups are flat: an entry may not itself be the name of another group - a bundle is always a
+	 * concrete list of closures/WireBox IDs/objects, never a pointer to another bundle.
+	 *
+	 * Register a group before any `.middleware()`/`group()` call that references it by name - name
+	 * resolution happens immediately, at registration time, not lazily at request time. A name that
+	 * doesn't match a registered group yet is silently treated as a literal target (e.g. a WireBox ID)
+	 * instead of being expanded, so referencing a group too early fails quietly rather than throwing.
+	 *
+	 * <pre>
+	 * middlewareGroup( "api", [ "RequireApiKey", "RateLimiter" ] );
+	 *
+	 * route( "/orders" ).middleware( "api" ).toHandler( "orders" );
+	 *
+	 * group( { pattern : "/api", middleware : [ "api" ] }, function(){
+	 *     route( "/users" ).toHandler( "users" );
+	 * } );
+	 * </pre>
+	 *
+	 * @name       The group name, referenced later as a middleware target.
+	 * @middleware The middleware targets in this group - the same values `.middleware()` accepts.
+	 * @point      The interception point for any member that doesn't declare its own via `{ target, point }`.
+	 */
+	function middlewareGroup(
+		required string name,
+		required any middleware,
+		string point = "preProcess"
+	){
+		variables.middlewareGroups[ arguments.name ] = normalizeMiddlewareEntries(
+			arguments.middleware,
+			arguments.point
+		);
+		return this;
+	}
+
+	/**
+	 * Exclude middleware this route would otherwise inherit - most commonly from an enclosing
+	 * `group()` - from running for this specific route. Mirrors Laravel's `Route::withoutMiddleware()`.
+	 *
+	 * Matches by the same name used to attach the middleware: a WireBox ID, or the name of a
+	 * `middlewareGroup()` - excluding a group name drops every member it expanded to, not just a
+	 * same-named single target. Pass `"*"` to strip all middleware, inherited or this route's own.
+	 *
+	 * Closures and object instances have no name to match, so they can only be kept off a route by
+	 * not attaching them in the first place - the same limitation Laravel has for anonymous middleware.
+	 *
+	 * <pre>
+	 * middlewareGroup( "api", [ "RequireApiKey", "RateLimiter" ] );
+	 *
+	 * group( { pattern : "/api", middleware : [ "api" ] }, function(){
+	 *     route( "/users" ).toHandler( "users" );                              // runs "api"
+	 *     route( "/health" ).withoutMiddleware( "api" ).toHandler( "health" ); // opts out
+	 * } );
+	 * </pre>
+	 *
+	 * @target A middleware target name, a `middlewareGroup()` name, `"*"` for all, or an array of any mix.
+	 */
+	function withoutMiddleware( required any target ){
+		var targets = isArray( arguments.target ) ? arguments.target : [ arguments.target ];
+		variables.thisRoute.withoutMiddleware.append( targets, true );
+		return this;
+	}
+
+	/**
+	 * Cache this route's output - the route-level equivalent of a handler action's `cache="true"`
+	 * annotation, declared where the URL is declared instead of on the handler. When a route opts
+	 * in here, its rules take full precedence over that handler's own cache annotations for any
+	 * request matching this route: the handler's `cache`/`cacheTimeout`/etc are ignored entirely,
+	 * which lets two different routes pointing at the same event carry two different cache
+	 * policies - something a handler annotation alone can never do, since it's shared by every
+	 * route that reaches that action.
+	 *
+	 * Reuses the exact same CacheBox-backed Event Caching machinery a handler annotation drives:
+	 * same cache providers, same conditional-GET Tier 1 layer (`etag`/`etagWeak`/`lastModified`/
+	 * `cacheControl`), same `cacheInclude`/`cacheExclude`/`cacheFilter` request-collection scoping.
+	 * See `docs/specs/http-caching.md` for the Tier 1 conditional-GET contract these four params opt into.
+	 *
+	 * <pre>
+	 * // cache for 60 minutes, default RC-based key
+	 * route( "/api/products" ).withCache( timeout = 60 ).to( "products.index" );
+	 *
+	 * // add conditional-GET support - a client with a matching ETag gets a 304, no body
+	 * route( "/api/products/:id" ).withCache( timeout = 60, etag = true ).to( "products.show" );
+	 *
+	 * // scope the cache key to just :id, ignoring any other querystring noise
+	 * route( "/api/products/:id" ).withCache( timeout = 60, cacheInclude = "id" ).to( "products.show" );
+	 *
+	 * // per-request dynamic suffix, e.g. multi-tenant isolation
+	 * route( "/api/products" ).withCache( suffix = ( event ) => event.getValue( "tenant", "" ) ).to( "products.index" );
+	 * </pre>
+	 *
+	 * @timeout           Cache timeout, in minutes. Blank uses the cache provider's default.
+	 * @lastAccessTimeout Cache last access timeout, in minutes.
+	 * @provider          The CacheBox provider to store the cached output in. Defaults to `template`.
+	 * @suffix            A static string, or a closure/lambda `function( event )` evaluated fresh on every request, appended to the cache key.
+	 * @cacheInclude      RC keys to include in the cache key, comma-delimited. Defaults to `*` (all).
+	 * @cacheExclude      RC keys to exclude from the cache key, comma-delimited.
+	 * @cacheFilter       A closure/lambda `function( rc ):struct` to fully customize which RC keys build the cache key, in place of `cacheInclude`/`cacheExclude`.
+	 * @etag              Tier 1 HTTP caching: compute an ETag alongside the cached entry so a matching `If-None-Match` gets a 304 with no body.
+	 * @etagWeak          Compute the ETag above as a weak validator (`W/"..."`) instead of strong.
+	 * @lastModified      Tier 1 HTTP caching: stamp the cached entry with a Last-Modified time so a matching `If-Modified-Since` gets a 304.
+	 * @cacheControl      `Cache-Control` header value to send. Defaults to a `max-age` derived from `timeout` when `etag`/`lastModified` is set and no explicit value is given.
+	 */
+	function withCache(
+		any timeout           = "",
+		any lastAccessTimeout = "",
+		string provider       = "template",
+		any suffix            = "",
+		string cacheInclude   = "*",
+		string cacheExclude   = "",
+		any cacheFilter       = "",
+		boolean etag          = false,
+		boolean etagWeak      = false,
+		boolean lastModified  = false,
+		string cacheControl   = ""
+	){
+		// process a with closure if not empty
+		if ( !variables.withClosure.isEmpty() ) {
+			processWith( arguments );
+		}
+
+		variables.thisRoute.cache                  = true;
+		variables.thisRoute.cacheTimeout           = arguments.timeout;
+		variables.thisRoute.cacheLastAccessTimeout = arguments.lastAccessTimeout;
+		variables.thisRoute.cacheProvider          = arguments.provider;
+		variables.thisRoute.cacheSuffix            = arguments.suffix;
+		variables.thisRoute.cacheInclude           = arguments.cacheInclude;
+		variables.thisRoute.cacheExclude           = arguments.cacheExclude;
+		variables.thisRoute.cacheFilter            = arguments.cacheFilter;
+		variables.thisRoute.etag                   = arguments.etag;
+		variables.thisRoute.etagWeak               = arguments.etagWeak;
+		variables.thisRoute.lastModified           = arguments.lastModified;
+		variables.thisRoute.cacheControl           = arguments.cacheControl;
+
+		return this;
+	}
+
+	/**
+	 * Normalize a mixed set of middleware targets - closures, WireBox IDs, object instances,
+	 * `{ target, point }` structs, or the name of a previously registered `middlewareGroup()` - into
+	 * the canonical `{ target, point, group }` entry shape `addRoute()` and `runRouteMiddleware()`
+	 * expect. A name that resolves to a registered group expands to that group's own entries, each
+	 * tagged with the group name it came from so `withoutMiddleware()` can exclude the whole bundle
+	 * later without knowing its individual members.
+	 *
+	 * Groups are flat - a group's own members are never expanded again here - so there's no risk of
+	 * a group indirectly referencing itself.
+	 *
+	 * @entries      A single target, or an array of any mix of the above.
+	 * @defaultPoint The interception point to use for any entry that doesn't declare its own.
+	 */
+	private array function normalizeMiddlewareEntries( required any entries, string defaultPoint = "preProcess" ){
+		var rawEntries = isArray( arguments.entries ) ? arguments.entries : [ arguments.entries ];
+		var normalized = [];
+
+		for ( var entry in rawEntries ) {
+			var target = entry;
+			var point  = arguments.defaultPoint;
+
+			if ( isStruct( entry ) && entry.keyExists( "target" ) ) {
+				target = entry.target;
+				point  = entry.keyExists( "point" ) ? entry.point : arguments.defaultPoint;
+			}
+
+			// A name that matches a registered middleware group expands to that group's members,
+			// each tagged with the group name so withoutMiddleware() can exclude it as a whole.
+			if ( isSimpleValue( target ) && variables.middlewareGroups.keyExists( target ) ) {
+				for ( var groupEntry in variables.middlewareGroups[ target ] ) {
+					normalized.append( {
+						"target" : groupEntry.target,
+						"point"  : groupEntry.point,
+						"group"  : target
+					} );
+				}
+				continue;
+			}
+
+			normalized.append( { "target" : target, "point" : point } );
+		}
+
+		return normalized;
+	}
 
 	/**
 	 * Add a header to a route
@@ -1895,6 +2313,83 @@ component
 	}
 
 	/**
+	 * Terminate the route by streaming a Server-Sent Events response. BoxLang only.
+	 *
+	 * Use this for endpoints that only ever stream. For a resource that has both a JSON and a
+	 * streaming representation, prefer content negotiation: leave the route pointing at a
+	 * handler and branch on `event.wantsSSE()` inside the action.
+	 *
+	 * <pre>
+	 * route( "/events/heartbeat" ).toSSE( ( event, rc, prc, emitter ) => {
+	 *     while( emitter.isOpen() ){
+	 *         emitter.send( { "ts" : now() }, "heartbeat" )
+	 *         sleep( 5000 )
+	 *     }
+	 * } );
+	 * </pre>
+	 *
+	 * @callback A closure/lambda receiving ( event, rc, prc, emitter )
+	 *
+	 * @return Router
+	 *
+	 * @throws InvalidArgumentException If the callback is not a closure or lambda
+	 * @throws SSENotSupportedException If BoxLang is not the active runtime
+	 */
+	function toSSE( required callback ){
+		// Guard at route registration time so misconfigurations surface on startup.
+		// Note this only requires BoxLang, unlike toAi()/toMCP() which also need the bxai module.
+		ensureSSESupport();
+
+		// Arg Check
+		if ( !isClosure( arguments.callback ) && !isCustomFunction( arguments.callback ) ) {
+			throw(
+				type   : "InvalidArgumentException",
+				message: "The 'callback' argument is not of type closure or lambda"
+			);
+		}
+		// process a with closure if not empty
+		if ( !variables.withClosure.isEmpty() ) {
+			processWith( arguments );
+		}
+		// Construct arguments
+		variables.thisRoute.append( { sse : true, sseCallback : arguments.callback }, true );
+		// register the route
+		addRoute( argumentCollection = variables.thisRoute );
+		// reinit
+		variables.thisRoute = initRouteDefinition();
+		return this;
+	}
+
+	/**
+	 * Verifies that BoxLang is the active runtime so Server-Sent Events can stream.
+	 *
+	 * Deliberately narrower than ensureBoxLang(): the `SSE()` BIF is core BoxLang, so streaming
+	 * must not inherit toAi()'s dependency on the bxai module.
+	 *
+	 * @throws SSENotSupportedException If BoxLang is not the active runtime
+	 */
+	private function ensureSSESupport(){
+		if ( !server.keyExists( "boxlang" ) ) {
+			throw(
+				type   : "SSENotSupportedException",
+				message: "Server-Sent Events require BoxLang.",
+				detail : "toSSE() is a BoxLang only feature."
+			);
+		}
+		return this;
+	}
+
+	/**
+	 * The global Server-Sent Events settings, falling back to framework defaults.
+	 *
+	 * Defaulted rather than looked up bare so a router built outside a fully configured
+	 * application - a mocked router in a test, for instance - does not blow up on a missing setting.
+	 */
+	private struct function getSSEDefaults(){
+		return variables.controller.getSetting( "sse", { "keepAliveInterval" : 30000, "retry" : 0, "cors" : "*" } );
+	}
+
+	/**
 	 * Terminate the route to be the entry point for module routing
 	 * <pre>
 	 * route( "/api/v1" ).toModuleRouting( "API" );
@@ -1939,8 +2434,8 @@ component
 
 	/**
 	 * Verifies that BoxLang is the active runtime and that the bxai module is installed.
-	 * Used as a guard by toAi() and toMCP() at route-registration time so misconfigurations
-	 * are caught on startup rather than at request time.
+	 * Used as a guard by toAi(), toMCP() and toAiGateway() at route-registration time so
+	 * misconfigurations are caught on startup rather than at request time.
 	 *
 	 * @throws BoxLangRequiredException If BoxLang is not the active runtime
 	 * @throws ModuleNotFoundException  If the bxai module is not installed
@@ -1949,14 +2444,14 @@ component
 		if ( !server.keyExists( "boxlang" ) ) {
 			throw(
 				type   : "BoxLangRequiredException",
-				message: "BoxLang is required for AI/MCP routing. toAi() and toMCP() are BoxLang-only features."
+				message: "BoxLang is required for AI routing. toAi(), toMCP() and toAiGateway() are BoxLang-only features."
 			);
 		}
 
 		if ( !getModuleList().keyArray().findNoCase( "bxai" ) ) {
 			throw(
 				type   : "ModuleNotFoundException",
-				message: "The BoxLang AI module (bxai) is required for AI/MCP routing. Install it via: box install bxai"
+				message: "The BoxLang AI module (bxai) is required for AI routing. Install it via: box install bxai"
 			);
 		}
 	}
@@ -1977,7 +2472,7 @@ component
 	 *   void function stream( function onChunk, any input={}, struct params={}, struct options={} )
 	 *
 	 * Any route modifiers already set (withCondition, withDomain, withSSL, etc.) are inherited
-	 * by all five sub-routes.
+	 * by every sub-route.
 	 *
 	 * <pre>
 	 * // Using WireBox ID — resolved lazily at request time
@@ -1990,6 +2485,26 @@ component
 	 * route( "/api/chat" )
 	 *     .withCondition( ( route, params, event ) => event.isAuthenticated() )
 	 *     .toAi( "ChatRunnable" );
+	 * </pre>
+	 *
+	 * ### Conversational context (invoke/stream/batch)
+	 *
+	 * Alongside `input`/`params`/`options`, the request body may carry `userId`, `conversationId`,
+	 * and `threadId`. Whatever's resolved is merged into `options` before the runnable is called
+	 * (`options.userId`, `options.conversationId`, `options.threadId`), and `threadId` is always
+	 * echoed back to the caller - as `threadId` on the JSON response (invoke/batch) and as an
+	 * `X-Thread-Id` response header on all three, plus a leading `thread` SSE frame on stream (since
+	 * EventSource clients can't read response headers):
+	 *
+	 * - `userId` - defaults to `Controller.getUserSessionIdentifier()` if not supplied
+	 * - `conversationId` - passed through only if supplied; no default is generated
+	 * - `threadId` - passed through if supplied, otherwise a new one is minted - always present in
+	 *   the response so a follow-up call can continue the same thread
+	 *
+	 * <pre>
+	 * // POST /api/chat/invoke  { "input": "hi", "threadId": "t-123" }
+	 * // → runnable.run( "hi", {}, { userId: "<session id>", threadId: "t-123" } )
+	 * // → { "output": ..., "success": true, "threadId": "t-123" }
 	 * </pre>
 	 *
 	 * @runnable A WireBox ID string or a live IAiRunnable instance
@@ -2052,12 +2567,16 @@ component
 				"response" : ( event, rc, prc ) => {
 					var runnableInstance = isSimpleValue( capturedRunnable ) ? getInstance( capturedRunnable ) : capturedRunnable
 					var body             = event.getHTTPContent( json: true )
-					var result           = runnableInstance.run(
-						body.input ?: {},
-						body.params ?: {},
-						body.options ?: {}
-					)
-					return { "output" : result, "success" : true }
+					var aiContext        = resolveAiContext( body )
+					var options          = body.options ?: {}
+					options.append( aiContext, true )
+					var result = runnableInstance.run( body.input ?: {}, body.params ?: {}, options )
+					event.setHTTPHeader( name = "X-Thread-Id", value = aiContext.threadId )
+					return {
+						"output"   : result,
+						"success"  : true,
+						"threadId" : aiContext.threadId
+					}
 				}
 			} )
 
@@ -2082,8 +2601,20 @@ component
 				"response" : ( event, rc, prc ) => {
 					var runnableInstance = isSimpleValue( capturedRunnable ) ? getInstance( capturedRunnable ) : capturedRunnable;
 					var body             = event.getHTTPContent( json: true );
+					var aiContext        = resolveAiContext( body );
+					var options          = body.options ?: {};
+					options.append( aiContext, true );
+
+					// Headers must go out before the stream opens
+					event.setHTTPHeader( name = "X-Thread-Id", value = aiContext.threadId );
+
 					SSE(
 						callback: ( emitter ) => {
+							// Lead with the resolved thread id - EventSource clients cannot read
+							// response headers, so this is the only way a browser caller learns a
+							// server-generated threadId in time to persist it for the next request.
+							emitter.send( { "threadId" : aiContext.threadId }, "thread" );
+
 							runnableInstance.stream(
 								( chunk ) => {
 									if ( !emitter.isClosed() ) {
@@ -2092,15 +2623,15 @@ component
 								},
 								body.input ?: {},
 								body.params ?: {},
-								body.options ?: {}
+								options
 							);
 							if ( !emitter.isClosed() ) {
 								emitter.send( "[DONE]", "done" );
 								emitter.close();
 							}
 						},
-						keepAliveInterval: 30000,
-						cors             : "*"
+						keepAliveInterval: getSSEDefaults().keepAliveInterval,
+						cors             : getSSEDefaults().cors
 					);
 					return "";
 				}
@@ -2127,10 +2658,13 @@ component
 					var runnableInstance = isSimpleValue( capturedRunnable ) ? getInstance( capturedRunnable ) : capturedRunnable
 					var body             = event.getHTTPContent( json: true )
 					var params           = body.params ?: {}
+					var aiContext        = resolveAiContext( body )
 					var options          = body.options ?: {}
-					var inputs           = body.inputs ?: []
+					options.append( aiContext, true )
+					var inputs = body.inputs ?: []
 
-					// Map the incoming outputs
+					// Map the incoming outputs - context is resolved once per request and shared
+					// by every item in the batch, same as params/options already are.
 					var outputs = inputs.map( ( input ) => {
 						try {
 							return {
@@ -2141,7 +2675,8 @@ component
 							return { error : e.message, success : false };
 						}
 					} )
-					return { "outputs" : outputs }
+					event.setHTTPHeader( name = "X-Thread-Id", value = aiContext.threadId )
+					return { "outputs" : outputs, "threadId" : aiContext.threadId }
 				}
 			} )
 
@@ -2205,6 +2740,35 @@ component
 		variables.thisRoute = initRouteDefinition()
 
 		return this;
+	}
+
+	/**
+	 * Resolve the conversational identity/thread context for an AI request - shared by the
+	 * invoke/stream/batch sub-routes toAi() registers.
+	 *
+	 * - `userId`: the request body's `userId` if provided, else the framework's own request/session
+	 *   tracking identifier (`Controller.getUserSessionIdentifier()`) - so every call is attributable
+	 *   to *someone* even when the caller doesn't manage its own user identity.
+	 * - `conversationId`: passed through as-is when provided. No default is generated - an absent
+	 *   conversationId means the caller isn't tracking conversations, and inventing one would imply
+	 *   a continuity that doesn't exist.
+	 * - `threadId`: the request body's `threadId` if provided, else a freshly generated one. Always
+	 *   present in the result so the caller can echo it back on the next request to continue the
+	 *   same thread, whether they supplied it or a new one had to be minted.
+	 *
+	 * @body The parsed JSON request body - invoke/stream/batch all pass their raw body here
+	 *
+	 * @return `{ userId, threadId, conversationId? }`
+	 */
+	private struct function resolveAiContext( required struct body ){
+		var ctx = {
+			"userId"   : len( arguments.body.userId ?: "" ) ? arguments.body.userId : variables.controller.getUserSessionIdentifier(),
+			"threadId" : len( arguments.body.threadId ?: "" ) ? arguments.body.threadId : createUUID()
+		};
+		if ( len( arguments.body.conversationId ?: "" ) ) {
+			ctx.conversationId = arguments.body.conversationId;
+		}
+		return ctx;
 	}
 
 	/**
@@ -2278,6 +2842,349 @@ component
 		variables.thisRoute = initRouteDefinition();
 
 		return this;
+	}
+
+	/**
+	 * Terminates the route by registering the family of sub-routes that expose a BoxLang AI
+	 * Gateway over HTTP: inbound platform events, the URL-verification handshake platforms
+	 * perform before they will POST anywhere, and the human-in-the-loop interaction endpoints.
+	 *
+	 * Given a base pattern (e.g. "/gateways"), the following sub-routes are registered:
+	 *
+	 *   POST {pattern}[/:gateway]/events                 → verify, parse, and dispatch  [202 JSON]
+	 *   GET  {pattern}[/:gateway]/events                 → the platform's URL handshake [gateway's own]
+	 *   GET  {pattern}/interactions/:requestID           → poll a pending interaction   [JSON]
+	 *   POST {pattern}/interactions/:requestID/decisions → submit a human's decision    [JSON]
+	 *   GET  {pattern}/info                              → registered gateways          [JSON]
+	 *
+	 * GET and POST deliberately share the `/events` path — one route answering both verbs — since
+	 * a platform is given ONE URL to store and verifies it with a GET before it ever POSTs to it.
+	 *
+	 * Pass a `gateway` name to pin the mount to one gateway. Leave it out and the terminator
+	 * inserts its own `:gateway` placeholder, so a single mount serves every gateway registered
+	 * in `aiGatewayRegistry()`.
+	 *
+	 * Pass a `session` — a WireBox ID or a live GatewaySession from `aiGatewaySession()` — and
+	 * every inbound message is dispatched as an agent turn and acked `202` immediately, without
+	 * waiting on the turn: a platform webhook times out in seconds while an agent turn does not.
+	 * The response reports which thread each message landed on so the caller can correlate the
+	 * reply that arrives later. Leave it out and inbound events are verified and parsed only,
+	 * returning the normalized messages for the application to dispatch itself.
+	 *
+	 * Any route modifiers already set (withCondition, withDomain, withSSL, etc.) are inherited
+	 * by all five sub-routes.
+	 *
+	 * <pre>
+	 * // One mount serving every registered gateway, dispatching into a session by WireBox ID
+	 * route( "/gateways" ).toAiGateway( session: "SupportAgentSession" );
+	 *
+	 * // Pinned to a single gateway: POST/GET /webhooks/slack/events
+	 * route( "/webhooks/slack" ).toAiGateway( "slack", "SupportAgentSession" );
+	 *
+	 * // Verify and parse only, dispatching nothing
+	 * route( "/gateways" ).toAiGateway();
+	 * </pre>
+	 *
+	 * @gateway The registered gateway name to pin this mount to, or empty for a `:gateway` placeholder mount
+	 * @session A WireBox ID or a live GatewaySession to dispatch into, or empty to parse without dispatching
+	 *
+	 * @return Router instance for chaining
+	 *
+	 * @throws BoxLangRequiredException If BoxLang is not the active runtime
+	 * @throws ModuleNotFoundException  If the bxai module is not installed
+	 * @throws InvalidArgumentException If session is not a WireBox ID string or an object
+	 */
+	function toAiGateway( string gateway = "", any session = "" ){
+		// Guard: BoxLang + bxai must be present at route-registration time
+		ensureBoxLang()
+
+		// Validate argument type
+		if (
+			( !isSimpleValue( arguments.session ) && !isObject( arguments.session ) ) ||
+			isNumeric( arguments.session )
+		) {
+			throw(
+				type   : "InvalidArgumentException",
+				message: "The 'session' argument must be a WireBox ID string or a GatewaySession instance"
+			)
+		}
+
+		// Capture base path and route name from the current fluent state, exactly as toAi() does,
+		// then build each sub-route as its own explicit routeArgs struct.
+		var basePath = variables.thisRoute.pattern
+		var baseName = len( variables.thisRoute.name ) ? variables.thisRoute.name : basePath
+
+		// A pinned mount needs no placeholder; an unpinned one takes the gateway name from the URL.
+		var gatewaySegment = len( trim( arguments.gateway ) ) ? "" : "/:gateway"
+
+		// Shared modifiers forwarded to every sub-route (mirrors toAi()/resources()).
+		// `gateway` here is the route-metadata FLAG — the name it was pinned to is `gatewayName`.
+		var sharedArgs = {
+			condition      : variables.thisRoute.condition,
+			domain         : variables.thisRoute.domain,
+			ssl            : variables.thisRoute.ssl,
+			headers        : variables.thisRoute.headers,
+			module         : variables.thisRoute.module,
+			namespace      : variables.thisRoute.namespace,
+			meta           : variables.thisRoute.meta,
+			gateway        : true,
+			gatewayName    : arguments.gateway,
+			gatewaySession : arguments.session,
+			statusCode     : 200
+		}
+
+		// Captured in local variables so the closures can close over them
+		var pinnedGateway   = arguments.gateway
+		var capturedSession = arguments.session
+
+		// =====================================================================================
+		// EVENTS ROUTE
+		// =====================================================================================
+
+		// GET/POST {base}[/:gateway]/events — one route, because a platform is given ONE URL and
+		// verifies it with a GET before it ever POSTs to it. Two routes sharing a pattern would
+		// merge into one anyway (see addRoute), so the verb branch lives inside the closure.
+		var routeArgs = sharedArgs
+			.copy()
+			.append( {
+				"pattern"  : "#basePath##gatewaySegment#/events",
+				"name"     : "#baseName#.gateway.events",
+				"verbs"    : "GET,POST",
+				"response" : ( event, rc, prc ) => {
+					var gatewayName = resolveGatewayName( pinnedGateway, rc )
+
+					// The platform's URL-verification handshake, answered by the gateway itself
+					if ( event.getHTTPMethod() == "GET" ) {
+						return writeGatewayResult(
+							event,
+							bxModules.bxai.models.gateway.http.GatewayRequestProcessor::processHandshake(
+								gatewayName,
+								rc
+							)
+						);
+					}
+
+					var gatewaySession = resolveGatewaySession( capturedSession )
+					var result         = "";
+
+					// Passed positionally rather than as a null-valued named argument, so a mount
+					// with no session is genuinely a parse-only call.
+					if ( isNull( gatewaySession ) ) {
+						result = bxModules.bxai.models.gateway.http.GatewayRequestProcessor::processInbound(
+							gatewayName,
+							event.getHTTPContent(),
+							getGatewayRequestHeaders()
+						);
+					} else {
+						result = bxModules.bxai.models.gateway.http.GatewayRequestProcessor::processInbound(
+							gatewayName,
+							event.getHTTPContent(),
+							getGatewayRequestHeaders(),
+							gatewaySession
+						);
+					}
+
+					return writeGatewayResult( event, result );
+				}
+			} )
+
+		// process a with closure if not empty
+		if ( !variables.withClosure.isEmpty() ) {
+			processWith( routeArgs )
+		}
+		// Register the route
+		addRoute( argumentCollection = routeArgs )
+
+		// =====================================================================================
+		// INTERACTION ROUTE
+		// =====================================================================================
+
+		// GET {base}/interactions/:requestID — poll a pending human-in-the-loop interaction
+		routeArgs = sharedArgs
+			.copy()
+			.append( {
+				"pattern"  : "#basePath#/interactions/:requestID",
+				"name"     : "#baseName#.gateway.interaction",
+				"verbs"    : "GET",
+				"response" : ( event, rc, prc ) => {
+					var result = bxModules.bxai.models.gateway.http.GatewayRequestProcessor::readInteraction(
+						rc.requestID ?: ""
+					);
+					return writeGatewayResult( event, result );
+				}
+			} )
+
+		// process a with closure if not empty
+		if ( !variables.withClosure.isEmpty() ) {
+			processWith( routeArgs )
+		}
+		// Register the route
+		addRoute( argumentCollection = routeArgs )
+
+		// =====================================================================================
+		// DECISION ROUTE
+		// =====================================================================================
+
+		// POST {base}/interactions/:requestID/decisions — submit a human's signed decision
+		routeArgs = sharedArgs
+			.copy()
+			.append( {
+				"pattern"  : "#basePath#/interactions/:requestID/decisions",
+				"name"     : "#baseName#.gateway.decision",
+				"verbs"    : "POST",
+				"response" : ( event, rc, prc ) => {
+					var result = bxModules.bxai.models.gateway.http.GatewayRequestProcessor::submitDecision(
+						rc.requestID ?: "",
+						event.getHTTPContent(),
+						getGatewayRequestHeaders()
+					);
+					return writeGatewayResult( event, result );
+				}
+			} )
+
+		// process a with closure if not empty
+		if ( !variables.withClosure.isEmpty() ) {
+			processWith( routeArgs )
+		}
+		// Register the route
+		addRoute( argumentCollection = routeArgs )
+
+		// =====================================================================================
+		// INFO ROUTE
+		// =====================================================================================
+
+		// GET {base}/info — what this mount serves, and which gateways are registered behind it
+		routeArgs = sharedArgs
+			.copy()
+			.append( {
+				"pattern"  : "#basePath#/info",
+				"name"     : "#baseName#.gateway.info",
+				"verbs"    : "GET",
+				"response" : ( event, rc, prc ) => {
+					var registered = aiGatewayRegistry().listGateways()
+					if ( len( pinnedGateway ) ) {
+						registered = registered.filter( ( key, gateway ) => key == pinnedGateway )
+					}
+
+					return {
+						"pattern"    : basePath,
+						"gateway"    : pinnedGateway,
+						"dispatches" : !isNull( resolveGatewaySession( capturedSession ) ),
+						"gateways"   : registered,
+						"endpoints"  : [
+							{
+								"verb"        : "POST",
+								"path"        : basePath & gatewaySegment & "/events",
+								"description" : "Inbound platform event"
+							},
+							{
+								"verb"        : "GET",
+								"path"        : basePath & gatewaySegment & "/events",
+								"description" : "Platform URL verification handshake"
+							},
+							{
+								"verb"        : "GET",
+								"path"        : basePath & "/interactions/:requestID",
+								"description" : "Poll a pending human interaction"
+							},
+							{
+								"verb"        : "POST",
+								"path"        : basePath & "/interactions/:requestID/decisions",
+								"description" : "Submit a human decision"
+							},
+							{
+								"verb"        : "GET",
+								"path"        : basePath & "/info",
+								"description" : "Endpoint metadata"
+							}
+						]
+					}
+				}
+			} )
+
+		// process a with closure if not empty
+		if ( !variables.withClosure.isEmpty() ) {
+			processWith( routeArgs )
+		}
+		// Register the route
+		addRoute( argumentCollection = routeArgs )
+
+		// Reset fluent state for the next route definition
+		variables.thisRoute = initRouteDefinition()
+
+		return this;
+	}
+
+	/**
+	 * Which gateway a toAiGateway() sub-route is talking to: the name the mount was pinned to
+	 * always wins, so a `:gateway` placeholder (or a stray `gateway` value in the request
+	 * collection) can never redirect a pinned mount at another gateway.
+	 *
+	 * @pinnedGateway The name passed to toAiGateway(), empty for a placeholder mount
+	 * @rc            The request collection, carrying the matched `:gateway` placeholder
+	 */
+	private string function resolveGatewayName( required string pinnedGateway, required struct rc ){
+		return len( arguments.pinnedGateway ) ? arguments.pinnedGateway : ( arguments.rc.gateway ?: "" );
+	}
+
+	/**
+	 * Resolve the GatewaySession a toAiGateway() route dispatches into: a live instance is used
+	 * as-is, a WireBox ID is resolved per request (so registering the route never forces the
+	 * session to be constructed), and an empty value means "parse, don't dispatch".
+	 *
+	 * @session The `session` argument toAiGateway() was given
+	 *
+	 * @return The GatewaySession, or null when the route dispatches nothing
+	 */
+	private any function resolveGatewaySession( required any session ){
+		if ( isObject( arguments.session ) ) {
+			return arguments.session;
+		}
+		if ( !len( trim( arguments.session ) ) ) {
+			return javacast( "null", "" );
+		}
+		return getInstance( arguments.session );
+	}
+
+	/**
+	 * The inbound request headers, for gateway signature verification. Defensive in exactly the
+	 * way RequestContext.getHTTPHeader() is: read from a thread there is no request to read.
+	 */
+	private struct function getGatewayRequestHeaders(){
+		try {
+			return getHTTPRequestData( false ).headers;
+		} catch ( any e ) {
+			return {};
+		}
+	}
+
+	/**
+	 * Render a bx-ai gateway result as the response.
+	 *
+	 * Both the status code and the content type come back from the gateway per request — a 401
+	 * on a bad signature, a plain-text challenge echo on a handshake — so this renders directly
+	 * instead of returning a body for the route's static `statusCode` to wrap.
+	 *
+	 * @event  The request context
+	 * @result The `{ statusCode, body, contentType, headers }` result from GatewayRequestProcessor
+	 */
+	private any function writeGatewayResult( required event, required struct result ){
+		var contentType   = arguments.result.contentType ?: "application/json";
+		var thisEvent     = arguments.event;
+		var resultHeaders = arguments.result.headers ?: {};
+
+		resultHeaders.each( ( key, value ) => {
+			thisEvent.setHTTPHeader( name = key, value = value );
+		} );
+
+		thisEvent.renderData(
+			type        = findNoCase( "json", contentType ) ? "JSON" : "PLAIN",
+			data        = arguments.result.body ?: {},
+			contentType = contentType,
+			statusCode  = arguments.result.statusCode ?: 200
+		);
+
+		return "";
 	}
 
 	/**

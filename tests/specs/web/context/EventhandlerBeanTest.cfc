@@ -81,6 +81,31 @@
 		</cfscript>
 	</cffunction>
 
+	<cffunction name="testHandlerRecord" access="public" returnType="void">
+		<cfscript>
+		var handlerRecord = {
+			handler        : "recorded",
+			invocationPath : "app.handlers",
+			runnable       : "app.handlers.recorded",
+			defaultEvent   : "recorded.index",
+			source         : "conventions"
+		};
+
+		this.ehBean
+			.setHandlerRecord( handlerRecord )
+			.setMethod( "show" )
+			.setFullEvent( "recorded.show" );
+
+		assertEquals( this.ehBean.getHandler(), "recorded" );
+		assertEquals( this.ehBean.getInvocationPath(), "app.handlers" );
+		assertEquals( this.ehBean.getRunnable(), "app.handlers.recorded" );
+		assertEquals( this.ehBean.getFullEvent(), "recorded.show" );
+		assertEquals( this.ehBean.getDefaultEvent(), "recorded.index" );
+		assertEquals( this.ehBean.getHandlerSource(), "conventions" );
+		expect( this.ehBean.getHandlerRecord() ).toBe( handlerRecord );
+		</cfscript>
+	</cffunction>
+
 	<cffunction name="testGetModule" access="public" returnType="void">
 		<cfscript>
 		assertEquals( this.ehBean.getModule(), this.instance.module );
@@ -102,6 +127,18 @@
 		expect( this.ehBean.isMetadataLoaded() ).toBe( false );
 		this.ehBean.setHandlerMetadata( getMetadata( this ) );
 		expect( this.ehBean.isMetadataLoaded() ).toBe( true );
+		</cfscript>
+	</cffunction>
+
+	<cffunction name="testGetNestedHandlerMetadata" access="public" returnType="void">
+		<cfscript>
+		this.ehBean.setHandlerMetadata( {
+			name        : "PasskeyRegistration",
+			annotations : { secured : "" }
+		} );
+
+		expect( this.ehBean.getHandlerMetadata( "secured", false ) ).toBe( "" );
+		expect( this.ehBean.getHandlerMetadata( "missing", false ) ).toBeFalse();
 		</cfscript>
 	</cffunction>
 </cfcomponent>
