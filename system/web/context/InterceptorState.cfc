@@ -39,6 +39,9 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 
 		// Controller
 		variables.controller       = arguments.controller
+		// Eagerly resolve the logger here instead of lazily per-call: logbox and controller are
+		// both required constructor args, so there's no chicken-and-egg reason to defer it.
+		variables.log              = arguments.logbox.getLogger( this )
 		// md ref map
 		variables.metadataMap      = {}
 		// Ordered runtime chain for hot interception processing
@@ -620,9 +623,7 @@ component accessors="true" extends="coldbox.system.core.events.EventPool" {
 	 * Get the service logger
 	 */
 	function getLogger(){
-		if ( !structKeyExists( variables, "log" ) || isNull( variables.log ) ) {
-			variables.log = variables.controller.getLogBox().getLogger( this )
-		}
+		// Eagerly set in init() now, this is just a direct field read
 		return variables.log
 	}
 

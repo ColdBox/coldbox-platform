@@ -589,8 +589,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 		var mdEntry = variables.eventCacheDictionary[ arguments.targetEvent ]
 
-		// Fast path: a static suffix needs no per-request work, hand back the memoized entry
-		if ( isSimpleValue( mdEntry.suffix ) ) {
+		// Fast path: suffixIsDynamic is precomputed once when the entry is memoized (see
+		// getEventCachingMetadata()), so a static suffix needs no per-request work here - just
+		// a boolean field read, no function calls.
+		if ( !mdEntry.suffixIsDynamic ) {
 			return mdEntry
 		}
 
@@ -826,7 +828,19 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * @requestContext The request context for the current request, passed to a closure `cacheSuffix` untouched.
 	 */
 	private function getRouteCachingMetadata( required struct routeRecord, required requestContext ){
+		// Memoized per HTTP request: the matched route record - and thus this result - cannot
+		// change for the life of a request (it's set once during initial routing), but this is
+		// called once from getEventMetadataEntry() (pre-dispatch cacheability check) and again
+		// from getEventCachingMetadata() (at dispatch), so caching it here avoids resolving it
+		// twice. `request` scope is per-HTTP-request and thread-isolated, safe to use even though
+		// this service is an application-wide singleton. An empty struct is the "no route cache"
+		// memo, since a real entry always has multiple keys.
+		if ( structKeyExists( request, "cbox_routeCacheMetadata" ) ) {
+			return request.cbox_routeCacheMetadata.isEmpty() ? javacast( "null", "" ) : request.cbox_routeCacheMetadata;
+		}
+
 		if ( !arguments.routeRecord.keyExists( "cache" ) || !arguments.routeRecord.cache ) {
+			request.cbox_routeCacheMetadata = {};
 			return;
 		}
 
@@ -852,6 +866,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		 ? suffix( arguments.requestContext )
 		 : suffix;
 
+		request.cbox_routeCacheMetadata = mdEntry;
 		return mdEntry;
 	}
 
@@ -958,6 +973,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 					}
 					// end cache metadata is true
 
+					// Precompute once whether the suffix needs per-request resolution, so
+					// resolveCacheSuffix() and getEventMetadataEntry()'s fast path can do a plain
+					// boolean field read instead of calling isClosure()/isCustomFunction() on
+					// every request.
+					mdEntry.suffixIsDynamic = isClosure( mdEntry.suffix ) || isCustomFunction( mdEntry.suffix );
+
 					// Save md Entry in dictionary
 					variables.eventCacheDictionary[ cacheKey ] = mdEntry;
 				}
@@ -1027,11 +1048,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		required ehBean,
 		required requestContext
 	){
-		// We check for isClosure and isCustomFunction for ACF/Lucee/BoxLang compatibility
-		if (
-			!isClosure( arguments.mdEntry.suffix ) &&
-			!isCustomFunction( arguments.mdEntry.suffix )
-		) {
+		// suffixIsDynamic is precomputed once when the entry is memoized (see
+		// getEventCachingMetadata()), so the common static-suffix case is a single boolean field
+		// read instead of two function calls on every request.
+		if ( !arguments.mdEntry.suffixIsDynamic ) {
 			return arguments.mdEntry;
 		}
 
