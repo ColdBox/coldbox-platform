@@ -216,38 +216,80 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 		var interceptionState = variables.interceptionStates[ arguments.state ]
 		var event             = controller.getRequestService().getContext()
-		var buffer            = getLazyBuffer()
+		// Threaded paths hand the buffer to a background thread that can outlive this call, so
+		// it can never be safely pooled/reused - only the synchronous (default) path pools it.
+		var pooled            = !arguments.async && !arguments.asyncAll
+		var buffer            = getLazyBuffer( pooled )
 
-		// Process the interception state and get results if any
-		var results = interceptionState.process(
-			event            = event,
-			data             = arguments.data,
-			async            = arguments.async,
-			asyncAll         = arguments.asyncAll,
-			asyncAllJoin     = arguments.asyncAllJoin,
-			asyncPriority    = arguments.asyncPriority,
-			asyncJoinTimeout = arguments.asyncJoinTimeout,
-			buffer           = buffer
-		)
+		try {
+			// Process the interception state and get results if any
+			var results = interceptionState.process(
+				event            = event,
+				data             = arguments.data,
+				async            = arguments.async,
+				asyncAll         = arguments.asyncAll,
+				asyncAllJoin     = arguments.asyncAllJoin,
+				asyncPriority    = arguments.asyncPriority,
+				asyncJoinTimeout = arguments.asyncJoinTimeout,
+				buffer           = buffer
+			)
 
-		// If buffer has a builder, then content was lazily produced, output it
-		if ( buffer.hasContent() ) {
-			writeOutput( buffer.getString() )
-		}
+			// If buffer has a builder, then content was lazily produced, output it
+			if ( buffer.hasContent() ) {
+				writeOutput( buffer.getString() )
+			}
 
-		// Any results
-		if ( !isNull( local.results ) ) {
-			return results
+			// Any results
+			if ( !isNull( local.results ) ) {
+				return results
+			}
+		} finally {
+			if ( pooled ) {
+				releaseLazyBuffer( buffer )
+			}
 		}
 	}
 
 	/**
-	 * Produce a lazy buffer for performance considerations
+	 * Produce a lazy buffer for performance considerations.
+	 *
+	 * Pooled per request for the synchronous path: `announce()` checks a buffer out here and
+	 * returns it via `releaseLazyBuffer()` in a finally block. The overwhelming majority of
+	 * announce() calls in a request are sequential and non-reentrant, so they reuse one buffer
+	 * instead of allocating a new component every time. A reentrant announce() (e.g. an
+	 * interceptor that itself triggers `announce( "onException", ... )` while executing) finds
+	 * the pool empty and gets its own instance, so it can never clobber the in-flight buffer of
+	 * the call still running further up the stack. The async/asyncAll paths always get a fresh,
+	 * unpooled instance since their buffer is handed to a background thread that can outlive
+	 * this call.
+	 *
+	 * @pooled Whether to check out from (and later return to) the per-request pool
 	 *
 	 * @return { get(), clear(), append(), length(), getString() }
 	 */
-	function getLazyBuffer(){
+	function getLazyBuffer( boolean pooled = true ){
+		if (
+			arguments.pooled &&
+			structKeyExists( request, "cbox_interceptorBufferPool" ) &&
+			request.cbox_interceptorBufferPool.len()
+		) {
+			var buffer = request.cbox_interceptorBufferPool.pop()
+			buffer.clear()
+			return buffer
+		}
 		return new coldbox.system.web.context.InterceptorBuffer()
+	}
+
+	/**
+	 * Return a buffer checked out via getLazyBuffer( true ) back to the per-request pool.
+	 *
+	 * @buffer The buffer instance to release
+	 */
+	function releaseLazyBuffer( required buffer ){
+		if ( !structKeyExists( request, "cbox_interceptorBufferPool" ) ) {
+			request.cbox_interceptorBufferPool = []
+		}
+		request.cbox_interceptorBufferPool.append( arguments.buffer )
 	}
 
 	/**
