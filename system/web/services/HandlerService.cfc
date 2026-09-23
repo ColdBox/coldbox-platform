@@ -591,8 +591,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 		// Fast path: suffixIsDynamic is precomputed once when the entry is memoized (see
 		// getEventCachingMetadata()), so a static suffix needs no per-request work here - just
-		// a boolean field read, no function calls.
-		if ( !mdEntry.suffixIsDynamic ) {
+		// a boolean field read, no function calls. Fall back to computing it directly for an
+		// entry that doesn't carry the field (e.g. built some other way than that method).
+		if ( !( mdEntry.suffixIsDynamic ?: ( isClosure( mdEntry.suffix ) || isCustomFunction( mdEntry.suffix ) ) ) ) {
 			return mdEntry
 		}
 
@@ -1050,8 +1051,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	){
 		// suffixIsDynamic is precomputed once when the entry is memoized (see
 		// getEventCachingMetadata()), so the common static-suffix case is a single boolean field
-		// read instead of two function calls on every request.
-		if ( !arguments.mdEntry.suffixIsDynamic ) {
+		// read instead of two function calls on every request. Fall back to computing it
+		// directly for an entry that doesn't carry the field (e.g. built some other way).
+		var suffixIsDynamic = arguments.mdEntry.suffixIsDynamic ?: (
+			isClosure( arguments.mdEntry.suffix ) || isCustomFunction( arguments.mdEntry.suffix )
+		);
+		if ( !suffixIsDynamic ) {
 			return arguments.mdEntry;
 		}
 
