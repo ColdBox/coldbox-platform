@@ -35,7 +35,7 @@ component serializable="false" accessors="true" {
 	param name="COLDBOX_WEB_MAPPING"   default="";
 	param name="lockTimeout" default="30" type="numeric";
 	param name="COLDBOX_FAIL_FAST" default="true";
-	param name="appHash" default="#getBaseTemplatePath()#";
+	param name="appHash"           default="#getBaseTemplatePath()#";
 
 	/**
 	 * Constructor, called by your Application CFC
