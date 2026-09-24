@@ -23,7 +23,7 @@ component serializable="false" accessors="true" {
 	// Lock Timeout for startup operations
 	property name="lockTimeout";
 	// The application hash used for locks
-	property name="appHash" default="#getBaseTemplatePath()#";
+	property name="appHash" default="";
 	// By default if an app is reiniting and a request hits it, we will fail fast with a message
 	property name="COLDBOX_FAIL_FAST";
 
@@ -35,6 +35,7 @@ component serializable="false" accessors="true" {
 	param name="COLDBOX_WEB_MAPPING"   default="";
 	param name="lockTimeout" default="30" type="numeric";
 	param name="COLDBOX_FAIL_FAST" default="true";
+	param name="appHash" default="#getBaseTemplatePath()#";
 
 	/**
 	 * Constructor, called by your Application CFC

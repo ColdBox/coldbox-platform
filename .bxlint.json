@@ -55,6 +55,10 @@
     "unusedVariable": {
       "enabled": true,
       "severity": "hint"
+    },
+	"possibleTypo": {
+      "enabled": false,
+      "severity": "warning"
     }
   },
   "include": [],
