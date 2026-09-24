@@ -227,6 +227,21 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				var response = mockRequestContext.getResponse();
 				expect( response.getError() ).toBeTrue();
 				expect( response.getStatusCode() ).toBe( 404 );
+				expect( response.getData() ).toBe( "" );
+			} );
+
+			it( "can handle onEntityNotFoundException with an incoming id", function(){
+				mockRequestContext.setValue( "id", "123abc" );
+				handler.onEntityNotFoundException(
+					mockRequestContext,
+					mockRequestContext.getCollection(),
+					mockRequestContext.getPrivateCollection(),
+					{}
+				);
+				var response = mockRequestContext.getResponse();
+				expect( response.getError() ).toBeTrue();
+				expect( response.getStatusCode() ).toBe( 404 );
+				expect( response.getData() ).toBe( "123abc" );
 			} );
 
 			it( "can handle onValidationException", function(){
