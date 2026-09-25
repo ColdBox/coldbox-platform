@@ -25,11 +25,15 @@
 
 		// Mock model Dependencies
 		mockController.$( "getRequestService", mockRequestService );
-		mockController.$( "getUtil", new coldbox.system.core.util.Util() );
 
 		mockController.setLogBox( mockLogBox );
 		mockController.setWireBox( mockWireBox );
 		mockController.setCacheBox( mockCacheBox );
+		// A real setter, not a $() stub: MockBox's $() return-type inference for getUtil()
+		// misfires on Lucee 5/6 (it infers "string" and then fails to cast the real Util
+		// component to it), the same way setLogBox()/setWireBox()/setCacheBox() above sidestep
+		// it for their own properties.
+		mockController.setUtil( new coldbox.system.core.util.Util() );
 
 		mockRequestService.$( "getFlashScope", mockFlash );
 		mockLogBox.$( "getLogger", mockLogger );
@@ -214,7 +218,7 @@
 		// from code running inside an async/asyncAll announce()'s thread) must never touch the
 		// same pool the request thread is using, or two real concurrent threads can pop/release
 		// the same array at once and corrupt it.
-		mockController.$( "getUtil", mockBox.createStub().$( "inThread", true ) )
+		mockController.setUtil( mockBox.createStub().$( "inThread", true ) )
 
 		var buffers = []
 		iService.listen( function( event, data, buffer ){
