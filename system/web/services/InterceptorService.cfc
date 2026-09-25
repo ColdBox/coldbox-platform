@@ -267,23 +267,37 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * instead of allocating a new component every time. A reentrant announce() (e.g. an
 	 * interceptor that itself triggers `announce( "onException", ... )` while executing) finds
 	 * the pool empty and gets its own instance, so it can never clobber the in-flight buffer of
-	 * the call still running further up the stack. The async/asyncAll paths always get a fresh,
-	 * unpooled instance since their buffer is handed to a background thread that can outlive
-	 * this call.
+	 * the call still running further up the stack. The async/asyncAll paths, and any announce()
+	 * running inside a cfthread, always get a fresh, unpooled instance since their buffer can be
+	 * used by a background thread that can outlive this call.
+	 *
+	 * The pool lives in `request` scope, but an async announce()'s thread can itself outlive the
+	 * request that spawned it (a fire-and-forget async announce, or one nobody joined) - by the
+	 * time that orphaned thread's own work runs, `request` scope may no longer be the one this
+	 * pool was built against, or may not be usable at all. The pool is a performance nicety only,
+	 * never load-bearing for correctness, so any failure reading it here is treated the same as
+	 * "no pool available" - fall back to a fresh, unpooled buffer rather than letting the
+	 * announce() itself fail.
 	 *
 	 * @pooled Whether to check out from (and later return to) the per-request pool
 	 *
 	 * @return { get(), clear(), append(), length(), getString() }
 	 */
 	function getLazyBuffer( boolean pooled = true ){
-		if (
-			arguments.pooled &&
-			structKeyExists( request, "cbox_interceptorBufferPool" ) &&
-			request.cbox_interceptorBufferPool.len()
-		) {
-			var buffer = request.cbox_interceptorBufferPool.pop()
-			buffer.clear()
-			return buffer
+		if ( arguments.pooled ) {
+			try {
+				if (
+					structKeyExists( request, "cbox_interceptorBufferPool" ) &&
+					request.cbox_interceptorBufferPool.len()
+				) {
+					var buffer = request.cbox_interceptorBufferPool.pop()
+					buffer.clear()
+					return buffer
+				}
+			} catch ( any e ) {
+				// request scope is gone or unusable (e.g. this thread has outlived the request
+				// that spawned it) - the pool goes with it, fall through to an unpooled buffer.
+			}
 		}
 		return new coldbox.system.web.context.InterceptorBuffer()
 	}
@@ -291,13 +305,20 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	/**
 	 * Return a buffer checked out via getLazyBuffer( true ) back to the per-request pool.
 	 *
+	 * Silently drops the buffer if `request` scope is gone or unusable (see getLazyBuffer()) -
+	 * there is no pool left to release it into, and that's fine, it just won't be reused.
+	 *
 	 * @buffer The buffer instance to release
 	 */
 	function releaseLazyBuffer( required buffer ){
-		if ( !structKeyExists( request, "cbox_interceptorBufferPool" ) ) {
-			request.cbox_interceptorBufferPool = []
+		try {
+			if ( !structKeyExists( request, "cbox_interceptorBufferPool" ) ) {
+				request.cbox_interceptorBufferPool = []
+			}
+			request.cbox_interceptorBufferPool.append( arguments.buffer )
+		} catch ( any e ) {
+			// Nothing to release into - safe to drop.
 		}
-		request.cbox_interceptorBufferPool.append( arguments.buffer )
 	}
 
 	/**

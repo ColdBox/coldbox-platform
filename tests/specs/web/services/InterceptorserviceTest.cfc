@@ -3,6 +3,12 @@
 	function setup(){
 		super.setup();
 
+		// `request` scope persists across every test in this suite (they all run inside one
+		// physical HTTP request to the test runner), so a leftover interceptor buffer pool - or
+		// one a test deliberately broke to exercise the COLDBOX-1454 fallback - must not leak
+		// into the next test.
+		structDelete( request, "cbox_interceptorBufferPool" );
+
 		// Create Mock Objects
 		variables.mockbox            = getMockBox();
 		variables.mockController     = mockBox.createMock( "coldbox.system.testing.mock.web.MockController" );
@@ -234,6 +240,30 @@
 		var buffer2 = iService.getLazyBuffer( false )
 
 		expect( objectId( buffer1 ) ).notToBe( objectId( buffer2 ) )
+	}
+
+	function testGetLazyBufferFallsBackToAnUnpooledBufferWhenThePoolIsUnusable(){
+		// COLDBOX-1454: an async announce()'s thread can outlive the request that spawned it (a
+		// fire-and-forget async announce, or one nobody joined). By the time that orphaned
+		// thread's own work runs, `request` scope - and the pool living in it - may no longer be
+		// usable. The pool is a performance nicety only, so this must degrade to a fresh,
+		// unpooled buffer instead of throwing. A struct in place of the expected array simulates
+		// that unusable state: structs have no pop() method, so reading it throws.
+		request.cbox_interceptorBufferPool = { "not" : "an array" }
+
+		var buffer = iService.getLazyBuffer( true )
+
+		expect( isObject( buffer ) ).toBeTrue()
+		expect( buffer.hasContent() ).toBeFalse()
+	}
+
+	function testReleaseLazyBufferSilentlyDropsWhenThePoolIsUnusable(){
+		// Same COLDBOX-1454 scenario as above, from the release side: a plain string in place of
+		// the expected array has no append() method, so writing back to it throws - and that
+		// must not propagate out of announce()'s finally block.
+		request.cbox_interceptorBufferPool = "not an array"
+
+		iService.releaseLazyBuffer( new coldbox.system.web.context.InterceptorBuffer() )
 	}
 
 	function testInterceptionPoints(){
