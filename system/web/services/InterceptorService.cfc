@@ -218,7 +218,15 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		var event             = controller.getRequestService().getContext()
 		// Threaded paths hand the buffer to a background thread that can outlive this call, so
 		// it can never be safely pooled/reused - only the synchronous (default) path pools it.
-		var pooled            = !arguments.async && !arguments.asyncAll
+		// Also never pool while already executing inside a cfthread (e.g. a synchronous announce()
+		// triggered from code running inside an async/asyncAll thread, such as getInstance()'s
+		// afterInstanceAutowire announcement): `request` scope - and thus the pool array - is
+		// shared between the request thread and any cfthread spawned from it, and CFML/BoxLang
+		// arrays aren't thread-safe, so two real concurrent threads popping/releasing the same
+		// array can corrupt it ("can not pop Element from array, array is empty" - COLDBOX-1454).
+		// InterceptorState.process() uses the same controller.getUtil().inThread() check for its
+		// own async dispatch decision.
+		var pooled            = !arguments.async && !arguments.asyncAll && !variables.controller.getUtil().inThread()
 		var buffer            = getLazyBuffer( pooled )
 
 		try {

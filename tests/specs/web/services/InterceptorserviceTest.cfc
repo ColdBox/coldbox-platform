@@ -19,6 +19,7 @@
 
 		// Mock model Dependencies
 		mockController.$( "getRequestService", mockRequestService );
+		mockController.$( "getUtil", new coldbox.system.core.util.Util() );
 
 		mockController.setLogBox( mockLogBox );
 		mockController.setWireBox( mockWireBox );
@@ -175,6 +176,64 @@
 		}
 
 		expect( local.output ).toBe( "buffered output" )
+	}
+
+	/**
+	 * Unambiguous reference-identity check: CFML's own object equality can compare by value/
+	 * string representation, which makes two freshly-created, still-empty InterceptorBuffer
+	 * instances look "equal" even though they're genuinely different objects. The JVM's identity
+	 * hash sidesteps that entirely.
+	 */
+	private function objectId( required obj ){
+		return createObject( "java", "java.lang.System" ).identityHashCode( arguments.obj )
+	}
+
+	function testAnnouncePoolsAndReusesTheBufferWhenNotInsideAThread(){
+		var buffers = []
+		iService.listen( function( event, data, buffer ){
+			buffers.append( arguments.buffer )
+		}, "onPoolTest" )
+
+		iService.announce( "onPoolTest" )
+		iService.announce( "onPoolTest" )
+
+		// Sequential, non-threaded announce() calls reuse the one pooled buffer
+		expect( objectId( buffers[ 1 ] ) ).toBe( objectId( buffers[ 2 ] ) )
+	}
+
+	function testAnnounceNeverPoolsTheBufferWhileInsideAThread(){
+		// COLDBOX-1454: `request` scope - and thus the buffer pool array - is shared between
+		// the request thread and any cfthread spawned from it. A synchronous announce() running
+		// on a spawned thread (e.g. WireBox's afterInstanceAutowire, triggered by getInstance()
+		// from code running inside an async/asyncAll announce()'s thread) must never touch the
+		// same pool the request thread is using, or two real concurrent threads can pop/release
+		// the same array at once and corrupt it.
+		mockController.$( "getUtil", mockBox.createStub().$( "inThread", true ) )
+
+		var buffers = []
+		iService.listen( function( event, data, buffer ){
+			buffers.append( arguments.buffer )
+		}, "onPoolTest" )
+
+		iService.announce( "onPoolTest" )
+		iService.announce( "onPoolTest" )
+
+		expect( objectId( buffers[ 1 ] ) ).notToBe( objectId( buffers[ 2 ] ) )
+	}
+
+	function testGetLazyBufferPoolsAndReusesWhenAskedTo(){
+		var buffer1 = iService.getLazyBuffer( true )
+		iService.releaseLazyBuffer( buffer1 )
+		var buffer2 = iService.getLazyBuffer( true )
+
+		expect( objectId( buffer1 ) ).toBe( objectId( buffer2 ) )
+	}
+
+	function testGetLazyBufferNeverReusesWhenNotAskedTo(){
+		var buffer1 = iService.getLazyBuffer( false )
+		var buffer2 = iService.getLazyBuffer( false )
+
+		expect( objectId( buffer1 ) ).notToBe( objectId( buffer2 ) )
 	}
 
 	function testInterceptionPoints(){
