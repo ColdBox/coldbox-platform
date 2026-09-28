@@ -578,6 +578,19 @@ component serializable="false" accessors="true" {
 		// Verify Reloading
 		reloadChecks();
 
+		// Dispatch a session start that arrived before the controller was ready, once per session even when
+		// several of its requests arrive together
+		var pendingKey = "coldboxPendingSessionStart_" & locateAppKey()
+		if ( isDefined( "session" ) && session.keyExists( pendingKey ) ) {
+			var claimed = false
+			lock scope="session" type="exclusive" timeout="10" {
+				claimed = structDelete( session, pendingKey, true )
+			}
+			if ( claimed ) {
+				onSessionStart()
+			}
+		}
+
 		// Process A ColdBox Request Only
 		// If the file is "index.(cfm|bxm)" then we will process it
 		if ( reFindNoCase( "index\.(cfm|bxm)", listLast( arguments.targetPage, "/" ) ) ) {
@@ -625,11 +638,16 @@ component serializable="false" accessors="true" {
 	 * ON session start
 	 */
 	function onSessionStart(){
-		// Exit if we don't have the app key in scope, means we are not ready to process session start yet.
-		if ( !application.keyExists( locateAppKey() ) ) {
+		var appKey     = locateAppKey()
+		var pendingKey = "coldboxPendingSessionStart_" & appKey
+		// Not ready yet: the application is still starting, or a reinit is rebuilding the controller. Keep the event in the
+		// session, so a request that fails fast during the reinit does not lose it, and let onRequestStart dispatch it.
+		if ( !application.keyExists( appKey ) || !application[ appKey ].getColdboxInitiated() ) {
+			session[ pendingKey ] = true
 			return;
 		}
-		var cbController = application[ locateAppKey() ]
+		session.delete( pendingKey )
+		var cbController = application[ appKey ]
 		// Session start interceptors
 		cbController.getInterceptorService().announce( "sessionStart", session )
 		// Execute Session Start Handler
