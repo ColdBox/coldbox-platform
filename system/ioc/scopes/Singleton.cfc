@@ -45,6 +45,9 @@ component accessors="true" {
 	function init( required injector ){
 		variables.injector   = arguments.injector;
 		variables.singletons = createObject( "java", "java.util.concurrent.ConcurrentHashMap" ).init();
+		// cacheKey -> id of the thread building and wiring that singleton
+		variables.building   = createObject( "java", "java.util.concurrent.ConcurrentHashMap" ).init()
+		variables.jThread    = createObject( "java", "java.lang.Thread" )
 		variables.log        = arguments.injector.getLogBox().getLogger( this );
 		return this;
 	}
@@ -59,56 +62,63 @@ component accessors="true" {
 	function getFromScope( required mapping, struct initArguments ){
 		var cacheKey = lCase( arguments.mapping.getName() );
 
-		// Verify in Singleton Cache
-		if ( NOT variables.singletons.containsKey( cacheKey ) ) {
-			// Lock it
+		// Verify in Singleton Cache. A singleton stored before wiring (circular-dependency support) is only
+		// visible to the thread wiring it; every other thread queues on the lock until wiring completes.
+		if ( NOT variables.singletons.containsKey( cacheKey ) OR buildingOnAnotherThread( cacheKey ) ) {
+			// Lock it; a thread arriving while another wires this singleton waits here for the whole transitive wiring
 			lock
 				name          ="WireBox.#variables.injector.getInjectorID()#.Singleton.#cacheKey#"
 				type          ="exclusive"
-				timeout       ="30"
+				timeout       ="60"
 				throwontimeout="true" {
-				// double lock it
-				if ( NOT variables.singletons.containsKey( cacheKey ) ) {
-					// some nice debug info.
-					if ( variables.log.canDebug() ) {
-						variables.log.debug(
-							"Object: (#cacheKey#) not found in singleton cache, beginning construction by (#variables.injector.getName()#) injector"
+				// owned from here, construction included, so a thread that is still constructing never queues behind one wiring
+				variables.building.put( cacheKey, variables.jThread.currentThread().getId() )
+				try {
+					// double lock it
+					if ( NOT variables.singletons.containsKey( cacheKey ) ) {
+						// some nice debug info.
+						if ( variables.log.canDebug() ) {
+							variables.log.debug(
+								"Object: (#cacheKey#) not found in singleton cache, beginning construction by (#variables.injector.getName()#) injector"
+							);
+						}
+
+						// construct the singleton object
+						var tmpSingleton = variables.injector.buildInstance(
+							arguments.mapping,
+							arguments.initArguments
 						);
+
+						// If not in wiring thread safety, store in singleton cache to satisfy circular dependencies
+						if ( NOT arguments.mapping.getThreadSafe() ) {
+							variables.singletons.put( cacheKey, tmpSingleton );
+						}
+
+						try {
+							// wire up dependencies on the singleton object
+							variables.injector.autowire( target = tmpSingleton, mapping = arguments.mapping );
+						} catch ( any e ) {
+							variables.singletons.remove( cacheKey );
+							rethrow;
+						}
+
+						// If thread safe, then now store it in the singleton cache, as all dependencies are now safely wired
+						if ( arguments.mapping.getThreadSafe() ) {
+							variables.singletons.put( cacheKey, tmpSingleton );
+						}
+
+						// log it
+						if ( variables.log.canDebug() ) {
+							variables.log.debug(
+								"Object: (#cacheKey#) constructed and stored in singleton cache. ThreadSafe=#arguments.mapping.getThreadSafe()# by (#variables.injector.getName()#) injector"
+							);
+						}
+
+						// return it
+						return variables.singletons.get( cacheKey );
 					}
-
-					// construct the singleton object
-					var tmpSingleton = variables.injector.buildInstance(
-						arguments.mapping,
-						arguments.initArguments
-					);
-
-					// If not in wiring thread safety, store in singleton cache to satisfy circular dependencies
-					if ( NOT arguments.mapping.getThreadSafe() ) {
-						variables.singletons.put( cacheKey, tmpSingleton );
-					}
-
-					try {
-						// wire up dependencies on the singleton object
-						variables.injector.autowire( target = tmpSingleton, mapping = arguments.mapping );
-					} catch ( any e ) {
-						variables.singletons.remove( cacheKey );
-						rethrow;
-					}
-
-					// If thread safe, then now store it in the singleton cache, as all dependencies are now safely wired
-					if ( arguments.mapping.getThreadSafe() ) {
-						variables.singletons.put( cacheKey, tmpSingleton );
-					}
-
-					// log it
-					if ( variables.log.canDebug() ) {
-						variables.log.debug(
-							"Object: (#cacheKey#) constructed and stored in singleton cache. ThreadSafe=#arguments.mapping.getThreadSafe()# by (#variables.injector.getName()#) injector"
-						);
-					}
-
-					// return it
-					return variables.singletons.get( cacheKey );
+				} finally {
+					variables.building.remove( cacheKey )
 				}
 			}
 			// end lock
@@ -116,6 +126,22 @@ component accessors="true" {
 
 		// return singleton
 		return variables.singletons.get( cacheKey );
+	}
+
+	/**
+	 * A thread that is itself building a singleton never waits: two threads building a circular pair from opposite
+	 * ends would otherwise each hold one singleton lock and queue on the other until the timeout. Such a thread gets
+	 * the stored, still-wiring instance, as it did before this guard.
+	 *
+	 * @cacheKey The singleton cache key
+	 */
+	private boolean function buildingOnAnotherThread( required string cacheKey ){
+		var owner = variables.building.get( arguments.cacheKey )
+		if ( isNull( owner ) ) {
+			return false
+		}
+		var current = variables.jThread.currentThread().getId()
+		return owner != current && !variables.building.containsValue( current )
 	}
 
 	/**
