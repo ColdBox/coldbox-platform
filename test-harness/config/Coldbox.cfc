@@ -54,7 +54,22 @@
 		// environment settings, create a detectEnvironment() method to detect it yourself.
 		// create a function with the name of the environment so it can be executed if that environment is detected
 		// the value of the environment is a list of regex patterns to match the CGI.SERVER_NAME.
-		variables.environments = { development : "^cf.,^localhost,^127" };
+		// The browser tests of tests/specs/browser reach the harness on 127.0.0.1, its testing environment
+		variables.environments = { development : "^cf.,^localhost", testing : "^127\.0\.0\.1" };
+
+		// Browser testing endpoints: they only answer in the testing environment
+		variables.moduleSettings = {
+			browserTesting : {
+				enabled : true,
+				token   : "coldbox-test-harness-browser-token",
+				login   : function( id, event, rc, prc ){
+					session.browserTestingUser = arguments.id
+				},
+				logout  : function( event, rc, prc ){
+					structDelete( session, "browserTestingUser" )
+				}
+			}
+		}
 
 		// Module Directives
 		variables.modules = {
