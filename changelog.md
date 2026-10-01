@@ -11,8 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- `coldbox.system.testing.BrowserTestCase` (BoxLang): browser tests for ColdBox applications built on TestBox browser support and bx-playwright. It loads your application like any integration test and adds `browse()`, `this.playwright()`, `browserAvailable()`, `browserUnavailableReason()`, the `browserProfile` and `baseURL` annotations, the TestBox browser matchers, and the ColdBox helpers `routeURL()`, `visitRoute()`, `assertRouteIs()`, `loginAs()` and `logout()`
-- `BrowserTesting` core module: test-only `GET /__browser-testing/login/:id` and `GET /__browser-testing/logout` endpoints that call the `login` and `logout` closures of `moduleSettings.browserTesting`. They answer `404 Not Found` unless the environment is `testing`, the module is `enabled`, a `token` is configured and sent with the request, and the closure is set
+- `coldbox.system.testing.BrowserTestCase` (BoxLang): browser tests for ColdBox applications built on TestBox browser support and bx-playwright. It loads your application like any integration test and adds `browse()`, `this.playwright()`, `browserAvailable()`, `browserUnavailableReason()`, the `browserProfile` and `baseURL` annotations, the TestBox browser matchers, and the ColdBox helpers `routeURL()`, `visitRoute()` and `assertRouteIs()`. Logged-in tests use bx-playwright saved sessions
 
 ### Fixed
 

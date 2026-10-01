@@ -14,7 +14,6 @@
  *         describe( "Users", () => {
  *             it( "shows a user", () => {
  *                 browse( ( page ) => {
- *                     loginAs( page, 1 )
  *                     visitRoute( page, "users.show", { id : 5 } )
  *                     assertRouteIs( page, "users.show" )
  *                     expect( page ).toSee( "User 5" )
@@ -37,12 +36,11 @@
  * every spec of the bundle. `this.playwright()` returns the bundle manager; an unqualified `playwright()`
  * still calls the bx-playwright BIF.
  *
- * loginAs() and logout() call the test-only endpoints of the BrowserTesting core module, which must be
- * enabled in the `testing` environment of the application with a token and login/logout closures:
- * see coldbox/system/modules/BrowserTesting/ModuleConfig.cfc.
+ * For logged-in tests, use a bx-playwright saved session: log in through your login page once with
+ * `this.playwright().session( "admin", ( page ) => ... )`, then `browse( ( page ) => ..., { session : "admin" } )`.
  *
  * When bx-playwright is not installed, or the TestBox install has no browser support (testbox.system.browser),
- * browse(), visitRoute(), loginAs() and logout() skip the running spec.
+ * browse() and visitRoute() skip the running spec.
  * Browser specs are not thread safe: do not use `asyncAll` in suites that browse.
  */
 class extends="coldbox.system.testing.BaseTestCase" {
@@ -236,46 +234,6 @@ class extends="coldbox.system.testing.BaseTestCase" {
 
 	/**
 	 * --------------------------------------------------------------------------
-	 * Authentication
-	 * --------------------------------------------------------------------------
-	 */
-
-	/**
-	 * Log a user in for the page: calls the `login` closure of the BrowserTesting core module through its
-	 * test-only endpoint (GET /__browser-testing/login/:id), with the module token of the loaded application.
-	 * The request shares the cookies of the page, so the page is logged in for its next visits.
-	 * Skips the spec when browser testing is not available.
-	 *
-	 * @page The bx-playwright page
-	 * @id   The user identifier passed to the login closure
-	 *
-	 * @return The page
-	 *
-	 * @throws BrowserTestCase.BrowserTestingUnavailable When the endpoint does not answer with success
-	 */
-	function loginAs( required page, required any id ) {
-		ensureBrowser()
-		return callBrowserTesting( arguments.page, "login@BrowserTesting", { id : arguments.id }, "loginAs()" )
-	}
-
-	/**
-	 * Log the user of the page out: calls the `logout` closure of the BrowserTesting core module through its
-	 * test-only endpoint (GET /__browser-testing/logout), with the module token of the loaded application.
-	 * Skips the spec when browser testing is not available.
-	 *
-	 * @page The bx-playwright page
-	 *
-	 * @return The page
-	 *
-	 * @throws BrowserTestCase.BrowserTestingUnavailable When the endpoint does not answer with success
-	 */
-	function logout( required page ) {
-		ensureBrowser()
-		return callBrowserTesting( arguments.page, "logout@BrowserTesting", {}, "logout()" )
-	}
-
-	/**
-	 * --------------------------------------------------------------------------
 	 * Private helpers
 	 * --------------------------------------------------------------------------
 	 */
@@ -296,66 +254,6 @@ class extends="coldbox.system.testing.BaseTestCase" {
 		if ( !variables.$testBoxBrowserSupport ) {
 			skip( browserUnavailableReason() )
 		}
-	}
-
-	/**
-	 * Call an endpoint of the BrowserTesting core module with the request API of the page context, which shares
-	 * the page cookies, sending the module token in the `X-Browser-Testing-Token` header.
-	 *
-	 * @page   The bx-playwright page
-	 * @route  The module route name
-	 * @params The route placeholder values
-	 * @action The helper name, for error messages
-	 *
-	 * @return The page
-	 *
-	 * @throws BrowserTestCase.BrowserTestingUnavailable When the module is not loaded, has no token, or the endpoint fails
-	 */
-	private function callBrowserTesting(
-		required page,
-		required string route,
-		required struct params,
-		required string action
-	) {
-		var setup = "Enable the BrowserTesting module in the testing environment of your application: "
-		setup &= "moduleSettings.browserTesting = { enabled : true, token : '<secret>', login : ( id, event, rc, prc ) => {}, logout : ( event, rc, prc ) => {} }, "
-		setup &= "and run the application with the environment setting set to 'testing'."
-		var token = ""
-		var path  = ""
-		try {
-			token = getController().getModuleSettings( "BrowserTesting", "token", "" )
-			path  = routeURL( arguments.route, arguments.params )
-		} catch ( any e ) {
-			throw(
-				type    = "BrowserTestCase.BrowserTestingUnavailable",
-				message = "#arguments.action# needs the BrowserTesting core module, which is not loaded in the test application: #e.message#",
-				detail  = setup
-			)
-		}
-		if ( !isSimpleValue( token ) || !len( token ) ) {
-			throw(
-				type    = "BrowserTestCase.BrowserTestingUnavailable",
-				message = "#arguments.action# needs the token of the BrowserTesting module, but moduleSettings.browserTesting.token is empty in the test application.",
-				detail  = setup
-			)
-		}
-		var response = arguments.page
-			.context()
-			.request()
-			.get( path, { headers : { "X-Browser-Testing-Token" : token } } )
-		var status = response.status()
-		if ( status < 200 || status >= 300 ) {
-			var reason = "The endpoint answered HTTP #status#: #left( response.text(), 500 )#"
-			if ( status == 404 ) {
-				reason = "The endpoint answered 404 Not Found: the BrowserTesting module of the application under test is disabled, its token differs from the token of the test application, the closure is not set, or the environment is not 'testing'."
-			}
-			throw(
-				type    = "BrowserTestCase.BrowserTestingUnavailable",
-				message = "#arguments.action# failed calling [#path#]. #reason#",
-				detail  = setup
-			)
-		}
-		return arguments.page
 	}
 
 	/**

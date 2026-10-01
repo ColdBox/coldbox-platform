@@ -128,6 +128,7 @@ component {
 
 		// Browser testing routes: tests/specs/browser
 		route( "/users/:id" ).as( "users.show" ).to( "browserTesting.user" )
+		route( "/browser-testing/login" ).as( "browserTesting.login" ).to( "browserTesting.login" )
 		route( "/browser-testing/whoami" ).as( "browserTesting.whoami" ).to( "browserTesting.whoami" )
 
 		// Default Application Routing

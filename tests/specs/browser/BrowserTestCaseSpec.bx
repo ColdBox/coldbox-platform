@@ -2,8 +2,8 @@
  * coldbox.system.testing.BrowserTestCase: route helpers, and browser tests against the test harness.
  *
  * The browser specs need bx-playwright and run against the test harness served by the test server on
- * http://127.0.0.1:8599, where the harness runs in its testing environment. They are skipped when
- * bx-playwright is not installed or the TestBox install has no browser support. BoxLang only: tests/runner.cfm excludes this folder on other engines.
+ * http://127.0.0.1:8599. They are skipped when bx-playwright is not installed or the TestBox install has no
+ * browser support. BoxLang only: tests/runner.cfm excludes this folder on other engines.
  */
 @appMapping( "/cbTestHarness" )
 @baseURL( "http://127.0.0.1:8599" )
@@ -28,8 +28,8 @@ class extends="coldbox.system.testing.BrowserTestCase" {
 			} )
 
 			it( "builds module route paths with the module entry point", () => {
-				expect( routeURL( "login@BrowserTesting", { id : 3 } ) ).toBe( basePath & "/__browser-testing/login/3/" )
-				expect( routeURL( "BrowserTesting:logout" ) ).toBe( basePath & "/__browser-testing/logout/" )
+				expect( routeURL( "photos.edit@resourcesTest", { id : 3 } ) ).toBe( basePath & "/resourcesTest/photos/3/edit/" )
+				expect( routeURL( "resourcesTest:photos.new" ) ).toBe( basePath & "/resourcesTest/photos/new/" )
 			} )
 
 			it( "throws for unknown routes", () => {
@@ -85,9 +85,9 @@ class extends="coldbox.system.testing.BrowserTestCase" {
 			} )
 
 			it( "asserts module routes", () => {
-				var page = new tests.resources.browser.FakePage( host & basePath & "/__browser-testing/login/9" )
-				assertRouteIs( page, "login@BrowserTesting" )
-				assertRouteIs( page, "login@BrowserTesting", { id : 9 } )
+				var page = new tests.resources.browser.FakePage( host & basePath & "/resourcesTest/photos/9/edit" )
+				assertRouteIs( page, "photos.edit@resourcesTest" )
+				assertRouteIs( page, "photos.edit@resourcesTest", { id : 9 } )
 			} )
 
 			it( "explains why browser testing is not available", () => {
@@ -133,45 +133,32 @@ class extends="coldbox.system.testing.BrowserTestCase" {
 					} )
 				} )
 
-				it( "logs in and out through the BrowserTesting module", () => {
+				it( "reuses a saved session created through the login page", () => {
+					this.playwright().session(
+						"coldbox-harness-user",
+						( page ) => {
+							reinitHarness( page )
+							visitRoute( page, "browserTesting.login" )
+							page.fill( "User", "42" ).click( "Sign in" )
+							expect( page ).toSee( "Logged in as 42" )
+						},
+						{ refresh : true }
+					)
 					browse( ( page ) => {
-						reinitHarness( page )
-						visitRoute( page, "browserTesting.whoami" )
-						expect( page ).toSee( "Guest" )
-
-						expect( loginAs( page, 42 ) ).toBe( page )
 						visitRoute( page, "browserTesting.whoami" )
 						expect( page ).toSee( "Logged in as 42" )
-
-						expect( logout( page ) ).toBe( page )
-						visitRoute( page, "browserTesting.whoami" )
-						expect( page ).toSee( "Guest" )
-					} )
+					}, { session : "coldbox-harness-user" } )
 				} )
 
 				it( "keeps every page of a browse() call in its own session", () => {
-					browse( ( admin, guest ) => {
-						reinitHarness( admin )
-						loginAs( admin, 1 )
-						visitRoute( admin, "browserTesting.whoami" )
+					browse( ( user, guest ) => {
+						reinitHarness( user )
+						visitRoute( user, "browserTesting.login" )
+						user.fill( "User", "1" ).click( "Sign in" )
 						visitRoute( guest, "browserTesting.whoami" )
-						expect( admin ).toSee( "Logged in as 1" )
+						expect( user ).toSee( "Logged in as 1" )
 						expect( guest ).toSee( "Guest" )
 					} )
-				} )
-
-				it( "explains a login the application refuses", () => {
-					var settings = getController().getModuleSettings( "BrowserTesting" )
-					var token    = settings.token
-					settings.token = "not-the-application-token"
-					try {
-						browse( ( page ) => {
-							reinitHarness( page )
-							expect( () => loginAs( page, 1 ) ).toThrow( "BrowserTestCase.BrowserTestingUnavailable", "404 Not Found" )
-						} )
-					} finally {
-						settings.token = token
-					}
 				} )
 			},
 			skip = !browserAvailable()
