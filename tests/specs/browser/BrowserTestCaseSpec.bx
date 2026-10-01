@@ -98,15 +98,18 @@ class extends="coldbox.system.testing.BrowserTestCase" {
 				}
 			} )
 
-			it(
-				title = "visits named routes",
-				body  = () => {
-					var page = new tests.resources.browser.FakePage()
-					expect( visitRoute( page, "users.show", { id : 7 } ) ).toBe( page )
-					expect( page.getVisits() ).toBe( [ basePath & "/users/7/" ] )
-				},
-				skip = !browserAvailable()
-			)
+			it( "asserts routes with optional placeholders, with and without them", () => {
+				assertRouteIs( new tests.resources.browser.FakePage( host & basePath & "/browser-posts/12" ), "browserPosts" )
+				assertRouteIs( new tests.resources.browser.FakePage( host & basePath & "/browser-posts/" ), "browserPosts" )
+				var other = new tests.resources.browser.FakePage( host & basePath & "/users/5/" )
+				expect( () => assertRouteIs( other, "browserPosts" ) ).toThrow( "TestBox.AssertionFailed" )
+			} )
+
+			it( "visits named routes without a browser", () => {
+				var page = new tests.resources.browser.FakePage()
+				expect( visitRoute( page, "users.show", { id : 7 } ) ).toBe( page )
+				expect( page.getVisits() ).toBe( [ basePath & "/users/7/" ] )
+			} )
 		} )
 
 		describe(

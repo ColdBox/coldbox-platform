@@ -172,7 +172,7 @@ class extends="coldbox.system.testing.BaseTestCase" {
 
 	/**
 	 * Visit a named route: page.visit( routeURL( name, params ) ). Relative routes resolve against the
-	 * `baseURL` annotation. Skips the spec when browser testing is not available.
+	 * `baseURL` annotation. Pages come from browse(), which skips the spec when browser testing is not available.
 	 *
 	 * @page   The bx-playwright page
 	 * @name   The route name, `name@module` or `module:name` for module routes
@@ -181,7 +181,6 @@ class extends="coldbox.system.testing.BaseTestCase" {
 	 * @return The page
 	 */
 	function visitRoute( required page, required string name, struct params = {} ) {
-		ensureBrowser()
 		arguments.page.visit( routeURL( arguments.name, arguments.params ) )
 		return arguments.page
 	}
@@ -239,15 +238,6 @@ class extends="coldbox.system.testing.BaseTestCase" {
 	 */
 
 	/**
-	 * Skip the running spec when browser testing is not available.
-	 */
-	private void function ensureBrowser() {
-		if ( !browserAvailable() ) {
-			skip( browserUnavailableReason() )
-		}
-	}
-
-	/**
 	 * Skip the running spec when the TestBox install has no browser support.
 	 */
 	private void function ensureTestBoxBrowserSupport() {
@@ -277,7 +267,8 @@ class extends="coldbox.system.testing.BaseTestCase" {
 	/**
 	 * The regex a page path must match to be on a named route, any value of its placeholders included: the
 	 * routing path of the application, the module entry point and the route's own regex, which ColdBox
-	 * builds from the route pattern and its constraints. Not anchored, and without the trailing slash.
+	 * builds from the route pattern and its constraints. Every route registered with the name counts, so a
+	 * route with optional placeholders matches with and without them. Not anchored, and without the trailing slash.
 	 *
 	 * @name The route name, `name@module` or `module:name` for module routes
 	 *
@@ -286,18 +277,42 @@ class extends="coldbox.system.testing.BaseTestCase" {
 	 * @throws InvalidArgumentException When the named route does not exist
 	 */
 	private string function routePathRegex( required string name ) {
-		var route = getController().getWireBox().getInstance( "router@coldbox" ).findRouteByName( arguments.name )
-		if ( route.isEmpty() ) {
+		var router    = getController().getWireBox().getInstance( "router@coldbox" )
+		var routes    = router.getRoutes()
+		var routeName = arguments.name
+		if ( find( "@", arguments.name ) ) {
+			routes    = router.getModuleRoutes( getToken( arguments.name, 2, "@" ) )
+			routeName = getToken( arguments.name, 1, "@" )
+		} else if ( find( ":", arguments.name ) ) {
+			routes    = router.getModuleRoutes( getToken( arguments.name, 1, ":" ) )
+			routeName = getToken( arguments.name, 2, ":" )
+		}
+		// A route with optional placeholders, such as /posts/:id?, is registered as several routes with the same
+		// name (/posts/:id, then /posts): the page may be on any of them
+		var variants = []
+		var matched  = false
+		for ( var route in routes ) {
+			if ( route.name == routeName ) {
+				matched = true
+				var variant = ( route.regexPattern ?: "" ).reReplace( "^/+|/+$", "", "all" )
+				if ( !variants.findNoCase( variant ) ) {
+					variants.append( variant )
+				}
+			}
+		}
+		if ( !matched ) {
 			throw( type = "InvalidArgumentException", message = "The named route '#arguments.name#' does not exist" )
 		}
 		var regex      = quoteRegex( toPath( getRequestContext().getSESBaseURL(), false ).reReplace( "/+$", "" ) )
 		var entryPoint = moduleEntryPoint( arguments.name ).reReplace( "^/+|/+$", "", "all" )
-		var routeRegex = ( route.regexPattern ?: "" ).reReplace( "^/+|/+$", "", "all" )
 		if ( len( entryPoint ) ) {
 			regex &= "/" & quoteRegex( entryPoint )
 		}
-		if ( len( routeRegex ) ) {
-			regex &= "/" & routeRegex
+		var paths = variants.filter( ( variant ) => len( variant ) )
+		if ( paths.len() ) {
+			var alternatives = "/(?:" & paths.toList( "|" ) & ")"
+			// An empty variant (the route is the root of the app or module) matches without a path
+			regex &= paths.len() < variants.len() ? "(?:" & alternatives & ")?" : alternatives
 		}
 		return regex
 	}
