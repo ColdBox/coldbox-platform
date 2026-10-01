@@ -9,7 +9,7 @@
  * routes, and drives a real browser against your running application:
  *
  * <pre>
- * class extends="coldbox.system.testing.BrowserTestCase" appMapping="/root" baseURL="http://127.0.0.1:8080" {
+ * class extends="coldbox.system.testing.BrowserTestCase" {
  *     function run() {
  *         describe( "Users", () => {
  *             it( "shows a user", () => {
@@ -25,9 +25,10 @@
  * }
  * </pre>
  *
- * Class annotations, besides the BaseTestCase ones (appMapping, webMapping, configMapping, ...):
- * - `browserProfile`: bx-playwright profiles for the bundle browser, a list such as `ci,mobile`
- * - `baseURL`: the URL of your running application, relative visits resolve against it
+ * Class annotations, written as BoxLang annotations above `class`, besides the BaseTestCase ones
+ * (`@appMapping( "/root" )`, `@webMapping`, `@configMapping`, ...):
+ * - `@browserProfile( "ci" )`: bx-playwright profiles for the bundle browser, a list such as `ci,mobile`
+ * - `@baseURL( "http://127.0.0.1:8080" )`: the URL of your running application, relative visits resolve against it
  *
  * Everything browser related is delegated to testbox.system.browser.BrowserSupport, exactly like TestBox's
  * BrowserSpec: the bundle shares one browser started on first use, every browse() call gets fresh, isolated
