@@ -277,9 +277,10 @@ component serializable="false" accessors="true" {
 	 * Get a representation of this instance
 	 */
 	struct function getMemento(){
-		// Return only non-function elements
+		// Return only non-function elements, without the `this` reference that Adobe keeps in the variables scope:
+		// a decorator restoring it would run its own methods with `this` pointing to the original context
 		return variables.filter( function( key, value ){
-			return ( !isCustomFunction( value ) );
+			return ( !isCustomFunction( value ) && arguments.key != "this" );
 		} );
 	}
 

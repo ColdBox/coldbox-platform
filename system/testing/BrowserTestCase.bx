@@ -40,13 +40,20 @@
  * enabled in the `testing` environment of the application with a token and login/logout closures:
  * see coldbox/system/modules/BrowserTesting/ModuleConfig.cfc.
  *
- * When bx-playwright is not installed, browse(), visitRoute(), loginAs() and logout() skip the running spec.
+ * When bx-playwright is not installed, or the TestBox install has no browser support (testbox.system.browser),
+ * browse(), visitRoute(), loginAs() and logout() skip the running spec.
  * Browser specs are not thread safe: do not use `asyncAll` in suites that browse.
  */
 class extends="coldbox.system.testing.BaseTestCase" {
 
+	// Does the TestBox install have browser support (testbox.system.browser)? Older TestBox releases do not:
+	// the route helpers still work, and the browser helpers skip the running spec.
+	variables.$testBoxBrowserSupport = fileExists( expandPath( "/testbox/system/browser/BrowserSupport.bx" ) )
+
 	// Browser matchers for every spec of the bundle: expect( page ).toSee( "Welcome" )
-	addMatchers( new testbox.system.browser.BrowserMatchers() )
+	if ( variables.$testBoxBrowserSupport ) {
+		addMatchers( new testbox.system.browser.BrowserMatchers() )
+	}
 
 	/**
 	 * --------------------------------------------------------------------------
@@ -57,7 +64,7 @@ class extends="coldbox.system.testing.BaseTestCase" {
 	/**
 	 * Run a callback with fresh browser pages: one page per declared callback argument, each in its own
 	 * browser context. When the callback throws, the kept screenshots, trace and videos are attached to the
-	 * spec and the exception is rethrown. Skips the spec when bx-playwright is not available.
+	 * spec and the exception is rethrown. Skips the spec when browser testing is not available.
 	 *
 	 * @callback The function to run, receiving one page per declared argument
 	 * @options  Context options for bx-playwright newContext(), for example { viewport : { width : 390, height : 844 } }
@@ -65,12 +72,13 @@ class extends="coldbox.system.testing.BaseTestCase" {
 	 * @return The callback result, or null when it returns nothing
 	 */
 	function browse( required function callback, struct options = {} ) {
+		ensureTestBoxBrowserSupport()
 		return getBrowserSupport().browse( argumentCollection = arguments )
 	}
 
 	/**
 	 * The bx-playwright manager of this bundle, created on first use with the `browserProfile` and `baseURL`
-	 * annotations. Skips the spec when bx-playwright is not available.
+	 * annotations. Skips the spec when browser testing is not available.
 	 *
 	 * Call it as `this.playwright()`: BoxLang resolves an unqualified `playwright()` call to the bx-playwright
 	 * BIF, even inside this class, which returns a new manager that the bundle does not close.
@@ -78,17 +86,31 @@ class extends="coldbox.system.testing.BaseTestCase" {
 	 * @return The bx-playwright manager (models.Playwright@playwright)
 	 */
 	function playwright() {
+		ensureTestBoxBrowserSupport()
 		return getBrowserSupport().getManager()
 	}
 
 	/**
-	 * Can browser specs run here? True on BoxLang with the bx-playwright module installed.
+	 * Can browser specs run here? True on BoxLang with the bx-playwright module installed and a TestBox
+	 * release with browser support.
 	 * Handy for skip constraints: it( title = "...", body = () => {}, skip = !browserAvailable() )
 	 *
 	 * @return True when browser testing is available
 	 */
 	boolean function browserAvailable() {
-		return getBrowserSupport().isAvailable()
+		return variables.$testBoxBrowserSupport && getBrowserSupport().isAvailable()
+	}
+
+	/**
+	 * Why browser specs cannot run here, or an empty string when they can.
+	 *
+	 * @return The reason browser testing is not available
+	 */
+	string function browserUnavailableReason() {
+		if ( !variables.$testBoxBrowserSupport ) {
+			return "Browser specs need TestBox browser support (testbox.system.browser.BrowserSupport), which this TestBox install does not have: update TestBox"
+		}
+		return getBrowserSupport().isAvailable() ? "" : getBrowserSupport().getUnavailableReason()
 	}
 
 	/**
@@ -97,6 +119,12 @@ class extends="coldbox.system.testing.BaseTestCase" {
 	 * @return The testbox.system.browser.BrowserSupport of this bundle
 	 */
 	function getBrowserSupport() {
+		if ( !variables.$testBoxBrowserSupport ) {
+			throw(
+				type    = "BrowserTestCase.BrowserSupportUnavailable",
+				message = browserUnavailableReason()
+			)
+		}
 		if ( isNull( variables.$browserSupport ) ) {
 			variables.$browserSupport = new testbox.system.browser.BrowserSupport( this )
 		}
@@ -145,7 +173,7 @@ class extends="coldbox.system.testing.BaseTestCase" {
 
 	/**
 	 * Visit a named route: page.visit( routeURL( name, params ) ). Relative routes resolve against the
-	 * `baseURL` annotation. Skips the spec when bx-playwright is not available.
+	 * `baseURL` annotation. Skips the spec when browser testing is not available.
 	 *
 	 * @page   The bx-playwright page
 	 * @name   The route name, `name@module` or `module:name` for module routes
@@ -215,7 +243,7 @@ class extends="coldbox.system.testing.BaseTestCase" {
 	 * Log a user in for the page: calls the `login` closure of the BrowserTesting core module through its
 	 * test-only endpoint (GET /__browser-testing/login/:id), with the module token of the loaded application.
 	 * The request shares the cookies of the page, so the page is logged in for its next visits.
-	 * Skips the spec when bx-playwright is not available.
+	 * Skips the spec when browser testing is not available.
 	 *
 	 * @page The bx-playwright page
 	 * @id   The user identifier passed to the login closure
@@ -232,7 +260,7 @@ class extends="coldbox.system.testing.BaseTestCase" {
 	/**
 	 * Log the user of the page out: calls the `logout` closure of the BrowserTesting core module through its
 	 * test-only endpoint (GET /__browser-testing/logout), with the module token of the loaded application.
-	 * Skips the spec when bx-playwright is not available.
+	 * Skips the spec when browser testing is not available.
 	 *
 	 * @page The bx-playwright page
 	 *
@@ -256,7 +284,16 @@ class extends="coldbox.system.testing.BaseTestCase" {
 	 */
 	private void function ensureBrowser() {
 		if ( !browserAvailable() ) {
-			skip( getBrowserSupport().getUnavailableReason() )
+			skip( browserUnavailableReason() )
+		}
+	}
+
+	/**
+	 * Skip the running spec when the TestBox install has no browser support.
+	 */
+	private void function ensureTestBoxBrowserSupport() {
+		if ( !variables.$testBoxBrowserSupport ) {
+			skip( browserUnavailableReason() )
 		}
 	}
 

@@ -3,7 +3,7 @@
  *
  * The browser specs need bx-playwright and run against the test harness served by the test server on
  * http://127.0.0.1:8599, where the harness runs in its testing environment. They are skipped when
- * bx-playwright is not installed. BoxLang only: tests/runner.cfm excludes this folder on other engines.
+ * bx-playwright is not installed or the TestBox install has no browser support. BoxLang only: tests/runner.cfm excludes this folder on other engines.
  */
 class extends="coldbox.system.testing.BrowserTestCase" appMapping="/cbTestHarness" baseURL="http://127.0.0.1:8599" {
 
@@ -86,6 +86,14 @@ class extends="coldbox.system.testing.BrowserTestCase" appMapping="/cbTestHarnes
 				var page = new tests.resources.browser.FakePage( host & basePath & "/__browser-testing/login/9" )
 				assertRouteIs( page, "login@BrowserTesting" )
 				assertRouteIs( page, "login@BrowserTesting", { id : 9 } )
+			} )
+
+			it( "explains why browser testing is not available", () => {
+				if ( browserAvailable() ) {
+					expect( browserUnavailableReason() ).toBe( "" )
+				} else {
+					expect( browserUnavailableReason() ).notToBeEmpty()
+				}
 			} )
 
 			it(
