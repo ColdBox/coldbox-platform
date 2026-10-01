@@ -1371,8 +1371,13 @@ component serializable="false" accessors="true" {
 
 		// Did we find it?
 		if ( !foundRoute.isEmpty() ) {
+			// Join the module entry point and the route pattern with a single slash
+			var routePath = foundRoute.pattern
+			if ( len( entryPoint ) ) {
+				routePath = reReplace( entryPoint, "/+$", "" ) & "/" & reReplace( routePath, "^/+", "" )
+			}
 			var args = {
-				to  : entryPoint & foundRoute.pattern,
+				to  : routePath,
 				ssl : !isNull( arguments.ssl ) ? arguments.ssl : javacast( "null", "" )
 			};
 
