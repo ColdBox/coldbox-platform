@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `coldbox.system.testing.BrowserTestCase` (BoxLang): browser tests for ColdBox applications built on TestBox browser support and bx-playwright. It loads your application like any integration test and adds `browse()`, `this.playwright()`, `browserAvailable()`, `browserUnavailableReason()`, the `browserProfile` and `baseURL` annotations, the TestBox browser matchers, and the ColdBox helpers `routeURL()`, `visitRoute()` and `assertRouteIs()`. Logged-in tests use bx-playwright saved sessions
+
+### Fixed
+
+- `event.route( "name@module" )` built module route links without a slash between the module entry point and the route pattern
+- Adobe ColdFusion: a request context decorator copied the `this` reference of the original context, so its inherited methods ran against the original context and missed the decorator's own state and mocks
+
 ## [8.2.0] - 2026-09-23
 
 - <https://coldbox.ortusbooks.com/readme/release-history/whats-new-with-8.2.0>

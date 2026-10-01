@@ -126,6 +126,12 @@ component {
 
 		route( "invalid-main-verbs" ).withVerbs( "post" ).to( "main.index" );
 
+		// Browser testing routes: tests/specs/browser
+		route( "/users/:id" ).as( "users.show" ).to( "browserTesting.user" )
+		route( "/browser-posts/:id?" ).as( "browserPosts" ).to( "browserTesting.user" )
+		route( "/browser-testing/login" ).as( "browserTesting.login" ).to( "browserTesting.login" )
+		route( "/browser-testing/whoami" ).as( "browserTesting.whoami" ).to( "browserTesting.whoami" )
+
 		// Default Application Routing
 		route( ":handler/:action?/:id-numeric?" ).end();
 

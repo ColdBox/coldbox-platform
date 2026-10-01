@@ -18,6 +18,11 @@ ColdBox is an HMVC (Hierarchical Model-View-Controller) framework designed for t
   - Bodyless component calls, e.g. `bx:component;`
   - `continue;` and `break;` statements for Adobe ColdFusion/Lucee compatibility.
 
+### Annotations And Optional Values
+- In BoxLang (`.bx`) classes and examples, write annotations as BoxLang annotations above the declaration, not as inline attributes: `@appMapping( "/root" )` and `@baseURL( "http://127.0.0.1:8080" )` on the lines before `class extends="coldbox.system.testing.BrowserTestCase" {`. Keep `extends` and `implements` inline. CFML (`.cfc`) components keep inline attributes.
+- Do not start a docblock line with `@` in an example, because BoxLang reads it as documentation metadata.
+- Prefer the elvis operator `?:` and safe navigation `?.` over `structKeyExists()` and `isNull()` checks when they say the same thing.
+
 ## JavaScript Coding Standards
 
 ### Spacing and Formatting
