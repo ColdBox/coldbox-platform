@@ -1,0 +1,402 @@
+/**
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * Base test case for ColdBox browser tests, built on TestBox browser support and the bx-playwright module.
+ * BoxLang only.
+ *
+ * It loads the ColdBox application like any ColdBox integration test, so the browser helpers know your
+ * routes, and drives a real browser against your running application:
+ *
+ * <pre>
+ * class extends="coldbox.system.testing.BrowserTestCase" appMapping="/root" baseURL="http://127.0.0.1:8080" {
+ *     function run() {
+ *         describe( "Users", () => {
+ *             it( "shows a user", () => {
+ *                 browse( ( page ) => {
+ *                     loginAs( page, 1 )
+ *                     visitRoute( page, "users.show", { id : 5 } )
+ *                     assertRouteIs( page, "users.show" )
+ *                     expect( page ).toSee( "User 5" )
+ *                 } )
+ *             } )
+ *         } )
+ *     }
+ * }
+ * </pre>
+ *
+ * Class annotations, besides the BaseTestCase ones (appMapping, webMapping, configMapping, ...):
+ * - `browserProfile`: bx-playwright profiles for the bundle browser, a list such as `ci,mobile`
+ * - `baseURL`: the URL of your running application, relative visits resolve against it
+ *
+ * Everything browser related is delegated to testbox.system.browser.BrowserSupport, exactly like TestBox's
+ * BrowserSpec: the bundle shares one browser started on first use, every browse() call gets fresh, isolated
+ * pages, and the browser closes after the bundle through the `closeBrowser()` method, which carries the
+ * `afterAll` annotation. The browser matchers of testbox.system.browser.BrowserMatchers are registered for
+ * every spec of the bundle. `this.playwright()` returns the bundle manager; an unqualified `playwright()`
+ * still calls the bx-playwright BIF.
+ *
+ * loginAs() and logout() call the test-only endpoints of the BrowserTesting core module, which must be
+ * enabled in the `testing` environment of the application with a token and login/logout closures:
+ * see coldbox/system/modules/BrowserTesting/ModuleConfig.cfc.
+ *
+ * When bx-playwright is not installed, browse(), visitRoute(), loginAs() and logout() skip the running spec.
+ * Browser specs are not thread safe: do not use `asyncAll` in suites that browse.
+ */
+class extends="coldbox.system.testing.BaseTestCase" {
+
+	// Browser matchers for every spec of the bundle: expect( page ).toSee( "Welcome" )
+	addMatchers( new testbox.system.browser.BrowserMatchers() )
+
+	/**
+	 * --------------------------------------------------------------------------
+	 * Browser
+	 * --------------------------------------------------------------------------
+	 */
+
+	/**
+	 * Run a callback with fresh browser pages: one page per declared callback argument, each in its own
+	 * browser context. When the callback throws, the kept screenshots, trace and videos are attached to the
+	 * spec and the exception is rethrown. Skips the spec when bx-playwright is not available.
+	 *
+	 * @callback The function to run, receiving one page per declared argument
+	 * @options  Context options for bx-playwright newContext(), for example { viewport : { width : 390, height : 844 } }
+	 *
+	 * @return The callback result, or null when it returns nothing
+	 */
+	function browse( required function callback, struct options = {} ) {
+		return getBrowserSupport().browse( argumentCollection = arguments )
+	}
+
+	/**
+	 * The bx-playwright manager of this bundle, created on first use with the `browserProfile` and `baseURL`
+	 * annotations. Skips the spec when bx-playwright is not available.
+	 *
+	 * Call it as `this.playwright()`: BoxLang resolves an unqualified `playwright()` call to the bx-playwright
+	 * BIF, even inside this class, which returns a new manager that the bundle does not close.
+	 *
+	 * @return The bx-playwright manager (models.Playwright@playwright)
+	 */
+	function playwright() {
+		return getBrowserSupport().getManager()
+	}
+
+	/**
+	 * Can browser specs run here? True on BoxLang with the bx-playwright module installed.
+	 * Handy for skip constraints: it( title = "...", body = () => {}, skip = !browserAvailable() )
+	 *
+	 * @return True when browser testing is available
+	 */
+	boolean function browserAvailable() {
+		return getBrowserSupport().isAvailable()
+	}
+
+	/**
+	 * The browser support of this bundle, which owns the bundle manager.
+	 *
+	 * @return The testbox.system.browser.BrowserSupport of this bundle
+	 */
+	function getBrowserSupport() {
+		if ( isNull( variables.$browserSupport ) ) {
+			variables.$browserSupport = new testbox.system.browser.BrowserSupport( this )
+		}
+		return variables.$browserSupport
+	}
+
+	/**
+	 * Close the bundle browser after all the specs ran. It carries the `afterAll` annotation, so TestBox runs it
+	 * after your own afterAll() without a super call.
+	 *
+	 * @return This test case
+	 */
+	@afterAll
+	function closeBrowser() {
+		if ( !isNull( variables.$browserSupport ) ) {
+			variables.$browserSupport.close()
+		}
+		return this
+	}
+
+	/**
+	 * --------------------------------------------------------------------------
+	 * Routes
+	 * --------------------------------------------------------------------------
+	 */
+
+	/**
+	 * The path of a named route, without scheme and host, built by ColdBox's own event.route(), so it carries
+	 * the routing app mapping and, for module routes (`name@module` or `module:name`), the module entry point.
+	 *
+	 * <pre>
+	 * routeURL( "users.show", { id : 5 } )   // /users/5/
+	 * routeURL( "home@blog" )                // /blog/home/
+	 * </pre>
+	 *
+	 * @name   The route name, `name@module` or `module:name` for module routes
+	 * @params The route placeholder values, for example { id : 5 }
+	 *
+	 * @return The route path, with the query string when the link has one
+	 *
+	 * @throws InvalidArgumentException When the named route does not exist
+	 */
+	string function routeURL( required string name, struct params = {} ) {
+		return toPath( getRequestContext().route( arguments.name, arguments.params ) )
+	}
+
+	/**
+	 * Visit a named route: page.visit( routeURL( name, params ) ). Relative routes resolve against the
+	 * `baseURL` annotation. Skips the spec when bx-playwright is not available.
+	 *
+	 * @page   The bx-playwright page
+	 * @name   The route name, `name@module` or `module:name` for module routes
+	 * @params The route placeholder values, for example { id : 5 }
+	 *
+	 * @return The page
+	 */
+	function visitRoute( required page, required string name, struct params = {} ) {
+		ensureBrowser()
+		arguments.page.visit( routeURL( arguments.name, arguments.params ) )
+		return arguments.page
+	}
+
+	/**
+	 * Assert that the page is on a named route. With params, the page path must be the path of
+	 * routeURL( name, params ). Without params, the page path must match the route pattern, so any value of
+	 * its placeholders passes. Like ColdBox routing, the match ignores case and the trailing slash, and the
+	 * query string and hash are ignored. It waits for the page URL with bx-playwright's waitForUrl(), up to the
+	 * bx-playwright assertion timeout (the `timeouts.assertion` setting).
+	 *
+	 * <pre>
+	 * assertRouteIs( page, "users.show" )               // any user
+	 * assertRouteIs( page, "users.show", { id : 5 } )   // user 5
+	 * </pre>
+	 *
+	 * @page   The bx-playwright page
+	 * @name   The route name, `name@module` or `module:name` for module routes
+	 * @params The route placeholder values, empty to match any value of the placeholders
+	 *
+	 * @return The page
+	 *
+	 * @throws TestBox.AssertionFailed When the page path does not match the route before the assertion timeout
+	 */
+	function assertRouteIs( required page, required string name, struct params = {} ) {
+		var expected  = "route [#arguments.name#]"
+		var pathRegex = ""
+		if ( arguments.params.isEmpty() ) {
+			pathRegex = routePathRegex( arguments.name )
+		} else {
+			expected  = "route [#arguments.name#] with params #jsonSerialize( arguments.params )#"
+			pathRegex = quoteRegex( toPath( routeURL( arguments.name, arguments.params ), false ).reReplace( "/+$", "" ) )
+		}
+		var urlRegex = "^[a-zA-Z][a-zA-Z0-9+.-]*://[^/]*" & pathRegex & "/?(\?.*)?(##.*)?$"
+		var timeout  = arguments.page.getConfig().timeouts.assertion ?: 5000
+		try {
+			arguments.page.waitForUrl( arguments.page.regex( urlRegex, "i" ), timeout )
+		} catch ( any e ) {
+			if ( !listFindNoCase( "Playwright.Timeout,Playwright.AssertionFailed", e.type ) ) {
+				rethrow
+			}
+			throw(
+				type    = "TestBox.AssertionFailed",
+				message = "Expected the page to be on #expected#, but the path is [#toPath( arguments.page.url() )#]",
+				detail  = "The page URL must match the regex [#urlRegex#]. #e.message#"
+			)
+		}
+		return arguments.page
+	}
+
+	/**
+	 * --------------------------------------------------------------------------
+	 * Authentication
+	 * --------------------------------------------------------------------------
+	 */
+
+	/**
+	 * Log a user in for the page: calls the `login` closure of the BrowserTesting core module through its
+	 * test-only endpoint (GET /__browser-testing/login/:id), with the module token of the loaded application.
+	 * The request shares the cookies of the page, so the page is logged in for its next visits.
+	 * Skips the spec when bx-playwright is not available.
+	 *
+	 * @page The bx-playwright page
+	 * @id   The user identifier passed to the login closure
+	 *
+	 * @return The page
+	 *
+	 * @throws BrowserTestCase.BrowserTestingUnavailable When the endpoint does not answer with success
+	 */
+	function loginAs( required page, required any id ) {
+		ensureBrowser()
+		return callBrowserTesting( arguments.page, "login@BrowserTesting", { id : arguments.id }, "loginAs()" )
+	}
+
+	/**
+	 * Log the user of the page out: calls the `logout` closure of the BrowserTesting core module through its
+	 * test-only endpoint (GET /__browser-testing/logout), with the module token of the loaded application.
+	 * Skips the spec when bx-playwright is not available.
+	 *
+	 * @page The bx-playwright page
+	 *
+	 * @return The page
+	 *
+	 * @throws BrowserTestCase.BrowserTestingUnavailable When the endpoint does not answer with success
+	 */
+	function logout( required page ) {
+		ensureBrowser()
+		return callBrowserTesting( arguments.page, "logout@BrowserTesting", {}, "logout()" )
+	}
+
+	/**
+	 * --------------------------------------------------------------------------
+	 * Private helpers
+	 * --------------------------------------------------------------------------
+	 */
+
+	/**
+	 * Skip the running spec when browser testing is not available.
+	 */
+	private void function ensureBrowser() {
+		if ( !browserAvailable() ) {
+			skip( getBrowserSupport().getUnavailableReason() )
+		}
+	}
+
+	/**
+	 * Call an endpoint of the BrowserTesting core module with the request API of the page context, which shares
+	 * the page cookies, sending the module token in the `X-Browser-Testing-Token` header.
+	 *
+	 * @page   The bx-playwright page
+	 * @route  The module route name
+	 * @params The route placeholder values
+	 * @action The helper name, for error messages
+	 *
+	 * @return The page
+	 *
+	 * @throws BrowserTestCase.BrowserTestingUnavailable When the module is not loaded, has no token, or the endpoint fails
+	 */
+	private function callBrowserTesting(
+		required page,
+		required string route,
+		required struct params,
+		required string action
+	) {
+		var setup = "Enable the BrowserTesting module in the testing environment of your application: "
+		setup &= "moduleSettings.browserTesting = { enabled : true, token : '<secret>', login : ( id, event, rc, prc ) => {}, logout : ( event, rc, prc ) => {} }, "
+		setup &= "and run the application with the environment setting set to 'testing'."
+		var token = ""
+		var path  = ""
+		try {
+			token = getController().getModuleSettings( "BrowserTesting", "token", "" )
+			path  = routeURL( arguments.route, arguments.params )
+		} catch ( any e ) {
+			throw(
+				type    = "BrowserTestCase.BrowserTestingUnavailable",
+				message = "#arguments.action# needs the BrowserTesting core module, which is not loaded in the test application: #e.message#",
+				detail  = setup
+			)
+		}
+		if ( !isSimpleValue( token ) || !len( token ) ) {
+			throw(
+				type    = "BrowserTestCase.BrowserTestingUnavailable",
+				message = "#arguments.action# needs the token of the BrowserTesting module, but moduleSettings.browserTesting.token is empty in the test application.",
+				detail  = setup
+			)
+		}
+		var response = arguments.page
+			.context()
+			.request()
+			.get( path, { headers : { "X-Browser-Testing-Token" : token } } )
+		var status = response.status()
+		if ( status < 200 || status >= 300 ) {
+			var reason = "The endpoint answered HTTP #status#: #left( response.text(), 500 )#"
+			if ( status == 404 ) {
+				reason = "The endpoint answered 404 Not Found: the BrowserTesting module of the application under test is disabled, its token differs from the token of the test application, the closure is not set, or the environment is not 'testing'."
+			}
+			throw(
+				type    = "BrowserTestCase.BrowserTestingUnavailable",
+				message = "#arguments.action# failed calling [#path#]. #reason#",
+				detail  = setup
+			)
+		}
+		return arguments.page
+	}
+
+	/**
+	 * The path of a URL, without scheme and host.
+	 *
+	 * @link      An absolute or relative URL
+	 * @withQuery Keep the query string
+	 *
+	 * @return The raw path, plus the raw query string when there is one and withQuery is true
+	 */
+	private string function toPath( required string link, boolean withQuery = true ) {
+		var uri   = createObject( "java", "java.net.URI" ).create( arguments.link )
+		var path  = uri.getRawPath() ?: ""
+		var query = uri.getRawQuery() ?: ""
+		if ( !len( path ) ) {
+			path = "/"
+		}
+		return arguments.withQuery && len( query ) ? path & "?" & query : path
+	}
+
+	/**
+	 * The regex a page path must match to be on a named route, any value of its placeholders included: the
+	 * routing path of the application, the module entry point and the route's own regex, which ColdBox
+	 * builds from the route pattern and its constraints. Not anchored, and without the trailing slash.
+	 *
+	 * @name The route name, `name@module` or `module:name` for module routes
+	 *
+	 * @return The path regex
+	 *
+	 * @throws InvalidArgumentException When the named route does not exist
+	 */
+	private string function routePathRegex( required string name ) {
+		var route = getController().getWireBox().getInstance( "router@coldbox" ).findRouteByName( arguments.name )
+		if ( route.isEmpty() ) {
+			throw( type = "InvalidArgumentException", message = "The named route '#arguments.name#' does not exist" )
+		}
+		var regex      = quoteRegex( toPath( getRequestContext().getSESBaseURL(), false ).reReplace( "/+$", "" ) )
+		var entryPoint = moduleEntryPoint( arguments.name ).reReplace( "^/+|/+$", "", "all" )
+		var routeRegex = ( route.regexPattern ?: "" ).reReplace( "^/+|/+$", "", "all" )
+		if ( len( entryPoint ) ) {
+			regex &= "/" & quoteRegex( entryPoint )
+		}
+		if ( len( routeRegex ) ) {
+			regex &= "/" & routeRegex
+		}
+		return regex
+	}
+
+	/**
+	 * The inherited entry point of the module of a route name (`name@module` or `module:name`).
+	 *
+	 * @name The route name
+	 *
+	 * @return The module entry point, or an empty string for application routes
+	 */
+	private string function moduleEntryPoint( required string name ) {
+		var module = ""
+		if ( find( "@", arguments.name ) ) {
+			module = getToken( arguments.name, 2, "@" )
+		}
+		if ( find( ":", arguments.name ) ) {
+			module = getToken( arguments.name, 1, ":" )
+		}
+		if ( !len( module ) ) {
+			return ""
+		}
+		var modules = getController().getSetting( "modules" )
+		return modules.keyExists( module ) ? modules[ module ].inheritedEntryPoint : ""
+	}
+
+	/**
+	 * Escape regex special characters. Playwright runs URL regexes in the browser, so Java's \Q...\E quoting cannot be used.
+	 *
+	 * @text The literal text
+	 *
+	 * @return The text with regex special characters escaped
+	 */
+	private string function quoteRegex( required string text ) {
+		return arguments.text.reReplace( "([.*+?^$\{\}()|\[\]\\/])", "\\\1", "all" )
+	}
+
+}
