@@ -174,14 +174,13 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 					registerModule( thisModule )
 				}
 			}
-			return this
-		}
-
-		// Iterate through registry and register each module
-		var aModules = structKeyArray( variables.moduleRegistry )
-		for ( var thisModule in aModules ) {
-			if ( canLoad( thisModule ) ) {
-				registerModule( thisModule )
+		} else {
+			// Iterate through registry and register each module
+			var aModules = structKeyArray( variables.moduleRegistry )
+			for ( var thisModule in aModules ) {
+				if ( canLoad( thisModule ) ) {
+					registerModule( thisModule )
+				}
 			}
 		}
 
