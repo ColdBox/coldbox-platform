@@ -44,6 +44,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		variables.moduleRegistry   = structNew( "ordered" )
 		variables.mappingRegistry  = {}
 		variables.appConfigModules = {}
+		// The executors each module created, keyed by module name
+		variables.moduleExecutors  = {}
 
 		return this
 	}
@@ -882,10 +884,20 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			| Module Executors
 			|--------------------------------------------------------------------------
 			*/
+			var asyncManager = variables.controller.getAsyncManager()
 			for ( var key in mConfig.executors ) {
 				var config  = mConfig.executors[ key ]
 				config.name = key
-				variables.controller.getAsyncManager().newExecutor( argumentCollection = config )
+				// Remember only the executors this module creates. An executor with this name
+				// that already exists belongs to the application or to another module, and
+				// newExecutor() just returns it, so unload() must not shut that one down.
+				if ( !asyncManager.hasExecutor( key ) ) {
+					if ( !structKeyExists( variables.moduleExecutors, arguments.moduleName ) ) {
+						variables.moduleExecutors[ arguments.moduleName ] = []
+					}
+					variables.moduleExecutors[ arguments.moduleName ].append( key )
+				}
+				asyncManager.newExecutor( argumentCollection = config )
 				variables.logger.info( "+ Registered Module (#moduleName#) Executor: #key#" )
 			}
 
@@ -1067,22 +1079,36 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				)
 			}
 
-			// Unregister all interceptors
+			// Unregister all interceptors, they were registered as {name}@{moduleName}
 			for ( var x = 1; x lte arrayLen( mConfig.interceptors ); x++ ) {
-				variables.interceptorService.unregister( mConfig.interceptors[ x ].name )
+				variables.interceptorService.unregister(
+					mConfig.interceptors[ x ].name & "@" & arguments.moduleName
+				)
 			}
 
 			// Unregister Config object
 			variables.interceptorService.unregister( "ModuleConfig:#arguments.moduleName#" )
+
+			// Unregister the module router, it was registered as an interceptor too
+			variables.interceptorService.unregister( "Router@#arguments.moduleName#" )
 
 			// Remove SES if enabled.
 			if ( controller.settingExists( "sesBaseURL" ) ) {
 				variables.appRouter.removeModuleRoutes( arguments.moduleName )
 			}
 
-			// Remove executors
-			for ( var key in mConfig.executors ) {
-				variables.controller.getAsyncManager().deleteExecutor( key )
+			// Remove only the executors this module created
+			if ( structKeyExists( variables.moduleExecutors, arguments.moduleName ) ) {
+				for ( var key in variables.moduleExecutors[ arguments.moduleName ] ) {
+					variables.controller.getAsyncManager().deleteExecutor( key )
+				}
+				structDelete( variables.moduleExecutors, arguments.moduleName )
+			}
+
+			// Remove the aliases, they are extra keys that point to this same module
+			for ( var thisAlias in mConfig.aliases ) {
+				structDelete( appConfig.modules, thisAlias )
+				structDelete( variables.mConfigCache, thisAlias )
 			}
 
 			// Remove configuration
@@ -1115,9 +1141,16 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	ModuleService function unloadAll(){
 		// Verify registered modules
 		if ( !isNull( variables.registeredModules ) && isStruct( variables.registeredModules ) ) {
-			// Unload all modules
-			for ( var key in variables.registeredModules ) {
-				unload( key )
+			// Unload all modules. We loop over a copy of the names because unload() removes them as it goes.
+			for ( var key in structKeyArray( variables.registeredModules ) ) {
+				// An alias is an extra name for a module that unloads under its own name
+				if (
+					structKeyExists( variables.registeredModules, key )
+					&&
+					!arrayContainsNoCase( variables.registeredModules[ key ].aliases, key )
+				) {
+					unload( key )
+				}
 			}
 		}
 		return this
