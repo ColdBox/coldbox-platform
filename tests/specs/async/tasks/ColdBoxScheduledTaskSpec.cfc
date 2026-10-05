@@ -276,6 +276,45 @@ component extends="tests.resources.BaseIntegrationTest" {
 					} ).notToThrow();
 				} );
 
+				it( "never resyncs a calendar-anchored task (COLDBOX regression: everyDayAt drifted to the scheduler's restart time)", function(){
+					// Simulate a cluster lock left behind by a PREVIOUS scheduler run, anchored to
+					// whatever time that old scheduler process happened to start at - e.g. 13:26,
+					// from an app restart - which has nothing to do with the task's configured time.
+					var wrongAnchor = dateAdd( "h", -9, now() ); // pretend "now - 9 hours" was startup
+					var t            = scheduler
+						.task( "daily-no-drift" )
+						.onOneServer()
+						.everyDayAt( "04:00" );
+
+					var delayBeforeSync         = t.getDelay();
+					var delayTimeUnitBeforeSync = t.getDelayTimeUnit();
+					expect( delayBeforeSync ).toBeGT( 0 );
+
+					t.getCache()
+						.set(
+							t.getFixationCacheKey(),
+							{
+								"task"          : t.getName(),
+								"lockOn"        : now(),
+								"serverHost"    : "some.other.server",
+								"serverIp"      : "10.0.0.9",
+								"nextRun"       : "",
+								"scheduleStart" : wrongAnchor,
+								"period"        : t.getPeriod(),
+								"spacedDelay"   : t.getSpacedDelay(),
+								"timeUnit"      : t.getTimeUnit()
+							},
+							1440,
+							0
+						);
+
+					t.syncScheduleWithCluster();
+
+					// The calendar-computed delay must survive untouched - no realignment to wrongAnchor
+					expect( t.getDelay() ).toBe( delayBeforeSync );
+					expect( t.getDelayTimeUnit() ).toBe( delayTimeUnitBeforeSync );
+				} );
+
 				it( "only syncs period-based tasks", function(){
 					// Spaced delay task should not sync
 					var spacedTask = scheduler
