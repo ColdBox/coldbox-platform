@@ -111,6 +111,30 @@ component {
 			name    = "testRoute"
 		).to( "main.main" );
 
+		// Route-scoped middleware: BaseTestCase.execute() must run it just like the Bootstrap does
+		route( "/routeMiddleware/blocked" )
+			.middleware( function( event, rc, prc ){
+				event
+					.renderData(
+						data       = "blocked by middleware",
+						statusCode = 403
+					)
+					.noExecution()
+				return true
+			} )
+			.to( "main.returnTest" )
+		route( "/routeMiddleware/open" )
+			.middleware( function( event, rc, prc ){
+				prc.routeMiddlewarePre = true
+			} )
+			.middleware(
+				function( event, rc, prc ){
+					prc.routeMiddlewarePost = true
+				},
+				"postProcess"
+			)
+			.to( "main.returnTest" )
+
 		// Names routes
 		route(
 			pattern = "/routeRunner/:id/:name",
