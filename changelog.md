@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `group()` now accepts a `meta` struct option that every route inside the group inherits. Nested groups merge outer-first and a route's own `meta()` values win on conflict. This lets a single group declare route metadata, for example the permissions consumed by security middleware.
+
 ### Fixed
 
 - `BaseTestCase.execute()` (and the `get()`, `post()`, etc. helpers built on it) now runs route-scoped middleware registered with `Router.middleware()`, in the same order as the Bootstrap, so integration tests exercise the same request lifecycle as a real request.

@@ -435,6 +435,73 @@ component extends="coldbox.system.testing.BaseModelTest" {
 					} );
 				} );
 
+				given( "a group with a meta option", function(){
+					then( "every route inside inherits it and the route's own meta wins on conflict", function(){
+						router.group(
+							{
+								pattern : "/admin",
+								meta    : { permissions : "ADMIN", area : "admin" }
+							},
+							function( options ){
+								router.route( "/users" ).toHandler( "users" );
+								router
+									.route( "/reports" )
+									.meta( { permissions : "REPORTS" } )
+									.toHandler( "reports" );
+							}
+						);
+
+						var routes = router.getRoutes();
+						expect( routes ).toHaveLength( 2 );
+						expect( routes[ 1 ].meta ).toBe( { permissions : "ADMIN", area : "admin" } );
+						expect( routes[ 2 ].meta ).toBe( { permissions : "REPORTS", area : "admin" } );
+					} );
+				} );
+
+				given( "nested groups each contributing meta", function(){
+					then( "the inner group's meta overrides the outer group's", function(){
+						router.group(
+							{
+								pattern : "/api",
+								meta    : { permissions : "API", version : 1 }
+							},
+							function( options ){
+								router.group(
+									{
+										pattern : "/admin",
+										meta    : { permissions : "ADMIN" }
+									},
+									function( innerOptions ){
+										router.route( "/users" ).toHandler( "users" );
+									}
+								);
+								router.route( "/health" ).toHandler( "health" );
+							}
+						);
+
+						var routes = router.getRoutes();
+						expect( routes[ 1 ].meta ).toBe( { permissions : "ADMIN", version : 1 } );
+						expect( routes[ 2 ].meta ).toBe( { permissions : "API", version : 1 } );
+					} );
+				} );
+
+				given( "a route registered after a group with meta", function(){
+					then( "it does not inherit the group's meta", function(){
+						router.group(
+							{
+								pattern : "/admin",
+								meta    : { permissions : "ADMIN" }
+							},
+							function( options ){
+								router.route( "/users" ).toHandler( "users" );
+							}
+						);
+						router.route( "/public" ).toHandler( "public" );
+
+						expect( router.getRoutes()[ 2 ].meta ).toBeStruct().toBeEmpty();
+					} );
+				} );
+
 				given( "a route registered outside any group", function(){
 					then( "it does not inherit a previously-run group's middleware", function(){
 						router.group( { pattern : "/api", middleware : [ "RequireApiKey" ] }, function( options ){

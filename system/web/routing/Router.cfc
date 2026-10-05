@@ -147,6 +147,8 @@ component
 
 		// Stack of group-level middleware arrays, outermost first, so nested groups accumulate in order
 		variables.groupMiddlewareStack = [];
+		// Stack of group-level meta structs, outermost first, so nested groups accumulate in order
+		variables.groupMetaStack       = [];
 		// Named, reusable middleware bundles registered via middlewareGroup(), keyed by name
 		variables.middlewareGroups     = {};
 
@@ -515,7 +517,7 @@ component
 	 * } )
 	 * </pre>
 	 *
-	 * @options The route options that match routing, look at the <code>addRoute()</code> method. A `middleware` array (same target values <code>middleware()</code> accepts) applies to every route registered within the body, ahead of any middleware the route registers for itself.
+	 * @options The route options that match routing, look at the <code>addRoute()</code> method. A `middleware` array (same target values <code>middleware()</code> accepts) applies to every route registered within the body, ahead of any middleware the route registers for itself. A `meta` struct is merged into the meta of every route registered within the body, the route's own <code>meta()</code> values win on conflict.
 	 * @body    The closure or lambda to contain all the routing methods to be grouped with the options data.
 	 */
 	function group( struct options = {}, body ){
@@ -532,14 +534,20 @@ component
 		// name of a middlewareGroup() bundle, which normalizeMiddlewareEntries() expands in place.
 		var groupMiddleware = structKeyExists( arguments.options, "middleware" ) ? arguments.options.middleware : [];
 		variables.groupMiddlewareStack.append( normalizeMiddlewareEntries( groupMiddleware ) );
+		// Same for meta: structs aren't part of the withClosure default/prefix merge either, so a
+		// group's meta is inherited via its own stack. Pushed even when empty to keep the depth in sync.
+		variables.groupMetaStack.append(
+			structKeyExists( arguments.options, "meta" ) && isStruct( arguments.options.meta ) ? arguments.options.meta : {}
+		);
 
 		try {
 			// Execute the body
 			arguments.body( arguments.options );
 		} finally {
 			// Pivot out of the group and do cleanup - always, even if the body threw, so a failed
-			// registration can't leak this group's middleware/options into whatever registers next.
+			// registration can't leak this group's middleware/meta/options into whatever registers next.
 			variables.groupMiddlewareStack.deleteAt( variables.groupMiddlewareStack.len() );
+			variables.groupMetaStack.deleteAt( variables.groupMetaStack.len() );
 			variables.onGroup     = false;
 			variables.withClosure = {};
 		}
@@ -861,6 +869,17 @@ component
 			}
 			inheritedMiddleware.append( thisRoute.middleware, true );
 			thisRoute.middleware = inheritedMiddleware;
+		}
+
+		// Inherit group-level meta (outermost group first). Keys are merged shallowly, an inner group
+		// overrides an outer one and the route's own meta, registered via .meta(), wins over them all.
+		if ( variables.groupMetaStack.len() ) {
+			var inheritedMeta = {};
+			for ( var groupMeta in variables.groupMetaStack ) {
+				inheritedMeta.append( groupMeta );
+			}
+			inheritedMeta.append( thisRoute.meta );
+			thisRoute.meta = inheritedMeta;
 		}
 
 		// Strip any middleware this route opted out of via withoutMiddleware() - matched by target
