@@ -466,15 +466,9 @@ component extends="coldbox.system.testing.BaseModelTest" {
 								meta    : { permissions : "API", version : 1 }
 							},
 							function( options ){
-								router.group(
-									{
-										pattern : "/admin",
-										meta    : { permissions : "ADMIN" }
-									},
-									function( innerOptions ){
-										router.route( "/users" ).toHandler( "users" );
-									}
-								);
+								router.group( { pattern : "/admin", meta : { permissions : "ADMIN" } }, function( innerOptions ){
+									router.route( "/users" ).toHandler( "users" );
+								} );
 								router.route( "/health" ).toHandler( "health" );
 							}
 						);
@@ -487,15 +481,9 @@ component extends="coldbox.system.testing.BaseModelTest" {
 
 				given( "a route registered after a group with meta", function(){
 					then( "it does not inherit the group's meta", function(){
-						router.group(
-							{
-								pattern : "/admin",
-								meta    : { permissions : "ADMIN" }
-							},
-							function( options ){
-								router.route( "/users" ).toHandler( "users" );
-							}
-						);
+						router.group( { pattern : "/admin", meta : { permissions : "ADMIN" } }, function( options ){
+							router.route( "/users" ).toHandler( "users" );
+						} );
 						router.route( "/public" ).toHandler( "public" );
 
 						expect( router.getRoutes()[ 2 ].meta ).toBeStruct().toBeEmpty();
