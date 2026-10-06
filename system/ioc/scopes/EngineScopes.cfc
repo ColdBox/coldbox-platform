@@ -42,21 +42,21 @@ component accessors="true" {
 	 * @initArguments       The constructor struct of arguments to passthrough to initialization
 	 */
 	function getFromScope( required mapping, struct initArguments ){
-		var CFScope  = arguments.mapping.getScope();
-		var cacheKey = "wirebox:#arguments.mapping.getName()#";
-
+		var CFScope   = arguments.mapping.getScope();
+		var cacheKey  = "wirebox:#arguments.mapping.getName()#";
 		var wiringKey = "#CFScope#:#cacheKey#";
+		var storage   = variables.injector.getScopeStorage();
 
 		// Verify it. An object stored before wiring (circular dependency support) is not ready for other threads,
 		// so they queue on the lock. The wiring thread re-enters its own lock and gets the stored instance.
-		if ( !variables.injector.getScopeStorage().exists( cacheKey, CFScope ) OR variables.wiring.containsKey( wiringKey ) ) {
+		if ( !storage.exists( cacheKey, CFScope ) OR variables.wiring.containsKey( wiringKey ) ) {
 			// One lock for all scopes, so threads building circular dependencies from opposite ends cannot deadlock
 			lock
 				name          ="WireBox.#variables.injector.getInjectorID()#.ScopeWiring"
 				type          ="exclusive"
 				timeout       ="30"
 				throwontimeout="true" {
-				if ( !variables.injector.getScopeStorage().exists( cacheKey, CFScope ) ) {
+				if ( !storage.exists( cacheKey, CFScope ) ) {
 					variables.wiring.put( wiringKey, true )
 					try {
 						// some nice debug info.
@@ -71,20 +71,20 @@ component accessors="true" {
 
 						// If not in wiring thread safety, store in scope to satisfy circular dependencies
 						if ( NOT arguments.mapping.getThreadSafe() ) {
-							variables.injector.getScopeStorage().put( cacheKey, target, CFScope );
+							storage.put( cacheKey, target, CFScope );
 						}
 
 						try {
 							// wire it
 							variables.injector.autowire( target = target, mapping = arguments.mapping );
 						} catch ( any e ) {
-							variables.injector.getScopeStorage().delete( cacheKey, CFScope );
+							storage.delete( cacheKey, CFScope );
 							rethrow;
 						}
 
 						// If thread safe, then now store it in the scope, as all dependencies are now safely wired
 						if ( arguments.mapping.getThreadSafe() ) {
-							variables.injector.getScopeStorage().put( cacheKey, target, CFScope );
+							storage.put( cacheKey, target, CFScope );
 						}
 
 						// log it
@@ -103,7 +103,7 @@ component accessors="true" {
 			// end lock
 		}
 
-		return variables.injector.getScopeStorage().get( cacheKey, CFScope );
+		return storage.get( cacheKey, CFScope );
 	}
 
 
@@ -119,7 +119,7 @@ component accessors="true" {
 		var cacheKey = "wirebox:#arguments.mapping.getName()#";
 		var CFScope  = arguments.mapping.getScope();
 
-		return variables.injector.getScopeStorage().exists( cacheKey, CFScope );
+		return storage.exists( cacheKey, CFScope );
 	}
 
 }
