@@ -119,7 +119,7 @@ component accessors="true" {
 		var cacheKey = "wirebox:#arguments.mapping.getName()#";
 		var CFScope  = arguments.mapping.getScope();
 
-		return storage.exists( cacheKey, CFScope );
+		return variables.injector.getScopeStorage().exists( cacheKey, CFScope );
 	}
 
 }
