@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- `COLDBOX-1455` WireBox singleton, engine (application, session, server) and CacheBox scopes handed objects to other threads before their dependencies were wired. A single wiring lock now makes other threads wait, while the wiring thread still resolves circular dependencies.
+
+### Changed
+
+- WireBox `CFScopes` scope renamed to `EngineScopes`
+
 ### Added
 
 - `group()` now accepts a `meta` struct option that every route inside the group inherits. Nested groups merge outer-first and a route's own `meta()` values win on conflict. This lets a single group declare route metadata, for example the permissions consumed by security middleware.

@@ -34,6 +34,8 @@ component accessors="true" {
 	function init( required injector ){
 		variables.injector = arguments.injector;
 		variables.cacheBox = arguments.injector.getCacheBox();
+		// keys of objects currently being built and wired
+		variables.wiring   = createObject( "java", "java.util.concurrent.ConcurrentHashMap" ).init();
 		variables.log      = arguments.injector.getLogBox().getLogger( this );
 		return this;
 	}
@@ -54,11 +56,12 @@ component accessors="true" {
 		// Get From Cache
 		refLocal.target = cacheProvider.get( cacheKey );
 
-		// Verify it
-		if ( isNull( local.refLocal.target ) ) {
-			// Lock it
+		// Verify it. An object stored before wiring (circular dependency support) is not ready for other threads,
+		// so they queue on the lock. The wiring thread re-enters its own lock and gets the stored instance.
+		if ( isNull( local.refLocal.target ) OR variables.wiring.containsKey( cacheKey ) ) {
+			// One lock for all scopes, so threads building circular dependencies from opposite ends cannot deadlock
 			lock
-				name                 ="WireBox.#variables.injector.getInjectorID()#.CacheBoxScope.#arguments.mapping.getName()#"
+				name                 ="WireBox.#variables.injector.getInjectorID()#.ScopeWiring"
 				type                 ="exclusive"
 				timeout              ="30"
 				throwontimeout       ="true" {
@@ -68,56 +71,61 @@ component accessors="true" {
 					return local.refLocal.target;
 				}
 
-				// some nice debug info.
-				if ( variables.log.canDebug() ) {
-					variables.log.debug(
-						"Object: (#cacheProperties.toString()#) not found in cacheBox, beginning construction by (#variables.injector.getName()#) injector"
-					);
-				}
-
-				// construct it
-				local.refLocal.target = variables.injector.buildInstance(
-					arguments.mapping,
-					arguments.initArguments
-				);
-
-				// If not in wiring thread safety, store in singleton cache to satisfy circular dependencies
-				if ( NOT arguments.mapping.getThreadSafe() ) {
-					cacheProvider.set(
-						cacheKey,
-						local.refLocal.target,
-						cacheProperties.timeout,
-						cacheProperties.lastAccessTimeout
-					);
-				}
-
+				variables.wiring.put( cacheKey, true )
 				try {
-					// wire up dependencies on the object
-					variables.injector.autowire( target = local.refLocal.target, mapping = arguments.mapping );
-				} catch ( any e ) {
-					cacheProvider.clear( cacheKey );
-					rethrow;
-				}
+					// some nice debug info.
+					if ( variables.log.canDebug() ) {
+						variables.log.debug(
+							"Object: (#cacheProperties.toString()#) not found in cacheBox, beginning construction by (#variables.injector.getName()#) injector"
+						);
+					}
 
-				// If thread safe, then now store it in the cache, as all dependencies are now safely wired
-				if ( arguments.mapping.getThreadSafe() ) {
-					cacheProvider.set(
-						cacheKey,
-						local.refLocal.target,
-						cacheProperties.timeout,
-						cacheProperties.lastAccessTimeout
+					// construct it
+					local.refLocal.target = variables.injector.buildInstance(
+						arguments.mapping,
+						arguments.initArguments
 					);
-				}
 
-				// log it
-				if ( variables.log.canDebug() ) {
-					variables.log.debug(
-						"Object: (#cacheProperties.toString()#) constructed and stored in cacheBox. ThreadSafe=#arguments.mapping.getThreadSafe()# by (#variables.injector.getName()#) injector"
-					);
-				}
+					// If not in wiring thread safety, store in singleton cache to satisfy circular dependencies
+					if ( NOT arguments.mapping.getThreadSafe() ) {
+						cacheProvider.set(
+							cacheKey,
+							local.refLocal.target,
+							cacheProperties.timeout,
+							cacheProperties.lastAccessTimeout
+						);
+					}
 
-				// return it
-				return local.refLocal.target;
+					try {
+						// wire up dependencies on the object
+						variables.injector.autowire( target = local.refLocal.target, mapping = arguments.mapping );
+					} catch ( any e ) {
+						cacheProvider.clear( cacheKey );
+						rethrow;
+					}
+
+					// If thread safe, then now store it in the cache, as all dependencies are now safely wired
+					if ( arguments.mapping.getThreadSafe() ) {
+						cacheProvider.set(
+							cacheKey,
+							local.refLocal.target,
+							cacheProperties.timeout,
+							cacheProperties.lastAccessTimeout
+						);
+					}
+
+					// log it
+					if ( variables.log.canDebug() ) {
+						variables.log.debug(
+							"Object: (#cacheProperties.toString()#) constructed and stored in cacheBox. ThreadSafe=#arguments.mapping.getThreadSafe()# by (#variables.injector.getName()#) injector"
+						);
+					}
+
+					// return it
+					return local.refLocal.target;
+				} finally {
+					variables.wiring.remove( cacheKey )
+				}
 			}
 			// end lock
 		} else {
