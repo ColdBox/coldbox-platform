@@ -473,6 +473,8 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 
 			// preProcess
 			cbController.getInterceptorService().announce( "preProcess" );
+			// Route-scoped middleware runs after the global preProcess chain, just like the Bootstrap does
+			routingService.runRouteMiddleware( getRequestContext(), "preProcess" );
 
 			// Request Start Handler
 			if ( len( cbController.getSetting( "RequestStartHandler" ) ) ) {
@@ -550,6 +552,8 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 				cbController.runEvent( cbController.getSetting( "RequestEndHandler" ), true );
 			}
 
+			// Route-scoped middleware runs before the global postProcess chain, just like the Bootstrap does
+			routingService.runRouteMiddleware( getRequestContext(), "postProcess" );
 			// postProcess
 			cbController.getInterceptorService().announce( "postProcess" );
 		} catch ( "InterceptorService.InterceptorNotFound" e ) {
