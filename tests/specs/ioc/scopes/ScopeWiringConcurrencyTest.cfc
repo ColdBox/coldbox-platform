@@ -33,7 +33,8 @@ component extends="testbox.system.BaseSpec" {
 			} );
 
 			// Singleton scope and the engine scopes (application, session, server) share the same wiring rules
-			[ "singleton", "application" ].each( function( scopeName ){
+			var scopeNames = [ "singleton", "application" ]
+			scopeNames.each( function( scopeName ){
 				describe( "#scopeName# scope", function(){
 					it( "never hands an object to a second thread before its dependencies are wired", function(){
 						newInjector(
