@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `COLDBOX-1456` `Bootstrap.onSessionStart()` ran the session start handler on a controller that was still loading during a reinit. It now skips the event until the controller is initiated.
 - `COLDBOX-1455` WireBox singleton, engine (application, session, server) and CacheBox scopes handed objects to other threads before their dependencies were wired. A single wiring lock now makes other threads wait, while the wiring thread still resolves circular dependencies.
 
 ### Changed
