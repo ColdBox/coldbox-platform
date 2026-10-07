@@ -1499,7 +1499,7 @@ component serializable="false" accessors="true" {
 		variables.scopes[ "NOSCOPE" ]     = new coldbox.system.ioc.scopes.NoScope( this );
 		variables.scopes[ "SINGLETON" ]   = new coldbox.system.ioc.scopes.Singleton( this );
 		variables.scopes[ "REQUEST" ]     = new coldbox.system.ioc.scopes.RequestScope( this );
-		variables.scopes[ "SESSION" ]     = new coldbox.system.ioc.scopes.CFScopes( this );
+		variables.scopes[ "SESSION" ]     = new coldbox.system.ioc.scopes.EngineScopes( this );
 		variables.scopes[ "SERVER" ]      = variables.scopes[ "SESSION" ];
 		variables.scopes[ "APPLICATION" ] = variables.scopes[ "SESSION" ];
 

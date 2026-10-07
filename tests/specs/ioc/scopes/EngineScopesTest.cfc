@@ -1,4 +1,4 @@
-﻿component extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.ioc.scopes.CFScopes" {
+﻿component extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.ioc.scopes.EngineScopes" {
 
 	/*********************************** LIFE CYCLE Methods ***********************************/
 
