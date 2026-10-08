@@ -1652,10 +1652,10 @@ component
 	 * @point  The interception point, `preProcess` (default) or `postProcess`.
 	 * @force  Overwrite a name that is already registered instead of throwing.
 	 *
+	 * @return The router, for chaining.
+	 *
 	 * @throws Router.DuplicateMiddleware When a name is already registered as middleware or as a middlewareGroup and `force` is false.
 	 * @throws Router.InvalidMiddleware   When a name is empty or not a string, or a single-form `target` is missing or empty.
-	 *
-	 * @return The router, for chaining.
 	 */
 	function registerMiddleware(
 		required any name,
@@ -1692,7 +1692,13 @@ component
 					message = "registerMiddleware() requires every name to be a non-empty string."
 				);
 			}
-			if ( isNull( registrations[ middlewareName ] ) || ( isSimpleValue( registrations[ middlewareName ] ) && !len( trim( registrations[ middlewareName ] ) ) ) ) {
+			if (
+				isNull( registrations[ middlewareName ] ) || (
+					isSimpleValue( registrations[ middlewareName ] ) && !len(
+						trim( registrations[ middlewareName ] )
+					)
+				)
+			) {
 				throw(
 					type    = "Router.InvalidMiddleware",
 					message = "registerMiddleware() requires a target for the middleware named [#middlewareName#]."
