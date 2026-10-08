@@ -123,7 +123,11 @@ component extends="testbox.system.BaseSpec" {
 		}
 	}
 
-	private function inThread( required string name, required string alias, string method = "probe" ){
+	private function inThread(
+		required string name,
+		required string alias,
+		string method = "probe"
+	){
 		thread
 			name     ="#arguments.name##variables.id#"
 			action   ="run"
@@ -131,7 +135,8 @@ component extends="testbox.system.BaseSpec" {
 			method   ="#arguments.method#"
 			resultKey="#arguments.name#" {
 			try {
-				variables.results[ attributes.resultKey ] = invoke( variables.injector.getInstance( attributes.alias ), attributes.method )
+				var target                                = variables.injector.getInstance( attributes.alias )
+				variables.results[ attributes.resultKey ] = invoke( target, attributes.method )
 			} catch ( any e ) {
 				variables.results[ attributes.resultKey ] = "ERR " & e.message
 			}

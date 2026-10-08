@@ -226,13 +226,14 @@ component serializable="false" accessors="true" {
 		// Injector Reference Map for quick location via named injectors
 		variables.injectorReferenceMap = {};
 
+		// Scope builds in flight, shared by all scopes: keys held until the outermost build completes
+		variables.scopeWiring      = createObject( "java", "java.util.concurrent.ConcurrentHashMap" ).init();
+		variables.scopeWiringDepth = 0;
+
 		// Prepare instance ID
 		variables.injectorID = createUUID();
 		// Prepare Lock Info
 		variables.lockName   = "WireBox.Injector.#variables.injectorID#";
-		// Scope builds in flight, shared by all scopes: keys held until the outermost build completes, and the nesting depth
-		variables.scopeWiring      = createObject( "java", "java.util.concurrent.ConcurrentHashMap" ).init();
-		variables.scopeWiringDepth = 0;
 		// Link ColdBox Context if passed
 		variables.coldbox    = arguments.coldbox;
 		// Register the task scheduler according to operating mode
