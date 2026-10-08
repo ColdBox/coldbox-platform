@@ -135,6 +135,24 @@ component {
 			)
 			.to( "main.returnTest" )
 
+		// Named middleware: registered once, referenced by name, opted out of with withoutMiddleware()
+		registerMiddleware( "namedBlocker", function( event, rc, prc ){
+			event
+				.renderData(
+					data       = "blocked by named middleware",
+					statusCode = 403
+				)
+				.noExecution()
+			return true
+		} )
+		route( "/routeMiddleware/named/blocked" )
+			.middleware( "namedBlocker" )
+			.to( "main.returnTest" )
+		group( { pattern : "/routeMiddleware/named/group", middleware : [ "namedBlocker" ] }, function(){
+			route( "/blocked" ).to( "main.returnTest" )
+			route( "/exempt" ).withoutMiddleware( "namedBlocker" ).to( "main.returnTest" )
+		} )
+
 		// Names routes
 		route(
 			pattern = "/routeRunner/:id/:name",

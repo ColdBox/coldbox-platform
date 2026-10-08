@@ -22,10 +22,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - `group()` now accepts a `meta` struct option that every route inside the group inherits. Nested groups merge outer-first and a route's own `meta()` values win on conflict. This lets a single group declare route metadata, for example the permissions consumed by security middleware.
+- `Router.registerMiddleware()` registers a closure, lambda, object instance or WireBox ID under a name, singly or as a struct of `name : target` pairs, so it can be referenced from `middleware()`, `group( { middleware : [ name ] } )` and `withoutMiddleware( name )`. Registering a name that already exists, including a `middlewareGroup()` name, throws `Router.DuplicateMiddleware` unless `force = true`. (COLDBOX-1460)
 
 ### Fixed
 
 - `BaseTestCase.execute()` (and the `get()`, `post()`, etc. helpers built on it) now runs route-scoped middleware registered with `Router.middleware()`, in the same order as the Bootstrap, so integration tests exercise the same request lifecycle as a real request.
+- Passing a component instance as route middleware (for example `middleware( myObject )`) no longer fails on engines where `isStruct()` is true for components. (COLDBOX-1460)
 
 ## [8.2.0] - 2026-09-23
 
