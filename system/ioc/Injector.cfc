@@ -614,22 +614,20 @@ component serializable="false" accessors="true" {
 	 *
 	 * @key The scope specific key of the object being built
 	 */
-	Injector function beginScopeBuild( required string key ){
+	void function beginScopeBuild( required string key ){
 		variables.scopeWiring.put( arguments.key, true );
 		variables.scopeWiringDepth++;
-		return this;
 	}
 
 	/**
 	 * Marks the end of a scope build. Releases every marked key once the outermost build completes.
 	 * Only call while holding the ScopeWiring lock.
 	 */
-	Injector function endScopeBuild(){
+	void function endScopeBuild(){
 		variables.scopeWiringDepth--;
 		if ( variables.scopeWiringDepth == 0 ) {
 			variables.scopeWiring.clear();
 		}
-		return this;
 	}
 
 	/**
