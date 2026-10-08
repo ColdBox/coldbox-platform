@@ -27,6 +27,29 @@ component extends="tests.resources.BaseIntegrationTest" {
 					} );
 				} );
 
+				given( "a route that references a closure registered by name with registerMiddleware()", function(){
+					then( "it should block the request, exactly like an inline closure", function(){
+						var e          = this.get( "routeMiddleware/named/blocked" );
+						var renderData = e.getRenderData();
+						expect( renderData.statusCode ).toBe( 403 );
+						expect( renderData.data ).toBe( "blocked by named middleware" );
+					} );
+				} );
+
+				given( "a group whose middleware option names a registered middleware", function(){
+					then( "a route inside it is blocked", function(){
+						var e          = this.get( "routeMiddleware/named/group/blocked" );
+						var renderData = e.getRenderData();
+						expect( renderData.statusCode ).toBe( 403 );
+						expect( renderData.data ).toBe( "blocked by named middleware" );
+					} );
+
+					then( "a route using withoutMiddleware( name ) is not blocked", function(){
+						var e = this.get( "routeMiddleware/named/group/exempt" );
+						expect( e.getRenderData() ).toBeEmpty();
+					} );
+				} );
+
 				given( "a route with no middleware", function(){
 					then( "it should not run any route middleware", function(){
 						var e = this.get( "main/returnTest" );
