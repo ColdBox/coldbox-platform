@@ -18,7 +18,10 @@
 			.$( "getUtility", createMock( "coldbox.system.core.util.Util" ) )
 			.setLogBox( mockLogBox )
 			.setInjectorID( createUUID() )
-			.setScopeStorage( new coldbox.system.core.collections.ScopeStorage() );
+			.setScopeStorage( new coldbox.system.core.collections.ScopeStorage() )
+			.$( "isScopeWiring", false )
+			.$( "beginScopeBuild" )
+			.$( "endScopeBuild" );
 
 		super.setup();
 		scope    = model.init( mockInjector );

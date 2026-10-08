@@ -54,6 +54,25 @@ component extends="testbox.system.BaseSpec" {
 						expect( results.second ).toBe( "ready" )
 					} );
 
+					it( "never hands out a circular partner before the outer object finishes wiring", function(){
+						newInjector(
+							scopeName,
+							{
+								Left  : "component { property name=""right"" inject=""id:Right#id#""; property name=""slow"" inject=""id:Slow#id#""; function init(){ return this; } function slowValue(){ return slow.value(); } }",
+								Right : "component { property name=""left"" inject=""id:Left#id#""; function init(){ return this; } function probe(){ return left.slowValue(); } }",
+								Slow  : "component { function init(){ application[ ""scopeWiring#id#"" ] = true; sleep( 1500 ); return this; } function value(){ return ""ready""; } }"
+							}
+						)
+						// Right is built and fully wired inside the build of Left, while Left still waits on Slow
+						inThread( "first", "Left#id#", "slowValue" )
+						waitForFlag()
+						inThread( "second", "Right#id#" )
+						thread action="join" name="first#id#,second#id#" timeout="15000";
+
+						expect( results.first ).toBe( "ready" )
+						expect( results.second ).toBe( "ready" )
+					} );
+
 					it( "still resolves a circular dependency on the wiring thread", function(){
 						newInjector(
 							scopeName,
@@ -104,16 +123,20 @@ component extends="testbox.system.BaseSpec" {
 		}
 	}
 
-	private function inThread( required string name, required string alias ){
+	private function inThread(
+		required string name,
+		required string alias,
+		string method = "probe"
+	){
 		thread
 			name     ="#arguments.name##variables.id#"
 			action   ="run"
 			alias    ="#arguments.alias#"
+			method   ="#arguments.method#"
 			resultKey="#arguments.name#" {
 			try {
-				variables.results[ attributes.resultKey ] = variables.injector
-					.getInstance( attributes.alias )
-					.probe()
+				var target                                = variables.injector.getInstance( attributes.alias )
+				variables.results[ attributes.resultKey ] = invoke( target, attributes.method )
 			} catch ( any e ) {
 				variables.results[ attributes.resultKey ] = "ERR " & e.message
 			}
