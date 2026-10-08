@@ -32,7 +32,8 @@
  * Everything browser related is delegated to testbox.system.browser.BrowserSupport, exactly like TestBox's
  * BrowserSpec: the bundle shares one browser started on first use, every browse() call gets fresh, isolated
  * pages, and the browser closes after the bundle through the `closeBrowser()` method, which carries the
- * `afterAll` annotation. The browser matchers of testbox.system.browser.BrowserMatchers are registered for
+ * `afterAll` annotation. When it never runs (an afterAll() that throws, an aborted request), the next run that
+ * opens a browser closes it. The browser matchers of testbox.system.browser.BrowserMatchers are registered for
  * every spec of the bundle. `this.playwright()` returns the bundle manager; an unqualified `playwright()`
  * still calls the bx-playwright BIF.
  *
