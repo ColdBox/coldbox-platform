@@ -46,7 +46,6 @@ component accessors="true" {
 		variables.injector   = arguments.injector;
 		variables.singletons = createObject( "java", "java.util.concurrent.ConcurrentHashMap" ).init();
 		// keys of singletons currently being built and wired
-		variables.wiring     = createObject( "java", "java.util.concurrent.ConcurrentHashMap" ).init();
 		variables.log        = arguments.injector.getLogBox().getLogger( this );
 		return this;
 	}
@@ -59,11 +58,12 @@ component accessors="true" {
 	 * @initArguments       The constructor struct of arguments to passthrough to initialization
 	 */
 	function getFromScope( required mapping, struct initArguments ){
-		var cacheKey = lCase( arguments.mapping.getName() );
+		var cacheKey  = lCase( arguments.mapping.getName() );
+		var wiringKey = "singleton:#cacheKey#";
 
 		// Verify in Singleton Cache. A singleton stored before wiring (circular dependency support) is not ready for
 		// other threads, so they queue on the lock. The wiring thread re-enters its own lock and gets the stored instance.
-		if ( NOT variables.singletons.containsKey( cacheKey ) OR variables.wiring.containsKey( cacheKey ) ) {
+		if ( NOT variables.singletons.containsKey( cacheKey ) OR variables.injector.isScopeWiring( wiringKey ) ) {
 			// One lock for all scopes, so threads building circular dependencies from opposite ends cannot deadlock
 			lock
 				name          ="WireBox.#variables.injector.getInjectorID()#.ScopeWiring"
@@ -72,7 +72,7 @@ component accessors="true" {
 				throwontimeout="true" {
 				// double lock it
 				if ( NOT variables.singletons.containsKey( cacheKey ) ) {
-					variables.wiring.put( cacheKey, true )
+					variables.injector.beginScopeBuild( wiringKey )
 					try {
 						// some nice debug info.
 						if ( variables.log.canDebug() ) {
@@ -115,7 +115,7 @@ component accessors="true" {
 						// return it
 						return variables.singletons.get( cacheKey );
 					} finally {
-						variables.wiring.remove( cacheKey )
+						variables.injector.endScopeBuild()
 					}
 				}
 			}

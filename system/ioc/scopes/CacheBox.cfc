@@ -34,8 +34,6 @@ component accessors="true" {
 	function init( required injector ){
 		variables.injector = arguments.injector;
 		variables.cacheBox = arguments.injector.getCacheBox();
-		// keys of objects currently being built and wired
-		variables.wiring   = createObject( "java", "java.util.concurrent.ConcurrentHashMap" ).init();
 		variables.log      = arguments.injector.getLogBox().getLogger( this );
 		return this;
 	}
@@ -52,13 +50,14 @@ component accessors="true" {
 		var refLocal        = {};
 		var cacheProvider   = variables.cacheBox.getCache( cacheProperties.provider );
 		var cacheKey        = "#cacheProperties.key#";
+		var wiringKey       = "cachebox:#cacheKey#";
 
 		// Get From Cache
 		refLocal.target = cacheProvider.get( cacheKey );
 
 		// Verify it. An object stored before wiring (circular dependency support) is not ready for other threads,
 		// so they queue on the lock. The wiring thread re-enters its own lock and gets the stored instance.
-		if ( isNull( local.refLocal.target ) OR variables.wiring.containsKey( cacheKey ) ) {
+		if ( isNull( local.refLocal.target ) OR variables.injector.isScopeWiring( wiringKey ) ) {
 			// One lock for all scopes, so threads building circular dependencies from opposite ends cannot deadlock
 			lock
 				name                 ="WireBox.#variables.injector.getInjectorID()#.ScopeWiring"
@@ -71,7 +70,7 @@ component accessors="true" {
 					return local.refLocal.target;
 				}
 
-				variables.wiring.put( cacheKey, true )
+				variables.injector.beginScopeBuild( wiringKey )
 				try {
 					// some nice debug info.
 					if ( variables.log.canDebug() ) {
@@ -124,7 +123,7 @@ component accessors="true" {
 					// return it
 					return local.refLocal.target;
 				} finally {
-					variables.wiring.remove( cacheKey )
+					variables.injector.endScopeBuild()
 				}
 			}
 			// end lock

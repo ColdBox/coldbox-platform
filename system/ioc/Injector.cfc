@@ -230,6 +230,9 @@ component serializable="false" accessors="true" {
 		variables.injectorID = createUUID();
 		// Prepare Lock Info
 		variables.lockName   = "WireBox.Injector.#variables.injectorID#";
+		// Scope builds in flight, shared by all scopes: keys held until the outermost build completes, and the nesting depth
+		variables.scopeWiring      = createObject( "java", "java.util.concurrent.ConcurrentHashMap" ).init();
+		variables.scopeWiringDepth = 0;
 		// Link ColdBox Context if passed
 		variables.coldbox    = arguments.coldbox;
 		// Register the task scheduler according to operating mode
@@ -590,6 +593,42 @@ component serializable="false" accessors="true" {
 		);
 
 		return target;
+	}
+
+	/**
+	 * Is the key part of a scope build that has not completed yet? Safe to call without the ScopeWiring lock.
+	 * Scopes use it to decide whether a stored object must wait on the lock because it may reach half-wired objects.
+	 *
+	 * @key The scope specific key of the object
+	 */
+	boolean function isScopeWiring( required string key ){
+		return variables.scopeWiring.containsKey( arguments.key );
+	}
+
+	/**
+	 * Marks the start of a scope build. Only call while holding the ScopeWiring lock, and always pair with endScopeBuild() in a finally.
+	 *
+	 * An object stays marked until the outermost build finishes, not just until its own wiring ends. A circular partner
+	 * built inside another build can hold a reference to an outer object that is still being wired.
+	 *
+	 * @key The scope specific key of the object being built
+	 */
+	Injector function beginScopeBuild( required string key ){
+		variables.scopeWiring.put( arguments.key, true );
+		variables.scopeWiringDepth++;
+		return this;
+	}
+
+	/**
+	 * Marks the end of a scope build. Releases every marked key once the outermost build completes.
+	 * Only call while holding the ScopeWiring lock.
+	 */
+	Injector function endScopeBuild(){
+		variables.scopeWiringDepth--;
+		if ( variables.scopeWiringDepth == 0 ) {
+			variables.scopeWiring.clear();
+		}
+		return this;
 	}
 
 	/**
