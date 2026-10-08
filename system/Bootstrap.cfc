@@ -625,11 +625,12 @@ component serializable="false" accessors="true" {
 	 * ON session start
 	 */
 	function onSessionStart(){
-		// Exit if we don't have the app key in scope, means we are not ready to process session start yet.
-		if ( !application.keyExists( locateAppKey() ) ) {
+		var appKey = locateAppKey()
+		// Exit if the controller is not in scope or not initiated yet (a reinit is loading it), we are not ready for session start.
+		if ( !application.keyExists( appKey ) || !application[ appKey ].getColdboxInitiated() ) {
 			return;
 		}
-		var cbController = application[ locateAppKey() ]
+		var cbController = application[ appKey ]
 		// Session start interceptors
 		cbController.getInterceptorService().announce( "sessionStart", session )
 		// Execute Session Start Handler

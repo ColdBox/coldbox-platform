@@ -11,7 +11,10 @@
 		mockInjector = createMock( "coldbox.system.ioc.Injector" )
 			.$( "getUtility", createMock( "coldbox.system.core.util.Util" ) )
 			.setLogBox( mockLogBox )
-			.setInjectorID( createUUID() );
+			.setInjectorID( createUUID() )
+			.$( "isScopeWiring", false )
+			.$( "beginScopeBuild" )
+			.$( "endScopeBuild" );
 		super.setup();
 		scope    = model.init( mockInjector );
 		mockStub = createStub();

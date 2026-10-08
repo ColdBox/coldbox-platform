@@ -435,6 +435,61 @@ component extends="coldbox.system.testing.BaseModelTest" {
 					} );
 				} );
 
+				given( "a group with a meta option", function(){
+					then( "every route inside inherits it and the route's own meta wins on conflict", function(){
+						router.group(
+							{
+								pattern : "/admin",
+								meta    : { permissions : "ADMIN", area : "admin" }
+							},
+							function( options ){
+								router.route( "/users" ).toHandler( "users" );
+								router
+									.route( "/reports" )
+									.meta( { permissions : "REPORTS" } )
+									.toHandler( "reports" );
+							}
+						);
+
+						var routes = router.getRoutes();
+						expect( routes ).toHaveLength( 2 );
+						expect( routes[ 1 ].meta ).toBe( { permissions : "ADMIN", area : "admin" } );
+						expect( routes[ 2 ].meta ).toBe( { permissions : "REPORTS", area : "admin" } );
+					} );
+				} );
+
+				given( "nested groups each contributing meta", function(){
+					then( "the inner group's meta overrides the outer group's", function(){
+						router.group(
+							{
+								pattern : "/api",
+								meta    : { permissions : "API", version : 1 }
+							},
+							function( options ){
+								router.group( { pattern : "/admin", meta : { permissions : "ADMIN" } }, function( innerOptions ){
+									router.route( "/users" ).toHandler( "users" );
+								} );
+								router.route( "/health" ).toHandler( "health" );
+							}
+						);
+
+						var routes = router.getRoutes();
+						expect( routes[ 1 ].meta ).toBe( { permissions : "ADMIN", version : 1 } );
+						expect( routes[ 2 ].meta ).toBe( { permissions : "API", version : 1 } );
+					} );
+				} );
+
+				given( "a route registered after a group with meta", function(){
+					then( "it does not inherit the group's meta", function(){
+						router.group( { pattern : "/admin", meta : { permissions : "ADMIN" } }, function( options ){
+							router.route( "/users" ).toHandler( "users" );
+						} );
+						router.route( "/public" ).toHandler( "public" );
+
+						expect( router.getRoutes()[ 2 ].meta ).toBeStruct().toBeEmpty();
+					} );
+				} );
+
 				given( "a route registered outside any group", function(){
 					then( "it does not inherit a previously-run group's middleware", function(){
 						router.group( { pattern : "/api", middleware : [ "RequireApiKey" ] }, function( options ){
@@ -638,6 +693,236 @@ component extends="coldbox.system.testing.BaseModelTest" {
 						var middleware = router.getRoutes()[ 1 ].middleware;
 						expect( middleware ).toHaveLength( 1 );
 						expect( middleware[ 1 ].target ).toBe( "lateGroup" );
+						expect( middleware[ 1 ] ).notToHaveKey( "group" );
+					} );
+				} );
+
+				given( "registerMiddleware() with a closure", function(){
+					then( "it is stored as a one-member bundle and expands when referenced by name", function(){
+						var closure = function( event, rc, prc ){
+						};
+						expect( router.registerMiddleware( "OnlyJson", closure ) ).toBe( router );
+						router
+							.route( "/orders" )
+							.middleware( "OnlyJson" )
+							.toHandler( "orders" );
+
+						var middleware = router.getRoutes()[ 1 ].middleware;
+						expect( middleware ).toHaveLength( 1 );
+						expect( middleware[ 1 ].target ).toBe( closure );
+						expect( middleware[ 1 ].point ).toBe( "preProcess" );
+						expect( middleware[ 1 ].group ).toBe( "OnlyJson" );
+					} );
+				} );
+
+				given( "registerMiddleware() with a lambda", function(){
+					then( "it is accepted as the target", function(){
+						var lambda = ( event, rc, prc ) => true;
+						router.registerMiddleware( "AlwaysStop", lambda );
+						router
+							.route( "/orders" )
+							.middleware( "AlwaysStop" )
+							.toHandler( "orders" );
+
+						var middleware = router.getRoutes()[ 1 ].middleware;
+						expect( middleware ).toHaveLength( 1 );
+						expect( middleware[ 1 ].target ).toBe( lambda );
+					} );
+				} );
+
+				given( "registerMiddleware() with an object instance", function(){
+					then( "the instance is stored untouched and not mistaken for the bulk struct form", function(){
+						var instance = createObject( "component", "coldbox.system.web.routing.Router" );
+						router.registerMiddleware( "ObjectMw", instance );
+						router
+							.route( "/orders" )
+							.middleware( "ObjectMw" )
+							.toHandler( "orders" );
+
+						var middleware = router.getRoutes()[ 1 ].middleware;
+						expect( middleware ).toHaveLength( 1 );
+						expect( isObject( middleware[ 1 ].target ) ).toBeTrue();
+						expect( middleware[ 1 ].group ).toBe( "ObjectMw" );
+					} );
+				} );
+
+				given( "registerMiddleware() with a WireBox ID string", function(){
+					then( "the ID is the target, and the registered name is only an alias", function(){
+						router.registerMiddleware( "auth", "Authenticated@cbsecurity" );
+						router
+							.route( "/orders" )
+							.middleware( "auth" )
+							.toHandler( "orders" );
+
+						var middleware = router.getRoutes()[ 1 ].middleware;
+						expect( middleware ).toHaveLength( 1 );
+						expect( middleware[ 1 ].target ).toBe( "Authenticated@cbsecurity" );
+						expect( middleware[ 1 ].group ).toBe( "auth" );
+					} );
+				} );
+
+				given( "registerMiddleware() with a custom point", function(){
+					then( "the member runs at that point", function(){
+						router.registerMiddleware( "AuditLog", "AuditLog", "postProcess" );
+						router
+							.route( "/orders" )
+							.middleware( "AuditLog" )
+							.toHandler( "orders" );
+
+						expect( router.getRoutes()[ 1 ].middleware[ 1 ].point ).toBe( "postProcess" );
+					} );
+				} );
+
+				given( "registerMiddleware() with a struct of name : target pairs", function(){
+					then( "every entry is registered with the default point and the router is returned", function(){
+						var closure = function( event, rc, prc ){
+						};
+						expect(
+							router.registerMiddleware( { auth : "Authenticated@cbsecurity", onlyJson : closure } )
+						).toBe( router );
+						router
+							.route( "/orders" )
+							.middleware( [ "auth", "onlyJson" ] )
+							.toHandler( "orders" );
+
+						var middleware = router.getRoutes()[ 1 ].middleware;
+						expect( middleware ).toHaveLength( 2 );
+						expect( middleware[ 1 ].target ).toBe( "Authenticated@cbsecurity" );
+						expect( middleware[ 1 ].point ).toBe( "preProcess" );
+						expect( middleware[ 2 ].target ).toBe( closure );
+					} );
+				} );
+
+				given( "a bulk registerMiddleware() containing one duplicate name", function(){
+					then( "it throws and registers nothing from that call", function(){
+						router.registerMiddleware( "auth", "Authenticated@cbsecurity" );
+
+						expect( function(){
+							router.registerMiddleware( { fresh : "Fresh", auth : "Other" } );
+						} ).toThrow( type = "Router.DuplicateMiddleware" );
+
+						router
+							.route( "/orders" )
+							.middleware( "fresh" )
+							.toHandler( "orders" );
+						expect( router.getRoutes()[ 1 ].middleware[ 1 ] ).notToHaveKey( "group" );
+					} );
+				} );
+
+				given( "registerMiddleware() with a name that is already registered", function(){
+					then( "it throws Router.DuplicateMiddleware", function(){
+						router.registerMiddleware( "auth", "Authenticated@cbsecurity" );
+
+						expect( function(){
+							router.registerMiddleware( "auth", "Other" );
+						} ).toThrow( type = "Router.DuplicateMiddleware" );
+					} );
+				} );
+
+				given( "registerMiddleware() with force = true on a taken name", function(){
+					then( "the new target replaces the old one", function(){
+						router.registerMiddleware( "auth", "Old" );
+						router.registerMiddleware( "auth", "New", "preProcess", true );
+						router
+							.route( "/orders" )
+							.middleware( "auth" )
+							.toHandler( "orders" );
+
+						var middleware = router.getRoutes()[ 1 ].middleware;
+						expect( middleware ).toHaveLength( 1 );
+						expect( middleware[ 1 ].target ).toBe( "New" );
+					} );
+
+					then( "the bulk form accepts force as a named argument", function(){
+						router.registerMiddleware( "auth", "Old" );
+						router.registerMiddleware( name = { auth : "New" }, force = true );
+						router
+							.route( "/orders" )
+							.middleware( "auth" )
+							.toHandler( "orders" );
+
+						expect( router.getRoutes()[ 1 ].middleware[ 1 ].target ).toBe( "New" );
+					} );
+				} );
+
+				given( "registerMiddleware() with a name that is already a middlewareGroup()", function(){
+					then( "it throws unless force = true", function(){
+						router.middlewareGroup( "api", [ "RequireApiKey", "RateLimiter" ] );
+
+						expect( function(){
+							router.registerMiddleware( "api", "Other" );
+						} ).toThrow( type = "Router.DuplicateMiddleware" );
+
+						router.registerMiddleware( "api", "Other", "preProcess", true );
+						router
+							.route( "/orders" )
+							.middleware( "api" )
+							.toHandler( "orders" );
+						expect( router.getRoutes()[ 1 ].middleware ).toHaveLength( 1 );
+					} );
+				} );
+
+				given( "registerMiddleware() with an invalid name or a missing target", function(){
+					then( "it throws Router.InvalidMiddleware", function(){
+						expect( function(){
+							router.registerMiddleware( "", "Something" );
+						} ).toThrow( type = "Router.InvalidMiddleware" );
+						expect( function(){
+							router.registerMiddleware( "   ", "Something" );
+						} ).toThrow( type = "Router.InvalidMiddleware" );
+						expect( function(){
+							router.registerMiddleware( [ "a" ], "Something" );
+						} ).toThrow( type = "Router.InvalidMiddleware" );
+						expect( function(){
+							router.registerMiddleware( "NoTarget" );
+						} ).toThrow( type = "Router.InvalidMiddleware" );
+						expect( function(){
+							router.registerMiddleware( "EmptyTarget", "" );
+						} ).toThrow( type = "Router.InvalidMiddleware" );
+					} );
+				} );
+
+				given( "a registered middleware name referenced from a group()'s middleware option", function(){
+					then( "every route in the body inherits it", function(){
+						router.registerMiddleware( "auth", "Authenticated@cbsecurity" );
+						router.group( { pattern : "/api", middleware : [ "auth" ] }, function( options ){
+							router.route( "/users" ).toHandler( "users" );
+						} );
+
+						var middleware = router.getRoutes()[ 1 ].middleware;
+						expect( middleware ).toHaveLength( 1 );
+						expect( middleware[ 1 ].target ).toBe( "Authenticated@cbsecurity" );
+						expect( middleware[ 1 ].group ).toBe( "auth" );
+					} );
+				} );
+
+				given( "withoutMiddleware() naming a registered middleware", function(){
+					then( "it is stripped from the route", function(){
+						router.registerMiddleware( "auth", "Authenticated@cbsecurity" );
+						router.group( { pattern : "/api", middleware : [ "auth" ] }, function( options ){
+							router.route( "/users" ).toHandler( "users" );
+							router
+								.route( "/health" )
+								.withoutMiddleware( "auth" )
+								.toHandler( "health" );
+						} );
+
+						var routes = router.getRoutes();
+						expect( routes[ 1 ].middleware ).toHaveLength( 1 );
+						expect( routes[ 2 ].middleware ).toBeArray().toBeEmpty();
+					} );
+				} );
+
+				given( "a registered middleware name referenced before it is registered", function(){
+					then( "it is treated as a literal target, like middlewareGroup()", function(){
+						router
+							.route( "/z" )
+							.middleware( "lateMw" )
+							.toHandler( "z" );
+						router.registerMiddleware( "lateMw", "RequireApiKey" );
+
+						var middleware = router.getRoutes()[ 1 ].middleware;
+						expect( middleware[ 1 ].target ).toBe( "lateMw" );
 						expect( middleware[ 1 ] ).notToHaveKey( "group" );
 					} );
 				} );
