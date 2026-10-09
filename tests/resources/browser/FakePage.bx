@@ -1,5 +1,5 @@
 /**
- * A stand-in for a bx-playwright page, so BrowserTestCase route helpers can be tested without a browser.
+ * A stand-in for a bx-playwright page, so the BaseTestCase route helpers can be tested without a browser.
  * It records visits and answers url(), regex(), getConfig() and waitForUrl() like bx-playwright, without waiting.
  */
 class {

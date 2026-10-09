@@ -1,18 +1,20 @@
 /**
- * coldbox.system.testing.BrowserTestCase: route helpers, and browser tests against the test harness.
+ * Browser testing with coldbox.system.testing.BaseTestCase: the ColdBox route helpers, and browser tests against
+ * the test harness. The `@browser` annotation turns on TestBox browser support (`@baseURL` alone would too).
  *
  * The browser specs need bx-playwright and run against the test harness served by the test server on
- * http://127.0.0.1:8599. They are skipped when bx-playwright is not installed or the TestBox install has no
- * browser support. BoxLang only: tests/runner.cfm excludes this folder on other engines.
+ * http://127.0.0.1:8599. They are skipped when bx-playwright is not installed. BoxLang only: tests/runner.cfm
+ * excludes this folder on other engines.
  */
 @appMapping( "/cbTestHarness" )
+@browser
 @baseURL( "http://127.0.0.1:8599" )
-class extends="coldbox.system.testing.BrowserTestCase" {
+class extends="coldbox.system.testing.BaseTestCase" {
 
 	/*********************************** BDD SUITES ***********************************/
 
 	function run() {
-		describe( "BrowserTestCase routes", () => {
+		describe( "Browser testing routes", () => {
 			beforeEach( ( currentSpec ) => {
 				variables.basePath = createObject( "java", "java.net.URI" )
 					.create( getRequestContext().getSESBaseURL() )
@@ -92,9 +94,9 @@ class extends="coldbox.system.testing.BrowserTestCase" {
 
 			it( "explains why browser testing is not available", () => {
 				if ( browserAvailable() ) {
-					expect( browserUnavailableReason() ).toBe( "" )
+					expect( getBrowserSupport().getUnavailableReason() ).toBe( "" )
 				} else {
-					expect( browserUnavailableReason() ).notToBeEmpty()
+					expect( getBrowserSupport().getUnavailableReason() ).notToBeEmpty()
 				}
 			} )
 
@@ -113,7 +115,7 @@ class extends="coldbox.system.testing.BrowserTestCase" {
 		} )
 
 		describe(
-			title = "BrowserTestCase in a browser",
+			title = "Browser testing in a browser",
 			body  = () => {
 				beforeEach( ( currentSpec ) => {
 					// The test server serves the harness through its front controller
