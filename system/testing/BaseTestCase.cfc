@@ -928,7 +928,11 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 *
 	 * @return The page
 	 */
-	function visitRoute( required page, required string name, struct params = {} ){
+	function visitRoute(
+		required page,
+		required string name,
+		struct params = {}
+	){
 		arguments.page.visit( routeURL( arguments.name, arguments.params ) )
 		return arguments.page
 	}
@@ -953,7 +957,11 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 *
 	 * @throws TestBox.AssertionFailed When the page path does not match the route before the assertion timeout
 	 */
-	function assertRouteIs( required page, required string name, struct params = {} ){
+	function assertRouteIs(
+		required page,
+		required string name,
+		struct params = {}
+	){
 		var expected  = "route [#arguments.name#]"
 		var pathRegex = ""
 		if ( arguments.params.isEmpty() ) {
