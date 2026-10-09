@@ -92,13 +92,17 @@ class extends="coldbox.system.testing.BaseTestCase" {
 				assertRouteIs( page, "photos.edit@resourcesTest", { id : 9 } )
 			} )
 
-			it( "explains why browser testing is not available", () => {
-				if ( browserAvailable() ) {
-					expect( getBrowserSupport().getUnavailableReason() ).toBe( "" )
-				} else {
-					expect( getBrowserSupport().getUnavailableReason() ).notToBeEmpty()
-				}
-			} )
+			it(
+				title = "explains why browser testing is not available",
+				body  = () => {
+					if ( browserAvailable() ) {
+						expect( getBrowserSupport().getUnavailableReason() ).toBe( "" )
+					} else {
+						expect( getBrowserSupport().getUnavailableReason() ).notToBeEmpty()
+					}
+				},
+				skip = !hasTestBoxBrowserSupport()
+			)
 
 			it( "asserts routes with optional placeholders, with and without them", () => {
 				assertRouteIs( new tests.resources.browser.FakePage( host & basePath & "/browser-posts/12" ), "browserPosts" )
@@ -166,8 +170,16 @@ class extends="coldbox.system.testing.BaseTestCase" {
 					} )
 				} )
 			},
-			skip = !browserAvailable()
+			skip = !hasTestBoxBrowserSupport() || !browserAvailable()
 		)
+	}
+
+	/**
+	 * Did TestBox attach browser support to this spec? TestBox releases without annotation-driven browser
+	 * support do not, so the browser specs skip there and the route helper specs still run.
+	 */
+	private boolean function hasTestBoxBrowserSupport() {
+		return structKeyExists( variables, "browserAvailable" )
 	}
 
 	/**
