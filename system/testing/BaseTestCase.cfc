@@ -969,7 +969,11 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 		} else {
 			expected  = "route [#arguments.name#] with params #serializeJSON( arguments.params )#"
 			pathRegex = quoteRouteRegex(
-				routeLinkPath( routeURL( arguments.name, arguments.params ), false ).reReplace( "/+$", "" )
+				reReplace(
+					routeLinkPath( routeURL( arguments.name, arguments.params ), false ),
+					"/+$",
+					""
+				)
 			)
 		}
 		var urlRegex = "^[a-zA-Z][a-zA-Z0-9+.-]*://[^/]*" & pathRegex & "/?(\?.*)?(##.*)?$"
@@ -1037,7 +1041,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 		for ( var route in routes ) {
 			if ( route.name == routeName ) {
 				matched     = true
-				var variant = ( route.regexPattern ?: "" ).reReplace( "^/+|/+$", "", "all" )
+				var variant = reReplace( route.regexPattern ?: "", "^/+|/+$", "", "all" )
 				if ( !variants.findNoCase( variant ) ) {
 					variants.append( variant )
 				}
@@ -1050,9 +1054,18 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 			)
 		}
 		var regex = quoteRouteRegex(
-			routeLinkPath( getRequestContext().getSESBaseURL(), false ).reReplace( "/+$", "" )
+			reReplace(
+				routeLinkPath( getRequestContext().getSESBaseURL(), false ),
+				"/+$",
+				""
+			)
 		)
-		var entryPoint = routeModuleEntryPoint( arguments.name ).reReplace( "^/+|/+$", "", "all" )
+		var entryPoint = reReplace(
+			routeModuleEntryPoint( arguments.name ),
+			"^/+|/+$",
+			"",
+			"all"
+		)
 		if ( len( entryPoint ) ) {
 			regex &= "/" & quoteRouteRegex( entryPoint )
 		}
@@ -1097,7 +1110,12 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * @return The text with regex special characters escaped
 	 */
 	private string function quoteRouteRegex( required string text ){
-		return arguments.text.reReplace( "([.*+?^$\{\}()|\[\]\\/])", "\\\1", "all" )
+		return reReplace(
+			arguments.text,
+			"([.*+?^$\{\}()|\[\]\\/])",
+			"\\\1",
+			"all"
+		)
 	}
 
 	/**
