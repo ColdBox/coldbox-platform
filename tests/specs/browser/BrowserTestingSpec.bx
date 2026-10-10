@@ -1,0 +1,197 @@
+/**
+ * Browser testing with coldbox.system.testing.BaseTestCase: the ColdBox route helpers, and browser tests against
+ * the test harness. The `@browser` annotation turns on TestBox browser support (`@baseURL` alone would too).
+ *
+ * The browser specs need bx-playwright and run against the test harness served by the test server on
+ * http://127.0.0.1:8599. They are skipped when bx-playwright is not installed. BoxLang only: tests/runner.cfm
+ * excludes this folder on other engines.
+ */
+@appMapping( "/cbTestHarness" )
+@browser
+@baseURL( "http://127.0.0.1:8599" )
+class extends="coldbox.system.testing.BaseTestCase" {
+
+	/*********************************** BDD SUITES ***********************************/
+
+	function run() {
+		describe( "Browser testing routes", () => {
+			beforeEach( ( currentSpec ) => {
+				variables.basePath = createObject( "java", "java.net.URI" )
+					.create( getRequestContext().getSESBaseURL() )
+					.getRawPath()
+					.reReplace( "/+$", "" )
+				variables.host = "http://127.0.0.1:8599"
+			} )
+
+			it( "builds route paths without scheme and host", () => {
+				expect( routeURL( "users.show", { id : 5 } ) ).toBe( basePath & "/users/5/" )
+				expect( routeURL( "testRoute" ) ).toBe( basePath & "/testroute/" )
+				expect( routeURL( "users.show", { id : 5 } ) ).notToInclude( "://" )
+			} )
+
+			it( "builds module route paths with the module entry point", () => {
+				expect( routeURL( "photos.edit@resourcesTest", { id : 3 } ) ).toBe( basePath & "/resourcesTest/photos/3/edit/" )
+				expect( routeURL( "resourcesTest:photos.new" ) ).toBe( basePath & "/resourcesTest/photos/new/" )
+			} )
+
+			it( "throws for unknown routes", () => {
+				expect( () => routeURL( "does.not.exist" ) ).toThrow( "InvalidArgumentException" )
+			} )
+
+			it( "asserts the page is on a route, whatever its placeholders", () => {
+				var page = new tests.resources.browser.FakePage( host & basePath & "/users/5/" )
+				expect( assertRouteIs( page, "users.show" ) ).toBe( page )
+				expect( page.getLastTimeout() ).toBe( 5000 )
+				assertRouteIs( new tests.resources.browser.FakePage( host & basePath & "/users/abc" ), "users.show" )
+			} )
+
+			it( "ignores the trailing slash, case, query string and hash like ColdBox routing", () => {
+				for ( var path in [ "/users/5", "/users/5/", "/USERS/5", "/users/5?tab=posts", "/users/5/##bio" ] ) {
+					assertRouteIs( new tests.resources.browser.FakePage( host & basePath & path ), "users.show" )
+				}
+			} )
+
+			it( "asserts the page is on a route with given params", () => {
+				var page = new tests.resources.browser.FakePage( host & basePath & "/users/5/" )
+				assertRouteIs( page, "users.show", { id : 5 } )
+				expect( () => assertRouteIs( page, "users.show", { id : 6 } ) ).toThrow( "TestBox.AssertionFailed" )
+			} )
+
+			it( "fails with the expected route and the actual path", () => {
+				var page    = new tests.resources.browser.FakePage( host & basePath & "/contactus/" )
+				var failure = ""
+				try {
+					assertRouteIs( page, "users.show" )
+				} catch ( any e ) {
+					failure = e.type & ": " & e.message
+				}
+				expect( failure )
+					.toInclude( "TestBox.AssertionFailed: " )
+					.toInclude( "route [users.show]" )
+					.toInclude( "the path is [#basePath#/contactus/]" )
+
+				failure = ""
+				try {
+					assertRouteIs( page, "users.show", { id : 5 } )
+				} catch ( any e ) {
+					failure = e.type & ": " & e.message
+				}
+				expect( failure ).toInclude( "TestBox.AssertionFailed: " ).toInclude( "route [users.show] with params" )
+			} )
+
+			it( "does not match a longer path or another route", () => {
+				var longer = new tests.resources.browser.FakePage( host & basePath & "/users/5/posts" )
+				var user   = new tests.resources.browser.FakePage( host & basePath & "/users/5/" )
+				expect( () => assertRouteIs( longer, "users.show" ) ).toThrow( "TestBox.AssertionFailed" )
+				expect( () => assertRouteIs( user, "testRoute" ) ).toThrow( "TestBox.AssertionFailed" )
+			} )
+
+			it( "asserts module routes", () => {
+				var page = new tests.resources.browser.FakePage( host & basePath & "/resourcesTest/photos/9/edit" )
+				assertRouteIs( page, "photos.edit@resourcesTest" )
+				assertRouteIs( page, "photos.edit@resourcesTest", { id : 9 } )
+			} )
+
+			it(
+				title = "explains why browser testing is not available",
+				body  = () => {
+					if ( browserAvailable() ) {
+						expect( getBrowserSupport().getUnavailableReason() ).toBe( "" )
+					} else {
+						expect( getBrowserSupport().getUnavailableReason() ).notToBeEmpty()
+					}
+				},
+				skip = !hasTestBoxBrowserSupport()
+			)
+
+			it( "asserts routes with optional placeholders, with and without them", () => {
+				assertRouteIs( new tests.resources.browser.FakePage( host & basePath & "/browser-posts/12" ), "browserPosts" )
+				assertRouteIs( new tests.resources.browser.FakePage( host & basePath & "/browser-posts/" ), "browserPosts" )
+				var other = new tests.resources.browser.FakePage( host & basePath & "/users/5/" )
+				expect( () => assertRouteIs( other, "browserPosts" ) ).toThrow( "TestBox.AssertionFailed" )
+			} )
+
+			it( "visits named routes without a browser", () => {
+				var page = new tests.resources.browser.FakePage()
+				expect( visitRoute( page, "users.show", { id : 7 } ) ).toBe( page )
+				expect( page.getVisits() ).toBe( [ basePath & "/users/7/" ] )
+			} )
+		} )
+
+		describe(
+			title = "Browser testing in a browser",
+			body  = () => {
+				beforeEach( ( currentSpec ) => {
+					// The test server serves the harness through its front controller
+					variables.originalSESBaseURL = getRequestContext().getSESBaseURL()
+					getRequestContext().setSESBaseURL( "http://127.0.0.1:8599/test-harness/index.cfm" )
+				} )
+
+				afterEach( ( currentSpec ) => {
+					getRequestContext().setSESBaseURL( variables.originalSESBaseURL )
+				} )
+
+				it( "visits and asserts named routes", () => {
+					browse( ( page ) => {
+						reinitHarness( page )
+						visitRoute( page, "users.show", { id : 5 } )
+						expect( page ).toSee( "User 5" )
+						assertRouteIs( page, "users.show" )
+						assertRouteIs( page, "users.show", { id : 5 } )
+						expect( () => assertRouteIs( page, "users.show", { id : 6 } ) ).toThrow( "TestBox.AssertionFailed" )
+					} )
+				} )
+
+				it( "reuses a saved session created through the login page", () => {
+					this.playwright().session(
+						"coldbox-harness-user",
+						( page ) => {
+							reinitHarness( page )
+							visitRoute( page, "browserTesting.login" )
+							page.fill( "User", "42" ).click( "Sign in" )
+							expect( page ).toSee( "Logged in as 42" )
+						},
+						{ refresh : true }
+					)
+					browse( ( page ) => {
+						visitRoute( page, "browserTesting.whoami" )
+						expect( page ).toSee( "Logged in as 42" )
+					}, { session : "coldbox-harness-user" } )
+				} )
+
+				it( "keeps every page of a browse() call in its own session", () => {
+					browse( ( user, guest ) => {
+						reinitHarness( user )
+						visitRoute( user, "browserTesting.login" )
+						user.fill( "User", "1" ).click( "Sign in" )
+						visitRoute( guest, "browserTesting.whoami" )
+						expect( user ).toSee( "Logged in as 1" )
+						expect( guest ).toSee( "Guest" )
+					} )
+				} )
+			},
+			skip = !hasTestBoxBrowserSupport() || !browserAvailable()
+		)
+	}
+
+	/**
+	 * Did TestBox attach browser support to this spec? TestBox releases without annotation-driven browser
+	 * support do not, so the browser specs skip there and the route helper specs still run.
+	 */
+	private boolean function hasTestBoxBrowserSupport() {
+		return structKeyExists( variables, "browserAvailable" )
+	}
+
+	/**
+	 * Reinitialize the harness through 127.0.0.1 once, so it detects its testing environment
+	 *
+	 * @page The page to reinitialize with
+	 */
+	private function reinitHarness( required page ) {
+		if ( isNull( variables.harnessReinitialized ) ) {
+			arguments.page.visit( "/test-harness/index.cfm?fwreinit=1" )
+			variables.harnessReinitialized = true
+		}
+	}
+
+}

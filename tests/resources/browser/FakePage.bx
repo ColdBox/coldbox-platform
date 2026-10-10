@@ -1,0 +1,103 @@
+/**
+ * A stand-in for a bx-playwright page, so the BaseTestCase route helpers can be tested without a browser.
+ * It records visits and answers url(), regex(), getConfig() and waitForUrl() like bx-playwright, without waiting.
+ */
+class {
+
+	/**
+	 * Constructor
+	 *
+	 * @currentURL The URL the page is on
+	 *
+	 * @return The fake page
+	 */
+	function init( string currentURL = "about:blank" ) {
+		variables.currentURL = arguments.currentURL
+		variables.visits     = []
+		return this
+	}
+
+	/**
+	 * Record a visit and move the page to it
+	 *
+	 * @target The visited URL or path
+	 *
+	 * @return The page
+	 */
+	function visit( required string target ) {
+		variables.visits.append( arguments.target )
+		variables.currentURL = arguments.target
+		return this
+	}
+
+	/**
+	 * The visits of the page, in order
+	 *
+	 * @return The visited URLs or paths
+	 */
+	array function getVisits() {
+		return variables.visits
+	}
+
+	/**
+	 * The current URL of the page
+	 *
+	 * @return The current URL
+	 */
+	string function url() {
+		return variables.currentURL
+	}
+
+	/**
+	 * Build a java.util.regex.Pattern like bx-playwright's regex()
+	 *
+	 * @pattern The regular expression
+	 * @flags   i for case insensitive
+	 *
+	 * @return The compiled pattern
+	 */
+	function regex( required string pattern, string flags = "" ) {
+		var Pattern = createObject( "java", "java.util.regex.Pattern" )
+		return Pattern.compile( arguments.pattern, arguments.flags.findNoCase( "i" ) ? Pattern.CASE_INSENSITIVE : 0 )
+	}
+
+	/**
+	 * The resolved bx-playwright configuration: the default timeouts
+	 *
+	 * @return The configuration struct
+	 */
+	struct function getConfig() {
+		return { timeouts : { action : 30000, navigation : 30000, assertion : 5000 } }
+	}
+
+	/**
+	 * Wait until the URL matches a pattern, timing out at once like bx-playwright's waitForUrl() when it does not
+	 *
+	 * @expected The java.util.regex.Pattern the URL must match
+	 * @timeout  The timeout in milliseconds, recorded only
+	 *
+	 * @return The page
+	 *
+	 * @throws Playwright.Timeout When the URL does not match
+	 */
+	function waitForUrl( required any expected, numeric timeout = 0 ) {
+		variables.lastTimeout = arguments.timeout
+		if ( !arguments.expected.matcher( variables.currentURL ).find() ) {
+			throw(
+				type    = "Playwright.Timeout",
+				message = "Timeout #arguments.timeout#ms exceeded waiting for the URL #arguments.expected.pattern()#: received #variables.currentURL#"
+			)
+		}
+		return this
+	}
+
+	/**
+	 * The timeout of the last waitForUrl() call
+	 *
+	 * @return The timeout in milliseconds
+	 */
+	numeric function getLastTimeout() {
+		return variables.lastTimeout ?: -1
+	}
+
+}
