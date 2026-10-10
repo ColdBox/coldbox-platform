@@ -16,49 +16,92 @@ class extends="coldbox.system.testing.BaseTestCase" {
 	function run() {
 		describe( "Browser testing routes", () => {
 			beforeEach( ( currentSpec ) => {
-				variables.basePath = createObject( "java", "java.net.URI" )
-					.create( getRequestContext().getSESBaseURL() )
-					.getRawPath()
-					.reReplace( "/+$", "" )
 				variables.host = "http://127.0.0.1:8599"
 			} )
 
 			it( "builds route paths without scheme and host", () => {
-				expect( routeURL( "users.show", { id : 5 } ) ).toBe( basePath & "/users/5/" )
-				expect( routeURL( "testRoute" ) ).toBe( basePath & "/testroute/" )
+				expect( routeURL( "users.show", { id : 5 } ) ).toBe( "/users/5/" )
+				expect( routeURL( "testRoute" ) ).toBe( "/testroute/" )
 				expect( routeURL( "users.show", { id : 5 } ) ).notToInclude( "://" )
 			} )
 
 			it( "builds module route paths with the module entry point", () => {
-				expect( routeURL( "photos.edit@resourcesTest", { id : 3 } ) ).toBe( basePath & "/resourcesTest/photos/3/edit/" )
-				expect( routeURL( "resourcesTest:photos.new" ) ).toBe( basePath & "/resourcesTest/photos/new/" )
+				expect( routeURL( "photos.edit@resourcesTest", { id : 3 } ) ).toBe( "/resourcesTest/photos/3/edit/" )
+				expect( routeURL( "resourcesTest:photos.new" ) ).toBe( "/resourcesTest/photos/new/" )
 			} )
 
-			it( "throws for unknown routes", () => {
+			it( "throws for unknown routes and modules", () => {
 				expect( () => routeURL( "does.not.exist" ) ).toThrow( "InvalidArgumentException" )
+				expect( () => routeURL( "home@notAModule" ) ).toThrow( "InvalidArgumentException" )
+				expect( () => routeURL( "notAModule:home" ) ).toThrow( "InvalidArgumentException" )
+			} )
+
+			it( "builds route paths from the web root, without the app mapping", () => {
+				withSESBaseURL( "http://127.0.0.1:8599/cbTestHarness/", () => {
+					expect( routeURL( "users.show", { id : 5 } ) ).toBe( "/users/5/" )
+					assertRouteIs( new tests.resources.browser.FakePage( host & "/users/5" ), "users.show" )
+					assertRouteIs( new tests.resources.browser.FakePage( host & "/users/5" ), "users.show", { id : 5 } )
+				} )
+				withSESBaseURL( "http://127.0.0.1:8599/cbTestHarness/index.cfm", () => {
+					expect( routeURL( "users.show", { id : 5 } ) ).toBe( "/index.cfm/users/5/" )
+				} )
+			} )
+
+			it( "keeps the base path when the app sets a web mapping", () => {
+				var controller = getController()
+				var original   = controller.getSetting( "WebMapping", "" )
+				controller.setSetting( "WebMapping", "/test-harness" )
+				try {
+					withSESBaseURL( "http://127.0.0.1:8599/test-harness/", () => {
+						expect( routeURL( "users.show", { id : 5 } ) ).toBe( "/test-harness/users/5/" )
+					} )
+				} finally {
+					controller.setSetting( "WebMapping", original )
+				}
+			} )
+
+			it( "fills the optional placeholders the params give", () => {
+				expect( routeURL( "browserPosts", { id : 12 } ) ).toBe( "/browser-posts/12/" )
+				expect( routeURL( "browserPosts" ) ).toBe( "/browser-posts/" )
+				var page = new tests.resources.browser.FakePage( host & "/browser-posts/12" )
+				assertRouteIs( page, "browserPosts", { id : 12 } )
+				expect( () => assertRouteIs( page, "browserPosts", { id : 13 } ) ).toThrow( "TestBox.AssertionFailed" )
+			} )
+
+			it( "builds the path of a root route with a single slash", () => {
+				expect( routeURL( "browserRoot" ) ).toBe( "/" )
+				assertRouteIs( new tests.resources.browser.FakePage( host & "/" ), "browserRoot" )
+			} )
+
+			it( "needs a loaded ColdBox application", () => {
+				var test = prepareMock( new coldbox.system.testing.BaseTestCase() ).$property(
+					propertyName = "controller",
+					mock         = ""
+				)
+				expect( () => test.routeURL( "users.show" ) ).toThrow( "BaseTestCase.NoColdBoxApp" )
 			} )
 
 			it( "asserts the page is on a route, whatever its placeholders", () => {
-				var page = new tests.resources.browser.FakePage( host & basePath & "/users/5/" )
+				var page = new tests.resources.browser.FakePage( host & "/users/5/" )
 				expect( assertRouteIs( page, "users.show" ) ).toBe( page )
 				expect( page.getLastTimeout() ).toBe( 5000 )
-				assertRouteIs( new tests.resources.browser.FakePage( host & basePath & "/users/abc" ), "users.show" )
+				assertRouteIs( new tests.resources.browser.FakePage( host & "/users/abc" ), "users.show" )
 			} )
 
 			it( "ignores the trailing slash, case, query string and hash like ColdBox routing", () => {
 				for ( var path in [ "/users/5", "/users/5/", "/USERS/5", "/users/5?tab=posts", "/users/5/##bio" ] ) {
-					assertRouteIs( new tests.resources.browser.FakePage( host & basePath & path ), "users.show" )
+					assertRouteIs( new tests.resources.browser.FakePage( host & path ), "users.show" )
 				}
 			} )
 
 			it( "asserts the page is on a route with given params", () => {
-				var page = new tests.resources.browser.FakePage( host & basePath & "/users/5/" )
+				var page = new tests.resources.browser.FakePage( host & "/users/5/" )
 				assertRouteIs( page, "users.show", { id : 5 } )
 				expect( () => assertRouteIs( page, "users.show", { id : 6 } ) ).toThrow( "TestBox.AssertionFailed" )
 			} )
 
 			it( "fails with the expected route and the actual path", () => {
-				var page    = new tests.resources.browser.FakePage( host & basePath & "/contactus/" )
+				var page    = new tests.resources.browser.FakePage( host & "/contactus/" )
 				var failure = ""
 				try {
 					assertRouteIs( page, "users.show" )
@@ -68,7 +111,7 @@ class extends="coldbox.system.testing.BaseTestCase" {
 				expect( failure )
 					.toInclude( "TestBox.AssertionFailed: " )
 					.toInclude( "route [users.show]" )
-					.toInclude( "the path is [#basePath#/contactus/]" )
+					.toInclude( "the path is [/contactus/]" )
 
 				failure = ""
 				try {
@@ -80,14 +123,14 @@ class extends="coldbox.system.testing.BaseTestCase" {
 			} )
 
 			it( "does not match a longer path or another route", () => {
-				var longer = new tests.resources.browser.FakePage( host & basePath & "/users/5/posts" )
-				var user   = new tests.resources.browser.FakePage( host & basePath & "/users/5/" )
+				var longer = new tests.resources.browser.FakePage( host & "/users/5/posts" )
+				var user   = new tests.resources.browser.FakePage( host & "/users/5/" )
 				expect( () => assertRouteIs( longer, "users.show" ) ).toThrow( "TestBox.AssertionFailed" )
 				expect( () => assertRouteIs( user, "testRoute" ) ).toThrow( "TestBox.AssertionFailed" )
 			} )
 
 			it( "asserts module routes", () => {
-				var page = new tests.resources.browser.FakePage( host & basePath & "/resourcesTest/photos/9/edit" )
+				var page = new tests.resources.browser.FakePage( host & "/resourcesTest/photos/9/edit" )
 				assertRouteIs( page, "photos.edit@resourcesTest" )
 				assertRouteIs( page, "photos.edit@resourcesTest", { id : 9 } )
 			} )
@@ -105,16 +148,16 @@ class extends="coldbox.system.testing.BaseTestCase" {
 			)
 
 			it( "asserts routes with optional placeholders, with and without them", () => {
-				assertRouteIs( new tests.resources.browser.FakePage( host & basePath & "/browser-posts/12" ), "browserPosts" )
-				assertRouteIs( new tests.resources.browser.FakePage( host & basePath & "/browser-posts/" ), "browserPosts" )
-				var other = new tests.resources.browser.FakePage( host & basePath & "/users/5/" )
+				assertRouteIs( new tests.resources.browser.FakePage( host & "/browser-posts/12" ), "browserPosts" )
+				assertRouteIs( new tests.resources.browser.FakePage( host & "/browser-posts/" ), "browserPosts" )
+				var other = new tests.resources.browser.FakePage( host & "/users/5/" )
 				expect( () => assertRouteIs( other, "browserPosts" ) ).toThrow( "TestBox.AssertionFailed" )
 			} )
 
 			it( "visits named routes without a browser", () => {
 				var page = new tests.resources.browser.FakePage()
 				expect( visitRoute( page, "users.show", { id : 7 } ) ).toBe( page )
-				expect( page.getVisits() ).toBe( [ basePath & "/users/7/" ] )
+				expect( page.getVisits() ).toBe( [ "/users/7/" ] )
 			} )
 		} )
 
@@ -122,7 +165,7 @@ class extends="coldbox.system.testing.BaseTestCase" {
 			title = "Browser testing in a browser",
 			body  = () => {
 				beforeEach( ( currentSpec ) => {
-					// The test server serves the harness through its front controller
+					// The test server serves the harness from /test-harness through its front controller, as an app sets its base URL
 					variables.originalSESBaseURL = getRequestContext().getSESBaseURL()
 					getRequestContext().setSESBaseURL( "http://127.0.0.1:8599/test-harness/index.cfm" )
 				} )
@@ -191,6 +234,23 @@ class extends="coldbox.system.testing.BaseTestCase" {
 		if ( isNull( variables.harnessReinitialized ) ) {
 			arguments.page.visit( "/test-harness/index.cfm?fwreinit=1" )
 			variables.harnessReinitialized = true
+		}
+	}
+
+	/**
+	 * Run a closure with another request base URL, as the app would set it.
+	 *
+	 * @sesBaseURL The base URL
+	 * @closure    The closure to run
+	 */
+	private function withSESBaseURL( required string sesBaseURL, required function closure ) {
+		var event    = getRequestContext()
+		var original = event.getSESBaseURL()
+		event.setSESBaseURL( arguments.sesBaseURL )
+		try {
+			arguments.closure()
+		} finally {
+			event.setSESBaseURL( original )
 		}
 	}
 
