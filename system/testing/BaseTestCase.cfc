@@ -916,7 +916,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 *
 	 * @return The route path
 	 *
-	 * @throws InvalidArgumentException When the named route or its module does not exist
+	 * @throws InvalidArgumentException  When the named route or its module does not exist
 	 * @throws BaseTestCase.NoColdBoxApp When no ColdBox application is loaded
 	 */
 	string function routeURL( required string name, struct params = {} ){
@@ -943,7 +943,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 *
 	 * @return The page
 	 *
-	 * @throws InvalidArgumentException When the named route or its module does not exist
+	 * @throws InvalidArgumentException  When the named route or its module does not exist
 	 * @throws BaseTestCase.NoColdBoxApp When no ColdBox application is loaded
 	 */
 	function visitRoute(
@@ -973,8 +973,8 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 *
 	 * @return The page
 	 *
-	 * @throws TestBox.AssertionFailed When the page path does not match the route before the assertion timeout
-	 * @throws InvalidArgumentException When the named route or its module does not exist
+	 * @throws TestBox.AssertionFailed   When the page path does not match the route before the assertion timeout
+	 * @throws InvalidArgumentException  When the named route or its module does not exist
 	 * @throws BaseTestCase.NoColdBoxApp When no ColdBox application is loaded
 	 */
 	function assertRouteIs(
@@ -988,7 +988,13 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 			pathRegex = routePathRegex( arguments.name )
 		} else {
 			expected  = "route [#arguments.name#] with params #serializeJSON( arguments.params )#"
-			pathRegex = quoteRouteRegex( reReplace( routeURL( arguments.name, arguments.params ), "/+$", "" ) )
+			pathRegex = quoteRouteRegex(
+				reReplace(
+					routeURL( arguments.name, arguments.params ),
+					"/+$",
+					""
+				)
+			)
 		}
 		var urlRegex = "^[a-zA-Z][a-zA-Z0-9+.-]*://[^/]*" & pathRegex & "/?(\?.*)?(##.*)?$"
 		var timeout  = arguments.page.getConfig().timeouts.assertion ?: 5000
@@ -1084,7 +1090,12 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * @return The path
 	 */
 	private string function joinRoutePath( required array parts ){
-		var path = reReplace( arguments.parts.toList( "/" ), "/{2,}", "/", "all" )
+		var path = reReplace(
+			arguments.parts.toList( "/" ),
+			"/{2,}",
+			"/",
+			"all"
+		)
 		return left( path, 1 ) == "/" ? path : "/" & path
 	}
 
@@ -1096,7 +1107,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 *
 	 * @return { routes : the routes, longest first, entryPoint : the module entry point or an empty string }
 	 *
-	 * @throws InvalidArgumentException When the named route or its module does not exist
+	 * @throws InvalidArgumentException  When the named route or its module does not exist
 	 * @throws BaseTestCase.NoColdBoxApp When no ColdBox application is loaded
 	 */
 	private struct function namedRoutes( required string name ){
@@ -1152,7 +1163,13 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 		for ( var route in arguments.routes ) {
 			var placeholders = reMatch( ":[a-zA-Z0-9_]+", route.pattern )
 			var filled       = placeholders.every( function( placeholder ){
-				return routeParams.keyExists( mid( arguments.placeholder, 2, len( arguments.placeholder ) ) )
+				return routeParams.keyExists(
+					mid(
+						arguments.placeholder,
+						2,
+						len( arguments.placeholder )
+					)
+				)
 			} )
 			if ( filled && placeholders.len() > most ) {
 				picked = route
@@ -1172,7 +1189,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 *
 	 * @return The path regex
 	 *
-	 * @throws InvalidArgumentException When the named route or its module does not exist
+	 * @throws InvalidArgumentException  When the named route or its module does not exist
 	 * @throws BaseTestCase.NoColdBoxApp When no ColdBox application is loaded
 	 */
 	private string function routePathRegex( required string name ){
@@ -1185,12 +1202,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 			}
 		}
 		var regex      = quoteRouteRegex( routeBasePath() )
-		var entryPoint = reReplace(
-			named.entryPoint,
-			"^/+|/+$",
-			"",
-			"all"
-		)
+		var entryPoint = reReplace( named.entryPoint, "^/+|/+$", "", "all" )
 		if ( len( entryPoint ) ) {
 			regex &= "/" & quoteRouteRegex( entryPoint )
 		}
