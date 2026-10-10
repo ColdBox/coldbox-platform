@@ -898,8 +898,12 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	/********************************************* BROWSER TESTING ROUTE HELPERS *********************************************/
 
 	/**
-	 * The path of a named route, without scheme and host, built by ColdBox's own event.route(), so it carries
-	 * the routing app mapping and, for module routes (`name@module` or `module:name`), the module entry point.
+	 * The path of a named route, without scheme and host, from the web root of the application: the base path of
+	 * the request (the front controller, like /index.cfm, when the app does not use full rewrites), the module entry
+	 * point for module routes (`name@module` or `module:name`) and the route pattern with its placeholders filled.
+	 * The `appMapping` is not part of it, as it is a mapping, not a web path. When the app is served from a sub
+	 * folder, set it with the `webMapping` annotation. For a route with optional placeholders, such as /posts/:id?,
+	 * the params pick the longest variant they fill.
 	 * Use it with TestBox browser specs: annotate the test with `@browser`, `@browserProfile` or `@baseURL`.
 	 *
 	 * <pre>
@@ -910,12 +914,23 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * @name   The route name, `name@module` or `module:name` for module routes
 	 * @params The route placeholder values, for example { id : 5 }
 	 *
-	 * @return The route path, with the query string when the link has one
+	 * @return The route path
 	 *
-	 * @throws InvalidArgumentException When the named route does not exist
+	 * @throws InvalidArgumentException  When the named route or its module does not exist
+	 * @throws BaseTestCase.NoColdBoxApp When no ColdBox application is loaded
 	 */
 	string function routeURL( required string name, struct params = {} ){
-		return routeLinkPath( getRequestContext().route( arguments.name, arguments.params ) )
+		var named = namedRoutes( arguments.name )
+		var path  = pickRoute( named.routes, arguments.params ).pattern
+		for ( var key in arguments.params ) {
+			path = reReplaceNoCase(
+				path,
+				":#key#-?[^/]*",
+				encodeForURL( arguments.params[ key ] ),
+				"all"
+			)
+		}
+		return joinRoutePath( [ routeBasePath(), named.entryPoint, path ] )
 	}
 
 	/**
@@ -927,6 +942,9 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 * @params The route placeholder values, for example { id : 5 }
 	 *
 	 * @return The page
+	 *
+	 * @throws InvalidArgumentException  When the named route or its module does not exist
+	 * @throws BaseTestCase.NoColdBoxApp When no ColdBox application is loaded
 	 */
 	function visitRoute(
 		required page,
@@ -955,7 +973,9 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	 *
 	 * @return The page
 	 *
-	 * @throws TestBox.AssertionFailed When the page path does not match the route before the assertion timeout
+	 * @throws TestBox.AssertionFailed   When the page path does not match the route before the assertion timeout
+	 * @throws InvalidArgumentException  When the named route or its module does not exist
+	 * @throws BaseTestCase.NoColdBoxApp When no ColdBox application is loaded
 	 */
 	function assertRouteIs(
 		required page,
@@ -970,7 +990,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 			expected  = "route [#arguments.name#] with params #serializeJSON( arguments.params )#"
 			pathRegex = quoteRouteRegex(
 				reReplace(
-					routeLinkPath( routeURL( arguments.name, arguments.params ), false ),
+					routeURL( arguments.name, arguments.params ),
 					"/+$",
 					""
 				)
@@ -982,15 +1002,38 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 			arguments.page.waitForUrl( arguments.page.regex( urlRegex, "i" ), timeout )
 		} catch ( any e ) {
 			if ( !listFindNoCase( "Playwright.Timeout,Playwright.AssertionFailed", e.type ) ) {
-				throw( object = e )
+				rethrow;
+			}
+			var actual = arguments.page.url()
+			try {
+				actual = routeLinkPath( actual )
+			} catch ( any pathError ) {
+				// Not a valid URI: report it as it is
 			}
 			throw(
 				type    = "TestBox.AssertionFailed",
-				message = "Expected the page to be on #expected#, but the path is [#routeLinkPath( arguments.page.url() )#]",
+				message = "Expected the page to be on #expected#, but the path is [#actual#]",
 				detail  = "The page URL must match the regex [#urlRegex#]. #e.message#"
 			)
 		}
 		return arguments.page
+	}
+
+	/**
+	 * The ColdBox controller the route helpers read the routes from.
+	 *
+	 * @return The controller
+	 *
+	 * @throws BaseTestCase.NoColdBoxApp When no ColdBox application is loaded
+	 */
+	private function routeController(){
+		if ( !isObject( variables.controller ) ) {
+			throw(
+				type    = "BaseTestCase.NoColdBoxApp",
+				message = "The route helpers need a loaded ColdBox application: extend coldbox.system.testing.BaseTestCase with loadColdbox=true"
+			)
+		}
+		return variables.controller
 	}
 
 	/**
@@ -1012,60 +1055,154 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	}
 
 	/**
-	 * The regex a page path must match to be on a named route, any value of its placeholders included: the
-	 * routing path of the application, the module entry point and the route's own regex, which ColdBox
-	 * builds from the route pattern and its constraints. Every route registered with the name counts, so a
-	 * route with optional placeholders matches with and without them. Not anchored, and without the trailing slash.
+	 * The base path of the routes from the web root, without the trailing slash: the path of the request base URL
+	 * without the app mapping, unless the app sets a web mapping. Empty, or the front controller like /index.cfm.
+	 *
+	 * @return The base path
+	 *
+	 * @throws BaseTestCase.NoColdBoxApp When no ColdBox application is loaded
+	 */
+	private string function routeBasePath(){
+		var controller = routeController()
+		var path       = reReplace(
+			routeLinkPath( getRequestContext().getSESBaseURL(), false ),
+			"/+$",
+			""
+		)
+		if ( !len( controller.getSetting( "WebMapping", "" ) ) ) {
+			var appPrefix = reReplace(
+				controller.getSetting( "RoutingAppMapping", "" ),
+				"/+$",
+				""
+			)
+			if ( len( appPrefix ) && ( path == appPrefix || left( path, len( appPrefix ) + 1 ) == appPrefix & "/" ) ) {
+				path = mid( path, len( appPrefix ) + 1, len( path ) )
+			}
+		}
+		return path
+	}
+
+	/**
+	 * Join route path parts with single slashes, with a leading slash.
+	 *
+	 * @parts The path parts
+	 *
+	 * @return The path
+	 */
+	private string function joinRoutePath( required array parts ){
+		var path = reReplace(
+			arguments.parts.toList( "/" ),
+			"/{2,}",
+			"/",
+			"all"
+		)
+		return left( path, 1 ) == "/" ? path : "/" & path
+	}
+
+	/**
+	 * The routes registered with a route name, and the module entry point. A route with optional placeholders,
+	 * such as /posts/:id?, is registered as several routes with the same name (/posts/:id, then /posts).
 	 *
 	 * @name The route name, `name@module` or `module:name` for module routes
 	 *
-	 * @return The path regex
+	 * @return { routes : the routes, longest first, entryPoint : the module entry point or an empty string }
 	 *
-	 * @throws InvalidArgumentException When the named route does not exist
+	 * @throws InvalidArgumentException  When the named route or its module does not exist
+	 * @throws BaseTestCase.NoColdBoxApp When no ColdBox application is loaded
 	 */
-	private string function routePathRegex( required string name ){
-		var router    = getController().getWireBox().getInstance( "router@coldbox" )
-		var routes    = router.getRoutes()
-		var routeName = arguments.name
+	private struct function namedRoutes( required string name ){
+		var controller = routeController()
+		var router     = controller.getWireBox().getInstance( "router@coldbox" )
+		var module     = ""
+		var routeName  = arguments.name
 		if ( find( "@", arguments.name ) ) {
-			routes    = router.getModuleRoutes( getToken( arguments.name, 2, "@" ) )
+			module    = getToken( arguments.name, 2, "@" )
 			routeName = getToken( arguments.name, 1, "@" )
 		} else if ( find( ":", arguments.name ) ) {
-			routes    = router.getModuleRoutes( getToken( arguments.name, 1, ":" ) )
+			module    = getToken( arguments.name, 1, ":" )
 			routeName = getToken( arguments.name, 2, ":" )
 		}
-		// A route with optional placeholders, such as /posts/:id?, is registered as several routes with the same
-		// name (/posts/:id, then /posts): the page may be on any of them
-		var variants = []
-		var matched  = false
-		for ( var route in routes ) {
-			if ( route.name == routeName ) {
-				matched     = true
-				var variant = reReplace( route.regexPattern ?: "", "^/+|/+$", "", "all" )
-				if ( !variants.findNoCase( variant ) ) {
-					variants.append( variant )
-				}
+		var entryPoint = ""
+		var routes     = router.getRoutes()
+		if ( len( module ) ) {
+			var modules = controller.getSetting( "modules" )
+			if ( !modules.keyExists( module ) ) {
+				throw(
+					type    = "InvalidArgumentException",
+					message = "The named route '#arguments.name#' does not exist: the module '#module#' is not loaded"
+				)
 			}
+			entryPoint = modules[ module ].inheritedEntryPoint
+			routes     = router.getModuleRoutes( module )
 		}
-		if ( !matched ) {
+		var found = routes.filter( function( route ){
+			return arguments.route.name == routeName
+		} )
+		if ( found.isEmpty() ) {
 			throw(
 				type    = "InvalidArgumentException",
 				message = "The named route '#arguments.name#' does not exist"
 			)
 		}
-		var regex = quoteRouteRegex(
-			reReplace(
-				routeLinkPath( getRequestContext().getSESBaseURL(), false ),
-				"/+$",
-				""
-			)
-		)
-		var entryPoint = reReplace(
-			routeModuleEntryPoint( arguments.name ),
-			"^/+|/+$",
-			"",
-			"all"
-		)
+		return { routes : found, entryPoint : entryPoint }
+	}
+
+	/**
+	 * Pick the route of a name that the params fill best: the one with the most placeholders, all of them in the
+	 * params. When none is filled, the last one registered, like event.route().
+	 *
+	 * @routes The routes registered with the name
+	 * @params The route placeholder values
+	 *
+	 * @return The route
+	 */
+	private struct function pickRoute( required array routes, required struct params ){
+		var routeParams = arguments.params
+		var picked      = arguments.routes[ arguments.routes.len() ]
+		var most        = -1
+		for ( var route in arguments.routes ) {
+			var placeholders = reMatch( ":[a-zA-Z0-9_]+", route.pattern )
+			var filled       = placeholders.every( function( placeholder ){
+				return routeParams.keyExists(
+					mid(
+						arguments.placeholder,
+						2,
+						len( arguments.placeholder )
+					)
+				)
+			} )
+			if ( filled && placeholders.len() > most ) {
+				picked = route
+				most   = placeholders.len()
+			}
+		}
+		return picked
+	}
+
+	/**
+	 * The regex a page path must match to be on a named route, any value of its placeholders included: the base
+	 * path of the routes, the module entry point and the route's own regex, which ColdBox builds from the route
+	 * pattern and its constraints. Every route registered with the name counts, so a route with optional
+	 * placeholders matches with and without them. Not anchored, and without the trailing slash.
+	 *
+	 * @name The route name, `name@module` or `module:name` for module routes
+	 *
+	 * @return The path regex
+	 *
+	 * @throws InvalidArgumentException  When the named route or its module does not exist
+	 * @throws BaseTestCase.NoColdBoxApp When no ColdBox application is loaded
+	 */
+	private string function routePathRegex( required string name ){
+		var named    = namedRoutes( arguments.name )
+		var variants = []
+		for ( var route in named.routes ) {
+			var variant = reReplace( route.regexPattern ?: "", "^/+|/+$", "", "all" )
+			if ( !variants.findNoCase( variant ) ) {
+				variants.append( variant )
+			}
+		}
+		var regex      = quoteRouteRegex( routeBasePath() )
+		var entryPoint = reReplace( named.entryPoint, "^/+|/+$", "", "all" )
 		if ( len( entryPoint ) ) {
 			regex &= "/" & quoteRouteRegex( entryPoint )
 		}
@@ -1081,29 +1218,8 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true" {
 	}
 
 	/**
-	 * The inherited entry point of the module of a route name (`name@module` or `module:name`).
-	 *
-	 * @name The route name
-	 *
-	 * @return The module entry point, or an empty string for application routes
-	 */
-	private string function routeModuleEntryPoint( required string name ){
-		var module = ""
-		if ( find( "@", arguments.name ) ) {
-			module = getToken( arguments.name, 2, "@" )
-		}
-		if ( find( ":", arguments.name ) ) {
-			module = getToken( arguments.name, 1, ":" )
-		}
-		if ( !len( module ) ) {
-			return ""
-		}
-		var modules = getController().getSetting( "modules" )
-		return modules.keyExists( module ) ? modules[ module ].inheritedEntryPoint : ""
-	}
-
-	/**
-	 * Escape regex special characters. Playwright runs URL regexes in the browser, so Java's \Q...\E quoting cannot be used.
+	 * Escape regex special characters one by one, without Java's \Q...\E quoting, so the regex reads the same in
+	 * any regex engine.
 	 *
 	 * @text The literal text
 	 *

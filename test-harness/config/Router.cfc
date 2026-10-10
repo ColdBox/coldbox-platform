@@ -173,6 +173,7 @@ component {
 		route( "/browser-posts/:id?" ).as( "browserPosts" ).to( "browserTesting.user" )
 		route( "/browser-testing/login" ).as( "browserTesting.login" ).to( "browserTesting.login" )
 		route( "/browser-testing/whoami" ).as( "browserTesting.whoami" ).to( "browserTesting.whoami" )
+		route( "/" ).withDomain( "browser-root.dev" ).as( "browserRoot" ).to( "main.index" )
 
 		// Default Application Routing
 		route( ":handler/:action?/:id-numeric?" ).end();
