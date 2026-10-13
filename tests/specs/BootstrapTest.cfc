@@ -1,8 +1,8 @@
 component extends="testbox.system.BaseSpec" {
 
 	function run(){
-		describe( "Bootstrap onSessionStart", function(){
-			beforeEach( function(){
+		describe( "Bootstrap onSessionStart", () => {
+			beforeEach( () => {
 				variables.appKey       = "bootstrapSpec" & replace( createUUID(), "-", "", "all" )
 				variables.bootstrap    = new coldbox.system.Bootstrap( "", expandPath( "/" ), appKey )
 				variables.interceptors = createStub().$( "announce" )
@@ -13,23 +13,23 @@ component extends="testbox.system.BaseSpec" {
 					.$( "runEvent" )
 			} );
 
-			afterEach( function(){
+			afterEach( () => {
 				structDelete( application, appKey )
 			} );
 
-			it( "does nothing while the controller is not in application scope", function(){
+			it( "does nothing while the controller is not in application scope", () => {
 				bootstrap.onSessionStart()
 				expect( controller.$count( "runEvent" ) ).toBe( 0 )
 			} );
 
-			it( "does nothing while the controller is not initiated, as during a reinit", function(){
+			it( "does nothing while the controller is not initiated, as during a reinit", () => {
 				application[ appKey ] = controller
 				bootstrap.onSessionStart()
 				expect( interceptors.$count( "announce" ) ).toBe( 0 )
 				expect( controller.$count( "runEvent" ) ).toBe( 0 )
 			} );
 
-			it( "runs the session start once the controller is initiated", function(){
+			it( "runs the session start once the controller is initiated", () => {
 				application[ appKey ] = controller
 				controller.$( "getColdboxInitiated", true )
 				bootstrap.onSessionStart()

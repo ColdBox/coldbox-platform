@@ -1,7 +1,7 @@
 ﻿component extends="coldbox.system.testing.BaseModelTest" {
 
 	function setUp(){
-		controller = createMock( "coldbox.system.web.Controller" ).init(
+		variables.controller = createMock( "coldbox.system.web.Controller" ).init(
 			expandPath( "/coldbox/test-harness" ),
 			"cbController"
 		);
