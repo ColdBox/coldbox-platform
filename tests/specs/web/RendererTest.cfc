@@ -20,13 +20,13 @@ component extends="tests.resources.BaseIntegrationTest" {
 
 	function run( testResults, testBox ){
 		// all your suites go here.
-		describe( "ColdBox Renderer", function(){
-			beforeEach( function( currentSpec ){
+		describe( "ColdBox Renderer", () => {
+			beforeEach( ( currentSpec ) => {
 				setup();
-				renderer = prepareMock( getController().getRenderer() );
+				variables.renderer = prepareMock( getController().getRenderer() );
 			} );
 
-			it( "can render views with caching parameters", function(){
+			it( "can render views with caching parameters", () => {
 				var results = renderer.view(
 					view         = "simpleview",
 					cache        = true,
@@ -42,7 +42,7 @@ component extends="tests.resources.BaseIntegrationTest" {
 				expect( results ).toBe( results2 );
 			} );
 
-			it( "can render views with different caching providers", function(){
+			it( "can render views with different caching providers", () => {
 				var results = renderer.view(
 					view          = "simpleview",
 					cache         = true,
@@ -58,12 +58,12 @@ component extends="tests.resources.BaseIntegrationTest" {
 				expect( results ).toBe( results2 );
 			} );
 
-			it( "can render external views", function(){
+			it( "can render external views", () => {
 				var results = renderer.externalView( "/cbtestharness/external/testViews/externalview" );
 				expect( results ).toInclude( "external" );
 			} );
 
-			it( "can render external views with caching parameters", function(){
+			it( "can render external views with caching parameters", () => {
 				var results = renderer.externalView(
 					view         = "/cbtestharness/external/testViews/externalview",
 					cache        = "true",
@@ -77,7 +77,7 @@ component extends="tests.resources.BaseIntegrationTest" {
 				expect( results ).toBe( results2 );
 			} );
 
-			it( "can render external views with different caching parameters", function(){
+			it( "can render external views with different caching parameters", () => {
 				results = renderer.externalView(
 					view          = "/cbtestharness/external/testViews/externalview",
 					cache         = "true",
@@ -93,7 +93,7 @@ component extends="tests.resources.BaseIntegrationTest" {
 				expect( results ).toBe( results2 );
 			} );
 
-			it( "can render external views with view caching turned off", function(){
+			it( "can render external views with view caching turned off", () => {
 				renderer.$property( "viewCaching", "variables", false );
 				renderer.getTemplateCache().clearAllViews();
 				var results = renderer.externalView(
@@ -109,7 +109,7 @@ component extends="tests.resources.BaseIntegrationTest" {
 				expect( results ).notToBe( results2 );
 			} );
 
-			it( "can render views with view caching turned off", function(){
+			it( "can render views with view caching turned off", () => {
 				renderer.$property( "viewCaching", "variables", false );
 				renderer.getTemplateCache().clearAllViews();
 				var results = renderer.view(
@@ -127,7 +127,7 @@ component extends="tests.resources.BaseIntegrationTest" {
 				expect( results ).notToBe( results2 );
 			} );
 
-			it( "can render a layout without changing the request context", function(){
+			it( "can render a layout without changing the request context", () => {
 				var event = getRequestContext();
 				event.overrideEvent( "Main.index" );
 				var beforeView = event.getCurrentView();
@@ -135,23 +135,30 @@ component extends="tests.resources.BaseIntegrationTest" {
 				expect( event.getCurrentView() ).toBe( beforeView );
 			} );
 
-			it( "can render implicit views", function(){
-				var event = getRequestContext();
-				event.overrideEvent( "main.index" );
-				event.setPrivateValue( "welcomeMessage", "Welcome to ColdBox!" );
-				var beforeView = event.getCurrentView();
-				expect( beforeView ).toBe( "" );
-				var results = renderer.layout();
-				expect( event.getCurrentView() ).toBe( "main/index" );
-			} );
+			it( "can render implicit views", () => {
+				var controller      = getController()
+				var originalSetting = controller.getSetting( "ImplicitViews" )
+				controller.setSetting( "ImplicitViews", true )
 
+				try {
+					var event = getRequestContext()
+					event.overrideEvent( "main.index" )
+					event.setPrivateValue( "welcomeMessage", "Welcome to ColdBox!" )
+					var beforeView = event.getCurrentView()
+					expect( beforeView ).toBe( "" )
+					var results = renderer.layout()
+					expect( event.getCurrentView() ).toBe( "main/index" )
+				} finally {
+					controller.setSetting( "ImplicitViews", originalSetting )
+				}
+			} )
 
-			describe( "Discovery Cache", function(){
-				it( "viewDiscoveryCaching setting defaults to true", function(){
+			describe( "Discovery Cache", () => {
+				it( "viewDiscoveryCaching setting defaults to true", () => {
 					expect( getController().getSetting( "viewDiscoveryCaching" ) ).toBeTrue();
 				} );
 
-				it( "locateView caches path results when viewDiscoveryCaching is true", function(){
+				it( "locateView caches path results when viewDiscoveryCaching is true", () => {
 					renderer.$property( "locateViewCache", "variables", {} );
 					renderer.$property( "isDiscoveryCaching", "variables", true );
 					var path1 = renderer.locateView( "simpleview" );
@@ -161,7 +168,7 @@ component extends="tests.resources.BaseIntegrationTest" {
 					expect( structCount( renderer.getLocateViewCache() ) ).toBeGT( 0 );
 				} );
 
-				it( "locateLayout caches path results when viewDiscoveryCaching is true", function(){
+				it( "locateLayout caches path results when viewDiscoveryCaching is true", () => {
 					renderer.$property( "locateLayoutCache", "variables", {} );
 					renderer.$property( "isDiscoveryCaching", "variables", true );
 					var path1 = renderer.locateLayout( "Main" );
@@ -171,28 +178,28 @@ component extends="tests.resources.BaseIntegrationTest" {
 					expect( structCount( renderer.getLocateLayoutCache() ) ).toBeGT( 0 );
 				} );
 
-				it( "expandPathCache is always populated regardless of viewDiscoveryCaching", function(){
+				it( "expandPathCache is always populated regardless of viewDiscoveryCaching", () => {
 					renderer.$property( "expandPathCache", "variables", {} );
 					renderer.$property( "isDiscoveryCaching", "variables", false );
 					renderer.locateView( "simpleview" );
 					expect( structCount( renderer.getExpandPathCache() ) ).toBeGT( 0 );
 				} );
 
-				it( "does not populate locateViewCache when viewDiscoveryCaching is false", function(){
+				it( "does not populate locateViewCache when viewDiscoveryCaching is false", () => {
 					renderer.$property( "isDiscoveryCaching", "variables", false );
 					renderer.$property( "locateViewCache", "variables", {} );
 					renderer.locateView( "simpleview" );
 					expect( structCount( renderer.getLocateViewCache() ) ).toBe( 0 );
 				} );
 
-				it( "does not populate locateLayoutCache when viewDiscoveryCaching is false", function(){
+				it( "does not populate locateLayoutCache when viewDiscoveryCaching is false", () => {
 					renderer.$property( "isDiscoveryCaching", "variables", false );
 					renderer.$property( "locateLayoutCache", "variables", {} );
 					renderer.locateLayout( "Main" );
 					expect( structCount( renderer.getLocateLayoutCache() ) ).toBe( 0 );
 				} );
 
-				it( "discoverViewPaths populates viewsRefMap when viewDiscoveryCaching is true", function(){
+				it( "discoverViewPaths populates viewsRefMap when viewDiscoveryCaching is true", () => {
 					renderer.$property( "viewsRefMap", "variables", {} );
 					renderer.$property( "isDiscoveryCaching", "variables", true );
 					renderer.discoverViewPaths(
@@ -204,8 +211,8 @@ component extends="tests.resources.BaseIntegrationTest" {
 				} );
 			} );
 
-			feature( "ColdBox can render view collections", function(){
-				beforeEach( function( currentSpec ){
+			feature( "ColdBox can render view collections", () => {
+				beforeEach( ( currentSpec ) => {
 					aUsers = [
 						{ id : createUUID(), name : "luis" },
 						{ id : createUUID(), name : "alexia" },
@@ -213,8 +220,8 @@ component extends="tests.resources.BaseIntegrationTest" {
 					];
 				} );
 
-				given( "Default options", function(){
-					then( "it can render the template with the collection", function(){
+				given( "Default options", () => {
+					then( "it can render the template with the collection", () => {
 						var results = renderer.view( view: "tags/user", collection: aUsers );
 						var htmlDoc = xmlParse( "<root>#results#</root>" );
 						expect( htmlDoc.root.xmlChildren ).toHaveLength( 3 );
@@ -229,8 +236,8 @@ component extends="tests.resources.BaseIntegrationTest" {
 					} );
 				} );
 
-				given( "a collection delimiter", function(){
-					then( "it can render the template with the collection", function(){
+				given( "a collection delimiter", () => {
+					then( "it can render the template with the collection", () => {
 						var results = renderer.view(
 							view           : "tags/user",
 							collection     : aUsers,
@@ -245,8 +252,8 @@ component extends="tests.resources.BaseIntegrationTest" {
 					} );
 				} );
 
-				given( "max rows of 1", function(){
-					then( "it can render the template with the collection", function(){
+				given( "max rows of 1", () => {
+					then( "it can render the template with the collection", () => {
 						var results = renderer.view(
 							view             : "tags/user",
 							collection       : aUsers,
@@ -261,8 +268,8 @@ component extends="tests.resources.BaseIntegrationTest" {
 					} );
 				} );
 
-				given( "a collection alias", function(){
-					then( "it can render the template with the collection", function(){
+				given( "a collection alias", () => {
+					then( "it can render the template with the collection", () => {
 						var results = renderer.view(
 							view        : "tags/member",
 							collection  : aUsers,
