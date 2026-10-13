@@ -17,139 +17,139 @@
       "source": "ortus-boxlang/skills",
       "sourceType": "github",
       "skillPath": "boxlang-developer/application-descriptor/SKILL.md",
-      "computedHash": "f060db9e4cfd932f4977f70c079555362aadfcbdd2fca250a04d7f8fb471207a"
+      "computedHash": "b1a5a0cb337ea5cb6f4e5f082e2534e7a73fc1a54967b8c096d133074d535c2b"
     },
     "boxlang-async-programming": {
       "source": "ortus-boxlang/skills",
       "sourceType": "github",
       "skillPath": "boxlang-developer/async-programming/SKILL.md",
-      "computedHash": "51b310a5f862faf03ff930b8854566ce697ef5706014ea0b8d41fd678f9aa6d5"
+      "computedHash": "427c2dd57017963518280793d8677153fc73e0fca66e41c025609b8dcfefe271"
     },
     "boxlang-best-practices": {
       "source": "ortus-boxlang/skills",
       "sourceType": "github",
       "skillPath": "boxlang-developer/best-practices/SKILL.md",
-      "computedHash": "be3060bb9d86e46c36589d70b83a178737bba80e69348de8846301f6160290b5"
+      "computedHash": "6021a8489864e5c1a178be51da18e5a9f1e44e5e9484485e8119171147f2bb03"
     },
     "boxlang-caching": {
       "source": "ortus-boxlang/skills",
       "sourceType": "github",
       "skillPath": "boxlang-developer/caching/SKILL.md",
-      "computedHash": "0bb09e51a5b769980b4fec3097fccc12a4fc33e8a1e3740af4e40cd49c9f7458"
+      "computedHash": "59682804d27926b842119002b6a08e9c4453ec8316a2ae0b12759dd81c42143f"
     },
     "boxlang-classes-and-oop": {
       "source": "ortus-boxlang/skills",
       "sourceType": "github",
       "skillPath": "boxlang-developer/classes-and-oop/SKILL.md",
-      "computedHash": "17477293bf20faebb024944240c91a838c169d1a705ab0f4ccfa9c04fd9897c0"
+      "computedHash": "8e5f752ba7fdaab6f8b433c03b2430d78efd4448cd11cfe128dd7557cba45cf0"
     },
     "boxlang-code-documenter": {
       "source": "ortus-boxlang/skills",
       "sourceType": "github",
       "skillPath": "boxlang-developer/code-documenter/SKILL.md",
-      "computedHash": "ac06957c446282e603c5ba566c893618983a3dfea7f49df6986d5048824aef17"
+      "computedHash": "2ac3ed0d1edb77acb88510f97cd3a6b27286cbb3d9e3cae941697fc8d9e15547"
     },
     "boxlang-code-reviewer": {
       "source": "ortus-boxlang/skills",
       "sourceType": "github",
       "skillPath": "boxlang-developer/code-reviewer/SKILL.md",
-      "computedHash": "75b1a6891e8e4c5f73f5251956f6ef7bfaf497289cf13cdbad277e7a5bf8d55d"
+      "computedHash": "f44a2f1ddb81579d4c48e8108f2ef94f87e059eafeb03dcc0a6ff6b4d077718b"
     },
     "boxlang-configuration": {
       "source": "ortus-boxlang/skills",
       "sourceType": "github",
       "skillPath": "boxlang-developer/configuration/SKILL.md",
-      "computedHash": "62ea714d8d806324b56ed0d656e9f21663e756ede9e52e53c120962f924e4eb5"
+      "computedHash": "675e3eeb7822485f2e46ca9792ad5878e5c916483b6c8988c55aeb8996fb09da"
     },
     "boxlang-database-access": {
       "source": "ortus-boxlang/skills",
       "sourceType": "github",
       "skillPath": "boxlang-developer/database-access/SKILL.md",
-      "computedHash": "44e26ffcf4dcd633eedd4d08aaa1dc0d1ad5aac700d6798b324e7b3e1c8688f0"
+      "computedHash": "f92ba563497fe54b2f23408a7e166fe5e97469a55c894ec69ab4b6debaa55524"
     },
     "boxlang-docbox": {
       "source": "ortus-boxlang/skills",
       "sourceType": "github",
       "skillPath": "boxlang-developer/docbox/SKILL.md",
-      "computedHash": "f68d2cdd4e2ed9cf23005c466bb50b119794f449c61eeb7bb32469c03a3e7fe3"
+      "computedHash": "6d410f4226d4cedbd38e6b581668797b90cb2e1a35e903e4e1f1d9e85662c98d"
     },
     "boxlang-file-handling": {
       "source": "ortus-boxlang/skills",
       "sourceType": "github",
       "skillPath": "boxlang-developer/file-handling/SKILL.md",
-      "computedHash": "134f2e5c3a1cd7fb14f971cc2580f7c0fa1046e85f986232314adefd652f4f7c"
+      "computedHash": "6a75c167d0debe24b5fd7d6ab9800579c9065f9900a0a3e62e6a86126212118e"
     },
     "boxlang-file-watchers": {
       "source": "ortus-boxlang/skills",
       "sourceType": "github",
       "skillPath": "boxlang-developer/file-watchers/SKILL.md",
-      "computedHash": "db6db2a78806f93e6a58d24895ea9373a0dbbe29809479dd9dc50209cf9f9819"
+      "computedHash": "f253c2effdd5d8f19701a1c73cbd3b7de230f4ce22e22d232473322508a06771"
     },
     "boxlang-functional-programming": {
       "source": "ortus-boxlang/skills",
       "sourceType": "github",
       "skillPath": "boxlang-developer/functional-programming/SKILL.md",
-      "computedHash": "d8e4d8b2f4f3f6bd1cb43cd557945c0e7a6d68340b962f2bcc4d2a5c2012a546"
+      "computedHash": "6999b75b954ff993c11679afd77d90f80ec105079ac202ab3fd5d5be1d9f3836"
     },
     "boxlang-interceptors": {
       "source": "ortus-boxlang/skills",
       "sourceType": "github",
       "skillPath": "boxlang-developer/interceptors/SKILL.md",
-      "computedHash": "18e163de09ae7cfb0ab0f2b4d74d97c58f5ace239630d57b8505909373f5bc84"
+      "computedHash": "8a1b9c232bced003424bcfd5793573e9f5b563ae5c7c64a05171b88ee631f75c"
     },
     "boxlang-java-integration": {
       "source": "ortus-boxlang/skills",
       "sourceType": "github",
       "skillPath": "boxlang-developer/java-integration/SKILL.md",
-      "computedHash": "f0e6a9dd347c4cbca99aae570fd2ddaa46751d0175767f3cc08d57b66a8ba10b"
+      "computedHash": "5e14b0dc42c37210bef42bdae5eff242dabbe2a6ec0c48573e95a13dcca8ea1b"
     },
     "boxlang-language-fundamentals": {
       "source": "ortus-boxlang/skills",
       "sourceType": "github",
       "skillPath": "boxlang-developer/language-fundamentals/SKILL.md",
-      "computedHash": "1791856caa11bad9436ea0229eaa45f1505a6d26f030f5c244dfbcd2dd7fe4da"
+      "computedHash": "e99eedac2732e7ab3335583ccab214da66559217976d7af5221cfa2d174fadef"
     },
     "boxlang-modules-and-packages": {
       "source": "ortus-boxlang/skills",
       "sourceType": "github",
       "skillPath": "boxlang-developer/modules-and-packages/SKILL.md",
-      "computedHash": "d2291df901e39f82c9bc1225ceb04a0c2046b5ec06a596e4a136942ec85b2910"
+      "computedHash": "f2095a5d0a3fce7c10a3c54547ce9899ed0cce6fe74cfe6eb72be4aa3457fbd8"
     },
     "boxlang-scheduled-tasks": {
       "source": "ortus-boxlang/skills",
       "sourceType": "github",
       "skillPath": "boxlang-developer/scheduled-tasks/SKILL.md",
-      "computedHash": "534448e61aacce705de4065549cfccd9cf8bb1c552330fddd3b40b200960ab58"
+      "computedHash": "3fe83d883e9899bd1e9301f584dae671a3b7dfe4aa1e31a1ac11c1aea9743eb3"
     },
     "boxlang-security": {
       "source": "ortus-boxlang/skills",
       "sourceType": "github",
       "skillPath": "boxlang-developer/security/SKILL.md",
-      "computedHash": "bcf72fd5f5d27c40efef3e6f4ee33017497f0b6bc54e35ae59b3a485b824af0f"
+      "computedHash": "c49db25a9286b36a5079cdb776c56f55d7be97d86093fc48e93ba125b24c09f1"
     },
     "boxlang-templating": {
       "source": "ortus-boxlang/skills",
       "sourceType": "github",
       "skillPath": "boxlang-developer/templating/SKILL.md",
-      "computedHash": "92712aa9582312ebd5ed430d8966aa45a47996cb3ec9679cfb401a88085eae63"
+      "computedHash": "429f10b1e0c8a83b8ba78895848f019a337569566a60fe7bb5e15673060cb6ba"
     },
     "boxlang-testing": {
       "source": "ortus-boxlang/skills",
       "sourceType": "github",
       "skillPath": "boxlang-developer/testing/SKILL.md",
-      "computedHash": "5062447bfb00f97d62536e8f83e78f5e0e05ea9b01f1ab542b9d29c6a4a7224c"
+      "computedHash": "3aec742095c693414c41cd61c268a17b370cb5a2f101a5e2659faf791f6bfe51"
     },
     "boxlang-web-development": {
       "source": "ortus-boxlang/skills",
       "sourceType": "github",
       "skillPath": "boxlang-developer/web-development/SKILL.md",
-      "computedHash": "365a7dea08d0aa06af2dec134ef5a6c67fe4cc622e9856e2a10426a65ec90de5"
+      "computedHash": "d2bd064f048b15e7d365d98de41e2a52c6ec4b5a2ea1fb5cf9eaa4c1849cf1fa"
     },
     "boxlang-zip": {
       "source": "ortus-boxlang/skills",
       "sourceType": "github",
       "skillPath": "boxlang-developer/zip/SKILL.md",
-      "computedHash": "06f346e32aacdccfd501222341cca88b3226e3703123e6e8053495e058bc9f0a"
+      "computedHash": "3cbd70d1aba2c060c569f9e0fb596591c75d691651d8ee148cdc1780a298aa6d"
     },
     "code-documenter": {
       "source": "ortus-solutions/skills",
@@ -179,7 +179,7 @@
       "source": "ortus-boxlang/skills",
       "sourceType": "github",
       "skillPath": "boxlang-developer/ortus-coding-standards/SKILL.md",
-      "computedHash": "01480f77e70756f2029bf159a79acf3ab079f0159ea7c4eaff499a28fcacf6b5"
+      "computedHash": "cc36afaa56317241e361ceb13fe29ac7887900a78c1fada0867121a52e43e79f"
     }
   }
 }
