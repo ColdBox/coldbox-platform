@@ -23,6 +23,11 @@
 <cfparam name="url.coverageBrowserOutputDir" default="#expandPath( '/tests/results/coverageReport' )#">
 
 <cfscript>
+// Browser specs are BoxLang classes: skip them on the other engines
+if( !structKeyExists( server, "boxlang" ) ){
+	url.directoryExcludes = listAppend( url.directoryExcludes, "/browser" );
+}
+
 // Directory Filter: return true use, false do not process.
 function directoryFilter( required bundlePath ){
 	var excludeList = listToArray( url.directoryExcludes );

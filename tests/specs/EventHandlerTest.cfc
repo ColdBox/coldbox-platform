@@ -57,8 +57,8 @@ component extends="coldbox.system.testing.BaseModelTest" {
 
 	function run( testResults, testBox ){
 		// all your suites go here.
-		describe( "Event Handler", function(){
-			it( "can load up mixins in isolation", function(){
+		describe( "Event Handler", () => {
+			it( "can load up mixins in isolation", () => {
 				expect( structKeyExists( handler, "mixinTest" ) ).toBeTrue();
 				expect( structKeyExists( handler, "repeatThis" ) ).toBeTrue();
 				expect( structKeyExists( handler, "add" ) ).toBeTrue();

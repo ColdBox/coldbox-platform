@@ -14,8 +14,8 @@ component extends="coldbox.system.testing.BaseModelTest" {
 
 	function run( testResults, testBox ){
 		// all your suites go here.
-		describe( "Response Object", function(){
-			beforeEach( function( currentSpec ){
+		describe( "Response Object", () => {
+			beforeEach( ( currentSpec ) => {
 				handler            = createMock( "coldbox.system.RestHandler" ).$( "announce" ).$( "announceInterception" );
 				mockController     = createMock( "coldbox.system.web.Controller" );
 				flashScope         = createEmptyMock( "coldbox.system.web.flash.MockFlash" );
@@ -66,11 +66,11 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				handler.onHandlerDIComplete();
 			} );
 
-			it( "can be created", function(){
+			it( "can be created", () => {
 				expect( handler ).toBeComponent();
 			} );
 
-			it( "does not marshal a body or flush headers once a conditional-GET has already committed a 304", function(){
+			it( "does not marshal a body or flush headers once a conditional-GET has already committed a 304", () => {
 				var event = mockRequestContext;
 				var prc   = event.getPrivateCollection();
 				event.getResponse();
@@ -84,7 +84,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 					event        = event,
 					rc           = event.getCollection(),
 					prc          = prc,
-					targetAction = function( event, rc, prc ){
+					targetAction = ( event, rc, prc ) => {
 					},
 					eventArguments = {}
 				);
@@ -93,7 +93,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				expect( event.$never( "setHTTPHeader" ) ).toBeTrue();
 			} );
 
-			it( "still marshals normally when isNoExecution() is false", function(){
+			it( "still marshals normally when isNoExecution() is false", () => {
 				var event = mockRequestContext;
 				var prc   = event.getPrivateCollection();
 				event.getResponse();
@@ -110,7 +110,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 					event        = event,
 					rc           = event.getCollection(),
 					prc          = prc,
-					targetAction = function( event, rc, prc ){
+					targetAction = ( event, rc, prc ) => {
 					},
 					eventArguments = {}
 				);
@@ -118,7 +118,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				expect( event.$once( "renderData" ) ).toBeTrue();
 			} );
 
-			it( "can handle onExpectationFailed", function(){
+			it( "can handle onExpectationFailed", () => {
 				makePublic( handler, "onExpectationFailed" );
 				handler.onExpectationFailed();
 				var response = handler.getRequestContext().getResponse();
@@ -126,7 +126,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				expect( response.getStatusCode() ).toBe( 417 );
 			} );
 
-			it( "can handle onInvalidRoute", function(){
+			it( "can handle onInvalidRoute", () => {
 				handler.onInvalidRoute(
 					mockRequestContext,
 					mockRequestContext.getCollection(),
@@ -137,7 +137,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				expect( response.getStatusCode() ).toBe( 404 );
 			} );
 
-			it( "can handle onAuthorizationFailure with no aborts", function(){
+			it( "can handle onAuthorizationFailure with no aborts", () => {
 				handler.onAuthorizationFailure(
 					mockRequestContext,
 					mockRequestContext.getCollection(),
@@ -148,7 +148,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				expect( response.getStatusCode() ).toBe( 403 );
 			} );
 
-			it( "can handle onAuthorizationFailure with cbsecurity results", function(){
+			it( "can handle onAuthorizationFailure with cbsecurity results", () => {
 				mockrequestContext.setPrivateValue(
 					"cbSecurity_validatorResults",
 					{ messages : "Invalid Access!" }
@@ -164,7 +164,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				expect( response.getMessagesString() ).toInclude( "Invalid Access!" );
 			} );
 
-			it( "can handle onAuthenticationFailure with no aborts", function(){
+			it( "can handle onAuthenticationFailure with no aborts", () => {
 				handler.onAuthenticationFailure(
 					mockRequestContext,
 					mockRequestContext.getCollection(),
@@ -175,7 +175,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				expect( response.getStatusCode() ).toBe( 401 );
 			} );
 
-			it( "can handle onAuthenticationFailure with cbsecurity expiration results", function(){
+			it( "can handle onAuthenticationFailure with cbsecurity expiration results", () => {
 				mockrequestContext.setPrivateValue(
 					"cbSecurity_validatorResults",
 					{ messages : "Expired Token!" }
@@ -191,7 +191,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				expect( response.getMessagesString() ).toInclude( "Expired Authentication Credentials" );
 			} );
 
-			it( "can handle onMissingActions", function(){
+			it( "can handle onMissingActions", () => {
 				handler.onMissingAction(
 					mockRequestContext,
 					mockRequestContext.getCollection(),
@@ -204,7 +204,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				expect( response.getStatusCode() ).toBe( 404 );
 			} );
 
-			it( "can handle onInvalidHTTPMethod", function(){
+			it( "can handle onInvalidHTTPMethod", () => {
 				handler.onInvalidHTTPMethod(
 					mockRequestContext,
 					mockRequestContext.getCollection(),
@@ -217,7 +217,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				expect( response.getStatusCode() ).toBe( 405 );
 			} );
 
-			it( "can handle onEntityNotFoundException", function(){
+			it( "can handle onEntityNotFoundException", () => {
 				handler.onEntityNotFoundException(
 					mockRequestContext,
 					mockRequestContext.getCollection(),
@@ -227,9 +227,24 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				var response = mockRequestContext.getResponse();
 				expect( response.getError() ).toBeTrue();
 				expect( response.getStatusCode() ).toBe( 404 );
+				expect( response.getData() ).toBe( "" );
 			} );
 
-			it( "can handle onValidationException", function(){
+			it( "can handle onEntityNotFoundException with an incoming id", () => {
+				mockRequestContext.setValue( "id", "123abc" );
+				handler.onEntityNotFoundException(
+					mockRequestContext,
+					mockRequestContext.getCollection(),
+					mockRequestContext.getPrivateCollection(),
+					{}
+				);
+				var response = mockRequestContext.getResponse();
+				expect( response.getError() ).toBeTrue();
+				expect( response.getStatusCode() ).toBe( 404 );
+				expect( response.getData() ).toBe( "123abc" );
+			} );
+
+			it( "can handle onValidationException", () => {
 				handler.onValidationException(
 					mockRequestContext,
 					mockRequestContext.getCollection(),
@@ -242,7 +257,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				expect( response.getStatusCode() ).toBe( 400 );
 			} );
 
-			it( "can handle onError", function(){
+			it( "can handle onError", () => {
 				handler
 					.$( "getSetting" )
 					.$args( "environment" )

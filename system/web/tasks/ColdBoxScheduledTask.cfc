@@ -264,8 +264,32 @@ component extends="coldbox.system.async.tasks.ScheduledTask" accessors="true" {
 	 * Synchronizes this task's schedule with any existing schedule in the cluster.
 	 * If another server has already started this task, we align our schedule to match.
 	 * This prevents schedule drift across servers and ensures consistent execution timing.
+	 *
+	 * This sync is only meaningful for tasks with NO inherent wall-clock anchor, i.e. plain
+	 * `every( n, unit )` tasks: every server starts at a different moment, so without a shared
+	 * anchor they'd drift relative to each other. Calendar/time-of-day DSL methods
+	 * (`everyDayAt()`, `everyHourAt()`, `everyWeekOn()`, `everyMonthOn()`, `everyYearOn()`,
+	 * `onFirstBusinessDayOfTheMonth()`, `onLastBusinessDayOfTheMonth()`) already compute their
+	 * own initial delay deterministically from the real clock, independently, on every server,
+	 * every time the scheduler (re)configures - they need no sync, because every server already
+	 * agrees. Realigning them here is actively harmful: the stored `scheduleStart` anchor is
+	 * `getScheduler().getStartedAt()` - the scheduler's own startup timestamp - which has no
+	 * relationship to the task's configured time of day. Snapping a calendar task's delay to
+	 * that anchor moves its daily/weekly/monthly run to whatever time-of-day the scheduler
+	 * happened to (re)start at, which compounds on every restart.
 	 */
 	public function syncScheduleWithCluster(){
+		// Calendar-anchored tasks already have a deterministic, wall-clock-computed initial delay
+		// set by their DSL method (everyDayAt/everyWeekOn/everyMonthOn/everyYearOn/everyHourAt/
+		// onFirstBusinessDayOfTheMonth/onLastBusinessDayOfTheMonth) before start() ever runs -
+		// nothing to sync, and syncing would overwrite that correct delay with a bogus one.
+		if ( getDelay() > 0 ) {
+			variables.log.debug(
+				"Task (#getName()#): Has a deterministic wall-clock delay already (#getDelay()# #getDelayTimeUnit()#), skipping cluster schedule sync"
+			);
+			return;
+		}
+
 		var existingLock = getCache().get( getFixationCacheKey() );
 
 		// No existing lock means we're the first server - no sync needed

@@ -311,7 +311,7 @@ component extends="tests.resources.BaseIntegrationTest" {
 				// implicitViews must be a boolean cached from getSetting("ImplicitViews")
 				prepareMock( variables.handlerService );
 				expect( variables.handlerService.$getProperty( "implicitViews", "variables" ) ).toBeBoolean();
-				expect( variables.handlerService.$getProperty( "implicitViews", "variables" ) ).toBeTrue();
+				expect( variables.handlerService.$getProperty( "implicitViews", "variables" ) ).toBeFalse();
 			} );
 
 			it( "isViewDispatch detects a view by extension without a filesystem call", () => {

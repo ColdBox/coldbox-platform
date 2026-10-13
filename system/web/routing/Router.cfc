@@ -147,6 +147,8 @@ component
 
 		// Stack of group-level middleware arrays, outermost first, so nested groups accumulate in order
 		variables.groupMiddlewareStack = [];
+		// Stack of group-level meta structs, outermost first, so nested groups accumulate in order
+		variables.groupMetaStack       = [];
 		// Named, reusable middleware bundles registered via middlewareGroup(), keyed by name
 		variables.middlewareGroups     = {};
 
@@ -515,7 +517,7 @@ component
 	 * } )
 	 * </pre>
 	 *
-	 * @options The route options that match routing, look at the <code>addRoute()</code> method. A `middleware` array (same target values <code>middleware()</code> accepts) applies to every route registered within the body, ahead of any middleware the route registers for itself.
+	 * @options The route options that match routing, look at the <code>addRoute()</code> method. A `middleware` array (same target values <code>middleware()</code> accepts) applies to every route registered within the body, ahead of any middleware the route registers for itself. A `meta` struct is merged into the meta of every route registered within the body, the route's own <code>meta()</code> values win on conflict.
 	 * @body    The closure or lambda to contain all the routing methods to be grouped with the options data.
 	 */
 	function group( struct options = {}, body ){
@@ -532,14 +534,20 @@ component
 		// name of a middlewareGroup() bundle, which normalizeMiddlewareEntries() expands in place.
 		var groupMiddleware = structKeyExists( arguments.options, "middleware" ) ? arguments.options.middleware : [];
 		variables.groupMiddlewareStack.append( normalizeMiddlewareEntries( groupMiddleware ) );
+		// Same for meta: structs aren't part of the withClosure default/prefix merge either, so a
+		// group's meta is inherited via its own stack. Pushed even when empty to keep the depth in sync.
+		variables.groupMetaStack.append(
+			structKeyExists( arguments.options, "meta" ) && isStruct( arguments.options.meta ) ? arguments.options.meta : {}
+		);
 
 		try {
 			// Execute the body
 			arguments.body( arguments.options );
 		} finally {
 			// Pivot out of the group and do cleanup - always, even if the body threw, so a failed
-			// registration can't leak this group's middleware/options into whatever registers next.
+			// registration can't leak this group's middleware/meta/options into whatever registers next.
 			variables.groupMiddlewareStack.deleteAt( variables.groupMiddlewareStack.len() );
+			variables.groupMetaStack.deleteAt( variables.groupMetaStack.len() );
 			variables.onGroup     = false;
 			variables.withClosure = {};
 		}
@@ -861,6 +869,17 @@ component
 			}
 			inheritedMiddleware.append( thisRoute.middleware, true );
 			thisRoute.middleware = inheritedMiddleware;
+		}
+
+		// Inherit group-level meta (outermost group first). Keys are merged shallowly, an inner group
+		// overrides an outer one and the route's own meta, registered via .meta(), wins over them all.
+		if ( variables.groupMetaStack.len() ) {
+			var inheritedMeta = {};
+			for ( var groupMeta in variables.groupMetaStack ) {
+				inheritedMeta.append( groupMeta );
+			}
+			inheritedMeta.append( thisRoute.meta );
+			thisRoute.meta = inheritedMeta;
 		}
 
 		// Strip any middleware this route opted out of via withoutMiddleware() - matched by target
@@ -1580,6 +1599,132 @@ component
 	}
 
 	/**
+	 * Register a single piece of middleware under a name, so it can be referenced by that name from
+	 * `.middleware()`, `group( { middleware : [ name ] } )` and `.withoutMiddleware( name )` instead of
+	 * repeating the closure, lambda or WireBox ID at every call site.
+	 *
+	 * This is sugar over `middlewareGroup()`: the name is stored as a one-member bundle in the same
+	 * namespace, so everything that works with a group name works with a registered name, and there is
+	 * no separate resolution step. The registry is scoped to this router instance. Modules should
+	 * register their middleware as WireBox mappings and reference them by WireBox ID instead.
+	 *
+	 * Register a name before any `.middleware()`/`group()` call that references it, exactly like
+	 * `middlewareGroup()`: name resolution happens immediately, not at request time. A name that is not
+	 * registered yet is silently treated as a literal WireBox ID.
+	 *
+	 * Registering a name that is already taken, either by another `registerMiddleware()` call or by a
+	 * `middlewareGroup()`, throws a `Router.DuplicateMiddleware` exception unless `force` is true, in
+	 * which case the new target replaces the old one. Routes that already referenced the old definition
+	 * keep it, since expansion happened when they were declared.
+	 *
+	 * Two call forms are supported. In the single form the first argument is the name and `target` is
+	 * required. In the bulk form the first argument is a struct of `name : target` pairs, `target` is
+	 * ignored, and `point` and `force` apply to every entry. A bulk call is all or nothing: if any name
+	 * is a duplicate nothing is registered.
+	 *
+	 * <pre>
+	 * // single form, with a lambda
+	 * registerMiddleware( "OnlyJson", ( event, rc, prc ) => {
+	 *     if ( !event.isAjax() ) {
+	 *         event.renderData( type = "json", data = { "error" : "JSON only" }, statusCode = 406 ).noExecution();
+	 *     }
+	 * } );
+	 *
+	 * // a WireBox ID, or an object with a preProcess()/postProcess() method, as the target
+	 * registerMiddleware( "auth", "Authenticated@cbsecurity" );
+	 *
+	 * // run after the handler instead of before it
+	 * registerMiddleware( "AuditLog", "AuditLog", "postProcess" );
+	 *
+	 * // bulk form, overwriting anything already registered under those names. CFML cannot mix
+	 * // positional and named arguments, so name every argument when you pass force.
+	 * registerMiddleware( name = { auth : "Authenticated@cbsecurity", onlyJson : jsonClosure }, force = true );
+	 *
+	 * route( "/admin" ).middleware( "auth" ).toHandler( "admin" );
+	 *
+	 * group( { pattern : "/api", middleware : [ "OnlyJson" ] }, function(){
+	 *     route( "/health" ).withoutMiddleware( "OnlyJson" ).toHandler( "health" );
+	 * } );
+	 * </pre>
+	 *
+	 * @name   The middleware name, or a struct of `name : target` pairs to register several at once.
+	 * @target A closure/lambda, an object instance or a WireBox ID. Required in the single form, ignored in the bulk form.
+	 * @point  The interception point, `preProcess` (default) or `postProcess`.
+	 * @force  Overwrite a name that is already registered instead of throwing.
+	 *
+	 * @return The router, for chaining.
+	 *
+	 * @throws Router.DuplicateMiddleware When a name is already registered as middleware or as a middlewareGroup and `force` is false.
+	 * @throws Router.InvalidMiddleware   When a name is empty or not a string, or a single-form `target` is missing or empty.
+	 */
+	function registerMiddleware(
+		required any name,
+		any target,
+		string point  = "preProcess",
+		boolean force = false
+	){
+		var registrations = {};
+
+		// A closure, lambda or component instance is never the bulk form (see isPlainStruct())
+		if ( isPlainStruct( arguments.name ) ) {
+			registrations = arguments.name;
+		} else {
+			if ( !isSimpleValue( arguments.name ) || !len( trim( arguments.name ) ) ) {
+				throw(
+					type    = "Router.InvalidMiddleware",
+					message = "registerMiddleware() requires the name to be a non-empty string or a struct of name : target pairs."
+				);
+			}
+			if ( !arguments.keyExists( "target" ) ) {
+				throw(
+					type    = "Router.InvalidMiddleware",
+					message = "registerMiddleware() requires a target for the middleware named [#arguments.name#]."
+				);
+			}
+			registrations[ arguments.name ] = arguments.target;
+		}
+
+		// Validate everything first so a bulk call never half-registers
+		for ( var middlewareName in registrations ) {
+			if ( !len( trim( middlewareName ) ) ) {
+				throw(
+					type    = "Router.InvalidMiddleware",
+					message = "registerMiddleware() requires every name to be a non-empty string."
+				);
+			}
+			if (
+				isNull( registrations[ middlewareName ] ) || (
+					isSimpleValue( registrations[ middlewareName ] ) && !len(
+						trim( registrations[ middlewareName ] )
+					)
+				)
+			) {
+				throw(
+					type    = "Router.InvalidMiddleware",
+					message = "registerMiddleware() requires a target for the middleware named [#middlewareName#]."
+				);
+			}
+			if ( !arguments.force && variables.middlewareGroups.keyExists( middlewareName ) ) {
+				throw(
+					type    = "Router.DuplicateMiddleware",
+					message = "The middleware name [#middlewareName#] is already registered as middleware or as a middlewareGroup. Pass force = true to overwrite it."
+				);
+			}
+		}
+
+		for ( var middlewareName in registrations ) {
+			// Drop any old definition first so a forced overwrite never expands it into the new one
+			variables.middlewareGroups.delete( middlewareName );
+			variables.middlewareGroups[ middlewareName ] = normalizeMiddlewareEntries(
+				registrations[ middlewareName ],
+				arguments.point
+			);
+		}
+
+		return this;
+	}
+
+	/**
 	 * Exclude middleware this route would otherwise inherit - most commonly from an enclosing
 	 * `group()` - from running for this specific route. Mirrors Laravel's `Route::withoutMiddleware()`.
 	 *
@@ -1682,6 +1827,19 @@ component
 	}
 
 	/**
+	 * True only for a real struct. Closures, lambdas and component instances answer true to `isStruct()`
+	 * on some engines, so they are ruled out explicitly before anything calls struct methods on them.
+	 *
+	 * @value The value to test.
+	 */
+	private boolean function isPlainStruct( required any value ){
+		return isStruct( arguments.value ) &&
+		!isObject( arguments.value ) &&
+		!isClosure( arguments.value ) &&
+		!isCustomFunction( arguments.value );
+	}
+
+	/**
 	 * Normalize a mixed set of middleware targets - closures, WireBox IDs, object instances,
 	 * `{ target, point }` structs, or the name of a previously registered `middlewareGroup()` - into
 	 * the canonical `{ target, point, group }` entry shape `addRoute()` and `runRouteMiddleware()`
@@ -1703,7 +1861,7 @@ component
 			var target = entry;
 			var point  = arguments.defaultPoint;
 
-			if ( isStruct( entry ) && entry.keyExists( "target" ) ) {
+			if ( isPlainStruct( entry ) && entry.keyExists( "target" ) ) {
 				target = entry.target;
 				point  = entry.keyExists( "point" ) ? entry.point : arguments.defaultPoint;
 			}

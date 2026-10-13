@@ -7,13 +7,13 @@
 component {
 
 	// Release Metadata
-	this.codename      = "ColdBox Restore";
-	this.author        = "Ortus Solutions";
-	this.authorEmail   = "info@ortussolutions.com";
-	this.authorWebsite = "https://www.ortussolutions.com";
-	this.suffix        = "Psalm 23:3";
-	this.version       = "@build.version@+@build.number@";
-	this.description   = "The Human Way to Build ColdFusion CFML apps!";
+	this.codename      = "ColdBox Restore"
+	this.author        = "Ortus Solutions"
+	this.authorEmail   = "info@ortussolutions.com"
+	this.authorWebsite = "https://www.ortussolutions.com"
+	this.suffix        = "Psalm 23:3"
+	this.version       = "@build.version@+@build.number@"
+	this.description   = "The Human Way to Build ColdFusion CFML apps!"
 
 	// ColdBox Operational Defaults
 	this.coldbox = {
@@ -53,7 +53,7 @@ component {
 		"exceptionHandler"         : "",
 		"customErrorTemplate"      : "",
 		// Helpers and Rendering Settings
-		"implicitViews"            : true,
+		"implicitViews"            : false,
 		"applicationHelper"        : [],
 		"viewsHelper"              : "",
 		// Extensions
@@ -63,7 +63,7 @@ component {
 		"viewsExternalLocation"    : "",
 		"layoutsExternalLocation"  : "",
 		"modulesExternalLocation"  : []
-	};
+	}
 
 	// flash scope defaults
 	this.flash = {
@@ -73,17 +73,17 @@ component {
 		"inflateToPRC" : false,
 		"autoPurge"    : true,
 		"autoSave"     : true
-	};
+	}
 
 	// Conventions
-	this.handlersConvention = "handlers";
-	this.layoutsConvention  = "layouts";
-	this.viewsConvention    = "views";
-	this.eventAction        = "index";
-	this.modelsConvention   = "models";
-	this.configConvention   = "config.Coldbox";
-	this.modulesConvention  = "modules";
-	this.includesConvention = "includes";
+	this.handlersConvention = "handlers"
+	this.layoutsConvention  = "layouts"
+	this.viewsConvention    = "views"
+	this.eventAction        = "index"
+	this.modelsConvention   = "models"
+	this.configConvention   = "config.Coldbox"
+	this.modulesConvention  = "modules"
+	this.includesConvention = "includes"
 
 	// Server-Sent Events defaults (BoxLang only)
 	this.sse = {
@@ -93,10 +93,10 @@ component {
 		"retry"             : 0,
 		// CORS origin. Defaults to `*` to preserve the behavior toAi() shipped with in 8.1.
 		"cors"              : "*"
-	};
+	}
 
 	// Async Configs
-	this.async = { "schedulerThreads" : 20 };
+	this.async = { "schedulerThreads" : 20 }
 
 	/**
 	 * Configuration for non-config apps

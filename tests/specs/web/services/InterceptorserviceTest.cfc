@@ -3,6 +3,12 @@
 	function setup(){
 		super.setup();
 
+		// `request` scope persists across every test in this suite (they all run inside one
+		// physical HTTP request to the test runner), so a leftover interceptor buffer pool - or
+		// one a test deliberately broke to exercise the COLDBOX-1454 fallback - must not leak
+		// into the next test.
+		structDelete( request, "cbox_interceptorBufferPool" );
+
 		// Create Mock Objects
 		variables.mockbox            = getMockBox();
 		variables.mockController     = mockBox.createMock( "coldbox.system.testing.mock.web.MockController" );
@@ -23,6 +29,11 @@
 		mockController.setLogBox( mockLogBox );
 		mockController.setWireBox( mockWireBox );
 		mockController.setCacheBox( mockCacheBox );
+		// A real setter, not a $() stub: MockBox's $() return-type inference for getUtil()
+		// misfires on Lucee 5/6 (it infers "string" and then fails to cast the real Util
+		// component to it), the same way setLogBox()/setWireBox()/setCacheBox() above sidestep
+		// it for their own properties.
+		mockController.setUtil( new coldbox.system.core.util.Util() );
 
 		mockRequestService.$( "getFlashScope", mockFlash );
 		mockLogBox.$( "getLogger", mockLogger );
@@ -175,6 +186,88 @@
 		}
 
 		expect( local.output ).toBe( "buffered output" )
+	}
+
+	/**
+	 * Unambiguous reference-identity check: CFML's own object equality can compare by value/
+	 * string representation, which makes two freshly-created, still-empty InterceptorBuffer
+	 * instances look "equal" even though they're genuinely different objects. The JVM's identity
+	 * hash sidesteps that entirely.
+	 */
+	private function objectId( required obj ){
+		return createObject( "java", "java.lang.System" ).identityHashCode( arguments.obj )
+	}
+
+	function testAnnouncePoolsAndReusesTheBufferWhenNotInsideAThread(){
+		var buffers = []
+		iService.listen( function( event, data, buffer ){
+			buffers.append( arguments.buffer )
+		}, "onPoolTest" )
+
+		iService.announce( "onPoolTest" )
+		iService.announce( "onPoolTest" )
+
+		// Sequential, non-threaded announce() calls reuse the one pooled buffer
+		expect( objectId( buffers[ 1 ] ) ).toBe( objectId( buffers[ 2 ] ) )
+	}
+
+	function testAnnounceNeverPoolsTheBufferWhileInsideAThread(){
+		// COLDBOX-1454: `request` scope - and thus the buffer pool array - is shared between
+		// the request thread and any cfthread spawned from it. A synchronous announce() running
+		// on a spawned thread (e.g. WireBox's afterInstanceAutowire, triggered by getInstance()
+		// from code running inside an async/asyncAll announce()'s thread) must never touch the
+		// same pool the request thread is using, or two real concurrent threads can pop/release
+		// the same array at once and corrupt it.
+		mockController.setUtil( mockBox.createStub().$( "inThread", true ) )
+
+		var buffers = []
+		iService.listen( function( event, data, buffer ){
+			buffers.append( arguments.buffer )
+		}, "onPoolTest" )
+
+		iService.announce( "onPoolTest" )
+		iService.announce( "onPoolTest" )
+
+		expect( objectId( buffers[ 1 ] ) ).notToBe( objectId( buffers[ 2 ] ) )
+	}
+
+	function testGetLazyBufferPoolsAndReusesWhenAskedTo(){
+		var buffer1 = iService.getLazyBuffer( true )
+		iService.releaseLazyBuffer( buffer1 )
+		var buffer2 = iService.getLazyBuffer( true )
+
+		expect( objectId( buffer1 ) ).toBe( objectId( buffer2 ) )
+	}
+
+	function testGetLazyBufferNeverReusesWhenNotAskedTo(){
+		var buffer1 = iService.getLazyBuffer( false )
+		var buffer2 = iService.getLazyBuffer( false )
+
+		expect( objectId( buffer1 ) ).notToBe( objectId( buffer2 ) )
+	}
+
+	function testGetLazyBufferFallsBackToAnUnpooledBufferWhenThePoolIsUnusable(){
+		// COLDBOX-1454: an async announce()'s thread can outlive the request that spawned it (a
+		// fire-and-forget async announce, or one nobody joined). By the time that orphaned
+		// thread's own work runs, `request` scope - and the pool living in it - may no longer be
+		// usable. The pool is a performance nicety only, so this must degrade to a fresh,
+		// unpooled buffer instead of throwing. A struct in place of the expected array simulates
+		// that unusable state: structs have no pop() method, so reading it throws.
+		request.cbox_interceptorBufferPool = { "not" : "an array" }
+
+		var buffer = iService.getLazyBuffer( true )
+
+		expect( isObject( buffer ) ).toBeTrue()
+		expect( buffer.hasContent() ).toBeFalse()
+	}
+
+	function testReleaseLazyBufferSilentlyDropsWhenThePoolIsUnusable(){
+		// Same COLDBOX-1454 scenario as above, from the release side: a plain string in place of
+		// the expected array has no append() method, so writing back to it throws - and that
+		// must not propagate out of announce()'s finally block.
+		request.cbox_interceptorBufferPool = "not an array"
+
+		iService.releaseLazyBuffer( new coldbox.system.web.context.InterceptorBuffer() )
 	}
 
 	function testInterceptionPoints(){

@@ -128,6 +128,20 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		expect( r ).toBe( "http://jfetmac/applications/coldbox/test-harness/index.cfm/mymodule/home/" );
 	}
 
+	function testModuleRoutesWithEntryPointWithoutTrailingSlash(){
+		// Mocks: ModuleService stores inherited entry points without a trailing slash
+		var mockRouter = createStub().$( "findRouteByName", { name : "login", pattern : "login/:id/" } )
+		mockController.getWireBox().$( "getInstance", mockRouter )
+
+		var event = getRequestContext().$property(
+			"modules",
+			"variables",
+			{ myModule : { inheritedEntryPoint : "mymodule" } }
+		)
+		var r = event.route( "login@mymodule", { id : 3 } )
+		expect( r ).toBe( "http://jfetmac/applications/coldbox/test-harness/index.cfm/mymodule/login/3/" )
+	}
+
 	function testInvalidRoute(){
 		// Mocks
 		var mockSES = createStub().$( "getRoutes", [] );

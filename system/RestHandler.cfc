@@ -299,11 +299,14 @@ component extends="EventHandler" {
 			arguments.exception?.extendedInfo ?: ""
 		);
 
+		// Resolve the incoming id first: ACF 2023 drops an inline Elvis expression passed to setData()
+		var entityId = structKeyExists( arguments.rc, "id" ) ? arguments.rc.id : ""
+
 		// Setup Response
 		arguments.event
 			.getResponse()
 			.setError( true )
-			.setData( rc.id ?: "" )
+			.setData( entityId )
 			.addMessage(
 				len( exception.message ) ? exception.message : "The record you requested cannot be found in this system"
 			)
