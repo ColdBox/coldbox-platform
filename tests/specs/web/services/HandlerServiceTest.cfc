@@ -188,9 +188,30 @@ component extends="tests.resources.BaseIntegrationTest" {
 				} );
 
 				it( "with a valid view dispatch", () => {
-					var results = variables.handlerService.getHandlerBean( "simpleview" );
-					expect( results.getViewDispatch() ).toBe( true );
-					expect( variables.handlerService.getHandlerBeanCacheDictionary() ).toHaveKey( "simpleview" );
+					// View dispatch only happens with implicit views on, the harness leaves them off
+					prepareMock( variables.handlerService )
+					var originalSetting = variables.handlerService.$getProperty( "implicitViews", "variables" )
+					variables.handlerService.$property( "implicitViews", "variables", true )
+
+					try {
+						var results = variables.handlerService.getHandlerBean( "simpleview" )
+						expect( results.getViewDispatch() ).toBe( true )
+						expect( variables.handlerService.getHandlerBeanCacheDictionary() ).toHaveKey( "simpleview" )
+					} finally {
+						variables.handlerService.$property( "implicitViews", "variables", originalSetting )
+						// Don't leave a cached view dispatch bean behind for the next specs
+						variables.handlerService.getHandlerBeanCacheDictionary().delete( "simpleview" )
+					}
+				} );
+
+				it( "with an existing view and implicit views off", () => {
+					prepareMock( variables.handlerService )
+					expect( variables.handlerService.$getProperty( "implicitViews", "variables" ) ).toBeFalse()
+
+					var results = variables.handlerService.getHandlerBean( "simpleview" )
+					expect( results.getViewDispatch() ).toBeFalse()
+					expect( results.getFullEvent() ).toBe( "main.onInvalidEvent" )
+					expect( variables.handlerService.getHandlerBeanCacheDictionary() ).notToHaveKey( "simpleview" )
 				} );
 			} );
 		} );
@@ -317,8 +338,19 @@ component extends="tests.resources.BaseIntegrationTest" {
 			it( "isViewDispatch detects a view by extension without a filesystem call", () => {
 				// simpleview exists — getHandlerBean triggers isViewDispatch internally
 				// If the extension-check logic is wrong the viewDispatch flag won't be set
-				var results = variables.handlerService.getHandlerBean( "simpleview" );
-				expect( results.getViewDispatch() ).toBeTrue();
+				// View dispatch only happens with implicit views on, the harness leaves them off
+				prepareMock( variables.handlerService )
+				var originalSetting = variables.handlerService.$getProperty( "implicitViews", "variables" )
+				variables.handlerService.$property( "implicitViews", "variables", true )
+
+				try {
+					var results = variables.handlerService.getHandlerBean( "simpleview" )
+					expect( results.getViewDispatch() ).toBeTrue()
+				} finally {
+					variables.handlerService.$property( "implicitViews", "variables", originalSetting )
+					// Don't leave a cached view dispatch bean behind for the next specs
+					variables.handlerService.getHandlerBeanCacheDictionary().delete( "simpleview" )
+				}
 			} );
 
 			it( "isViewDispatch returns false for an event with no matching view", () => {

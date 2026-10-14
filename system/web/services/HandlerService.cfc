@@ -313,8 +313,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		}
 		// end else
 
-		// Do View Dispatch Check Procedures
-		if ( isViewDispatch( arguments.event, oHandlerBean ) ) {
+		// Do View Dispatch Check Procedures, only when implicit views are enabled, like getHandler()
+		if ( variables.implicitViews AND isViewDispatch( arguments.event, oHandlerBean ) ) {
 			// put bean in cache if enabled
 			if ( variables.handlerCaching ) {
 				variables.handlerBeanCacheDictionary[ arguments.event ] = oHandlerBean;
