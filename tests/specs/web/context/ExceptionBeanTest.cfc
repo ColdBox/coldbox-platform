@@ -160,4 +160,28 @@
 		assertEquals( this.e.getextendedInfo(), this.instance.exceptionstruct.extendedInfo );
 		</cfscript>
 	</cffunction>
+	<cffunction name="testComplexExtendedInfoIsAString" access="public" returnType="void">
+		<cfscript>
+		// a struct in extendedInfo (BoxLang modules attach context this way) comes back as JSON text
+		var exceptionStruct = duplicate( this.instance.exceptionStruct );
+		exceptionStruct.extendedInfo = { entity : "cbMenuItem", values : [ 1, 2 ] };
+		this.e.init( exceptionStruct, this.instance.extraMessage, this.instance.extraInfo );
+		var info = this.e.getExtendedInfo();
+		assertTrue( isSimpleValue( info ) );
+		assertTrue( findNoCase( "cbMenuItem", info ) );
+		assertEquals( exceptionStruct.extendedInfo, deserializeJSON( info ) );
+		// the error templates encode it, which fails on a struct
+		assertTrue( len( encodeForHTML( info ) ) );
+
+		// an array too
+		exceptionStruct.extendedInfo = [ "a", "b" ];
+		this.e.init( exceptionStruct, this.instance.extraMessage, this.instance.extraInfo );
+		assertEquals( [ "a", "b" ], deserializeJSON( this.e.getExtendedInfo() ) );
+
+		// missing extendedInfo is still an empty string
+		structDelete( exceptionStruct, "extendedInfo" );
+		this.e.init( exceptionStruct, this.instance.extraMessage, this.instance.extraInfo );
+		assertEquals( "", this.e.getExtendedInfo() );
+		</cfscript>
+	</cffunction>
 </cfcomponent>
