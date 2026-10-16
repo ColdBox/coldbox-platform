@@ -1,8 +1,10 @@
 /**
  * Implicit views resolve only from the declared view folders: the views convention, the external views location
  * and module views. Templates elsewhere under the app root are never chosen from the event name.
- * Fixtures: test-harness/handlers/implicitViews.cfc, test-harness/rootOnlyView.cfm,
- * test-harness/main/rootOnlyAction.cfm, test-harness/implicitViews/noView.cfm, test-harness/views/implicitViews/
+ * Fixtures: test-harness/handlers/implicitViews.cfc, test-harness/rootonlyview.cfm,
+ * test-harness/main/rootonlyaction.cfm, test-harness/implicitViews/noView.cfm, test-harness/views/implicitViews/
+ * The root-only fixtures are lowercase because view dispatch lowercases the event, so on a case-sensitive file
+ * system the old lookup finds them too.
  */
 component extends="tests.resources.BaseIntegrationTest" {
 
@@ -50,15 +52,15 @@ component extends="tests.resources.BaseIntegrationTest" {
 
 			describe( "templates outside the declared view folders", function(){
 				it( "are not dispatched for a missing handler", function(){
-					var e = execute( event = "rootOnlyView", renderResults = true )
-					expect( e.getPrivateValue( "invalidevent", "" ) ).toBe( "rootOnlyView" )
+					var e = execute( event = "rootonlyview", renderResults = true )
+					expect( e.getPrivateValue( "invalidevent", "" ) ).toBe( "rootonlyview" )
 					expect( e.getStatusCode() ).toBe( 404 )
 					expect( e.getRenderedContent() ).notToInclude( "ROOT-ONLY-VIEW" )
 				} )
 
 				it( "are not dispatched for a missing action", function(){
-					var e = execute( event = "main.rootOnlyAction", renderResults = true )
-					expect( e.getPrivateValue( "invalidevent", "" ) ).toBe( "main.rootOnlyAction" )
+					var e = execute( event = "main.rootonlyaction", renderResults = true )
+					expect( e.getPrivateValue( "invalidevent", "" ) ).toBe( "main.rootonlyaction" )
 					expect( e.getStatusCode() ).toBe( 404 )
 					expect( e.getRenderedContent() ).notToInclude( "ROOT-ONLY-ACTION" )
 				} )

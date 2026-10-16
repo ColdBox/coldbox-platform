@@ -61,7 +61,7 @@ component
 		// Per-name locate caches, gated by viewDiscoveryCaching
 		variables.locateViewCache   = {};
 		variables.locateLayoutCache = {};
-		// Folders implicit views may resolve from, per module ("" = no module)
+		// Normalized folders implicit views may resolve from, per configured folder path
 		variables.implicitViewRoots = {}
 		super.init();
 		return this;
@@ -976,18 +976,19 @@ component
 	 * @return The view path, or an empty string when the view doesn't exist in a declared view folder
 	 */
 	function locateImplicitView( required view, module = "" ){
-		var viewPath = len( arguments.module ) ? locateModuleView( arguments.view, arguments.module ) : locateView(
+		// Remove the extension like locateView() does, which returns the view as is when no template exists
+		arguments.view = reReplace( arguments.view, "\.(cfm|bxm)$", "", "one" )
+		var viewPath   = len( arguments.module ) ? locateModuleView( arguments.view, arguments.module ) : locateView(
 			arguments.view
 		)
-
-		// locateView() returns the view as is when no template exists
-		if ( !reFindNoCase( "\.(cfm|bxm)$", viewPath ) ) {
+		if ( viewPath == arguments.view ) {
 			return ""
 		}
 
+		// Compare case-sensitively: on a case-sensitive file system, folders that differ only by case are different
 		var templatePath = normalizeFilePath( cachedExpandPath( viewPath ) )
 		for ( var viewRoot in getImplicitViewRoots( arguments.module ) ) {
-			if ( left( templatePath, len( viewRoot ) ) == viewRoot ) {
+			if ( !compare( left( templatePath, len( viewRoot ) ), viewRoot ) ) {
 				return viewPath
 			}
 		}
@@ -1119,26 +1120,27 @@ component
 	 * @module The module of the event, if any
 	 */
 	private array function getImplicitViewRoots( module = "" ){
-		if ( !variables.implicitViewRoots.keyExists( arguments.module ) ) {
-			var roots = [ "/#variables.appMapping#/#variables.viewsConvention#" ]
-			if ( len( variables.viewsExternalLocation ) ) {
-				roots.append( variables.viewsExternalLocation )
-			}
-			if ( len( arguments.module ) ) {
-				roots.append(
-					"#variables.modulesConfig[ arguments.module ].mapping#/#variables.modulesConfig[ arguments.module ].conventions.viewsLocation#"
-				)
-			}
-
-			var viewRoots = []
-			for ( var root in roots ) {
-				viewRoots.append(
-					normalizeFilePath( cachedExpandPath( reReplace( root, "//", "/", "all" ) ) ) & "/"
-				)
-			}
-			variables.implicitViewRoots[ arguments.module ] = viewRoots
+		var roots = [ "/#variables.appMapping#/#variables.viewsConvention#" ]
+		if ( len( variables.viewsExternalLocation ) ) {
+			roots.append( variables.viewsExternalLocation )
 		}
-		return variables.implicitViewRoots[ arguments.module ]
+		// Read the module's folder on every lookup, a module reload can change it
+		if ( len( arguments.module ) ) {
+			roots.append(
+				"#variables.modulesConfig[ arguments.module ].mapping#/#variables.modulesConfig[ arguments.module ].conventions.viewsLocation#"
+			)
+		}
+
+		var viewRoots = []
+		for ( var root in roots ) {
+			if ( !variables.implicitViewRoots.keyExists( root ) ) {
+				variables.implicitViewRoots[ root ] = normalizeFilePath(
+					cachedExpandPath( reReplace( root, "//", "/", "all" ) )
+				) & "/"
+			}
+			viewRoots.append( variables.implicitViewRoots[ root ] )
+		}
+		return viewRoots
 	}
 
 	/**
