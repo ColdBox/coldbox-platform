@@ -254,10 +254,7 @@ component accessors="true" {
 	 * JSON: the error templates encode it as text and would fail on anything else.
 	 */
 	function getExtendedInfo(){
-		if ( !structKeyExists( variables.exceptionStruct, "extendedInfo" ) || isNull( variables.exceptionStruct.extendedInfo ) ) {
-			return variables.STRINGNULL;
-		}
-		var info = variables.exceptionStruct.extendedInfo;
+		var info = variables.exceptionStruct.extendedInfo ?: variables.STRINGNULL;
 		if ( isSimpleValue( info ) ) {
 			return info;
 		}
