@@ -227,12 +227,53 @@ component extends="tests.resources.BaseIntegrationTest" {
 				} )
 
 				it( "ignores an app root template that locateView() finds", () => {
-					expect( renderer.locateView( "rootOnlyView" ) ).toInclude( "rootOnlyView.cfm" )
-					expect( renderer.locateImplicitView( "rootOnlyView" ) ).toBe( "" )
+					expect( renderer.locateView( "rootonlyview" ) ).toInclude( "rootonlyview.cfm" )
+					expect( renderer.locateImplicitView( "rootonlyview" ) ).toBe( "" )
 				} )
 
 				it( "returns an empty string for a missing view", () => {
 					expect( renderer.locateImplicitView( "no/such/view" ) ).toBe( "" )
+				} )
+
+				it( "returns an empty string for a missing view with an extension", () => {
+					expect( renderer.locateImplicitView( "/cbTestHarness/views/missing.CFM" ) ).toBe( "" )
+				} )
+
+				// Only on a case-sensitive file system: elsewhere both names are the same folder
+				it(
+					title = "ignores a folder whose name differs from a view folder only by case",
+					body  = () => {
+						var viewsConvention = renderer.$getProperty( "viewsConvention", "variables" )
+						try {
+							// With the views folder configured as "Views", views/simpleview.cfm is only found from the app root
+							renderer.$property( "viewsConvention", "variables", "Views" )
+							expect( renderer.locateImplicitView( "views/simpleview" ) ).toBe( "" )
+						} finally {
+							renderer.$property(
+								"viewsConvention",
+								"variables",
+								viewsConvention
+							)
+						}
+					},
+					skip = fileExists( expandPath( "/cbTestHarness/VIEWS/simpleview.cfm" ) )
+				)
+
+				it( "uses a module's current views folder", () => {
+					var conventions   = renderer.$getProperty( "modulesConfig", "variables" ).moduleLookup.conventions
+					var viewsLocation = conventions.viewsLocation
+					expect( renderer.locateImplicitView( "module-level", "moduleLookup" ) ).toInclude(
+						"moduleLookup/views/module-level.cfm"
+					)
+					try {
+						// As after a module reload with another views folder
+						conventions.viewsLocation = "layouts"
+						expect( renderer.locateImplicitView( "module-level", "moduleLookup" ) ).toInclude(
+							"moduleLookup/layouts/module-level.cfm"
+						)
+					} finally {
+						conventions.viewsLocation = viewsLocation
+					}
 				} )
 			} )
 
