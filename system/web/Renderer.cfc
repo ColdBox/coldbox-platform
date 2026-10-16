@@ -61,6 +61,8 @@ component
 		// Per-name locate caches, gated by viewDiscoveryCaching
 		variables.locateViewCache   = {};
 		variables.locateLayoutCache = {};
+		// Normalized folders implicit views may resolve from, per configured folder path
+		variables.implicitViewRoots = {}
 		super.init();
 		return this;
 	}
@@ -964,6 +966,36 @@ component
 	}
 
 	/**
+	 * Locate a view chosen from the request's event name (implicit views). Unlike locateView(), only views inside the
+	 * declared view folders are returned: the views convention folder, the external views location and, for a module
+	 * event, the module's views folder. Templates anywhere else under the application root are ignored.
+	 *
+	 * @view   The view to locate
+	 * @module The module of the event, if any
+	 *
+	 * @return The view path, or an empty string when the view doesn't exist in a declared view folder
+	 */
+	function locateImplicitView( required view, module = "" ){
+		// Remove the extension like locateView() does, which returns the view as is when no template exists
+		arguments.view = reReplace( arguments.view, "\.(cfm|bxm)$", "", "one" )
+		var viewPath   = len( arguments.module ) ? locateModuleView( arguments.view, arguments.module ) : locateView(
+			arguments.view
+		)
+		if ( viewPath == arguments.view ) {
+			return ""
+		}
+
+		// Compare case-sensitively: on a case-sensitive file system, folders that differ only by case are different
+		var templatePath = normalizeFilePath( cachedExpandPath( viewPath ) )
+		for ( var viewRoot in getImplicitViewRoots( arguments.module ) ) {
+			if ( !compare( left( templatePath, len( viewRoot ) ), viewRoot ) ) {
+				return viewPath
+			}
+		}
+		return ""
+	}
+
+	/**
 	 * Discover view+helper path locations.  The returned helper and view locations will have the appropriate extension.
 	 *
 	 * @view           The view to discover
@@ -1063,13 +1095,72 @@ component
 		var cEvent = reReplaceNoCase( event.getCurrentEvent(), "^([^:.]*):", "" );
 
 		// Implicit views
-		if ( variables.controller.getSetting( name = "caseSensitiveImplicitViews", defaultValue = true ) ) {
-			event.setView( replace( cEvent, ".", "/", "all" ) );
-		} else {
-			event.setView( lCase( replace( cEvent, ".", "/", "all" ) ) );
+		var implicitView = replace( cEvent, ".", "/", "all" )
+		if ( !variables.controller.getSetting( name = "caseSensitiveImplicitViews", defaultValue = true ) ) {
+			implicitView = lCase( implicitView )
 		}
 
+		// The view must exist in a declared view folder, never elsewhere under the app root
+		if ( !len( locateImplicitView( implicitView, event.getCurrentModule() ) ) ) {
+			throw(
+				message = "The implicit view [#implicitView#] for the event [#event.getCurrentEvent()#] was not found in the views folders.",
+				detail  = "Implicit views resolve only from the views folder, the external views location or a module's views folder. Use event.setView() to render a template from another location.",
+				type    = "Renderer.ImplicitViewNotFoundException"
+			)
+		}
+
+		event.setView( implicitView )
+
 		return this;
+	}
+
+	/**
+	 * The folders implicit views may resolve from, as normalized absolute paths ending in /
+	 *
+	 * @module The module of the event, if any
+	 */
+	private array function getImplicitViewRoots( module = "" ){
+		var roots = [ "/#variables.appMapping#/#variables.viewsConvention#" ]
+		if ( len( variables.viewsExternalLocation ) ) {
+			roots.append( variables.viewsExternalLocation )
+		}
+		// Read the module's folder on every lookup, a module reload can change it
+		if ( len( arguments.module ) ) {
+			roots.append(
+				"#variables.modulesConfig[ arguments.module ].mapping#/#variables.modulesConfig[ arguments.module ].conventions.viewsLocation#"
+			)
+		}
+
+		var viewRoots = []
+		for ( var root in roots ) {
+			if ( !variables.implicitViewRoots.keyExists( root ) ) {
+				variables.implicitViewRoots[ root ] = normalizeFilePath(
+					cachedExpandPath( reReplace( root, "//", "/", "all" ) )
+				) & "/"
+			}
+			viewRoots.append( variables.implicitViewRoots[ root ] )
+		}
+		return viewRoots
+	}
+
+	/**
+	 * Normalize an absolute file path: use / separators and remove . and .. segments, without resolving symlinks
+	 *
+	 * @path The absolute path
+	 */
+	private string function normalizeFilePath( required string path ){
+		var segments = []
+		for ( var segment in listToArray( replace( arguments.path, "\", "/", "all" ), "/" ) ) {
+			if ( segment == ".." ) {
+				if ( segments.len() ) {
+					segments.deleteAt( segments.len() )
+				}
+			} else if ( segment != "." ) {
+				segments.append( segment )
+			}
+		}
+		// Keep the leading slash of a *nix path, a Windows path starts with its drive
+		return ( left( arguments.path, 1 ) == "/" ? "/" : "" ) & segments.toList( "/" )
 	}
 
 	/**
