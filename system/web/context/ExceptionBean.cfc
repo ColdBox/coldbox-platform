@@ -249,13 +249,20 @@ component accessors="true" {
 	}
 
 	/**
-	 * Get error extended info
+	 * Get error extended info, always as a string. Engines and modules can put a complex value in extendedInfo
+	 * (BoxLang modules such as bx-orm attach a struct of context), so a struct, array or object is returned as
+	 * JSON: the error templates encode it as text and would fail on anything else.
 	 */
 	function getExtendedInfo(){
-		if ( structKeyExists( variables.exceptionStruct, "extendedInfo" ) ) {
-			return variables.exceptionStruct.extendedInfo;
+		var info = variables.exceptionStruct.extendedInfo ?: variables.STRINGNULL;
+		if ( isSimpleValue( info ) ) {
+			return info;
 		}
-		return variables.STRINGNULL;
+		try {
+			return serializeJSON( info );
+		} catch ( any e ) {
+			return "[complex value that cannot be serialized: " & e.message & "]";
+		}
 	}
 
 	/**
