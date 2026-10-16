@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - The development error page (`BugReport.cfm`) failed with an `encodeForHTML` error when an exception's `extendedInfo` was a struct, as BoxLang modules such as bx-orm set it, and hid the real error. `ExceptionBean.getExtendedInfo()` now always returns a string: complex values come back as JSON.
+- [COLDBOX-1419] Scheduled tasks could not load module components on engines that lose path mappings between requests, including Adobe ColdFusion behind IIS. ColdBox now stores mappings for module folders and registered module paths. Scheduled tasks register these paths with the CFML engine before the task starts.
 
 ## [8.3.0] - 2026-10-13
 
