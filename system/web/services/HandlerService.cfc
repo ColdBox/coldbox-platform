@@ -175,6 +175,17 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			return processInvalidEvent( arguments.ehBean, oRequestContext )
 		}
 
+		// Are they requesting an advice method (preHandler, preIndex, etc) as the action of the main event?
+		// Internal runEvent() calls and the automatic advice calls are not affected.
+		if (
+			!arguments.ehBean.getIsPrivate() AND
+			arguments.ehBean.getFullEvent() EQ oRequestContext.getCurrentEvent() AND
+			isAdviceAction( arguments.ehBean.getMethod(), oEventHandler )
+		) {
+			// Invalid Event processing
+			return processInvalidEvent( arguments.ehBean, oRequestContext )
+		}
+
 		/* ::::::::::::::::::::::::::::::::::::::::: EVENT CACHING :::::::::::::::::::::::::::::::::::::::::::: */
 
 		// Event Caching Routines, if using caching, NOT a private event and we are executing the main event
@@ -753,6 +764,26 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 		// Go retrieve the handler that will handle the invalid event so it can execute.
 		return getHandler( getHandlerBean( targetInvalidEvent ), arguments.requestContext );
+	}
+
+	/**
+	 * Verify if an action is one of the handler's advice methods: preHandler(), postHandler(), aroundHandler(),
+	 * or the pre/post/around advice of another action in the same handler. This is the same rule the
+	 * Controller uses to find the advice it runs around an action.
+	 *
+	 * @action        The requested action
+	 * @oEventHandler The event handler instance
+	 */
+	private boolean function isAdviceAction( required string action, required oEventHandler ){
+		if ( listFindNoCase( "preHandler,postHandler,aroundHandler", arguments.action ) ) {
+			return true
+		}
+		// pre{Action}, post{Action} or around{Action} for an action that exists
+		var adviceTarget = reReplaceNoCase( arguments.action, "^(pre|post|around)", "" )
+		if ( !len( adviceTarget ) || adviceTarget == arguments.action ) {
+			return false
+		}
+		return arguments.oEventHandler._actionExists( adviceTarget )
 	}
 
 	/**
