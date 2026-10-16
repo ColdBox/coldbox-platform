@@ -769,7 +769,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	/**
 	 * Verify if an action is one of the handler's advice methods: preHandler(), postHandler(), aroundHandler(),
 	 * or the pre/post/around advice of another action in the same handler. This is the same rule the
-	 * Controller uses to find the advice it runs around an action.
+	 * Controller uses to find the advice it runs around an action. Inherited framework methods tagged
+	 * cbMethod, such as view(), can never run as actions, so preview() next to them is a normal action.
 	 *
 	 * @action        The requested action
 	 * @oEventHandler The event handler instance
@@ -783,7 +784,13 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		if ( !len( adviceTarget ) || adviceTarget == arguments.action ) {
 			return false
 		}
-		return arguments.oEventHandler._actionExists( adviceTarget )
+		if ( !arguments.oEventHandler._actionExists( adviceTarget ) ) {
+			return false
+		}
+		// The target must be an action, not an inherited framework method
+		var targetMetadata = arguments.oEventHandler._actionMetadata( adviceTarget )
+		var annotations    = targetMetadata.keyExists( "annotations" ) ? targetMetadata.annotations : targetMetadata
+		return !annotations.keyExists( "cbMethod" )
 	}
 
 	/**

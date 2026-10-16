@@ -58,6 +58,13 @@ component extends="tests.resources.BaseIntegrationTest" {
 				expect( e.getPrivateValue( "ran" ).toList() ).toBe( "preHandler,aroundHandler,preflight,postHandler" )
 			} )
 
+			it( "runs preview() as an action when view() is only the inherited framework helper", function(){
+				var e = execute( event = "adviceInherited.preview", renderResults = true )
+
+				expect( e.getPrivateValue( "invalidevent", "" ) ).toBe( "" )
+				expect( e.getRenderedContent() ).toInclude( "INHERITED-PREVIEW-OK" )
+			} )
+
 			it( "lets handler code run an advice method with runEvent()", function(){
 				var e = execute( event = "adviceDispatch.internalAdvice", renderResults = true )
 
