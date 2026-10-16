@@ -211,6 +211,31 @@ component extends="tests.resources.BaseIntegrationTest" {
 				} );
 			} );
 
+			describe( "Implicit view lookup", () => {
+				it( "finds a view in the views folder", () => {
+					expect( renderer.locateImplicitView( "simpleview" ) ).toInclude( "simpleview.cfm" )
+				} )
+
+				it( "finds a view in the external views location", () => {
+					expect( renderer.locateImplicitView( "externalview" ) ).toInclude( "testViews/externalview.cfm" )
+				} )
+
+				it( "finds a module view", () => {
+					expect( renderer.locateImplicitView( "module-level", "moduleLookup" ) ).toInclude(
+						"moduleLookup/views/module-level.cfm"
+					)
+				} )
+
+				it( "ignores an app root template that locateView() finds", () => {
+					expect( renderer.locateView( "rootOnlyView" ) ).toInclude( "rootOnlyView.cfm" )
+					expect( renderer.locateImplicitView( "rootOnlyView" ) ).toBe( "" )
+				} )
+
+				it( "returns an empty string for a missing view", () => {
+					expect( renderer.locateImplicitView( "no/such/view" ) ).toBe( "" )
+				} )
+			} )
+
 			feature( "ColdBox can render view collections", () => {
 				beforeEach( ( currentSpec ) => {
 					aUsers = [
