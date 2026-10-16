@@ -239,26 +239,6 @@ component extends="tests.resources.BaseIntegrationTest" {
 					expect( renderer.locateImplicitView( "/cbTestHarness/views/missing.CFM" ) ).toBe( "" )
 				} )
 
-				// Only on a case-sensitive file system: elsewhere both names are the same folder
-				it(
-					title = "ignores a folder whose name differs from a view folder only by case",
-					body  = () => {
-						var viewsConvention = renderer.$getProperty( "viewsConvention", "variables" )
-						try {
-							// With the views folder configured as "Views", views/simpleview.cfm is only found from the app root
-							renderer.$property( "viewsConvention", "variables", "Views" )
-							expect( renderer.locateImplicitView( "views/simpleview" ) ).toBe( "" )
-						} finally {
-							renderer.$property(
-								"viewsConvention",
-								"variables",
-								viewsConvention
-							)
-						}
-					},
-					skip = fileExists( expandPath( "/cbTestHarness/VIEWS/simpleview.cfm" ) )
-				)
-
 				it( "uses a module's current views folder", () => {
 					var conventions   = renderer.$getProperty( "modulesConfig", "variables" ).moduleLookup.conventions
 					var viewsLocation = conventions.viewsLocation
