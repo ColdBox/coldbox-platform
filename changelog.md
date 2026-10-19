@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `COLDBOX-1466` Event caching ignored `noExecution()`. When an interceptor, route middleware or the request start handler denied a request (for example `renderData( statusCode = 429 ).noExecution()`), a warm cached event was still served with its cached 200, and a denied response for a cold event was cached and then served to allowed requests. Denied requests now skip event cache delivery and are never cached.
 - The development error page (`BugReport.cfm`) failed with an `encodeForHTML` error when an exception's `extendedInfo` was a struct, as BoxLang modules such as bx-orm set it, and hid the real error. `ExceptionBean.getExtendedInfo()` now always returns a string: complex values come back as JSON.
 
 ## [8.3.0] - 2026-10-13

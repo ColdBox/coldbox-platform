@@ -496,6 +496,53 @@
 				} );
 			} );
 
+			// COLDBOX-1466: execute() never reaches the Bootstrap's event cache delivery or write, so these
+			// specs make real HTTP requests to the test harness. The route middleware on /eventcaching/guarded
+			// denies the request with a 429 and noExecution() when the x-deny-request header is true.
+			describe( "denied requests (COLDBOX-1466)", function(){
+				it( "renders the denial instead of the cached content of a warm event", function(){
+					var nonce = createUUID()
+
+					var first = requestGuarded( nonce )
+					expect( val( first.statusCode ) ).toBe( 200 )
+					expect( first.fileContent ).toInclude( "guarded-" )
+
+					// warm cache hit
+					var cached = requestGuarded( nonce )
+					expect( cached.fileContent ).toBe( first.fileContent )
+					expect( cached.responseHeader ).toHaveKey( "x-coldbox-cache-response" )
+
+					var denied = requestGuarded( nonce, true )
+					expect( val( denied.statusCode ) ).toBe( 429 )
+					expect( denied.fileContent ).toInclude( "denied by middleware" )
+					expect( denied.responseHeader ).notToHaveKey( "x-coldbox-cache-response" )
+
+					// the denial did not touch the cached entry
+					var allowed = requestGuarded( nonce )
+					expect( val( allowed.statusCode ) ).toBe( 200 )
+					expect( allowed.fileContent ).toBe( first.fileContent )
+				} );
+
+				it( "does not cache a denied response", function(){
+					var nonce = createUUID()
+
+					// cold cache, denied first
+					var denied = requestGuarded( nonce, true )
+					expect( val( denied.statusCode ) ).toBe( 429 )
+					expect( denied.fileContent ).toInclude( "denied by middleware" )
+
+					var allowed = requestGuarded( nonce )
+					expect( val( allowed.statusCode ) ).toBe( 200 )
+					expect( allowed.fileContent ).toInclude( "guarded-" )
+					expect( allowed.responseHeader ).notToHaveKey( "x-coldbox-cache-response" )
+
+					// the allowed response is the one that got cached
+					var cached = requestGuarded( nonce )
+					expect( cached.fileContent ).toBe( allowed.fileContent )
+					expect( cached.responseHeader ).toHaveKey( "x-coldbox-cache-response" )
+				} );
+			} );
+
 			describe( "EVENT_CACHE_SUFFIX", function(){
 				it( "evaluates a closure suffix on every request producing distinct cache keys", function(){
 					getRequestContext().setValue( "slug", "alpha" )
@@ -580,6 +627,30 @@
 				} );
 			} );
 		} );
+	}
+
+	/**
+	 * Make a real HTTP request to the test harness cached /eventcaching/guarded route.
+	 *
+	 * @nonce A unique value that isolates the cache key of one spec from the others
+	 * @deny  Ask the route middleware to deny the request
+	 *
+	 * @return The http result struct
+	 */
+	private struct function requestGuarded( required string nonce, boolean deny = false ){
+		cfhttp(
+			url     = "http://#cgi.http_host#/test-harness/index.cfm/eventcaching/guarded?nonce=#arguments.nonce#",
+			method  = "GET",
+			result  = "local.response",
+			timeout = 30
+		) {
+			cfhttpparam(
+				type  = "header",
+				name  = "x-deny-request",
+				value = arguments.deny ? "true" : "false"
+			);
+		}
+		return local.response;
 	}
 
 }

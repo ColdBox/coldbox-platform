@@ -153,6 +153,21 @@ component {
 			route( "/exempt" ).withoutMiddleware( "namedBlocker" ).to( "main.returnTest" )
 		} )
 
+		// COLDBOX-1466: a cached action whose route middleware denies the request when the x-deny-request header is set.
+		// A header, not an rc value, so the denied request shares the cache key of the allowed one.
+		route( "/eventcaching/guarded" )
+			.middleware( function( event, rc, prc ){
+				if ( event.getHTTPHeader( "x-deny-request", "" ) == "true" ) {
+					event
+						.renderData(
+							data       = "denied by middleware",
+							statusCode = 429
+						)
+						.noExecution()
+				}
+			} )
+			.to( "eventcaching.guarded" )
+
 		// Names routes
 		route(
 			pattern = "/routeRunner/:id/:name",
