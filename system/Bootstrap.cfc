@@ -247,8 +247,10 @@ component serializable="false" accessors="true" {
 			var refResults  = {};
 			var eCacheEntry = event.getEventCacheableEntry();
 
-			// Verify if event caching item is in selected cache
-			if ( eCacheEntry.keyExists( "cachekey" ) ) {
+			// Verify if event caching item is in selected cache.
+			// A request denied by an interceptor, route middleware or the request start handler (noExecution)
+			// must render what it set, never the cached content of the event it was denied.
+			if ( !event.getIsNoExecution() && eCacheEntry.keyExists( "cachekey" ) ) {
 				// Get cache element.
 				refResults.eventCaching = cacheBox.getCache( eCacheEntry.provider ).get( eCacheEntry.cacheKey );
 			}
@@ -367,8 +369,10 @@ component serializable="false" accessors="true" {
 					renderedContent = interceptorData.renderedContent;
 
 					// ****** EVENT CACHING *******/
+					// Never cache a response for an event that did not execute, such as a denied request
 					var eCacheEntry = event.getEventCacheableEntry();
 					if (
+						!event.getIsNoExecution() AND
 						eCacheEntry.keyExists( "cacheKey" ) AND
 						getPageContextResponse().getStatus() neq 500 AND
 						(

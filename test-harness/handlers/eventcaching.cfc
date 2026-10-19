@@ -331,4 +331,12 @@
 			statusCode = 500
 		);
 	}
+
+	/**
+	 * A cached action guarded by route middleware that can deny the request (COLDBOX-1466).
+	 * Returns a unique value so a cached response can be told apart from a fresh one.
+	 */
+	function guarded( event, rc, prc ) cache="true" cacheTimeout="10"{
+		return "guarded-" & createUUID();
+	}
 }
