@@ -41,7 +41,8 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		variables.logBox       = new coldbox.system.logging.LogBox()
 		variables.fileappender = createMock( "coldbox.system.logging.appenders.FileAppender" ).setLogBox( logBox )
 
-		variables.fileappender.init( "MyFileAppender", props )
+		// Own file name: RollingFileAppenderTest writes to MyFileAppender.log from its listener thread
+		variables.fileappender.init( "FileAppenderTest", props )
 
 		variables.loge = createMock( "coldbox.system.logging.LogEvent" )
 		variables.loge.init( "Unit Test Sample", 0, "", "UnitTest" )
