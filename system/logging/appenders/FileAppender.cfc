@@ -171,27 +171,43 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 	 * We do this here instead of processing the queue one by one since we can accelerate it
 	 * via toList() operations and fileWriteLine() operations.
 	 *
+	 * The queue argument is not used: it may be a copy (Adobe ColdFusion passes arrays by value),
+	 * so the appender drains its own queue instead.
+	 *
 	 * @queue        The queue itself
 	 * @queueContext A struct of data attached to this processing queue thread
 	 */
 	function preProcessQueue( required queue, required struct queueContext ){
-		if ( arguments.queue.len() ) {
+		if ( variables.logListener.queue.len() ) {
 			variables.lock( () => {
-				if ( queue.len() ) {
-					var oFile = fileOpen(
-						variables.logFullPath,
-						"append",
-						this.getProperty( "fileEncoding" )
-					);
-					try {
-						fileWriteLine( oFile, queue.toList( chr( 13 ) & chr( 10 ) ) );
-					} finally {
-						fileClose( oFile );
-						queue.clear();
-					}
+				var lines = drainQueue()
+				if ( lines.len() ) {
+					appendLines( lines )
 				}
 			} );
 		}
+	}
+
+	/**
+	 * Writes an entry the log listener dequeued itself, one that was queued after
+	 * <code>preProcessQueue()</code> drained the queue, to the log file
+	 *
+	 * @data         The log line to write
+	 * @queueContext The queue context in process
+	 * @queue        The queue itself
+	 *
+	 * @return The appender
+	 */
+	function processQueueElement(
+		required data,
+		required queueContext,
+		required queue
+	){
+		var line = arguments.data
+		variables.lock( () => {
+			appendLines( [ line ] )
+		} )
+		return this
 	}
 
 	/**
@@ -208,6 +224,24 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 
 
 	/************************************ PRIVATE ************************************/
+
+	/**
+	 * Appends lines to the log file in one write. Callers hold the appender lock.
+	 *
+	 * @lines The log lines to write
+	 */
+	private function appendLines( required array lines ){
+		var oFile = fileOpen(
+			variables.logFullPath,
+			"append",
+			this.getProperty( "fileEncoding" )
+		)
+		try {
+			fileWriteLine( oFile, arguments.lines.toList( chr( 13 ) & chr( 10 ) ) )
+		} finally {
+			fileClose( oFile )
+		}
+	}
 
 	/**
 	 * Ensures the log directory.

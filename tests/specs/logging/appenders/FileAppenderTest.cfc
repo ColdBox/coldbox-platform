@@ -73,10 +73,61 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				writeDump( var = "Sleeping for 5 seconds waiting for log file...", output = "console" );
 				sleep( 5000 );
 
-				var content = fileRead( fileAppender.getLogFullPath() );
-				expect( content ).toInclude( "Unit Test Sample" );
+				var lines = writtenLines( fileAppender ).filter( ( line ) => line contains "Unit Test Sample" )
+				expect( lines.len() ).toBe( 6, "each message is written exactly once" )
 			} );
 		} );
+
+		describe( "File Appender queue", function(){
+			it( "writes each queued line once when the log listener drains the queue", function(){
+				var appender = newQueueAppender()
+				appender
+					.queueMessage( "one" )
+					.queueMessage( "two" )
+					.queueMessage( "three" )
+
+				appender.runLogListener()
+
+				expect( writtenLines( appender ) ).toBe( [ "one", "two", "three" ] )
+				expect( appender.pending() ).toBe( 0, "the appender's own queue is drained" )
+			} );
+
+			it( "writes a line the listener pops itself to the file, not the console", function(){
+				var appender = newQueueAppender()
+
+				appender.processQueueElement( "popped", {}, [] )
+
+				expect( writtenLines( appender ) ).toBe( [ "popped" ] )
+			} );
+		} );
+	}
+
+	/**
+	 * A FileAppender with its own log file whose listener runs in the test thread
+	 */
+	private function newQueueAppender(){
+		var name     = "QueueSpec" & left( replace( createUUID(), "-", "", "all" ), 8 )
+		var appender = new tests.specs.logging.appenders.QueueTestFileAppender(
+			name       = name,
+			properties = {
+				filePath   : expandPath( "/tests/logs" ),
+				autoExpand : false
+			}
+		)
+		appender.setLogBox( variables.logBox )
+		appender.initLogLocation()
+		return appender
+	}
+
+	/**
+	 * The lines of an appender's log file after the header row
+	 *
+	 * @appender The file appender to read
+	 */
+	private array function writtenLines( required appender ){
+		var lines = fileRead( arguments.appender.getLogFullPath() ).listToArray( chr( 13 ) & chr( 10 ) )
+		lines.deleteAt( 1 )
+		return lines
 	}
 
 }
