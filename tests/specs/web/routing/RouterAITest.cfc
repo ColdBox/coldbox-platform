@@ -173,10 +173,7 @@ component extends="coldbox.system.testing.BaseModelTest" skip="notBoxlang" {
 						.$( "getHTTPContent", body )
 						.$( "renderData" )
 						.$( "setHTTPHeader" )
-					return {
-						event  : event,
-						result : route.response( event, {}, {} )
-					}
+					return { event : event, result : route.response( event, {}, {} ) }
 				}
 
 				function assertRejected( required struct called ){
@@ -191,10 +188,10 @@ component extends="coldbox.system.testing.BaseModelTest" skip="notBoxlang" {
 
 				var routePaths = [ "invoke", "stream", "batch" ]
 				var badBodies  = {
-					"no body"      : "",
-					"invalid JSON" : "",
-					"a JSON array" : [ 1, 2 ],
-					"a JSON string": "hello"
+					"no body"       : "",
+					"invalid JSON"  : "",
+					"a JSON array"  : [ 1, 2 ],
+					"a JSON string" : "hello"
 				}
 
 				routePaths.each( ( path ) => {
@@ -219,7 +216,14 @@ component extends="coldbox.system.testing.BaseModelTest" skip="notBoxlang" {
 
 				given( "a valid JSON object body on batch", function(){
 					then( "it runs the runnable for each input and answers as before", function(){
-						var called = callRoute( "batch", { "inputs" : [ "a", "b" ], "userId" : "u1", "threadId" : "t1" } )
+						var called = callRoute(
+							"batch",
+							{
+								"inputs"   : [ "a", "b" ],
+								"userId"   : "u1",
+								"threadId" : "t1"
+							}
+						)
 						expect( called.event.$never( "renderData" ) ).toBeTrue()
 						expect( called.result.outputs ).toHaveLength( 2 )
 						expect( called.result.outputs[ 1 ].success ).toBeTrue()

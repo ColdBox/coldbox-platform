@@ -2932,8 +2932,11 @@ component
 	 */
 	private string function rejectAiBody( required event ){
 		arguments.event.renderData(
-			type       = "json",
-			data       = { "error" : true, "message" : "The request body must be a JSON object" },
+			type = "json",
+			data = {
+				"error"   : true,
+				"message" : "The request body must be a JSON object"
+			},
 			statusCode = 400
 		)
 		return ""
@@ -3017,7 +3020,7 @@ component
 
 		// Inline response closure: resolves the server name and delegates to MCPRequestProcessor
 		var mcpResponseClosure = ( event, rc, prc ) => {
-			var resolvedServerName                              = rc.keyExists( "mcpServer" ) ? rc.mcpServer : serverName
+			var resolvedServerName = rc.keyExists( "mcpServer" ) ? rc.mcpServer : serverName
 			return bxModules.bxai.models.mcp.MCPRequestProcessor::processHttp( resolvedServerName );
 		};
 
