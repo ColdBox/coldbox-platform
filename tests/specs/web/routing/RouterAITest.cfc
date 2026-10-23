@@ -160,6 +160,78 @@ component extends="coldbox.system.testing.BaseModelTest" skip="notBoxlang" {
 				} )
 			} )
 
+			story( "I want toAi() invoke/stream/batch to reject a request body that is not a JSON object", function(){
+				beforeEach( function(){
+					variables.runnable = createStub().$( "run", "stub-output" )
+					router.route( "/api/chat" ).toAi( runnable )
+				} )
+
+				// Run a sub-route's response closure against a stub event whose body is `body`
+				function callRoute( required string path, required any body ){
+					var route = router.getRoutes().filter( ( r ) => r.pattern == "api/chat/#path#/" )[ 1 ]
+					var event = createStub()
+						.$( "getHTTPContent", body )
+						.$( "renderData" )
+						.$( "setHTTPHeader" )
+					return { event : event, result : route.response( event, {}, {} ) }
+				}
+
+				function assertRejected( required struct called ){
+					expect( called.event.$once( "renderData" ) ).toBeTrue()
+					var args = called.event.$callLog().renderData[ 1 ]
+					expect( args.statusCode ).toBe( 400 )
+					expect( args.type ).toBe( "json" )
+					expect( args.data.error ).toBeTrue()
+					expect( args.data.message ).toBe( "The request body must be a JSON object" )
+					expect( runnable.$never( "run" ) ).toBeTrue()
+				}
+
+				var routePaths = [ "invoke", "stream", "batch" ]
+				var badBodies  = {
+					"no body"       : "",
+					"invalid JSON"  : "",
+					"a JSON array"  : [ 1, 2 ],
+					"a JSON string" : "hello"
+				}
+
+				routePaths.each( ( path ) => {
+					badBodies.each( ( label, badBody ) => {
+						given( "a POST to #path# with #label#", () => {
+							then( "it answers 400 with a JSON error", () => {
+								assertRejected( callRoute( path, badBody ) )
+							} )
+						} )
+					} )
+				} )
+
+				given( "a valid JSON object body on invoke", function(){
+					then( "it runs the runnable and answers as before", function(){
+						var called = callRoute( "invoke", { "input" : "hi", "userId" : "u1", "threadId" : "t1" } )
+						expect( called.event.$never( "renderData" ) ).toBeTrue()
+						expect( called.result.success ).toBeTrue()
+						expect( called.result.output ).toBe( "stub-output" )
+						expect( called.result.threadId ).toBe( "t1" )
+					} )
+				} )
+
+				given( "a valid JSON object body on batch", function(){
+					then( "it runs the runnable for each input and answers as before", function(){
+						var called = callRoute(
+							"batch",
+							{
+								"inputs"   : [ "a", "b" ],
+								"userId"   : "u1",
+								"threadId" : "t1"
+							}
+						)
+						expect( called.event.$never( "renderData" ) ).toBeTrue()
+						expect( called.result.outputs ).toHaveLength( 2 )
+						expect( called.result.outputs[ 1 ].success ).toBeTrue()
+						expect( called.result.threadId ).toBe( "t1" )
+					} )
+				} )
+			} )
+
 			story( "I want argument validation on toAi()", function(){
 				given( "a numeric value as runnable", function(){
 					then( "it should throw InvalidArgumentException", function(){

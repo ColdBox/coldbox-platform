@@ -103,6 +103,21 @@ box run-script start:lucee       # Lucee CFML engine
 box run-script start:2023        # Adobe ColdFusion 2023
 ```
 
+### Local Setup (BoxLang + CommandBox)
+
+Install BoxLang with the quick installer, which also gives you the `box` CommandBox launcher. Add BoxLang modules with `install-bx-module`:
+
+```bash
+curl -fsSL https://install.boxlang.io | bash -s -- --yes
+install-bx-module bx-ai          # needed by the toAi()/toMCP() router specs
+box install                      # TestBox and the formatter
+```
+
+- If `install-bx-module` reports "Helper scripts not found", run `/usr/local/boxlang/scripts/install-bx-module.sh <module>` directly.
+- If `box install` fails with a PKIX or certificate error behind a TLS-intercepting proxy, import the proxy CA into CommandBox's own truststore (`~/.CommandBox/engine/cfml/cli/lucee-server/context/security/cacerts`). `JAVA_TOOL_OPTIONS` is not enough.
+- Run the router specs without the full test app by serving a small runner with `boxlang-miniserver` that maps `/coldbox`, `/testbox` and `/tests`. Restart it after installing a module.
+- CI fails on formatting that differs from `box run-script format:check`. Format only the files you changed and do not accept reflows of lines outside your diff.
+
 ### Building & Formatting
 
 ```bash
