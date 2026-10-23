@@ -2724,9 +2724,12 @@ component
 				"verbs"    : "POST",
 				"response" : ( event, rc, prc ) => {
 					var runnableInstance = isSimpleValue( capturedRunnable ) ? getInstance( capturedRunnable ) : capturedRunnable
-					var body             = event.getHTTPContent( json: true )
-					var aiContext        = resolveAiContext( body )
-					var options          = body.options ?: {}
+					var body             = resolveAiBody( event )
+					if ( isNull( body ) ) {
+						return rejectAiBody( event )
+					}
+					var aiContext = resolveAiContext( body )
+					var options   = body.options ?: {}
 					options.append( aiContext, true )
 					var result = runnableInstance.run( body.input ?: {}, body.params ?: {}, options )
 					event.setHTTPHeader( name = "X-Thread-Id", value = aiContext.threadId )
@@ -2758,9 +2761,12 @@ component
 				"verbs"    : "POST",
 				"response" : ( event, rc, prc ) => {
 					var runnableInstance = isSimpleValue( capturedRunnable ) ? getInstance( capturedRunnable ) : capturedRunnable;
-					var body             = event.getHTTPContent( json: true );
-					var aiContext        = resolveAiContext( body );
-					var options          = body.options ?: {};
+					var body             = resolveAiBody( event );
+					if ( isNull( body ) ) {
+						return rejectAiBody( event );
+					}
+					var aiContext = resolveAiContext( body );
+					var options   = body.options ?: {};
 					options.append( aiContext, true );
 
 					// Headers must go out before the stream opens
@@ -2814,10 +2820,13 @@ component
 				"verbs"    : "POST",
 				"response" : ( event, rc, prc ) => {
 					var runnableInstance = isSimpleValue( capturedRunnable ) ? getInstance( capturedRunnable ) : capturedRunnable
-					var body             = event.getHTTPContent( json: true )
-					var params           = body.params ?: {}
-					var aiContext        = resolveAiContext( body )
-					var options          = body.options ?: {}
+					var body             = resolveAiBody( event )
+					if ( isNull( body ) ) {
+						return rejectAiBody( event )
+					}
+					var params    = body.params ?: {}
+					var aiContext = resolveAiContext( body )
+					var options   = body.options ?: {}
 					options.append( aiContext, true )
 					var inputs = body.inputs ?: []
 
@@ -2898,6 +2907,36 @@ component
 		variables.thisRoute = initRouteDefinition()
 
 		return this;
+	}
+
+	/**
+	 * Read the JSON request body for a toAi() sub-route - shared by invoke/stream/batch.
+	 *
+	 * `getHTTPContent( json: true )` yields an empty string when there is no body or the JSON is
+	 * invalid, and an array or string when the JSON is not an object. None of those can carry
+	 * `input`, `params` or `options`, so they are all reported as "no usable body".
+	 *
+	 * @event The request context
+	 *
+	 * @return The parsed body struct, or null when the body is missing, invalid or not a JSON object
+	 */
+	private any function resolveAiBody( required event ){
+		var body = arguments.event.getHTTPContent( json: true )
+		return isStruct( body ) ? body : javacast( "null", "" )
+	}
+
+	/**
+	 * Render the 400 answer for a toAi() request whose body is not a JSON object.
+	 *
+	 * @event The request context
+	 */
+	private string function rejectAiBody( required event ){
+		arguments.event.renderData(
+			type       = "json",
+			data       = { "error" : true, "message" : "The request body must be a JSON object" },
+			statusCode = 400
+		)
+		return ""
 	}
 
 	/**
