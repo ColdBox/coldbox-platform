@@ -6,7 +6,14 @@
 	}
 
 	function teardown(){
-		structDelete( application, "testApp" );
+		// Shut down any second app loaded by testProxyAppLoading() so it cannot leak into later bundles
+		if ( structKeyExists( application, "testApp" ) ) {
+			application.testApp.getLoaderService().processShutdown( force = true );
+			structDelete( application, "testApp" );
+		}
+		// The WireBox transient DI cache is request-scoped and keyed only by target ID,
+		// so a second injector in this request would otherwise reuse testApp's injections.
+		structDelete( request, "cbTransientDICache" );
 	}
 
 	function testRemotingUtil(){
@@ -62,9 +69,17 @@
 	function testVerifyColdBox(){
 		makePublic( proxy, "verifyColdBox" );
 		assertTrue( proxy.verifyColdBox() );
-		structDelete( application, "cbController" );
-		expectException( "ColdBoxProxy.ControllerIllegalState" );
-		proxy.verifyColdBox();
+
+		// Remove the controller temporarily, but ALWAYS restore it so the next test or bundle
+		// in this request does not restart the app on top of stale request-scoped state.
+		var originalController = application.cbController;
+		try {
+			structDelete( application, "cbController" );
+			expectException( "ColdBoxProxy.ControllerIllegalState" );
+			proxy.verifyColdBox();
+		} finally {
+			application.cbController = originalController;
+		}
 	}
 
 	function testGetCacheBox(){
