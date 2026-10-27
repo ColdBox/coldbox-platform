@@ -682,6 +682,30 @@
 		);
 	}
 
+	function testDelegates(){
+		// As a string
+		config
+			.map( "MyObject" )
+			.to( "tests.resources.Test" )
+			.delegates( "Memory, >Worker" );
+		assertEquals( "Memory, >Worker", config.getMapping( "MyObject" ).getDelegates() );
+
+		// As an array
+		config
+			.map( "MyOtherObject" )
+			.to( "tests.resources.Test" )
+			.delegates( [ "Memory", ">Worker" ] );
+		assertEquals( "Memory,>Worker", config.getMapping( "MyOtherObject" ).getDelegates() );
+
+		// On every mapping when several are being configured at once
+		config.reset();
+		config.mapDirectory( packagePath = "coldbox.test-harness.models" ).delegates( "Memory" );
+		var mappings = config.getMappings();
+		for ( var thisMapping in mappings ) {
+			assertEquals( "Memory", mappings[ thisMapping ].getDelegates() );
+		}
+	}
+
 	function testThreadSafety(){
 		config
 			.map( "MyObject" )
