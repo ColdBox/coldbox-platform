@@ -17,6 +17,9 @@ component extends="tests.resources.BaseIntegrationTest" {
 				variables.originalSetting = getController().getSetting( "ImplicitViews" )
 				getController().setSetting( "ImplicitViews", true )
 				prepareMock( variables.handlerService ).$property( "implicitViews", "variables", true )
+				// Don't cache handler lookups made with implicit views on: a later spec with them off would get them
+				variables.originalHandlerCaching = variables.handlerService.getHandlerCaching()
+				variables.handlerService.setHandlerCaching( false )
 			} )
 
 			afterEach( function( currentSpec ){
@@ -26,6 +29,7 @@ component extends="tests.resources.BaseIntegrationTest" {
 					"variables",
 					variables.originalSetting
 				)
+				variables.handlerService.setHandlerCaching( variables.originalHandlerCaching )
 			} )
 
 			describe( "dispatch from a declared view folder", function(){
