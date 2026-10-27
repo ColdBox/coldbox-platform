@@ -46,6 +46,13 @@ component extends="tests.resources.BaseIntegrationTest" {
 						expect( e.getStatusCode() ).toBe( 404 );
 					} );
 				} );
+				given( "an event that only matches a view and implicit views are off", function(){
+					then( "it should fire the global invalid event handler", function(){
+						var e = this.get( "simpleview" )
+						expect( e.getStatusCode() ).toBe( 404 )
+						expect( e.getRenderedContent() ).toInclude( "Invalid Page" )
+					} );
+				} );
 			} );
 
 			story( "I want the onException to have a default status code of 500", function(){
