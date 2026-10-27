@@ -476,6 +476,9 @@ component accessors="true" {
 	/**
 	 *  Fired before the queue is processed within the log listener thread
 	 *
+	 * The queue argument may be a copy (Adobe ColdFusion passes arrays by value), so only read it.
+	 * Use <code>drainQueue()</code> to remove entries from the appender's queue.
+	 *
 	 * @queue        The queue itself
 	 * @queueContext A struct of data attached to this processing queue thread
 	 */
@@ -484,6 +487,9 @@ component accessors="true" {
 
 	/**
 	 *  Fired after the queue is processed within the log listener thread
+	 *
+	 * The queue argument may be a copy (Adobe ColdFusion passes arrays by value), so only read it.
+	 * Use <code>drainQueue()</code> to remove entries from the appender's queue.
 	 *
 	 * @queue        The queue itself
 	 * @queueContext A struct of data attached to this processing queue thread
@@ -503,6 +509,8 @@ component accessors="true" {
 	/**
 	 * Processes a queue element to a destination
 	 * This method is called by the log listeners asynchronously.
+	 *
+	 * The queue argument may be a copy (Adobe ColdFusion passes arrays by value), so only read it.
 	 *
 	 * @data         The data element the queue needs processing
 	 * @queueContext The queue context in process
@@ -559,6 +567,27 @@ component accessors="true" {
 		// Queue it up
 		variables.logListener.queue.append( arguments.data );
 		return this;
+	}
+
+	/**
+	 * Removes and returns the entries queued so far. Anything queued while this runs stays for the
+	 * next pass. It works on the appender's own queue, not on a queue argument, so it is safe
+	 * whether the engine passes arrays by value (Adobe ColdFusion) or by reference.
+	 *
+	 * @return The removed entries, in queue order
+	 */
+	private array function drainQueue(){
+		// Always go through variables: assigning the queue to a local copies it on Adobe ColdFusion
+		var count = variables.logListener.queue.len()
+		if ( !count ) {
+			return []
+		}
+		var entries = variables.logListener.queue.slice( 1, count )
+		// Remove exactly what was read instead of clear(), so entries queued meanwhile are kept
+		for ( var i = 1; i <= count; i++ ) {
+			variables.logListener.queue.deleteAt( 1 )
+		}
+		return entries
 	}
 
 	/**
