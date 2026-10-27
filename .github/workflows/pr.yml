@@ -12,6 +12,12 @@ on:
       - development
       - "releases/**"
 
+# Branches in this repo with an open PR fire both `push` and `pull_request`;
+# share one group per branch so the duplicate run is cancelled.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
 jobs:
   tests:
     uses: ./.github/workflows/tests.yml
