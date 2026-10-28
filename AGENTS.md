@@ -23,6 +23,15 @@ ColdBox is an HMVC (Hierarchical Model-View-Controller) framework designed for t
 - Do not start a docblock line with `@` in an example, because BoxLang reads it as documentation metadata.
 - Prefer the elvis operator `?:` and safe navigation `?.` over `structKeyExists()` and `isNull()` checks when they say the same thing.
 
+### Hot Paths
+Code that runs on every request must be as fast as possible: event dispatch in `HandlerService` and `Controller`, routing, rendering and view lookups, interceptor announcements, WireBox `getInstance()`, and `RequestContext` getters.
+- Look things up in a struct, with `structKeyExists()` or `keyExists()`. Don't search a list or an array (`listFind()`, `listFindNoCase()`, `arrayFind()`, `arrayContains()`).
+- Don't use regular expressions. Use `left()`, `right()`, `mid()`, `find()` or `compare()`, or a lookup struct.
+- Build lookup structs once, in `init()` or `onConfigurationLoad()`, not on every call.
+- Put the cheapest check first, so the common case returns early.
+- Remember results that don't change between requests in a struct, gated by the matching setting (`handlerCaching`, `viewDiscoveryCaching`) like the existing caches.
+- Don't read metadata (`getMetadata()`), serialize (`serializeJSON()`) or hash on every call.
+
 ## JavaScript Coding Standards
 
 ### Spacing and Formatting
