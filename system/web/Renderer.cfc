@@ -63,6 +63,8 @@ component
 		variables.locateLayoutCache = {};
 		// Normalized folders implicit views may resolve from, per configured folder path
 		variables.implicitViewRoots = {}
+		// Implicit view lookups, gated by viewDiscoveryCaching
+		variables.implicitViewCache = {}
 		super.init();
 		return this;
 	}
@@ -976,9 +978,40 @@ component
 	 * @return The view path, or an empty string when the view doesn't exist in a declared view folder
 	 */
 	function locateImplicitView( required view, module = "" ){
-		// Remove the extension like locateView() does, which returns the view as is when no template exists
-		arguments.view = reReplace( arguments.view, "\.(cfm|bxm)$", "", "one" )
-		var viewPath   = len( arguments.module ) ? locateModuleView( arguments.view, arguments.module ) : locateView(
+		// This runs on every render that uses an implicit view, so the result is remembered like locateView()'s.
+		// A module lookup depends on the module's current views folder, so that folder is part of the key:
+		// a module reloaded with another views folder gets a fresh lookup.
+		var cacheKey = "|" & arguments.view
+		if ( len( arguments.module ) ) {
+			var moduleConfig = variables.modulesConfig[ arguments.module ]
+			cacheKey         = arguments.module & "|" & moduleConfig.mapping & "/" & moduleConfig.conventions.viewsLocation & "|" & arguments.view
+		}
+		if ( variables.isDiscoveryCaching && variables.implicitViewCache.keyExists( cacheKey ) ) {
+			return variables.implicitViewCache[ cacheKey ]
+		}
+
+		var viewPath = findImplicitView( arguments.view, arguments.module )
+		if ( variables.isDiscoveryCaching ) {
+			variables.implicitViewCache[ cacheKey ] = viewPath
+		}
+		return viewPath
+	}
+
+	/**
+	 * Find a view chosen from the request's event name in the declared view folders, without the lookup cache
+	 *
+	 * @view   The view to locate
+	 * @module The module of the event, if any
+	 *
+	 * @return The view path, or an empty string when the view doesn't exist in a declared view folder
+	 */
+	private string function findImplicitView( required view, module = "" ){
+		// Remove a lowercase extension like locateView() does, which returns the view as is when no template exists
+		var extension = right( arguments.view, 4 )
+		if ( !compare( extension, ".cfm" ) || !compare( extension, ".bxm" ) ) {
+			arguments.view = left( arguments.view, len( arguments.view ) - 4 )
+		}
+		var viewPath = len( arguments.module ) ? locateModuleView( arguments.view, arguments.module ) : locateView(
 			arguments.view
 		)
 		if ( viewPath == arguments.view ) {
