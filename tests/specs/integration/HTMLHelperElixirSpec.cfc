@@ -41,6 +41,15 @@ component extends="tests.resources.BaseIntegrationTest" {
 				expect( second ).toBe( first );
 			} );
 
+			it( "gives the same path with and without a leading slash", function(){
+				runningInModule( "", "" );
+
+				expect( htmlhelper.elixirPath( "js/jquery.js" ) ).toBe( "/includes/js/jquery.1.js" );
+				expect( htmlhelper.elixirPath( "/js/jquery.js" ) ).toBe( "/includes/js/jquery.1.js" );
+				// and again, from what was remembered
+				expect( htmlhelper.elixirPath( "/js/jquery.js" ) ).toBe( "/includes/js/jquery.1.js" );
+			} );
+
 			it( "reads a manifest file only once", function(){
 				runningInModule( "", "" );
 

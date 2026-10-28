@@ -2489,19 +2489,25 @@ component
 		numeric version       = 3,
 		manifestRoot          = ""
 	){
-		var event          = requestService.getContext();
-		var currentModule  = event.getCurrentModule();
-		// When using the module root, the result depends on the module we are running in, so the
-		// module must be part of the cache key. Else two modules asking for the same file name
-		// would share the first module's path.
-		var argumentsHash  = hash( toJson( arguments ) & ( arguments.useModuleRoot ? currentModule : "" ) );
-		// Incoming Cleanup
-		arguments.fileName = reReplace( arguments.fileName, "^//?", "" );
+		// This runs for every asset on every page, so a cache hit only builds a plain string key and does one
+		// struct lookup. The module is only looked up when the module root is used, because only then does the
+		// result depend on the module we are running in.
+		var event         = "";
+		var currentModule = "";
+		var cacheKey      = arguments.fileName & "|" & arguments.version & "|" & arguments.manifestRoot;
+		if ( arguments.useModuleRoot ) {
+			event         = requestService.getContext();
+			currentModule = event.getCurrentModule();
+			cacheKey &= "|module:" & currentModule;
+		}
 
 		// In local discovery cache?
-		if ( variables.cachedPaths.keyExists( argumentsHash ) ) {
-			return variables.cachedPaths[ argumentsHash ];
+		if ( variables.cachedPaths.keyExists( cacheKey ) ) {
+			return variables.cachedPaths[ cacheKey ];
 		}
+
+		// Incoming Cleanup
+		arguments.fileName = reReplace( arguments.fileName, "^//?", "" );
 
 		// Prepare state checks
 		var includesLocation    = controller.getColdBoxSetting( "IncludesConvention" );
@@ -2546,15 +2552,15 @@ component
 		// Is the key in the manifest? If not, remember and return the plain path
 		var manifestDirectory = variables.elixirManifests[ manifestKey ];
 		if ( !structKeyExists( manifestDirectory, key ) ) {
-			variables.cachedPaths[ argumentsHash ] = href;
+			variables.cachedPaths[ cacheKey ] = href;
 			return href;
 		}
 		if ( mapping.len() ) {
-			variables.cachedPaths[ argumentsHash ] = "/#mapping#" & manifestDirectory[ key ];
+			variables.cachedPaths[ cacheKey ] = "/#mapping#" & manifestDirectory[ key ];
 		} else {
-			variables.cachedPaths[ argumentsHash ] = manifestDirectory[ key ];
+			variables.cachedPaths[ cacheKey ] = manifestDirectory[ key ];
 		}
-		return variables.cachedPaths[ argumentsHash ];
+		return variables.cachedPaths[ cacheKey ];
 	}
 
 	/**
