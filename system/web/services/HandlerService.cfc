@@ -63,6 +63,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// Default registries
 		variables.registeredHandlers         = {}
 		variables.registeredExternalHandlers = {}
+		// Handler-level advice methods, a struct for fast existence checks on every event
+		variables.ADVICE_METHODS             = {
+			"preHandler"    : true,
+			"postHandler"   : true,
+			"aroundHandler" : true
+		}
 
 		return this
 	}
@@ -175,13 +181,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			return processInvalidEvent( arguments.ehBean, oRequestContext )
 		}
 
-		// Are they requesting an advice method (preHandler, preIndex, etc) as the action of the main event?
-		// Internal runEvent() calls and the automatic advice calls are not affected.
-		if (
-			!arguments.ehBean.getIsPrivate() AND
-			arguments.ehBean.getFullEvent() EQ oRequestContext.getCurrentEvent() AND
-			isAdviceAction( arguments.ehBean.getMethod(), oEventHandler )
-		) {
+		// Are they requesting an advice method (preHandler, preIndex, etc) as an action?
+		// The Controller runs advice by calling the methods directly, so they never come through here.
+		if ( isAdviceAction( arguments.ehBean.getMethod(), oEventHandler ) ) {
 			// Invalid Event processing
 			return processInvalidEvent( arguments.ehBean, oRequestContext )
 		}
@@ -772,18 +774,31 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * Controller uses to find the advice it runs around an action. Inherited framework methods tagged
 	 * cbMethod, such as view(), can never run as actions, so preview() next to them is a normal action.
 	 *
+	 * This runs for every event, so it only uses struct lookups and plain string checks. An action
+	 * without a pre, post or around prefix, which is almost every action, returns without any metadata lookup.
+	 *
 	 * @action        The requested action
 	 * @oEventHandler The event handler instance
 	 */
 	private boolean function isAdviceAction( required string action, required oEventHandler ){
-		if ( listFindNoCase( "preHandler,postHandler,aroundHandler", arguments.action ) ) {
+		if ( structKeyExists( variables.ADVICE_METHODS, arguments.action ) ) {
 			return true
 		}
-		// pre{Action}, post{Action} or around{Action} for an action that exists
-		var adviceTarget = reReplaceNoCase( arguments.action, "^(pre|post|around)", "" )
-		if ( !len( adviceTarget ) || adviceTarget == arguments.action ) {
+
+		// pre{Action}, post{Action} or around{Action}: the action it would advise
+		var adviceTarget = ""
+		if ( left( arguments.action, 3 ) == "pre" ) {
+			adviceTarget = mid( arguments.action, 4, len( arguments.action ) )
+		} else if ( left( arguments.action, 4 ) == "post" ) {
+			adviceTarget = mid( arguments.action, 5, len( arguments.action ) )
+		} else if ( left( arguments.action, 6 ) == "around" ) {
+			adviceTarget = mid( arguments.action, 7, len( arguments.action ) )
+		}
+		if ( !len( adviceTarget ) ) {
 			return false
 		}
+
+		// Only for an action with an advice prefix: does the advised action exist?
 		if ( !arguments.oEventHandler._actionExists( adviceTarget ) ) {
 			return false
 		}

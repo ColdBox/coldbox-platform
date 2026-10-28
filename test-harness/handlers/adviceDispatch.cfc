@@ -70,12 +70,6 @@ component {
 		event.renderData( type = "plain", data = "ADVICE-PREFLIGHT-OK" )
 	}
 
-	// Internal calls to an advice method keep working
-	function internalAdvice( event, rc, prc ){
-		record( prc, "internalAdvice" )
-		runEvent( event = "adviceDispatch.preHandler", prePostExempt = true )
-		event.renderData( type = "plain", data = "ADVICE-INTERNAL-OK" )
-	}
 
 	/************************************** PRIVATE *********************************************/
 

@@ -65,13 +65,20 @@ component extends="tests.resources.BaseIntegrationTest" {
 				expect( e.getRenderedContent() ).toInclude( "INHERITED-PREVIEW-OK" )
 			} )
 
-			it( "lets handler code run an advice method with runEvent()", function(){
-				var e = execute( event = "adviceDispatch.internalAdvice", renderResults = true )
+			it( "rejects an advice method requested with runEvent(), like a missing action", function(){
+				// runEvent() of an action that doesn't exist throws, and so does an advice method now
+				expect( function(){
+					getController().runEvent( event = "adviceDispatch.preHandler" )
+				} ).toThrow()
+				expect( getRequestContext().getPrivateValue( "invalidevent", "" ) ).toBe( "adviceDispatch.preHandler" )
+				expect( getRequestContext().getPrivateValue( "ran", [] ) ).notToInclude( "preHandler:action" )
+			} )
 
-				expect( e.getRenderedContent() ).toInclude( "ADVICE-INTERNAL-OK" )
-				expect( e.getPrivateValue( "ran" ).toList() ).toBe(
-					"preHandler,aroundHandler,internalAdvice,preHandler:action,postHandler"
-				)
+			it( "rejects an advice method requested as a private event", function(){
+				var e = execute( event = "adviceDispatch.preHandler", private = true )
+
+				expect( e.getPrivateValue( "invalidevent", "" ) ).toBe( "adviceDispatch.preHandler" )
+				expect( e.getPrivateValue( "ran", [] ) ).notToInclude( "preHandler:action" )
 			} )
 		} )
 	}
