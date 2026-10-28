@@ -211,6 +211,52 @@ component extends="tests.resources.BaseIntegrationTest" {
 				} );
 			} );
 
+			describe( "Implicit view lookup", () => {
+				it( "finds a view in the views folder", () => {
+					expect( renderer.locateImplicitView( "simpleview" ) ).toInclude( "simpleview.cfm" )
+				} )
+
+				it( "finds a view in the external views location", () => {
+					expect( renderer.locateImplicitView( "externalview" ) ).toInclude( "testViews/externalview.cfm" )
+				} )
+
+				it( "finds a module view", () => {
+					expect( renderer.locateImplicitView( "module-level", "moduleLookup" ) ).toInclude(
+						"moduleLookup/views/module-level.cfm"
+					)
+				} )
+
+				it( "ignores an app root template that locateView() finds", () => {
+					expect( renderer.locateView( "rootonlyview" ) ).toInclude( "rootonlyview.cfm" )
+					expect( renderer.locateImplicitView( "rootonlyview" ) ).toBe( "" )
+				} )
+
+				it( "returns an empty string for a missing view", () => {
+					expect( renderer.locateImplicitView( "no/such/view" ) ).toBe( "" )
+				} )
+
+				it( "returns an empty string for a missing view with an extension", () => {
+					expect( renderer.locateImplicitView( "/cbTestHarness/views/missing.CFM" ) ).toBe( "" )
+				} )
+
+				it( "uses a module's current views folder", () => {
+					var conventions   = renderer.$getProperty( "modulesConfig", "variables" ).moduleLookup.conventions
+					var viewsLocation = conventions.viewsLocation
+					expect( renderer.locateImplicitView( "module-level", "moduleLookup" ) ).toInclude(
+						"moduleLookup/views/module-level.cfm"
+					)
+					try {
+						// As after a module reload with another views folder
+						conventions.viewsLocation = "layouts"
+						expect( renderer.locateImplicitView( "module-level", "moduleLookup" ) ).toInclude(
+							"moduleLookup/layouts/module-level.cfm"
+						)
+					} finally {
+						conventions.viewsLocation = viewsLocation
+					}
+				} )
+			} )
+
 			feature( "ColdBox can render view collections", () => {
 				beforeEach( ( currentSpec ) => {
 					aUsers = [
