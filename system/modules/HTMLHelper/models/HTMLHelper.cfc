@@ -2489,19 +2489,29 @@ component
 		numeric version       = 3,
 		manifestRoot          = ""
 	){
-		var argumentsHash  = hash( toJson( arguments ) );
+		// This runs for every asset on every page, so a cache hit only builds a plain string key and does one
+		// struct lookup. The module is only looked up when the module root is used, because only then does the
+		// result depend on the module we are running in.
+		var event         = "";
+		var currentModule = "";
+		var cacheKey      = arguments.fileName & "|" & arguments.version & "|" & arguments.manifestRoot;
+		if ( arguments.useModuleRoot ) {
+			event         = requestService.getContext();
+			currentModule = event.getCurrentModule();
+			cacheKey &= "|module:" & currentModule;
+		}
+
+		// In local discovery cache?
+		if ( variables.cachedPaths.keyExists( cacheKey ) ) {
+			return variables.cachedPaths[ cacheKey ];
+		}
+
 		// Incoming Cleanup
 		arguments.fileName = reReplace( arguments.fileName, "^//?", "" );
 
-		// In local discovery cache?
-		if ( variables.cachedPaths.keyExists( argumentsHash ) ) {
-			return variables.cachedPaths[ argumentsHash ];
-		}
-
 		// Prepare state checks
 		var includesLocation    = controller.getColdBoxSetting( "IncludesConvention" );
-		var event               = requestService.getContext();
-		arguments.currentModule = event.getCurrentModule();
+		arguments.currentModule = currentModule;
 
 		// Get the manifest location
 		var manifestPath = discoverElixirManifest( argumentCollection = arguments );
@@ -2525,35 +2535,32 @@ component
 		}
 
 		// Only read, parse and store once the manifest
-		if ( !variables.elixirManifests.keyExists( "elixirManifest-#hash( manifestPath )#" ) ) {
-			lock
-				name          ="load-elixir-manifest-#hash( manifestPath )#"
-				type          ="exclusive"
-				timeout       ="20"
-				throwOnTimeout="true" {
-				if ( !variables.elixirManifests.keyExists( "elixirManifest-#hash( manifestPath )#" ) ) {
+		var manifestKey = hash( manifestPath );
+		if ( !variables.elixirManifests.keyExists( manifestKey ) ) {
+			lock name="load-elixir-manifest-#manifestKey#" type="exclusive" timeout="20" throwOnTimeout="true" {
+				if ( !variables.elixirManifests.keyExists( manifestKey ) ) {
 					var contents = fileRead( manifestPath );
 					if ( isJSON( contents ) ) {
-						variables.elixirManifests[ hash( manifestPath ) ] = deserializeJSON( contents );
+						variables.elixirManifests[ manifestKey ] = deserializeJSON( contents );
 					} else {
-						variables.elixirManifests[ hash( manifestPath ) ] = {};
+						variables.elixirManifests[ manifestKey ] = {};
 					}
 				}
 			}
 		}
 
-		// Is the key in the manifest?
-		var manifestDirectory = variables.elixirManifests[ hash( manifestPath ) ];
+		// Is the key in the manifest? If not, remember and return the plain path
+		var manifestDirectory = variables.elixirManifests[ manifestKey ];
 		if ( !structKeyExists( manifestDirectory, key ) ) {
-			variables.cachedPaths[ argumentsHash ] = arguments.fileName;
+			variables.cachedPaths[ cacheKey ] = href;
 			return href;
 		}
 		if ( mapping.len() ) {
-			variables.cachedPaths[ argumentsHash ] = "/#mapping#" & manifestDirectory[ key ];
+			variables.cachedPaths[ cacheKey ] = "/#mapping#" & manifestDirectory[ key ];
 		} else {
-			variables.cachedPaths[ argumentsHash ] = manifestDirectory[ key ];
+			variables.cachedPaths[ cacheKey ] = manifestDirectory[ key ];
 		}
-		return variables.cachedPaths[ argumentsHash ];
+		return variables.cachedPaths[ cacheKey ];
 	}
 
 	/**
