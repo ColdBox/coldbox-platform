@@ -542,6 +542,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 								thisChild & "/ModuleConfig.bx"
 							)
 						) {
+							// A module with this name may already be known (e.g. a top-level copy)
+							var childWasKnown   = structKeyExists( variables.moduleRegistry, childName )
 							// register child
 							var childRegistered = registerModule(
 								moduleName    : childName,
@@ -551,12 +553,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 								parentInjector: moduleConfigAndInjector.injector
 							)
 							/*
-							 * Track the child only when it registered now, or when another parent
-							 * already registered it (the activation cascade must still reach it).
-							 * A child that failed registration entirely (e.g. it is disabled) must
-							 * not be tracked: activating it later throws IllegalModuleState.
+							 * Track the child when it registered now, or when a module with its name was
+							 * already known, so the activation cascade still reaches it as before.
+							 * A child that refused registration (it is disabled) must not be tracked:
+							 * activating it later throws IllegalModuleState.
 							 */
-							if ( childRegistered || structKeyExists( variables.registeredModules, childName ) ) {
+							if ( childRegistered || childWasKnown ) {
 								arrayAppend( mConfig.childModules, childname )
 							}
 						} else if ( variables.logger.canInfo() ) {
