@@ -638,8 +638,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		var sTime   = getTickCount()
 		var modules = variables.registeredModules
 
-		// If module not registered, throw exception
-		if ( isNull( modules[ arguments.moduleName ] ) ) {
+		// If module not registered, throw exception. structKeyExists() because Adobe throws on isNull() of a missing key
+		if ( !structKeyExists( modules, arguments.moduleName ) ) {
 			throw(
 				message: "Cannot activate module (#arguments.moduleName#) as it has not been registered.",
 				detail : "Registered modules are #modules.keyList()#",
