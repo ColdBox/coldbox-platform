@@ -1143,11 +1143,17 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		if ( !isNull( variables.registeredModules ) && isStruct( variables.registeredModules ) ) {
 			// Unload all modules. We loop over a copy of the names because unload() removes them as it goes.
 			for ( var key in structKeyArray( variables.registeredModules ) ) {
-				// An alias is an extra name for a module that unloads under its own name
+				// An alias is an extra name for a module that unloads under its own name.
+				// A module may list its own name as an alias, so a real module name (a key of
+				// the module registry) is never skipped.
 				if (
 					structKeyExists( variables.registeredModules, key )
 					&&
-					!arrayContainsNoCase( variables.registeredModules[ key ].aliases, key )
+					(
+						structKeyExists( variables.moduleRegistry, key )
+						||
+						!arrayContainsNoCase( variables.registeredModules[ key ].aliases, key )
+					)
 				) {
 					unload( key )
 				}

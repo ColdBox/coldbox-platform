@@ -84,6 +84,11 @@ component extends="tests.resources.BaseIntegrationTest" {
 				model
 					.$property( "controller", "variables", mockController )
 					.$property( "registeredModules", "variables", registered )
+					.$property(
+						"moduleRegistry",
+						"variables",
+						{ "aliased" : {}, "plain" : {} }
+					)
 					.$( "unload", true );
 
 				model.unloadAll();
@@ -97,6 +102,30 @@ component extends="tests.resources.BaseIntegrationTest" {
 				expect( unloadedNames ).toHaveLength( 2 );
 				expect( unloadedNames ).toInclude( "aliased" );
 				expect( unloadedNames ).toInclude( "plain" );
+			} );
+
+			it( "unloads a module that lists its own name as an alias", function(){
+				var mockController = getMockBox().createMock( "coldbox.system.testing.mock.web.MockController" );
+				var model          = getMockBox().createMock( "coldbox.system.web.services.ModuleService" );
+
+				model
+					.$property( "controller", "variables", mockController )
+					.$property(
+						"registeredModules",
+						"variables",
+						{ "selfAliased" : { "aliases" : [ "selfAliased" ] } }
+					)
+					.$property(
+						"moduleRegistry",
+						"variables",
+						{ "selfAliased" : {} }
+					)
+					.$( "unload", true );
+
+				model.unloadAll();
+
+				expect( model.$count( "unload" ) ).toBe( 1 );
+				expect( model.$callLog().unload[ 1 ][ 1 ] ).toBe( "selfAliased" );
 			} );
 		} );
 	}
