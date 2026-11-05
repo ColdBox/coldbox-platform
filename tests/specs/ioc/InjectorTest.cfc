@@ -261,4 +261,36 @@
 		expect( injector.removeChildInjector( "alexia" ) ).toBeTrue();
 	}
 
+	function testRemoveMissingChildInjectorReturnsFalse(){
+		expect( injector.hasChildInjector( "neverRegistered" ) ).toBeFalse();
+		// Must return false, not blow up on an undefined variable
+		expect( injector.removeChildInjector( "neverRegistered" ) ).toBeFalse();
+	}
+
+	function testShutdownLeavesCacheBoxAloneInColdBoxMode(){
+		// mocks
+		parent       = createStub().$( "shutdown", injector );
+		cachebox     = createStub().$( "shutdown" );
+		eventManager = createStub().$( "announce" );
+
+		injector.setParent( parent );
+		injector
+			.$property( "cachebox", "variables", cachebox )
+			.$property( "eventManager", "variables", eventManager )
+			.$( "isCacheBoxLinked", true )
+			.$( "isColdBoxLinked", true )
+			.$(
+				method             = "removeFromScope",
+				returns            = injector,
+				preserveReturnType = false
+			);
+		mockLogger.$( "canInfo", true ).$( "info" );
+
+		injector.shutdown();
+
+		// The application owns CacheBox in ColdBox mode, so the injector must not touch it
+		assertTrue( cacheBox.$never( "shutdown" ) );
+		assertTrue( injector.$once( "removeFromScope" ) );
+	}
+
 }
