@@ -906,6 +906,21 @@ component serializable="false" accessors="true" {
 			} else {
 				// get the mapping as it exists already
 				arguments.mapping = variables.binder.getMapping( arguments.targetID );
+				// Another thread may have registered it but not finished processing it yet, or its processing failed.
+				// process() locks and re-checks, so this waits for discovery instead of wiring with no DI metadata.
+				if ( NOT arguments.mapping.isDiscovered() ) {
+					if ( isSimpleValue( md ) ) {
+						md = variables.utility.getInheritedMetaData(
+							arguments.target,
+							getBinder().getStopRecursions()
+						);
+					}
+					arguments.mapping.process(
+						binder   = variables.binder,
+						injector = this,
+						metadata = md
+					);
+				}
 			}
 		}
 		// end if mapping not found
