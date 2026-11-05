@@ -339,6 +339,11 @@ component
 			append        = arguments.append
 		);
 
+		// A pre-pended entry point must not sit in front of a longer entry point that starts with it
+		if ( !arguments.append ) {
+			moveEntryPointAfterLongerOnes( arguments.module );
+		}
+
 		// Process module resources
 		mConfig
 			.find( arguments.module )
@@ -365,6 +370,65 @@ component
 					addRoute( argumentCollection = item );
 				}
 			} );
+
+		return this;
+	}
+
+	/**
+	 * Routing stops at the first module entry point that matches the incoming URL. So an entry point
+	 * like `api/` must come after a longer one that starts with it, like `api/v2/`, or the shorter
+	 * one would capture every request meant for the longer one.
+	 *
+	 * This moves the given module's entry point to right after the last longer entry point that starts with it.
+	 * If there is none, nothing moves.
+	 *
+	 * @module The module whose entry point was just pre-pended
+	 *
+	 * @return Router
+	 */
+	private function moveEntryPointAfterLongerOnes( required module ){
+		var routeCount = arrayLen( variables.routes );
+		var entryIndex = 0;
+
+		// Find this module's entry point
+		for ( var i = 1; i <= routeCount; i++ ) {
+			if ( variables.routes[ i ].moduleRouting == arguments.module ) {
+				entryIndex = i;
+				break;
+			}
+		}
+		if ( !entryIndex ) {
+			return this;
+		}
+
+		// Find the last longer module entry point that starts with this one. Patterns always end in `/`,
+		// so `api/` is the start of `api/v2/` but not of `apiary/`
+		var entryPoint = variables.routes[ entryIndex ];
+		var patternLen = len( entryPoint.pattern );
+		var lastLonger = 0;
+		for ( var i = entryIndex + 1; i <= routeCount; i++ ) {
+			var thisRoute = variables.routes[ i ];
+			if (
+				len( thisRoute.moduleRouting )
+				&&
+				len( thisRoute.pattern ) > patternLen
+				&&
+				left( thisRoute.pattern, patternLen ) == entryPoint.pattern
+			) {
+				lastLonger = i;
+			}
+		}
+		if ( !lastLonger ) {
+			return this;
+		}
+
+		// Move it to right after that longer entry point
+		arrayDeleteAt( variables.routes, entryIndex );
+		if ( lastLonger == routeCount ) {
+			arrayAppend( variables.routes, entryPoint );
+		} else {
+			arrayInsertAt( variables.routes, lastLonger, entryPoint );
+		}
 
 		return this;
 	}
