@@ -212,7 +212,7 @@ component extends="EventHandler" {
 			.getResponse()
 			.setError( true )
 			.setData( {} )
-			.addMessage( "Base Handler Application Error: #arguments.exception.message#" )
+			.addMessage( "Base Handler Application Error" )
 			.setStatusCode( arguments.event.STATUS.INTERNAL_ERROR );
 
 		// Development additions Great for Testing
@@ -221,6 +221,7 @@ component extends="EventHandler" {
 				.setData(
 					structKeyExists( arguments.exception, "tagContext" ) ? arguments.exception.tagContext : {}
 				)
+				.addMessage( "Message: #arguments.exception.message#" )
 				.addMessage( "Detail: #arguments.exception.detail#" )
 				.addMessage( "StackTrace: #arguments.exception.stacktrace#" );
 		}
@@ -307,10 +308,12 @@ component extends="EventHandler" {
 			.getResponse()
 			.setError( true )
 			.setData( entityId )
-			.addMessage(
-				len( exception.message ) ? exception.message : "The record you requested cannot be found in this system"
-			)
+			.addMessage( "The record you requested cannot be found in this system" )
 			.setStatusCode( arguments.event.STATUS.NOT_FOUND );
+
+		if ( inDebugMode() && len( arguments.exception.message ) ) {
+			arguments.prc.response.addMessage( "Message: #arguments.exception.message#" )
+		}
 
 		// Render Error Out
 		arguments.event.renderData(
@@ -573,12 +576,13 @@ component extends="EventHandler" {
 					"exception" : {
 						"stack"        : arguments.exception.tagContext.map( ( item ) => item.template & ":" & item.line ),
 						"type"         : arguments.exception.type,
+						"message"      : arguments.exception.message,
 						"detail"       : arguments.exception.detail,
 						"extendedInfo" : arguments.exception.extendedInfo
 					}
 				} : {}
 			)
-			.addMessage( "An exception occurred: #arguments.exception.message#" )
+			.addMessage( "An exception occurred" )
 			.setStatusCode( arguments.event.STATUS.INTERNAL_ERROR );
 	}
 

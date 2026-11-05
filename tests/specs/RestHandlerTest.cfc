@@ -278,6 +278,149 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				expect( response.getError() ).toBeTrue();
 				expect( response.getStatusCode() ).toBe( 500 );
 			} );
+
+			describe( "exception messages", () => {
+				beforeEach( ( currentSpec ) => {
+					// qb's firstOrFail() and existsOrFail() put the query's bound values in this message
+					exceptionMessage = "No rows found with constraints [s3cret]"
+					mockException    = {
+						message      : exceptionMessage,
+						detail       : "oooops!",
+						type         : "",
+						stackTrace   : "",
+						extendedInfo : "",
+						tagContext   : []
+					}
+				} )
+
+				describe( "outside debug mode", () => {
+					it( "leaves the message out of the onError reply", () => {
+						handler.onError(
+							mockRequestContext,
+							mockRequestContext.getCollection(),
+							mockRequestContext.getPrivateCollection(),
+							"badAction",
+							mockException,
+							{}
+						)
+						var response = mockRequestContext.getResponse()
+						expect( response.getStatusCode() ).toBe( 500 )
+						expect( response.getMessages() ).toBe( [ "Base Handler Application Error" ] )
+						expect( serializeJSON( response.getDataPacket() ) ).notToInclude( exceptionMessage )
+					} )
+
+					it( "leaves the message out of the onAnyOtherException reply", () => {
+						var response = mockRequestContext.getResponse()
+						handler.onAnyOtherException(
+							mockRequestContext,
+							mockRequestContext.getCollection(),
+							mockRequestContext.getPrivateCollection(),
+							{},
+							mockException
+						)
+						expect( response.getStatusCode() ).toBe( 500 )
+						expect( response.getMessages() ).toBe( [ "An exception occurred" ] )
+						expect( serializeJSON( response.getDataPacket() ) ).notToInclude( exceptionMessage )
+					} )
+
+					it( "leaves the message out of the onEntityNotFoundException reply", () => {
+						handler.onEntityNotFoundException(
+							mockRequestContext,
+							mockRequestContext.getCollection(),
+							mockRequestContext.getPrivateCollection(),
+							{},
+							mockException
+						)
+						var response = mockRequestContext.getResponse()
+						expect( response.getStatusCode() ).toBe( 404 )
+						expect( response.getMessages() ).toBe( [ "The record you requested cannot be found in this system" ] )
+						expect( serializeJSON( response.getDataPacket() ) ).notToInclude( exceptionMessage )
+					} )
+
+					for ( var notFoundType in [ "RecordNotFound", "EntityNotFound" ] ) {
+						it(
+							title = "leaves the message out of the 404 when an action throws #notFoundType#",
+							body  = ( data ) => {
+								var thrownType = data.type
+								var event      = mockRequestContext
+								var prc        = event.getPrivateCollection()
+								event.getResponse()
+
+								event.$( "isSSE", false )
+								event.$( "isNoExecution", false )
+								event.$( "renderData" )
+								event.$( "setHTTPHeader" )
+
+								handler.aroundHandler(
+									event        = event,
+									rc           = event.getCollection(),
+									prc          = prc,
+									targetAction = ( event, rc, prc ) => {
+										throw( type = thrownType, message = exceptionMessage )
+									},
+									eventArguments = {}
+								)
+
+								var response = event.getResponse()
+								expect( response.getStatusCode() ).toBe( 404 )
+								expect( response.getMessages() ).toBe( [ "The record you requested cannot be found in this system" ] )
+								expect( serializeJSON( response.getDataPacket() ) ).notToInclude(
+									exceptionMessage
+								)
+							},
+							data = { type : notFoundType }
+						)
+					}
+				} )
+
+				describe( "in debug mode", () => {
+					beforeEach( ( currentSpec ) => {
+						mockController.$( "inDebugMode", true )
+						mockWireBox.$( "getInstance", new coldbox.system.async.time.DateTimeHelper() )
+					} )
+
+					it( "adds the message to the onError reply", () => {
+						// Outside the MockController, onError rethrows in debug mode instead of replying
+						var testingController = createEmptyMock( "coldbox.system.testing.mock.web.MockController" )
+						handler.setController( testingController.$( "inDebugMode", true ) )
+						handler.onError(
+							mockRequestContext,
+							mockRequestContext.getCollection(),
+							mockRequestContext.getPrivateCollection(),
+							"badAction",
+							mockException,
+							{}
+						)
+						expect( mockRequestContext.getResponse().getMessages() ).toInclude( "Message: #exceptionMessage#" )
+					} )
+
+					it( "adds the message to the onAnyOtherException debug data", () => {
+						var response = mockRequestContext.getResponse()
+						handler.onAnyOtherException(
+							mockRequestContext,
+							mockRequestContext.getCollection(),
+							mockRequestContext.getPrivateCollection(),
+							{},
+							mockException
+						)
+						expect( response.getData().exception.message ).toBe( exceptionMessage )
+					} )
+
+					it( "adds the message to the onEntityNotFoundException reply", () => {
+						handler.onEntityNotFoundException(
+							mockRequestContext,
+							mockRequestContext.getCollection(),
+							mockRequestContext.getPrivateCollection(),
+							{},
+							mockException
+						)
+						expect( mockRequestContext.getResponse().getMessages() ).toBe( [
+							"The record you requested cannot be found in this system",
+							"Message: #exceptionMessage#"
+						] )
+					} )
+				} )
+			} )
 		} );
 	}
 
