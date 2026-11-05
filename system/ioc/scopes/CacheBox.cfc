@@ -139,10 +139,11 @@ component accessors="true" {
 	 * @mapping             The linked WireBox injector
 	 * @mapping.doc_generic coldbox.system.ioc.config.Mapping
 	 *
-	 * @return True if the mapping exists in the singleton cache
+	 * @return True if the mapping exists in the cache it is configured to be stored in
 	 */
 	boolean function exists( required mapping ){
-		return variables.cacheProvider.lookupQuiet( arguments.mapping.getCacheProperties().key );
+		var cacheProperties = arguments.mapping.getCacheProperties();
+		return variables.cacheBox.getCache( cacheProperties.provider ).lookupQuiet( cacheProperties.key );
 	}
 
 }

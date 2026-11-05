@@ -84,5 +84,28 @@
 
 		expect( mockCache.$once( "clear" ) ).toBeTrue();
 	}
+
+	function testExists(){
+		var mapping = createMock( "coldbox.system.ioc.config.Mapping" ).init( name = "CacheTest" );
+		mapping.setCacheProperties(
+			key      = "CacheTest",
+			timeout  = "",
+			provider = "template"
+		);
+		// Only the cache this mapping is configured for can answer
+		mockCacheBox
+			.$( "getCache" )
+			.$args( "template" )
+			.$results( mockCache );
+
+		// In the cache
+		mockCache.$( "lookupQuiet", true );
+		assertTrue( scope.exists( mapping ) );
+		assertEquals( "CacheTest", mockCache.$callLog().lookupQuiet[ 1 ][ 1 ] );
+
+		// Not in the cache
+		mockCache.$( "lookupQuiet", false );
+		assertFalse( scope.exists( mapping ) );
+	}
 	</cfscript>
 </cfcomponent>
