@@ -924,7 +924,9 @@ component accessors="true" {
 		if ( isArray( arguments.expression ) ) {
 			arguments.expression = arrayToList( arguments.expression );
 		}
-		variables.currentMapping.setDelegates( arguments.expression );
+		for ( var mapping in variables.currentMapping ) {
+			mapping.setDelegates( arguments.expression );
+		}
 		return this;
 	}
 
