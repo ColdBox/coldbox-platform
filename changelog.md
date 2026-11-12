@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `COLDBOX-1468` The `toAi()` routes (`/invoke`, `/stream`, `/batch`) answered HTTP 500 when the request had no body or the body was not a JSON object. They now answer 400 with `{ "error": true, "message": "The request body must be a JSON object" }` for a missing body, invalid JSON, a JSON array or a JSON string.
 - `COLDBOX-1466` Event caching ignored `noExecution()`. When an interceptor, route middleware or the request start handler denied a request (for example `renderData( statusCode = 429 ).noExecution()`), a warm cached event was still served with its cached 200, and a denied response for a cold event was cached and then served to allowed requests. Denied requests now skip event cache delivery and are never cached.
 - The development error page (`BugReport.cfm`) failed with an `encodeForHTML` error when an exception's `extendedInfo` was a struct, as BoxLang modules such as bx-orm set it, and hid the real error. `ExceptionBean.getExtendedInfo()` now always returns a string: complex values come back as JSON.
+- [COLDBOX-1419] Scheduled tasks could not load module components on engines that lose path mappings between requests, including Adobe ColdFusion behind IIS. ColdBox now stores mappings for module folders and registered module paths. Scheduled tasks register these paths with the CFML engine before the task starts.
 
 ## [8.3.0] - 2026-10-13
 
