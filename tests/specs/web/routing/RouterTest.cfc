@@ -337,6 +337,49 @@ component extends="coldbox.system.testing.BaseModelTest" {
 						).notToBeEmpty();
 					} );
 				} );
+
+				given( "an entry point that is the start of a longer entry point registered before it", function(){
+					then( "the longer entry point stays first so its requests are not captured", function(){
+						var modules        = controller.getSetting( "modules" );
+						modules[ "apiV2" ] = { "routes" : [], "resources" : [] };
+						modules[ "api" ]   = { "routes" : [], "resources" : [] };
+
+						// The longer one registers first, as it does when it is activated as a dependency
+						router.addModuleRoutes(
+							pattern = "/api/v2",
+							module  = "apiV2",
+							append  = false
+						);
+						router.addModuleRoutes(
+							pattern = "/api",
+							module  = "api",
+							append  = false
+						);
+
+						expect( getModuleEntryPointOrder( router ) ).toBe( [ "apiV2", "api" ] );
+					} );
+				} );
+
+				given( "entry points that only share their first letters", function(){
+					then( "the newest one is still placed first", function(){
+						var modules         = controller.getSetting( "modules" );
+						modules[ "apiary" ] = { "routes" : [], "resources" : [] };
+						modules[ "api" ]    = { "routes" : [], "resources" : [] };
+
+						router.addModuleRoutes(
+							pattern = "/apiary",
+							module  = "apiary",
+							append  = false
+						);
+						router.addModuleRoutes(
+							pattern = "/api",
+							module  = "api",
+							append  = false
+						);
+
+						expect( getModuleEntryPointOrder( router ) ).toBe( [ "api", "apiary" ] );
+					} );
+				} );
 			} );
 
 			story( "I can register namespace routes", function(){
@@ -1450,6 +1493,24 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				expect( routes[ 1 ].responsePlaceholders ).toHaveLength( 0 );
 			} );
 		} );
+	}
+
+	/*********************************** HELPERS ***********************************/
+
+	/**
+	 * The module names of the module entry points in the main routing table, in matching order
+	 *
+	 * @router The router to inspect
+	 */
+	private array function getModuleEntryPointOrder( required router ){
+		return arguments.router
+			.getRoutes()
+			.filter( function( item ){
+				return len( item.moduleRouting );
+			} )
+			.map( function( item ){
+				return item.moduleRouting;
+			} );
 	}
 
 }
