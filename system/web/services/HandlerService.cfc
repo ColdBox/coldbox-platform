@@ -397,16 +397,16 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		if ( find( ":", arguments.event ) ) {
 			// Validate that it is a valid module, else it is an invalid view.
 			if ( structKeyExists( variables.modules, targetModule ) ) {
-				targetView = renderer.locateModuleView( cEvent, targetModule );
+				targetView = renderer.locateImplicitView( cEvent, targetModule );
 			} else {
 				return false;
 			}
 		} else {
-			targetView = renderer.locateView( cEvent );
+			targetView = renderer.locateImplicitView( cEvent );
 		}
 
-		// locateView/locateModuleView return a path with .cfm/.bxm extension only when
-		// the file was verified to exist — no need for a redundant filesystem call here.
+		// locateImplicitView returns a path with .cfm/.bxm extension only when the file was verified
+		// to exist in a declared view folder — no need for a redundant filesystem call here.
 		if ( right( targetView, 4 ) == ".cfm" || right( targetView, 4 ) == ".bxm" ) {
 			arguments.ehBean.setViewDispatch( true );
 			return true;

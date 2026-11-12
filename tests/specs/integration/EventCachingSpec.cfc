@@ -576,7 +576,8 @@
 				} );
 
 				it( "keeps the serve-side and store-side keys in sync even with handlerCaching off", function(){
-					var handlerService = controller.getHandlerService()
+					var handlerService  = controller.getHandlerService()
+					var originalCaching = handlerService.getHandlerCaching()
 					handlerService.setHandlerCaching( false )
 
 					try {
@@ -593,7 +594,9 @@
 						expect( storeKey ).toInclude( "delta-present" )
 						expect( serveKey ).toBe( storeKey )
 					} finally {
-						handlerService.setHandlerCaching( true )
+						// Put back the setting the spec found. The test app runs with handler caching off, so
+						// turning it on here would leave every later spec with cached handler lookups.
+						handlerService.setHandlerCaching( originalCaching )
 					}
 				} );
 
