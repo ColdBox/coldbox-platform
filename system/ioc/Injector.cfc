@@ -295,7 +295,7 @@ component serializable="false" accessors="true" {
 			variables.childInjectors[ arguments.name ].shutdown( this );
 			return structDelete( variables.childInjectors, arguments.name );
 		}
-		return falase;
+		return false;
 	}
 
 	/**
@@ -440,8 +440,11 @@ component serializable="false" accessors="true" {
 			} );
 		}
 
-		// standalone cachebox? Yes, then shut it down baby!
-		if ( isCacheBoxLinked() ) {
+		// Shutdown CacheBox only if not in ColdBox Mode.
+		// In ColdBox Mode the application owns the CacheBox lifecycle and shuts it down
+		// itself via LoaderService.processShutdown(). A child injector shutting it down
+		// here would unregister every cache for the whole application.
+		if ( !isColdBoxLinked() && isCacheBoxLinked() ) {
 			variables.cacheBox.shutdown( this );
 		}
 
