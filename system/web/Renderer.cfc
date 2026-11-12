@@ -250,11 +250,16 @@ component
 
 		// Do we have a view To render? Else throw exception
 		if ( NOT len( arguments.view ) ) {
+			var viewNotSetDetail = "Please remember to use the 'event.setView()' method in your handler or pass in a view to render."
+			// Implicit views are disabled by default, so point at the most likely cause
+			if ( !variables.controller.getSetting( name = "ImplicitViews", defaultValue = false ) ) {
+				viewNotSetDetail &= " The ""implicitViews"" setting is disabled (the default since 8.3.0), so the view is not discovered from the event ('#event.getCurrentEvent()#'). Either set the view explicitly with event.setView(), or enable implicit views with the ""implicitViews = true"" setting in your config/Coldbox.cfc."
+			}
 			throw(
 				message = "The ""currentview"" variable has not been set, therefore there is no view to render.",
-				detail  = "Please remember to use the 'event.setView()' method in your handler or pass in a view to render.",
+				detail  = viewNotSetDetail,
 				type    = "Renderer.ViewNotSetException"
-			);
+			)
 		}
 
 		// Cleanup leading / in views, just in case

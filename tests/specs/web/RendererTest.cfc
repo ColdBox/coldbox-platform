@@ -153,6 +153,30 @@ component extends="tests.resources.BaseIntegrationTest" {
 				}
 			} )
 
+			it( "explains that implicit views are disabled when no view is set", () => {
+				var controller      = getController()
+				var originalSetting = controller.getSetting( "ImplicitViews" )
+				controller.setSetting( "ImplicitViews", false )
+
+				try {
+					var event = getRequestContext()
+					event.overrideEvent( "main.index" )
+					event.setView( "" )
+					var thrown = ""
+					try {
+						renderer.renderView( view = "" )
+					} catch ( any e ) {
+						thrown = e
+					}
+					expect( thrown ).notToBeEmpty( "renderView() should have thrown" )
+					expect( thrown.type ).toBe( "Renderer.ViewNotSetException" )
+					expect( thrown.detail ).toInclude( "implicitViews" )
+					expect( thrown.detail ).toInclude( "main.index" )
+				} finally {
+					controller.setSetting( "ImplicitViews", originalSetting )
+				}
+			} )
+
 			describe( "Discovery Cache", () => {
 				it( "viewDiscoveryCaching setting defaults to true", () => {
 					expect( getController().getSetting( "viewDiscoveryCaching" ) ).toBeTrue();
