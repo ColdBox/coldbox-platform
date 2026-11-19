@@ -122,8 +122,13 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// resolved from this scheduler's own unique path instead, so each one gets its own instance.
 		oScheduler.setLog( variables.wirebox.getLogBox().getLogger( arguments.path ) )
 
-		// Register the Scheduler as an Interceptor as well.
-		variables.interceptorService.registerInterceptor( interceptorObject = oScheduler )
+		// Register the Scheduler as an Interceptor as well, under its own unique name.
+		// Without a name, the class name is used, which is `Scheduler` for every config/Scheduler,
+		// so only the first scheduler loaded would ever listen to interception points.
+		variables.interceptorService.registerInterceptor(
+			interceptorObject = oScheduler,
+			interceptorName   = arguments.name
+		)
 
 		// Inject useful global properties
 		var envUtil = getEnvDelegate()
@@ -199,6 +204,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				if ( hasScheduler( arguments.name ) ) {
 					variables.schedulers[ arguments.name ].shutdown()
 					structDelete( variables.schedulers, arguments.name )
+					// It was registered as an interceptor when loaded, so stop it from listening
+					variables.interceptorService.unregister( arguments.name )
 					return true
 				}
 			}
