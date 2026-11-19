@@ -362,16 +362,21 @@ component serializable="false" accessors="true" {
 	/**
 	 * Convert a proxy script name (CGI.SCRIPT_NAME) into a dot notation component path
 	 *
-	 * @scriptName The script name of the proxy, e.g. /remote/MyProxy.cfc
+	 * @scriptName  The script name of the proxy, e.g. /remote/MyProxy.cfc
 	 * @contextRoot The application context root to strip from the beginning, if any
 	 */
 	private string function getProxyComponentPath( required string scriptName, string contextRoot = "" ){
 		// replace the context root at the beginning of the script
-		var componentPath = len( arguments.contextRoot ) ? replaceNoCase( arguments.scriptName, arguments.contextRoot, "", "one" ) : arguments.scriptName
+		var componentPath = len( arguments.contextRoot ) ? replaceNoCase(
+			arguments.scriptName,
+			arguments.contextRoot,
+			"",
+			"one"
+		) : arguments.scriptName
 		// remove the extension, if any
-		componentPath     = reReplaceNoCase( componentPath, "\..+$", "", "one" )
+		componentPath = reReplaceNoCase( componentPath, "\..+$", "", "one" )
 		// remove leading slashes so we do not generate a leading dot
-		componentPath     = reReplaceNoCase( componentPath, "^/+", "", "one" )
+		componentPath = reReplaceNoCase( componentPath, "^/+", "", "one" )
 		// replace all slashes with dots
 		return reReplaceNoCase( componentPath, "\/+", ".", "all" )
 	}
