@@ -22,6 +22,25 @@
 		assertTrue( isObject( util ) );
 	}
 
+	function testProxyComponentPathHasNoLeadingDot(){
+		makePublic( proxy, "getProxyComponentPath" );
+
+		// COLDBOX-1482: no context root
+		assertEquals( "remote.textMessagesProxy", proxy.getProxyComponentPath( "/remote/textMessagesProxy.cfc" ) );
+		// with a context root
+		assertEquals(
+			"remote.textMessagesProxy",
+			proxy.getProxyComponentPath( "/app/remote/textMessagesProxy.cfc", "/app" )
+		);
+		// root context
+		assertEquals(
+			"remote.textMessagesProxy",
+			proxy.getProxyComponentPath( "/remote/textMessagesProxy.cfc", "/" )
+		);
+		// bx extension and nested folders
+		assertEquals( "a.b.MyProxy", proxy.getProxyComponentPath( "/a/b/MyProxy.bx" ) );
+	}
+
 	function testNoEvent(){
 		// Test With default ProxyReturnCollection = false
 		expectException( "ColdBoxProxy.NoEventDetected" );
