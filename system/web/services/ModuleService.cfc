@@ -542,16 +542,25 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 								thisChild & "/ModuleConfig.bx"
 							)
 						) {
-							// add to parent children
-							arrayAppend( mConfig.childModules, childname )
+							// A module with this name may already be known (e.g. a top-level copy)
+							var childWasKnown   = structKeyExists( variables.moduleRegistry, childName )
 							// register child
-							registerModule(
+							var childRegistered = registerModule(
 								moduleName    : childName,
 								invocationPath: mConfig.invocationPath & "." & thisInceptionPath,
 								parent        : modName,
 								bundle        : arguments.bundle,
 								parentInjector: moduleConfigAndInjector.injector
 							)
+							/*
+							 * Track the child when it registered now, or when a module with its name was
+							 * already known, so the activation cascade still reaches it as before.
+							 * A child that refused registration (it is disabled) must not be tracked:
+							 * activating it later throws IllegalModuleState.
+							 */
+							if ( childRegistered || childWasKnown ) {
+								arrayAppend( mConfig.childModules, childname )
+							}
 						} else if ( variables.logger.canInfo() ) {
 							variables.logger.info(
 								"> Inception Module #childName# does not have a valid ModuleConfig.cfc in its root, so skipping registration"
@@ -629,8 +638,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		var sTime   = getTickCount()
 		var modules = variables.registeredModules
 
-		// If module not registered, throw exception
-		if ( isNull( modules[ arguments.moduleName ] ) ) {
+		// If module not registered, throw exception. structKeyExists() because Adobe throws on isNull() of a missing key
+		if ( !structKeyExists( modules, arguments.moduleName ) ) {
 			throw(
 				message: "Cannot activate module (#arguments.moduleName#) as it has not been registered.",
 				detail : "Registered modules are #modules.keyList()#",
