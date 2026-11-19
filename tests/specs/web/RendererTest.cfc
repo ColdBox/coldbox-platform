@@ -162,16 +162,17 @@ component extends="tests.resources.BaseIntegrationTest" {
 					var event = getRequestContext()
 					event.overrideEvent( "main.index" )
 					event.setView( "" )
-					var thrown = ""
+					var thrownType   = ""
+					var thrownDetail = ""
 					try {
-						renderer.renderView( view = "" )
+						renderer.view( view = "" )
 					} catch ( any e ) {
-						thrown = e
+						thrownType   = e.type
+						thrownDetail = e.detail
 					}
-					expect( thrown ).notToBeEmpty( "renderView() should have thrown" )
-					expect( thrown.type ).toBe( "Renderer.ViewNotSetException" )
-					expect( thrown.detail ).toInclude( "implicitViews" )
-					expect( thrown.detail ).toInclude( "main.index" )
+					expect( thrownType ).toBe( "Renderer.ViewNotSetException" )
+					expect( thrownDetail ).toInclude( "implicitViews" )
+					expect( thrownDetail ).toInclude( "main.index" )
 				} finally {
 					controller.setSetting( "ImplicitViews", originalSetting )
 				}
